@@ -1,0 +1,40 @@
+{
+  "artifact_id": "pq1_objective_binding_audit_2026_09",
+  "evidence_class": "contract_dictionary_audit",
+  "issue": "PQ1 objective/sign/binding audit",
+  "template": {
+    "path": "work/df2_fd_refresh/template_frozen/system/optimisationDict",
+    "sha256": "aa5e1a2ac22c5f7dd6d1e38303f6d119463ec93e5edc8219bbfb3c2a41a02750",
+    "downforce_objective": {
+      "type": "porousDirectionalForce",
+      "direction": [
+        0,
+        0,
+        -1
+      ],
+      "Aref": 0.64,
+      "UInf": 1,
+      "isConstraint": "true (constraint mode)",
+      "target": "0"
+    },
+    "regularisation": "regularise false (one-owner: Python transform owns projection)",
+    "design_update": "maxInitChange 0 (design frozen for the FD campaign)"
+  },
+  "sensitivity_artifact": {
+    "field": "topOSensdownforce",
+    "adjoint_solver_id": "downforce",
+    "response_id": "downforce",
+    "sign_convention": "dJ/drho = -d(downforce_coefficient)/drho",
+    "identity_profile": true,
+    "final_time": "1"
+  },
+  "constraint_flag_ab": {
+    "evidence": "docs/evidence/pq1_constraint_flag_ab_2026_09.json",
+    "finding": "isConstraint/target do not change the analytic derivative (bit-identical)"
+  },
+  "not_verified": [
+    "the continuous-adjoint boundary/objective implementation itself (source-level)",
+    "grid stability of the ratio (registered as a separate campaign)",
+    "any response other than downforce at this state"
+  ]
+}

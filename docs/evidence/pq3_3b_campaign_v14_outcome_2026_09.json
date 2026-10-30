@@ -1,0 +1,97 @@
+{
+  "checkpoint": {
+    "accepted_count": 11,
+    "index": 5,
+    "level_index": 0,
+    "rho_file_sha256": "984f76fa32c11beecc7636d7802736c05da349d743a6edf300f98c6754970a40",
+    "rho_sha256": "f3b981ecb56165bf083a58665777399d19190c1517acf1ef06218b5e791f33b4",
+    "state_path": "checkpoints/state_0005.json",
+    "state_sha256": "f5bf40ac61a724b9db964ea5238cf60b0b8508a9cd803969af83922188b7b711",
+    "verified_chain": true
+  },
+  "claims_not_supported": [
+    "no convergence or stationarity certificate; the registered window governs",
+    "no terminal independent evaluation and no Stage S readiness"
+  ],
+  "claims_supported": [
+    "the accepted steps and the stopping attempt are recorded with their gate verdicts and projections",
+    "the final rho and the checkpoint chain are hash-verified"
+  ],
+  "convergence": {
+    "level_converged": false,
+    "min_accepted_iterations": 10,
+    "objective_delta_abs_max": 0.0001,
+    "reason": "the registered convergence window was not met before the policy stop",
+    "window_accepted": 3
+  },
+  "kind": "pq3_3b_campaign_v14_outcome",
+  "level_records": {
+    "level_3_b128_margin": {
+      "accepted_steps": 5,
+      "discreteness_field": "rho_projection",
+      "discreteness_mean_nd_final": 0.009945312188186787,
+      "discreteness_mean_nd_max": 0.01,
+      "discreteness_scope": "active",
+      "discreteness_within_limit": true,
+      "final_rho_sha256": "f3b981ecb56165bf083a58665777399d19190c1517acf1ef06218b5e791f33b4",
+      "last_metrics": [
+        {
+          "objective_delta_abs": 0.030559142099999992,
+          "projected_field_mean_abs_delta": 0.00043186350895204305,
+          "projected_volume_delta_abs": 0.00027871778749756493
+        },
+        {
+          "objective_delta_abs": 0.024684496349999918,
+          "projected_field_mean_abs_delta": 0.0006911347096530368,
+          "projected_volume_delta_abs": 0.0004440147503178421
+        },
+        {
+          "objective_delta_abs": 0.0033766199400000474,
+          "projected_field_mean_abs_delta": 0.00033397483359123636,
+          "projected_volume_delta_abs": 0.0002530196300102455
+        }
+      ],
+      "last_trial_downforce": 2.61268983854,
+      "last_trial_objective": -2.61268983854,
+      "projected_volume_final": 0.07052783246092366,
+      "projected_volume_fraction_of_v_max": 0.9240381929821101,
+      "start_rho_sha256": "c0441ff5551c7e4cb95ee1d34040f4c3e04f885c5f317a80f79408867ba4a7ac",
+      "stopping_attempt": {
+        "attempt": 6,
+        "candidates": [
+          {
+            "alpha": 1.0,
+            "corrected_update_inf_norm": 0.010000000000000009,
+            "discreteness_field": "rho_projection",
+            "discreteness_mean_nd_candidate": 0.009929593979203823,
+            "discreteness_mean_nd_max": 0.01,
+            "discreteness_mean_nd_parent": 0.009945312188186787,
+            "discreteness_scope": "transform.active",
+            "phi_after": 0.07074276048442815,
+            "projected_discreteness_within_limit": true,
+            "projected_volume_within_v_max": true,
+            "reason": "response_gates_failed",
+            "volume_cap_correction_applied": null,
+            "volume_cap_kappa": null
+          }
+        ],
+        "parent_downforce_coefficient": 2.61268983854
+      }
+    }
+  },
+  "manifest_sha256": "86558ea018c5db3744c87035c8ee82e10a2960d9090ec0605633305954a60a58",
+  "output_directory": "work/pq3_3b_campaign_v14",
+  "output_hashes": {
+    "campaign_meta_json": "df8a1a0b7d3b65447b04dc12974132c550b17fd239d29b7e3aed26fcfba49e81",
+    "events_jsonl": "735ac380b01c849aad59ce08491b6e2618f04a470176ab445f0e67e688f84f85",
+    "latest_json": "967a0ea85fc0c187819d9b94513f290cf199ea3b9470bd7c5c378b72240c0a70"
+  },
+  "schema_version": 1,
+  "status": {
+    "level": "level_3_b128_margin",
+    "measured_stop_cause": null,
+    "reason": "objective_rejected",
+    "status": "blocked"
+  },
+  "terminal": null
+}

@@ -1,0 +1,22 @@
+{
+  "attempted_full_field_jobs": 1,
+  "complete": false,
+  "completed_full_field_jobs": 0,
+  "counts_and_coordinates_unavailable": true,
+  "environments": [
+    "current",
+    "minimum"
+  ],
+  "exact_agreement": null,
+  "float32_only_rescue_allowed": false,
+  "float64_required": true,
+  "measurement_reruns": 0,
+  "no_new_geometry_queries": true,
+  "not_attempted_full_field_jobs": 31,
+  "planned_full_field_jobs": 32,
+  "reason": "First canonical pseudonormal job B_A_repeat_1 failed the preregistered zero rule before worker output persistence: raw signer scalar == 0 while explicit unsigned distance > 0. No retry or later mapping jobs were executed.",
+  "same_libigl_version": "2.6.3",
+  "status": "NOT_EXECUTED_AFTER_SEMANTIC_STOP",
+  "target_arrays_saved": false,
+  "terminal_classification": "SRCMAP02_INCONCLUSIVE"
+}

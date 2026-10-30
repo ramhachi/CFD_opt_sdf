@@ -1,0 +1,41 @@
+Round 3 exact runtime package inspection (static package-content evidence)
+
+Package: openfoam2512-common=2512.0-2 (all)
+Downloaded .deb SHA-256: 55588cb7231fb27eb6dbf53448a2e3d00fa30d516b42120b8eacf07abdfbe2d9
+This digest equals openfoam_package_lock.json entry for openfoam2512-common.
+Archive member: ./usr/lib/openfoam/openfoam2512/etc/config.sh/aliases
+Archive inspection command:
+  tar -xOf openfoam2512-common_2512.0-2_all.deb data.tar.zst | tar -xOf - ./usr/lib/openfoam/openfoam2512/etc/config.sh/aliases
+
+Relevant official package source excerpt, lines 65-81:
+
+# Query the current OpenFOAM version
+# or change to another version (if installed in a parallel directory)
+unset -f foamVersion 2>/dev/null
+foamVersion()
+{
+    if [ "$#" -gt 0 ] && [ -d "$WM_PROJECT_DIR" ]
+    then
+        local prefixDir="${WM_PROJECT_DIR%/*}"  # Parent directory
+        local ver="$1"
+        shift
+
+        if [ -f "$prefixDir/OpenFOAM-$ver/etc/bashrc" ]
+        then
+            . "$WM_PROJECT_DIR/etc/config.sh/unset"   2>/dev/null
+            . "$prefixDir/OpenFOAM-$ver/etc/bashrc"
+            echo "Using OpenFOAM-$WM_PROJECT_VERSION" 1>&2
+        else
+            echo "No OpenFOAM-$ver available in $prefixDir" 1>&2
+
+The no-argument query branch later in this same function is:
+
+        # Treat as query. Report current version
+        echo "OpenFOAM-$WM_PROJECT_VERSION" 1>&2
+
+Thus the version token is written on stderr by the pinned package. Round 4
+preserves stdout and stderr as separate raw strings and selects the unique
+anchored expected version line from both streams.
+
+This inspects package contents only; it is not fresh installation, solver, or
+XFID evidence.

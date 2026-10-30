@@ -1,0 +1,14 @@
+{
+  "reviewer": "requested luna worker",
+  "scope": "source and synthetic inputs only; no target extraction",
+  "issues_found": [
+    "same-sign multiplication underflow in distance bracketing",
+    "serialized component sidedness audit missing"
+  ],
+  "resolution": [
+    "explicit signbit/zero endpoint bracketing, stable hypot Lipschitz norm, no contradicting lower-bound pass, synthetic regression in both metric/verifier",
+    "component sidedness required on NPZ and STL"
+  ],
+  "Step0_volume_review": "corner ordering and linear-z fractions coherent; approximate nonmonotone xy midpoint quadrature; not an exact value or bound",
+  "independent_verifier_imports_extractor": false
+}

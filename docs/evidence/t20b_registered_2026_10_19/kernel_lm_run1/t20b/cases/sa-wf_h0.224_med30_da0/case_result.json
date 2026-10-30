@@ -1,0 +1,214 @@
+{
+  "adjoint": {
+    "adjoint_iterations_logged": 1322,
+    "adjoint_iters": 5000,
+    "binary": "/usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/bin/adjointOptimisationFoam",
+    "box": [
+      [
+        -0.03351,
+        0.0250208,
+        -0.001
+      ],
+      [
+        0.25690999999999997,
+        0.1394016,
+        0.003
+      ]
+    ],
+    "box_contains_section": true,
+    "control_point_files": [
+      "boxcpsBsplines0.csv"
+    ],
+    "converged_in": {},
+    "derivative_files": [],
+    "foam_fatal": false,
+    "log_tail": [
+      "    Cs(r):\t0.00014843641\t9.4410844e-05\t5.4025569e-05\t0",
+      "",
+      "    writing force and moment coefficient files.",
+      "",
+      "forces forces write:",
+      "    Sum of forces",
+      "        Total    : (0.0066672892 -0.27121121 -2.6992498e-20)",
+      "        Pressure : (0.0042406334 -0.27107859 -3.207062e-20)",
+      "        Viscous  : (0.0024266559 -0.0001326279 5.0781226e-21)",
+      "    Sum of moments",
+      "        Total    : (0.00027121121 6.6672892e-06 -0.0077930171)",
+      "        Pressure : (0.00027107859 4.2406334e-06 -0.0076571379)",
+      "        Viscous  : (1.326279e-07 2.4266559e-06 -0.00013587911)",
+      "    writing force and moment files.",
+      "",
+      "Time = 1622",
+      "",
+      "smoothSolver:  Solving for Uax, Initial residual = 0.18995906, Final residual = 0.0048740768, No Iterations 2",
+      "smoothSolver:  Solving for Uay, Initial residual = 0.081677108, Final residual = 0.0031041964, No Iterations 2",
+      "[stack trace]",
+      "=============",
+      "#1  Foam::sigFpe::sigHandler(int) in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libOpenFOAM.so",
+      "#2  ? in /lib/x86_64-linux-gnu/libc.so.6",
+      "#3  Foam::GAMGSolver::scale(Foam::Field<double>&, Foam::Field<double>&, Foam::lduMatrix const&, Foam::FieldField<Foam::Field, double> const&, Foam::UPtrList<Foam::lduInterfaceField const> const&, Foam::Field<double> const&, unsigned char) const in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libOpenFOAM.so",
+      "#4  Foam::GAMGSolver::Vcycle(Foam::PtrList<Foam::lduMatrix::smoother> const&, Foam::Field<double>&, Foam::Field<double> const&, Foam::Field<double>&, Foam::Field<double>&, Foam::Field<double>&, Foam::Field<double>&, Foam::Field<double>&, Foam::PtrList<Foam::Field<double> >&, Foam::PtrList<Foam::Field<double> >&, unsigned char) const in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libOpenFOAM.so",
+      "#5  Foam::GAMGSolver::solve(Foam::Field<double>&, Foam::Field<double> const&, unsigned char) const in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libOpenFOAM.so",
+      "#6  Foam::fvMatrix<double>::solveSegregated(Foam::dictionary const&) in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libfiniteVolume.so",
+      "#7  ? in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libfiniteVolume.so",
+      "#8  Foam::fvMesh::solve(Foam::fvMatrix<double>&, Foam::dictionary const&) const in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libfiniteVolume.so",
+      "#9  ? in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libadjointOptimisation.so",
+      "#10  Foam::adjointSimple::mainIter() in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libadjointOptimisation.so",
+      "#11  Foam::adjointSimple::solveIter() in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libadjointOptimisation.so",
+      "#12  Foam::adjointSimple::solve() in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libadjointOptimisation.so",
+      "#13  Foam::adjointSolverManager::solveAdjointEquations() in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libadjointOptimisation.so",
+      "#14  Foam::optimisationManager::solveAdjointEquations() in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libadjointOptimisation.so",
+      "#15  ? in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/bin/adjointOptimisationFoam",
+      "#16  ? in /lib/x86_64-linux-gnu/libc.so.6",
+      "#17  __libc_start_main in /lib/x86_64-linux-gnu/libc.so.6",
+      "#18  ? in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/bin/adjointOptimisationFoam",
+      "============="
+    ],
+    "primal": {
+      "converged_in": null,
+      "foam_fatal": false,
+      "iterations": 301,
+      "last_initial_residuals": {
+        "ReThetat": null,
+        "Ux": 3.4760089e-06,
+        "Uy": 4.7393979e-06,
+        "gammaInt": null,
+        "k": null,
+        "nuTilda": 1.512755e-06,
+        "omega": null,
+        "p": 9.87754e-06
+      },
+      "last_time": 301.0,
+      "nan_in_log": false,
+      "sigfpe": false
+    },
+    "primal_iters": 300,
+    "sigfpe": true,
+    "stage": {
+      "peak_rss_mb_sampled": 95.55968,
+      "returncode": -8,
+      "stage": "adjointOptimisationFoam",
+      "timed_out": false,
+      "wall_s": 62.83363329199983
+    },
+    "status": "ADJ_FAILED",
+    "x_low_m": 0.04542920183486107,
+    "y_le_m": 0.06727143216447977
+  },
+  "check_mesh": {
+    "cells": 14773,
+    "diagnostic_lines": [],
+    "failed_check_counts": [],
+    "max_aspect_ratio": "6.7223694",
+    "max_non_orthogonality": "43.868342",
+    "max_skewness": "0.64883743",
+    "mesh_ok": true,
+    "min_determinant": "0.025733761",
+    "min_face_weight": "0.14767123",
+    "min_volume_ratio": "0.12994214",
+    "severe_non_orthogonal_faces": 0,
+    "unused_points": 0
+  },
+  "check_mesh_returncode": 0,
+  "delta_alpha_deg": 0.0,
+  "forces": {
+    "Cd": {
+      "half_window_rel_diff": 4.810503380284874e-11,
+      "last": 0.0331914575,
+      "tail_max": 0.0333295597,
+      "tail_mean": 0.033260509045600004,
+      "tail_min": 0.0331914575,
+      "tail_rel_drift": 1.244412404908851e-05,
+      "tail_rel_std": 0.002076045796861069,
+      "tail_std": 6.905034000557746e-05
+    },
+    "Cl": {
+      "half_window_rel_diff": 7.435619350454494e-11,
+      "last": 1.34462238,
+      "tail_max": 1.34512763,
+      "tail_mean": 1.34487500659,
+      "tail_min": 1.34462238,
+      "tail_rel_drift": 1.1261017614753147e-06,
+      "tail_rel_std": 0.00018783750822203975,
+      "tail_std": 0.0002526179701079649
+    },
+    "cl_block_rel_drift": 1.67083114416817e-10,
+    "cl_block_rel_std": 2.849895917651689e-10,
+    "cl_plateau": true,
+    "force_plateau": true,
+    "history_rows": 5000,
+    "iterations_to_plateau": 135,
+    "last_iteration": 5000.0,
+    "rows": 5000,
+    "tail_rows": 1000
+  },
+  "generator_wall_s": 4.690429160999997,
+  "h_m": 0.0500416,
+  "h_over_c": 0.224,
+  "id": "sa-wf_h0.224_med30_da0",
+  "iterations_requested": 5000,
+  "mesh": "med30",
+  "mesh_cells_3d": 14773,
+  "mesh_proxy_failures": [],
+  "mode": "lm",
+  "model": "sa-wf",
+  "pre_solver_wall_s": 6.987094096999954,
+  "residual_converged": false,
+  "solver": {
+    "converged_in": null,
+    "foam_fatal": false,
+    "iterations": 5000,
+    "last_initial_residuals": {
+      "ReThetat": null,
+      "Ux": 0.00017727787,
+      "Uy": 0.00062550249,
+      "gammaInt": null,
+      "k": null,
+      "nuTilda": 0.00026956624,
+      "omega": null,
+      "p": 2.1905937e-05
+    },
+    "last_time": 5000.0,
+    "nan_in_log": false,
+    "sigfpe": false
+  },
+  "stages": [
+    {
+      "peak_rss_mb_sampled": 2.162688,
+      "returncode": 0,
+      "stage": "gmshToFoam",
+      "timed_out": false,
+      "wall_s": 1.0225630569999566
+    },
+    {
+      "peak_rss_mb_sampled": 58.314752,
+      "returncode": 0,
+      "stage": "checkMesh",
+      "timed_out": false,
+      "wall_s": 1.272974594999937
+    },
+    {
+      "peak_rss_mb_sampled": 76.644352,
+      "returncode": 0,
+      "stage": "simpleFoam",
+      "timed_out": false,
+      "wall_s": 347.6141608259999
+    }
+  ],
+  "status": "COMPLETED",
+  "total_wall_s": 355.53918050100003,
+  "x_lowest_m": 0.04542920183486107,
+  "yplus": {
+    "airfoil": {
+      "average": 32.166818,
+      "max": 63.195043,
+      "min": 1.6837716
+    },
+    "ground": {
+      "average": 6.9546555,
+      "max": 24.302785,
+      "min": 0.017754419
+    }
+  },
+  "yplus_returncode": 0
+}

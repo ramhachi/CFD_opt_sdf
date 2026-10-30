@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/kaggle/src/script.py", line 605, in <module>
+    main()
+  File "/kaggle/src/script.py", line 481, in main
+    gpu_rows, selected_uuid = gpu_inventory(criteria)
+                              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/src/script.py", line 157, in gpu_inventory
+    raise RuntimeError("W3 NVIDIA driver drift")
+RuntimeError: W3 NVIDIA driver drift

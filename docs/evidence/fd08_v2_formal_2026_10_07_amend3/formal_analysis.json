@@ -1,0 +1,673 @@
+{
+  "R6_criteria_sha256": "90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837",
+  "R6_result_sha256": "b5d55b77f750f447fd486a600f9e52a66a3f6c2610c5dba5ce6792018cc647be",
+  "analysis_runs": 1,
+  "analyzer_source_sha256": "47026ff884d396ded1a8b2bb45da1059c093920fc37787767889e7d0c3f1f93a",
+  "comparison_count": 24,
+  "comparisons": [
+    {
+      "absolute_error_n": 9.253795755850429e-07,
+      "direction_id": "D0_interface_offset",
+      "epsilon_m": 0.0006294627058970836,
+      "epsilon_mm": 0.6294627058970836,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.32388370658833365,
+        "response_from_plus_n": 0.3237541203494598,
+        "response_n": -6.479311943694e-05
+      },
+      "predicted": {
+        "s_pred_n": -6.571849901252504e-05,
+        "sigma_pred_n": 4.901004876647169e-06
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.01408096030021438,
+      "response": "drag",
+      "sign_same": true,
+      "standardized_error": 0.18881425317375017,
+      "threshold_n": 1.4703014629941508e-05,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 1.2412663760928927e-06,
+      "direction_id": "D0_interface_offset",
+      "epsilon_m": 0.0015811388300841897,
+      "epsilon_mm": 1.5811388300841898,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.3235415273685558,
+        "response_from_plus_n": 0.32320189132973776,
+        "response_n": -0.0001698180194090182
+      },
+      "predicted": {
+        "s_pred_n": -0.0001685767530329253,
+        "sigma_pred_n": 1.0060651462628919e-05
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.007363212031082701,
+      "response": "drag",
+      "sign_same": true,
+      "standardized_error": 0.12337832999221514,
+      "threshold_n": 3.0181954387886755e-05,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 1.5102421548016673e-06,
+      "direction_id": "D0_interface_offset",
+      "epsilon_m": 0.003971641173621408,
+      "epsilon_mm": 3.971641173621408,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.32098336553040446,
+        "response_from_plus_n": 0.32002253190207036,
+        "response_n": -0.0004804168141670506
+      },
+      "predicted": {
+        "s_pred_n": -0.00047890657201224895,
+        "sigma_pred_n": 2.8254750100594577e-05
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.0031535214654833344,
+      "response": "drag",
+      "sign_same": true,
+      "standardized_error": 0.053450911773234425,
+      "threshold_n": 8.476425030178372e-05,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 5.4458608463612895e-06,
+      "direction_id": "D0_interface_offset",
+      "epsilon_m": 0.0006294627058970836,
+      "epsilon_mm": 0.6294627058970836,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.3309535274313334,
+        "response_from_plus_n": 0.33197258267937074,
+        "response_n": 0.0005095276240186797
+      },
+      "predicted": {
+        "s_pred_n": 0.0005040817631723184,
+        "sigma_pred_n": 2.8377326427931837e-05
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.01080352681693752,
+      "response": "downforce",
+      "sign_same": true,
+      "standardized_error": 0.1919088769758423,
+      "threshold_n": 8.513197928379552e-05,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 1.4755738559066095e-05,
+      "direction_id": "D0_interface_offset",
+      "epsilon_m": 0.0015811388300841897,
+      "epsilon_mm": 1.5811388300841898,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.32933515680145287,
+        "response_from_plus_n": 0.3318266403514671,
+        "response_n": 0.0012457417750071087
+      },
+      "predicted": {
+        "s_pred_n": 0.0012604975135661748,
+        "sigma_pred_n": 6.929269352938132e-05
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.01170628136926621,
+      "response": "downforce",
+      "sign_same": true,
+      "standardized_error": 0.2129479719648855,
+      "threshold_n": 0.00020787808058814395,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 5.920012201163227e-06,
+      "direction_id": "D0_interface_offset",
+      "epsilon_m": 0.003971641173621408,
+      "epsilon_mm": 3.971641173621408,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.3217579003608119,
+        "response_from_plus_n": 0.327921559262245,
+        "response_n": 0.003081829450716528
+      },
+      "predicted": {
+        "s_pred_n": 0.0030759094385153646,
+        "sigma_pred_n": 0.00017753906415278795
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.001924638003653519,
+      "response": "downforce",
+      "sign_same": true,
+      "standardized_error": 0.03334484289084985,
+      "threshold_n": 0.0005326171924583639,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 3.0405537887832004e-06,
+      "direction_id": "D1_filtered_seed11",
+      "epsilon_m": 0.0006294627058970836,
+      "epsilon_mm": 0.6294627058970836,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.3239335784704384,
+        "response_from_plus_n": 0.3238593301137847,
+        "response_n": -3.7124178326852775e-05
+      },
+      "predicted": {
+        "s_pred_n": -4.0164732115635975e-05,
+        "sigma_pred_n": 3.887655384011923e-06
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.07570208062210688,
+      "response": "drag",
+      "sign_same": true,
+      "standardized_error": 0.7821047619826468,
+      "threshold_n": 1.1662966152035769e-05,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 2.8538275434062456e-06,
+      "direction_id": "D1_filtered_seed11",
+      "epsilon_m": 0.0015811388300841897,
+      "epsilon_mm": 1.5811388300841898,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.3239774936907357,
+        "response_from_plus_n": 0.3237685968051709,
+        "response_n": -0.00010444844278240106
+      },
+      "predicted": {
+        "s_pred_n": -0.00010159461523899482,
+        "sigma_pred_n": 6.731261863537789e-06
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.02809034255105745,
+      "response": "drag",
+      "sign_same": true,
+      "standardized_error": 0.42396620444451744,
+      "threshold_n": 2.019378559061337e-05,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 2.7866155798172195e-06,
+      "direction_id": "D1_filtered_seed11",
+      "epsilon_m": 0.003971641173621408,
+      "epsilon_mm": 3.971641173621408,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.32399095543271955,
+        "response_from_plus_n": 0.3234637816828719,
+        "response_n": -0.0002635868749238379
+      },
+      "predicted": {
+        "s_pred_n": -0.00026637349050365514,
+        "sigma_pred_n": 1.5866114248265356e-05
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.010461309699205905,
+      "response": "drag",
+      "sign_same": true,
+      "standardized_error": 0.17563314723527096,
+      "threshold_n": 4.759834274479607e-05,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 1.6968327418981078e-06,
+      "direction_id": "D1_filtered_seed11",
+      "epsilon_m": 0.0006294627058970836,
+      "epsilon_mm": 0.6294627058970836,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.331675381449216,
+        "response_from_plus_n": 0.3315449047685554,
+        "response_n": -6.523834033028697e-05
+      },
+      "predicted": {
+        "s_pred_n": -6.693517307218508e-05,
+        "sigma_pred_n": 4.9390465150032415e-06
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.02535038999702276,
+      "response": "downforce",
+      "sign_same": true,
+      "standardized_error": 0.3435547198722817,
+      "threshold_n": 1.4817139545009724e-05,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 1.7865592002166357e-06,
+      "direction_id": "D1_filtered_seed11",
+      "epsilon_m": 0.0015811388300841897,
+      "epsilon_mm": 1.5811388300841898,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.33168367203757776,
+        "response_from_plus_n": 0.3313455246469328,
+        "response_n": -0.00016907369532248584
+      },
+      "predicted": {
+        "s_pred_n": -0.0001672871361222692,
+        "sigma_pred_n": 1.0014736168110018e-05
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.010679597018809921,
+      "response": "downforce",
+      "sign_same": true,
+      "standardized_error": 0.17839303704331086,
+      "threshold_n": 3.0044208504330055e-05,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 1.0070584490448815e-05,
+      "direction_id": "D1_filtered_seed11",
+      "epsilon_m": 0.003971641173621408,
+      "epsilon_mm": 3.971641173621408,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.3313310549717906,
+        "response_from_plus_n": 0.3305376131739135,
+        "response_n": -0.0003967208989385518
+      },
+      "predicted": {
+        "s_pred_n": -0.0004067914834290006,
+        "sigma_pred_n": 2.3699701067355422e-05
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.024756134040860484,
+      "response": "downforce",
+      "sign_same": true,
+      "standardized_error": 0.42492453646684586,
+      "threshold_n": 7.109910320206627e-05,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 1.8462149898817548e-07,
+      "direction_id": "D2_filtered_seed2026",
+      "epsilon_m": 0.0006294627058970836,
+      "epsilon_mm": 0.6294627058970836,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.32400480088998573,
+        "response_from_plus_n": 0.3237914523790976,
+        "response_n": -0.00010667425544405584
+      },
+      "predicted": {
+        "s_pred_n": -0.00010685887694304402,
+        "sigma_pred_n": 6.800509039575197e-06
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.0017277132632282771,
+      "response": "drag",
+      "sign_same": true,
+      "standardized_error": 0.027148188159706956,
+      "threshold_n": 2.040152711872559e-05,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 9.388295897186133e-07,
+      "direction_id": "D2_filtered_seed2026",
+      "epsilon_m": 0.0015811388300841897,
+      "epsilon_mm": 1.5811388300841898,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.324132412453716,
+        "response_from_plus_n": 0.3235974703736313,
+        "response_n": -0.00026747104004234967
+      },
+      "predicted": {
+        "s_pred_n": -0.0002684098696320683,
+        "sigma_pred_n": 1.5272062646177e-05
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.003497746155927668,
+      "response": "drag",
+      "sign_same": true,
+      "standardized_error": 0.06147366020356309,
+      "threshold_n": 4.5816187938531e-05,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 1.843458665758222e-06,
+      "direction_id": "D2_filtered_seed2026",
+      "epsilon_m": 0.003971641173621408,
+      "epsilon_mm": 3.971641173621408,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.32435265328745566,
+        "response_from_plus_n": 0.3230081475118422,
+        "response_n": -0.0006722528878067291
+      },
+      "predicted": {
+        "s_pred_n": -0.0006740963464724873,
+        "sigma_pred_n": 3.91727539527073e-05
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.002734710958463059,
+      "response": "drag",
+      "sign_same": true,
+      "standardized_error": 0.047059715739766556,
+      "threshold_n": 0.00011751826185812189,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 2.8834145641478277e-06,
+      "direction_id": "D2_filtered_seed2026",
+      "epsilon_m": 0.0006294627058970836,
+      "epsilon_mm": 0.6294627058970836,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.3316679774990018,
+        "response_from_plus_n": 0.3315466054706419,
+        "response_n": -6.068601417993924e-05
+      },
+      "predicted": {
+        "s_pred_n": -5.780259961579141e-05,
+        "sigma_pred_n": 4.5549425286294746e-06
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.04988382154632526,
+      "response": "downforce",
+      "sign_same": true,
+      "standardized_error": 0.6330298452778528,
+      "threshold_n": 1.3664827585888423e-05,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 7.026188961690435e-06,
+      "direction_id": "D2_filtered_seed2026",
+      "epsilon_m": 0.0015811388300841897,
+      "epsilon_mm": 1.5811388300841898,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.3316703386791498,
+        "response_from_plus_n": 0.3313641279091401,
+        "response_n": -0.00015310538500484805
+      },
+      "predicted": {
+        "s_pred_n": -0.00014607919604315761,
+        "sigma_pred_n": 8.91588880578791e-06
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.048098491448533294,
+      "response": "downforce",
+      "sign_same": true,
+      "standardized_error": 0.7880525559189632,
+      "threshold_n": 2.674766641736373e-05,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 3.697810880083283e-06,
+      "direction_id": "D2_filtered_seed2026",
+      "epsilon_m": 0.003971641173621408,
+      "epsilon_mm": 3.971641173621408,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.33136127184424485,
+        "response_from_plus_n": 0.33060672617442777,
+        "response_n": -0.000377272834908543
+      },
+      "predicted": {
+        "s_pred_n": -0.0003809706457886263,
+        "sigma_pred_n": 2.2395760200152873e-05
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.009706288190337208,
+      "response": "downforce",
+      "sign_same": true,
+      "standardized_error": 0.16511209474631014,
+      "threshold_n": 6.718728060045862e-05,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 7.46007440020804e-07,
+      "direction_id": "P1_upstream_lobe",
+      "epsilon_m": 0.0006294627058970836,
+      "epsilon_mm": 0.6294627058970836,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.32402159015500537,
+        "response_from_plus_n": 0.32375041532147875,
+        "response_n": -0.00013558741676331088
+      },
+      "predicted": {
+        "s_pred_n": -0.00013484140932329007,
+        "sigma_pred_n": 8.22119862620805e-06
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.00553248029492341,
+      "response": "drag",
+      "sign_same": true,
+      "standardized_error": 0.09074193118782398,
+      "threshold_n": 2.466359587862415e-05,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 1.3513604647996322e-06,
+      "direction_id": "P1_upstream_lobe",
+      "epsilon_m": 0.0015811388300841897,
+      "epsilon_mm": 1.5811388300841898,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.32412323866052595,
+        "response_from_plus_n": 0.3234444856048548,
+        "response_n": -0.00033937652783558314
+      },
+      "predicted": {
+        "s_pred_n": -0.0003380251673707835,
+        "sigma_pred_n": 1.901042645301857e-05
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.003997810208366261,
+      "response": "drag",
+      "sign_same": true,
+      "standardized_error": 0.07108522621201148,
+      "threshold_n": 5.7031279359055714e-05,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 1.0736599893558995e-06,
+      "direction_id": "P1_upstream_lobe",
+      "epsilon_m": 0.003971641173621408,
+      "epsilon_mm": 3.971641173621408,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.3240031738811479,
+        "response_from_plus_n": 0.3223244555532129,
+        "response_n": -0.000839359163967518
+      },
+      "predicted": {
+        "s_pred_n": -0.0008382855039781621,
+        "sigma_pred_n": 4.856679545709253e-05
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.0012807808130532448,
+      "response": "drag",
+      "sign_same": true,
+      "standardized_error": 0.022106873209381286,
+      "threshold_n": 0.0001457003863712776,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 6.110145982663248e-06,
+      "direction_id": "P1_upstream_lobe",
+      "epsilon_m": 0.0006294627058970836,
+      "epsilon_mm": 0.6294627058970836,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.33181986244218103,
+        "response_from_plus_n": 0.33134748526838875,
+        "response_n": -0.00023618858689614108
+      },
+      "predicted": {
+        "s_pred_n": -0.00024229873287880433,
+        "sigma_pred_n": 1.3967623623837222e-05
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.02521740790827614,
+      "response": "downforce",
+      "sign_same": true,
+      "standardized_error": 0.43745064638165365,
+      "threshold_n": 4.190287087151167e-05,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 1.6172616393023273e-06,
+      "direction_id": "P1_upstream_lobe",
+      "epsilon_m": 0.0015811388300841897,
+      "epsilon_mm": 1.5811388300841898,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.3319314913260364,
+        "response_from_plus_n": 0.3307219338859202,
+        "response_n": -0.0006047787200580967
+      },
+      "predicted": {
+        "s_pred_n": -0.0006063959816973991,
+        "sigma_pred_n": 3.3594184539061235e-05
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.0026670058643451988,
+      "response": "downforce",
+      "sign_same": true,
+      "standardized_error": 0.04814111911012085,
+      "threshold_n": 0.0001007825536171837,
+      "verdict": "PASS"
+    },
+    {
+      "absolute_error_n": 1.826049919883459e-06,
+      "direction_id": "P1_upstream_lobe",
+      "epsilon_m": 0.003971641173621408,
+      "epsilon_mm": 3.971641173621408,
+      "magnitude_passed": true,
+      "observed": {
+        "response_from_minus_n": 0.33120147485581364,
+        "response_from_plus_n": 0.3282294466070142,
+        "response_n": -0.0014860141243997205
+      },
+      "predicted": {
+        "s_pred_n": -0.001487840174319604,
+        "sigma_pred_n": 8.592997241129035e-05
+      },
+      "prediction_source": {
+        "calibration_fit_verdict": "PASS",
+        "formal_refit": false,
+        "model": "frozen calibration full six-point Model A"
+      },
+      "relative_error": 0.0012273159116156546,
+      "response": "downforce",
+      "sign_same": true,
+      "standardized_error": 0.02125044229204866,
+      "threshold_n": 0.000257789917233871,
+      "verdict": "PASS"
+    }
+  ],
+  "criteria_sha256": "31b29cccc9d3fd6912a910b09694a8230f9ee0aa84e6a418161881ffbcf907be",
+  "evidence_class": "deterministic_solver_interior_interpolation_validation",
+  "formal_refit": false,
+  "formal_terminal_verification_sha256": "13841237ca95142c45761963c5e61f68310de63ca5f70e3386e6ca465333e6ef",
+  "interpretation": "interior interpolation validation only; not noise validation, extrapolation, direction generalization, grid independence, physical truth, exact epsilon-to-zero derivative, or joint 95% confidence",
+  "kind": "fd08_v2_formal_analysis",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "source_commit": "b1d4330f919b682d50f28a4d2267eb3058340a19",
+  "verdict": "PASS"
+}

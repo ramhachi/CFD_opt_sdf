@@ -1,0 +1,55 @@
+{
+  "claims_not_supported": [
+    "no re-qualification of W1; no solver, gradient, force or physics claim",
+    "no change to any later W-series gate"
+  ],
+  "claims_supported": [
+    "the two W1 prose statements are corrected in an append-only record while the immutable registration and result evidence remain byte-identical",
+    "no W1 threshold, gate, measured value or verdict is re-opened or altered"
+  ],
+  "correction_id": "sdf_native_w1_prose_corrections_2026_09",
+  "corrections": [
+    {
+      "artifact": {
+        "path": "docs/evidence/sdf_native_w1_adapter_criteria_2026_09.json",
+        "sha256": "6da068fad8c79ba39197377157d4a5172dedf04511b2acbd8f69146aefea70ef",
+        "status": "unmodified"
+      },
+      "correction": "the interface band is |phi_analytic| <= 0.001 m = 0.02 h on each side of the surface (h = 0.05 m); deep-solid probes remain recorded diagnostics only",
+      "impact": "prose only; the band definition, every threshold and every gate are unchanged",
+      "incorrect_text": "|phi_analytic| <= min_registered_threshold_m = 0.001 (i.e. ten cells deep at most half a cell outside the surface)",
+      "issue": "at h = 0.05 m the registered band half-width 0.001 m is 0.02 h, not 'ten cells'; the parenthetical also misstates the outside-surface extent",
+      "location": "thresholds.sdf_abs_error_m_bound_provenance"
+    },
+    {
+      "artifact": {
+        "path": "docs/evidence/sdf_native_w1_grid_sdf_body_2026_09.json",
+        "sha256": "d618b556ec71c638f8d10f201c4ae4c62a2b163f824dd9466dd928e89c725567",
+        "status": "unmodified"
+      },
+      "correction": "for solid nodes (p < 0) the bound is min over axes of d_face(node) + p, i.e. d_face - |p|; the measured value 0.3499999939931499 m and the gate accept verdict are unchanged",
+      "impact": "prose only; the measured value, the gate and every verdict are unchanged",
+      "incorrect_text": "min over axes of the node-to-face gap plus the nodal |phi|",
+      "issue": "the implementation evaluates min_axis(d_face) + phi with phi < 0, i.e. d_face - |phi|; 'plus the nodal |phi|' reads as adding a magnitude and misstates the measure",
+      "location": "genesis_margin_diagnosis.measure"
+    }
+  ],
+  "evidence_class": "contract",
+  "existing_evidence_modified": false,
+  "flags": {
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false
+  },
+  "generated_on": {
+    "authority": "user review of HEAD 10c940e (2026-09-26)",
+    "date": "2026-09-26",
+    "purpose": "append-only prose corrections to the committed W1 registration and result records; no artifact, threshold, gate or measured value is modified"
+  },
+  "immutable": true,
+  "kind": "sdf_native_w1_prose_corrections",
+  "schema_version": 1,
+  "solver_started": false
+}

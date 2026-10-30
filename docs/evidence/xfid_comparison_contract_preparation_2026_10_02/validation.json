@@ -1,0 +1,87 @@
+{
+  "baseline_failure_ids_sha256": "71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a",
+  "commands": {
+    "compileall": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m compileall src tests",
+    "diff_check": "git diff --check",
+    "focused": "PYTHONPATH=src /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q tests/test_xfid_response.py",
+    "full_suite": "PYTHONPATH=src /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q --tb=short"
+  },
+  "composite_candidate_c_identity": {
+    "interpretation": "identity frozen; physical qualification remains pending",
+    "path": "docs/evidence/candidate_c_composite_operator_identity_v1_2026_10.json",
+    "sha256": "516cfb26b9cc11f920918f08224ec2cfa5ed89d1e7372fa8d8dd7d4807bd5efc"
+  },
+  "evidence_class": "preparation_only_contract_arithmetic_and_repository_tests",
+  "final_source_hashes": {
+    "draft": "8ee5d014bac0e3315fef21e260429f52d951f6f135afc3722dd8c87ba3fed95d",
+    "environment_gate": "1106a697f679d468bf7d3ee93678a5de616f71dec1a1005c03bc9ad57aa2ac90",
+    "helper": "5d2110ed956c5150b9e57489d2f40defb27fd104a318217d22d1040e7b5407b9",
+    "result": "d358e71d0b0da23d07136705b46d7714ec2009cb6f711fb1518fb652c1f5bc63",
+    "tests": "6e71e429e7cde020a22bda57fdc65ab3db0d8f0ceb0d82201820f1926243bcbd"
+  },
+  "full_suite_failure_ids": [
+    "tests/test_canonical_objective.py::test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign",
+    "tests/test_pq3_3b_campaign_v15.py::test_pinned_evidence_and_margin_mask_hashes_verify",
+    "tests/test_pq3_3b_campaign_v15.py::test_v15_bootstrap_is_deterministic_from_the_pinned_v14_checkpoint",
+    "tests/test_pq3_3b_campaign_v16.py::test_start_state_is_the_recorded_v15_checkpoint_10_unchanged",
+    "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_preflight_reverifies",
+    "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_run_reverifies",
+    "tests/test_stage_s_adjoint_qualification.py::test_registered_qualification_reverifies",
+    "tests/test_stage_s_baseline_v16.py::test_baseline_file_hashes_reverify",
+    "tests/test_stage_s_baseline_v16.py::test_baseline_v2_supersedes_v1_and_binds_the_repaired_judgment",
+    "tests/test_stage_s_component_diagnosis.py::test_registered_component_manifest_reverifies",
+    "tests/test_stage_s_fd_diagnosis.py::test_case_audit_detects_clipping_and_accepts_exact_application",
+    "tests/test_stage_s_fd_diagnosis.py::test_control_point_parsers_and_count_validation",
+    "tests/test_stage_s_fd_diagnosis.py::test_pair_audit_odd_even_and_direction_comparison",
+    "tests/test_stage_s_fd_diagnosis.py::test_registered_d1_audit_reverifies",
+    "tests/test_stage_s_fd_diagnosis.py::test_registered_d2_audit_reverifies",
+    "tests/test_stage_s_perturbation.py::test_baseline_patch_extraction_is_closed_and_oriented",
+    "tests/test_stage_s_perturbation.py::test_fixed_patches_do_not_move_in_a_registered_side",
+    "tests/test_stage_s_perturbation.py::test_registered_side_evidence_reverifies",
+    "tests/test_stage_s_perturbation.py::test_registered_surface_fd_result_reverifies",
+    "tests/test_stage_s_reduced_basis.py::test_registered_manifest_contract_and_reduced_spec",
+    "tests/test_stage_s_v16_contract_audit.py::test_build_manifest_refuses_a_pq2_hash_registration_mismatch",
+    "tests/test_stage_s_v16_contract_audit.py::test_every_recorded_artifact_hash_is_current",
+    "tests/test_stage_s_work_f.py::test_preflight_artifact_passed_and_matches_the_manifest",
+    "tests/test_stage_s_work_f.py::test_registration_binds_the_baseline_and_response_identities",
+    "tests/test_stage_s_work_f.py::test_solver_evidence_qualified_and_reconfirmed_clearance",
+    "tests/test_stage_s_work_f_surface_fd.py::test_evaluation_requires_both_responses_and_resolvable_aligned_directions",
+    "tests/test_stage_s_work_f_surface_fd.py::test_manifest_validation_rejects_missing_roles_and_seeds",
+    "tests/test_stage_s_work_f_surface_fd.py::test_response_manifests_share_the_catalog_and_identity_contract",
+    "tests/test_stage_v16_domain_boundary_contract.py::test_extended_spec_changes_only_domain_and_problem_id",
+    "tests/test_stage_v16_domain_boundary_contract.py::test_registered_artifacts_are_current",
+    "tests/test_stage_v_domain_boundary_factor.py::test_extended_case_bundle_uses_declared_grid_without_sdf_arrays",
+    "tests/test_stage_v_domain_boundary_factor.py::test_extended_domain_reuses_baseline_location_in_mesh",
+    "tests/test_stage_v_domain_boundary_factor.py::test_extended_spec_diff_and_top_block_helper",
+    "tests/test_stage_v_domain_boundary_factor.py::test_registered_run_manifest_contract",
+    "tests/test_stage_v_domain_boundary_factor.py::test_treatment_cases_match_the_registered_definition",
+    "tests/test_stage_v_domain_continuation.py::test_staged_geometry_is_byte_identical_to_base",
+    "tests/test_stage_v_qualification.py::test_real_historical_run_without_residual_control_is_not_called_converged"
+  ],
+  "full_suite_log": {
+    "compressed_sha256": "479a382c8f8ec5ee465cd837c815613a6dc2c91419d701222eb7e3cf93501a64",
+    "path": "docs/evidence/xfid_comparison_contract_preparation_2026_10_02/full_pytest.log.gz",
+    "uncompressed_sha256": "69d2ebc15deb5df09c182b3f038c0b8579f964317eb32fe4db062c74e508aa35"
+  },
+  "full_suite_source_hashes": {
+    "helper_at_full_run_sha256": "1fa4c452e2f3156c800a7bd1040797d0f3da673469a7e8a43027987e138a03e4",
+    "note": "Only helper docstring wording changed after the full suite. Logic and test source are unchanged; focused tests and compileall passed after that wording-only edit.",
+    "tests_sha256": "6e71e429e7cde020a22bda57fdc65ab3db0d8f0ceb0d82201820f1926243bcbd"
+  },
+  "issue": 45,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "results": {
+    "compileall": "PASS",
+    "diff_check": "PASS",
+    "focused": "12 passed",
+    "full_suite": "37 failed, 1318 passed, 5 skipped; exact pinned baseline IDs; zero new and zero removed"
+  },
+  "scope": "No formal XFID criteria were registered; no WaterLily or OpenFOAM solver was run."
+}

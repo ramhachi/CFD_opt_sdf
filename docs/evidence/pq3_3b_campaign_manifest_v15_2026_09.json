@@ -1,0 +1,283 @@
+{
+  "bootstrap_provenance": {
+    "bootstrap": {
+      "generated_by": "scripts/pq3_3b_v15_register_2026_09.py",
+      "grid_cells": 14400,
+      "mean_nd_measured": 0.0036595159924047906,
+      "overwrite_refused": true,
+      "projected_volume_measured": 0.06202391605512339,
+      "rho_file_sha256": "4eb906855f14e1298bd6d062e0540891bd0b8a3223153b633ed1fc993d35af52",
+      "rho_path": "work/pq3_3b_campaign_v15_bootstrap.npy",
+      "rho_sha256": "80577874ae5e04c2ffd233b32ee560e86fc2d45643670dfd5c327c6fa27f15e4",
+      "support_violations_measured": 0
+    },
+    "clean_start": "v15 resets accepted_count to 0 and starts with an empty convergence window; the v14 accepted counts and final metrics are provenance, not carried state",
+    "trim_rule": {
+      "description": "cells whose centers fall outside the registered support box are set to zero; every other design value is kept unchanged",
+      "deterministic": true,
+      "implementation": "np.where on the support-center mask over the flattened design array",
+      "support_box": {
+        "x": [
+          -0.675,
+          1.675
+        ],
+        "y": [
+          -0.475,
+          0.475
+        ],
+        "z": [
+          -0.275,
+          0.275
+        ]
+      },
+      "tolerance_m": 1e-09
+    },
+    "v14_checkpoint": {
+      "accepted_count_v14_cumulative": 11,
+      "learning_accepted_count_v14": 5,
+      "not_carried_into_v15": true,
+      "note": "recorded as provenance only; the trimmed bootstrap is a materially transformed state, so v15 starts accepted_count at 0 with an empty convergence window",
+      "outcome_checkpoint_index": 5,
+      "rho_file_sha256": "984f76fa32c11beecc7636d7802736c05da349d743a6edf300f98c6754970a40",
+      "rho_path": "work/pq3_3b_campaign_v14/checkpoints/rho_0005.npy",
+      "rho_sha256": "f3b981ecb56165bf083a58665777399d19190c1517acf1ef06218b5e791f33b4",
+      "state_path": "work/pq3_3b_campaign_v14/checkpoints/state_0005.json",
+      "state_sha256": "f5bf40ac61a724b9db964ea5238cf60b0b8508a9cd803969af83922188b7b711"
+    }
+  },
+  "cap_stationarity_exit": {
+    "enabled": false
+  },
+  "change": {
+    "description": "start state: a deterministic trim of the v14 final checkpoint in which cells whose centers fall outside the registered support box are zeroed, so the start satisfies the volume cap, the discreteness bound and zero support violations. policy: a transform-level support-clearance gate (solid cells inside the box) and a response-level ladder (backtracking continues only after Path B passes and the trial response gates fail; a Path B failure stops the attempt fail-closed). fresh bounded learning budgets; no v14 count or metric carryover.",
+    "does_not_relax": [
+      "the 0.25 m clearance profile, the 0.01 discreteness bound, the volume cap and every threshold",
+      "the PQ4.1 composite gate requirements"
+    ],
+    "evidence": {
+      "pq4_1_v14_state_reasons": [
+        "clearance:the extracted surface fails the clearance preflight"
+      ],
+      "pq4_1_v14_state_side_clearance_m": 0.350000011920929,
+      "pq4_1_v14_state_top_z_clearance_m": 0.21055865883827207,
+      "v14_last_accepted_step_provenance_only": {
+        "objective_delta_abs": 0.0033766199400000474,
+        "projected_field_mean_abs_delta": 0.00033397483359123636,
+        "projected_volume_delta_abs": 0.0002530196300102455
+      },
+      "v14_stall_attempt": 6,
+      "v14_stall_reason": "response_gates_failed at alpha 1.0; smaller alphas were never response-evaluated",
+      "v14_stall_trial_downforce_delta": -0.0002909377100000175
+    },
+    "id": "support-clearance-gate+response-level-ladder"
+  },
+  "claims_not_supported": [
+    "the gate and ladder changes are registered, not yet qualified",
+    "no terminal evaluation and no Stage S readiness in this registration"
+  ],
+  "convergence": {
+    "note": "thresholds are unchanged from v14; the window itself is reset because the trimmed bootstrap is a new, materially transformed start state",
+    "objective_delta_abs_max": 0.0001,
+    "projected_field_mean_abs_delta_max": 0.001,
+    "projected_volume_delta_abs_max": 0.001,
+    "window_accepted": 3,
+    "window_reset": true
+  },
+  "entry_preflight": {
+    "artifact_path": "docs/evidence/pq3_3b_v15_entry_preflight_2026_09.json",
+    "requirement": "must pass before the v15 campaign",
+    "script_path": "scripts/pq3_3b_v15_entry_preflight_2026_09.py",
+    "script_sha256": "c2c4d52efc5494140f8d2526427881548d9460ac9e2b756fc148740354d7760f"
+  },
+  "filter_radius_m": 0.15,
+  "immutable": true,
+  "input_stop_state": {
+    "level": "level_3_b128_margin",
+    "rho_file_sha256": "4eb906855f14e1298bd6d062e0540891bd0b8a3223153b633ed1fc993d35af52",
+    "rho_path": "work/pq3_3b_campaign_v15_bootstrap.npy",
+    "rho_sha256": "80577874ae5e04c2ffd233b32ee560e86fc2d45643670dfd5c327c6fa27f15e4",
+    "source": "pinned v14 final checkpoint deterministically trimmed to the registered support box"
+  },
+  "kind": "pq3_3b_campaign_manifest_v15",
+  "learning_campaign": {
+    "budget_note": "fresh-attempt and accepted-step budgets against the trimmed bootstrap state; unrelated to the v14 counters, which are provenance only",
+    "does_not_claim_convergence": true,
+    "max_fresh_attempts": 10,
+    "max_new_accepted_attempts": 10,
+    "stop_status": "paused_learning_budget",
+    "unrestricted_campaign": false
+  },
+  "levels": [
+    {
+      "b": 128.0,
+      "max_attempts": 10,
+      "min_accepted_iterations": 10,
+      "move_limit": 0.01,
+      "name": "level_3_b128_margin",
+      "q": 100.0
+    }
+  ],
+  "margin_mask": {
+    "rule": "v10-qualified |y_center| <= 0.475",
+    "state": "work/pq3_3b_margin_masks/topology_state.json",
+    "state_sha256": "146bc2f77178456784f2806fb7807be21a7886cea7962639bd768ac37fd01444"
+  },
+  "noise_thresholds": {
+    "downforce": 1e-06,
+    "objective": 1e-06
+  },
+  "objective": {
+    "canonical": "J = -downforce",
+    "sense": "maximize",
+    "sense_sign": -1
+  },
+  "openfoam_image": "opencfd/openfoam-default:2512",
+  "openfoam_image_id": "sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319",
+  "output_directory": "work/pq3_3b_campaign_v15",
+  "path_b": {
+    "epsilon": 0.0008,
+    "noise_floor_abs": 1e-06,
+    "requires_centered_pair": true
+  },
+  "phase1_policy": {
+    "ascent_only": true,
+    "formation_target": 0.018,
+    "id": "projected-volume-restoration-oc",
+    "unchanged_from_v5": true
+  },
+  "phase2_policy": {
+    "alpha_ladder": [
+      1.0,
+      0.5,
+      0.25,
+      0.125,
+      0.0625
+    ],
+    "discreteness_field": "rho_projection",
+    "discreteness_mean_nd_max": 0.01,
+    "discreteness_metric": "mean(4*rho*(1-rho))",
+    "discreteness_scope": "active",
+    "extractability_fraction": 0.5,
+    "extractability_thresholds": [
+      0.4,
+      0.5
+    ],
+    "freeze_exact_box_faces": true,
+    "id": "objective-gradient-discreteness-projected-v1",
+    "min_corrected_update_inf_norm": 1e-08,
+    "module": "src/cfd_sdf/phase2_discreteness_direction.py",
+    "no_joint_volume_projection": true,
+    "response_level_ladder": true,
+    "stop_when_no_transform_candidate_satisfies_d_and_v": true,
+    "support_box": {
+      "x": [
+        -0.675,
+        1.675
+      ],
+      "y": [
+        -0.475,
+        0.475
+      ],
+      "z": [
+        -0.275,
+        0.275
+      ]
+    },
+    "volume_cap_correction": false
+  },
+  "pinned_evidence": {
+    "campaign_v12_outcome": {
+      "path": "docs/evidence/pq3_3b_campaign_v12_outcome_2026_09.json",
+      "sha256": "6475a8e12d8ea0fb1ca1357fbd3119a0eb252f4e36cadf72026015ec0525ef85"
+    },
+    "campaign_v14_outcome": {
+      "path": "docs/evidence/pq3_3b_campaign_v14_outcome_2026_09.json",
+      "sha256": "0d0efcc67b42e01980c2befabd46f2dd10788c88d2c46918153b453af034622c"
+    },
+    "manifest_v14": {
+      "path": "docs/evidence/pq3_3b_campaign_manifest_v14_2026_09.json",
+      "sha256": "86558ea018c5db3744c87035c8ee82e10a2960d9090ec0605633305954a60a58"
+    },
+    "pq4_1_v14_state": {
+      "path": "docs/evidence/pq4_1_v14_state_stage_s_entry_2026_09.json",
+      "sha256": "f4511d5049f120721e0c8a186784dd76b51d27e8650118c5ca344f8bd125a8ea"
+    },
+    "v13_discriminant": {
+      "path": "docs/evidence/pq3_3b_v13_discriminant_manifest_2026_09.json",
+      "sha256": "2f7214b0c679651d53412e24443846c3dc940a80ef9ee7504051c6b77cf26735"
+    },
+    "v13_entry_preflight": {
+      "path": "docs/evidence/pq3_3b_v13_entry_preflight_2026_09.json",
+      "sha256": "381f23582e1b70721e3ddf5bf0bca46911567b9355da52e0534b5997423a277c"
+    }
+  },
+  "plan": {
+    "first_transform_feasible_only": false,
+    "per_accepted_step": "evaluate a fresh parent/adjoint request, then recompute objective and discreteness gradients and the free-cell set",
+    "response_backtracking": true,
+    "response_failure_action": "continue to the next smaller transform-feasible alpha only after Path B passes and the trial response gates fail; a Path B failure stops the attempt fail-closed, and transform-infeasible alphas never consume solver calls",
+    "result_semantics": "a bounded stop or observed window is diagnostic and is not convergence",
+    "scope": "bounded fresh-attempt learning campaign from a trimmed bootstrap"
+  },
+  "previous_registrations": {
+    "campaign_v14_outcome": {
+      "path": "docs/evidence/pq3_3b_campaign_v14_outcome_2026_09.json",
+      "sha256": "0d0efcc67b42e01980c2befabd46f2dd10788c88d2c46918153b453af034622c"
+    },
+    "manifest_v14": {
+      "path": "docs/evidence/pq3_3b_campaign_manifest_v14_2026_09.json",
+      "sha256": "86558ea018c5db3744c87035c8ee82e10a2960d9090ec0605633305954a60a58"
+    }
+  },
+  "projection_eta": 0.5,
+  "registered_inputs": {
+    "canonical_grid": {
+      "path": "work/pq3_3b_margin_masks/topology_state.json",
+      "sha256": "146bc2f77178456784f2806fb7807be21a7886cea7962639bd768ac37fd01444"
+    },
+    "noise_calibration": {
+      "path": "docs/evidence/pq3_3b_noise_calibration_v3_2026_09.json",
+      "sha256": "3439b291a261ca0086fc259fe9703bd52c8525d032aa53b7cbffc9441374ab3b"
+    },
+    "problem_spec": {
+      "path": "work/pq0_2_smoke/project_downforce_volume.yaml",
+      "sha256": "90314ab78073330a784939b3fe03c24319d217f564d3ebad4dea9a29c82d75fe"
+    },
+    "solver_controls": {
+      "path": "work/df2_fd_refresh/template_frozen/system",
+      "sha256": "ab9a1979361ac26058c9da190e94aa85500f8ff8b48770dd67aad26e3ae63b9b"
+    },
+    "source_grid": {
+      "path": "work/df2_fd_refresh/source_state/provenance.json",
+      "sha256": "04ab53dbce816fbac6794285c09a70dced56a137a5e695315fb2018ec565a9e4"
+    },
+    "template_parent": {
+      "path": "work/df2_fd_refresh/template_frozen",
+      "sha256": "4cd0431d38f985ddc79a3afd45c60f379ff89fc8f30977e6c8b86b53d0448f46"
+    },
+    "template_trial": {
+      "path": "work/pq0_2_smoke/template_trial",
+      "sha256": "87a501c077ed33d9d23bc2b7a1c05314a6b99297b5d47c929a924334d8e45cdf"
+    }
+  },
+  "registered_target": 0.018,
+  "reject_stop_count": 1,
+  "restoration_step_cap": 60,
+  "resume_rule": "resume only from a verified v15 checkpoint while below the registered fresh-attempt and accepted-step learning budgets",
+  "schema_version": 12,
+  "solver_budget": {
+    "evaluator_requests_max_per_attempt": 16,
+    "parent_adjoint_requests_max": 1,
+    "path_b_primal_requests_per_tried_alpha": 2,
+    "scope": "per fresh attempt",
+    "semantics": "these are evaluator request bounds, not solver-run counts; request freshness is recorded separately per request in the campaign evaluator_calls evidence",
+    "transform_feasible_alphas_max": 5,
+    "transform_infeasible_alpha_evaluator_requests": 0,
+    "trial_primal_requests_per_tried_alpha": 1
+  },
+  "source_tree_python_sha256": "b4a8f0edae547d285e71203907034344e20fa605ba0fbe38a5cac203e12de607",
+  "status": "registered_preflight_pending",
+  "terminal_rule": "the v15 run is a bounded discriminant/learning campaign: it stops fail-closed at the learning budget (paused_learning_budget, as enforced by the runner) or at the first failed attempt, without evaluating the window exit or the cap-stationarity exit; no independent terminal repeat, no convergence and no Stage S readiness claim in this registration; any continuation and the PQ4.1 composite judgment require a later immutable manifest",
+  "v_max_projected": 0.07632566813424899,
+  "volume_tolerance": 0.0001
+}

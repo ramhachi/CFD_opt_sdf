@@ -1,0 +1,12 @@
+Command: PYTHONPATH=src /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python scripts/preflight_fd08_cpu.py --preview-contract work/fd08_candidate_c_calibration_preview_retry1/cpu_rehearsal_preview.json --dataset work/fd08_candidate_c_calibration_preview_retry1 --output docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1
+Exit code: 1
+Traceback (most recent call last):
+  File "scripts/preflight_fd08_cpu.py", line 474, in <module>
+    raise SystemExit(main())
+  File "scripts/preflight_fd08_cpu.py", line 467, in main
+    result = rehearse(args.preview_contract, args.dataset, args.output, args.julia)
+  File "scripts/preflight_fd08_cpu.py", line 427, in rehearse
+    "preview_path": evidence_preview.relative_to(ROOT).as_posix(), "preview_sha256": preview_sha,
+  File "pathlib.py", line 682, in relative_to
+    raise ValueError(f"{str(self)!r} is not in the subpath of {str(other)!r}")
+ValueError: 'docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/cpu_rehearsal_preview.json' is not in the subpath of '/Users/sota/.codex/worktrees/issue45-root-certifier-integration' OR one path is relative.

@@ -1,0 +1,21 @@
+{
+  "kind": "stage_v_v16_far_field_contract_preliminary_staging_diagnostic",
+  "schema_version": 1,
+  "status": "superseded_before_solver",
+  "reason": "The first registered runner stopped during case staging because the field rewrite assumed multi-line patch blocks while the generated U/p files use one-line entries. No OpenFOAM solver was started and no result was used.",
+  "preserved_run_manifest": {
+    "path": "docs/evidence/stage_v_v16_far_field_contract_run_manifest_preliminary_staging_2026_09.json",
+    "sha256": "b3f42b8c2d9a587ff8070bc3404d018acbdd543ab3cbb261d0da3b405c9a13a5"
+  },
+  "preserved_parent_manifest": {
+    "path": "docs/evidence/stage_v_v16_far_field_contract_manifest_preliminary_staging_2026_09.json",
+    "sha256": "a274fd0990cca6d1fff294ee6c5b5a80940eaf2ddb4bdf66287430b3c8db127c"
+  },
+  "runner_hash_at_registration": "703e5ec17270de97352016ef42dc9e3fdfb81f320e5e698fb1e563ec9bf35086",
+  "repair": {
+    "action": "support both one-line and multi-line OpenFOAM field patch entries",
+    "solver_started": false,
+    "stage_s2_allowed": false,
+    "new_contract_required": true
+  }
+}

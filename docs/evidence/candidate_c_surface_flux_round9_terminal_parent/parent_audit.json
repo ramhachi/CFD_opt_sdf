@@ -1,0 +1,281 @@
+{
+  "all_original_artifact_hashes_verified": 40,
+  "evidence_class": "independently_recomputed_bounded_CPU_transient_observables_not_physical_qualification",
+  "independent_fresh_host_result_identical": true,
+  "init_sha256": "4b0c7fbaeac6307a913a17ddd274636e9ce04389799619c227364d3f102b80e7",
+  "integration_before_execution": "e8852e8",
+  "limitations": [
+    "refinement differences are indicators only, not uncertainty bounds or resolution floors",
+    "ground patch is open and does not close a fluid control volume",
+    "cached scaled-system residual is not recomputed against unscaled pressure",
+    "intermediate field norms are source-produced; final raw fields are independently recomputed",
+    "no mass/no-through/stationarity/accuracy criterion or production qualification",
+    "short .10-.25 transient window is not steady or stationarity evidence",
+    "native control velocities sampled on the canonical GridSDF comparison surface, not necessarily native wall",
+    "nonzero normal slip/flux observed; no physical PASS threshold was preregistered",
+    "pressure+viscous arithmetic closure does not close a fluid control volume"
+  ],
+  "plan_sha256": "57966058c75ec8cd9ae22739428469ae4dcb95c539ecad922b76912519c371dd",
+  "preregistration_sha256": "9af88b2f0f511571508e882165d6a8768fecd9bf764d3c786b41189e517fc72e",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "raw_original_file_sha256": {
+    "DONE": "1a9e5b08d508cce696ea812cca97c7ca70685de3aca0c2bb2f9e5c1a07ce22af",
+    "final_point_values.csv": "dd637f1a55c5ef641aff4c2da1ebd6f1beb02f68989ae22fab8f2a6001f74f6c",
+    "moving_ground_only__candidate_c__cached_scaled_residual_f32_fortran.bin": "f261aea8e307e2a3139c94e5d1bb6b9fd62f4501cef77a69b12132a443f9dd21",
+    "moving_ground_only__candidate_c__p_f32_fortran.bin": "fdb1fadf0ee778dfe73ae369e248fad23265519937ef827500a1391c04125cb7",
+    "moving_ground_only__candidate_c__u_f32_fortran.bin": "62caac40ff712346d8812acdc3bee9f41eef48ca6e92d7880047a8e6f6388824",
+    "moving_ground_only__grid_upstream__cached_scaled_residual_f32_fortran.bin": "3a0410e7e2c0d962c9b0bf93e9f23b32aa3ebf9e0edc565ff0e2894b926d946e",
+    "moving_ground_only__grid_upstream__p_f32_fortran.bin": "b9cccd5d8249e73d6aebd25d64fd3c8527edeba05aca7f0c4b8d8022e6646cd1",
+    "moving_ground_only__grid_upstream__u_f32_fortran.bin": "2031284678706fbb117014f4d2a3acc73369735618bdae2f18f9ed168aeabbd6",
+    "moving_ground_only__native__cached_scaled_residual_f32_fortran.bin": "f261aea8e307e2a3139c94e5d1bb6b9fd62f4501cef77a69b12132a443f9dd21",
+    "moving_ground_only__native__p_f32_fortran.bin": "fdb1fadf0ee778dfe73ae369e248fad23265519937ef827500a1391c04125cb7",
+    "moving_ground_only__native__u_f32_fortran.bin": "62caac40ff712346d8812acdc3bee9f41eef48ca6e92d7880047a8e6f6388824",
+    "plate_1cell__candidate_c__cached_scaled_residual_f32_fortran.bin": "17c7dffa9558b4ba3bb58f2c047a1aace5200b0975246856fa009b04836dbc4d",
+    "plate_1cell__candidate_c__p_f32_fortran.bin": "b3f2ad764adcfb8f32cebc432a4417a8c9a5da61add3eb168bf3067454ef97da",
+    "plate_1cell__candidate_c__u_f32_fortran.bin": "12d320dff3eb4a308eeb0722d53d33eee47f087bb8ff457e68932479e12a8f1f",
+    "plate_1cell__grid_upstream__cached_scaled_residual_f32_fortran.bin": "13a0f2f1c4769c2ddfbe3ce9b2368a1627294f07dfb71a1473bc2c40ce47c881",
+    "plate_1cell__grid_upstream__p_f32_fortran.bin": "3be52bc32269839a9bc7176fa96696b60179d9eb418e284669fd8434d1e59ddd",
+    "plate_1cell__grid_upstream__u_f32_fortran.bin": "e15c3212df31acc1dee947d13260bd74faf497c442be0e1a874cea0f829ca214",
+    "plate_1cell__native__cached_scaled_residual_f32_fortran.bin": "b74f15ebca64d5c3a3725d4af25bd427e7ccc06fb2c900be342880b641b401a6",
+    "plate_1cell__native__p_f32_fortran.bin": "4d94f773b5532872d032fabbac23c8e1a0c6cfcbcf3c760c9277a49763973517",
+    "plate_1cell__native__u_f32_fortran.bin": "0f31523b4373644bc38df0876c89238bd15fa16ec1dec4342198b5a3b0a081b9",
+    "plate_2cell__candidate_c__cached_scaled_residual_f32_fortran.bin": "ae0d6ae95afb644d81670cb4dd455a480a56e2ee00a667f7821abf76b2f30b25",
+    "plate_2cell__candidate_c__p_f32_fortran.bin": "fc72595b7fe5615089b43ba81cee4d6e53766ccb51d48859aa10bbdb0685b710",
+    "plate_2cell__candidate_c__u_f32_fortran.bin": "5c13cfc50eb9b7ce7332358b47f4601fca3e1c28d40bbe22ace8daec6d396d6f",
+    "plate_2cell__grid_upstream__cached_scaled_residual_f32_fortran.bin": "16cc880750426345020657f0a110f46af8557856d36dfa7828e0ba1280e1ef13",
+    "plate_2cell__grid_upstream__p_f32_fortran.bin": "070a5332df5a2549bd874b39f8eee7e77bf92b67773b18d83925405af3fc05df",
+    "plate_2cell__grid_upstream__u_f32_fortran.bin": "d11ec1d57c5f47178a3983b734cd318f216ae68d73f8c4247349269a40e930b9",
+    "plate_2cell__native__cached_scaled_residual_f32_fortran.bin": "2a3b3ef670d5e5aa57442ceda7a0c17b2d2a1abbd774a35d436325ed4a14ab14",
+    "plate_2cell__native__p_f32_fortran.bin": "2d44c15dde057d3e78a5368fa7317c5434e4e260e67d49a891e7e2c4dad4437c",
+    "plate_2cell__native__u_f32_fortran.bin": "edcb74525a9e7e94b4254aab1559b4762de05e07f1d0f06fa551653bd35919b0",
+    "result.json": "a7ac9d2fc8ac08447f0dd8ce28e9a0eab01f7f6eb3fde1fff0edaaf1367e1137",
+    "solver.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "solver.stdout.txt": "2c1c20cbb786907a464012e37ae337930d143290e2627cef2db9f4a94b8b3009",
+    "sphere__candidate_c__cached_scaled_residual_f32_fortran.bin": "567f7529278626577d45db51f8e86ce607022e5ef8c5d13e0b9d74936790203e",
+    "sphere__candidate_c__p_f32_fortran.bin": "0e2e260ea625260f319b3ab0ea8cb360e47121278dfdbb42868f6c82ae4ed792",
+    "sphere__candidate_c__u_f32_fortran.bin": "d544c2e8c72e3dd1e40a8e180b97f81ea1394dab6ce81becd915b1f47121eefa",
+    "sphere__grid_upstream__cached_scaled_residual_f32_fortran.bin": "472ce61b7dc9adc1125f2a884777f5632aaa727513a9943048acc577152d0e9e",
+    "sphere__grid_upstream__p_f32_fortran.bin": "938813bbce3a0d4bed4908f2b1cca0538158306c1478725762be7c4ef9e1cd34",
+    "sphere__grid_upstream__u_f32_fortran.bin": "a8070923c532077da424ee64d8b1fc628697d57fff86d5ab2d056a39a70c374c",
+    "sphere__native__cached_scaled_residual_f32_fortran.bin": "e794cc14257705ca3e793194b971552a07fc07d4e79fe8139ae40f1e26f806dd",
+    "sphere__native__p_f32_fortran.bin": "86bf7c45718a55992b9db5d3212b72d4caa59b0f24be042f17d09fea588c95de",
+    "sphere__native__u_f32_fortran.bin": "fa200062379b819c369f3d2052a6bdb67374874850e94be4caea75798e9892a4",
+    "surface_history.csv": "34d170c46fab6170e278defa5ad6966a90b9ce2eb4bec221ed4961355796986e"
+  },
+  "raw_output_tar_sha256": "a0d26472af3a465dfbfce78ed5bca39a68e24999b4f0304421f5a5b61e1afcbb",
+  "recorded_at_utc": "2026-10-02T02:06:52.109488+00:00",
+  "result_sha256": "a7ac9d2fc8ac08447f0dd8ce28e9a0eab01f7f6eb3fde1fff0edaaf1367e1137",
+  "runtime": "CANDIDATE_C_SURFACE_RUNTIME julia=1.12.6 waterlily=1.8.0 threads=4 backend=Array precision=Float32 job_sha256=39aec1c1646cf6df7feccbb3998b4fecb8c731312bf85ead388561468691ec9a criteria_sha256=57966058c75ec8cd9ae22739428469ae4dcb95c539ecad922b76912519c371dd",
+  "source_feature_commit": "6a51763",
+  "status": "diagnostic_data_integrity_ok",
+  "summary": {
+    "moving_ground_only": {
+      "candidate_c": {
+        "downforce_n": -0.0,
+        "fine_level_window_means": {
+          "absolute_kg_s": 0.022700715942311243,
+          "candidate_total_fx_n": 0.0,
+          "candidate_total_fz_n": 0.0,
+          "geom_slip_rms_m_s": 0.0022230103164048954,
+          "operator_signed_kg_s": 0.022700715942311243,
+          "signed_body_outward_kg_s": 0.022700715942311243
+        },
+        "level2_minus_level1_indicators_not_bounds": {
+          "absolute_kg_s": -3.6358886790800737e-06,
+          "geom_slip_rms_m_s": -2.4353620436045817e-07,
+          "signed_body_outward_kg_s": -3.6358886790800737e-06
+        }
+      },
+      "grid_upstream": {
+        "downforce_n": -0.0,
+        "fine_level_window_means": {
+          "absolute_kg_s": 0.02270069632880674,
+          "candidate_total_fx_n": 0.0,
+          "candidate_total_fz_n": 0.0,
+          "geom_slip_rms_m_s": 0.0022230083812346656,
+          "operator_signed_kg_s": 0.02270069632880674,
+          "signed_body_outward_kg_s": 0.02270069632880674
+        },
+        "level2_minus_level1_indicators_not_bounds": {
+          "absolute_kg_s": -3.687367221606036e-06,
+          "geom_slip_rms_m_s": -2.4855148352204495e-07,
+          "signed_body_outward_kg_s": -3.687367221606036e-06
+        }
+      },
+      "native": {
+        "downforce_n": -0.0,
+        "fine_level_window_means": {
+          "absolute_kg_s": 0.022700715942311243,
+          "candidate_total_fx_n": 0.0,
+          "candidate_total_fz_n": 0.0,
+          "geom_slip_rms_m_s": 0.0022230103164048954,
+          "operator_signed_kg_s": 0.022700715942311243,
+          "signed_body_outward_kg_s": 0.022700715942311243
+        },
+        "level2_minus_level1_indicators_not_bounds": {
+          "absolute_kg_s": -3.6358886790800737e-06,
+          "geom_slip_rms_m_s": -2.4353620436045817e-07,
+          "signed_body_outward_kg_s": -3.6358886790800737e-06
+        }
+      }
+    },
+    "plate_1cell": {
+      "candidate_c": {
+        "downforce_n": 0.00019278720357913986,
+        "fine_level_window_means": {
+          "absolute_kg_s": 0.020373741596901772,
+          "candidate_total_fx_n": 0.05688707256626469,
+          "candidate_total_fz_n": -0.00019278720357913986,
+          "geom_slip_rms_m_s": 0.0794597151722751,
+          "operator_signed_kg_s": 0.0002894528236154432,
+          "signed_body_outward_kg_s": 0.0002894455626468192
+        },
+        "level2_minus_level1_indicators_not_bounds": {
+          "absolute_kg_s": 0.00010701887998487702,
+          "geom_slip_rms_m_s": 8.431306930736793e-05,
+          "signed_body_outward_kg_s": -8.256640463083715e-06
+        }
+      },
+      "grid_upstream": {
+        "downforce_n": 0.00016009683385618617,
+        "fine_level_window_means": {
+          "absolute_kg_s": 0.018721033985302376,
+          "candidate_total_fx_n": 0.057693288937343164,
+          "candidate_total_fz_n": -0.00016009683385618617,
+          "geom_slip_rms_m_s": 0.07656165521643231,
+          "operator_signed_kg_s": 0.0002846114346199636,
+          "signed_body_outward_kg_s": 0.00028460432659411285
+        },
+        "level2_minus_level1_indicators_not_bounds": {
+          "absolute_kg_s": 9.270997814505785e-05,
+          "geom_slip_rms_m_s": 8.304785246565638e-05,
+          "signed_body_outward_kg_s": -6.213802456819936e-06
+        }
+      },
+      "native": {
+        "downforce_n": 0.00030176958150226194,
+        "fine_level_window_means": {
+          "absolute_kg_s": 0.011281171106514883,
+          "candidate_total_fx_n": 0.0374703515356595,
+          "candidate_total_fz_n": -0.00030176958150226194,
+          "geom_slip_rms_m_s": 0.045253734569089016,
+          "operator_signed_kg_s": 0.0,
+          "signed_body_outward_kg_s": 0.0003408845681899088
+        },
+        "level2_minus_level1_indicators_not_bounds": {
+          "absolute_kg_s": 9.769706321884411e-06,
+          "geom_slip_rms_m_s": 2.3721329773830624e-05,
+          "signed_body_outward_kg_s": -5.398550251826245e-06
+        }
+      }
+    },
+    "plate_2cell": {
+      "candidate_c": {
+        "downforce_n": 0.0002629930391869809,
+        "fine_level_window_means": {
+          "absolute_kg_s": 0.048658123283551846,
+          "candidate_total_fx_n": 0.11179923754661376,
+          "candidate_total_fz_n": -0.0002629930391869809,
+          "geom_slip_rms_m_s": 0.13781252993466223,
+          "operator_signed_kg_s": 0.0050249314660716455,
+          "signed_body_outward_kg_s": 0.0012481774845284996
+        },
+        "level2_minus_level1_indicators_not_bounds": {
+          "absolute_kg_s": -0.0014851531148624905,
+          "geom_slip_rms_m_s": -0.005991155831692713,
+          "signed_body_outward_kg_s": 0.000253204371761088
+        }
+      },
+      "grid_upstream": {
+        "downforce_n": 0.0002632147054846334,
+        "fine_level_window_means": {
+          "absolute_kg_s": 0.048658131645821716,
+          "candidate_total_fx_n": 0.11179922001333809,
+          "candidate_total_fz_n": -0.0002632147054846334,
+          "geom_slip_rms_m_s": 0.13781253271925376,
+          "operator_signed_kg_s": 0.005024971945470149,
+          "signed_body_outward_kg_s": 0.0012482187851363662
+        },
+        "level2_minus_level1_indicators_not_bounds": {
+          "absolute_kg_s": -0.0014851531540829577,
+          "geom_slip_rms_m_s": -0.0059911561234801125,
+          "signed_body_outward_kg_s": 0.00025320457390115006
+        }
+      },
+      "native": {
+        "downforce_n": 0.0002915885528548825,
+        "fine_level_window_means": {
+          "absolute_kg_s": 0.04369491493255577,
+          "candidate_total_fx_n": 0.07257764237824613,
+          "candidate_total_fz_n": -0.0002915885528548825,
+          "geom_slip_rms_m_s": 0.12421392789499489,
+          "operator_signed_kg_s": 0.0,
+          "signed_body_outward_kg_s": 0.0013223796331366408
+        },
+        "level2_minus_level1_indicators_not_bounds": {
+          "absolute_kg_s": -0.0015048238106256592,
+          "geom_slip_rms_m_s": -0.005761082808005663,
+          "signed_body_outward_kg_s": 0.00021407481845076297
+        }
+      }
+    },
+    "sphere": {
+      "candidate_c": {
+        "downforce_n": -0.002140973287215626,
+        "fine_level_window_means": {
+          "absolute_kg_s": 0.02899316318374671,
+          "candidate_total_fx_n": 0.23993279717009552,
+          "candidate_total_fz_n": 0.002140973287215626,
+          "geom_slip_rms_m_s": 0.04332512964675327,
+          "operator_signed_kg_s": 0.001328650542777586,
+          "signed_body_outward_kg_s": 0.0013286423871750337
+        },
+        "level2_minus_level1_indicators_not_bounds": {
+          "absolute_kg_s": 1.1877024054279817e-05,
+          "geom_slip_rms_m_s": 2.2908911777586027e-05,
+          "signed_body_outward_kg_s": 2.374741030743144e-06
+        }
+      },
+      "grid_upstream": {
+        "downforce_n": -0.0021407864023622976,
+        "fine_level_window_means": {
+          "absolute_kg_s": 0.02899317089354819,
+          "candidate_total_fx_n": 0.23993360306234776,
+          "candidate_total_fz_n": 0.0021407864023622976,
+          "geom_slip_rms_m_s": 0.04332513489664457,
+          "operator_signed_kg_s": 0.00132866043728611,
+          "signed_body_outward_kg_s": 0.0013286522816848658
+        },
+        "level2_minus_level1_indicators_not_bounds": {
+          "absolute_kg_s": 1.1876794515842948e-05,
+          "geom_slip_rms_m_s": 2.2908905318148876e-05,
+          "signed_body_outward_kg_s": 2.374730430216611e-06
+        }
+      },
+      "native": {
+        "downforce_n": -0.002191492168213207,
+        "fine_level_window_means": {
+          "absolute_kg_s": 0.027209466608058546,
+          "candidate_total_fx_n": 0.2427893908549885,
+          "candidate_total_fz_n": 0.002191492168213207,
+          "geom_slip_rms_m_s": 0.04070830903083969,
+          "operator_signed_kg_s": 0.0013103612584845009,
+          "signed_body_outward_kg_s": 0.0013114578474037
+        },
+        "level2_minus_level1_indicators_not_bounds": {
+          "absolute_kg_s": -2.5346298254680377e-07,
+          "geom_slip_rms_m_s": 1.9916060702146465e-05,
+          "signed_body_outward_kg_s": 2.3358857762776405e-06
+        }
+      }
+    }
+  },
+  "surface_group_count": 63
+}

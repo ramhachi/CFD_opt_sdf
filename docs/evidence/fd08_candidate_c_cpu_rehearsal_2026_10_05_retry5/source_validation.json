@@ -1,0 +1,50 @@
+{
+  "checks": {
+    "compileall": {
+      "command": "PYTHONPATH=src /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m compileall -q src tests",
+      "result": "PASS"
+    },
+    "focused_tests": {
+      "command": "PYTHONPATH=src /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q tests/test_fd08_calibration.py tests/test_fd08_contract.py",
+      "result": "39 passed"
+    },
+    "git_diff_check": {
+      "command": "git diff --check",
+      "result": "PASS"
+    },
+    "julia_parse": {
+      "command": "julia --startup-file=no -e 'Meta.parseall(read(\"scripts/waterlily_fd08_cpu_rehearsal.jl\", String)); println(\"Julia parse PASS\")'",
+      "result": "PASS"
+    },
+    "module_imports": {
+      "command": "PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -c 'from cfd_sdf import fd08_calibration, fd08_contract, candidate_c_identity; import build_fd08_calibration_kernel, register_fd08_calibration, preflight_fd08_cpu'",
+      "result": "PASS"
+    }
+  },
+  "cpu_rehearsal_result_path": "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry5/rehearsal_result.json",
+  "cpu_rehearsal_result_sha256": "b7265211f71206ec7f377f556d758ae097e6bb7e477cc3076507d9dbf9c11cfd",
+  "evidence_class": "software_harness_validation_not_calibration_or_physical_qualification",
+  "full_pytest": {
+    "baseline_failure_count": 37,
+    "baseline_failure_ids_sha256": "c1e69d27e76b3983ec825daed371a01df7c2d616c84de3ef16ec0e18fcb2b90b",
+    "baseline_path": "docs/evidence/four_track_baseline_2026_10_02/failure_ids.json",
+    "baseline_sha256": "71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a",
+    "current_failure_count": 37,
+    "current_failure_ids_sha256": "c1e69d27e76b3983ec825daed371a01df7c2d616c84de3ef16ec0e18fcb2b90b",
+    "log_path": "work/fd08_preparation/full_pytest_after_r3_runner_binding_fix_2026_10_05.log",
+    "log_sha256": "1884d55fa49fdb7ea54af5efdedfd6fb476026a67ba7ad867058951f4d1d7456",
+    "new_failure_ids": [],
+    "resolved_failure_ids": [],
+    "result": "37 failed, 1438 passed, 9 skipped, 7226 warnings in 247.51s"
+  },
+  "kind": "fd08_calibration_harness_source_validation",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "source_commit": "91bb6f4175435cc0259f3ff7d83c7dd260352ec2"
+}

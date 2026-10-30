@@ -1,0 +1,47 @@
+{
+  "captured_at_utc": "2026-10-05T05:26:34+00:00",
+  "changed_source_sha256": {
+    "analyzer": "f96e4521b6ab73b0bd195fa9427e5d18eeaa9cccf35c92453f842bb8158f7206",
+    "test": "fce527006ac8c5bc692bea29f2f4e471df56023ecabcf3c9950f4989eaf04477"
+  },
+  "compileall": {
+    "command": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m compileall src tests",
+    "result": "PASS"
+  },
+  "diff_check": "PASS",
+  "evidence_class": "source regression and repository suite validation; not calibration or physical qualification evidence",
+  "focused_tests": {
+    "command": "PYTHONPATH=src /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q tests/test_fd08_calibration.py tests/test_fd08_contract.py",
+    "result": "40 passed"
+  },
+  "full_suite": {
+    "capture_note": "The pytest process completed and wrote its JUnit XML/log. The surrounding zsh capture then hit its read-only special variable named status; the JUnit totals and failure ID comparison are authoritative.",
+    "command": "PYTHONPATH=src /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q --tb=no --junitxml=work/fd08_analyzer_schema_fix/full_pytest.xml",
+    "failed": 37,
+    "junit_xml_path": "work/fd08_analyzer_schema_fix/full_pytest.xml",
+    "junit_xml_sha256": "04b0117db84db6c7095c2a47d8ec9efb92454214e13ee103f0652da5b99dd949",
+    "log_path": "work/fd08_analyzer_schema_fix/full_pytest.log",
+    "log_sha256": "d4b33c67f11c0564c030e94abe88d61856fda618a2679cf39510e8f91df434fb",
+    "new_failure_count": 0,
+    "new_failure_ids": [],
+    "observed_failure_ids_sha256": "39031c5893dd0cb0f7759d889abd345315fc7b1c69b06c43557cdda6007497bf",
+    "passed": 1439,
+    "pinned_baseline_path": "docs/evidence/four_track_baseline_2026_10_02/failure_ids.json",
+    "pinned_baseline_sha256": "71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a",
+    "pytest_result": "37 failed, 1439 passed, 9 skipped; failure ID set exactly equals the pinned 37-ID baseline",
+    "resolved_failure_count": 0,
+    "resolved_failure_ids": [],
+    "skipped": 9,
+    "test_count": 1485
+  },
+  "kind": "fd08_calibration_analyzer_schema_fix_source_validation",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "scope": "schema binding fix only; no criteria, solver, operator, epsilon, threshold, force conversion, time window, or verdict rule changes"
+}

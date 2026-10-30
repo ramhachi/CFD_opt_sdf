@@ -1,0 +1,81 @@
+{
+  "both_registered_numeric_gates_fail": true,
+  "bracket_phi_m": [
+    -0.005000006097058455,
+    0.025000001071018758
+  ],
+  "case": "D0_interface_offset_minus",
+  "claims": [
+    "A nearer original-trilinear sign crossing exists in the source cell; the parent chooses a farther root after residual-based candidate omission.",
+    "A local sign certificate verifies an accepted root; it does not prove exhaustive root enumeration or nearest-root uniqueness.",
+    "Boolean gate agreement does not mean displacement metrics or per-sample correspondence agree.",
+    "Large frozen error values cannot all be interpreted as actual surface displacement error; no frozen criteria or sources are changed."
+  ],
+  "diagnostic_mesh_minus_source_delta_m": 3.378070927931992e-08,
+  "direct_root_guard_phi_m": [
+    -3.000000903079225e-10,
+    3.0000003653149476e-10
+  ],
+  "direct_root_residual_m": 6.938893903907228e-18,
+  "direct_sign_root_t_m": 0.004166670751981498,
+  "evidence_class": "post_registration_root_omission_diagnostic_not_qualification",
+  "guard_t_m": 2.5e-10,
+  "independent_failure_max_m": 0.013136769153431802,
+  "independent_sample": {
+    "baseline_root_audit": {
+      "root_candidate_count": 2,
+      "root_residual_m": 8.388861851335777e-13
+    },
+    "baseline_root_t_m": 6.076879799366038e-09,
+    "selected_face_id": 113300,
+    "target_mesh_root_t_m": 0.004166698455810641,
+    "target_root_audit": {
+      "root_candidate_count": 2,
+      "root_residual_m": 3.620627235523255e-12
+    },
+    "target_root_t_m": 0.00416667074896398,
+    "upper_error_bound_m": 3.430872646044292e-08
+  },
+  "independent_unresolved": 9,
+  "mesh_root_t_m": 0.004166698455810977,
+  "normal": [
+    4.05238144482034e-07,
+    -0.9999999999999178,
+    0.0
+  ],
+  "parent_failure_max_m": 0.054166658165599145,
+  "parent_residual_candidate_cutoff_m": 2.5000000000000003e-12,
+  "parent_target_root_audit": {
+    "crossing_certificate": true,
+    "nearest_absolute_root_tied": false,
+    "root_position_uncertainty_m": 2.5e-10,
+    "roots_m": [
+      -0.04999995310790837
+    ],
+    "zero_interval": false
+  },
+  "parent_target_root_t_m": -0.04999995310790837,
+  "parent_unresolved": 427,
+  "point_m": [
+    0.22083333333333335,
+    0.40000000000000013,
+    0.1479166666666667
+  ],
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "solver_qualification": false,
+    "topology": false
+  },
+  "r": 4,
+  "sample_index": 691,
+  "script_sha256": "0d1f205386fa36568fd50acb2924ec0d3fd0a8439da1b0f27c102fe7fd657897",
+  "source_cell_bracket_t_m": [
+    0.0,
+    0.025000000000002055
+  ],
+  "source_field_sha256": "e7a83328efc9a7a263e54e59fa349e2d57c6cba5dceffff783291056cbc7fd5f"
+}

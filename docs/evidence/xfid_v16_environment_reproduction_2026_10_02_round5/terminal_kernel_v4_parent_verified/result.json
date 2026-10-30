@@ -1,0 +1,154 @@
+{
+  "case_input_sha256": {
+    "case_template/0/U": "ac791673b04d347f0a8c3b93d04eed5e6cc47321f2c9c48c5cfd4e767bf116c1",
+    "case_template/0/p": "8372855fe3a2144838e945c723d3f6ce0b277730ab7868e35cba047bc937c987",
+    "case_template/Allrun": "3d4b4d1b6429c77b44dfa888d8a810b495eeea94a3bfd766645c3eced7280d59",
+    "case_template/constant/transportProperties": "e44501f41494cdb653120ea5f8c6a64baa52bd26ca2f625427bf71ff827ee390",
+    "case_template/constant/triSurface/allowed_design_domain.stl": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446",
+    "case_template/constant/triSurface/design_candidate.stl": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "case_template/constant/turbulenceProperties": "f9a5d6d76de0f28e1112f690f27d221361181f8bd7979de823914eefe0e0f927",
+    "case_template/system/blockMeshDict": "903395068edc527f3cb44af6165b1ac20f759b7876e5f59145ac3b932c450330",
+    "case_template/system/controlDict": "640e101f1c292f1e3a84d848ecf24f602b637de970fb284f15cb50ff44cb7a9b",
+    "case_template/system/fvSchemes": "aaf8a02b7e65dae5e7a009509546cebd472caeebf65aff4f69e3b6cef96f3a2e",
+    "case_template/system/fvSolution": "007ddea730c1268410e406ecc83a82300d3840c353f0a6ce1ae2fbe9a4dfb643",
+    "case_template/system/snappyHexMeshDict": "e8fdf720a2af997828c9d73d1f860ac3389b17011123f28427a8cc6e0eeb0a43",
+    "case_template/system/surfaceFeatureExtractDict": "0f7c017a9edc5dd0819368089e35b59f8da84587432ab53facdb46e48fe0c4f8",
+    "fixtures/physical_profile.yaml": "6e41d2bbe9ac6a272f122f7e2556fe2ae9904b0572415eb548f438406885278e"
+  },
+  "criteria_sha256": "7d5215fd3ba681230ffe183952a8e2a91cca1cbb6fc06eecaa85ff6cd67c2867",
+  "environment": {
+    "apt_index_records": [
+      {
+        "bytes": 3624,
+        "name": "InRelease",
+        "sha256": "e2102adead8229c90f654a768a272e37b08c7bfa5d856379c9bf833196f79bad",
+        "url": "https://dl.openfoam.com/repos/deb/dists/jammy/InRelease"
+      },
+      {
+        "bytes": 42529,
+        "name": "Packages.gz",
+        "sha256": "0000d7fae190252a056c976597be5823f1b9b16b288033000bb3d703610c91ab",
+        "url": "https://dl.openfoam.com/repos/deb/dists/jammy/main/binary-amd64/Packages.gz"
+      }
+    ],
+    "architecture": "amd64",
+    "foamVersion": "OpenFOAM-v2512",
+    "foam_version_probe": {
+      "command": [
+        "bash",
+        "-lc",
+        "source /usr/lib/openfoam/openfoam2512/etc/bashrc && source \"$WM_PROJECT_DIR/etc/config.sh/aliases\" && foamVersion"
+      ],
+      "returncode": 0,
+      "stderr": "OpenFOAM-v2512\n",
+      "stdout": ""
+    },
+    "installed_packages": [
+      "openfoam2512-common=2512.0-2",
+      "openfoam2512-tools=2512.0-2",
+      "openfoam2512=2512.0-2"
+    ],
+    "observed_os_release": "PRETTY_NAME=\"Ubuntu 22.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\nVERSION=\"22.04.5 LTS (Jammy Jellyfish)\"\nVERSION_CODENAME=jammy\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=jammy\n",
+    "official_installer_sha256": "f7fa288327e936b5a85e3e4a0b29bf039c06d214916f39400b830b63a3310b5b",
+    "os_codename": "jammy",
+    "os_id": "ubuntu",
+    "os_version": "22.04",
+    "package_records": [
+      {
+        "architecture": "amd64",
+        "deb": "openfoam2512_2512.0-2_amd64.deb",
+        "name": "openfoam2512",
+        "sha256": "52377a07c3ef8129c89d89a108c5421d709cf5a0f291f4977274b04a02df2181",
+        "version": "2512.0-2"
+      },
+      {
+        "architecture": "all",
+        "deb": "openfoam2512-common_2512.0-2_all.deb",
+        "name": "openfoam2512-common",
+        "sha256": "55588cb7231fb27eb6dbf53448a2e3d00fa30d516b42120b8eacf07abdfbe2d9",
+        "version": "2512.0-2"
+      },
+      {
+        "architecture": "amd64",
+        "deb": "openfoam2512-tools_2512.0-2_amd64.deb",
+        "name": "openfoam2512-tools",
+        "sha256": "77742307d3285f1cefeb286313b28fda15ed1d3b316e57e3353866fc326f3546",
+        "version": "2512.0-2"
+      }
+    ],
+    "status": "packages_installed_and_hash_verified_before_foamVersion"
+  },
+  "evidence_class": "environment_reproduction",
+  "execution_commands": {
+    "install": "apt-get download openfoam2512=2512.0-2 openfoam2512-common=2512.0-2 openfoam2512-tools=2512.0-2; verify all downloaded SHA-256 values; apt-get install the exact .deb files",
+    "mesh_and_solver": [
+      "blockMesh",
+      "surfaceFeatureExtract",
+      "snappyHexMesh -overwrite",
+      "checkMesh -allGeometry -allTopology",
+      "simpleFoam"
+    ],
+    "version": "source /usr/lib/openfoam/openfoam2512/etc/bashrc && source \"$WM_PROJECT_DIR/etc/config.sh/aliases\" && foamVersion"
+  },
+  "final_residuals": {
+    "Ux": 6.3691907e-09,
+    "Uy": 1.3460835e-08,
+    "Uz": 1.3104401e-08,
+    "p": 9.8685712e-08
+  },
+  "historical_reference": {
+    "archive_commit": "aa2e9d5f702044419c2a63a1eeea52fb421ab5af",
+    "archive_ref": "archive/pre-openfoam-removal-2026-09-29",
+    "case_metadata_sha256": "68b572a86bb7e400421665702c791dea2c86d9bd161f7b69f9058077932e2766",
+    "case_qualification_sha256": "a6a051bc23536f8ac0123ffc49d939d007502f956586519355fa41fe34515a6a",
+    "domain_comparison_result_sha256": "13374c722b4993f941ca6487a305fe2f371551d2eed152f744ef016f5b18b5bf",
+    "physical_profile_sha256": "a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca",
+    "problem_id": "stage_sv_v2_expanded_domain_v2",
+    "result_manifest_sha256": "6fe9168be5b40295c303a26ade0c13bc23ca23eedc4ffebabfc0f4d0a80cae6f",
+    "result_run_manifest_sha256": "1e419a37c3c0ec51cfdcf8d2ca497faffe4cc0179560d54f927a29b06c76d4b0",
+    "result_sha256": "8871255838b9666683581a3cb50d949764f6a4b27fb3dab24d6f6f52b4a75e66"
+  },
+  "kernel_metadata_sha256": "28ffa72c980ac0e0b833423a6060c5cc6de5bfec701abf3de71e4d8dfc30d4e8",
+  "mass": {
+    "latest_time": "584",
+    "normalized_imbalance": 1.753881451723771e-08,
+    "threshold": 0.0001
+  },
+  "mesh": {
+    "cells": 42619,
+    "concave_cells": 2969,
+    "concave_fraction": 0.06966376498744692,
+    "interpretation": "exactly one failed check is accepted, and only with the registered concave-cell output",
+    "raw_failed_check_counts": [
+      1
+    ]
+  },
+  "package_lock_sha256": "b5e59f8a7da34820fc3c6bda93b3524204dcaf4fa6e4f7f11d6c46ddddb66746",
+  "responses": {
+    "Cd": 1.1695734196575343,
+    "downforce_N": 0.24225913050301373,
+    "downforce_coefficient": 0.7570597828219179,
+    "drag_N": 0.37426349429041095
+  },
+  "round_id": "v16_environment_reproduction_r5_jammy_noninteractive_version",
+  "runner_sha256": "19e336893f7b9dc8f1c84503a1218d654fa50eb8b3b3ba4d1530eedfa80f3195",
+  "stationarity": {
+    "Cd": {
+      "linear_drift": 0.0004174248448420418,
+      "mean": 1.1695734196575343,
+      "relative_drift": 0.00035690349816967375,
+      "relative_std": 0.00010787321687154006,
+      "std": 0.00012616564714590592,
+      "window_rows": 146
+    },
+    "downforce_coefficient": {
+      "linear_drift": 0.00035057802571988926,
+      "mean": 0.7570597828219179,
+      "relative_drift": 0.0004630783904715161,
+      "relative_std": 0.00013996754723506183,
+      "std": 0.00010596380091189243,
+      "window_rows": 146
+    }
+  },
+  "status": "PASS"
+}

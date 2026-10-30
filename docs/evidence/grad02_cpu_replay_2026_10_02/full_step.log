@@ -1,0 +1,66 @@
+MethodError: no method matching MixedDuplicated(::Flow{3, Float64, Array{Float64, 3}, Array{Float64, 4}, Array{Float64, 5}}, ::Flow{3, Float64, Array{Float64, 3}, Array{Float64, 4}, Array{Float64, 5}})
+The type `MixedDuplicated` exists, but no method is defined for this combination of argument types when trying to construct it.
+
+Closest candidates are:
+  MixedDuplicated(::T, !Matched::Base.RefValue{T}) where T
+   @ EnzymeCore ~/.julia/packages/EnzymeCore/w6Eem/src/EnzymeCore.jl:220
+  MixedDuplicated(::T, !Matched::Base.RefValue{T}, !Matched::Bool) where T
+   @ EnzymeCore ~/.julia/packages/EnzymeCore/w6Eem/src/EnzymeCore.jl:220
+
+Stacktrace:
+  [1] macro expansion
+    @ ~/.julia/packages/Enzyme/xkbrs/src/rules/jitrules.jl:29 [inlined]
+  [2] create_activity_wrapper
+    @ ~/.julia/packages/Enzyme/xkbrs/src/rules/jitrules.jl:17 [inlined]
+  [3] macro expansion
+    @ ~/.julia/packages/Enzyme/xkbrs/src/rules/jitrules.jl:505 [inlined]
+  [4] runtime_generic_augfwd(::Type{Val{(false, false, false, true, true)}}, ::Val{false}, ::Val{false}, ::Val{1}, ::Val{(true, true, true, true, true)}, ::Val{@NamedTuple{var"1", var"2", var"3"}}, ::typeof(Core.kwcall), ::Nothing, ::@NamedTuple{λ::typeof(quick), udf::Nothing}, ::Nothing, ::typeof(mom_step!), ::Nothing, ::Flow{3, Float64, Array{Float64, 3}, Array{Float64, 4}, Array{Float64, 5}}, ::Flow{3, Float64, Array{Float64, 3}, Array{Float64, 4}, Array{Float64, 5}}, ::MultiLevelPoisson{Float64, Array{Float64, 3}, Array{Float64, 4}}, ::MultiLevelPoisson{Float64, Array{Float64, 3}, Array{Float64, 4}})
+    @ Enzyme.Compiler ~/.julia/packages/Enzyme/xkbrs/src/rules/jitrules.jl:600
+  [5] #sim_step!#104
+    @ ~/.julia/packages/WaterLily/4Wr0g/src/WaterLily.jl:116 [inlined]
+  [6] augmented_julia__sim_step__104_11263wrap
+    @ ~/.julia/packages/WaterLily/4Wr0g/src/WaterLily.jl:0
+  [7] macro expansion
+    @ ~/.julia/packages/Enzyme/xkbrs/src/compiler.jl:7304 [inlined]
+  [8] enzyme_call
+    @ ~/.julia/packages/Enzyme/xkbrs/src/compiler.jl:6770 [inlined]
+  [9] AugmentedForwardThunk
+    @ ~/.julia/packages/Enzyme/xkbrs/src/compiler.jl:6716 [inlined]
+ [10] macro expansion
+    @ ~/.julia/packages/Enzyme/xkbrs/src/rules/jitrules.jl:467 [inlined]
+ [11] runtime_generic_augfwd(::Type{Val{(false, false, false, false, false, false, true)}}, ::Val{false}, ::Val{false}, ::Val{1}, ::Val{(true, true, true, true, true, true, true)}, ::Val{@NamedTuple{var"1", var"2", var"3"}}, ::WaterLily.var"##sim_step!#104", ::Nothing, ::Bool, ::Nothing, ::typeof(quick), ::Nothing, ::Nothing, ::Nothing, ::@Kwargs{}, ::Nothing, ::typeof(sim_step!), ::Nothing, ::Simulation, ::Simulation)
+    @ Enzyme.Compiler ~/.julia/packages/Enzyme/xkbrs/src/rules/jitrules.jl:600
+ [12] sim_step!
+    @ ~/.julia/packages/WaterLily/4Wr0g/src/WaterLily.jl:114 [inlined]
+ [13] force_after_steps!
+    @ ~/.codex/worktrees/issue-22-cpu-replay/CFD2026_09/infra/kaggle/kernel_enzyme_reverse_spike/julia/cpu/initial_state_reverse_spike.jl:26 [inlined]
+ [14] augmented_julia_force_after_steps__6639wrap
+    @ ~/.codex/worktrees/issue-22-cpu-replay/CFD2026_09/infra/kaggle/kernel_enzyme_reverse_spike/julia/cpu/initial_state_reverse_spike.jl:0
+ [15] macro expansion
+    @ ~/.julia/packages/Enzyme/xkbrs/src/compiler.jl:7304 [inlined]
+ [16] enzyme_call
+    @ ~/.julia/packages/Enzyme/xkbrs/src/compiler.jl:6770 [inlined]
+ [17] AugmentedForwardThunk
+    @ ~/.julia/packages/Enzyme/xkbrs/src/compiler.jl:6716 [inlined]
+ [18] autodiff
+    @ ~/.julia/packages/Enzyme/xkbrs/src/Enzyme.jl:495 [inlined]
+ [19] autodiff(mode::ReverseMode{true, false, false, FFIABI, false, false}, f::typeof(force_after_steps!), ::Type{Active}, args::Duplicated{Simulation})
+    @ Enzyme ~/.julia/packages/Enzyme/xkbrs/src/Enzyme.jl:625
+ [20] top-level scope
+    @ ~/.codex/worktrees/issue-22-cpu-replay/CFD2026_09/infra/kaggle/kernel_enzyme_reverse_spike/julia/cpu/initial_state_reverse_spike.jl:56
+ [21] include(mod::Module, _path::String)
+    @ Base ./Base.jl:306
+ [22] exec_options(opts::Base.JLOptions)
+    @ Base ./client.jl:317
+ [23] _start()
+    @ Base ./client.jl:550
+JULIA_VERSION 1.12.6
+WATERLILY_VERSION 1.6.1
+ENZYME_VERSION 0.13.205
+WATERLILY_PR 285 HEAD feed49f480b52047b4e9b8bfacdf3e4f8201106b
+FIXTURE dims=(24, 16, 16) center=(8.0, 8.0, 8.0) radius=2.0 re_d=100 steps=2 precision=Float64 backend=Array
+PRIMAL_BASE_DRAG 8.45013686103991
+PRIMAL_CENTERED_FD_INITIAL_U 0.09989015934408484
+CPU_STATE_REVERSE_BEGIN
+CPU_STATE_REVERSE_ELAPSED_S_INCLUDING_JIT 10.031505917
+CPU_STATE_REVERSE_FAILED MethodError

@@ -1,0 +1,17 @@
+{
+  "command": ["kaggle", "kernels", "push", "-p", "infra/kaggle/kernel_gridres01_f40", "--accelerator", "NvidiaTeslaT4", "--timeout", "21600"],
+  "evidence_class": "execution_provenance_not_measurement_result",
+  "exact_reference": "ramhachi888/cfd-opt-sdf-gridres01-f40/1",
+  "exit_code": 0,
+  "first_push_attempt_utc": "2026-10-20T15:56:50+00:00",
+  "first_push_attempt_result": "Kernel push error: Maximum batch GPU session count of 2 reached. (no kernel version created; two other account kernels cfd-opt-sdf-unc01-u2-f48a/f48b were RUNNING; the identical command was retried unchanged until a slot was free)",
+  "freeze_sha256": "baef30c6a3067459d719405c7d25730ab9ac8ef4f715a85726ac0c22493de132",
+  "frozen_pushed_commit": "6c0cddae9e6baf2415f4388593bab590b6000f81",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-gridres01-f40",
+  "kernel_version": 1,
+  "kaggle_cli_version": "2.2.4",
+  "source_commit": "9299f32f7f6a9a630c70359fa4c280d499f7dd72",
+  "stdout": "Kernel version 1 successfully pushed.  Please check progress at https://www.kaggle.com/code/ramhachi888/cfd-opt-sdf-gridres01-f40",
+  "submitted_utc": "2026-10-20T17:41:26+00:00",
+  "terminal_status": "KernelWorkerStatus.COMPLETE (observed 2026-10-20T19:29:57Z)"
+}

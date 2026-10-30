@@ -1,0 +1,730 @@
+{
+  "all_registered_cases_reached_t_u_l_120": true,
+  "backend_identity": {
+    "compute_capability": "7.5.0",
+    "cuda_driver_api_version": "13.3.0",
+    "cuda_jl_version": "6.3.1",
+    "cuda_runtime_version": "12.8.0",
+    "gpu_inventory": [
+      "0, Tesla T4, GPU-5471204c-d93c-faf5-1502-1d6aaa0d45ed, 15360 MiB, 580.159.04",
+      "1, Tesla T4, GPU-1c3fbdfb-62dd-b406-b37e-f32f7943c6ee, 15360 MiB, 580.159.04"
+    ],
+    "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+    "julia_version": "1.12.6",
+    "runner_sha256": "456bd7e711da839d514538377413de111a991730c19ec965ba911f562fdc065e",
+    "selected_gpu_uuid": "GPU-5471204c-d93c-faf5-1502-1d6aaa0d45ed",
+    "source_commit_observed": "6d4608f39d2937ced96dd934b6be1cf61b4aa150",
+    "waterlily_backend": "KernelAbstractions",
+    "waterlily_version": "1.8.0"
+  },
+  "case_summary_measurements": {
+    "domain_xplus1m_16": {
+      "cd_time_weighted": 1.051172558166545,
+      "downforce_time_weighted_n": 0.3532202886640743,
+      "drag_time_weighted_n": 0.3363752186132944,
+      "flow_dims": [
+        120,
+        48,
+        36
+      ],
+      "flow_origin_m": [
+        -2.5,
+        -1.2,
+        -0.9
+      ],
+      "flow_spacing_m": 0.05,
+      "force_samples": 601,
+      "ground_model": "moving planar half-space at world z=-0.9 m on the expanded flow-domain bottom, with +x wall velocity 1 m/s",
+      "peak_vram_bytes": 29631500,
+      "physical_box_max_m": [
+        3.5,
+        1.2,
+        0.9
+      ],
+      "reynolds": 80.0,
+      "solver_length": 16.0,
+      "solver_time_unit_s": 0.05,
+      "solver_viscosity": 0.19999999999999996,
+      "stationarity_relative_half_window_drift_downforce": 1.0784224433974308e-05,
+      "stationarity_relative_half_window_drift_drag": 1.9809632758297544e-05,
+      "steps": 4808,
+      "t_end_reached": 120.0008773803711,
+      "t_end_target": 120.0,
+      "vram_total_bytes": 15636037632,
+      "wall_seconds": 32.9736590385437,
+      "window_samples": 200
+    },
+    "flow_16": {
+      "cd_time_weighted": 1.0500554059927338,
+      "downforce_time_weighted_n": 0.3533732402215731,
+      "drag_time_weighted_n": 0.3360177299176748,
+      "flow_dims": [
+        100,
+        48,
+        36
+      ],
+      "flow_origin_m": [
+        -2.5,
+        -1.2,
+        -0.9
+      ],
+      "flow_spacing_m": 0.05,
+      "force_samples": 601,
+      "ground_model": "moving planar half-space at world z=-0.9 m on the expanded flow-domain bottom, with +x wall velocity 1 m/s",
+      "peak_vram_bytes": 24928644,
+      "physical_box_max_m": [
+        2.5,
+        1.2,
+        0.9
+      ],
+      "reynolds": 80.0,
+      "solver_length": 16.0,
+      "solver_time_unit_s": 0.05,
+      "solver_viscosity": 0.19999999999999996,
+      "stationarity_relative_half_window_drift_downforce": 4.172623328584231e-06,
+      "stationarity_relative_half_window_drift_drag": 8.163573632285925e-06,
+      "steps": 4808,
+      "t_end_reached": 120.00193786621094,
+      "t_end_target": 120.0,
+      "vram_total_bytes": 15636037632,
+      "wall_seconds": 36.75817608833313,
+      "window_samples": 200
+    },
+    "flow_24": {
+      "cd_time_weighted": 1.1175623712824938,
+      "downforce_time_weighted_n": 0.35674766042338996,
+      "drag_time_weighted_n": 0.35761995881039804,
+      "flow_dims": [
+        150,
+        72,
+        54
+      ],
+      "flow_origin_m": [
+        -2.5,
+        -1.2,
+        -0.9
+      ],
+      "flow_spacing_m": 0.03333333333333333,
+      "force_samples": 1093,
+      "ground_model": "moving planar half-space at world z=-0.9 m on the expanded flow-domain bottom, with +x wall velocity 1 m/s",
+      "peak_vram_bytes": 81571960,
+      "physical_box_max_m": [
+        2.5,
+        1.2,
+        0.9
+      ],
+      "reynolds": 80.0,
+      "solver_length": 24.0,
+      "solver_time_unit_s": 0.03333333333333333,
+      "solver_viscosity": 0.3,
+      "stationarity_relative_half_window_drift_downforce": 1.168155374289611e-05,
+      "stationarity_relative_half_window_drift_drag": 2.0596414585137835e-06,
+      "steps": 8741,
+      "t_end_reached": 120.00933074951172,
+      "t_end_target": 120.0,
+      "vram_total_bytes": 15636037632,
+      "wall_seconds": 103.44651699066162,
+      "window_samples": 364
+    },
+    "flow_32": {
+      "cd_time_weighted": 1.2822039948280215,
+      "downforce_time_weighted_n": 0.41182016047259773,
+      "drag_time_weighted_n": 0.4103052783449669,
+      "flow_dims": [
+        200,
+        96,
+        72
+      ],
+      "flow_origin_m": [
+        -2.5,
+        -1.2,
+        -0.9
+      ],
+      "flow_spacing_m": 0.025,
+      "force_samples": 1692,
+      "ground_model": "moving planar half-space at world z=-0.9 m on the expanded flow-domain bottom, with +x wall velocity 1 m/s",
+      "peak_vram_bytes": 184394940,
+      "physical_box_max_m": [
+        2.5,
+        1.2,
+        0.9
+      ],
+      "reynolds": 80.0,
+      "solver_length": 32.0,
+      "solver_time_unit_s": 0.025,
+      "solver_viscosity": 0.3999999999999999,
+      "stationarity_relative_half_window_drift_downforce": 1.409059035999522e-06,
+      "stationarity_relative_half_window_drift_drag": 1.989388613409475e-06,
+      "steps": 13536,
+      "t_end_reached": 120.00504302978516,
+      "t_end_target": 120.0,
+      "vram_total_bytes": 15636037632,
+      "wall_seconds": 342.12651920318604,
+      "window_samples": 563
+    }
+  },
+  "claim_scope": "diagnostic-only: all four registered WaterLily primal cases completed, but W4 registered T3/T4 integrity gates failed in implementation checks; no W4 PASS or broader physical claim",
+  "criteria_path": "docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round3.json",
+  "criteria_sha256": "6cbe15769a8728c4f3ceba165ef75d6d11543c633c6651daafb8d6c901f8dfc6",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-v16-w4-sensitivity",
+  "dataset_version": 2,
+  "downloaded_kernel_log_path": "work/kaggle_w4_version2/output/cfd-opt-sdf-w4-v16-sensitivity.log",
+  "downloaded_kernel_log_sha256": "76325ce2abf666738faad65fc0f07641c5c76c5c8b92f27519741d13801ac705",
+  "exact_exception": "Traceback (most recent call last):\n  File \"/kaggle/src/script.py\", line 820, in <module>\n    main()\n  File \"/kaggle/src/script.py\", line 642, in main\n    raise RuntimeError(f\"W4 registered integrity gates failed: {gates}\")\nRuntimeError: W4 registered integrity gates failed: {'T0_registered_inputs_and_w3_pass': True, 'T1_registered_case_matrix_complete': True, 'T2_canonical_phi_and_margin_identity': True, 'T3_case_mapping_and_reynolds': False, 'T4_native_profile_limitation_preserved': False, 'T5_T4_Julia_CUDA_WaterLily_identity': True, 'T6_primal_completion_and_force_integrity': True, 'T7_host_force_recomputation': True, 'T8_runtime_and_vram': True, 'T9_exact_source_and_runner_identity': True, 'T10_stationarity': True}\n",
+  "failed_gates": [
+    "T3_case_mapping_and_reynolds",
+    "T4_native_profile_limitation_preserved"
+  ],
+  "failed_stage": "post-matrix acceptance gate evaluation, after all four primal runs and host-side metric recomputation, before DONE marker",
+  "failure_classification": "implementation defect in registered T3 box-maximum predicate plus T4 ground-model descriptor serialization; solver and raw measurements completed",
+  "force_component_closure_all_samples": {
+    "domain_xplus1m_16": {
+      "fx": true,
+      "fy": true,
+      "fz": true
+    },
+    "flow_16": {
+      "fx": true,
+      "fy": true,
+      "fz": true
+    },
+    "flow_24": {
+      "fx": true,
+      "fy": true,
+      "fz": true
+    },
+    "flow_32": {
+      "fx": true,
+      "fy": true,
+      "fz": true
+    }
+  },
+  "host_raw_force_recomputation_matches_runner_metrics": true,
+  "host_recomputation": {
+    "criteria_sidecar_and_prerequisites_verified": true,
+    "dataset_files_and_canonical_sdf_identity_verified": true,
+    "host_verifier_blocker": "required top-level DONE marker absent after runner rejected T3/T4",
+    "host_verifier_completed_pass_path": false,
+    "output_sha256_manifest_verified": true,
+    "raw_csv_total_pressure_viscous_closure_all_three_axes_all_rows": true,
+    "raw_csv_window_metrics_independently_recomputed": true,
+    "recomputed_gates_equal_kaggle_outcome": true,
+    "recomputed_metrics_equal_kaggle_outcome": true,
+    "source_inputs_match_registered_commit": true
+  },
+  "host_recomputed_metrics": {
+    "domain_xplus1m_16": {
+      "cd_time_weighted": 1.051172558166545,
+      "diagnostic_first_half_mean_downforce_solver": 141.28734944141047,
+      "diagnostic_first_half_mean_drag_solver": 134.5514274215501,
+      "diagnostic_second_half_mean_downforce_solver": 141.28886933459097,
+      "diagnostic_second_half_mean_drag_solver": 134.54876851935245,
+      "downforce_time_weighted_n": 0.3532202886640743,
+      "drag_time_weighted_n": 0.3363752186132944,
+      "stationarity_first_half_time_weighted_downforce_solver": 141.28735362425607,
+      "stationarity_first_half_time_weighted_drag_solver": 134.5514201392276,
+      "stationarity_relative_half_window_drift_downforce": 1.0784224433974308e-05,
+      "stationarity_relative_half_window_drift_drag": 1.9809632758297544e-05,
+      "stationarity_second_half_time_weighted_downforce_solver": 141.2888773070031,
+      "stationarity_second_half_time_weighted_drag_solver": 134.5487547514077,
+      "window_mean_downforce_solver": 141.28810938800072,
+      "window_mean_drag_solver": 134.55009797045128,
+      "window_samples": 200,
+      "window_time_weighted_downforce_solver": 141.2881154656297,
+      "window_time_weighted_drag_solver": 134.55008744531773,
+      "window_time_weighted_fx_solver": 134.55008744531773,
+      "window_time_weighted_fy_solver": -0.45181949670270366,
+      "window_time_weighted_fz_solver": -141.2881154656297,
+      "window_time_weighted_pressure_fx_solver": 91.38902094974159,
+      "window_time_weighted_pressure_fy_solver": -0.6580652446517391,
+      "window_time_weighted_pressure_fz_solver": -144.86889565341238,
+      "window_time_weighted_viscous_fx_solver": 43.16106649557603,
+      "window_time_weighted_viscous_fy_solver": 0.20624574794903575,
+      "window_time_weighted_viscous_fz_solver": 3.5807801877827607
+    },
+    "flow_16": {
+      "cd_time_weighted": 1.0500554059927338,
+      "diagnostic_first_half_mean_downforce_solver": 141.34899454001277,
+      "diagnostic_first_half_mean_drag_solver": 134.40765232580364,
+      "diagnostic_second_half_mean_downforce_solver": 141.34959595112412,
+      "diagnostic_second_half_mean_drag_solver": 134.40653467315155,
+      "downforce_time_weighted_n": 0.3533732402215731,
+      "drag_time_weighted_n": 0.3360177299176748,
+      "stationarity_first_half_time_weighted_downforce_solver": 141.349001189944,
+      "stationarity_first_half_time_weighted_drag_solver": 134.40764058816586,
+      "stationarity_relative_half_window_drift_downforce": 4.172623328584231e-06,
+      "stationarity_relative_half_window_drift_drag": 8.163573632285925e-06,
+      "stationarity_second_half_time_weighted_downforce_solver": 141.34959098731434,
+      "stationarity_second_half_time_weighted_drag_solver": 134.4065433459739,
+      "window_mean_downforce_solver": 141.34929524556844,
+      "window_mean_drag_solver": 134.40709349947758,
+      "window_samples": 200,
+      "window_time_weighted_downforce_solver": 141.34929608862922,
+      "window_time_weighted_drag_solver": 134.4070919670699,
+      "window_time_weighted_fx_solver": 134.4070919670699,
+      "window_time_weighted_fy_solver": -0.45878104979081236,
+      "window_time_weighted_fz_solver": -141.34929608862922,
+      "window_time_weighted_pressure_fx_solver": 91.25007667900528,
+      "window_time_weighted_pressure_fy_solver": -0.6650381946198055,
+      "window_time_weighted_pressure_fz_solver": -144.92899724867567,
+      "window_time_weighted_viscous_fx_solver": 43.15701528806457,
+      "window_time_weighted_viscous_fy_solver": 0.20625714482899338,
+      "window_time_weighted_viscous_fz_solver": 3.5797011600464343
+    },
+    "flow_24": {
+      "cd_time_weighted": 1.1175623712824938,
+      "diagnostic_first_half_mean_downforce_solver": 321.0747715133699,
+      "diagnostic_first_half_mean_drag_solver": 321.85829467664166,
+      "diagnostic_second_half_mean_downforce_solver": 321.0710197645674,
+      "diagnostic_second_half_mean_drag_solver": 321.8576316252617,
+      "downforce_time_weighted_n": 0.35674766042338996,
+      "drag_time_weighted_n": 0.35761995881039804,
+      "stationarity_first_half_time_weighted_downforce_solver": 321.07476969618654,
+      "stationarity_first_half_time_weighted_drag_solver": 321.85829438536,
+      "stationarity_relative_half_window_drift_downforce": 1.168155374289611e-05,
+      "stationarity_relative_half_window_drift_drag": 2.0596414585137835e-06,
+      "stationarity_second_half_time_weighted_downforce_solver": 321.07101906591544,
+      "stationarity_second_half_time_weighted_drag_solver": 321.8576314733558,
+      "window_mean_downforce_solver": 321.07289563896865,
+      "window_mean_drag_solver": 321.8579631509517,
+      "window_samples": 364,
+      "window_time_weighted_downforce_solver": 321.07289438105096,
+      "window_time_weighted_drag_solver": 321.8579629293582,
+      "window_time_weighted_fx_solver": 321.8579629293582,
+      "window_time_weighted_fy_solver": 5.678310998826662,
+      "window_time_weighted_fz_solver": -321.07289438105096,
+      "window_time_weighted_pressure_fx_solver": 222.136465868405,
+      "window_time_weighted_pressure_fy_solver": 4.468083027620805,
+      "window_time_weighted_pressure_fz_solver": -328.04468568307107,
+      "window_time_weighted_viscous_fx_solver": 99.72149706095308,
+      "window_time_weighted_viscous_fy_solver": 1.2102279712058621,
+      "window_time_weighted_viscous_fz_solver": 6.971791302020213
+    },
+    "flow_32": {
+      "cd_time_weighted": 1.2822039948280215,
+      "diagnostic_first_half_mean_downforce_solver": 658.9127175566724,
+      "diagnostic_first_half_mean_drag_solver": 656.4877973293445,
+      "diagnostic_second_half_mean_downforce_solver": 658.9117960340897,
+      "diagnostic_second_half_mean_drag_solver": 656.4890933857376,
+      "downforce_time_weighted_n": 0.41182016047259773,
+      "drag_time_weighted_n": 0.4103052783449669,
+      "stationarity_first_half_time_weighted_downforce_solver": 658.91272097929,
+      "stationarity_first_half_time_weighted_drag_solver": 656.4877923466277,
+      "stationarity_relative_half_window_drift_downforce": 1.409059035999522e-06,
+      "stationarity_relative_half_window_drift_drag": 1.989388613409475e-06,
+      "stationarity_second_half_time_weighted_downforce_solver": 658.9117925330207,
+      "stationarity_second_half_time_weighted_drag_solver": 656.4890983572657,
+      "window_mean_downforce_solver": 658.9122576137847,
+      "window_mean_drag_solver": 656.4884442065141,
+      "window_samples": 563,
+      "window_time_weighted_downforce_solver": 658.9122567561562,
+      "window_time_weighted_drag_solver": 656.4884453519469,
+      "window_time_weighted_fx_solver": 656.4884453519469,
+      "window_time_weighted_fy_solver": -1.9461667608284312,
+      "window_time_weighted_fz_solver": -658.9122567561562,
+      "window_time_weighted_pressure_fx_solver": 455.8694777639551,
+      "window_time_weighted_pressure_fy_solver": -3.3110483709126095,
+      "window_time_weighted_pressure_fz_solver": -668.5031789439802,
+      "window_time_weighted_viscous_fx_solver": 200.61896758799213,
+      "window_time_weighted_viscous_fy_solver": 1.3648816100841785,
+      "window_time_weighted_viscous_fz_solver": 9.590922187824521
+    }
+  },
+  "host_verifier_failure": "ValueError: Kaggle W4 completion marker missing",
+  "host_verifier_output_path": "work/kaggle_w4_version2/host_verifier_output.txt",
+  "host_verifier_output_sha256": "066b0168ad65c3b6af12e491a82e2213e83f0696166a48d4ec9866d29a35f2a2",
+  "host_verifier_return_code": 1,
+  "input_and_output_integrity": {
+    "all_output_payload_hashes_match_manifest": true,
+    "dataset_cpu_margin_m": 0.3499999939931499,
+    "dataset_identity_verified": true,
+    "error_file_sha256": "f65d13aa85d10fa0c1c6eb90013d27595beec4152b390762bcda2f1012d0c36c",
+    "execution_state_sha256": "d1847eda75e1d8739a13ded56944a56b0f4f2811a7a5d3372ae3d282d348d2cf",
+    "fingerprint_sha256": "448ca83050c7d796694337f29d848ba6d0d6a084ab3b723e425d974dbe4b45a3",
+    "outcome_sha256": "33c65ce55e77dc1344e3f7e881e0282f0ee3fc01ccc4bdfe99092f987ed48c32",
+    "output_manifest_file_count": 25,
+    "output_manifest_inventory_matches": true,
+    "output_manifest_sha256": "e9f70c36618c5dda3562dcc9557c390e648718da03404e8c298a580b45b11db9",
+    "output_payload_sha256": {
+      "ERROR.txt": "f65d13aa85d10fa0c1c6eb90013d27595beec4152b390762bcda2f1012d0c36c",
+      "W4_JOB_DONE": "8b6c56703327042593f0336a62ae46e9ac266eddc318d2910e0577a589d0c78e",
+      "domain_xplus1m_16.forces.csv": "d24d0da685f9b7661f59914a4db9c6fd4ce8499b168893b26836e2468d9c2ec2",
+      "domain_xplus1m_16.summary.json": "79c544ddcdc5e7240aa6d96ee36441920b17a76add462e28d4a908dc474e17f7",
+      "execution_state.json": "d1847eda75e1d8739a13ded56944a56b0f4f2811a7a5d3372ae3d282d348d2cf",
+      "fingerprint.json": "448ca83050c7d796694337f29d848ba6d0d6a084ab3b723e425d974dbe4b45a3",
+      "flow_16.forces.csv": "3e53ad09fd3d88bf1d8c71feb5f5de9dad05efcc5dce3dcbd54d19f89f5ff5bb",
+      "flow_16.summary.json": "f426aaf02cfcc09bf880bc78580d8f21dcdbc193e7bd1f067f04e643e43f78b3",
+      "flow_24.forces.csv": "b65300d7361736eb334582ceb60d8993020001d6c447bb17cb87fa267aa314dc",
+      "flow_24.summary.json": "4b0e26aa29e09383fc30cf9f0ecf0446389c768613f81f72e5d306943f744840",
+      "flow_32.forces.csv": "5f73ff8a7a8fbf8bcbd436d22f7db2eb443ff865703f29af4ae398d69f4257ef",
+      "flow_32.summary.json": "a85ffc3678dee1f7727256ead0b1812e6751e79f927d8438062891b168fca64d",
+      "git_checkout.log": "111656ac4a9b7d0ab45b93eb83c8842b611b9d174aa32a7ad5e46b85350931d7",
+      "git_fetch.log": "f787ad9fb708b5f6ad6860e5d5bf36a96a9a74bdc3bb9d7b611ee9feed4ff784",
+      "git_init.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "input_criteria.json": "6cbe15769a8728c4f3ceba165ef75d6d11543c633c6651daafb8d6c901f8dfc6",
+      "input_criteria.json.sha256": "3ee3e0dbf0fb055eec78517d8bd8a20da4052594bc513ff65645ddd6da845c40",
+      "input_dataset_manifest.json": "0215f60cbb9ab567ae2b79d2f03d29b3e1eb532adc060f96af71e289f49e49e7",
+      "input_state_metadata.json": "bff9f425abdda70d2804547aecb8b48d08c847b91fe1e6da876e3f4ee41ee2a9",
+      "instantiate.log": "0d6edc7c00b56aed978c09961502dce32a4292069098b6c398d975847dbcd9f0",
+      "julia_extract.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "julia_smoke.log": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+      "nvidia_smi.csv": "328dca17ea4f968426d3b3cd949132ba8c8569e8d2fcb192aa725ff9d028861a",
+      "outcome.json": "33c65ce55e77dc1344e3f7e881e0282f0ee3fc01ccc4bdfe99092f987ed48c32",
+      "w4_v16.log": "71a3a207b7dafe253a8bed496c3ecc4baa9401125d75b5fa731403a960f5186f"
+    },
+    "remote_dataset_inventory_audit_sha256": "e281ab7ad3e3025d89f4084b18b5ad900365f608d8a51bfc9109583608271a56",
+    "remote_dataset_manifest_sha256": "0215f60cbb9ab567ae2b79d2f03d29b3e1eb532adc060f96af71e289f49e49e7",
+    "solver_output_marker": "W4_JOB_DONE present; top-level acceptance marker DONE absent because T3/T4 gates failed",
+    "source_identity_verified": true
+  },
+  "integrity_gates_host_recomputed": {
+    "T0_registered_inputs_and_w3_pass": true,
+    "T10_stationarity": true,
+    "T1_registered_case_matrix_complete": true,
+    "T2_canonical_phi_and_margin_identity": true,
+    "T3_case_mapping_and_reynolds": false,
+    "T4_native_profile_limitation_preserved": false,
+    "T5_T4_Julia_CUDA_WaterLily_identity": true,
+    "T6_primal_completion_and_force_integrity": true,
+    "T7_host_force_recomputation": true,
+    "T8_runtime_and_vram": true,
+    "T9_exact_source_and_runner_identity": true
+  },
+  "kaggle_log_path": "work/kaggle_w4_version2/kaggle.log",
+  "kaggle_log_sha256": "632ea975d88c85ec0942d0453182350ff8a15a3e1d87dda8d90a58f4908beeb6",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w4-v16-sensitivity",
+  "kernel_version": 2,
+  "kind": "kaggle_w4_v16_sensitivity_round3_kernel2_diagnostic",
+  "qualification_flags": {
+    "absolute_downforce_qualified": false,
+    "gradient_qualified": false,
+    "grid_or_domain_convergence_qualified": false,
+    "grid_or_domain_sensitivity_qualified": false,
+    "optimizer_qualified": false,
+    "physical_profile_equivalence_qualified": false,
+    "physical_profile_qualified": false,
+    "reverse_mode_qualified": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "stationarity_qualified": false,
+    "topology_birth_qualified": false,
+    "topology_qualified": false,
+    "w4_sensitivity_matrix_passed": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false
+  },
+  "raw_force_csv_sha256": {
+    "domain_xplus1m_16": "d24d0da685f9b7661f59914a4db9c6fd4ce8499b168893b26836e2468d9c2ec2",
+    "flow_16": "3e53ad09fd3d88bf1d8c71feb5f5de9dad05efcc5dce3dcbd54d19f89f5ff5bb",
+    "flow_24": "b65300d7361736eb334582ceb60d8993020001d6c447bb17cb87fa267aa314dc",
+    "flow_32": "5f73ff8a7a8fbf8bcbd436d22f7db2eb443ff865703f29af4ae398d69f4257ef"
+  },
+  "recorded_at_utc": "2026-09-28T15:50:40.928564+00:00",
+  "remote_dataset_inventory_audit_sha256": "e281ab7ad3e3025d89f4084b18b5ad900365f608d8a51bfc9109583608271a56",
+  "remote_dataset_manifest_sha256": "0215f60cbb9ab567ae2b79d2f03d29b3e1eb532adc060f96af71e289f49e49e7",
+  "response_analysis_host_recomputed": {
+    "any_force_component_requires_extended_domain_fine_grid": false,
+    "downforce_time_weighted_n": {
+      "domain_delta_abs_n": 0.00015295155749883715,
+      "domain_delta_relative": 0.0004328328806191805,
+      "extended_domain_fine_grid_required": false,
+      "resolution_delta_abs_n": 0.05507250004920777,
+      "resolution_delta_relative": 0.13372949004246787
+    },
+    "drag_time_weighted_n": {
+      "domain_delta_abs_n": 0.00035748869561957886,
+      "domain_delta_relative": 0.0010627676351822964,
+      "extended_domain_fine_grid_required": false,
+      "resolution_delta_abs_n": 0.05268531953456884,
+      "resolution_delta_relative": 0.12840517125951598
+    }
+  },
+  "schema_version": 1,
+  "solver_started": true,
+  "solver_step_count_total": 31893,
+  "solver_step_invoked": [
+    "flow_16",
+    "flow_24",
+    "flow_32",
+    "domain_xplus1m_16"
+  ],
+  "solver_step_returned": [
+    "flow_16",
+    "flow_24",
+    "flow_32",
+    "domain_xplus1m_16"
+  ],
+  "solver_steps_by_case": {
+    "domain_xplus1m_16": 4808,
+    "flow_16": 4808,
+    "flow_24": 8741,
+    "flow_32": 13536
+  },
+  "source_commit": "6d4608f39d2937ced96dd934b6be1cf61b4aa150",
+  "t3_diagnostic": {
+    "cases": [
+      {
+        "case_id": "flow_16",
+        "registered_expected_physical_box_max_vector": [
+          2.5,
+          1.2,
+          0.9
+        ],
+        "reported_matches_registered_expected_vector": true,
+        "reported_physical_box_max_m": [
+          2.5,
+          1.2,
+          0.9
+        ],
+        "runner_comparison_value_using_case_box_index_1": [
+          -1.2,
+          1.2
+        ]
+      },
+      {
+        "case_id": "flow_24",
+        "registered_expected_physical_box_max_vector": [
+          2.5,
+          1.2,
+          0.9
+        ],
+        "reported_matches_registered_expected_vector": true,
+        "reported_physical_box_max_m": [
+          2.5,
+          1.2,
+          0.9
+        ],
+        "runner_comparison_value_using_case_box_index_1": [
+          -1.2,
+          1.2
+        ]
+      },
+      {
+        "case_id": "flow_32",
+        "registered_expected_physical_box_max_vector": [
+          2.5,
+          1.2,
+          0.9
+        ],
+        "reported_matches_registered_expected_vector": true,
+        "reported_physical_box_max_m": [
+          2.5,
+          1.2,
+          0.9
+        ],
+        "runner_comparison_value_using_case_box_index_1": [
+          -1.2,
+          1.2
+        ]
+      },
+      {
+        "case_id": "domain_xplus1m_16",
+        "registered_expected_physical_box_max_vector": [
+          3.5,
+          1.2,
+          0.9
+        ],
+        "reported_matches_registered_expected_vector": true,
+        "reported_physical_box_max_m": [
+          3.5,
+          1.2,
+          0.9
+        ],
+        "runner_comparison_value_using_case_box_index_1": [
+          -1.2,
+          1.2
+        ]
+      }
+    ],
+    "predicate": "summary.physical_box_max_m == case.physical_box_m[1]",
+    "problem": "case.physical_box_m[1] is the y-axis interval, not the xyz maximum vector"
+  },
+  "t4_field_comparison": {
+    "domain_xplus1m_16": {
+      "force_integration_body": {
+        "matches": true,
+        "observed": "canonical v16 candidate GridSDF only; exclude auxiliary moving-ground half-space",
+        "registered": "canonical v16 candidate GridSDF only; exclude auxiliary moving-ground half-space"
+      },
+      "ground_model": {
+        "matches": false,
+        "observed": "moving planar half-space at world z=-0.9 m on the expanded flow-domain bottom, with +x wall velocity 1 m/s",
+        "registered": "moving planar half-space on the expanded flow-domain bottom at world z=-0.9 m, with +x wall velocity 1 m/s"
+      },
+      "native_velocity_boundary": {
+        "matches": true,
+        "observed": "v16_native_far_field_uBC: +x freestream velocity 1 m/s; other normal components zero",
+        "registered": "v16_native_far_field_uBC: +x freestream velocity 1 m/s; other normal components zero"
+      },
+      "pressure_boundary": {
+        "matches": true,
+        "observed": "WaterLily projection pressure; no per-patch freestreamPressure input",
+        "registered": "WaterLily projection pressure; no per-patch freestreamPressure input"
+      },
+      "side_top_tangential_boundary": {
+        "matches": true,
+        "observed": "WaterLily native tangential zero-Neumann",
+        "registered": "WaterLily native tangential zero-Neumann"
+      },
+      "x_max_boundary": {
+        "matches": true,
+        "observed": "WaterLily convective exit",
+        "registered": "WaterLily convective exit"
+      }
+    },
+    "flow_16": {
+      "force_integration_body": {
+        "matches": true,
+        "observed": "canonical v16 candidate GridSDF only; exclude auxiliary moving-ground half-space",
+        "registered": "canonical v16 candidate GridSDF only; exclude auxiliary moving-ground half-space"
+      },
+      "ground_model": {
+        "matches": false,
+        "observed": "moving planar half-space at world z=-0.9 m on the expanded flow-domain bottom, with +x wall velocity 1 m/s",
+        "registered": "moving planar half-space on the expanded flow-domain bottom at world z=-0.9 m, with +x wall velocity 1 m/s"
+      },
+      "native_velocity_boundary": {
+        "matches": true,
+        "observed": "v16_native_far_field_uBC: +x freestream velocity 1 m/s; other normal components zero",
+        "registered": "v16_native_far_field_uBC: +x freestream velocity 1 m/s; other normal components zero"
+      },
+      "pressure_boundary": {
+        "matches": true,
+        "observed": "WaterLily projection pressure; no per-patch freestreamPressure input",
+        "registered": "WaterLily projection pressure; no per-patch freestreamPressure input"
+      },
+      "side_top_tangential_boundary": {
+        "matches": true,
+        "observed": "WaterLily native tangential zero-Neumann",
+        "registered": "WaterLily native tangential zero-Neumann"
+      },
+      "x_max_boundary": {
+        "matches": true,
+        "observed": "WaterLily convective exit",
+        "registered": "WaterLily convective exit"
+      }
+    },
+    "flow_24": {
+      "force_integration_body": {
+        "matches": true,
+        "observed": "canonical v16 candidate GridSDF only; exclude auxiliary moving-ground half-space",
+        "registered": "canonical v16 candidate GridSDF only; exclude auxiliary moving-ground half-space"
+      },
+      "ground_model": {
+        "matches": false,
+        "observed": "moving planar half-space at world z=-0.9 m on the expanded flow-domain bottom, with +x wall velocity 1 m/s",
+        "registered": "moving planar half-space on the expanded flow-domain bottom at world z=-0.9 m, with +x wall velocity 1 m/s"
+      },
+      "native_velocity_boundary": {
+        "matches": true,
+        "observed": "v16_native_far_field_uBC: +x freestream velocity 1 m/s; other normal components zero",
+        "registered": "v16_native_far_field_uBC: +x freestream velocity 1 m/s; other normal components zero"
+      },
+      "pressure_boundary": {
+        "matches": true,
+        "observed": "WaterLily projection pressure; no per-patch freestreamPressure input",
+        "registered": "WaterLily projection pressure; no per-patch freestreamPressure input"
+      },
+      "side_top_tangential_boundary": {
+        "matches": true,
+        "observed": "WaterLily native tangential zero-Neumann",
+        "registered": "WaterLily native tangential zero-Neumann"
+      },
+      "x_max_boundary": {
+        "matches": true,
+        "observed": "WaterLily convective exit",
+        "registered": "WaterLily convective exit"
+      }
+    },
+    "flow_32": {
+      "force_integration_body": {
+        "matches": true,
+        "observed": "canonical v16 candidate GridSDF only; exclude auxiliary moving-ground half-space",
+        "registered": "canonical v16 candidate GridSDF only; exclude auxiliary moving-ground half-space"
+      },
+      "ground_model": {
+        "matches": false,
+        "observed": "moving planar half-space at world z=-0.9 m on the expanded flow-domain bottom, with +x wall velocity 1 m/s",
+        "registered": "moving planar half-space on the expanded flow-domain bottom at world z=-0.9 m, with +x wall velocity 1 m/s"
+      },
+      "native_velocity_boundary": {
+        "matches": true,
+        "observed": "v16_native_far_field_uBC: +x freestream velocity 1 m/s; other normal components zero",
+        "registered": "v16_native_far_field_uBC: +x freestream velocity 1 m/s; other normal components zero"
+      },
+      "pressure_boundary": {
+        "matches": true,
+        "observed": "WaterLily projection pressure; no per-patch freestreamPressure input",
+        "registered": "WaterLily projection pressure; no per-patch freestreamPressure input"
+      },
+      "side_top_tangential_boundary": {
+        "matches": true,
+        "observed": "WaterLily native tangential zero-Neumann",
+        "registered": "WaterLily native tangential zero-Neumann"
+      },
+      "x_max_boundary": {
+        "matches": true,
+        "observed": "WaterLily convective exit",
+        "registered": "WaterLily convective exit"
+      }
+    }
+  },
+  "terminal_status": "KernelWorkerStatus.ERROR",
+  "terminal_status_path": "work/kaggle_w4_version2/status_terminal.txt",
+  "terminal_status_sha256": "aa2cd16390695ae2a44ec7b099ae5de585974c2e916d851545ba9e122357988a",
+  "thresholds_changed_after_measurement": false,
+  "w3_flow16_comparison_host_recomputed": {
+    "cd_time_weighted": {
+      "absolute_delta": 0.0,
+      "delta_w4_minus_w3": 0.0,
+      "relative_delta": 0.0,
+      "w3_round4": 1.0500554059927338,
+      "w4_flow_16": 1.0500554059927338
+    },
+    "downforce_time_weighted_n": {
+      "absolute_delta": 0.0,
+      "delta_w4_minus_w3": 0.0,
+      "relative_delta": 0.0,
+      "w3_round4": 0.3533732402215731,
+      "w4_flow_16": 0.3533732402215731
+    },
+    "drag_time_weighted_n": {
+      "absolute_delta": 0.0,
+      "delta_w4_minus_w3": 0.0,
+      "relative_delta": 0.0,
+      "w3_round4": 0.3360177299176748,
+      "w4_flow_16": 0.3360177299176748
+    },
+    "force_projection_semantics": "drag=+Fx; downforce=-Fz",
+    "force_sign": {
+      "w3_round4": 1.0,
+      "w4_flow_16": 1.0
+    },
+    "force_sign_consistent": true,
+    "interpretation_if_force_sign_differs": "stop matrix interpretation and diagnose before FD",
+    "interpretation_rule": "report all W3 round-4 to W4 flow_16 deltas; if drag force sign differs, stop matrix interpretation and diagnose before FD",
+    "numerical_repeatability_gate_registered": false,
+    "stationarity_relative_half_window_drift_downforce": {
+      "absolute_delta": 0.0,
+      "delta_w4_minus_w3": 0.0,
+      "relative_delta": 0.0,
+      "w3_round4": 4.172623328584231e-06,
+      "w4_flow_16": 4.172623328584231e-06
+    },
+    "stationarity_relative_half_window_drift_drag": {
+      "absolute_delta": 0.0,
+      "delta_w4_minus_w3": 0.0,
+      "relative_delta": 0.0,
+      "w3_round4": 8.163573632285925e-06,
+      "w4_flow_16": 8.163573632285925e-06
+    },
+    "steps": {
+      "w3_round4": 4808,
+      "w4_flow_16": 4808
+    },
+    "t_u_l": {
+      "w3_round4": 120.00193786621094,
+      "w4_flow_16": 120.00193786621094
+    }
+  }
+}

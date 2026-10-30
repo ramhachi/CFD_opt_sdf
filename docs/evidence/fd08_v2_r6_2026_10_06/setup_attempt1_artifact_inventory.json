@@ -1,0 +1,133 @@
+{
+  "archive": "setup_attempt1_artifacts.tar.gz",
+  "archive_sha256": "0a0f3e7fcb8b635da59ca4d05b8e24372ee5bbf9cc7baea013c9e26046abed65",
+  "file_count": 25,
+  "files": [
+    {
+      "path": "attempt_rejection.json",
+      "sha256": "06821952b6b1bafb6dc6cf14317da71f44e4fe8e8ed3f23f8723345f13eb310a",
+      "size_bytes": 1668
+    },
+    {
+      "path": "attempt_rejection.json.sha256",
+      "sha256": "2d74ddcbdb597853f92f87ddf8cc282504c07f1fc461cc1c088dc56d43bb6efd",
+      "size_bytes": 65
+    },
+    {
+      "path": "download/cfd-opt-sdf-fd08-v2-r6-and-formal.log",
+      "sha256": "3ecac23eee0d0d66baa8a54f2eace4a16ee9ebe68bd3a68b7c861ac0d9a53f56",
+      "size_bytes": 2819
+    },
+    {
+      "path": "download/fd08_v2_setup_rehearsal/DONE",
+      "sha256": "c9be0b73bc6a0dd3bf2588de1c7874fdd015b027eedb0ba3e3672fca394c815c",
+      "size_bytes": 210
+    },
+    {
+      "path": "download/fd08_v2_setup_rehearsal/execution_state.json",
+      "sha256": "cf2558342f337d5d69ec4c17ebe22f4faa76ef06b61378c01ce4ce40443f42c8",
+      "size_bytes": 35
+    },
+    {
+      "path": "download/fd08_v2_setup_rehearsal/git_checkout.log",
+      "sha256": "73a823d94a8d361f42fca0074bc2308018de96a2f854c79427a3b44765c01577",
+      "size_bytes": 61
+    },
+    {
+      "path": "download/fd08_v2_setup_rehearsal/git_fetch.log",
+      "sha256": "f787ad9fb708b5f6ad6860e5d5bf36a96a9a74bdc3bb9d7b611ee9feed4ff784",
+      "size_bytes": 109
+    },
+    {
+      "path": "download/fd08_v2_setup_rehearsal/git_init.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "download/fd08_v2_setup_rehearsal/instantiate.log",
+      "sha256": "f89b1f1a7c14ed939655cfb357c4f200c5c3b9c3ffb149e560624d0da81161e9",
+      "size_bytes": 1749
+    },
+    {
+      "path": "download/fd08_v2_setup_rehearsal/julia_extract.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "download/fd08_v2_setup_rehearsal/julia_smoke.log",
+      "sha256": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+      "size_bytes": 308
+    },
+    {
+      "path": "download/fd08_v2_setup_rehearsal/nvidia_smi.csv",
+      "sha256": "01d0a5af65b915efef1b459ecb49ac888c099ad061e3554e34c40e91ee9ef422",
+      "size_bytes": 154
+    },
+    {
+      "path": "download/fd08_v2_setup_rehearsal/result.json",
+      "sha256": "d2336c0f26443d17f3af55f3fb71a7a0b40f50394fe7d83febce0758b491da46",
+      "size_bytes": 3736
+    },
+    {
+      "path": "download/fd08_v2_setup_rehearsal/sha256.json",
+      "sha256": "a690e01da8557381a72c5fdd2e0b48ead7b0175998d5c2281a2b90cddeac1d57",
+      "size_bytes": 1252
+    },
+    {
+      "path": "download/fd08_v2_setup_rehearsal/states/P1_upstream_lobe__e0.5mm__plus/setup.json",
+      "sha256": "8e60102bf0e5c7f8795565a59f201803ce550781e5ff6b14761d2e8ccd249cb5",
+      "size_bytes": 563
+    },
+    {
+      "path": "download/fd08_v2_setup_rehearsal/states/P1_upstream_lobe__e0.5mm__plus/setup.log",
+      "sha256": "4b478d73053f9cfde14a75aa001ade3cbb2c61ae93461d4c98e93a7a41226a59",
+      "size_bytes": 582
+    },
+    {
+      "path": "download/fd08_v2_setup_rehearsal/states/baseline_v17/setup.json",
+      "sha256": "b6052fcd5759656d30ca34b3e534009922c10fe5d04ab4b85ea628a651160b90",
+      "size_bytes": 562
+    },
+    {
+      "path": "download/fd08_v2_setup_rehearsal/states/baseline_v17/setup.log",
+      "sha256": "fea14e1fa4ae464ddd790af627d4e25e42026dfae4dd9e4adb5c8d5911149c94",
+      "size_bytes": 581
+    },
+    {
+      "path": "logs.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "logs.stdout",
+      "sha256": "37e16e1852005ef14e50253a5f7713995ba8e66ab3e7ff0c1e58c798ddae4e47",
+      "size_bytes": 2820
+    },
+    {
+      "path": "output.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "output.stdout",
+      "sha256": "48147b02e3246defbf04bd923e9c00354fad926372173cee9a8e861736e879c9",
+      "size_bytes": 1835
+    },
+    {
+      "path": "status.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "status.stdout",
+      "sha256": "4cb0faab6bfb4819cddaccb3750bf884e7e8217111fb1f3df021f23d9b2134ed",
+      "size_bytes": 89
+    },
+    {
+      "path": "submitted_kernel-metadata.json",
+      "sha256": "6afe6762836df81fe128beed8cd416733bfa8fbda8cdbc59ce61e8fb9e837e54",
+      "size_bytes": 428
+    }
+  ],
+  "kind": "fd08_v2_setup_attempt_artifact_archive"
+}

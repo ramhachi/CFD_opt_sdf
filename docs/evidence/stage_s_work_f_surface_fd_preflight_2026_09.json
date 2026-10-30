@@ -1,0 +1,189 @@
+{
+  "baseline": {
+    "path": "docs/evidence/stage_s_baseline_v16_v2_2026_09.json",
+    "sha256": "a6d40a5c25d9a4ca44aaf1c4d9a7b667d6d33fcfeed45d4b7e2b3cdb049abed6"
+  },
+  "catalog": {
+    "path": "docs/evidence/stage_s_work_f_surface_fd_catalog_2026_09.json",
+    "sha256": "e4cdbe437eaa32dc752ad603a5d921aa94a4a47511e4a0403ead58ac49d5b4a8"
+  },
+  "claims_not_supported": [
+    "no adjoint, perturbation primal or FD value exists yet",
+    "the per-direction mesh/solver preflight still runs after the base adjoint"
+  ],
+  "claims_supported": [
+    "every registered epsilon stays geometrically feasible under the conservative uniform normal offset in both signs"
+  ],
+  "grid": {
+    "bounds": [
+      [
+        -1.0,
+        -0.8,
+        -0.6
+      ],
+      [
+        2.0,
+        0.8,
+        0.6000000000000002
+      ]
+    ],
+    "cell_count": 46080,
+    "cell_order": "vtk-x-fastest",
+    "cell_shape": [
+      60,
+      32,
+      24
+    ],
+    "location": "cell",
+    "origin": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "point_dimensions": [
+      61,
+      33,
+      25
+    ],
+    "spacing": [
+      0.05,
+      0.05,
+      0.05
+    ]
+  },
+  "kind": "stage_s_work_f_surface_fd_preflight",
+  "schema_version": 1,
+  "summary": {
+    "campaign_allowed": true,
+    "preflight_pass": true,
+    "solver_started": false
+  },
+  "surface_stl": {
+    "path": "work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl",
+    "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+  },
+  "worst_case_checks": {
+    "all_pass": true,
+    "baseline_volume_m3": 0.1292499984670429,
+    "epsilons_m": [
+      0.0001,
+      0.00025,
+      0.0005,
+      0.001
+    ],
+    "rows": {
+      "0.0001_minus": {
+        "clearance_qualified": true,
+        "clearance_reasons": [],
+        "epsilon_m": 0.0001,
+        "minimum_solid_width_m": 0.05,
+        "pass": true,
+        "positive_volume": true,
+        "self_intersection": "none",
+        "sign": "minus",
+        "volume_m3": 0.12898004402311544,
+        "volume_relative_difference": 0.0020886224149263876,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "0.0001_plus": {
+        "clearance_qualified": true,
+        "clearance_reasons": [],
+        "epsilon_m": 0.0001,
+        "minimum_solid_width_m": 0.05,
+        "pass": true,
+        "positive_volume": true,
+        "self_intersection": "none",
+        "sign": "plus",
+        "volume_m3": 0.1295200693555805,
+        "volume_relative_difference": 0.0020895233403538695,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "0.00025_minus": {
+        "clearance_qualified": true,
+        "clearance_reasons": [],
+        "epsilon_m": 0.00025,
+        "minimum_solid_width_m": 0.05,
+        "pass": true,
+        "positive_volume": true,
+        "self_intersection": "none",
+        "sign": "minus",
+        "volume_m3": 0.1285753306533627,
+        "volume_relative_difference": 0.005219867092317437,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "0.00025_plus": {
+        "clearance_qualified": true,
+        "clearance_reasons": [],
+        "epsilon_m": 0.00025,
+        "minimum_solid_width_m": 0.05,
+        "pass": true,
+        "positive_volume": true,
+        "self_intersection": "none",
+        "sign": "plus",
+        "volume_m3": 0.12992539405953618,
+        "volume_relative_difference": 0.005225497876237803,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "0.0005_minus": {
+        "clearance_qualified": true,
+        "clearance_reasons": [],
+        "epsilon_m": 0.0005,
+        "minimum_solid_width_m": 0.05,
+        "pass": true,
+        "positive_volume": true,
+        "self_intersection": "none",
+        "sign": "minus",
+        "volume_m3": 0.12790139035059966,
+        "volume_relative_difference": 0.010434105473410298,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "0.0005_plus": {
+        "clearance_qualified": true,
+        "clearance_reasons": [],
+        "epsilon_m": 0.0005,
+        "minimum_solid_width_m": 0.05,
+        "pass": true,
+        "positive_volume": true,
+        "self_intersection": "none",
+        "sign": "plus",
+        "volume_m3": 0.13060151769873843,
+        "volume_relative_difference": 0.010456628609091545,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "0.001_minus": {
+        "clearance_qualified": true,
+        "clearance_reasons": [],
+        "epsilon_m": 0.001,
+        "minimum_solid_width_m": 0.05,
+        "pass": true,
+        "positive_volume": true,
+        "self_intersection": "none",
+        "sign": "minus",
+        "volume_m3": 0.12655569120624163,
+        "volume_relative_difference": 0.020845704392702877,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "0.001_plus": {
+        "clearance_qualified": true,
+        "clearance_reasons": [],
+        "epsilon_m": 0.001,
+        "minimum_solid_width_m": 0.05,
+        "pass": true,
+        "positive_volume": true,
+        "self_intersection": "none",
+        "sign": "plus",
+        "volume_m3": 0.13195595018885314,
+        "volume_relative_difference": 0.020935796935426795,
+        "watertight": true,
+        "winding_consistent": true
+      }
+    }
+  }
+}

@@ -1,0 +1,257 @@
+{
+ "all_pass": true,
+ "all_same_bytes_as_states_json": true,
+ "gate_stack": "scripts/mode01_v18_prescreen.py work() (13 GEOM-02 v2 gates, P22-v2, smoothed-volume band, clearance)",
+ "identical_to_prescreen": true,
+ "kind": "unc01_regate",
+ "states": {
+  "v18__D0_p3": {
+   "all_pass": true,
+   "error": null,
+   "failed_geom02": [],
+   "phi_fortran_sha256": "5cac89ae3eccd264c156eb248998c770bd61447e48a8f8c334f5fcc5120a69ea",
+   "same_as_prescreen": {
+    "all_pass": true,
+    "failed_geom02": true,
+    "gate_status": true,
+    "p22": true,
+    "phi_fortran_sha256": true,
+    "unmeasured_geom02": true
+   },
+   "same_bytes_as_states_json": true
+  },
+  "v18__camber_m19.7": {
+   "all_pass": true,
+   "error": null,
+   "failed_geom02": [],
+   "phi_fortran_sha256": "c339770e712e8cac83b926445b77181c5fb9910d8ff52551a3aa5f85bf228dc2",
+   "same_as_prescreen": {
+    "all_pass": true,
+    "failed_geom02": true,
+    "gate_status": true,
+    "p22": true,
+    "phi_fortran_sha256": true,
+    "unmeasured_geom02": true
+   },
+   "same_bytes_as_states_json": true
+  },
+  "v18__camber_p11.3": {
+   "all_pass": true,
+   "error": null,
+   "failed_geom02": [],
+   "phi_fortran_sha256": "f8fdcae487ac5d9bc0b3052f05ea1c4f3baf1b6e74f92f85a7e76dc426e4ee06",
+   "same_as_prescreen": {
+    "all_pass": true,
+    "failed_geom02": true,
+    "gate_status": true,
+    "p22": true,
+    "phi_fortran_sha256": true,
+    "unmeasured_geom02": true
+   },
+   "same_bytes_as_states_json": true
+  },
+  "v18__camber_p19.7": {
+   "all_pass": true,
+   "error": null,
+   "failed_geom02": [],
+   "phi_fortran_sha256": "6cfc5e9cd6b8c759d9c976bb8cb39c58c9888d136024b93dc20591ece1822629",
+   "same_as_prescreen": {
+    "all_pass": true,
+    "failed_geom02": true,
+    "gate_status": true,
+    "p22": true,
+    "phi_fortran_sha256": true,
+    "unmeasured_geom02": true
+   },
+   "same_bytes_as_states_json": true
+  },
+  "v18__parent": {
+   "all_pass": true,
+   "error": null,
+   "failed_geom02": [],
+   "phi_fortran_sha256": "29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a",
+   "same_as_prescreen": {
+    "all_pass": true,
+    "failed_geom02": true,
+    "gate_status": true,
+    "p22": true,
+    "phi_fortran_sha256": true,
+    "unmeasured_geom02": true
+   },
+   "same_bytes_as_states_json": true
+  },
+  "v18__pitch_m3.1": {
+   "all_pass": true,
+   "error": null,
+   "failed_geom02": [],
+   "phi_fortran_sha256": "3344401555328c5e729ea1ad98421e677b9121fd00937cee33bbcecdff7205cb",
+   "same_as_prescreen": {
+    "all_pass": true,
+    "failed_geom02": true,
+    "gate_status": true,
+    "p22": true,
+    "phi_fortran_sha256": true,
+    "unmeasured_geom02": true
+   },
+   "same_bytes_as_states_json": true
+  },
+  "v18__pitch_p1.3": {
+   "all_pass": true,
+   "error": null,
+   "failed_geom02": [],
+   "phi_fortran_sha256": "ba0038869e6a3ce7b44ae1301e3808e647a70dff6b445fc4a86f2b8eeab51a17",
+   "same_as_prescreen": {
+    "all_pass": true,
+    "failed_geom02": true,
+    "gate_status": true,
+    "p22": true,
+    "phi_fortran_sha256": true,
+    "unmeasured_geom02": true
+   },
+   "same_bytes_as_states_json": true
+  },
+  "v18__pitch_p3.1": {
+   "all_pass": true,
+   "error": null,
+   "failed_geom02": [],
+   "phi_fortran_sha256": "b4c14e4eaa55d557058d84d6ae38b2b24dbbf33ca7ba56532a9ecc8ba6d863b2",
+   "same_as_prescreen": {
+    "all_pass": true,
+    "failed_geom02": true,
+    "gate_status": true,
+    "p22": true,
+    "phi_fortran_sha256": true,
+    "unmeasured_geom02": true
+   },
+   "same_bytes_as_states_json": true
+  },
+  "v18__reflex_m29.3": {
+   "all_pass": true,
+   "error": null,
+   "failed_geom02": [],
+   "phi_fortran_sha256": "2a47821872ec2aefed7029c005780f6faa8c20c384e337a15a8bfc280773737f",
+   "same_as_prescreen": {
+    "all_pass": true,
+    "failed_geom02": true,
+    "gate_status": true,
+    "p22": true,
+    "phi_fortran_sha256": true,
+    "unmeasured_geom02": true
+   },
+   "same_bytes_as_states_json": true
+  },
+  "v18__reflex_p11.3": {
+   "all_pass": true,
+   "error": null,
+   "failed_geom02": [],
+   "phi_fortran_sha256": "34973f32ac2f7b39b07d6fd795c3c18ef14763452cff1cb9535d807e6037b6d7",
+   "same_as_prescreen": {
+    "all_pass": true,
+    "failed_geom02": true,
+    "gate_status": true,
+    "p22": true,
+    "phi_fortran_sha256": true,
+    "unmeasured_geom02": true
+   },
+   "same_bytes_as_states_json": true
+  },
+  "v18__reflex_p29.3": {
+   "all_pass": true,
+   "error": null,
+   "failed_geom02": [],
+   "phi_fortran_sha256": "44ce69780650b11cca7acb62dbae02358bf25b736a9d2ca91d2211dbd1a20bbb",
+   "same_as_prescreen": {
+    "all_pass": true,
+    "failed_geom02": true,
+    "gate_status": true,
+    "p22": true,
+    "phi_fortran_sha256": true,
+    "unmeasured_geom02": true
+   },
+   "same_bytes_as_states_json": true
+  },
+  "v18__roll_p25": {
+   "all_pass": true,
+   "error": null,
+   "failed_geom02": [],
+   "phi_fortran_sha256": "355a7ceee5c9e97ec1099336b8a68e134eecaa71d347843daec7f0d4c8099df1",
+   "same_as_prescreen": null,
+   "same_bytes_as_states_json": true
+  },
+  "v18__s050_m5": {
+   "all_pass": true,
+   "error": null,
+   "failed_geom02": [],
+   "phi_fortran_sha256": "044096583d990936440165cc9d71ec2a7bfca4da60c63640a6cc52c1f4a1034b",
+   "same_as_prescreen": {
+    "all_pass": true,
+    "failed_geom02": true,
+    "gate_status": true,
+    "p22": true,
+    "phi_fortran_sha256": true,
+    "unmeasured_geom02": true
+   },
+   "same_bytes_as_states_json": true
+  },
+  "v18__sweep_m11.3": {
+   "all_pass": true,
+   "error": null,
+   "failed_geom02": [],
+   "phi_fortran_sha256": "1d9db59236fbbe0aec94ea64ed47da8bad519b17871b4ac00c4a84ebf396c699",
+   "same_as_prescreen": {
+    "all_pass": true,
+    "failed_geom02": true,
+    "gate_status": true,
+    "p22": true,
+    "phi_fortran_sha256": true,
+    "unmeasured_geom02": true
+   },
+   "same_bytes_as_states_json": true
+  },
+  "v18__sweep_p11.3": {
+   "all_pass": true,
+   "error": null,
+   "failed_geom02": [],
+   "phi_fortran_sha256": "8ee0a9e79fcaf7a60e0ffe4ada73a5e6a0a29fe586ad406de60943a865142b21",
+   "same_as_prescreen": {
+    "all_pass": true,
+    "failed_geom02": true,
+    "gate_status": true,
+    "p22": true,
+    "phi_fortran_sha256": true,
+    "unmeasured_geom02": true
+   },
+   "same_bytes_as_states_json": true
+  },
+  "v18__twist_m1.1": {
+   "all_pass": true,
+   "error": null,
+   "failed_geom02": [],
+   "phi_fortran_sha256": "479ec6ee2b7000132a0046d2a6af9897abae76b73cc149e09f06a1e9d1bac104",
+   "same_as_prescreen": {
+    "all_pass": true,
+    "failed_geom02": true,
+    "gate_status": true,
+    "p22": true,
+    "phi_fortran_sha256": true,
+    "unmeasured_geom02": true
+   },
+   "same_bytes_as_states_json": true
+  },
+  "v18__twist_p1.1": {
+   "all_pass": true,
+   "error": null,
+   "failed_geom02": [],
+   "phi_fortran_sha256": "5b5165c2ac95eb95060528f9aae41658e6e1d73c430b423893bf66b6e64f4c1f",
+   "same_as_prescreen": {
+    "all_pass": true,
+    "failed_geom02": true,
+    "gate_status": true,
+    "p22": true,
+    "phi_fortran_sha256": true,
+    "unmeasured_geom02": true
+   },
+   "same_bytes_as_states_json": true
+  }
+ }
+}

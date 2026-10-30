@@ -1,0 +1,21 @@
+{
+  "accepted_as_setup_preflight": false,
+  "api_error": "409 Client Error: Conflict for url: https://api.kaggle.com/v1/kernels.KernelsApiService/SaveKernel",
+  "attempt_number": 2,
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+  "dataset_remote_files_verified": 8,
+  "dataset_verification_sha256": "e592b07db47dc39d1a5872067e1ac8dfa708de4f7c27cfd5a56b4ec4dccde844",
+  "dataset_version": 2,
+  "interpretation": "The requested kernel slug equals the private dataset slug; Kaggle rejected SaveKernel with 409. The resource-slug collision is an inference from the ID equality and API response; the API did not provide a structured reason.",
+  "kaggle_cli_command": "kaggle kernels push -p infra/kaggle/kernel_fd08_v2_r6 --accelerator NvidiaTeslaT4 --timeout 7200",
+  "kernel_id_requested": "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+  "kernel_title_requested": "CFD Opt SDF FD08 V2 R6",
+  "kernel_version_created": false,
+  "kind": "fd08_v2_setup_rehearsal_attempt_rejected",
+  "next_action": "Use one shared KERNEL_ID for setup/R6/formal that is distinct from DATASET_ID and matches the existing Kaggle title-derived slug; generate new setup criteria/dataset version.",
+  "phase": "bounded_setup_only_before_r6_registration",
+  "recorded_utc": "2026-10-06T14:01:36.817113Z",
+  "setup_criteria_sha256": "853bef6fb82f7e78399830538d92031434cc4b55aaf5a2ce58e34ce9cacea5f0",
+  "solver_steps_in_attempt": 0,
+  "source_commit": "b1a8bd3494dcfc1b0dd3598771ca045c97798700"
+}

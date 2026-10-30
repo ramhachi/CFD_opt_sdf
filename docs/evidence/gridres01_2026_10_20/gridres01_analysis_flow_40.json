@@ -1,0 +1,460 @@
+{
+  "disclosures": "Non-blind: the flow_24/flow_32 values and the quadratic structure were known before the run.  The direction was selected as the max-min of the flow_24/flow_32 predictions: a selected line, not a random draw.  Lattice commensurability confound: the design lattice (0.025 m) equals the flow_32 spacing, flow_24 is coarser, flow_40/48 finer; resolution and lattice alignment change together, and any convergence is that of this interpolated-lattice body only.  The 3e-5 N floor is nominal, the 1e-5 N guard band is the scale of the fit residuals, not a noise measurement.  Multigrid-depth confound: WaterLily 1.8.0 builds 4, 6, 4 and 5 multigrid levels on flow_24, flow_32, flow_40 and flow_48 and caps the pressure solve at 32 iterations (tol 1e-4), so part of any flow_24/flow_32 difference may be pressure-solver convergence rather than resolution; the Poisson statistics above are descriptive, reported not gating.  The verdict uses the fit including the -1.25 mm reverse state (a report-only probe for the gates); the forward-only G_max is reported without classification; with 3 dof per fit one outlier is partly absorbed, so read G_max together with the acceptance emulation.  Not claimed: grid independence, physical or Stage V downforce, a gradient, optimizer behaviour.  No GRIDRES-01 result alone supports a GRID-01 amendment.",
+  "fine_grid": "flow_40",
+  "frozen_parameters": {
+    "drag_allowance_n": 0.0,
+    "edge_mm": 1.25,
+    "fit_residual_incomplete_above_n": 2e-05,
+    "g_max_sides_with_flow24_below_n": 2e-05,
+    "g_max_sides_with_flow32_above_n": 4e-05,
+    "min_downforce_gain_n": 3e-05,
+    "parent_reruns": [
+      "flow_24",
+      "flow_32"
+    ],
+    "poisson_confounded_cap_fraction_excess_above": 0.1,
+    "poisson_iteration_cap": 32,
+    "steps_mm": [
+      0.3125,
+      0.625,
+      1.25,
+      -1.25
+    ]
+  },
+  "grids": {
+    "flow_24": {
+      "acceptance_emulation": {
+        "0.3125": {
+          "accepted": false,
+          "downforce_gain_n": 3.509015072400423e-06,
+          "drag_change_n": -8.539722217820733e-05
+        },
+        "0.625": {
+          "accepted": false,
+          "downforce_gain_n": -2.7762319726565288e-05,
+          "drag_change_n": -0.00018433853964144875
+        },
+        "1.25": {
+          "accepted": false,
+          "downforce_gain_n": -0.000233410947515722,
+          "drag_change_n": -0.00046147539167112894
+        }
+      },
+      "delta_n": {
+        "downforce": {
+          "-1.25": -0.00047932858746141394,
+          "0.3125": 3.509015072400423e-06,
+          "0.625": -2.7762319726565288e-05,
+          "1.25": -0.000233410947515722
+        },
+        "drag": {
+          "-1.25": 0.0001261825814058981,
+          "0.3125": -8.539722217820733e-05,
+          "0.625": -0.00018433853964144875,
+          "1.25": -0.00046147539167112894
+        }
+      },
+      "fit": {
+        "downforce": {
+          "a": 9.79187878085599e-05,
+          "b": -0.00022815977089073584,
+          "max_residual_n": 4.8093784917261275e-06
+        },
+        "drag": {
+          "a": -0.0002344350748038621,
+          "b": -0.00010700872971327559,
+          "max_residual_n": 3.983667155213336e-06
+        }
+      },
+      "forward_fit": {
+        "downforce": {
+          "a": 9.021311536734556e-05,
+          "b": -0.0002213078596792914,
+          "max_residual_n": 3.070487808089264e-06
+        },
+        "drag": {
+          "a": -0.0002283509206935733,
+          "b": -0.00011241878108497301,
+          "max_residual_n": 3.0591628711362816e-06
+        }
+      },
+      "g_max_forward_fit_n": 9.193534965359773e-06,
+      "g_max_n": 1.0505893489095246e-05
+    },
+    "flow_32": {
+      "acceptance_emulation": {
+        "0.3125": {
+          "accepted": true,
+          "downforce_gain_n": 0.000133506435699704,
+          "drag_change_n": -2.0650288028112307e-05
+        },
+        "0.625": {
+          "accepted": true,
+          "downforce_gain_n": 0.00027540720334229274,
+          "drag_change_n": -1.8578594143725535e-05
+        },
+        "1.25": {
+          "accepted": true,
+          "downforce_gain_n": 0.0004683451995147747,
+          "drag_change_n": -0.00012050600152496704
+        }
+      },
+      "delta_n": {
+        "downforce": {
+          "-1.25": -0.0007104737475363554,
+          "0.3125": 0.000133506435699704,
+          "0.625": 0.00027540720334229274,
+          "1.25": 0.0004683451995147747
+        },
+        "drag": {
+          "-1.25": -6.97475823134841e-05,
+          "0.3125": -2.0650288028112307e-05,
+          "0.625": -1.8578594143725535e-05,
+          "1.25": -0.00012050600152496704
+        }
+      },
+      "fit": {
+        "downforce": {
+          "a": 0.00047283183439441326,
+          "b": -7.682441056323176e-05,
+          "max_residual_n": 9.896842222046893e-06
+        },
+        "drag": {
+          "a": -1.801498411135102e-05,
+          "b": -5.978214328775011e-05,
+          "max_residual_n": 1.6033170647646242e-05
+        }
+      },
+      "forward_fit": {
+        "downforce": {
+          "a": 0.00048364737921394266,
+          "b": -8.644163130187199e-05,
+          "max_residual_n": 9.191804747829655e-06
+        },
+        "drag": {
+          "a": 2.4509750318316513e-06,
+          "b": -7.798054660374119e-05,
+          "max_residual_n": 1.3800929971288098e-05
+        }
+      },
+      "g_max_forward_fit_n": 0.0004694941751082534,
+      "g_max_n": 0.0004710016514879669
+    },
+    "flow_40": {
+      "acceptance_emulation": {
+        "0.3125": {
+          "accepted": false,
+          "downforce_gain_n": -0.00014490234928998813,
+          "drag_change_n": -0.00020584882420721096
+        },
+        "0.625": {
+          "accepted": false,
+          "downforce_gain_n": -0.0004072166297693913,
+          "drag_change_n": -0.000468475351343034
+        },
+        "1.25": {
+          "accepted": false,
+          "downforce_gain_n": -0.0013045821287875348,
+          "drag_change_n": -0.0011878403525895087
+        }
+      },
+      "delta_n": {
+        "downforce": {
+          "-1.25": -0.0007340182269471862,
+          "0.3125": -0.00014490234928998813,
+          "0.625": -0.0004072166297693913,
+          "1.25": -0.0013045821287875348
+        },
+        "drag": {
+          "-1.25": 0.00014901208846473946,
+          "0.3125": -0.00020584882420721096,
+          "0.625": -0.000468475351343034,
+          "1.25": -0.0011878403525895087
+        }
+      },
+      "fit": {
+        "downforce": {
+          "a": -0.00023070459795994095,
+          "b": -0.0006531632950367,
+          "max_residual_n": 9.021684396578859e-06
+        },
+        "drag": {
+          "a": -0.0005360166949143698,
+          "b": -0.0003328184959008713,
+          "max_residual_n": 5.841800806150938e-06
+        }
+      },
+      "forward_fit": {
+        "downforce": {
+          "a": -0.0002634871448045176,
+          "b": -0.0006240129383380885,
+          "max_residual_n": 1.623853028997422e-06
+        },
+        "drag": {
+          "a": -0.0005535575230556049,
+          "b": -0.00031722112942625765,
+          "max_residual_n": 1.8834723318014333e-06
+        }
+      },
+      "g_max_forward_fit_n": 0.0,
+      "g_max_n": 0.0
+    }
+  },
+  "integrity": {
+    "failures": [],
+    "pass": true
+  },
+  "kind": "gridres01_analysis",
+  "max_downforce_fit_residual_n": 9.896842222046893e-06,
+  "no_gradient_claim": true,
+  "not_grid_converged": true,
+  "poisson": {
+    "cap_fraction_by_grid": {
+      "flow_24": 0.0017162471395881006,
+      "flow_32": 0.00014761236991659902,
+      "flow_40": 0.0024134156050955413
+    },
+    "cap_fraction_excess_over_flow_32": {
+      "flow_24": 0.0015686347696715016,
+      "flow_40": 0.002265803235178942
+    },
+    "iteration_cap": 32,
+    "label": null,
+    "material_threshold_abs": 0.1,
+    "note": "descriptive: the grids differ in multigrid depth (WaterLily 1.8.0: flow_24 4, flow_32 6, flow_40 4, flow_48 5 levels) and the Poisson solve is capped; a label of None does not exclude a pressure-solver effect",
+    "per_run": {
+      "flow_24": {
+        "cap_fraction": 0.0017162471395881006,
+        "final_residual_l2": {
+          "max": 0.0038316333666443825,
+          "mean": 4.4370878421879956e-06,
+          "min": 5.775365821136802e-07,
+          "p50": 5.776387297373731e-07,
+          "p90": 5.778474815087975e-07,
+          "p99": 1.0661418200470325e-05
+        },
+        "iterations": {
+          "max": 32.0,
+          "mean": 1.0561784897025173,
+          "min": 1.0,
+          "p50": 1.0,
+          "p90": 1.0,
+          "p99": 1.0
+        },
+        "samples": 1093,
+        "solves": 17480,
+        "solves_at_cap": 30
+      },
+      "flow_32": {
+        "cap_fraction": 0.00014761236991659902,
+        "final_residual_l2": {
+          "max": 3.8850608689244837e-05,
+          "mean": 6.154871446120875e-07,
+          "min": 4.3313718833815074e-07,
+          "p50": 5.61610590921191e-07,
+          "p90": 5.619122703137691e-07,
+          "p99": 7.043706574449966e-07
+        },
+        "iterations": {
+          "max": 32.0,
+          "mean": 1.0056461731493098,
+          "min": 1.0,
+          "p50": 1.0,
+          "p90": 1.0,
+          "p99": 1.0
+        },
+        "samples": 1694,
+        "solves": 27098,
+        "solves_at_cap": 4
+      },
+      "flow_40": {
+        "opt01b__ctrl_reverse__s1.25mm": {
+          "cap_fraction": 0.0024134156050955413,
+          "final_residual_l2": {
+            "max": 0.08074064552783966,
+            "mean": 5.6342100199195814e-05,
+            "min": 3.583596708267578e-07,
+            "p50": 1.2671205695369281e-05,
+            "p90": 2.3717094154562802e-05,
+            "p99": 8.550521670258603e-05
+          },
+          "iterations": {
+            "max": 32.0,
+            "mean": 1.5035828025477707,
+            "min": 1.0,
+            "p50": 1.0,
+            "p90": 2.0,
+            "p99": 2.0
+          },
+          "samples": 2512,
+          "solves": 40192,
+          "solves_at_cap": 97
+        },
+        "opt01b__parent": {
+          "cap_fraction": 0.0023710877052862778,
+          "final_residual_l2": {
+            "max": 0.07845359295606613,
+            "mean": 5.324749621197947e-05,
+            "min": 5.33155002813146e-07,
+            "p50": 9.299790690420195e-06,
+            "p90": 2.1516653578146358e-05,
+            "p99": 8.519562717992853e-05
+          },
+          "iterations": {
+            "max": 32.0,
+            "mean": 1.5500424299905156,
+            "min": 1.0,
+            "p50": 1.0,
+            "p90": 2.0,
+            "p99": 2.0
+          },
+          "samples": 2505,
+          "solves": 40066,
+          "solves_at_cap": 95
+        },
+        "opt01b__prop__s0.3125mm": {
+          "cap_fraction": 0.0023689591541569,
+          "final_residual_l2": {
+            "max": 0.0778980702161789,
+            "mean": 5.257857906917589e-05,
+            "min": 4.30101579240727e-07,
+            "p50": 9.319520358985756e-06,
+            "p90": 1.9250341574661432e-05,
+            "p99": 8.223626777180473e-05
+          },
+          "iterations": {
+            "max": 32.0,
+            "mean": 1.5251608398583612,
+            "min": 1.0,
+            "p50": 1.0,
+            "p90": 2.0,
+            "p99": 2.0
+          },
+          "samples": 2507,
+          "solves": 40102,
+          "solves_at_cap": 95
+        },
+        "opt01b__prop__s0.625mm": {
+          "cap_fraction": 0.0023688410133652503,
+          "final_residual_l2": {
+            "max": 0.07734662294387817,
+            "mean": 5.199400608552747e-05,
+            "min": 4.25716990548608e-07,
+            "p50": 8.853421604726464e-06,
+            "p90": 1.9099040582659654e-05,
+            "p99": 8.225725265219811e-05
+          },
+          "iterations": {
+            "max": 32.0,
+            "mean": 1.5245362058647516,
+            "min": 1.0,
+            "p50": 1.0,
+            "p90": 2.0,
+            "p99": 2.0
+          },
+          "samples": 2507,
+          "solves": 40104,
+          "solves_at_cap": 95
+        },
+        "opt01b__prop__s1.25mm": {
+          "cap_fraction": 0.002393418100224383,
+          "final_residual_l2": {
+            "max": 0.07623525708913803,
+            "mean": 5.154758860337639e-05,
+            "min": 4.476351875837281e-07,
+            "p50": 6.58374119666405e-06,
+            "p90": 3.947019140468915e-05,
+            "p99": 9.664501485531219e-05
+          },
+          "iterations": {
+            "max": 32.0,
+            "mean": 1.4726003490401396,
+            "min": 1.0,
+            "p50": 1.0,
+            "p90": 2.0,
+            "p99": 2.0
+          },
+          "samples": 2507,
+          "solves": 40110,
+          "solves_at_cap": 96
+        }
+      }
+    }
+  },
+  "provenance": {
+    "analyzer_sha256": "88304daa3bfb43df63526e0318d48ad667ce5de740a559314a670f9a460c585a",
+    "freeze_sha256": "baef30c6a3067459d719405c7d25730ab9ac8ef4f715a85726ac0c22493de132",
+    "inventory_sha256": "241c0c6f9d499f9006c0ad120bcea47804abd724a1dcc4dec40316eb2b311b7b",
+    "kernel_manifest_sha256": "7122bd65d35370e7811266c8304d53105ec6abb7442a5dfe04b14cba05d8abb2",
+    "source_commit": "9299f32f7f6a9a630c70359fa4c280d499f7dd72",
+    "source_tree_id": "fcc33e127235b2cf39b8e7861db66ec69761e802"
+  },
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "record_level_status_only": true,
+  "report_only_labels": {
+    "contracting": false,
+    "ratios": {
+      "a": 1.8765322753131972,
+      "b": 3.808355715585678
+    },
+    "third_value": true
+  },
+  "state_forces_n": {
+    "flow_40": {
+      "opt01b__ctrl_reverse__s1.25mm": {
+        "downforce_n": 0.3493261416763394,
+        "drag_n": 0.3498505718157913,
+        "forces_csv_sha256": "c8aff4f238cd72adcab179142270ed11272c867fbaf40b8f10ad11420bf8176c",
+        "julia_summary_wall_seconds": 1053.0401260852814,
+        "peak_vram_bytes": 364975492,
+        "solver_process_wall_seconds": 1119.9084179401398,
+        "summary_sha256": "dbfaf745ecd1aa4de04e6fa28a9cb90f51d5da052aa8ab3b944cccaf0b91b491"
+      },
+      "opt01b__parent": {
+        "downforce_n": 0.3500601599032866,
+        "drag_n": 0.3497015597273266,
+        "forces_csv_sha256": "b3e64fe155608eb2d9b800d55d5b0735a3ef2f2b9f75ccb5368bd45c8067cfc9",
+        "julia_summary_wall_seconds": 1059.13614487648,
+        "peak_vram_bytes": 365018412,
+        "solver_process_wall_seconds": 1129.806325674057,
+        "summary_sha256": "e74b75715d3e1b225790c89f91a7d20109805fe62c03543c5379ed9e7ae328e0"
+      },
+      "opt01b__prop__s0.3125mm": {
+        "downforce_n": 0.3499152575539966,
+        "drag_n": 0.34949571090311937,
+        "forces_csv_sha256": "eeb8f881faa7d30bc44b41e746256ee138d6d7a675210fa1ce38e1f74594c089",
+        "julia_summary_wall_seconds": 1053.4152419567108,
+        "peak_vram_bytes": 364999708,
+        "solver_process_wall_seconds": 1121.9603838920593,
+        "summary_sha256": "72b822eb0b53309eb7081c9ccadefa3cb899bc85cc83aed58bee7aefdb520d9a"
+      },
+      "opt01b__prop__s0.625mm": {
+        "downforce_n": 0.3496529432735172,
+        "drag_n": 0.34923308437598355,
+        "forces_csv_sha256": "d4f54448eed08c9c9052596354f1f0b3f86b6cc6acb3559b73d2ba62f085e877",
+        "julia_summary_wall_seconds": 1054.5810480117798,
+        "peak_vram_bytes": 364976752,
+        "solver_process_wall_seconds": 1122.0308499336243,
+        "summary_sha256": "fc8c6bb55a9c1c200576c73f30d74c6b8b015ba6ea053512ae97e7157261f313"
+      },
+      "opt01b__prop__s1.25mm": {
+        "downforce_n": 0.34875557777449906,
+        "drag_n": 0.3485137193747371,
+        "forces_csv_sha256": "033bcbaa1c7c354b10d2c9921dd719a6ea7823e6452969bbf6b55278565d5458",
+        "julia_summary_wall_seconds": 1043.3321890830994,
+        "peak_vram_bytes": 365007536,
+        "solver_process_wall_seconds": 1111.4250411987305,
+        "summary_sha256": "a69a29751e40aa214f2adbde5f79a3c5cedb2b05f6e4a9498b0dfc66ee9acf2d"
+      }
+    }
+  },
+  "verdict": "FLOW40_SIDES_WITH_FLOW24",
+  "verdict_reason": "G_max(flow_40) = 0.000e+00 N against the guard band [2e-05, 4e-05] N"
+}

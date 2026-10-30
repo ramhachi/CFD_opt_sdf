@@ -1,0 +1,29 @@
+{
+  "calibration_measurement_started": false,
+  "completed_state_count": 2,
+  "completed_states": [
+    "D0_interface_offset__eps_5_0000000000e_05__plus",
+    "cal_baseline_01"
+  ],
+  "criteria_registered": false,
+  "error": "'docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/cpu_rehearsal_preview.json' is not in the subpath of '/Users/sota/.codex/worktrees/issue45-root-certifier-integration' OR one path is relative.",
+  "error_type": "ValueError",
+  "evidence_class": "cpu_setup_harness_reporting_failure_not_scientific_verdict",
+  "failure_stage": "final_result_path_binding_after_cpu_states_completed",
+  "formal_qualification": false,
+  "host_error_path": "host_error.txt",
+  "host_error_sha256": "e49fe053a83650caee443f051697364430a0ea0622d17f03da26d78bbea832f8",
+  "kind": "fd08_cpu_rehearsal_terminal_failure",
+  "preview_sha256": "a2b84fb59160ddc5d096956bcf6da5f8e58bf104afccce5fc3fd49ea183acb61",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "raw_force_histories_host_parsed": true,
+  "solver_steps_per_state": 1,
+  "source_commit": "3fabdcac99d67f34a1704d8bc7bbc77efd75b809"
+}

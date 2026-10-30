@@ -1,0 +1,175 @@
+{
+  "analytic_fixtures": [
+    {
+      "case_id": "analytic_sphere",
+      "center_m": [
+        0.037,
+        -0.023,
+        0.011
+      ],
+      "origin_m": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "radius_m": 0.62,
+      "shape": [
+        41,
+        41,
+        41
+      ],
+      "shape_kind": "sphere",
+      "spacing_m": 0.05
+    },
+    {
+      "case_id": "analytic_thin_box",
+      "center_m": [
+        0.012,
+        -0.017,
+        0.009
+      ],
+      "half_extents_m": [
+        0.45,
+        0.35,
+        0.075
+      ],
+      "origin_m": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "shape": [
+        41,
+        41,
+        41
+      ],
+      "shape_kind": "box",
+      "spacing_m": 0.05
+    },
+    {
+      "case_id": "analytic_two_spheres",
+      "centers_m": [
+        [
+          -0.48,
+          0.0,
+          0.0
+        ],
+        [
+          0.48,
+          0.0,
+          0.0
+        ]
+      ],
+      "origin_m": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "radii_m": [
+        0.25,
+        0.25
+      ],
+      "shape": [
+        41,
+        41,
+        41
+      ],
+      "shape_kind": "sphere_pair",
+      "spacing_m": 0.05,
+      "surface_gap_m": 0.46
+    }
+  ],
+  "canonical_v16": {
+    "origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "phi_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+    "provenance": "canonical v16 SDF genesis state; solver-free operator input",
+    "shape": [
+      61,
+      33,
+      25
+    ],
+    "spacing_m": 0.05,
+    "state_npz_path": "work/issue_28/canonical_v16/sdf_design_state.npz",
+    "state_npz_sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe",
+    "state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8"
+  },
+  "criteria_id": "sdf_native_reinitialization_godunov2_v2_round1_2026_10",
+  "criteria_sha256": "3f99c44c3125de5c89aa05f28d6524ae2cea3070f0f059d65d06303a37dcebd5",
+  "evaluation": {
+    "affected_nodes": "abs(phi_input) <= 3 * spacing_m",
+    "canonical_eikonal": "fluid side p50/p95 gated; solid side/max reported only",
+    "convergence": "exact floating fixed point; 4*sum(shape) iteration cap; cap reached is UNRESOLVED",
+    "eikonal_band": "abs(phi_output) <= 3 * spacing_m; exclude one-node grid boundary; central differences",
+    "fixture_eikonal": "fluid and solid sides, error abs(norm(grad(phi))-1), p50/p95/max",
+    "idempotence": "second application max absolute change divided by h on output abs(phi)<=3h band",
+    "topology": "strict node and trilinear cell-center 26-connected events and component counts",
+    "unchanged_far_band": "abs(phi_input) > 3 * spacing_m, exact float32 equality",
+    "volume": "sharp trilinear cell-center occupancy and sdf_native_smoothed_volume_v1 relative drift",
+    "zero_level": "maximum abs change in linearly interpolated edge crossing fraction on common edges; unmatched edges counted separately"
+  },
+  "formal_measurement_started": false,
+  "hard_invariants": {
+    "exact_zero_nodes_preserved": true,
+    "far_band_changes": 0,
+    "masks_byte_identical": true,
+    "node_and_cell_center_component_counts_unchanged": true,
+    "sign_changes": 0,
+    "topology_events": 0,
+    "unmatched_crossings": 0
+  },
+  "immutable": true,
+  "kind": "sdf_native_reinitialization_qualification",
+  "method_contract_id": "sdf_native_reinitialization_godunov2_v2",
+  "method_contract_sha256": "01c1337601da841ab97c34c78676e17f826bc710e8faed90243c27794fba0f25",
+  "registered_at": "2026-10-02",
+  "registered_before_computation": true,
+  "schema_version": 1,
+  "scope": "CPU-only geometric operator-effect qualification; no solver, GPU, FD forward, optimizer descent, physical-physics, or shape-update qualification",
+  "source_commit": "968469358653ac5a735ec0792104704b64dfb17f",
+  "source_inputs": [
+    {
+      "path": "src/cfd_sdf/design/sdf_reinitialization.py",
+      "sha256": "bf22575736cd41268fff827f5407d7b6541804337ece299e29a24455848772ac"
+    },
+    {
+      "path": "scripts/qualify_sdf_reinitialization.py",
+      "sha256": "5b2c697fc1711effe24efb449cc0732ada276657d37ecb6f0154f0c152a12be2"
+    },
+    {
+      "path": "tests/test_sdf_native_reinitialization.py",
+      "sha256": "4cfb9c3735a42d8a55263384585c6dba88fdd9a18098aa95f0443152f10dc1c9"
+    },
+    {
+      "path": "docs/sdf_native_reinitialization_godunov2_v2_contract_2026_10.md",
+      "sha256": "772c4237da711279dd8264916d077d17d928c1ec06073b94181c7db551adf22f"
+    },
+    {
+      "path": "src/cfd_sdf/design/sdf_state.py",
+      "sha256": "74c675ed658c85fa2d8f306652d0de712698daf36e4e86f1f508b676c4f96faf"
+    },
+    {
+      "path": "src/cfd_sdf/design/volume_semantics.py",
+      "sha256": "021c2da0916f1417211764c6d6ffc1d7a45785b41b8ce2f206f31cd710625626"
+    },
+    {
+      "path": "src/cfd_sdf/design/topology_policy.py",
+      "sha256": "f7ead697ef879462cfed5036a6e6af20c1953f767154b9fdbd606f69f83b418b"
+    }
+  ],
+  "status": "registered_not_run",
+  "tolerances": {
+    "canonical_eikonal_p50_max": 0.1,
+    "canonical_eikonal_p95_max": 0.5,
+    "fixture_eikonal_max": 0.5,
+    "fixture_eikonal_p50_max": 0.05,
+    "fixture_eikonal_p95_max": 0.25,
+    "idempotence_max_h": 0.1,
+    "volume_relative_drift_max": 0.05,
+    "zero_level_displacement_max_edges": 0.25
+  },
+  "verdict_rule": "PASS only if every applicable gate passes for all four cases; any gate failure is FAIL; solver iteration limit or invalid/unresolvable input is UNRESOLVED"
+}

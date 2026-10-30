@@ -1,0 +1,205 @@
+{
+  "accepted_count_carryover": {
+    "level_3_b128_margin": 0
+  },
+  "cap_stationarity_exit": {
+    "all_candidates_rejected_as": [
+      "machine_scale_update_rejected",
+      "volume_cap_unreachable"
+    ],
+    "does_not_claim_convergence": true,
+    "enabled": true,
+    "independent_repeat": true,
+    "last_accepted_objective_delta_max": 0.0001,
+    "min_accepted_iterations": "cumulative accepted count for the level including the registered carryover",
+    "reproducibility_tolerance": 1e-06
+  },
+  "change": {
+    "description": "the canonical allowed mask is restricted to |y_center| <= 0.475 so the extracted surface stays >= 0.30 m from the side bounds (the PQ4.1 v2 verdict measured 0.2365 m against the 0.25 m profile); the continuation level is b=128 because the measured mean_nd on the terminal rho crosses the 0.01 bound only at higher sharpness",
+    "does_not_relax": [
+      "the clearance profile margin 0.25 m, the discreteness bound 0.01 and the volume cap",
+      "the policy, the thresholds, the cap-stationarity exit and the terminal rule"
+    ],
+    "evidence": {
+      "active_cells_after_margin": 14400,
+      "bootstrap_mean_nd_b128": 0.0058,
+      "margin_excluded_active_cells": 4800,
+      "mean_nd_sweep_terminal_rho": {
+        "b128": 0.00612,
+        "b16": 0.10903,
+        "b32": 0.03215,
+        "b64": 0.01188
+      },
+      "pq4_1_v2_clearance_m": {
+        "sideMax": 0.23975591659545903,
+        "sideMin": 0.23653261661529545
+      }
+    },
+    "id": "clearance-margin-mask+b128-sharpening"
+  },
+  "claims_not_supported": [
+    "the mask and sharpening changes are registered, not yet qualified",
+    "no terminal evaluation and no Stage S readiness in this registration"
+  ],
+  "convergence": {
+    "note": "the equality volume residual criterion is replaced by volume stability under the inequality policy",
+    "objective_delta_abs_max": 0.0001,
+    "projected_field_mean_abs_delta_max": 0.001,
+    "projected_volume_delta_abs_max": 0.001,
+    "window_accepted": 3
+  },
+  "entry_preflight": {
+    "artifact_path": "docs/evidence/pq3_3b_v10_entry_preflight_2026_09.json",
+    "requirement": "must pass before the v10 campaign",
+    "script_path": "scripts/pq3_3b_v10_entry_preflight_2026_09.py",
+    "script_sha256": "568a25e4a4bde8dbf34fc681a742ba438580b7c8f9d5a8b8c90d4a5b68651d65"
+  },
+  "filter_radius_m": 0.15,
+  "immutable": true,
+  "input_stop_state": {
+    "level": "level_3_b128_margin",
+    "rho_file_sha256": "17e5d28a2c1224410938ed65083ffde347d622177b3c175df9ec11b6fb626eba",
+    "rho_path": "work/pq3_3b_campaign_v10_bootstrap.npy",
+    "rho_sha256": "86a3f46db72eebdc64f3d9edcae4d0934c5ab441892615106da38940916496a8",
+    "source": "v9 terminal rho trimmed to the margin mask"
+  },
+  "kind": "pq3_3b_campaign_manifest_v10",
+  "levels": [
+    {
+      "b": 128.0,
+      "max_attempts": 150,
+      "min_accepted_iterations": 10,
+      "move_limit": 0.01,
+      "name": "level_3_b128_margin",
+      "q": 100.0
+    }
+  ],
+  "margin_mask": {
+    "density_vti": "work/pq3_3b_margin_masks/density.vti",
+    "density_vti_sha256": "8ec38505a742a136c992f145b38fdfae1a83bb90f745c7dde8843a687160a589",
+    "profile_margin_m": 0.25,
+    "rule": "allowed_mask = original allowed_mask AND |y_center| <= 0.475",
+    "state": "work/pq3_3b_margin_masks/topology_state.json",
+    "state_sha256": "146bc2f77178456784f2806fb7807be21a7886cea7962639bd768ac37fd01444",
+    "surface_reach_bound_m": 0.5
+  },
+  "noise_thresholds": {
+    "downforce": 1e-06,
+    "objective": 1e-06
+  },
+  "objective": {
+    "canonical": "J = -downforce",
+    "sense": "maximize",
+    "sense_sign": -1
+  },
+  "openfoam_image": "opencfd/openfoam-default:2512",
+  "openfoam_image_id": "sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319",
+  "output_directory": "work/pq3_3b_campaign_v10",
+  "path_b": {
+    "epsilon": 0.0008,
+    "noise_floor_abs": 1e-06,
+    "requires_centered_pair": true
+  },
+  "phase1_policy": {
+    "ascent_only": true,
+    "formation_target": 0.018,
+    "id": "projected-volume-restoration-oc",
+    "unchanged_from_v5": true
+  },
+  "phase2_policy": {
+    "alpha_ladder": [
+      1.0,
+      0.5,
+      0.25,
+      0.125,
+      0.0625
+    ],
+    "extractability_fraction": 0.5,
+    "extractability_thresholds": [
+      0.4,
+      0.5
+    ],
+    "freeze_exact_box_faces": true,
+    "id": "objective-oc-inequality-v1",
+    "min_corrected_update_inf_norm": 1e-08,
+    "module": "src/cfd_sdf/phase2_inequality_policy.py",
+    "volume_cap_correction": true
+  },
+  "pinned_evidence": {
+    "campaign_v9_outcome": {
+      "path": "docs/evidence/pq3_3b_campaign_v9_outcome_2026_09.json",
+      "sha256": "9c6df49345fc1f9812345d989076b870761df5e5d59300bf1138a6ff2e1dd58a"
+    },
+    "change_manifest_d2": {
+      "path": "docs/evidence/pq3_3b_d2_change_manifest_2026_09.json",
+      "sha256": "7cc2933a39c26ce1c1f89c1b8f0d0f029122fa622cdecb35c07f598dcdc2bebd"
+    },
+    "discriminant_outcome_d1": {
+      "path": "docs/evidence/pq3_3b_d1_discriminant_outcome_2026_09.json",
+      "sha256": "0e954ca79b5ffbff0d9c576061c3e072d18c45d571bf8d799c995e5f9b0e66c9"
+    },
+    "manifest_v9": {
+      "path": "docs/evidence/pq3_3b_campaign_manifest_v9_2026_09.json",
+      "sha256": "09a3f81fafe360acc08182492fb60e0904672e689ccf665499b3b285df1855a9"
+    },
+    "pq4_1_verdict_v2": {
+      "path": "docs/evidence/pq4_1_terminal_stage_s_entry_v2_2026_09.json",
+      "sha256": "4886e4c6b1922887a6bb25f7a9b7e89ac0839800575f1cee8ef71114a9e7a5b0"
+    }
+  },
+  "plan": {
+    "path": "docs/pq3_3b_post_v5_plan_2026_09.md",
+    "sha256": "7b6c1948f205098baab8225c3cdd0a38ca5bbed0f189a889e7b0bc7b9a5ce6ba"
+  },
+  "previous_registrations": {
+    "campaign_v9_outcome": {
+      "path": "docs/evidence/pq3_3b_campaign_v9_outcome_2026_09.json",
+      "sha256": "9c6df49345fc1f9812345d989076b870761df5e5d59300bf1138a6ff2e1dd58a"
+    },
+    "manifest_v9": {
+      "path": "docs/evidence/pq3_3b_campaign_manifest_v9_2026_09.json",
+      "sha256": "09a3f81fafe360acc08182492fb60e0904672e689ccf665499b3b285df1855a9"
+    }
+  },
+  "projection_eta": 0.5,
+  "registered_inputs": {
+    "canonical_grid": {
+      "path": "work/pq3_3b_margin_masks/topology_state.json",
+      "sha256": "146bc2f77178456784f2806fb7807be21a7886cea7962639bd768ac37fd01444"
+    },
+    "noise_calibration": {
+      "path": "docs/evidence/pq3_3b_noise_calibration_v3_2026_09.json",
+      "sha256": "3439b291a261ca0086fc259fe9703bd52c8525d032aa53b7cbffc9441374ab3b"
+    },
+    "problem_spec": {
+      "path": "work/pq0_2_smoke/project_downforce_volume.yaml",
+      "sha256": "90314ab78073330a784939b3fe03c24319d217f564d3ebad4dea9a29c82d75fe"
+    },
+    "solver_controls": {
+      "path": "work/df2_fd_refresh/template_frozen/system",
+      "sha256": "ab9a1979361ac26058c9da190e94aa85500f8ff8b48770dd67aad26e3ae63b9b"
+    },
+    "source_grid": {
+      "path": "work/df2_fd_refresh/source_state/provenance.json",
+      "sha256": "04ab53dbce816fbac6794285c09a70dced56a137a5e695315fb2018ec565a9e4"
+    },
+    "template_parent": {
+      "path": "work/df2_fd_refresh/template_frozen",
+      "sha256": "4cd0431d38f985ddc79a3afd45c60f379ff89fc8f30977e6c8b86b53d0448f46"
+    },
+    "template_trial": {
+      "path": "work/pq0_2_smoke/template_trial",
+      "sha256": "87a501c077ed33d9d23bc2b7a1c05314a6b99297b5d47c929a924334d8e45cdf"
+    }
+  },
+  "registered_target": 0.018,
+  "reject_stop_count": 1,
+  "restoration_step_cap": 60,
+  "resume_rule": "resume only from the verified objective_accepted rho chain; incomplete solver cases block automatic resume",
+  "schema_version": 9,
+  "source_tree_python_sha256": "4dbb887af85953c7e52e3cb6efd37ae204f1f3ed8f57da874b318018bd220d5c",
+  "status": "registered_preflight_pending",
+  "terminal_rule": "the b=128 level exits by the registered window or the cap-stationarity exit with at least ten accepted steps; then an independent repeat primal on the final rho with only the original projected V<=Vmax gate before the PQ4.1 judgment",
+  "v_max_projected": 0.07632566813424899,
+  "volume_tolerance": 0.0001
+}

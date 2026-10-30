@@ -1,0 +1,411 @@
+{
+  "base_seed": 46150000,
+  "draw_order": "per point absolute then relative standard normal, always consume both",
+  "evidence_class": "solver_free_numeric_contract_design_unregistered",
+  "execution_started": false,
+  "generator": "PCG64",
+  "historical_seed_inventory": [
+    462012,
+    462014,
+    463012,
+    463014,
+    464012,
+    464014,
+    465012,
+    465014,
+    466012,
+    466014,
+    467012,
+    467014,
+    468012,
+    468014,
+    469012,
+    469014,
+    470012,
+    470014,
+    471012,
+    471014,
+    472012,
+    472014,
+    473012,
+    473014,
+    474012,
+    474013,
+    474014,
+    475012,
+    475013,
+    475014,
+    476012,
+    476013,
+    476014,
+    477012,
+    477013,
+    477014,
+    478012,
+    478013,
+    478014,
+    479012,
+    479013,
+    479014,
+    480012,
+    480013,
+    480014,
+    481012,
+    481013,
+    481014,
+    482012,
+    482013,
+    482014,
+    483012,
+    483013,
+    483014,
+    484012,
+    484013,
+    484014,
+    485012,
+    485013,
+    485014,
+    486012,
+    486013,
+    486014,
+    487012,
+    487013,
+    487014,
+    488012,
+    488014,
+    1362012,
+    1362014,
+    1363012,
+    1363014,
+    1364012,
+    1364014,
+    1368012,
+    1368014,
+    1370012,
+    1370014,
+    1373012,
+    1373014,
+    1376012,
+    1376014,
+    1379012,
+    1379014,
+    1384012,
+    1384014,
+    1388012,
+    1388014
+  ],
+  "historical_strict_numeric_mismatch_count": 17,
+  "ladder_construction": "np.geomspace(.5,5,6); np.geomspace(.3,5,8); np.geomspace(.5,15,7)",
+  "numpy": "2.5.2",
+  "parameters": {
+    "k_mag": 5,
+    "nested_drop": 2,
+    "rho": 0.05,
+    "sigma0_n": 3e-06,
+    "tol_hold": 0.15,
+    "tol_model": 0.15,
+    "tol_nested": 0.15,
+    "tol_se": 0.1
+  },
+  "python": "3.12.13",
+  "recorded_utc": "2026-10-06T09:27:22.160471+00:00",
+  "reference_digits": [
+    80,
+    120
+  ],
+  "seed_overlap": [],
+  "seeds": [
+    {
+      "n": 6,
+      "scenario": 1,
+      "seed": 46151006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 1,
+      "seed": 46151008,
+      "upper_mm": 5
+    },
+    {
+      "n": 6,
+      "scenario": 2,
+      "seed": 46152006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 2,
+      "seed": 46152008,
+      "upper_mm": 5
+    },
+    {
+      "n": 6,
+      "scenario": 3,
+      "seed": 46153006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 3,
+      "seed": 46153008,
+      "upper_mm": 5
+    },
+    {
+      "n": 6,
+      "scenario": 4,
+      "seed": 46154006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 4,
+      "seed": 46154008,
+      "upper_mm": 5
+    },
+    {
+      "n": 6,
+      "scenario": 6,
+      "seed": 46156006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 6,
+      "seed": 46156008,
+      "upper_mm": 5
+    },
+    {
+      "n": 6,
+      "scenario": 7,
+      "seed": 46157006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 7,
+      "seed": 46157008,
+      "upper_mm": 5
+    },
+    {
+      "n": 6,
+      "scenario": 9,
+      "seed": 46159006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 9,
+      "seed": 46159008,
+      "upper_mm": 5
+    },
+    {
+      "n": 6,
+      "scenario": 10,
+      "seed": 46160006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 10,
+      "seed": 46160008,
+      "upper_mm": 5
+    },
+    {
+      "n": 6,
+      "scenario": 11,
+      "seed": 46161006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 11,
+      "seed": 46161008,
+      "upper_mm": 5
+    },
+    {
+      "n": 6,
+      "scenario": 12,
+      "seed": 46162006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 12,
+      "seed": 46162008,
+      "upper_mm": 5
+    },
+    {
+      "n": 6,
+      "scenario": 13,
+      "seed": 46163006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 13,
+      "seed": 46163008,
+      "upper_mm": 5
+    },
+    {
+      "n": 6,
+      "scenario": 15,
+      "seed": 46165006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 15,
+      "seed": 46165008,
+      "upper_mm": 5
+    },
+    {
+      "n": 6,
+      "scenario": 16,
+      "seed": 46166006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 16,
+      "seed": 46166008,
+      "upper_mm": 5
+    },
+    {
+      "n": 6,
+      "scenario": 17,
+      "seed": 46167006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 17,
+      "seed": 46167008,
+      "upper_mm": 5
+    },
+    {
+      "n": 6,
+      "scenario": 18,
+      "seed": 46168006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 18,
+      "seed": 46168008,
+      "upper_mm": 5
+    },
+    {
+      "n": 6,
+      "scenario": 19,
+      "seed": 46169006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 19,
+      "seed": 46169008,
+      "upper_mm": 5
+    },
+    {
+      "n": 6,
+      "scenario": 20,
+      "seed": 46170006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 20,
+      "seed": 46170008,
+      "upper_mm": 5
+    },
+    {
+      "n": 6,
+      "scenario": 22,
+      "seed": 46172006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 22,
+      "seed": 46172008,
+      "upper_mm": 5
+    },
+    {
+      "n": 6,
+      "scenario": 24,
+      "seed": 46174006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 24,
+      "seed": 46174008,
+      "upper_mm": 5
+    },
+    {
+      "n": 6,
+      "scenario": 27,
+      "seed": 46177006,
+      "upper_mm": 5
+    },
+    {
+      "n": 8,
+      "scenario": 27,
+      "seed": 46177008,
+      "upper_mm": 5
+    },
+    {
+      "n": 7,
+      "scenario": 15,
+      "seed": 46165007,
+      "upper_mm": 15
+    },
+    {
+      "n": 7,
+      "scenario": 16,
+      "seed": 46166007,
+      "upper_mm": 15
+    },
+    {
+      "n": 7,
+      "scenario": 17,
+      "seed": 46167007,
+      "upper_mm": 15
+    },
+    {
+      "n": 7,
+      "scenario": 18,
+      "seed": 46168007,
+      "upper_mm": 15
+    },
+    {
+      "n": 7,
+      "scenario": 22,
+      "seed": 46172007,
+      "upper_mm": 15
+    },
+    {
+      "n": 7,
+      "scenario": 24,
+      "seed": 46174007,
+      "upper_mm": 15
+    }
+  ],
+  "serialization": "Python format(value,'.12g') then json parse to shared binary64",
+  "sha256": {
+    "docs/evidence/fd08_v2_stage1_2026_10_06/independent_checker.py": "01c8ed3778c9de26e82ce8c85100b1ea9f02db035d23cd803b19ffed99d17824",
+    "docs/evidence/fd08_v2_stage1_2026_10_06/independent_comparison.json": "6983fdc760990c89e1716c60de11122a8c070bcd9dbb6755f5019a562b71e462",
+    "docs/evidence/fd08_v2_stage1_2026_10_06/prerun_freeze.json": "7cc87bac0d3296a8e4df7563a893c63ea46c11cb98a85fec055c0b36aa90ea9d",
+    "docs/evidence/fd08_v2_stage1_2026_10_06/synthetic_inputs.json": "870477620ea9cf23ce3069b4be785c2ceeee994e7d464ea4835cbc0f4b816897",
+    "docs/evidence/fd08_v2_stage1p5_2026_10_06/independent_numerical_review.md": "303453e64272d21b54a700ba7e350fe1cfc8ee996c6c47ea13c9305500e55003",
+    "docs/evidence/fd08_v2_stage1p5_2026_10_06/numeric_contract.md": "8da56a9f8f092fc217dbce8955fbbfee92340851674ef7a8a083bed68e5fb94c",
+    "scripts/analyze_fd08_v2_numeric_contract.py": "9e149f4baa558402b8c41cb1ac69b8853ceb77f7e94e99954f6b2fd20fb71bc3",
+    "scripts/fd08_v2_forward_error.py": "d7fbf493f8c5fb6803c3068730d38506ca814f62c3d8a789a77041945e2ee473",
+    "scripts/simulate_fd08_v2_gate.py": "9a01926d6ec7ac2867edbc09d68dc3526c7478eba70ad40ed8f1644f9390abca",
+    "scripts/validate_fd08_v2_numeric_contract.py": "e2f363af2019525b2f16416d67bed09229ed43038b45e6277676ce375fd08f58",
+    "src/cfd_sdf/fd08_v2_gate.py": "4e4af8f3d0817b60e58f8d1a00ed382b2d1e6deed03425f398b5eb81040cc582",
+    "src/cfd_sdf/fd08_v2_gate_params.json": "c5f3fe1a3875c44d5fd0b87d48fd0bd0c06bdf22fb74581cb399e382dbac95ba",
+    "tests/test_fd08_v2_numeric_contract.py": "902989a1cce19fc81e4768bc3f2c436fce7d4369a5669704cf40c661e3345705"
+  }
+}

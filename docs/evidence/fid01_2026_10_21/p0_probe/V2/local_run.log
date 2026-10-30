@@ -1,0 +1,24 @@
+Detected distribution code-name: noble
+Overwrote /etc/apt/sources.list.d/openfoam.list
+Importing openfoam gpg key... done
+Overwrote /etc/apt/trusted.gpg.d/openfoam.gpg
+Running apt-get update... done
+
+The repository is setup! You can now install packages.
+Hit:1 http://security.ubuntu.com/ubuntu noble-security InRelease
+Hit:2 http://archive.ubuntu.com/ubuntu noble InRelease
+Hit:3 http://archive.ubuntu.com/ubuntu noble-updates InRelease
+Hit:5 http://archive.ubuntu.com/ubuntu noble-backports InRelease
+Hit:4 https://sourceforge.net/projects/openfoam/files/repos/deb noble InRelease
+Reading package lists...
+Get:1 https://sourceforge.net/projects/openfoam/files/repos/deb noble/main amd64 openfoam2512 amd64 2512.0-2 [68.3 MB]
+Get:3 https://sourceforge.net/projects/openfoam/files/repos/deb noble/main amd64 openfoam2512-tools amd64 2512.0-2 [54.0 kB]
+Get:2 https://sourceforge.net/projects/openfoam/files/repos/deb noble/main amd64 openfoam2512-common all 2512.0-2 [1312 kB]
+Fetched 69.6 MB in 18s (3856 kB/s)
+Reading package lists...
+Building dependency tree...
+Reading state information...
+openfoam2512 is already the newest version (2512.0-2).
+openfoam2512-common is already the newest version (2512.0-2).
+openfoam2512-tools is already the newest version (2512.0-2).
+0 upgraded, 0 newly installed, 0 to remove and 4 not upgraded.

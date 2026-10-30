@@ -1,0 +1,48 @@
+GRAD_TA1_BLOCKED
+{
+  "failed_rows": null,
+  "vector_metrics": null,
+  "aggregate": null,
+  "blocked": {
+    "D0_interface_offset": {
+      "limit": 1e+30,
+      "onset_step": 700,
+      "reason": "tangent_non_finite_or_above_limit",
+      "t_u_l": 9.539809226989746,
+      "tan_argmax_p": "105;54;9",
+      "tan_argmax_u": "105;54;9;2",
+      "tan_max_p": 7.493454544188364e+32,
+      "tan_max_u": 1.1125309104618371e+33
+    },
+    "D1_filtered_seed11": {
+      "limit": 1e+30,
+      "onset_step": 700,
+      "reason": "tangent_non_finite_or_above_limit",
+      "t_u_l": 9.539809226989746,
+      "tan_argmax_p": "105;54;9",
+      "tan_argmax_u": "105;54;9;2",
+      "tan_max_p": 1.5482744887446194e+32,
+      "tan_max_u": 2.2986772793566973e+32
+    },
+    "D2_filtered_seed2026": {
+      "limit": 1e+30,
+      "onset_step": 700,
+      "reason": "tangent_non_finite_or_above_limit",
+      "t_u_l": 9.539809226989746,
+      "tan_argmax_p": "105;54;9",
+      "tan_argmax_u": "105;54;9;2",
+      "tan_max_p": 5.587627574750129e+31,
+      "tan_max_u": 8.295777603902792e+31
+    },
+    "P1_upstream_lobe": {
+      "limit": 1e+30,
+      "onset_step": 700,
+      "reason": "tangent_non_finite_or_above_limit",
+      "t_u_l": 9.539809226989746,
+      "tan_argmax_p": "105;54;9",
+      "tan_argmax_u": "105;54;9;2",
+      "tan_max_p": 3.515050468876415e+31,
+      "tan_max_u": 5.218691461682759e+31
+    }
+  }
+}

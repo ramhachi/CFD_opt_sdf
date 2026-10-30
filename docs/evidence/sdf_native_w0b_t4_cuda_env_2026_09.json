@@ -1,0 +1,121 @@
+{
+  "artifacts": {
+    "nvidia_smi": {
+      "path": "work/sdf_native_w0b_t4_cuda_env_2026_09/nvidia_smi.txt",
+      "sha256": "6093f6e42e1784881279c70eb82f4f87b8c0cac5603a29799993f9f2ee922784"
+    },
+    "resolve_stdout": {
+      "path": "work/sdf_native_w0b_t4_cuda_env_2026_09/resolve_stdout.txt",
+      "sha256": "7076b192ec0ee7cd262ced71889673cb11a84480ac21eb3ee09df8f1be444986"
+    },
+    "smoke_stdout": {
+      "path": "work/sdf_native_w0b_t4_cuda_env_2026_09/smoke_stdout.txt",
+      "sha256": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb"
+    }
+  },
+  "claims_not_supported": [
+    "no WaterLily time step, force value or GridSDF GPU bridge qualification (W1g)",
+    "no CUDA/Enzyme reverse capability",
+    "no v16, FD gradient, topology or optimizer claim",
+    "no absolute, grid-independent, high-Re or full-vehicle downforce claim"
+  ],
+  "claims_supported": [
+    "the committed julia/CFDSDFWaterLilyT4 Project/Manifest pair instantiates on the explicitly selected Colab T4 runtime",
+    "CUDA.jl is functional on the T4 and the WaterLily CUDA extension activates",
+    "CuArray and KernelAbstractions CUDA smoke operations pass"
+  ],
+  "environment": {
+    "cpu_environment_untouched": {
+      "evidence_path": "docs/evidence/sdf_native_w0_julia_env_2026_09.json",
+      "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c"
+    },
+    "gpu": {
+      "compute_capability": "7.5.0",
+      "cuda_runtime_version": "12.8.0",
+      "driver_version": "13.3.0",
+      "memory_total_mib": 15360,
+      "name": "Tesla T4",
+      "total_memory_bytes": 16106127360,
+      "uuid": "GPU-1fe89c69-4615-ad3d-88cb-2450c240208e"
+    },
+    "manifest": {
+      "cuda_jl": "6.3.1",
+      "julia_version": "1.12.6",
+      "path": "julia/CFDSDFWaterLilyT4/Manifest.toml",
+      "project_hash": "f6e7f19c1f47d75c62fe182a4b93f19b7da9a5ec",
+      "sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+      "waterlily": "1.8.0"
+    },
+    "project": {
+      "deps": [
+        "CUDA",
+        "WaterLily"
+      ],
+      "path": "julia/CFDSDFWaterLilyT4/Project.toml",
+      "sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
+    },
+    "runtime": {
+      "cuda_jl_version": "6.3.1",
+      "julia_version": "1.12.6",
+      "waterlily_version": "1.8.0"
+    }
+  },
+  "evidence_class": "capability_and_contract",
+  "existing_evidence_modified": false,
+  "flags": {
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false
+  },
+  "gate_id": "sdf_native_w0b_t4_cuda_env_2026_09",
+  "gates": {
+    "G0_targeted_runtime": {
+      "detail": "nvidia-smi T4 match; GPU_NAME=Tesla T4",
+      "pass": true
+    },
+    "G1_cuda_functional": {
+      "detail": "CUDA_FUNCTIONAL=true",
+      "pass": true
+    },
+    "G2_cuarray_smoke": {
+      "detail": "CUARRAY_SMOKE=true",
+      "pass": true
+    },
+    "G3_ka_smoke": {
+      "detail": "KA_SMOKE=true",
+      "pass": true
+    },
+    "G4_waterlily_cuda_ext": {
+      "detail": "WATERLILY_CUDA_EXT=true",
+      "pass": true
+    },
+    "G5_no_solver_step": {
+      "detail": "no Simulation/sim_step! marker present",
+      "pass": true
+    },
+    "G6_identity": {
+      "detail": "identity fields {'julia_version': '1.12.6', 'waterlily_version': '1.8.0', 'cuda_jl_version': '6.3.1', 'gpu_name': 'Tesla T4', 'gpu_compute_capability': '7.5.0', 'gpu_total_memory_bytes': '16106127360', 'gpu_uuid': 'GPU-1fe89c69-4615-ad3d-88cb-2450c240208e', 'cuda_driver_version': '13.3.0', 'cuda_runtime_version': '12.8.0'}",
+      "pass": true
+    }
+  },
+  "generated_on": {
+    "base_commit": "90e55180a6e00f376187222e0e6ad764a3e3a793",
+    "platform": "Colab managed runtime (Linux x86_64) driven through the colab-mcp browser connection",
+    "python": "3.12.13",
+    "recording_host": "macOS-26.3.1-arm64-arm-64bit"
+  },
+  "immutable": true,
+  "kind": "sdf_native_w0b_t4_cuda_env",
+  "registered_criteria": {
+    "path": "docs/evidence/sdf_native_w0b_t4_cuda_env_criteria_2026_09.json",
+    "sha256": "9f68eb6fae9cf412b1ab9694045fd053b9b7298ba11d2b277394e8526f15d843"
+  },
+  "schema_version": 1,
+  "solver_started": false,
+  "verdict": {
+    "fail_closed": false,
+    "w0b_qualified": true
+  }
+}

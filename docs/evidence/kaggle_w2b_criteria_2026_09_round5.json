@@ -1,0 +1,386 @@
+{
+  "backend": {
+    "accelerator": "NvidiaTeslaT4",
+    "backend": "kaggle_background",
+    "compute_capability": "7.5.0",
+    "cuda_driver_api_version": "13.3.0",
+    "cuda_jl_version": "6.3.1",
+    "cuda_runtime_version": "12.8.0",
+    "cuda_visible_devices": "0",
+    "driver_version": "580.159.04",
+    "gpu_count": 2,
+    "julia_version": "1.12.6",
+    "uuid_policy": "Record selected GPU 0 UUID for each run; UUIDs are ephemeral and not compared across versions.",
+    "waterlily_version": "1.8.0"
+  },
+  "claims_not_supported": [
+    "no formal Grid Convergence Index or asymptotic-order qualification",
+    "no absolute or literature Cd validation; the dimensionless sphere domain is a capability fixture",
+    "no target-aerodynamics, full-vehicle, high-Re, gradient, reverse-mode, topology, v16 or optimizer claim"
+  ],
+  "claims_supported": [
+    "analytic and sampled GridSDF sphere primals complete on the registered T4 backend at 16, 24 and 32 cells per diameter",
+    "the sampled geometry stays within the registered per-grid analytic comparison bound",
+    "the finest-two-grid Cd response is assessed against the preregistered 3% W2b PoC candidate bound"
+  ],
+  "criteria_id": "kaggle_w2b_sphere_flow_grid_ladder_2026_09_round5",
+  "evidence_class": "sampled_and_analytic_sphere_t4_flow_grid_response",
+  "existing_evidence_modified": false,
+  "failure_policy": "Any failed gate is a diagnostic stop; preserve outputs, do not change thresholds after observing the GPU results, and register a new immutable round before retry.",
+  "fixture": {
+    "cases": [
+      {
+        "case_id": "analytic_16",
+        "cells_per_diameter": 16,
+        "flow_dims": [
+          96,
+          64,
+          64
+        ],
+        "mode": "analytic",
+        "reynolds": 100.0,
+        "solver_center": [
+          32,
+          32,
+          32
+        ],
+        "solver_radius": 8.0,
+        "u_inf": 1.0,
+        "viscosity": 0.16,
+        "world_origin_m": [
+          -1.75,
+          -2.0,
+          -2.0
+        ],
+        "world_per_solver": 0.0625
+      },
+      {
+        "case_id": "gridsdf_16",
+        "cells_per_diameter": 16,
+        "flow_dims": [
+          96,
+          64,
+          64
+        ],
+        "mode": "gridsdf",
+        "reynolds": 100.0,
+        "solver_center": [
+          32,
+          32,
+          32
+        ],
+        "solver_radius": 8.0,
+        "u_inf": 1.0,
+        "viscosity": 0.16,
+        "world_origin_m": [
+          -1.75,
+          -2.0,
+          -2.0
+        ],
+        "world_per_solver": 0.0625
+      },
+      {
+        "case_id": "analytic_24",
+        "cells_per_diameter": 24,
+        "flow_dims": [
+          144,
+          96,
+          96
+        ],
+        "mode": "analytic",
+        "reynolds": 100.0,
+        "solver_center": [
+          48,
+          48,
+          48
+        ],
+        "solver_radius": 12.0,
+        "u_inf": 1.0,
+        "viscosity": 0.24,
+        "world_origin_m": [
+          -1.75,
+          -2.0,
+          -2.0
+        ],
+        "world_per_solver": 0.041666666666666664
+      },
+      {
+        "case_id": "gridsdf_24",
+        "cells_per_diameter": 24,
+        "flow_dims": [
+          144,
+          96,
+          96
+        ],
+        "mode": "gridsdf",
+        "reynolds": 100.0,
+        "solver_center": [
+          48,
+          48,
+          48
+        ],
+        "solver_radius": 12.0,
+        "u_inf": 1.0,
+        "viscosity": 0.24,
+        "world_origin_m": [
+          -1.75,
+          -2.0,
+          -2.0
+        ],
+        "world_per_solver": 0.041666666666666664
+      },
+      {
+        "case_id": "analytic_32",
+        "cells_per_diameter": 32,
+        "flow_dims": [
+          192,
+          128,
+          128
+        ],
+        "mode": "analytic",
+        "reynolds": 100.0,
+        "solver_center": [
+          64,
+          64,
+          64
+        ],
+        "solver_radius": 16.0,
+        "u_inf": 1.0,
+        "viscosity": 0.32,
+        "world_origin_m": [
+          -1.75,
+          -2.0,
+          -2.0
+        ],
+        "world_per_solver": 0.03125
+      },
+      {
+        "case_id": "gridsdf_32",
+        "cells_per_diameter": 32,
+        "flow_dims": [
+          192,
+          128,
+          128
+        ],
+        "mode": "gridsdf",
+        "reynolds": 100.0,
+        "solver_center": [
+          64,
+          64,
+          64
+        ],
+        "solver_radius": 16.0,
+        "u_inf": 1.0,
+        "viscosity": 0.32,
+        "world_origin_m": [
+          -1.75,
+          -2.0,
+          -2.0
+        ],
+        "world_per_solver": 0.03125
+      }
+    ],
+    "domain": {
+      "boundary_conditions": "same registered WaterLily Simulation defaults as W2-T4a/W2-T4b; uniform inflow uBC=(U,0,0), no periodic direction, exitBC disabled",
+      "dimensionless_extents_D": [
+        6.0,
+        4.0,
+        4.0
+      ],
+      "freestream_direction": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "julia_threads": 1,
+      "memory": "CuArray",
+      "precision": "Float32",
+      "sphere_center_over_D": [
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    "geometry": {
+      "analytic_mode": "exact sphere SDF evaluated in solver coordinates",
+      "gridsdf_mode": "canonical CPU GridSDF -> CuArray exact round-trip -> GridSDFWaterLilyBody",
+      "physical_sphere_center_m": [
+        0.25,
+        0.0,
+        0.0
+      ],
+      "physical_sphere_radius_m": 0.5,
+      "sampled_phi_lattice": {
+        "expected_measured_margin_m": 0.19999998807907104,
+        "margin_gate_m": 0.15,
+        "origin_m": [
+          -1.0,
+          -0.8,
+          -0.7
+        ],
+        "outside_value_m": 3.0,
+        "shape": [
+          61,
+          33,
+          29
+        ],
+        "spacing_m": [
+          0.05,
+          0.05,
+          0.05
+        ]
+      },
+      "sampled_phi_sha256": "393d5d7897885d71cda0902129a4aa3db561c59b1a85e8e221d55ce19fca4161"
+    },
+    "time": {
+      "burn_in_tu_d": 40.0,
+      "force_sampling": "every 4 solver steps",
+      "primary_time_mean": "trapezoidal physical-time-weighted mean over the registered [40,60] tU/D samples",
+      "runtime_limit_per_case_s": 1800.0,
+      "stationarity_split_tu_d": 50.0,
+      "t_end_tu_d": 60.0
+    }
+  },
+  "flags": {
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_grid_response_sphere_t4_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "waterlily_sampled_sphere_t4_qualified": true
+  },
+  "gates_registered_before_measurement": {
+    "T0_prerequisites": "All registered prior result, criteria, Project/Manifest and source-file hashes match.",
+    "T10_finest_grid_response": "For each geometry mode, symmetric relative difference between time-weighted Cd at 24 and 32 cells/D <= 3%. This is the registered W2b PoC candidate bound; not a formal GCI. Also report 16-24 and 24-32 changes and whether the latter decreases.",
+    "T11_runtime_vram": "Every case has positive wall time and ms/step, and 0 < peak_vram_bytes < vram_total_bytes.",
+    "T12_backend_identity": "Two Tesla T4s are inventoried; selected first UUID is recorded; NVIDIA driver, CUDA driver API version, CUDA runtime version, compute capability, Julia, CUDA.jl, WaterLily, Project and Manifest match this registration.",
+    "T13_artifact_retrieval": "Exact Kaggle version has a DONE marker and every file in its SHA-256 manifest verifies locally.",
+    "T1_completion": "All six registered cases complete through at least 60 tU/D with the exact case inventory and parameters.",
+    "T2_finiteness": "u and p arrays are finite at completion for every case.",
+    "T3_force_finite": "Every value in every case force CSV is finite, the sample count matches, and CSV SHA-256 matches its summary.",
+    "T4_drag_sign": "Window-mean drag is positive for all six cases.",
+    "T5_stationarity": "For each case, |first-half mean drag - second-half mean drag| / |whole-window mean drag| <= 0.02.",
+    "T6_lift_bound": "For each case, abs(window-mean lift) / window-mean drag <= 0.10.",
+    "T7_canonical_grid": "Each GridSDF case has the exact canonical phi and device-round-trip SHA; measured margin >= 0.15 m and within 1e-6 m of 0.19999998807907104 m; separately reported configured gate equals 0.15 m.",
+    "T8_16_baseline_agreement": "At 16 cells/D, analytic and GridSDF window-mean drag each agree within 1% of the existing matching W2-T4a/W2-T4b T4 result.",
+    "T9_geometry_interpolation_agreement": "At each rung, analytic-vs-GridSDF time-weighted Cd relative difference <= 1%; motivated by the previously observed ~0.22% same-fixture cross-geometry difference with over 4x margin."
+  },
+  "immutable": true,
+  "inputs": {
+    "baseline_drag": {
+      "analytic_16": 88.42577373189188,
+      "gridsdf_16": 88.23605899425723
+    },
+    "canonical_phi_sha256": "393d5d7897885d71cda0902129a4aa3db561c59b1a85e8e221d55ce19fca4161",
+    "device_grid": {
+      "path": "julia/CFDSDFWaterLily/src/DeviceGridSDF.jl",
+      "sha256": "2f02c840f4fad5ba5d26d42f4c24bc83f413502b15487427a7dc52f06a80a874"
+    },
+    "forces": {
+      "path": "julia/CFDSDFWaterLily/src/Forces.jl",
+      "sha256": "0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e"
+    },
+    "grid_sdf_body": {
+      "path": "julia/CFDSDFWaterLily/src/GridSDFBody.jl",
+      "sha256": "fa6aecccecbf140158396c9c8e5f3a6c16d3810f792ba45b9c8f4ee481709058"
+    },
+    "job": {
+      "path": "scripts/waterlily_w2b_grid_ladder_job.jl",
+      "sha256": "eaedc02478ee1b966dce3ecb24bc9b8bb2b41223706f9ea1a71c070619c53e15"
+    },
+    "k0_result": {
+      "path": "docs/evidence/kaggle_k0_result_2026_09.json",
+      "sha256": "0f9176083c2cb2503101b7f69fd48ef9bc24f15f63d7d187e32bc8eef4cda719"
+    },
+    "k0_result_sha256": "0f9176083c2cb2503101b7f69fd48ef9bc24f15f63d7d187e32bc8eef4cda719",
+    "manifest": {
+      "path": "julia/CFDSDFWaterLilyT4/Manifest.toml",
+      "sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707"
+    },
+    "manifest_sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "module": {
+      "path": "julia/CFDSDFWaterLily/src/CFDSDFWaterLily.jl",
+      "sha256": "996224432490df72726e208ad36d1a68657b506ba4058d79a0f9eb72154d4e9e"
+    },
+    "project": {
+      "path": "julia/CFDSDFWaterLilyT4/Project.toml",
+      "sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
+    },
+    "project_sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "runtime": {
+      "path": "julia/CFDSDFWaterLily/src/Runtime.jl",
+      "sha256": "bd830f7f307f7bd5de67642b4e9243ae5586959fd475765b13ef14d19637d458"
+    },
+    "simulation": {
+      "path": "julia/CFDSDFWaterLily/src/Simulation.jl",
+      "sha256": "99cfc7a30741c17b7e83f4451270e0536e336dd2c79cc1f904492910e8588cc2"
+    },
+    "w1g_result": {
+      "path": "docs/evidence/kaggle_w1g_round2_result_2026_09.json",
+      "sha256": "bb233f72068b5c6681b9f3f9b4dba180b538f945f8283312fb521c24ac802eb8"
+    },
+    "w1g_result_sha256": "bb233f72068b5c6681b9f3f9b4dba180b538f945f8283312fb521c24ac802eb8",
+    "w2a_cpu_criteria": {
+      "path": "docs/evidence/sdf_native_w2a_sphere_cpu_criteria_2026_09.json",
+      "sha256": "aea91e6cc8de65ef072b3fbb19a3ca50a01b5e75198e62c128fda3fe8849602f"
+    },
+    "w2a_cpu_result": {
+      "path": "docs/evidence/sdf_native_w2a_sphere_cpu_2026_09.json",
+      "sha256": "26b6a65f6a2f89dde7e9976b2209b776eeb90d895432707214a582e9192f920b"
+    },
+    "w2a_cpu_result_sha256": "26b6a65f6a2f89dde7e9976b2209b776eeb90d895432707214a582e9192f920b",
+    "w2t4a_analytic_criteria": {
+      "path": "docs/evidence/sdf_native_w2t4a_analytic_sphere_criteria_2026_09.json",
+      "sha256": "154fec9111737f8cb76579f0a02fd2d6b4c043c30250d1d24b8a5d05b3ea15ad"
+    },
+    "w2t4a_analytic_result": {
+      "path": "docs/evidence/sdf_native_w2t4a_analytic_sphere_2026_09.json",
+      "sha256": "70f747e264bacc9c3360ab9d6445c7bb77e6b11a6a6d521271297780301af754"
+    },
+    "w2t4a_result_sha256": "70f747e264bacc9c3360ab9d6445c7bb77e6b11a6a6d521297780301af754",
+    "w2t4b_round2_criteria": {
+      "path": "docs/evidence/kaggle_w2t4b_criteria_2026_09_round2.json",
+      "sha256": "85bd5ba4f6ff0a13c7f0509b1ba86b74cfeb7bc346fc590b27a819ce3f228e66"
+    },
+    "w2t4b_round2_result": {
+      "path": "docs/evidence/kaggle_w2t4b_round2_result_2026_09.json",
+      "sha256": "737ea3f6946b0eb3867902ea2b1db8bc6c92ccb8f45de30f664cd34dd2fb4b82"
+    },
+    "w2t4b_round2_result_sha256": "737ea3f6946b0eb3867902ea2b1db8bc6c92ccb8f45de30f664cd34dd2fb4b82",
+    "waterlily_body": {
+      "path": "julia/CFDSDFWaterLily/src/WaterLilyBody.jl",
+      "sha256": "e5b9329fbf29bc86fa1eb1a5481b255535e255e04418d0d2582f1d33e42df369"
+    }
+  },
+  "previous_round": {
+    "criteria_path": "docs/evidence/kaggle_w2b_criteria_2026_09_round4.json",
+    "criteria_sha256": "4b5789d4dcf2e9b79b10eb5e388d5a56951df5c835f0c993903527463b6a82d0",
+    "diagnostic_path": "docs/evidence/kaggle_w2b_version10_partial_failure_diagnostic_2026_09.json",
+    "diagnostic_scope": "version 10 T4 smoke and analytic_16 completed; gridsdf_16 stopped during build_body before solver integration because zero_level_margin_m was unbound in Main; partial response is diagnostic only",
+    "diagnostic_sha256": "b2df282a40d776abeaf3ec63b086c4e297e6ffe1bafdd1de3b44d17a415f7cec"
+  },
+  "registered_before_implementation": false,
+  "registered_before_measurement": true,
+  "registration_note": "Round 4 pinned the completion-counter fix. Kaggle version 10 passed T4 smoke and completed analytic_16, then gridsdf_16 stopped before solver integration because zero_level_margin_m was called as an unbound Main name. The immutable version-10 diagnostic binds all retrieved outputs and records analytic_16 as partial diagnostic only. The source job now calls the already-existing helper through CFDSDFWaterLily.GridSDFBody; round 5 updates only the source commit and W2b job hash for that lookup fix. Backend identity, fixture parameters, all other registered inputs, and every numerical threshold equal round 4. No round-5 solver measurement has occurred.",
+  "round": 5,
+  "schema_version": 1,
+  "scope_exclusions": [
+    "no formal GCI or asymptotic-order claim",
+    "no absolute or literature Cd validation",
+    "no v16/target-aerodynamics/high-Re claim",
+    "no gradient/reverse-mode/topology/optimizer qualification"
+  ],
+  "solver_started": false,
+  "source_commit": "65dbb015994e34669ec5d22f671b97128eaf87d2",
+  "thresholds": {
+    "analytic_gridsdf_time_weighted_relative_cd": 0.01,
+    "case_wall_time_limit_s": 1800.0,
+    "finest_two_grid_time_weighted_relative_cd": 0.03,
+    "phi_margin_abs_tolerance_m": 1e-06,
+    "phi_margin_expected_m": 0.19999998807907104,
+    "phi_margin_min_m": 0.15,
+    "relative_lift_to_drag": 0.1,
+    "stationarity_relative_drift": 0.02,
+    "t4_baseline_relative_drag": 0.01
+  }
+}

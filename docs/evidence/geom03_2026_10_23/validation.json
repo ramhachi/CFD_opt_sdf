@@ -1,0 +1,194 @@
+{
+  "schema": "geom03_software_validation_v1",
+  "evidence_class": "software_development_validation_not_GEOM_study",
+  "source_at_start": {
+    "utc": "2026-10-22 18:12:24 UTC",
+    "command": "nice -n 15 env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 NUMEXPR_NUM_THREADS=1 BLIS_NUM_THREADS=1 .venv/bin/python -m pytest -q --junitxml=/tmp/cfd20261023-pytest.xml > /tmp/cfd20261023-pytest.txt 2>&1",
+    "source_hashes": {
+      "runner": "4fac45020188eb8da62fb3d500f34d758f7dd18f6f78f6193b0507171dd78250",
+      "checker": "9e23a18c9110e06ab48f26326c54cffe310e6766415a63d704f3857492091fb4",
+      "tests": "7130c427c0de7f1b099119a9afdc06138a3a387a686bc9c7e226fd0135fc4415"
+    },
+    "base_commit": "bd088dfc576b78b313dc894423f4e915f5707abf"
+  },
+  "compileall": {
+    "exit_code": 0,
+    "command": "env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 NUMEXPR_NUM_THREADS=1 BLIS_NUM_THREADS=1 .venv/bin/python -m compileall src tests"
+  },
+  "explicit_py_compile": {
+    "exit_code": 0,
+    "files": [
+      "scripts/geom03_run.py",
+      "scripts/geom03_check.py",
+      "tests/test_geom03.py"
+    ]
+  },
+  "targeted_pytest": {
+    "exit_code": 0,
+    "passed": 18,
+    "failed": 0,
+    "seconds_reported": 1.07,
+    "command": "nice -n 15 env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 NUMEXPR_NUM_THREADS=1 BLIS_NUM_THREADS=1 .venv/bin/python -m pytest -q tests/test_geom03.py --junitxml=/tmp/cfd20261023-geom03-targeted.xml",
+    "scope": "Five distinct known tiny input pairs plus P1/component-overlap/scaling/halo/strictJSON/freezing/resource/cache/resume/terminal/watchdog failure tests; no registered fixture generation or new seed."
+  },
+  "full_pytest": {
+    "status": "PASS",
+    "exit_code": 0,
+    "passed": 3117,
+    "skipped": 73,
+    "warnings": 7294,
+    "seconds_reported": 604.17,
+    "command": "nice -n 15 env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 NUMEXPR_NUM_THREADS=1 BLIS_NUM_THREADS=1 .venv/bin/python -m pytest -q --junitxml=/tmp/cfd20261023-pytest-final.xml > /tmp/cfd20261023-pytest-final.txt 2>&1",
+    "source_hashes": {
+      "runner": "bafffc4c2864667cb2140471c5077e598b42688a89ad18eadee4a0cccc3d7962",
+      "checker": "9e23a18c9110e06ab48f26326c54cffe310e6766415a63d704f3857492091fb4",
+      "tests": "4ff8c2552424d1531389c1ad68a13b85affb6a791ed0283cef1be70d9f0d61ac"
+    },
+    "log": "docs/evidence/geom03_2026_10_23/validation/full_pytest.txt.gz",
+    "junit": "docs/evidence/geom03_2026_10_23/validation/full_pytest.xml.gz"
+  },
+  "inherited_merge_diff_check": {
+    "scope": "Incoming FID result merge only",
+    "result": "13 trailing-whitespace lines in immutable owner logs; preserved exact bytes. Subsequent own delta checks recorded separately."
+  },
+  "artifacts": {
+    "docs/evidence/geom03_2026_10_23/validation/compileall.txt": {
+      "sha256": "69791aac5cf1208db674bccd91504dca1dd73daaff4d91e885f5deebee911bd6",
+      "bytes": 289
+    },
+    "docs/evidence/geom03_2026_10_23/validation/targeted_pytest.txt": {
+      "sha256": "65b8c9cb95b36b565fb1855dc0370e20447ab60e12de6aefc6dfbeb161a087fa",
+      "bytes": 99
+    },
+    "docs/evidence/geom03_2026_10_23/validation/targeted_pytest.xml": {
+      "sha256": "c521a8e38d7322385a444e21b9ac79a452b0070ce3c50de1dd1dd9f416a13246",
+      "bytes": 2468
+    },
+    "docs/evidence/geom03_2026_10_23/validation/initial_full_pytest.txt.gz": {
+      "sha256": "f7ce12818380b78154ed2d697b0e28aca11e9b88b5317dd2836b8e5b5db0988c",
+      "uncompressed_sha256": "96aa851ba20246eb4ef32008b953a5180b3e335c16fed2cf106c5fbbdbcbaa02",
+      "bytes": 1244,
+      "uncompressed_bytes": 6501
+    },
+    "docs/evidence/geom03_2026_10_23/validation/initial_full_pytest.xml.gz": {
+      "sha256": "5054cd5801ceee9723399827d69fcaa3e859d031cd8a3bdafb1ce879263ad220",
+      "uncompressed_sha256": "207903a8bd5f2fb2985ed00dfd03c701fb76e798541d032602aecb656181f765",
+      "bytes": 66082,
+      "uncompressed_bytes": 460873
+    },
+    "docs/evidence/geom03_2026_10_23/validation/final_compileall.txt": {
+      "sha256": "db09e9c84ccc45df603a3b57618d63e6700cc1d9ac5053e54289c36134d8d530",
+      "bytes": 248
+    },
+    "docs/evidence/geom03_2026_10_23/validation/final_targeted_pytest.txt": {
+      "sha256": "d08643ed23c666b0c0b1b6e4a64eb227b48c31d7b615fc917a236912688ed8aa",
+      "bytes": 99
+    },
+    "docs/evidence/geom03_2026_10_23/validation/final_targeted_pytest.xml": {
+      "sha256": "b5c5295126b20f54508478e5db03092133122ef8018824968e1a29ddb368d5db",
+      "bytes": 3506
+    },
+    "docs/evidence/geom03_2026_10_23/validation/full_pytest.txt.gz": {
+      "sha256": "6394759c4a8cd4f26683dd26b2fc63020ceeb3a5f5e997c39f876a63f712244d",
+      "uncompressed_sha256": "a5d67a45b042aef3ae6b2d0eb3abd30225b7e1894185f1231e8ded6d1948626e",
+      "bytes": 1240,
+      "uncompressed_bytes": 6501
+    },
+    "docs/evidence/geom03_2026_10_23/validation/full_pytest.xml.gz": {
+      "sha256": "a86f99be5f798d147518885094b360340f5296cd303c49ab71ef46bb03c5eb22",
+      "uncompressed_sha256": "aec558e7ee7cbf6a6d8691891cefb5957d4e2a8159326e81e74a12ec0317a81c",
+      "bytes": 66238,
+      "uncompressed_bytes": 461911
+    }
+  },
+  "study_verdict": null,
+  "qualification_flags": "all false unchanged",
+  "shape_update_allowed": false,
+  "full_pytest_runs": [
+    {
+      "kind": "initial_reviewed_source_snapshot",
+      "exit_code": 0,
+      "passed": 3110,
+      "skipped": 73,
+      "warnings": 7294,
+      "seconds_reported": 628.05,
+      "source_hashes": {
+        "runner": "4fac45020188eb8da62fb3d500f34d758f7dd18f6f78f6193b0507171dd78250",
+        "checker": "9e23a18c9110e06ab48f26326c54cffe310e6766415a63d704f3857492091fb4",
+        "tests": "7130c427c0de7f1b099119a9afdc06138a3a387a686bc9c7e226fd0135fc4415"
+      },
+      "command": "nice -n 15 env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 NUMEXPR_NUM_THREADS=1 BLIS_NUM_THREADS=1 .venv/bin/python -m pytest -q --junitxml=/tmp/cfd20261023-pytest.xml > /tmp/cfd20261023-pytest.txt 2>&1",
+      "log": "docs/evidence/geom03_2026_10_23/validation/initial_full_pytest.txt.gz",
+      "junit": "docs/evidence/geom03_2026_10_23/validation/initial_full_pytest.xml.gz"
+    },
+    {
+      "kind": "final_reviewed_source_snapshot",
+      "status": "PASS",
+      "exit_code": 0,
+      "passed": 3117,
+      "skipped": 73,
+      "warnings": 7294,
+      "seconds_reported": 604.17,
+      "command": "nice -n 15 env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 NUMEXPR_NUM_THREADS=1 BLIS_NUM_THREADS=1 .venv/bin/python -m pytest -q --junitxml=/tmp/cfd20261023-pytest-final.xml > /tmp/cfd20261023-pytest-final.txt 2>&1",
+      "source_hashes": {
+        "runner": "bafffc4c2864667cb2140471c5077e598b42688a89ad18eadee4a0cccc3d7962",
+        "checker": "9e23a18c9110e06ab48f26326c54cffe310e6766415a63d704f3857492091fb4",
+        "tests": "4ff8c2552424d1531389c1ad68a13b85affb6a791ed0283cef1be70d9f0d61ac"
+      },
+      "log": "docs/evidence/geom03_2026_10_23/validation/full_pytest.txt.gz",
+      "junit": "docs/evidence/geom03_2026_10_23/validation/full_pytest.xml.gz"
+    }
+  ],
+  "registered_geometry_input_or_seed_executed_during_software_validation": false,
+  "final_source_at_full_test_start": {
+    "utc": "2026-10-22 18:28:57 UTC",
+    "command": "nice -n 15 env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 NUMEXPR_NUM_THREADS=1 BLIS_NUM_THREADS=1 .venv/bin/python -m pytest -q --junitxml=/tmp/cfd20261023-pytest-final.xml > /tmp/cfd20261023-pytest-final.txt 2>&1",
+    "source_hashes": {
+      "runner": "bafffc4c2864667cb2140471c5077e598b42688a89ad18eadee4a0cccc3d7962",
+      "checker": "9e23a18c9110e06ab48f26326c54cffe310e6766415a63d704f3857492091fb4",
+      "tests": "4ff8c2552424d1531389c1ad68a13b85affb6a791ed0283cef1be70d9f0d61ac"
+    }
+  },
+  "targeted_pytest_final": {
+    "exit_code": 0,
+    "passed": 25,
+    "failed": 0,
+    "seconds_reported": 0.77,
+    "log": "docs/evidence/geom03_2026_10_23/validation/final_targeted_pytest.txt",
+    "junit": "docs/evidence/geom03_2026_10_23/validation/final_targeted_pytest.xml",
+    "source_hashes": {
+      "runner": "bafffc4c2864667cb2140471c5077e598b42688a89ad18eadee4a0cccc3d7962",
+      "checker": "9e23a18c9110e06ab48f26326c54cffe310e6766415a63d704f3857492091fb4",
+      "tests": "4ff8c2552424d1531389c1ad68a13b85affb6a791ed0283cef1be70d9f0d61ac"
+    }
+  },
+  "compileall_final": {
+    "exit_code": 0,
+    "log": "docs/evidence/geom03_2026_10_23/validation/final_compileall.txt"
+  },
+  "explicit_py_compile_final": {
+    "exit_code": 0,
+    "files": [
+      "scripts/geom03_run.py",
+      "scripts/geom03_check.py",
+      "tests/test_geom03.py"
+    ]
+  },
+  "git_diff_check": {
+    "status": "PASS",
+    "exit_code": 0,
+    "commands": [
+      "git diff --check",
+      "git diff --cached --check"
+    ],
+    "scope": "Own staged/new source and documents against merged FID base; inherited immutable owner-log whitespace remains in the earlier merge record."
+  },
+  "FID_owner_manifest_final_recheck": {
+    "entries": 660,
+    "missing": 0,
+    "mismatches": 0,
+    "receipt": "docs/evidence/geom03_2026_10_23/github_catchup_pre_source_commit.json"
+  },
+  "software_validation_complete": true,
+  "source_snapshot_scope": "Tests ran on the explicitly hashed working-tree sources atop the recorded base; the subsequent source commit will bind those exact files before freeze."
+}

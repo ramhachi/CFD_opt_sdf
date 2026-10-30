@@ -1,0 +1,122 @@
+{
+  "analysis": {
+    "rule": "registration \u00a76",
+    "script": "scripts/fid01/analyze_fid01.py"
+  },
+  "case_order": [
+    {
+      "id": "V2_v18__parent_80p",
+      "shift_m": [
+        -0.000636719,
+        0.00395679,
+        0.0007239999999999999
+      ],
+      "state": "v18__parent"
+    },
+    {
+      "id": "V2_v18__camber_m11.3_reflex_m11.3_80p",
+      "shift_m": [
+        -0.000636719,
+        0.00395679,
+        0.0007239999999999999
+      ],
+      "state": "v18__camber_m11.3_reflex_m11.3"
+    }
+  ],
+  "case_template_origin": "infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/case_template (hash-identical, minus the v16 candidate STL); level V2 changes only the listed template entries",
+  "date": "2026-10-21",
+  "environment": {
+    "architecture": "amd64",
+    "foam_version": "OpenFOAM-v2512",
+    "note": "lock chosen by the observed Ubuntu codename (X2: Jammy and Noble are bit-identical for the v16 fixture); host recorded in environment.json; any other OS fails closed with diagnostics",
+    "observed_reference_os_version": "22.04.5",
+    "openfoam_family": "OpenCFD v2512",
+    "os_id": "ubuntu",
+    "package_version": "2512.0-2",
+    "registered_lock_suites": [
+      "jammy",
+      "noble"
+    ],
+    "version_codename": "jammy"
+  },
+  "evidence_class": "fid01_openfoam_uncertified_geometry (development smoke: statuses only)",
+  "export": {
+    "profile": "docs/evidence/opt01_v1_2026_10_15/geom02_gate_profile_v2.json",
+    "profile_sha256": "9055e15b4f1b596d97f023a81fafbadda6de9ba439e1935f34461de5699e0bbc"
+  },
+  "export_sha256": "13afa6526d9784376786154ffc363d1d76fd4998056be1d3053a0a993bc25f29",
+  "force_window": {
+    "force_n_per_coefficient": 0.32,
+    "minimum_rows": 20,
+    "rule": "last-25% iteration-tail window as in Round 5 and X2; forces in N from forceCoeffs Cd and -Cl",
+    "tail_fraction": 0.25
+  },
+  "immutable": true,
+  "inputs": {
+    "case_template/0/U": "ac791673b04d347f0a8c3b93d04eed5e6cc47321f2c9c48c5cfd4e767bf116c1",
+    "case_template/0/p": "8372855fe3a2144838e945c723d3f6ce0b277730ab7868e35cba047bc937c987",
+    "case_template/Allrun": "3d4b4d1b6429c77b44dfa888d8a810b495eeea94a3bfd766645c3eced7280d59",
+    "case_template/constant/transportProperties": "e44501f41494cdb653120ea5f8c6a64baa52bd26ca2f625427bf71ff827ee390",
+    "case_template/constant/triSurface/allowed_design_domain.stl": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446",
+    "case_template/constant/turbulenceProperties": "f9a5d6d76de0f28e1112f690f27d221361181f8bd7979de823914eefe0e0f927",
+    "case_template/system/blockMeshDict": "7a48d06b2d0881f4382cdd8f7f839c8dbb1badf7edf768f0b3f4389896130b98",
+    "case_template/system/controlDict": "640e101f1c292f1e3a84d848ecf24f602b637de970fb284f15cb50ff44cb7a9b",
+    "case_template/system/fvSchemes": "aaf8a02b7e65dae5e7a009509546cebd472caeebf65aff4f69e3b6cef96f3a2e",
+    "case_template/system/fvSolution": "007ddea730c1268410e406ecc83a82300d3840c353f0a6ce1ae2fbe9a4dfb643",
+    "case_template/system/snappyHexMeshDict": "e8fdf720a2af997828c9d73d1f860ac3389b17011123f28427a8cc6e0eeb0a43",
+    "case_template/system/surfaceFeatureExtractDict": "0f7c017a9edc5dd0819368089e35b59f8da84587432ab53facdb46e48fe0c4f8",
+    "openfoam_package_lock_jammy.json": "b5e59f8a7da34820fc3c6bda93b3524204dcaf4fa6e4f7f11d6c46ddddb66746",
+    "openfoam_package_lock_noble.json": "8bcf141db29d18800a55a70bca93175a37465ac18494e473efd32985317c7340",
+    "states/v18__camber_m11.3_reflex_m11.3.stl": "8a4f7784fb453ea8decf1942400971305a78a91b5515d86f85b31656682dbc0d",
+    "states/v18__parent.stl": "41ceb0c6f75ab465d4d85627c53fe8c5333a36a53baba0515dff535ff80fd626"
+  },
+  "launch_deadline_hours": 200.0,
+  "level": "V2",
+  "not_run_export_gate": [],
+  "per_case_failure_policy": "record the failing stage and continue; checkMesh exit 1 with exactly one concave-cell failure and fraction <= 0.08 is allowed; no retries; result.json rewritten after every case",
+  "purpose": "FID-01 M3a OpenFOAM level V2: registered v18 designs, matched rigid shifts (X3 generator), U3 pipeline",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "registered_before_run": true,
+  "registration": "docs/fid01_registration_2026_10_21.md \u00a75",
+  "round_id": "fid01_smoke_v2",
+  "shift_design": {
+    "generator": "Halton bases (2,3,5) for magnitudes and (7,11,13) for signs, rounded to 1e-6 mm; each vector paired with its exact mirror; all components non-zero; the same 32 shifts for every state (matched phases)",
+    "range_mm_per_axis_magnitude": [
+      0.5,
+      4.0
+    ],
+    "shift_tags": [
+      "80p"
+    ]
+  },
+  "stage_timeout_s": 43200,
+  "states": {
+    "v18__camber_m11.3_reflex_m11.3": {
+      "file": "states/v18__camber_m11.3_reflex_m11.3.stl",
+      "sha256": "8a4f7784fb453ea8decf1942400971305a78a91b5515d86f85b31656682dbc0d",
+      "triangles": 646376
+    },
+    "v18__parent": {
+      "file": "states/v18__parent.stl",
+      "sha256": "41ceb0c6f75ab465d4d85627c53fe8c5333a36a53baba0515dff535ff80fd626",
+      "triangles": 643072
+    }
+  },
+  "states_sha256": "a5800f93f6a58631c30abcd94351f4d760b7b01a88da746d362cc2f1ac82241b",
+  "stop_after_consecutive_failures": 10,
+  "template_changes": {
+    "blockMesh_cells": [
+      50,
+      26,
+      18
+    ],
+    "endTime": null
+  }
+}

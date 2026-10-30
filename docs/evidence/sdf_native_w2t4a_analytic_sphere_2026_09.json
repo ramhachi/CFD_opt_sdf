@@ -1,0 +1,180 @@
+{
+  "artifacts": {
+    "repeat": {
+      "path": "work/sdf_native_w2t4a_analytic_sphere_2026_09/run_repeat_stdout.txt",
+      "sha256": "e9ba625382e3723db7bc8b6d72e263c7a33d0a6856fb3f3b43d034db53fc21e4"
+    },
+    "run": {
+      "path": "work/sdf_native_w2t4a_analytic_sphere_2026_09/run_stdout.txt",
+      "sha256": "605115f680977a51ef9d50078192a124406fadf18c212b152945e3444941d1ea"
+    }
+  },
+  "claims_not_supported": [
+    "no GridSDF/GPU bridge qualification (analytic body only; that is W1g)",
+    "no sampled-sphere T4 run (that is W2-T4b)",
+    "no grid independence, absolute Cd, literature validation or W2b ladder",
+    "no v16 geometry behavior, gradient, topology or optimizer claim"
+  ],
+  "claims_supported": [
+    "the registered W2a analytic sphere fixture runs on the registered Colab T4 CUDA backend with mem=CuArray",
+    "the T4 analytic run reaches the registered horizon with finite fields and forces and a positive drag sign",
+    "the T4 analytic window-mean drag agrees with the CPU analytic fixture within the registered 1% bound",
+    "the T4 force evidence is repeatable and both arithmetic and physical-time-weighted means are recorded"
+  ],
+  "evidence_class": "capability_and_numerical",
+  "existing_evidence_modified": false,
+  "flags": {
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false
+  },
+  "gate_id": "sdf_native_w2t4a_analytic_sphere_2026_09",
+  "gates": {
+    "T0_environment": {
+      "detail": "GPU=Tesla T4 cuda_jl=6.3.1 manifest=c537ae8ef4eaacf7",
+      "pass": true
+    },
+    "T1_completion": {
+      "detail": "steps=2246 t_end_reached=60.000022888183594",
+      "pass": true
+    },
+    "T2_finiteness": {
+      "detail": "finite_u=True finite_p=True",
+      "pass": true
+    },
+    "T3_force_finite": {
+      "detail": "force_samples=561 finite=True",
+      "pass": true
+    },
+    "T4_drag_sign": {
+      "detail": "window_mean_drag=88.42577373189188",
+      "pass": true
+    },
+    "T5_stationarity": {
+      "detail": "relative drift=1.197219e-07 <= 0.02",
+      "pass": true
+    },
+    "T6_cpu_t4_agreement": {
+      "detail": "|drag_T4-drag_CPU|/drag_CPU=6.751593e-08 <= 0.01 (T4=88.42577373189188 CPU=88.42577970204097)",
+      "pass": true
+    },
+    "T7_repeatability": {
+      "detail": "repeat relative difference=0.000000e+00 <= 1e-06",
+      "pass": true
+    },
+    "T8_runtime_and_vram": {
+      "detail": "peak_vram=53831920 total=15637086208 wall=27.9407639503479 ms_per_step=12.445774588128241",
+      "pass": true
+    }
+  },
+  "generated_on": {
+    "platform": "Colab T4 runtime (Linux x86_64) driven through the colab-mcp browser connection",
+    "python": "3.12.13",
+    "recording_host": "macOS-26.3.1-arm64-arm-64bit"
+  },
+  "immutable": true,
+  "inputs": {
+    "cpu_analytic_window_mean_drag": 88.42577970204097,
+    "manifest_sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "project_sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "w0b_result": {
+      "path": "docs/evidence/sdf_native_w0b_t4_cuda_env_2026_09.json",
+      "sha256": "4f822429656f36020410bcae6c375591d512ac3f4f58011e263346515f1237e6"
+    },
+    "w2a_result": {
+      "path": "docs/evidence/sdf_native_w2a_sphere_cpu_2026_09.json",
+      "sha256": "26b6a65f6a2f89dde7e9976b2209b776eeb90d895432707214a582e9192f920b"
+    }
+  },
+  "kind": "sdf_native_w2t4a_analytic_sphere",
+  "registered_criteria": {
+    "path": "docs/evidence/sdf_native_w2t4a_analytic_sphere_criteria_2026_09.json",
+    "sha256": "154fec9111737f8cb76579f0a02fd2d6b4c043c30250d1d24b8a5d05b3ea15ad"
+  },
+  "runs": {
+    "repeat": {
+      "cd": 0.8795874366347541,
+      "csv_sha256": "e321b5c568001f9c6ab9774b365d32b5a7aa0b699df25b6003efe306115d9075",
+      "cuda_jl_version": "6.3.1",
+      "final_force": [
+        88.42576597954303,
+        -1.8466609802203493e-05,
+        -3.562634844911372e-07,
+        56.94866908102449,
+        31.47709689851854
+      ],
+      "finite_forces": true,
+      "finite_p": true,
+      "finite_u": true,
+      "first_half_mean_drag": 88.42577899683644,
+      "first_step_seconds": 21.501427173614502,
+      "force_samples": 561,
+      "gpu_name": "Tesla T4",
+      "julia_threads": 1,
+      "julia_version": "1.12.6",
+      "mode": "analytic",
+      "ms_per_step": 12.579186615805849,
+      "peak_vram_bytes": 53857208,
+      "second_half_mean_drag": 88.42576841033505,
+      "steps": 2246,
+      "t_end_reached": 60.000022888183594,
+      "t_end_target": 60.0,
+      "time_weighted_mean_drag": 88.42577367117276,
+      "time_weighted_mean_lift": -1.1091006085885731e-05,
+      "time_weighted_mean_side": 1.1157223151833824e-05,
+      "vram_total_bytes": 15637086208,
+      "wall_seconds": 28.24027395248413,
+      "waterlily_backend": "KernelAbstractions",
+      "waterlily_version": "1.8.0",
+      "window_mean_drag": 88.42577373189188,
+      "window_mean_lift": -1.1118114822909745e-05,
+      "window_mean_side": 1.1118836967250505e-05
+    },
+    "run": {
+      "cd": 0.8795874366347541,
+      "csv_sha256": "e321b5c568001f9c6ab9774b365d32b5a7aa0b699df25b6003efe306115d9075",
+      "cuda_jl_version": "6.3.1",
+      "final_force": [
+        88.42576597954303,
+        -1.8466609802203493e-05,
+        -3.562634844911372e-07,
+        56.94866908102449,
+        31.47709689851854
+      ],
+      "finite_forces": true,
+      "finite_p": true,
+      "finite_u": true,
+      "first_half_mean_drag": 88.42577899683644,
+      "first_step_seconds": 21.483659029006958,
+      "force_samples": 561,
+      "gpu_name": "Tesla T4",
+      "julia_threads": 1,
+      "julia_version": "1.12.6",
+      "mode": "analytic",
+      "ms_per_step": 12.445774588128241,
+      "peak_vram_bytes": 53831920,
+      "second_half_mean_drag": 88.42576841033505,
+      "steps": 2246,
+      "t_end_reached": 60.000022888183594,
+      "t_end_target": 60.0,
+      "time_weighted_mean_drag": 88.42577367117276,
+      "time_weighted_mean_lift": -1.1091006085885731e-05,
+      "time_weighted_mean_side": 1.1157223151833824e-05,
+      "vram_total_bytes": 15637086208,
+      "wall_seconds": 27.9407639503479,
+      "waterlily_backend": "KernelAbstractions",
+      "waterlily_version": "1.8.0",
+      "window_mean_drag": 88.42577373189188,
+      "window_mean_lift": -1.1118114822909745e-05,
+      "window_mean_side": 1.1118836967250505e-05
+    }
+  },
+  "schema_version": 1,
+  "solver_started": true,
+  "verdict": {
+    "fail_closed": false,
+    "w2t4a_qualified": true
+  }
+}

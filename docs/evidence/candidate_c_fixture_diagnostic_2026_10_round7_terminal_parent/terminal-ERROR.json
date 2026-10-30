@@ -1,0 +1,18 @@
+{
+  "criteria_sha256": "c2f3161b45797012331db271eab136d1c1ba6b5c7bbe7bfb8b085789723f17d5",
+  "detail": "ValueError: non-finite solver field at ('sphere', 'native')",
+  "job_sha256": "f615aa42ac34158d66e733fefbcadbe79011e1d4de1e451cda9fbdc108f4e448",
+  "partial_artifacts": [
+    {
+      "path": "work/candidate_c_fixture_diagnostic_2026_10_round7/run-001/raw_history.csv",
+      "sha256": "bafd59336800b53788d6b31348da501d01f4454cf7e5526b12c4d252b3f20129"
+    },
+    {
+      "path": "work/candidate_c_fixture_diagnostic_2026_10_round7/run-001/solver.transcript.txt",
+      "sha256": "50ceb03ce33031f0c10bbfaea516c7fcfdb7a7b5485e3723cc401cf068a4dc37"
+    }
+  ],
+  "runner_sha256": "fbd20f28735b1bfa16d1c923db32357c7b1ed6cb16210674050dda71aba8cccd",
+  "stage": "solver_or_host_verification",
+  "status": "ERROR"
+}

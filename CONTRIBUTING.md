@@ -15,6 +15,9 @@ short-lived branch from `main` for each change:
 Do not create or maintain a permanent `develop` branch. Open a pull request
 for every change to `main`; delete the short-lived branch after merging.
 
+**Current practice:** integration actually happens on `codex/kaggle-batch-migration` (merged `--no-ff`), not `main`; see
+`docs/git_branching_strategy.md`, "Current practice".
+
 ## Commits and pull requests
 
 - Keep commits small and describe one coherent change.

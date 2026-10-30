@@ -1,0 +1,55 @@
+{
+  "artifact_id": "stage_v_scheme_factor_v23_2026_09",
+  "evidence_class": "numerical_verification_factor_screen",
+  "issue": "P16 discretization factor (finest transition)",
+  "manifest": {
+    "path": "docs/evidence/stage_v_scheme_factor_v23_manifest_2026_09.json",
+    "registered_before_computation": true
+  },
+  "baseline_finest_transition": {
+    "downforce_v2": 0.5092669766413043,
+    "downforce_v3": 0.5221744316823105,
+    "downforce_absolute_drift": 0.01290745504100621,
+    "drag_relative_drift": 0.030002826045359324
+  },
+  "treatment_finest_transition": {
+    "available": true,
+    "downforce_v2": 0.5010325418989898,
+    "downforce_v3": 0.5114064913286713,
+    "downforce_absolute_drift": 0.010373949429681506,
+    "drag_relative_drift": 0.0036437429843075683
+  },
+  "decision": {
+    "second_order_scheme_is_the_factor": false,
+    "outcome": "escalate the mesh-convergence policy"
+  },
+  "rows": [
+    {
+      "level": "V2",
+      "arm": "linearUpwind",
+      "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/stage_v_scheme_factor_2026_09/opt_q100_b0_step0_try0_block/V2_linearUpwind",
+      "qualified": true,
+      "reasons": [],
+      "iterations": 794,
+      "Cd": 1.5447971821717172,
+      "downforce": 0.5010325418989898
+    },
+    {
+      "level": "V3",
+      "arm": "linearUpwind",
+      "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/stage_v_scheme_factor_v23_2026_09/opt_q100_b0_step0_try0_block/V3_linearUpwind",
+      "qualified": true,
+      "reasons": [],
+      "iterations": 2289,
+      "Cd": 1.5504260260664335,
+      "downforce": 0.5114064913286713
+    }
+  ],
+  "claims_supported": [
+    "the finest-transition screen measures the scheme factor under the registered conditions"
+  ],
+  "claims_not_supported": [
+    "no grid-independent claim beyond V3",
+    "no ranking or target-physics claim"
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "diagnosis": "Subtraction before vs after g unit conversion changes cancellation at near-zero ratios; full fits unchanged; tolerance remains strict1e-9 with no absolute floor.",
+  "rows": [
+    {
+      "case": "a01_n6",
+      "independent": 3.03678650854e-14,
+      "metric": "model_difference",
+      "primary_mm_arithmetic": 3.04533257272e-14,
+      "same_fits_m_arithmetic": 3.03678650854e-14
+    },
+    {
+      "case": "a01_n6",
+      "independent": 7.13481561414e-14,
+      "metric": "nested_drop1",
+      "primary_mm_arithmetic": 7.12703486914e-14,
+      "same_fits_m_arithmetic": 7.13481561414e-14
+    },
+    {
+      "case": "a01_n6",
+      "independent": 9.17893212419e-13,
+      "metric": "nested_drop2",
+      "primary_mm_arithmetic": 9.17904692206e-13,
+      "same_fits_m_arithmetic": 9.17893212419e-13
+    },
+    {
+      "case": "a01_n6",
+      "independent": 1.49782147469e-12,
+      "metric": "nested_drop3",
+      "primary_mm_arithmetic": 1.49779341299e-12,
+      "same_fits_m_arithmetic": 1.49782147469e-12
+    },
+    {
+      "case": "a01_n8",
+      "independent": 2.95351978169e-13,
+      "metric": "model_difference",
+      "primary_mm_arithmetic": 2.95445092002e-13,
+      "same_fits_m_arithmetic": 2.95351978169e-13
+    },
+    {
+      "case": "a01_n8",
+      "independent": 3.8776171816e-13,
+      "metric": "nested_drop1",
+      "primary_mm_arithmetic": 3.8776171816e-13,
+      "same_fits_m_arithmetic": 3.8776171816e-13
+    },
+    {
+      "case": "a01_n8",
+      "independent": 5.6719335111e-13,
+      "metric": "nested_drop2",
+      "primary_mm_arithmetic": 5.67292842603e-13,
+      "same_fits_m_arithmetic": 5.6719335111e-13
+    },
+    {
+      "case": "a01_n8",
+      "independent": 9.76179921211e-13,
+      "metric": "nested_drop3",
+      "primary_mm_arithmetic": 9.76260279725e-13,
+      "same_fits_m_arithmetic": 9.76179921211e-13
+    },
+    {
+      "case": "a02_n6",
+      "independent": 0.050901393664,
+      "metric": "model_difference",
+      "primary_mm_arithmetic": 0.050901393664,
+      "same_fits_m_arithmetic": 0.050901393664
+    },
+    {
+      "case": "a02_n6",
+      "independent": 6.43448969319e-13,
+      "metric": "nested_drop1",
+      "primary_mm_arithmetic": 6.4348441439e-13,
+      "same_fits_m_arithmetic": 6.43448969319e-13
+    },
+    {
+      "case": "a02_n6",
+      "independent": 1.32893162286e-12,
+      "metric": "nested_drop2",
+      "primary_mm_arithmetic": 1.32892953786e-12,
+      "same_fits_m_arithmetic": 1.32893162286e-12
+    },
+    {
+      "case": "a02_n6",
+      "independent": 3.9638431426e-12,
+      "metric": "nested_drop3",
+      "primary_mm_arithmetic": 3.96385356762e-12,
+      "same_fits_m_arithmetic": 3.9638431426e-12
+    },
+    {
+      "case": "a02_n8",
+      "independent": 0.0449346862108,
+      "metric": "model_difference",
+      "primary_mm_arithmetic": 0.0449346862108,
+      "same_fits_m_arithmetic": 0.0449346862108
+    },
+    {
+      "case": "a02_n8",
+      "independent": 1.01814924013e-13,
+      "metric": "nested_drop1",
+      "primary_mm_arithmetic": 1.01904579193e-13,
+      "same_fits_m_arithmetic": 1.01814924013e-13
+    },
+    {
+      "case": "a02_n8",
+      "independent": 1.28156032794e-12,
+      "metric": "nested_drop2",
+      "primary_mm_arithmetic": 1.28162600558e-12,
+      "same_fits_m_arithmetic": 1.28156032794e-12
+    },
+    {
+      "case": "a02_n8",
+      "independent": 9.3715099783e-13,
+      "metric": "nested_drop3",
+      "primary_mm_arithmetic": 9.37209377947e-13,
+      "same_fits_m_arithmetic": 9.3715099783e-13
+    }
+  ]
+}

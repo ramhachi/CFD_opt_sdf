@@ -1,0 +1,163 @@
+{
+  "captured_utc": "2026-10-06T13:51:54.591348Z",
+  "cli_version": "Kaggle CLI 2.2.4",
+  "criteria_sha256": "853bef6fb82f7e78399830538d92031434cc4b55aaf5a2ce58e34ce9cacea5f0",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+  "dataset_version": 2,
+  "download_mode": "one CLI datasets download --file request per registered remote file after full archive endpoint returned 404",
+  "exact_paths_sizes_sha256_match": true,
+  "expected_and_downloaded_file_count": 8,
+  "files": [
+    {
+      "argv": [
+        "kaggle",
+        "datasets",
+        "download",
+        "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+        "--file",
+        "P1_upstream_lobe__e0.5mm__plus.phi.f32f",
+        "--path",
+        "work/kaggle_fd08_v2_setup_remote_v2_exact_files",
+        "--force"
+      ],
+      "path": "P1_upstream_lobe__e0.5mm__plus.phi.f32f",
+      "sha256": "a908fc5ecc0d38a7140d7116d93680056844e4fb0e26b1ae8ab5548a16b83b37",
+      "size_bytes": 1541540,
+      "stderr_sha256": "91a892caed9880b83fcdd17a92f6a2ae7517de45ee55bc262a69762a0e9cd469",
+      "stdout_sha256": "c9d8134fd3474e977cded87161a2e63eca361b5aab33ac573ddd29cc0a18f8ab"
+    },
+    {
+      "argv": [
+        "kaggle",
+        "datasets",
+        "download",
+        "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+        "--file",
+        "P1_upstream_lobe__e0.5mm__plus.sdf_design_state.npz",
+        "--path",
+        "work/kaggle_fd08_v2_setup_remote_v2_exact_files",
+        "--force"
+      ],
+      "path": "P1_upstream_lobe__e0.5mm__plus.sdf_design_state.npz",
+      "sha256": "944f57be1f5343ee6673d5b70c8a9ad41f6476ccd6f9cb30d836552e772df663",
+      "size_bytes": 211571,
+      "stderr_sha256": "d9369d1cf5fd6da7695fe1424618cb7a891b6112373e3761bbd06c70d62f0a90",
+      "stdout_sha256": "f15b83c5949228c136b8ffc58f3442ae313a3747a3f5895630c58e009255252c"
+    },
+    {
+      "argv": [
+        "kaggle",
+        "datasets",
+        "download",
+        "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+        "--file",
+        "baseline_v17.phi.f32f",
+        "--path",
+        "work/kaggle_fd08_v2_setup_remote_v2_exact_files",
+        "--force"
+      ],
+      "path": "baseline_v17.phi.f32f",
+      "sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+      "size_bytes": 1541540,
+      "stderr_sha256": "a997fc459b90af258f382dd8123ed8e5e3f79402261e690d16eb571aa45bd85a",
+      "stdout_sha256": "d5394c87bbd976b9f25ff1c3cb9eec6e254eddabbe9f9e64290e0b8bb204d8a7"
+    },
+    {
+      "argv": [
+        "kaggle",
+        "datasets",
+        "download",
+        "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+        "--file",
+        "baseline_v17.sdf_design_state.npz",
+        "--path",
+        "work/kaggle_fd08_v2_setup_remote_v2_exact_files",
+        "--force"
+      ],
+      "path": "baseline_v17.sdf_design_state.npz",
+      "sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+      "size_bytes": 200028,
+      "stderr_sha256": "0be3ff4c45ae3a978c5b6f79c8343ef1cc52b9af684806baac9620472726692e",
+      "stdout_sha256": "bf13cd4a1807609c0e713fda1ecf5eadfb6ecfe5328f43fda0c8049fa0441bdc"
+    },
+    {
+      "argv": [
+        "kaggle",
+        "datasets",
+        "download",
+        "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+        "--file",
+        "criteria.json",
+        "--path",
+        "work/kaggle_fd08_v2_setup_remote_v2_exact_files",
+        "--force"
+      ],
+      "path": "criteria.json",
+      "sha256": "853bef6fb82f7e78399830538d92031434cc4b55aaf5a2ce58e34ce9cacea5f0",
+      "size_bytes": 11209,
+      "stderr_sha256": "28e70f672b389e71bba5626b8050cfa31904d2aa014d4cf86e77e5b0c7b862ca",
+      "stdout_sha256": "81d9f58b7a9e1bbdbc8df4232638089400b073b963991088f5bb5921668be1e0"
+    },
+    {
+      "argv": [
+        "kaggle",
+        "datasets",
+        "download",
+        "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+        "--file",
+        "criteria.json.sha256",
+        "--path",
+        "work/kaggle_fd08_v2_setup_remote_v2_exact_files",
+        "--force"
+      ],
+      "path": "criteria.json.sha256",
+      "sha256": "b734c0d437628dac9415601ddba2e2ac80707bb8cdfd7cdb771fea8f70050b05",
+      "size_bytes": 65,
+      "stderr_sha256": "688727e23241482dce4c652d4429a0d66e9fe3fe4995eb494fcd8f3673382308",
+      "stdout_sha256": "a0ec8c4a0e478ee649a241bac8f791ec7bf1316dde0c8d88a64f34aea373bb62"
+    },
+    {
+      "argv": [
+        "kaggle",
+        "datasets",
+        "download",
+        "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+        "--file",
+        "fd08_v2_dataset_manifest.json",
+        "--path",
+        "work/kaggle_fd08_v2_setup_remote_v2_exact_files",
+        "--force"
+      ],
+      "path": "fd08_v2_dataset_manifest.json",
+      "sha256": "ba97a64daaeff8d57b53f4d1d9112f0de82ab79acc1b49bceef00e42532bdad7",
+      "size_bytes": 895,
+      "stderr_sha256": "d8460c3c270e240d43fbaa64f83ceb23f7d69f8f2579b1f76c83bc134e089721",
+      "stdout_sha256": "7097c5906ec2afb06ab59afca1fbe2c556094d475b9237ed7304ae0e18d34b91"
+    },
+    {
+      "argv": [
+        "kaggle",
+        "datasets",
+        "download",
+        "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+        "--file",
+        "kaggle_budget_preflight.json",
+        "--path",
+        "work/kaggle_fd08_v2_setup_remote_v2_exact_files",
+        "--force"
+      ],
+      "path": "kaggle_budget_preflight.json",
+      "sha256": "9bbee09f2d69aaaffff550fd5c78cebcfac3e18eab549b3736530ba9c7c6c16d",
+      "size_bytes": 1189,
+      "stderr_sha256": "3bd0f14d318c9d9f7d8d0cebd3548318085a70c1abb9e636707875c3941d1fea",
+      "stdout_sha256": "9267bad134867877ca9a1dbb7f4d0552b6b07cba973e188b1432a82829b9310b"
+    }
+  ],
+  "kind": "fd08_v2_setup_dataset_remote_verification",
+  "manifest_sha256": "ba97a64daaeff8d57b53f4d1d9112f0de82ab79acc1b49bceef00e42532bdad7",
+  "remote_list_sha256": "a1d52efd64ef091abfb362b0a83f607d1f218c3801fc0da8457e8b2e3c6e7272",
+  "remote_status_before_and_after": {
+    "current_version_number": 2,
+    "status": "ready"
+  }
+}

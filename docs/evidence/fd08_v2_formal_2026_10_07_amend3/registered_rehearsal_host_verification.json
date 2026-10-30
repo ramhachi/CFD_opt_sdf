@@ -1,0 +1,26 @@
+{
+  "all_pass": true,
+  "checks": {
+    "criteria_sha256_equals_registered": true,
+    "distinct_run_from_candidate": true,
+    "force_history_absent": true,
+    "mounted_54_files_equal_registered_bytes": true,
+    "no_DONE_or_result": true,
+    "runner_sha256_equals_bound": true,
+    "scientific_verdict_null": true,
+    "solver_started_false": true,
+    "source_commit_equals": true,
+    "source_input_count_44": true,
+    "source_inputs_sha256_equals_candidate": true,
+    "states_25": true,
+    "status": true
+  },
+  "elapsed_kernel_seconds": 284.588752108,
+  "kernel": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3-pre-solver",
+  "kernel_version": 2,
+  "kind": "fd08_v2_formal_amend3_rehearsal_host_verification",
+  "rehearsal_dataset": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3-rehearsal",
+  "rehearsal_dataset_version": 1,
+  "rehearsal_kind": "registered_bytes",
+  "report_sha256": "efee0981a17249e84457471e8d6aa589a65a3e73124110feb2c1697d423e54c7"
+}

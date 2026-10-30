@@ -1,0 +1,190 @@
+{
+  "artifacts": {
+    "docs/evidence/stage_v_v16_domain_boundary_contract_manifest_v2_2026_09.json": {
+      "path": "docs/evidence/stage_v_v16_domain_boundary_contract_manifest_v2_2026_09.json",
+      "sha256": "b8eccba3c0bc26fcc5eb392e52287a8e92a44e9b0541e8f589383fe307c54b8a"
+    },
+    "docs/evidence/stage_v_v16_domain_boundary_contract_v2_2026_09.json": {
+      "path": "docs/evidence/stage_v_v16_domain_boundary_contract_v2_2026_09.json",
+      "sha256": "e87558be5ee8efb24723603ff4c1bc9ace8a84efeaaec658e34a09db7e0f2ae8"
+    },
+    "docs/evidence/stage_v_v16_domain_boundary_lineage_audit_2026_09.json": {
+      "path": "docs/evidence/stage_v_v16_domain_boundary_lineage_audit_2026_09.json",
+      "sha256": "c10d19bff2b47e4e7fd8864af969a1c98f378f1f816d5e09766aa99f3fb76071"
+    },
+    "docs/evidence/stage_v_v16_domain_continuation_3p2_2026_09.json": {
+      "path": "docs/evidence/stage_v_v16_domain_continuation_3p2_2026_09.json",
+      "sha256": "a3c706c4d5c67580ec7f350dbf7f3a7a831a7bdd967caa5bdfb86905ce40bc44"
+    },
+    "docs/evidence/stage_v_v16_domain_continuation_3p2_run_manifest_2026_09.json": {
+      "path": "docs/evidence/stage_v_v16_domain_continuation_3p2_run_manifest_2026_09.json",
+      "sha256": "827d93314a8594a9205aa06ad98aa9c50343a6bb361f8e21d2c4d75f36e4aa22"
+    },
+    "scripts/run_stage_v16_far_field_contract_2026_09.py": {
+      "path": "scripts/run_stage_v16_far_field_contract_2026_09.py",
+      "sha256": "6ec0051d0a5bba8536ef9c77306f2c8e8051de4d781b83b8929b2e6e7bb5d786"
+    },
+    "work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl": {
+      "path": "work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl",
+      "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+    },
+    "work/stage_sv_laminar/project_matched_re_laminar.yaml": {
+      "path": "work/stage_sv_laminar/project_matched_re_laminar.yaml",
+      "sha256": "dd704b42021334c4e25261c8a2bbc606c4268a5dcbc4e6df0baf8b48d87b7417"
+    },
+    "work/stage_v_v16_domain_continuation_3p2_2026_09/far_field_domain_extension_3p2/V1/0/U": {
+      "path": "work/stage_v_v16_domain_continuation_3p2_2026_09/far_field_domain_extension_3p2/V1/0/U",
+      "sha256": "683cc2a0554a839588d82024238d07617d1017a2a7d87e83b768abec76b0ac24"
+    },
+    "work/stage_v_v16_domain_continuation_3p2_2026_09/far_field_domain_extension_3p2/V1/0/p": {
+      "path": "work/stage_v_v16_domain_continuation_3p2_2026_09/far_field_domain_extension_3p2/V1/0/p",
+      "sha256": "3fa58d06bc850923f950381a2e8cc029f51da456b587187e5ac4a5c50d93365e"
+    },
+    "work/stage_v_v16_domain_continuation_3p2_2026_09/far_field_domain_extension_3p2/V1/constant/polyMesh/boundary": {
+      "path": "work/stage_v_v16_domain_continuation_3p2_2026_09/far_field_domain_extension_3p2/V1/constant/polyMesh/boundary",
+      "sha256": "c5cb4ee567083768acf32f7428b3bcc0c0d223718f4ad800d45ca67ed5336882"
+    },
+    "work/stage_v_v16_domain_continuation_3p2_2026_09/far_field_domain_extension_3p2/V1/stage_v_qualification.json": {
+      "path": "work/stage_v_v16_domain_continuation_3p2_2026_09/far_field_domain_extension_3p2/V1/stage_v_qualification.json",
+      "sha256": "17c63ef03b6aae73f064cc9818a97909b39bbd8d83b0b7487e99200f4a376e7a"
+    }
+  },
+  "baseline": {
+    "Cd": 1.0260445793714286,
+    "case_dir": "work/stage_v_v16_domain_continuation_3p2_2026_09/far_field_domain_extension_3p2/V1",
+    "cells": 82907,
+    "downforce": 0.42796766878857145,
+    "iterations": 700,
+    "qualified": true,
+    "raw_check_mesh_mesh_ok": false,
+    "reasons": []
+  },
+  "budget": {
+    "max_new_runs": 1,
+    "mesh_levels": [
+      "V1"
+    ],
+    "v2_runs": 0,
+    "v3_runs": 0
+  },
+  "candidate": {
+    "same_candidate_as_stage_s": true,
+    "stl": {
+      "path": "work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl",
+      "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+    }
+  },
+  "claims_not_supported": [
+    "grid-independent or absolute Stage V downforce",
+    "reduced-basis FD qualification or shape update",
+    "full-vehicle or high-Re FSAE qualification"
+  ],
+  "evidence_class": "contract",
+  "execution": {
+    "mesh_generation_started": false,
+    "new_run_count": 0,
+    "optimization_campaign_started": false,
+    "solver_started": false
+  },
+  "immutable": true,
+  "kind": "stage_v_v16_far_field_contract_run_manifest",
+  "metric": {
+    "comparison": "same +3.2 m domain baseline to mixed far-field treatment",
+    "downforce_absolute": 0.005,
+    "drag_relative": 0.02
+  },
+  "parents": {
+    "continuation_evidence": {
+      "path": "docs/evidence/stage_v_v16_domain_continuation_3p2_2026_09.json",
+      "sha256": "a3c706c4d5c67580ec7f350dbf7f3a7a831a7bdd967caa5bdfb86905ce40bc44"
+    },
+    "continuation_manifest": {
+      "path": "docs/evidence/stage_v_v16_domain_continuation_3p2_run_manifest_2026_09.json",
+      "sha256": "827d93314a8594a9205aa06ad98aa9c50343a6bb361f8e21d2c4d75f36e4aa22"
+    },
+    "factor_evidence": {
+      "path": "docs/evidence/stage_v_v16_domain_boundary_contract_v2_2026_09.json",
+      "sha256": "e87558be5ee8efb24723603ff4c1bc9ace8a84efeaaec658e34a09db7e0f2ae8"
+    },
+    "factor_manifest": {
+      "path": "docs/evidence/stage_v_v16_domain_boundary_contract_manifest_v2_2026_09.json",
+      "sha256": "b8eccba3c0bc26fcc5eb392e52287a8e92a44e9b0541e8f589383fe307c54b8a"
+    },
+    "lineage_audit": {
+      "path": "docs/evidence/stage_v_v16_domain_boundary_lineage_audit_2026_09.json",
+      "sha256": "c10d19bff2b47e4e7fd8864af969a1c98f378f1f816d5e09766aa99f3fb76071"
+    }
+  },
+  "question": "At the largest registered v16 V1 domain, does a mixed freestreamVelocity/freestreamPressure outer boundary remove the response dependence on the symmetry/patch mixture without changing the candidate, mesh, or operating point?",
+  "registered_before_computation": true,
+  "schema_version": 1,
+  "status": "registered_not_run",
+  "stop_conditions": [
+    "any pinned hash or candidate mismatch",
+    "boundary edit differs from the registered mixed contract",
+    "failed solver convergence or force stationarity",
+    "response change outside the bound keeps S2 blocked",
+    "a passing boundary factor does not establish grid independence"
+  ],
+  "treatment": {
+    "base_domain": "+3.2 m from the original v16 V1 box",
+    "boundary_contract": {
+      "bottom": {
+        "U": "noSlip",
+        "mesh": "wall",
+        "p": "zeroGradient"
+      },
+      "design_candidate": {
+        "U": "noSlip",
+        "mesh": "wall",
+        "p": "zeroGradient"
+      },
+      "inlet": {
+        "U": "freestreamVelocity",
+        "mesh": "patch",
+        "p": "freestreamPressure"
+      },
+      "outlet": {
+        "U": "freestreamVelocity",
+        "mesh": "patch",
+        "p": "freestreamPressure"
+      },
+      "sideMax": {
+        "U": "freestreamVelocity",
+        "mesh": "patch",
+        "p": "freestreamPressure"
+      },
+      "sideMin": {
+        "U": "freestreamVelocity",
+        "mesh": "patch",
+        "p": "freestreamPressure"
+      },
+      "top": {
+        "U": "freestreamVelocity",
+        "mesh": "patch",
+        "p": "freestreamPressure"
+      }
+    },
+    "case_dir": "work/stage_v_v16_far_field_contract_2026_09/mixed_outer/V1",
+    "change": "convert inlet/outlet/sideMin/sideMax/top to patch; use freestreamVelocity for U and freestreamPressure for p",
+    "factor": "far-field boundary formulation",
+    "name": "mixed_freestream_outer",
+    "openfoam_reference": {
+      "U": "freestreamVelocity",
+      "freestream_value": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "p": "freestreamPressure",
+      "pressure_value": 0.0
+    },
+    "outer_patches": [
+      "inlet",
+      "outlet",
+      "sideMin",
+      "sideMax",
+      "top"
+    ]
+  }
+}

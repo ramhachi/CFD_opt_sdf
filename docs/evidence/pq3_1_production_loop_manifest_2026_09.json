@@ -1,0 +1,68 @@
+{
+  "kind": "pq3_1_production_loop_manifest",
+  "created": "2026-09-22",
+  "registered_before_computation": true,
+  "reduced_problem": {
+    "objective": "minimize J = -C_DF (maximize downforce)",
+    "constraint": "g_V = V(rho_projection) - V_max <= 0 (compiled volume budget)",
+    "drag": "report-only",
+    "source_grid": "32x16x16, template_frozen (regularise false, maxInitChange 0)"
+  },
+  "transform": {
+    "filter": "cone, radius 0.075 m (declared minimum solid width 0.15 m)",
+    "projection": "tanh, eta 0.5",
+    "ramp": "RAMP",
+    "continuation": [
+      {
+        "stage": "stage1_grow",
+        "b": 0.0,
+        "q": 0.0,
+        "iterations": 3,
+        "move_limit": 0.02
+      },
+      {
+        "stage": "stage2_sharpen",
+        "b": 8.0,
+        "q": 30.0,
+        "iterations": 2,
+        "move_limit": 0.01
+      },
+      {
+        "stage": "stage3_binarize",
+        "b": 16.0,
+        "q": 100.0,
+        "iterations": 2,
+        "move_limit": 0.005
+      }
+    ]
+  },
+  "seed": {
+    "rule": "rho_seed = max(rho_canonical, 1e-3) on the 2-cell dilation of the body mask"
+  },
+  "volume_budget_rule": "V_max = V(seed, b=0) + 0.002",
+  "bracket": {
+    "epsilon": 0.0001,
+    "noise_floor_abs": 1e-06,
+    "backoff": 2.0,
+    "min_epsilon_factor": 1024
+  },
+  "acceptance_profile": {
+    "trust_veto": false,
+    "reason": "Path B: adjoint magnitude is not trusted"
+  },
+  "proposal_rule": "projected gradient with registered bound margin 1e-4",
+  "hard_gates": {
+    "mean_nd_max": 0.01,
+    "max_rho_min": 0.9,
+    "volume_feasible": true
+  },
+  "stop_conditions": [
+    "no threshold or continuation change after seeing results",
+    "a proposal that cannot form a symmetric pair is rejected, never clipped",
+    "no magnitude correction"
+  ],
+  "budget": {
+    "parent_runs": "<= 1 + accepted per stage",
+    "note": "3 stages, <= 7 accepted steps total"
+  }
+}

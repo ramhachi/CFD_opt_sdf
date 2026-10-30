@@ -16,6 +16,10 @@ class OpenFoamSurfaceSensitivityExport:
     max_sensitivity: float
     downforce_sensitivity_mode: str = "negative-of-objective-faceSensNormal"
     drag_sensitivity_mode: str = "zero-filled-not-provided-by-faceSensNormal"
+    drag_source_sensitivity: Path | None = None
+    drag_sensitivity_sign: float = 1.0
+    drag_min_sensitivity: float | None = None
+    drag_max_sensitivity: float | None = None
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -27,10 +31,20 @@ class OpenFoamSurfaceSensitivityExport:
             "max_sensitivity": self.max_sensitivity,
             "downforce_sensitivity_mode": self.downforce_sensitivity_mode,
             "drag_sensitivity_mode": self.drag_sensitivity_mode,
+            "drag_source_sensitivity": (
+                str(self.drag_source_sensitivity)
+                if self.drag_source_sensitivity is not None
+                else None
+            ),
+            "drag_sensitivity_sign": self.drag_sensitivity_sign,
+            "drag_min_sensitivity": self.drag_min_sensitivity,
+            "drag_max_sensitivity": self.drag_max_sensitivity,
             "constraint_sensitivity_note": (
-                "OpenFOAM faceSensNormal is parsed as a scalar negative-lift "
-                "objective sensitivity; drag sensitivity is not available from "
-                "this field and is zero-filled."
+                "OpenFOAM faceSensNormal is written per adjoint solver; the "
+                "downforce column negates the negative-lift objective field and "
+                "the drag column consumes a drag-adjoint faceSensNormal file "
+                "with a declared sign. A zero-filled drag column is diagnostic "
+                "only and must be rejected by Stage S refinement."
             ),
         }
 
@@ -41,8 +55,25 @@ def export_openfoam_surface_sensitivity_to_csv(
     sensitivity_file: Path,
     output_csv: Path,
     patches: list[str],
+    drag_sensitivity_file: Path | None = None,
+    drag_sensitivity_sign: float = 1.0,
+    require_drag: bool = False,
 ) -> OpenFoamSurfaceSensitivityExport:
-    """Convert OpenFOAM faceSensNormal volScalarField output to normalized CSV."""
+    """Convert OpenFOAM faceSensNormal volScalarField output to normalized CSV.
+
+    ``sensitivity_file`` is the downforce (negative-lift) adjoint field.
+    ``drag_sensitivity_file`` is the separate drag-adjoint
+    ``faceSensNormal<drag-solver>`` field; when it is absent the drag column is
+    zero-filled and recorded as diagnostic-only. ``require_drag`` turns that
+    diagnostic path into a hard failure so Stage S refinement cannot silently
+    use a zero drag sensitivity.
+    """
+
+    if drag_sensitivity_file is None and require_drag:
+        raise ValueError(
+            "a drag-adjoint faceSensNormal file is required; a zero-filled drag "
+            "surface sensitivity cannot drive Stage S refinement"
+        )
     boundary = _read_boundary(case_dir / "constant" / "polyMesh" / "boundary")
     selected = [patch for patch in patches if patch in boundary]
     if not selected:
@@ -52,9 +83,15 @@ def export_openfoam_surface_sensitivity_to_csv(
     face_ranges = [(boundary[patch]["startFace"], boundary[patch]["nFaces"]) for patch in selected]
     faces = _read_selected_faces(case_dir / "constant" / "polyMesh" / "faces", face_ranges)
     sensitivity_by_patch = _read_boundary_scalar_values(sensitivity_file, boundary)
+    drag_by_patch = (
+        _read_boundary_scalar_values(drag_sensitivity_file, boundary)
+        if drag_sensitivity_file is not None
+        else None
+    )
 
     output_csv.parent.mkdir(parents=True, exist_ok=True)
     values_written: list[float] = []
+    drag_values_written: list[float] = []
     with output_csv.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(
             handle,
@@ -78,10 +115,24 @@ def export_openfoam_surface_sensitivity_to_csv(
                 raise ValueError(f"Sensitivity field does not contain patch values for {patch}")
             if len(values) != n_faces:
                 raise ValueError(f"Patch {patch} has {n_faces} faces but {len(values)} sensitivity values")
+            drag_values = drag_by_patch.get(patch) if drag_by_patch is not None else None
+            if drag_by_patch is not None and drag_values is None:
+                raise ValueError(f"Drag sensitivity field does not contain patch values for {patch}")
+            if drag_values is not None and len(drag_values) != n_faces:
+                raise ValueError(
+                    f"Patch {patch} has {n_faces} faces but {len(drag_values)} drag sensitivity values"
+                )
             for local_face, sens in enumerate(values):
                 face_index = start + local_face
                 center = _face_center(points, faces[face_index])
                 values_written.append(sens)
+                drag_value = (
+                    drag_sensitivity_sign * drag_values[local_face]
+                    if drag_values is not None
+                    else 0.0
+                )
+                if drag_values is not None:
+                    drag_values_written.append(drag_value)
                 writer.writerow(
                     {
                         "x": f"{center[0]:.12g}",
@@ -89,7 +140,7 @@ def export_openfoam_surface_sensitivity_to_csv(
                         "z": f"{center[2]:.12g}",
                         "objective_surface_sensitivity": f"{sens:.12g}",
                         "downforce_surface_sensitivity": f"{-sens:.12g}",
-                        "drag_surface_sensitivity": "0",
+                        "drag_surface_sensitivity": f"{drag_value:.12g}",
                         "source_patch": patch,
                         "source_face": face_index,
                     }
@@ -104,6 +155,19 @@ def export_openfoam_surface_sensitivity_to_csv(
         point_count=len(values_written),
         min_sensitivity=min(values_written),
         max_sensitivity=max(values_written),
+        drag_sensitivity_mode=(
+            "faceSensNormal-of-drag-adjoint-solver"
+            if drag_sensitivity_file is not None
+            else "zero-filled-not-provided-by-faceSensNormal"
+        ),
+        drag_source_sensitivity=drag_sensitivity_file,
+        drag_sensitivity_sign=float(drag_sensitivity_sign),
+        drag_min_sensitivity=(
+            min(drag_values_written) if drag_values_written else None
+        ),
+        drag_max_sensitivity=(
+            max(drag_values_written) if drag_values_written else None
+        ),
     )
 
 

@@ -1,0 +1,150 @@
+{
+  "baseline": {
+    "path": "docs/evidence/stage_s_baseline_v16_v2_2026_09.json",
+    "sha256": "a6d40a5c25d9a4ca44aaf1c4d9a7b667d6d33fcfeed45d4b7e2b3cdb049abed6"
+  },
+  "case_dir": "work/stage_s_work_f_v1/baseline/V1",
+  "claims_not_supported": [
+    "registration and case preparation only; no mesh, solver, force or stationarity claim",
+    "no adjoint, surface FD or shape update is authorized by this manifest"
+  ],
+  "expected_case": {
+    "domain_bounds_m": {
+      "lower": [
+        -1.0,
+        -0.8,
+        -0.6
+      ],
+      "upper": [
+        2.0,
+        0.8,
+        0.6
+      ]
+    },
+    "flow_case_id": "matched_re_laminar",
+    "force_patch": "design_candidate",
+    "force_reference": {
+      "area_m2": 0.64,
+      "drag_dir": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "length_m": 0.8,
+      "lift_dir": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "moment_center_m": [
+        0.25,
+        0.0,
+        0.0
+      ]
+    },
+    "operating_point": {
+      "density": 1.0,
+      "velocity_mps": 1.0,
+      "viscosity": 0.01
+    },
+    "turbulence_model": "laminar",
+    "voxel_size_m": 0.05
+  },
+  "immutable": true,
+  "kind": "stage_s_work_f_manifest_v1",
+  "level": {
+    "name": "V1",
+    "voxel_size_m": 0.05
+  },
+  "mesh_evidence_path": "docs/evidence/stage_s_work_f_v1_mesh_2026_09.json",
+  "mesh_gate": {
+    "check_mesh": {
+      "allowed_failed_check_markers": [
+        "Concave cells"
+      ],
+      "concave_cell_fraction_max": 0.08,
+      "concave_face_max_angle_deg_max": 170.0
+    },
+    "force_stationarity": {
+      "absolute_drift_max": 0.001,
+      "absolute_std_max": 0.001,
+      "relative_drift_max": 0.01,
+      "relative_std_max": 0.01,
+      "response_bound_kind": {
+        "Cd": "relative",
+        "downforce": "absolute"
+      },
+      "window_fraction": 0.25,
+      "window_min_rows": 20
+    },
+    "grid_convergence": {
+      "absolute_change_max": 0.005,
+      "relative_change_max": 0.02,
+      "response_bound_kind": {
+        "Cd": "relative",
+        "downforce": "absolute"
+      }
+    },
+    "profile_id": "stage_v_qualification_v1"
+  },
+  "openfoam_image": "opencfd/openfoam-default:2512",
+  "openfoam_image_id": "sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319",
+  "preflight": {
+    "artifact_path": "docs/evidence/stage_s_work_f_v1_preflight_2026_09.json",
+    "requirement": "must pass before the mesh-only run",
+    "script_path": "scripts/stage_s_work_f_preflight_2026_09.py",
+    "script_sha256": "37d4298de73d19738a383f182a41a9702343aaa796f72896aab6a2d883f19659"
+  },
+  "problem_spec": {
+    "path": "work/stage_sv_laminar/project_matched_re_laminar.yaml",
+    "sha256": "dd704b42021334c4e25261c8a2bbc606c4268a5dcbc4e6df0baf8b48d87b7417"
+  },
+  "profiles": {
+    "clearance": "stage_v_clearance_v1",
+    "mesh_solver": "stage_v_qualification_v1",
+    "surface_fd": "fd_gradient_v1"
+  },
+  "response_identities": {
+    "downforce": {
+      "bound_kind": "absolute",
+      "coefficient": "downforce",
+      "direction": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "grid_absolute_max": 0.005,
+      "note": "the Stage T objective is J = -downforce; the solver's liftDir is the negated downforce direction",
+      "objective_sign": -1,
+      "response_id": "downforce",
+      "stationarity_absolute_max": 0.001
+    },
+    "drag": {
+      "bound_kind": "relative",
+      "coefficient": "Cd",
+      "direction": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "grid_relative_max": 0.02,
+      "response_id": "drag",
+      "stationarity_relative_max": 0.01
+    }
+  },
+  "schema_version": 1,
+  "solver_budget": {
+    "max_mesh_runs": 1,
+    "max_solver_runs": 1,
+    "mesh_timeout_seconds": 3600,
+    "solver_timeout_seconds": 7200
+  },
+  "source_tree_python_sha256": "a759a4fc4f70894f4e1b3a28bdc2d3f1b87af803c2512b8a8acb41677e94bfd8",
+  "status": "registered_preflight_pending",
+  "stop_rules": [
+    "any pinned hash mismatch stops before any OpenFOAM command",
+    "a failed clearance preflight or a failed case-metadata check stops before meshing",
+    "a failed checkMesh profile stops before simpleFoam",
+    "the mesh-only runner never starts simpleFoam"
+  ]
+}

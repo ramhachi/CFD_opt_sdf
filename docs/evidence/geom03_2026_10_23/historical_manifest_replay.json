@@ -1,0 +1,12 @@
+{
+  "schema": "dated_manifest_replay_v1",
+  "method": "git show fixed historical commit; old manifests bind mutable central documents at their dated commit, not future workspace versions",
+  "records": [
+    {
+      "manifest": "docs/evidence/parallel_preparation_2026_10_22/SHA256SUMS",
+      "replay_commit": "73802a5bef333bce63cd8ff34644304371387a37",
+      "entries": 13,
+      "mismatches": []
+    }
+  ]
+}

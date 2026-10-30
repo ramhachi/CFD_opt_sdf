@@ -1,0 +1,213 @@
+{
+  "baseline": {
+    "downforce_n": 0.3316344583180616,
+    "drag_n": 0.3239039699743226
+  },
+  "candidates": {
+    "lowdim01__prop__s1.25mm": {
+      "accepted": true,
+      "actual_over_predicted_reference_only": 0.5159552828868279,
+      "downforce_change_n": 0.00040517653513449936,
+      "downforce_gain_resolved": true,
+      "downforce_n": 0.3320396348531961,
+      "drag_change_n": -0.00016764795823859258,
+      "drag_constraint_ok": true,
+      "drag_n": 0.323736322016084,
+      "eikonal_median_abs_deviation": 0.01938233058899641,
+      "geometry_gates": {
+        "cell_components_equal_baseline": true,
+        "clearance": true,
+        "eikonal_median_within_limit": true,
+        "masks_and_support_preserved": true,
+        "smoothed_volume_band": true
+      },
+      "hard_geometry_gates_pass": true,
+      "linear_predicted_downforce_change_n_reference_only": 0.0007852938976949534,
+      "relative_sharp_volume_change": 0.0,
+      "relative_smoothed_volume_change": -0.021221316514626665,
+      "signed_step_mm": 1.25,
+      "step_mm": 1.25
+    },
+    "lowdim01__prop__s2.5mm": {
+      "accepted": false,
+      "actual_over_predicted_reference_only": -0.03189840929775152,
+      "downforce_change_n": -5.009925233540047e-05,
+      "downforce_gain_resolved": false,
+      "downforce_n": 0.3315843590657262,
+      "drag_change_n": -0.0007423741489236413,
+      "drag_constraint_ok": true,
+      "drag_n": 0.32316159582539894,
+      "eikonal_median_abs_deviation": 0.0375742893666029,
+      "geometry_gates": {
+        "cell_components_equal_baseline": true,
+        "clearance": true,
+        "eikonal_median_within_limit": true,
+        "masks_and_support_preserved": true,
+        "smoothed_volume_band": true
+      },
+      "hard_geometry_gates_pass": true,
+      "linear_predicted_downforce_change_n_reference_only": 0.0015705877953899067,
+      "relative_sharp_volume_change": 0.0,
+      "relative_smoothed_volume_change": -0.04197115156759046,
+      "signed_step_mm": 2.5,
+      "step_mm": 2.5
+    },
+    "lowdim01__prop__s5mm": {
+      "accepted": false,
+      "actual_over_predicted_reference_only": -1.0908789268133907,
+      "downforce_change_n": -0.0034266422574023014,
+      "downforce_gain_resolved": false,
+      "downforce_n": 0.3282078160606593,
+      "drag_change_n": -0.003105744133939714,
+      "drag_constraint_ok": true,
+      "drag_n": 0.32079822584038287,
+      "eikonal_median_abs_deviation": 0.07365772873163223,
+      "geometry_gates": {
+        "cell_components_equal_baseline": true,
+        "clearance": true,
+        "eikonal_median_within_limit": true,
+        "masks_and_support_preserved": true,
+        "smoothed_volume_band": true
+      },
+      "hard_geometry_gates_pass": true,
+      "linear_predicted_downforce_change_n_reference_only": 0.0031411755907798135,
+      "relative_sharp_volume_change": -0.0033849129593811478,
+      "relative_smoothed_volume_change": -0.08170016455337381,
+      "signed_step_mm": 5.0,
+      "step_mm": 5.0
+    },
+    "lowdim01__prop__s7.5mm": {
+      "accepted": false,
+      "actual_over_predicted_reference_only": -2.1387704896684827,
+      "downforce_change_n": -0.010077380484640241,
+      "downforce_gain_resolved": false,
+      "downforce_n": 0.32155707783342136,
+      "drag_change_n": -0.007057599831828465,
+      "drag_constraint_ok": true,
+      "drag_n": 0.3168463701424941,
+      "eikonal_median_abs_deviation": 0.1084991972893532,
+      "geometry_gates": {
+        "cell_components_equal_baseline": true,
+        "clearance": true,
+        "eikonal_median_within_limit": false,
+        "masks_and_support_preserved": true,
+        "smoothed_volume_band": false
+      },
+      "hard_geometry_gates_pass": false,
+      "linear_predicted_downforce_change_n_reference_only": 0.00471176338616972,
+      "relative_sharp_volume_change": -0.007978723404255428,
+      "relative_smoothed_volume_change": -0.11862654047902632,
+      "signed_step_mm": 7.5,
+      "step_mm": 7.5
+    }
+  },
+  "controls": {
+    "lowdim01__ctrl_reverse__s1.25mm": {
+      "actual_over_predicted_reference_only": 1.545907874856892,
+      "downforce_change_n": -0.001213992020523691,
+      "downforce_gain_resolved": false,
+      "downforce_n": 0.3304204662975379,
+      "drag_change_n": -0.00022082322396527188,
+      "drag_constraint_ok": true,
+      "drag_n": 0.3236831467503573,
+      "eikonal_median_abs_deviation": 0.020391576923429966,
+      "geometry_gates": {
+        "cell_components_equal_baseline": true,
+        "clearance": true,
+        "eikonal_median_within_limit": true,
+        "masks_and_support_preserved": true,
+        "smoothed_volume_band": true
+      },
+      "hard_geometry_gates_pass": true,
+      "linear_predicted_downforce_change_n_reference_only": -0.0007852938976949534,
+      "never_accepted_or_selected": true,
+      "relative_sharp_volume_change": 0.0,
+      "relative_smoothed_volume_change": 0.02159830268159002,
+      "signed_step_mm": -1.25,
+      "step_mm": 1.25
+    },
+    "lowdim01__ctrl_reverse__s2.5mm": {
+      "actual_over_predicted_reference_only": 2.0286998548263195,
+      "downforce_change_n": -0.003186251232499493,
+      "downforce_gain_resolved": false,
+      "downforce_n": 0.3284482070855621,
+      "drag_change_n": -0.0008200854052827777,
+      "drag_constraint_ok": true,
+      "drag_n": 0.3230838845690398,
+      "eikonal_median_abs_deviation": 0.040244270116090775,
+      "geometry_gates": {
+        "cell_components_equal_baseline": true,
+        "clearance": true,
+        "eikonal_median_within_limit": true,
+        "masks_and_support_preserved": true,
+        "smoothed_volume_band": true
+      },
+      "hard_geometry_gates_pass": true,
+      "linear_predicted_downforce_change_n_reference_only": -0.0015705877953899067,
+      "never_accepted_or_selected": true,
+      "relative_sharp_volume_change": 0.0,
+      "relative_smoothed_volume_change": 0.04347577678963965,
+      "signed_step_mm": -2.5,
+      "step_mm": 2.5
+    }
+  },
+  "fd08_verdict_unchanged": true,
+  "grad03_verdict": null,
+  "integrity": {
+    "failures": [],
+    "pass": true
+  },
+  "interpretation": "An accepted coefficient-space step exists on the fixed four-direction basis (D0, D1, D2, P1): the actual primal downforce improved by more than the nominal resolution (10 x the nominal sigma0 of FD-08, not a measured noise) with the drag, volume and SDF-quality gates satisfied. Evidence scope: one trial on the single registered flow grid (flow_24), the [80,120] tU/L time-weighted force, deterministic Float32 T4 runs, no reinitialization. This is a capability statement for a fixed low-dimensional basis, not a full-field gradient, not OPT-01 (#30), not grid-independent or physical downforce, and not a statement that the proposal direction is a descent direction in general; the improvement may be small and may be largely predictable from STEP-01's curvature.",
+  "kind": "lowdim01_four_direction_capability_analysis",
+  "no_gradient_claim": true,
+  "not_opt01": true,
+  "proposal_sign_check_descriptive": {
+    "1.25": {
+      "even_part_n": -0.0004044077426945958,
+      "forward_minus_reverse_n": 0.0016191685556581903,
+      "odd_part_n": 0.0008095842778290951
+    },
+    "2.5": {
+      "even_part_n": -0.0016181752424174467,
+      "forward_minus_reverse_n": 0.0031361519801640925,
+      "odd_part_n": 0.0015680759900820462
+    }
+  },
+  "provenance": {
+    "analyzer_sha256": "5c39f4d03cdc18e32f87c6ebceba82f4379df33cf9c811b8c17d3cf411b2f47a",
+    "freeze_sha256": "8ef70f0588189f3b60857b0dd0c1941841f091c688182d2f84ef5c228f0b480c",
+    "kernel_manifest_sha256": "a04e876a0d8b69774137f854b002dda8e5028390ec13a69f643b78bdbd5990ab",
+    "source_commit": "4c99143cb0b56fcc8850e5826b8f07e5fd51430b"
+  },
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "reinitialization": "none",
+  "rules": {
+    "authority": "actual primal responses and hard geometry gates; predictions are reference only; controls are never accepted or selected",
+    "drag_allowance_n": 3e-05,
+    "geometry_thresholds": {
+      "cell_components": 1,
+      "clearance_m": 0.15,
+      "eikonal_median_abs_deviation_max": 0.1,
+      "recorded_only": [
+        "sharp volume change",
+        "eikonal p95 / max",
+        "node components",
+        "min feature width",
+        "gaps"
+      ],
+      "reinitialization": "none (SDF-02 / #28 is not qualified)",
+      "smoothed_volume_band": 0.1
+    },
+    "min_downforce_gain_n": 3e-05
+  },
+  "selected": "lowdim01__prop__s1.25mm",
+  "selected_delta": null,
+  "verdict": "LOWDIM_ACCEPT"
+}

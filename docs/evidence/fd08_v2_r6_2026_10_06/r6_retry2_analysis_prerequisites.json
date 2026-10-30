@@ -1,0 +1,25 @@
+{
+  "analysis_invocations_before_this_checkpoint": 0,
+  "captured_utc": "2026-10-06T20:33:00.539036Z",
+  "checks": {
+    "all_expected_states_present": true,
+    "analysis_not_yet_performed": true,
+    "criteria_identity_matches": true,
+    "criteria_sha_sidecar_matches": true,
+    "integration_head_pushed": true,
+    "kernel_terminal_status_complete": true,
+    "one_shot_output_absent": true,
+    "registered_terminal_verifier_passed": true,
+    "solver_and_kernel_caps_pass": true,
+    "source_input_hashes_match": true
+  },
+  "criteria_sha256": "90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837",
+  "integration_head": "1c037acf68037c2d638a40d6c8b0d6126f061f81",
+  "integration_remote_head": "1c037acf68037c2d638a40d6c8b0d6126f061f81",
+  "kind": "fd08_v2_r6_retry2_analysis_prerequisites",
+  "source_commit": "f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9",
+  "source_mismatches": [],
+  "status": "PASS",
+  "terminal_archive_sha256": "17e57c020cb9bd398c1d794748bdf876f111b11f5982716a589fadf89f930856",
+  "terminal_verification_sha256": "dd0b1c9bd3643adc0d36fcb70d38ac19d4f223d880b840f03a30b8106422f06f"
+}

@@ -1,0 +1,2109 @@
+# 問題台帳 — 2026-09-22
+
+> **最新の投影（2026-10-23）:** UNC-01 は `M2_COMPLETE`、FID-01 は02:47JSTの再照合で登録済み FID01_GO を確認（結果b2314d9d、統合458e2df5）。
+> GEOM-03は03:51JSTに登録済みGEOM03_NO_GOで完了（534件の登録された独立照合を完了、K2/K4に反例）。R3を採用せずR0-clean fixed-pool/parent経路へ戻る。
+> T2-0b/c/d は登録済み NO-GO、#57 は調査完了として closed。高Re評価器は未採用で、旧自動 fallback は利用不能。
+> [最新計画](phase_plan.md#2026-10-23-geom-03-plan-review-and-implementation)と
+> [証拠・先行研究の照合](roadmap_review_2026_10_22.md)を参照する。下の過去の現況は日付ごとの記録。
+
+> **現況（2026-10-02）:** v17 FD-05/FD-06は登録基準でFAILを保持する。
+> FD-07の因果介入は、このfixtureの短時間不規則応答について半セル符号補正を主要因として支持し、
+> 続く連続replacement比較では one-sided moment-level Candidate C を診断上の最有力候補に選んだ。
+> Candidate C は試したthin-body crossingとmoving-groundを保存し、短時間force perturbationを抑えるが、
+> baseline `μ₀` は1 faceで約0.818変わり、forceは入力10倍に対して比例しない。
+> production採用、formal FD、長時間応答、物理精度、保存性は未資格。
+> [issue #37の連続replacement結果](issues/37_fd07_continuous_replacement_result.md)、
+> [issue #37の因果診断](issues/37_fd07_sign_consistency_causal_diagnosis.md)、
+> [FD-07格子シフト診断](issues/37_fd07_lattice_shift_diagnosis.md)、
+> [正本ロードマップ](phase_plan.md#11-current-sdf-native-execution-order)を参照する。
+>
+> **過去の現況（2026-09-29）:** W3 owner-fix round 4はexact T4 version 5でhost PASSし、
+> W4 immutable round 4もexact kernel version 3でhost PASSした。W3 v4 all-zero forceの
+> root causeは未解決の診断課題として残るが、現行の次gateを定義しない。W4は登録済み
+> finite-box sensitivity matrixのみ通過し、grid/domain convergence、FD、gradient、reverse、
+> topology、optimizer、shape updateは未資格。現行順序は[`phase_plan.md`](phase_plan.md)を参照する。
+>
+> **状態注記（2026-09-28）:** 本台帳は問題ごとの診断と証拠範囲を保持する。
+> Stage T/S/V に関する「現在地」や blocker の記述は、それぞれの日付と候補・契約に
+> 限る歴史的 status であり、現行の architecture や実行順ではない。現在の production
+> research direction は bounded Cartesian SDF `phi` を canonical design state とする
+> SDF-native path で、W3 owner-lifetime diagnosis が未解決の immediate blocker である。
+> W4、formal FD、gradient backend、shape update、topology birth の gate status と順序は
+> [`phase_plan.md`](phase_plan.md) を参照する。P22/P23 は現行 SDF-native issue である。
+
+作業スライス単位の記録（`p0_openfoam_closed_loop_2026_09.md`、
+`stage_t_optimizer_diagnosis_2026_09.md`、`docs/evidence/*.json`）を、
+**問題単位**へ横断整理したもの。正本ロードマップは`phase_plan.md`であり、
+実行順序はそちらが決める。
+
+## Historical Stage T/S/V summary snapshot (2026-09-22)
+
+T→S→Vのパイプラインは実機OpenFOAMで一周し、Stage Tは初めて実設計を生成した。
+その後、DF0--DF6のcompiler、transform、受理制御、抽出、検証algebra、robust prototypeが
+実装された。PQ0.1/PQ0.2 は projected-volume、parent/trial oracle、Path B bracket、rollback、
+resume を実 OpenFOAM の bounded closed loopとして統合し、PQ3は3 accepted stepを得た。
+ただし、これはPath B下のcapability evidenceであり、production gradient、抽出可能な終端候補、
+Stage V downforce referenceはまだ資格化されていない。
+
+一方、**このアーキテクチャが成立する条件そのもの（安い代理モデルが、実際の optimizer
+reachable set で応答値と候補順位を十分に保存すること）は、2026-09-22時点で資格化されていない。**
+WP6-2 の8形状では downforce の解像可能な反転がなく、候補別bandによる再判定後も25組で
+反転0だった。P18は固定形状diagnosticとして閉じたが、production optimizerの一般的な
+裏付けには使えない。PQ1は細 source grid で Path B に進んだが5% gateは未達である。
+当時の主要blockerは、P6の残るdesign/source-grid coupling、P16のdownforce Stage V数値不確かさ、
+P19のprojected-volume/geometry-field意味論、P20のStage S entry測定である。
+
+ただし初期の否定的所見は、**未資格の参照（P12）と未収束の随伴（P13）の上に乗っていた**ため、
+Brinkman方式一般のNo-Goへ昇格させてはならない。
+
+2026-09-12の測定により、観測されている失敗群は1本の連鎖で説明できることが分かった。
+**抗力寄与の約93%が`beta < 0.1`の45,316セルから来ており、全ランを通じて`beta > 0.62`の
+セルが存在しない。** すなわちStage Tが最適化してきた「空力」は物体ではなく希薄な靄が
+生んでいた。詳細は下記「統一的説明」。
+
+## 一覧
+
+重大度は「アーキテクチャの主張を無効化する度合い」で付けた。
+
+| # | 問題 | 重大度 | 状態 |
+| --- | --- | --- | --- |
+| P1 | 代理モデルの順位が body-fitted へ転写しない | 最重大 | **条件付き肯定観測、一般資格は未成立（2026-09-20, WP6+WP6-2）**: WP6 の厚さ軸ではdownforce反転。WP6-2の8形状ではV1/V2とも解像可能な反転ゼロ、tau=1.000。一方、17形状合成poolのmachine verdictは両応答とも`unresolved`。reachable-set/min-widthへの一般化はP18を閉じてから判定する |
+| P2 | 設計が二値化しない | 最重大 | **open（strict terminal criterion）**。v16 checkpoint 87は`mean_nd=0.0025089`、抽出可能（PQ4.1 v2で`ready_for_stage_s=true`、P19/P20はclosed）。ただしv16はattempt 88のPath B符号不一致によるblocked stopで、登録済み収束窓を満たすterminalではない。P2のclosureは登録済みterminal convergenceを満たすcandidateを要求する |
+
+> **2026-09-23 quantification:** both terminal candidates re-grey during the campaign: the v9 (b=16) terminal measures `mean_nd 0.109` and the v11 (b=128, margin mask) terminal `0.0555` against the 0.01 bound although the b=128 continuation started at 0.0058. The extractability guard only prevents occupancy collapse; the acceptance policy has no discreteness criterion. Clearing P2 requires a registered discreteness gate in the Phase 2 acceptance (or a penalty), not a threshold change. The PQ4.1 self-intersection reason from v1 was a detector barycentric bug (fixed, P20); the corrected v2 keeps discreteness and clearance as the real failures, and clearance is structurally addressed by the v10/v11 margin mask.
+>
+> **2026-09-23 v12 update:** the transform-measured acceptance gate is now
+> implemented and its bounded entry preflight passes from v10 checkpoint 5.
+> The first three trial sizes are rejected before CFD for exceeding 0.01;
+> alpha 0.125 passes at `mean_nd 0.00973685`. P2 remains open until a complete
+> v12 terminal candidate also passes PQ4.1; one feasible step is not evidence
+> of extractable geometry or Stage S readiness.
+>
+> **2026-09-23 v12/v13 result:** v12 preserved the new bound for one accepted
+> step, then every registered sign-step alpha violated it; this was a direction
+> and ladder failure, not convergence. A projected raw-gradient direction on
+> the local discreteness tangent passed the v13 real-OpenFOAM one-step
+> discriminant, improving downforce from `2.32152697653` to `2.45647595951`
+> while keeping `mean_nd=0.00975157`. P2 remains open until this behavior is
+> sustained and the resulting terminal geometry passes the complete PQ4.1
+> extraction/handoff gate.
+>
+> **2026-09-24 v14/v15 and v15 campaign update:** v14 sustained the tangent
+> policy for five additional accepted steps (`DF=2.61268983854`,
+> `mean_nd=0.00994531219`, projected volume `0.07052783246`) and then stopped
+> when a transform-feasible, Path-B-positive alpha 1.0 trial worsened downforce
+> by `2.9093771e-4`. PQ4.1 on the last accepted state shows iso 0.5 passing
+> discreteness, extraction profile and volume fidelity, but failing clearance.
+> V15 runs from a deterministic support-box trim with a reset convergence
+> history, unchanged D/V thresholds and a bounded response-level alpha ladder;
+> its entry preflight passed at alpha 1.0 (`DF 2.00516803057 ->
+> 2.01655864594`, `mean_nd=0.00348178008`, projected volume
+> `0.06216404077`, support violations 0). The bounded v15 learning campaign
+> then accepted 10/10 fresh attempts (all at alpha 1.0, so the alpha-below-1
+> response backtracking path was not exercised) and stopped at
+> `paused_learning_budget` with raw downforce `2.10035503533`, projected
+> volume `0.06406567400358908`, active projected discreteness
+> `0.003213044195919047` and zero support violations; the registered
+> convergence window was not observed. This is a budget stop — not terminal or
+> converged — and the campaign evidence alone does not establish Stage S readiness.
+> PQ4.1 on the v15 final accepted checkpoint
+> (`docs/evidence/pq4_1_v15_state_stage_s_entry_2026_09.json`) then selects
+> `rho_projection` iso 0.5 (range 0.4/0.5/0.6, first-that-passes) and the
+> complete composite `stage_s_entry_v1` gate returns `ready_for_stage_s=true`:
+> discreteness, extraction profile (measured watertight, manifold,
+> non-self-intersecting), volume fidelity, volume constraint, width/gap,
+> lineage hashes and the `stage_v_clearance_v1` clearance preflight all pass;
+> iso 0.4 fails feature shrink, iso 0.6 fails volume fidelity. This measured
+> pass is at a paused-budget checkpoint (not a converged terminal state); it
+> removes the clearance blocker isolated on v14 but does not close P2, P17
+> (no solver-execution reconfirmation) or the remaining P20 scope, and no
+> Stage S baseline is registered by this record. The v15 checkpoint's composite
+> readiness gate is passed; P2 remains open under its stricter terminal-state
+> closure rule, and Stage S baseline registration remains pending.
+>
+> **2026-09-24 v16 update:** the v16 b=128 continuation (registered from the
+> unchanged v15 checkpoint 10, carryover accepted count 10 and the last three
+> metrics, cap-stationarity exit and independent terminal repeat enabled)
+> accepted 87 steps (cumulative 97) and stopped fail-closed at attempt 88:
+> the alpha-1.0 Path B bracket failed as `not_a_descent_direction`
+> (`d_adj=-0.04161669`, `d_fd=+0.01716448`). Final accepted state: raw
+> downforce `2.65056396128`, projected volume `0.0719735014` (94.30% of Vmax),
+> active projected discreteness `mean_nd=0.0025088808`, zero support
+> violations; last three objective deltas `5.52e-4/1.53e-4/7.33e-4`, so the
+> registered window was not met and no independent terminal repeat ran. P20 is
+> closed (calibrated gap/width metrics, volume-calibration correction and
+> detector audit), and PQ4.1 on the v16 checkpoint with the repaired gate
+> selects iso 0.5 and returns `ready_for_stage_s=true`
+> (`evidence/pq4_1_v16_state_stage_s_entry_2026_09.json`). This is a bounded
+> response/gradient stop, not a converged terminal; P2's stricter
+> terminal-state closure rule and P17's solver-execution reconfirmation remain
+> open. The Stage S baseline is now registered on this candidate
+> (`evidence/stage_s_baseline_v16_2026_09.json`): the selected iso-0.5
+> `rho_projection` handoff, the transform, the four-field bundle, the surface
+> and the `stage_v_clearance_v1` pass are hash-bound, and the Work F
+> qualification profiles (`stage_v_qualification_v1`, `fd_gradient_v1`) are
+> pinned. Stage S Work F is the next slice; the registration is not a Stage S
+> qualification.
+| P3 | Stage Tの格子が対象を解像していない可能性 | 高 | 未検証 |
+| P4 | 「宣言された問題」と「解かれている問題」の乖離 | 高 | **bounded reduced problemでは解消（2026-09-22, PQ0.1/PQ0.2/PQ3）**。downforce-only + projected-volumeのsolved set、実oracle、bracket、trialを統合。target physics、robust constraints、production backendへの一般化は未資格 |
+| P5 | native ISQPが降下方向を与えない | 中 | 診断済・Python移管で回避 |
+| P6 | continuous adjoint と discrete primal FD のsolver-side不整合 | 高 | **Path B（2026-09-22）**。source grid細分化+tight residualでFD/adjoint比は1.1504/1.1134/1.1441へ改善しepsilon-stable。refined-source mesh gateはpass。canonical-only refinementは1.1172/2.2454/1.8916でcoupling依存を示した。5% gate未達、第三source gridは登録済み未実行 |
+| P7 | 注入が`rho`のみ更新し他配列が陳腐化 | 中 | **解消（2026-09-20）**。C3 identity契約が検証できるときは4配列を同世代で一斉更新、検証できない場合は`owns no filter/projection profile`でfail-closed |
+| P8 | move limitにフロアがなくno-opを受理 | 低 | 修正着手中 |
+| P9 | Stage Sが範囲ゼロ成分を除去しない | 低 | 未修正 |
+| P10 | Stage Sの形状更新（level-set/HJ）が存在しない | 設計上 | 未実装 |
+| P11 | Brinkman浸透層が格子で解像されていない | — | **P2の症状として閉じた**（測定済） |
+| P12 | Stage V参照が未資格（mesh失敗・solver未収束） | 最重大 | **P15の960-cell候補V0–V3は解消**。v16 moving-ground/freestream profile は physical-profile と同一-profile 2-domain convergence を通過したが、値はこの candidate/profile に限る（absolute/grid-independent reference ではない、2026-09-26） |
+| P13 | 最適化ループの随伴・primal実行契約 | 最重大 | **bounded pathでは解消（2026-09-22, PQ0.1/PQ0.2）**。accepted primal再利用、parent adjoint fail-closed、trial primal-only、real bracket/rollback/resumeを実測。勾配精度そのものはP6としてopen |
+| P14 | 射影がPythonとOpenFOAMで二重にかかる | 高 | **解消**（注入場との差 1.9e-09） |
+| P15 | 最適形状が2セル厚で格子が表現しきれない | 最重大 | **当初因果は反証**。V3でもdownforce grid gateは未達 |
+| P16 | Stage Vが解像できる最小差 | — | **scheme因子まで更新（2026-09-21）**。`linearUpwind`でdrag drift 0.364%は2% bound内。downforce driftは0.010374で0.005未達、三格子非単調でGCIなし。次は登録済みdomain/boundary因子 |
+| P17 | 候補面とStage V外周境界のclearanceが未検査 | 最重大 | **closed（2026-09-24、bounded）**。fail-closed gate実装（2026-09-20）に加え、Work F V1 baseline（登録v16 iso-0.5 surface）がbody-fitted caseでmesh/solverを完走し、`stage_v_qualification_v1`の全gateに合格（solver実行での再確認、`evidence/stage_s_work_f_v1_solver_2026_09.json`）。closureはこのcandidate/levelに限られ、新candidate・新levelでは再確認が必要 |
+| P18 | WP6-2のminimum-width適用範囲と不確かさ登録が証拠内容と一致しない | 最重大 | **固定形状diagnosticとしてclosed（2026-09-21）**。候補別bandで8-shape downforceはV1/V2 pass、25組・反転0。17-shape poolは両応答`unresolved`。optimizer-generated shape、絶対値、grid-independent claimは範囲外 |
+| P19 | volume targetとStage S geometry fieldの意味論が一致しない | 最重大 | **closed（2026-09-23, semantic mismatch）**。PQ4.1は`rho_projection`を採用fieldとして完全composite gateを実行し、`beta_solver`はsolver audit fieldに限定した。残るfailures（当時）はP2/P17/P20として追跡する |
+| P20 | Stage S entryの幾何測定が一部fail-openまたは誤計算 | 高 | **closed（2026-09-24）**。self-intersection直接測定とfail-closed化、component gapのface-to-face校正、minimum/quantile契約分離、volume calibrationのshape label訂正、clean/defect/cap回帰testを実装。v15 PQ4.1 passは修理前gateの記録であり、次のPQ4.1は修理後gateで再判定する |
+| P21 | v16 physical profile の外周場が候補から十分に離れていない | 最重大 | **registered profile は解消（2026-09-26）**。元 V1 box と第1拡大は outer pressure gate のみ No-Go だったが、同じ moving-ground/freestream profile の v2 domain と downstream-expanded domain が全 physical-profile gate を通過し、2-domain convergence も `|Δdownforce|=0.0008034 <= 0.005`、relative-Cd `0.0008242 <= 0.02`。この candidate/profile の reduced-laminar qualification に限り、absolute/grid-independent/high-Re reference は未成立 |
+| P22 | SDF-native の volume 契約と design-grid/flow-grid 恒等性 | 最重大 | **sharp contract registered; P22-01 differentiable primitive implemented on `feat/issue-27-p22-volume-gradient` (software-only; one-step integration pending)**。sharp/revoxelized/density の体積が別測度（0.12925 / 0.126125 / 0.1775 m³ と Stage T `Vmax=0.0763256681`）であることが genesis 実測で確認され、SDF 契約は `V_phi = |{trilinear center sample < 0}| h^3 <= V_phi_0 = 0.12612500000000004`（`evidence/sdf_native_volume_semantics_v1_2026_09.json`）。旧 `Vmax` を SDF Stage S に持ち込まない。smooth value/gradient と signed residual は実装済みだが、一歩の形状更新・全 hard gate 通過は未実行でP22はopen |
+| P23 | topology birth の topology policy（root/disconnected 成分許可）が未定義 | 高 | **open（Birth-0 前の必須 gate）**。genesis v16 状態は root/fixed/forbidden が全空で `root_connectivity = not_applicable` のため、旧 root hard gate は何も制約しない。SDFTopologyPolicy v1 として「非接続空力成分の許可」「root 接続の強制」「root領域の定義」を登録するまで Birth-0 作業を開始しない |
+
+P11–P14は2026-09-12の外部監査（`problem_resolution_plan_2026_09.md`）が指摘し、
+本台帳の作成者が実測で確認した。**P12とP13は、既存の最適化結果と順位検定結果を
+証拠として採用できなくする。**
+
+修正済み: 力の単位・参照量の不一致、Stage Vがv2 specから駆動できない問題、
+勾配の符号規約の曖昧さ、勾配と宣言応答の非束縛。
+
+## P21 — v16 physical profile の外周 disturbance（初回 No-Go、2026-09-26 に登録 profile で解消）
+
+### 登録した判定
+
+v2 の moving-ground/freestream profile に対して、solver を起動する前に次の数値 gate を
+immutable manifest として登録した。
+
+- `stage_v_qualification_v1` の checkMesh、residualControl、force-stationarity profile を再利用し、
+  最終 initial residual は `p <= 1e-5`、`Ux/Uy/Uz <= 1e-6` とした。
+- 全 boundary face の `phi` から `abs(sum(phi))/[0.5 sum(abs(phi))] <= 1e-4` を判定する。
+- `bottom` の速度を `(1,0,0) m/s`、ground/candidate の最大法線 flux を `1e-8` 以下とする。
+- upstream outer boundary の face-mean velocity の相対 L2 誤差を `0.05` 以下とする。
+- outer patch の backflow ratio と kinematic-pressure disturbance `max |p|/U_inf^2` を `0.05` 以下とする。
+- v16 candidate の pre-mesh clearance は `0.25 m` 以上とする。
+
+契約は
+[`evidence/stage_v_v16_physical_profile_qualification_manifest_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_qualification_manifest_v1_2026_09.json)
+（SHA-256 `c556b75f9b37ec674b6c8b04f12e8df43e0025857e03a72f98c7cb918c41353f`）で登録し、
+Docker image ID と v2 profile/candidate/spec の hash を固定した。登録時点で solver と mesh は未起動である。
+
+### controlled run の実測
+
+1 本だけ、元の V1 box と同じ v16 candidate に対して実行した。OpenFOAM image は
+`opencfd/openfoam-default:2512`、image ID は
+`sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319` である。
+実行は return code 0、`simpleFoam` は residualControl により 546 iteration で終了した。
+
+結果は
+[`evidence/stage_v_v16_physical_profile_qualification_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_qualification_v1_2026_09.json)
+（SHA-256 `de500ec9ce7166ef71dee721fbd6d45f548896f381a11880b411e6489c7fb002`）に保存した。
+
+| gate | 実測 | 判定 |
+| --- | --- | --- |
+| mesh qualification | 39,848 cells、concave fraction `0.06126`、profile 上限 `0.08` | pass（raw `checkMesh` の concave failed line は記録を保持） |
+| solver | `p=5.19e-6`、`Ux=5.36e-7`、`Uy=9.86e-7`、`Uz=8.92e-7` | pass |
+| force stationarity | mean `Cd=1.44033`、mean downforce `0.886829`、両応答の drift/std が profile 内 | pass |
+| global mass | normalized imbalance `4.84e-9` | pass |
+| moving ground/candidate flux | ground velocity error `0`、ground/candidate max normal flux `0` | pass |
+| upstream velocity | inlet face mean `(1,0,0)`、relative L2 `0` | pass |
+| outer backflow | side `0.03559/0.03568`、top `0.00832`、outlet `0` | pass |
+| outer pressure | inlet max `0.29055`、top max `0.05192`、registered max `0.05` | **fail** |
+
+従ってこの run は solver failure ではなく、**外周場が候補から十分に離れていないための
+physical-profile No-Go** である。旧 stationary-ground result との比較、absolute/grid-independent
+downforce、Stage S FD、shape update、optimization campaign はこの結果から支持されない。
+
+### 次の扱い（初回 No-Go 時点）
+
+P21 を閉じるため、閾値や profile の実装を後付けで変更せず、同じ candidate、Re、laminar model、
+moving-ground/freestream semantics、force normalization、physical-profile hash を保ったまま、
+domain bounds だけを広げた新しい immutable contract を登録する。まず upstream/top/side の
+pressure disturbance を再測定し、その contract が pass した後にだけ同一 profile の二領域以上の
+domain convergence（downforce absolute `0.005`、Cd relative `0.02`）を計画する。Stage S、reduced-basis
+FD、PQ5、形状更新は引き続き停止する。
+
+---
+
+### P21 closure for the registered v16 profile (2026-09-26)
+
+The first inlet-only correction preserved the immutable pressure threshold but
+still measured inlet pressure `0.077604551`; that outcome remains a diagnostic
+No-Go.  The next same-profile domain
+[`evidence/stage_v_v16_physical_profile_expanded_domain_v2_2026_09.json`](evidence/stage_v_v16_physical_profile_expanded_domain_v2_2026_09.json)
+passed every physical-profile gate with `42,619` cells, mean `Cd=1.1693991`,
+mean downforce `0.7565515`, normalized mass imbalance `1.91e-8`, inlet
+pressure maximum `0.020346387`, and top pressure maximum `0.026347419`.
+
+A second qualified domain changed only the downstream bound from `2.5 m` to
+`3.5 m`.  Its outcome is
+[`evidence/stage_v_v16_physical_profile_domain_convergence_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_domain_convergence_v1_2026_09.json)
+(`43,204` cells, mean `Cd=1.1703630`, mean downforce `0.7573549`).  The pair
+result
+[`evidence/stage_v_v16_physical_profile_domain_convergence_result_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_domain_convergence_result_v1_2026_09.json)
+is `pass`: absolute downforce change is `0.0008034` against the pre-registered
+`0.005` bound and relative Cd change is `0.0008242` against `0.02`.  Both
+cases share candidate SHA
+`5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11` and
+physical-profile SHA
+`a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca`.
+
+P21 is closed for this registered reduced-laminar v16 candidate/profile.  The
+result does not establish an absolute or grid-independent downforce reference,
+and the allowed concave-cell marker in raw `checkMesh` output remains visible.
+The next issue slice is to freeze the qualified Stage V profile and register
+the K=16 reduced-basis centered-FD preflight.  Shape updates, PQ5 ranking, and
+production optimization remain blocked until that downstream qualification is
+complete.
+
+### Stage S reduced-basis FD v2 registration and S0R/S1R (2026-09-26)
+
+The frozen v2 profile was rebound to the exact historical K=16 mode basis
+without a flow solver.  The immutable contract is
+[`evidence/stage_s_reduced_basis_fd_v2_manifest_2026_09.json`](evidence/stage_s_reduced_basis_fd_v2_manifest_2026_09.json)
+(SHA-256 `b96df520e6a359c206b9ded3c4cb1872220344ba9a46c7a7492d0e1ba47860dd`):
+working domain `[-2.5,-1.2,-0.9] -> [2.5,1.2,0.9]` m (v3 retained only as the
+domain-convergence witness), candidate
+`5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11`,
+physical-profile
+`a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca`,
+Docker image ID
+`sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319`,
+epsilon ladder `1e-4/2.5e-4/5e-4/1e-3 m`, and the Stage S ProblemSpec
+`9503400412509be755b7599d1e504b36519a1e33c5599347caf6f0c62e9318ed`.  The
+objective audit isolates the difference from the Stage V spec to
+`problem_id`/`objectives` only: Stage S declares `maximize_downforce` with
+canonical `J = -CDF`, drag report-only, no constraints.  The 16 historical
+mode vectors are reused byte-for-byte; no response-dependent reselection or
+reserve substitution is registered.
+
+S0R audited the base-case construction and S1R applied the registered maximum
+epsilon `1e-3 m` to both signs of all 16 modes.  The solver-free evidence
+[`evidence/stage_s_reduced_basis_fd_v2_preflight_2026_09.json`](evidence/stage_s_reduced_basis_fd_v2_preflight_2026_09.json)
+(SHA-256 `3f6cb15eae5b7770640466c89f9c296a383dd152f9f1dc0fedbc95d69acdaf50`)
+passes 16/16 modes: outer-patch immobility exactly `0.0`,
+realized-equals-prescribed movement difference `<= 4.7e-9 m`, cosines
+`>= 0.9999999999`, even component `<= 5.0e-9 m`, unit amplitude, watertight
+non-self-intersecting surface, minimum solid width `>= 0.0466 m` against the
+declared `0.01 m` policy, volume change `<= 0.31%`, clearance pass, and the
+registered `checkMesh` profile pass (concave fraction `0.0692--0.0699`;
+the raw concave marker is recorded, not a raw clean pass).  No flow solver
+and no flow field were involved: `flow_campaign_allowed=true`,
+`reduced_basis_fd_qualified=pending`, `shape_update_allowed=false`.
+
+The next slice is S2 epsilon calibration (at most 24 primals for the
+lowest/middle/highest-frequency modes), re-applying the v2 physical-profile
+gates to every perturbed shape; epsilon and thresholds must not be changed
+from the observed results.
+
+## P18 — WP6-2 evidence-applicability gap（固定形状diagnosticとして解消）
+
+### 症状
+
+`work/fixed_shape_ranking_2026_09/reachable_set_ranking_manifest.json` の purpose は
+T1 voxel 0.05 m の3セル、すなわち `>=0.15 m` を検定対象とする。一方、同じ manifest の
+`definition.reachable_set` は `>=0.10 m` と記録する。さらに
+`analytic_candidate_shapes.py` の複合形状には、0.10 m厚のsecondary element、0.05 m spanの
+endplate、0.05 m chord / 0.12 m thicknessのgurney partが含まれる。
+
+8形状の downforce 順位がV1/V2で一致し、解像可能な反転がなかった観測は有効である。しかし、
+`evidence/reachable_set_cross_fidelity_ranking_2026_09.json` の17形状統合poolは、反転ゼロという
+副所見を持ちながら最終machine verdictがdownforce/dragとも`unresolved`である。同reportの
+extraction sensitivityは空であり、ゼロを測定したことを意味しない。一部候補のV1->V2
+downforce driftも、他候補から継承した0.0147を上回る。
+
+### 影響
+
+WP6-2は「この固定形状集合で順位反転を観測しなかった」とは言えるが、
+`minimum_solid_width`が全局所featureに厳密に適用されたoptimizer reachable setの資格、
+absolute response constraintの精度、将来のoptimizer-generated geometryの順位保存を証明しない。
+したがってP1を最終closeせず、条件付き観測として保持する。
+
+### 解消条件
+
+[`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md)
+の旧DF0計画に従い、次を満たす。
+
+1. union partsを含む実形状からlocal feature size、gap、componentを計測する。
+2. 宣言policyと計測値の不一致をmachine-readableにする。
+3. extraction sensitivityを測定するか`not_measured`として判定から除外する。
+4. candidate/response固有のgrid uncertaintyを登録する。
+5. required pairsとaggregate verdictを事前登録した新reportで再判定する。
+
+歴史的 evidence JSON は書き換えない。P18 closureは新しいmanifestとevidence artifactで記録する。
+
+### Closure（2026-09-21）
+
+[`p18_closure_record_2026_09.md`](p18_closure_record_2026_09.md) と
+`evidence/wp6_2_rejudgment_manifest_2026_09.json` に事前登録し、候補別band
+`max(inherited band, |V2-V1|)`で再判定した。
+
+- reachable 8-shape downforce: V1/V2とも`pass`、25 resolvable pairs、反転0
+- reachable 8-shape drag: `unresolved`、反転0
+- combined 17-shape downforce/drag: ともに`unresolved`、反転0
+- analytic anchorを同一gridで比較する固定形状programでは、density-to-surface extractionを
+  経由しないためextraction termは`not_applicable`とした。ゼロ測定ではない。
+
+従ってP18は固定形状diagnosticとして閉じる。8形状の観測は保持するが、optimizer-generated
+shape、absolute calibration、grid-independent rankingへは拡張しない。将来のproduction
+claimはPQ1/PQ3/PQ5の新しいevidenceから作る。
+
+---
+
+## P19 — volume targetとStage S geometry fieldの意味論不一致（最重大・closed 2026-09-23）
+
+> **2026-09-23 closure:** PQ4.1 ran the complete composite gate on the first
+> converged terminal candidate with the registered semantics: the optimizer
+> target and limit, the Phase 1/2 backends, the handoff and the geometry
+> extraction all use `rho_projection`; `beta_solver` is retained as the solver
+> audit field. The verdict is recorded
+> (`docs/evidence/pq4_1_terminal_stage_s_entry_2026_09.json`):
+> `ready_for_stage_s=false` on discreteness (`mean_nd 0.109` vs `0.01`),
+> a measured self-intersecting extracted surface and the clearance margin.
+> P19 is closed as a semantic mismatch; the residual failures are tracked
+> under P2/P17/P20. No Stage S baseline is registered.
+
+> **2026-09-23 D0-D3 post-v5 update:** the equality volume target 0.018 was
+> measured as the objective blocker at the stopped b=8 parent: the registered
+> corrected step improved only 2.71e-7 while the objective-only proposal
+> improved +0.13399 under the original `V<=Vmax` inequality (D1 bounded
+> discriminant, 10 fresh primals). The minimal change
+> (`objective-oc-inequality-v1`, D2 manifest) replaces the equality correction
+> in Phase 2, keeps 0.018 as the Phase 1 formation target, rejects
+> machine-scale corrected updates and guards extractability. The v6 entry
+> preflight passed at b=8 and b=16 (one step each). P19 is NARROWED but remains
+> open: the projected-volume semantics are now consistent across target,
+> backend and geometry basis, while the extraction-coherence qualification
+> still depends on the terminal candidate and the PQ4.1 composite gate. No
+> Stage S-ready claim, and the long v6 campaign has not started.
+
+> **2026-09-23 v6/v7 cycle update:** under the inequality policy with the
+> volume-cap correction, the b=8 level accepted 36 steps total across the two
+> cycles (same-level downforce 0.579818003757 -> 3.82622378522) and now sits
+> exactly on the projected-volume cap with a machine-scale stopping attempt.
+> The registered convergence window was not met; no convergence claim. P2
+> (binarization/extractability) and P19 remain open pending a pre-registered
+> cap-stationarity exit, the b=16 campaign and the terminal PQ4.1 evaluation.
+
+> **2026-09-23 preflight v5 current status:** The v4 b=8 failure reason was not
+> auditable because its per-alpha ledger was dropped on exception, and b=8
+> inherited the b=4 restoration rho instead of the objective-accepted rho.
+> Preflight v5 (`docs/evidence/pq3_3b_preflight_v5_2026_09.json`) corrects that
+> lineage, records every alpha, and calibrates baseline spread with two distinct
+> uncached OpenFOAM primals. b=4 accepts alpha=1.0; b=8 reaches projected
+> volume 0.018 in three restoration steps. Every b=8 trial improves canonical
+> J and raw downforce, yet all centered Path B brackets fail before FD because
+> their minus perturbation crosses a design bound. Adjoint/FD direction signs
+> at b=8 are therefore **unmeasured**, not known to disagree. b=16 remains
+> unreached; preflight_pass is false and manifest v3 stays `registered_blocked`.
+> Preflight v6 (`docs/evidence/pq3_3b_preflight_v6_2026_09.json`) freezes exact
+> design box-face cells during the Phase 2 proposal and volume correction while
+> retaining the centered Path B rule. b=4, b=8 and b=16 each have an accepted
+> alpha=1.0 real trial with projected volume 0.018 and matching negative
+> adjoint/FD directional signs. This closes the **single-step preflight
+> feasibility question**, not P19: the registered multi-iteration convergence,
+> terminal upper-bound re-evaluation and Stage S handoff are still unmeasured.
+> The later v4 campaign converged at b=4, then stopped after eight accepted
+> b=8 objective steps because the ninth-step centered objective difference was
+> below its registered noise floor. A separate same-state diagnostic supported
+> a wider centered epsilon with the original noise floor unchanged. The
+> registered v5 continuation resumes from the verified b=8 checkpoint; b=16,
+> terminal qualification and Stage S readiness remain unmeasured. See
+> `docs/evidence/pq3_3b_campaign_v4_outcome_2026_09.json` and
+> `docs/evidence/pq3_3b_bracket_recovery_v1_2026_09.json`.
+> The v5 continuation then accepted three additional b=8 steps (11 total)
+> before all alphas failed the registered improvement gate. Its three-step
+> objective stability window did not pass; b=16 and terminal evaluation were
+> not reached. The alpha=1 trial improvement was only `2.7124e-7` against
+> `1e-6`; smaller corrected updates were essentially zero. This may indicate
+> constrained stagnation or proposal cancellation, but it is not a KKT or
+> Stage S qualification. See
+> `docs/evidence/pq3_3b_campaign_v5_outcome_2026_09.json`.
+
+
+### 症状
+
+PQ3.3の`VolumeTargetBackend`は、objective gradientが非ゼロのcellをactiveとみなし、
+move box内で`mean(rho_design_new)=target`となるscalar multiplierを二分探索する。一方、
+採用された制約と形状占有率は`V(rho_projection)`である。PQ3.3ではraw design targetを維持しても、
+`b=0 -> 8 -> 16`でprojected volumeが`0.02745 -> 0.01469 -> 0.01302`へ低下した。
+
+さらにcandidate materializationは、RAMP後の`beta_solver`をfixed-grid artifactの
+`rho_projected`へ書き、0.4/0.5/0.6でcontourした。採用計画のgeometry fieldはRAMP前の
+`rho_projection`である。RAMP q=100では`beta_solver=0.5`が
+`rho_projection≈0.9902`に相当するため、現sweepは意図した0.5等値面より大幅に厳しい。
+
+### 影響
+
+- PQ3.3の`discrete_candidate=true`はsolver fieldのglobal mean_nd/max/volume upper-boundだけを
+  表し、抽出可能なgeometryを意味しない。
+- 0.4 contourの66% volume errorと0.5のempty revoxelizationは実測だが、
+  `rho_projection` geometryの同じthreshold verdictではない。
+- 現時点の`ready_for_stage_s=false`はfail-closedに維持するが、抽出不能の原因を
+  projection continuationだけに確定できない。
+
+### 解消条件
+
+[`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md)の
+Work A/C/Dに従う。
+
+1. 既存PQ3.3 candidateから四場を再計算し、別名・別hashで保存する。
+2. `rho_projection`をgeometry sourceとして再sweepし、RAMP threshold mappingとmask一致を確認する。
+3. volume targetを`V(rho_projection)`へ変更し、宣言active mask、attainable bracket、最終残差を
+   fail-closedに検査する。
+4. b/q levelごとにparentを再計算し、最終b=16でaccepted/converged stateを得る。
+5. terminal candidateを元のprojected-volume upper-bound問題で再評価する。
+
+既存PQ3.3 evidenceは上書きせず、誤ったartifact IDとfield semanticを訂正artifactで参照する。
+
+---
+
+## P20 — Stage S entryの幾何測定不備（高・closed 2026-09-24）
+
+> **2026-09-24 re-audit and repair:** an independent audit found two
+> reproducible false-negative classes in the direct self-intersection detector:
+> coplanar area overlap and shared-vertex crossings away from the shared
+> vertex. The topology-aware repair (`_triangle_intersection_contacts` /
+> `_contacts_confined_to_shared_simplex`, commit `17e80f4`) detects both,
+> permits contact only on the shared simplex, and rejects degenerate triangles
+> fail-closed. The repaired gate then rejected the registered iso-0.5 surface:
+> marching cubes emitted 4-8 collinear sliver triangles (area <= 1e-10 m^2,
+> aspect ratio > 1e7) that point merging could not remove and edge collapse
+> turned into new crossings. The handoff now extracts the binary cell material
+> with VTK surface nets (`contour_labels`, no smoothing), which emits no
+> degenerate triangles and reproduces the cell volume exactly (measured
+> absolute difference 1.5e-9 m^3 on the v16 candidate). The PQ4.1 v2 judgment
+> on the v16 checkpoint passes at iso 0.5
+> (`evidence/pq4_1_v16_state_stage_s_entry_v2_2026_09.json`) and the Stage S
+> baseline is re-bound
+> (`evidence/stage_s_baseline_v16_v2_2026_09.json`, superseding the v1
+> record). The volume-fidelity and feature-survival sub-gates pass by
+> construction for this extractor and are retained as guards against future
+> extractor changes.
+>
+> **2026-09-24 closure:** the remaining scope is implemented and tested.
+> `component_boundary_gap_m` replaces the center-to-center EDT with the exact
+> axis-aligned cube face distance (`sqrt(sum(max(0, |delta_i| - spacing)^2))`),
+> calibrated on analytic axis-aligned and corner-touch fixtures; the declared
+> `minimum_solid_width_m` / `minimum_void_width_m` are now compared against the
+> true minimum medial-axis thickness (`thickness_ridge_m_min`), while
+> `ridge_width_p5_m` stays a separately named quantile that is never
+> substituted; the volume-calibration shape labels are corrected by the
+> append-only `pq4_volume_fidelity_calibration_correction_2026_09.json`
+> (original SHA-256 referenced, measurements unchanged, profile now references
+> the correction); and the direct self-intersection detector has a
+> false-positive/true-positive/cap audit (clean box/icosphere/torus → `none`,
+> a crossing pair → `fail`, over-cap → `not_evaluated`). The detector's AABB
+> stage was made memory-safe (per-axis boolean overlap instead of the
+> `(n, n, 3)` float64 broadcast). The v15 checkpoint-10 PQ4.1 pass predates
+> this repair and remains a pre-repair record; a new PQ4.1 judgment on the next
+> terminal candidate uses the repaired gate.
+>
+> **2026-09-23 partial repair:** two fail-opens are fixed with regression
+> coverage: a measured self-intersection now gates the extraction profile
+> (`_manifold_reasons`, `mesh_self_intersects`), and the applied discreteness
+> threshold is recorded in the composite sub-verdict.
+
+### 症状
+
+PQ4.0は`ready_for_stage_s`を全sub-gateの論理積に戻し、local extraction passによる上書きを
+防いだ。この合成論理は正しい。一方、個別測定には次が残る。
+
+1. self-intersectionはmeshと同じmeshのboolean intersectionを呼び、自己交差を検出しない。
+   `not_evaluated`もglobal reasonへ追加されない。
+2. component間gapは`distance_transform_edt(~material)`をmaterial cell上で読むため0となる。
+3. `thickness_ridge_m_p5`を`minimum_solid_width`として扱い、ProblemSpecのminimum意味論と
+   一致しない。
+4. volume profileが参照する校正artifactはsurface-distanceを測ったもので、登録volume閾値を
+   支持しない。
+
+### 影響
+
+現行gateがfalseを返した判断は保守側なので保持できる。しかし、将来trueを返す場合の
+幾何資格が十分にfail-closedとは言えない。したがって現行PQ4.0実装だけでStage S entryを
+許可しない。
+
+### 解消条件
+
+1. 実self-intersection測定を導入し、必須なのに測定不能ならfailとする。
+   → 2026-09-24: 直接triangle-triangle narrow phase、`not_evaluated`を
+   `require_self_intersection_measured`でfail化。clean/defect/capの回帰testを追加。
+2. component境界間の実距離を測り、analytic multi-component fixtureで校正する。
+   → 2026-09-24: `shape_feature_metrics.component_boundary_gap_m`（axis-aligned
+   exact、corner touch 0）。`tests/test_stage_s_entry.py`の解析fixtureで校正。
+3. minimumとquantile metricを区別し、ProblemSpecに対応するmetricを登録する。
+   → 2026-09-24: 宣言minimumは`thickness_ridge_m_min`と比較し、
+   `ridge_width_p5_m`は情報用のquantileとして別名記録。
+4. binary analytic shapesでsource/surface/revoxelized volume errorを測ってprofileを再登録する。
+   → 2026-09-24: 測定はPQ4.0a artifactに存在。shape label欠陥をappend-only
+   correction `pq4_volume_fidelity_calibration_correction_2026_09.json`で訂正し、
+   profileがcorrectionを参照。
+5. clean/defect/unavailable-dependencyの回帰testを追加する。
+   → 2026-09-24: clean primitives、crossing pair、triangle cap、gap/width校正を
+   `tests/test_stage_s_entry.py` / `tests/test_extraction_qualification.py`に追加。
+6. 共面area overlapと共有頂点外交差のfalse negativeを除去する。
+   → 2026-09-24 re-audit: `_triangle_intersection_contacts` /
+   `_contacts_confined_to_shared_simplex`で両クラスを検出。回帰fixtureは
+   `tests/test_extraction_qualification.py`。
+7. degenerate triangleをfail-closedで扱い、抽出側で発生させない。
+   → 2026-09-24: detectorは`not_evaluated_degenerate_triangle`を返し、
+   handoffはbinary cell materialのsurface nets（`contour_labels`、smoothingなし）
+   で抽出する。marching cubesのsliverはpoint mergeでもedge collapseでも除去できず、
+   collapseは新たな交差を生むことを測定済み。
+
+P20 closure後の新candidateだけをPQ4.1の`ready_for_stage_s`判定に使う。
+
+---
+
+## P1 — 代理モデルの順位が転写しない（最重大・未解決）
+
+### 症状
+
+Stage T（固定格子Brinkman）で最適化した2候補を、body-fitted RANSで3解像度検証した。
+B/A比は次のとおり。
+
+| B/A比 | Stage T | coarse (5.5k) | medium (30k) | fine (180k) |
+| --- | --- | --- | --- | --- |
+| drag | 2.582 | 0.849 | 0.901 | 0.905 |
+| downforce | 3.882 | 3.167 | 0.896 | 0.918 |
+| L/D | 1.503 | 3.728 | 0.995 | 1.015 |
+
+- **dragの順位は全格子で反転**（Stage Tは「Bの方が2.58倍大きい」、実際は約10%小さい）
+- downforceの順位は最粗格子でのみ一致し、細かい2格子で反転
+- L/Dは medium/fine で2%以内＝区別不能。Stage Tは1.5倍と主張
+
+### なぜ重大か
+
+このアーキテクチャは「安い代理で探索し、高い検証で確かめる」ことで成立する。
+絶対値の一致は不要だが、**順位が保存されなければ、代理で最適化しても実性能は
+改善しない。**
+
+### 確認済みの除外
+
+乱流モデルの交絡は棄却した。層流と`kOmegaSST`のdrag係数はcoarseで0.016%、
+mediumで0.006%しか違わない。Re~300では渦粘性が無視できる。つまり先行の
+`kOmegaSST`比較は無効な検定ではなく、**有効な検定の否定的結果**である。
+
+### 原因候補（未分離）
+
+**2026-09-12の外部監査（`problem_resolution_plan_2026_09.md`）を受けて訂正した。**
+当初「原因候補は2つに絞れた」と書いたが、これは強すぎる。二値化（P2）とStage T解像度
+（P3）は**主要仮説**であって確定した2択ではない。少なくとも次がまだ混ざっている。
+
+1. 灰色密度と中実STLの物理的不一致（P2）
+2. Stage T格子と46,080→8,192セル平均化（P3）
+3. `betaMax`の有限値と格子依存性（P11、下記）
+4. cell-to-point変換・等値面抽出・再voxel化による形状差
+5. **Stage V参照自体が未資格**（P12、下記）
+6. 契約違反（P13、下記）
+
+なお**dragの反転は最粗格子でも起きる**ため、P3単独では説明できない。
+
+### この結果の格付け（重要）
+
+参照側のStage Vは`checkMesh`が全ケースで1項目失敗し、solverは収束条件を持たずに
+500反復で打ち切られている（P12）。したがって本項は**「未資格の参照に対して観測された
+重要な否定的所見」**であり、Brinkman方式一般のNo-Goへ昇格させてはならない。
+
+### 根拠
+
+`docs/evidence/cross_fidelity_ranking_2026_09.json`、`work/stage_sv_laminar/result.json`
+
+### 追記（2026-09-12）— 二値化候補による順位検定（肯定的所見、証明ではない）
+
+P2の修正（罰則付き補間・射影の一本化・随伴の資格化）を経て、初めて中実な設計で
+上記の検定をやり直した。参照側もqualified Stage V（`checkMesh`・明示的
+`residualControl`・force stationarityをハードゲート化）へ更新した。
+
+#### 何を検定したか
+
+RAMPで二値化した3候補をV0/V1/V2で通した。`opt_q100_step2_try0_r12`は**3格子すべて
+で失格**した。`checkMesh`の「Cells with small determinant (<0.001)」（24/98/303セル、
+V0/V1/V2）は事前登録プロファイルが免除しない項目であり、係数は他2候補の5〜8倍で
+採用不能。したがって**有効なペアは1組だけ**残った。
+
+#### 結果
+
+| grid | step0 Cd | step2 Cd | step0 downforce | step2 downforce |
+| --- | ---: | ---: | ---: | ---: |
+| V0 | 1.2505 | 1.2610 | 0.5179 | 0.5361 |
+| V1 | 1.3480 | 1.3607 | 0.5902 | 0.6129 |
+| V2 | 1.3634 | 1.3786 | 0.6680 | 0.6899 |
+
+Stage Tは両応答ともstep2の方が大きいと予測する（drag 2.231→2.706、downforce
+1.078→1.594）。qualified Stage Vは**3格子すべてで同じ向き**に一致した。
+
+これは灰色候補での所見と**符号が逆**である。灰色候補ではdragの順位が全格子で
+反転していた（B/A比0.849/0.901/0.905、Stage Tは2.582）。この反転はqualified化
+後も変わらないため（`work/stage_sv_qualified_laminar/result_summary.json`）、
+先行の否定的所見は「間違った対象を比べていた」ことによる**本物の観測**だったと
+確認できる。
+
+#### この結果が持つ限界（弱めてはならない）
+
+- **ペアは1組のみ。** 3候補目が失格したため、意図していた2組の符号のうち1つしか
+  存在しない。
+- **margin（差）は離散化誤差を超えない。** step2−step0のdownforce差は0.018〜0.023、
+  一方で各候補自身の格子間drift（V0→V1、V1→V2）は約0.077。向きは3格子一貫だが、
+  大きさは未確定である。
+- **downforceは格子収束していない**（Gate 3不合格、閾値5e-3に対し約0.077）。収束を
+  確かめるはずのV3（約128万セル）は灰色候補のqualified再実行
+  （`work/stage_sv_qualified_laminar/result_summary.json`）で500反復に達しても
+  収束せず、`residualControl`（U 1e-6、p 1e-5）に対しp残差が約1.9e-4〜6.2e-4
+  （19〜62倍）、U各成分は16〜148倍で頭打ちになり、正しく却下されている。
+  Cdは収束する（V1→V2で約1.1〜1.3%、上限2%以内）。
+- **等値面抽出は体積を失う**（抽出/設計体積比0.881、0.884、0.919、1〜2セル厚の
+  物体）。これは真の抽出誤差であり、今回はもう灰色ではないのでgreynessの症状
+  ではない。
+- ラン内定常性ノイズは約1e-6と小さく、律速要因ではない。律速は離散化である。
+
+#### 結論
+
+一物体、一流動条件（Re〜300、層流）、一有効ペア、一台のマシンによる
+cross-fidelity証拠であり、target physicsでもbenchmarkでもなく、いかなる
+solver backendも資格化しない。**このアーキテクチャの中心的前提は反証されて
+おらず、肯定的所見を得たが、実証されたわけではない。** 決着には次の3点が要る。
+
+1. mesh失格候補の救済（2組目の符号を得る）
+2. 離散化誤差を上回るmarginを持つペアの取得
+3. downforce応答の格子収束
+
+根拠: `docs/evidence/binarized_ranking_2026_09.json`、
+`work/stage_sv_qualified_ramp_binarized/result.json`、
+`work/stage_sv_qualified_laminar/result_summary.json`
+
+### 追記（2026-09-20）— 決定実験（WP6, fixed-shape program）
+
+P1の最終判定実験が完了した。10個の事前登録された解析二値形状（迎角系列、厚さ系列、
+スパン、zオフセット、鈍頭箱）を、(a) same-grid T1固定格子Brinkman代理
+（binary、q=0恒等、alphaMax 2500、転送なしと射影なし）と (b) anchor STL直接的な
+qualified Stage V（V1+V2全20実行qualified、固定domain）で評価した。宣言済み
+不確かさ帯（downforce abs 0.0147、Cd rel 0.034 — P16の実測値をそのまま継続使用）で
+Gate 4を適用した。
+
+| 応答 | 判定 | 実測 |
+| --- | --- | --- |
+| downforce | **no_go** | V2で解像可能な1組の反転: `plate_a20_nd` vs `plate_a20_t05`（代理 +0.2316、参照 +0.0343 → 符号逆）。代理は参照が飽和する厚さ軸の差を約7倍に誇張する |
+| drag | **unresolved（符号全一致）** | 37/37の解像可能ペアで代理・参照の符号が一致（rho 0.9758, tau 0.9111）。順位の入れ替わりは全てノイズ帯以下のクラスタ内 |
+
+主な測定事実:
+
+- 反転は実形状・same-grid・転送なし・抽出なしの最も管理された条件で起きた。
+  抽出感度E-blockではiso 0.50がanchorと0.0013で一致し、0.45/0.55で±0.03なので、
+  幾何経路の交絡はこの実験にない。
+- 厚さクラスタの参照差は0.014–0.034で宣言帯と同オーダー（V1/V2で方向は一貫、
+  V2でのみ解像）— **参照自体がこの軸の差の解像限界に近い。**
+- P11（alphaMax・saturation・靄）はこれらの形状では無視できる（alphaMax 250 vs
+  2500の力差≤8%、solid帯leak ≤2%、beta<0.1の力寄与 ~1e-6）。
+- **P1の結論**: 代理モデルの順位保存は、downforce応答の**厚さ因子で反証された**。
+  P15で観測された2セル厚問題と整合する、格子と解像度に内在する構造的限界である
+  ことが、初めてクリーンな条件下で確認された。optimizerを調整してこの結果を逆転させ
+  てはならない（WP6の停止規則）。治療対象は最適化器ではなく、downforce軸に対する
+  Stage T代理の定式化（または置換）である。
+
+根拠: `evidence/fixed_shape_cross_fidelity_ranking_2026_09.json`、
+`work/fixed_shape_ranking_2026_09/`
+
+### 追記（2026-09-20）— WP6-2 と P18 による適用範囲の訂正
+
+次の8形状を用いたWP6-2では、V1/V2のdownforce順位が完全一致し、解像可能な反転はなかった。
+これはWP6の厚さ軸no-goが全形状軸へ直ちに一般化しないことを示す肯定的所見である。
+
+ただしP18の監査により、これを「minimum-width policy内の最終資格」とした先の結論は撤回する。
+manifestの幅定義、複合partの局所寸法、候補固有grid drift、未測定のextraction sensitivityが
+整合しておらず、17形状poolのmachine verdictも両応答で`unresolved`である。従ってP1の現在状態は
+**条件付き肯定観測、一般資格は未成立**である。歴史的なWP6/WP6-2数値は保持し、DF0の
+候補別band再判定で8-shape観測だけを固定形状diagnosticとして閉じた。
+
+根拠: `evidence/reachable_set_cross_fidelity_ranking_2026_09.json`、
+`evidence/wp6_2_rejudgment_2026_09.json`、P18 closure record。
+
+---
+
+## P2 — 設計が二値化しない（最重大・open: strict terminal criterion）
+
+### 症状
+
+| 候補 | rho最大 | >0.9 のセル | グレー帯 (0.1,0.9) |
+| --- | --- | --- | --- |
+| A | 0.62 | 0 | 624 |
+| B | 0.55 | 0 | 624 |
+
+### 何が起きているか
+
+Stage Tが最適化しているのは**半透過な多孔質体**（最大でも55%しか塞いでいない）。
+Stage Sはその0.5等値面から**中実の物体**を切り出し、Stage Vはその中実体を解く。
+両者は物理的に別の対象であり、力の順位が転写する理由がない。
+
+### 原因
+
+OpenFOAMケースの`optimisationDict`が`function linear`を指定しており、Heaviside射影が
+恒等写像になっている。
+
+**監査を受けた訂正**: これは sharpening を無効にする欠陥であり寄与原因である。ただし
+「設計変数が0.5を越えることを数学的に禁止する」わけではない。tutorialは`tanh; b 20`を使う。
+
+さらに実測で判明した二重射影（P14）がある。Python側が射影した`rho`（最大0.55）を注入しても、
+OpenFOAM側の`regularise true`が削り、**ソルバが実際に見る`beta`は最大0.436、0.5超はゼロ**で
+あった（`work/stage_t_python_loop_v2_floor/iter_004_attempt_00`）。つまり
+**Stage Tが解いた場とStage Sが輪郭化した場は数値的に別物**である。
+
+### 対処と結果（2026-09-12）
+
+射影だけでは足りない。**罰則付き補間が本質である。**
+
+```text
+f(rho)  = rho / (1 + q(1 - rho))          RAMP、q > 0 で中間密度が割高になる
+f'(rho) = (1 + q) / (1 + q(1 - rho))^2
+```
+
+併せて次の3点を同時に行った。
+
+1. 罰則付き補間（RAMP）をPython側で適用
+2. 射影所有者をPythonへ一本化し、OpenFOAM側を`regularise false`にする（P14）
+3. 収束した随伴と宣言応答に束縛された勾配を使う（P13、C1）
+
+同一格子T1（46,080セル）での実行結果:
+
+| 指標 | 修正前 | 修正後 |
+| --- | ---: | ---: |
+| ソルバが見る`beta`の最大 | 0.436 | **1.0** |
+| 注入した場とソルバの場の差 | 最大0.11 | **1.9e-09** |
+| 中間帯 [0.1, 0.9) のセル数 | 624 | **0** |
+| 随伴の収束 | false（1反復） | **true**（約1,000反復） |
+| 予測ΔJ / 実測ΔJ | 0.21 | **0.80–0.97** |
+
+目的関数はどのq系列でも全ステップ受理・単調改善した。
+
+| q | downforceの推移 |
+| --- | --- |
+| 8 | 0.151 → 0.448 → 0.887 → 1.471 |
+| 30 | 0.494 → 0.849 → 1.381 → 1.736 |
+| 100 | 0.884 → 1.078 → … |
+
+漏れの帯別測定では`[0,0.1)`が1.017（流体）、`[0.9,1)`が0.031（固体）で、
+**その間の帯がすべて空**である。すなわち設計は流体と固体だけで構成されている。
+
+**これによりP2は解消される見込みである。** Stage Sが0.5等値面で切り出す物体と、
+Stage Tが力を計算した物体が、初めて同一になった。これはP1を検定する前提条件であった。
+
+Stage Sハンドオフ側には非離散度 `M_nd = mean(4ρ(1−ρ)) ≤ 0.01` かつ `max ρ ≥ 0.9` の
+ゲートを設けてあり、グレーな密度場は下流へ渡らない。
+
+根拠: `work/ramp_interp/optimize_history.json`、`scripts/stage_t_ramp_interp.py`
+
+---
+
+## P3 — Stage Tの格子が対象を解像していない可能性（高・未検証）
+
+Stage Tの格子は8192セル。body-fittedのcoarse格子は5534セルで、**両フィデリティが
+一致するのはまさにその解像度**である。細かくすると一致が消える。
+
+ただしdragの反転は最粗格子でも起きるため、これ単独では P1 を説明できない。
+
+検証方法: Stage Tを細かい固定格子で回し、力が収束することを示す。未実施。
+
+---
+
+## P4 — 宣言された問題 ≠ 解かれている問題（高）
+
+同じ根を持つ複数の問題。**ハッシュで同一性は縛れていても、実行経路が宣言した代数を
+消費しなければ意味は一致しない。**
+
+### P4a — `downforce`が目的関数でなく等式制約（未修正）
+
+`examples/fixed_grid_backend_spike/openfoam/porous_force_3d_fd_base/system/optimisationDict`が
+`downforce`を`isConstraint true; target 0;`と宣言し、`drag`を唯一の重み付き目的として
+いた。実際に解かれていた問題:
+
+```text
+minimize   drag
+subject to downforce == 0
+           volume fraction == 0.462
+```
+
+材料を置けば必ず鉛直力が出て制約違反になるため、最適化器は体積ゼロに留まる。
+40サイクル実行しても beta histogram は `[8080, 2, 110, 0, 0, 0]`、平均0.0070のまま
+固定点に収束した。**これはリポジトリ自身のテンプレートである。**
+
+### P4b — 体積制約が原理的に充足不能（未修正）
+
+`topOVolume`の目的関数は `J = (1 − ⟨β⟩_V − percentage) / percentage`、制約は
+`weight·J ≤ 0`。`⟨β⟩_V`は**メッシュ全体**の平均、`percentage`は**流体率の上限**である。
+
+`percentage 0.462`、`weight 1` は「固体が全メッシュの53.8%以上」を要求する。
+しかし`fixedZeroPorousZones`が8192セル中5283セル（64.5%）を強制流体にしているため、
+設計可能な2909セルが全て固体でも固体率は最大35.5%。
+
+```text
+min J = (1 − 0.355 − 0.462) / 0.462 = +0.396 > 0
+```
+
+観測値 `J = 1.1497`（⟨β⟩=0.007）は上式と厳密に一致する。
+
+### P4c — 勾配の符号が規約と逆（ガード済）
+
+`topOSens`は`+downforce`の微分であり、プロジェクト規約の`J = −downforce`に対する
+`dJ/dρ`とは逆符号。補正前のFD比は8行すべてで約−1（平均−0.9931）。この配列を
+`dJ/dρ`として消費すると設計が逆方向へ動く。artifactの規約文字列を明示化した。
+
+### P4d — 勾配が宣言された応答に束縛されていない（ガード済）
+
+P0で使用したProblemSpecは`drag`応答と`minimize_drag`目的のみを宣言していたが、
+検証した勾配はOpenFOAMの`downforce`目的のものだった。
+`transfer-openfoam-gradient-to-canonical`に`--response-id`を必須化し、specで宣言された
+応答であることを検証するようにした。記録済みartifactはガード導入前のもの。
+
+### P4e — 実際のReynolds数が宣言の約1/20000（未修正）
+
+| | Stage Tケース | ProblemSpecの宣言 |
+| --- | --- | --- |
+| 流速 | 1.0 m/s | 30.0 m/s |
+| 動粘性 | 1e-2 m²/s | 1.47e-5 m²/s |
+| Re（L≈3m） | 約300（層流） | 約6.1×10⁶（乱流） |
+| 参照面積 | 0.64 m² | 1.2 m² |
+
+このまま両忠実度を比較すると別物理を比べることになる。今回のクロス忠実度検定は
+Stage T側の実条件に合わせて実施した。
+
+### 追記（2026-09-22）— PQ0 実装後の production-path 監査
+
+PQ0で `CompiledProblem.volume_constraint`、`DesignTransform`、`solved_set` audit は実装された。
+ただし次を実コードで確認した。
+
+1. `fixed_grid_optimizer.py` の one-step path は projected-volume value/gradient を追加するが、
+   `stage_t_loop.py::make_oracle_from_compiled` は primitive response constraints だけを組み立て、
+   `compiled.volume_constraint` を nonlinear loop の `OracleResult` に追加しない。
+2. nonlinear acceptance test の `volume_budget` は、実 volume occupancy ではなく downforce
+   response を制約項として使うため、この欠落を検出しない。
+3. `work/p0_closed_loop/project.yaml` は drag minimization と downforce maximization の二目的を
+   無制約で足し合わせる。PQ0 audit の `declared_equals_solved=true` はこの fixture について
+   正しいが、次の downforce+projected-volume reduced problem の成立を示さない。
+4. projection output と OpenFOAM beta に同じ artifact 名 `rho_projected` が使われ、volume と
+   solver interpolation の意味を metadata なしに区別できない。
+
+従って P4 は未解決である。PQ0.1 では新しい abstraction を作らず、既存 compiler/transform/loop
+を接続し、downforce-only objective と projected-volume inequality で
+`declared_equals_solved` を再監査する。
+
+### 追記（2026-09-22）— bounded reduced problemでのclosure
+
+PQ0.1は上記の接続を実装し、downforce-only objectiveとprojected-volume inequalityの
+`declared_equals_solved=true`を新しい実artifactで確認した。PQ0.2はparent/trial/bracket/
+rollback/resumeを実OpenFOAMで実行し、PQ3は同じ経路で3 accepted stepを得た。従ってP4は
+**このreduced problemのbounded pathでは解消**とする。
+
+native ISQPの歴史的template、target-Re/full-vehicle physics、robust constraints、将来の
+production backendまで解消したという意味ではない。projected-volume targetとgeometry fieldの
+新しい不一致はP19で別に追跡する。
+
+---
+
+## P5 — native ISQPが降下方向を与えない（中・回避済）
+
+P4a/P4bと`function linear`を修復すると、native経路でも実形状は生成される
+（R7: 1072面、downforce 0.636 → 1.029）。しかしどの実行も収束しない。
+Armijo line searchを入れると毎サイクル「line search reached max iterations」となる。
+
+**監査を受けた訂正**: line search失敗は観測済みだが、「探索方向そのものが非降下」と断定するには
+方向微分の実測が要る。現時点では「line searchが機能しない」までが観測事実である。
+
+体積感度は抗力感度の約1/4000（cellあたり平均 8.5e-5 対 0.75）でQP内で不可視。
+Lagrange乗数がISQPのペナルティ係数`c = 2`に固着するのは、elastic変数のKKT条件
+`λ ≤ c` により実行不能性を示す署名である。
+
+**決定: 最適化はPythonへ恒久移管。OpenFOAMはprimal/adjoint評価器に限定する。**
+同じ勾配に対するOC更新は12反復で単調前進した。
+
+---
+
+## P6 — continuous adjoint / discrete primal FD 不整合（高・solver側へ局在）
+
+### 現在の判定（2026-09-22）
+
+凍結設計、identity profile、登録済み24-run campaignで再測定した結果、過去の「約10%」より
+大きく、方向依存の mismatch が再現した。
+
+| direction | FD / analytic | 相対誤差 |
+| --- | ---: | ---: |
+| gradient-aligned | 1.2178 | 21.8% |
+| random seed 11 | 1.3764 | 37.6% |
+| random seed 2026 | 1.5680 | 56.8% |
+
+各方向でepsilonを変えたspreadは0.4%未満。`g_canonical = P.T g_source` とdot-product identityは
+machine precisionで一致し、24 runの最大設計変化は`2.98e-8`だった。primal residualを
+`5e-7`から`5e-9`へ厳しくしてiterationが91から114へ増えてもratioは0.04%未満しか変わらない。
+従ってtransfer、設計の更新、primal residual toleranceは原因から除外され、原因はこの構成の
+OpenFOAM continuous-adjoint sensitivityとdiscrete primal responseの間に局在する。
+
+その後、source grid を32x16x16から64x32x32へ細分化し、perturbation primal residualを
+`5e-9`へ締めて再実行した。
+
+| direction | 粗grid比 | 細grid比 | 細grid epsilon spread |
+| --- | ---: | ---: | ---: |
+| gradient-aligned | 1.2179 | 1.1504 | 0.00043 |
+| random seed 11 | 1.3764 | 1.1134 | 0.00003 |
+| random seed 2026 | 1.5678 | 1.1441 | 0.00450 |
+
+全方向が1へ移動し、30倍のepsilon範囲で符号とplateauが安定したため、source-grid離散化は
+主要寄与である。ただし5% gateは全方向で未達、base mesh gateは未測定、source gridは二段階
+しかない。従って判定は **Path B bounded exception** であり、grid convergenceとは呼ばない。
+
+次はPQ1.1でbase mesh gateとcanonical grid因子を測定し、必要な場合だけ第三source-grid levelを
+事前登録する。PQ3で使う場合は提案方向ごとのcentered primal FD bracketを必須とし、経験的な
+一律scale補正は禁止する。
+
+根拠: [`p6_diagnosis_record_2026_09.md`](p6_diagnosis_record_2026_09.md)、
+`evidence/fd_campaign_p6_solver_side_result_2026_09.json`、
+`evidence/pq1_source_grid_refined_tight_2026_09.json`。
+
+### 歴史的観測（現在の判定で上書きしない）
+
+勾配方向（sensitivity）のFD比は0.990→0.994、相対誤差1.03%→0.56%で正しい。
+しかし局在したランダム方向では比が約0.90で安定し、epsを1桁変えても1に近づかない。
+
+| 条件 | ratio | 相対誤差 |
+| --- | --- | --- |
+| 既定許容値 | 0.896（eps 1e-3） | 10.4% |
+| 主問題残差を約2桁厳格化 | 0.905 | 9.5% |
+| 正則化を無効化 | 0.861 | — |
+
+許容値の厳格化はばらつきを消したがバイアスは消さなかった（ノイズではない）。
+正則化フィルタの連鎖律欠落を疑い、無効化したところratioは1から遠ざかった（0.905→0.861）。
+
+**監査を受けた訂正**: これは連鎖律欠落に対する**反証寄りの証拠**だが、**決定的棄却ではない**。
+正則化を切るとforward問題自体が変わるため交絡試験である（「フィルタが無いなら欠落項もゼロ、
+よって比は1へ寄るはず」という論理自体は成立するが、他のb依存効果を排除できない）。
+正則化transposeの因果的棄却には、同一forward問題の下での比較が要る。
+
+残る候補は`P`の部分重なり再配分（refinement比が非整数：1.875、1.5）だが未検証。
+切り分け手順は`problem_resolution_plan_2026_09.md`§8が定める。
+
+この歴史的構成では運用上の影響を限定的と評価していたが、凍結設計campaignでaligned方向も
+21.8%外れたため、その評価は現在のproduction判断には使わない。
+
+---
+
+## P7 — 注入が`rho`のみ更新（中・解消 2026-09-20）
+
+`inject-canonical-state-into-fixed-grid-contract`は`rho`だけを上書きし、
+`rho_filtered`、`rho_projected`、`alpha`は前状態のまま残る。solver caseは`rho`から
+生成される（`src/cfd_sdf/fixed_grid_primal.py:590`）ため現在の結果は正しいが、
+他の配列を読む将来の消費者は**古い状態を黙って読む**。
+
+### 対処（2026-09-20, WP4）
+
+- 注入器はC3 identity契約（`rho_projected = rho_filtered = rho`、
+  `alpha = beta_max * rho`）を事前状態から検証できるときだけ、4配列を同世代で一斉
+  更新する。`beta_max`は記録済み`alpha/rho`比からデコードする。
+- identity契約が成立しない（実際のフィルタ/射影がある）場合は、injectionを拒否して
+  古い配列を持ち越さない（fail-closed）。更新はそのprofileの所有者経由で行う。
+- provenanceに`derived_generation`ブロック（契約、検証値、4配列の新しいハッシュ）を
+  記録する。mutationテスト: フィルタ非identity・射影非identity・alphaが単一係数でない
+  場合の3件を新規追加（`tests/test_fixed_grid_canonical_state_injection.py`、606 passed）。
+
+## P8 — move limitにフロアがない（低・修正着手中）
+
+Python最適化ループのmove limitは棄却のたびに半減するラチェットで、下限も
+リセットもない。ゼロまで縮み、`max|Δρ| = 6e-29`という浮動小数点上のno-opを
+「受理」として記録した。
+
+## P9 — Stage Sが範囲ゼロ成分を除去しない（低・未修正）
+
+iso-surface writerは常に計算領域の境界パッチを出力する。したがって退化署名
+（5120面・2822頂点・6成分 `[1024,1024,1024,1024,512,512]`・bounds=領域そのもの）は
+writerの仕様であり、実設計成分があってもその中に埋もれる。Stage Sは範囲ゼロ成分を
+除去すべきである。
+
+## P10 — Stage Sの形状更新が存在しない（設計上・未実装）
+
+Hamilton-Jacobi更新、再初期化、shape gradientからの法線速度、曲率制御のいずれも
+`src/`に存在しない。現状のStage Sは一発のiso-surface/SDF生成のみである。
+
+## 統一的説明 — 2026-09-12（測定で確立）
+
+P1、P2、P11、P14、およびStage Sの失敗は、**独立した問題ではなく1本の連鎖**である。
+`work/brinkman_scoping/`の測定が、この連鎖の主要な環を直接押さえた。
+
+計測値（■）と推論（□）を区別して示す。
+
+```text
+■ function linear（alpha = alphaMax·rho）の下では、同じ材料量を薄く広げるほど
+  目的関数が良くなる。すなわち靄が最適解である
+      ↓
+■ 最適化器はそれに忠実に従い、物体を作らず靄を広げた
+      ↓
+■ 抗力寄与の約93%が beta < 0.1 の45,316セルから来る
+   （alphaMax 2500/10000/40000 で 93.0/92.8/92.9% と不変）
+■ 全ランを通じて beta > 0.62 のセルが存在せず、[0.7,1.0] は常に空
+      ↓
+■ 0.5等値面は、その力を生んだ実体と対応しない
+      ↓
+■ Stage Vは中実体を解くため、力も順位も一致しない
+```
+
+**2026-09-12の機構検証により、連鎖の先頭2環は推論から実測へ昇格した。**
+同一の材料量 `∫rho dV` を固定し、コンパクトな物体から段階的に薄く広げて測定した。
+
+| 状態 | セル数 | rho | downforce（linear） | downforce（RAMP q=100） |
+| --- | ---: | ---: | ---: | ---: |
+| 中実体 | 624 | 1.0 | 0.277 | **0.2595** |
+| | 1,294 | 0.48 | 0.400 | 0.0222 |
+| | 2,070 | 0.30 | 0.546 | 0.0077 |
+| | 2,988 | 0.21 | 0.787 | 0.0040 |
+| 靄 | 4,056 | 0.15 | **1.200** | 0.0025 |
+
+線形補間では**靄が中実体の4.3倍**のスコアを出し、薄く広げるほど単調に改善する。
+罰則付き補間では完全に逆転し、**中実体が約100倍勝つ**。
+
+したがって最適化器は壊れていなかった。**目的関数が靄を最適解にしていた**ので、
+忠実にそれを見つけていただけである。射影（tanh）を足しても b=4 で停滞したのは、
+射影が押し上げる一方で目的関数が押し戻していたためである。
+
+根拠: `work/ramp_interp/mechanism_check.json`、`mechanism_check2_a250_q100.json`
+
+### beta帯別の漏れ（決定的）
+
+| beta帯 | セル数（T0典型） | 平均 \|U\|/U_ref | 解釈 |
+| --- | ---: | ---: | --- |
+| [0, 0.1) | 約8,000 | 103–105% | **流体**。流れて当然 |
+| [0.1, 0.3) | 71–107 | 0.6–0.9% | 既に十分塞いでいる |
+| [0.3, 0.5) | 72–103 | 0.23–0.36% | 良好 |
+| [0.5, 0.7) | 0–33 | 0.27% | 1ランのみ到達 |
+| [0.7, 0.9), [0.9, 1.0] | **全ラン0** | — | 一度も生成されていない |
+
+初期に報告した「top decileで最大90%の漏れ」は誤りであった。decile閾値が0.001–0.04であり、
+流体セルを固体として数えていた。**Brinkman penalizationは beta ≳ 0.1 で既に機能しており、
+alphaMax=2500で十分である。**
+
+### 帰結
+
+- **P11はP2の症状であり、独立した欠陥ではない。** ただし beta 0.7–1.0 帯は一度も
+  生成されていないため、その帯での挙動は単調傾向からの外挿である。二値化により
+  設計がその帯へ入ったら再確認する。
+- **修正の優先順はP2が最上流。** 「二値化していない」は形状抽出の問題であるだけでなく、
+  **目的関数値そのものが物体ではなく靄から来ている**という、より深い問題である。
+- alphaMaxを上げても力が収束しないのは、グレーセルではなく**beta<0.1の裾**が
+  支配しているためである。surrogateの欠陥ではなく設計場の性質である。
+
+根拠: `work/brinkman_scoping/result.json`（`part5_beta_binned_reanalysis_supersedes_decile_framing`）、
+`binned_leakage_results.json`
+
+## P11 — Brinkman浸透層の格子解像（P2の症状として閉じる）
+
+固体はBrinkmanの運動量シンク `alphaMax · beta` で課している。その浸透長は
+
+```text
+ell_p = sqrt(nu / alphaMax) = sqrt(0.01 / 2500) = 0.002 m
+```
+
+一方T0格子のセル幅は0.075–0.1 mであり、**セルは浸透層の37〜50倍大きい**。
+流れを止めるはずの層が格子上に存在しない。
+
+この比だけを見ると「Stage Tの固体は実際には透過体ではないか」という懸念が生じる。
+
+**測定結果: この懸念は否定された。** 上記「統一的説明」のbeta帯別表のとおり、漏れは
+beta ≳ 0.1 で既に平均1%未満であり、`alphaMax = 2500`で十分に塞いでいる。
+浸透層がセルより小さいことは、界面を解像できないことを意味するが、**塞ぐこと自体は
+できている。**
+
+alphaMaxを上げても力が収束しないのは、抗力寄与の93%が`beta < 0.1`の裾から来ている
+ためであり、penalizationの失敗ではなく設計場が靄である結果である。
+
+したがって**P11はP2の症状として閉じる。** 唯一の留保は、beta 0.7–1.0帯が一度も
+生成されていないため、その帯での挙動が単調傾向からの外挿である点。二値化で設計が
+その帯へ入った時点で再確認する。
+
+診断手順は`problem_resolution_plan_2026_09.md`§6.4。実測は`work/brinkman_scoping/`。
+
+## P12 — Stage V参照が未資格（最重大・修正中）
+
+body-fittedの全6ケースで次を確認した。
+
+- `checkMesh`が`Failed 1 mesh checks.`（concave faces: coarse 48、fine 147–171）
+- `SIMPLE: no convergence criteria found. Calculations will run for 500 steps.`
+  実際に500反復で打ち切られ、収束宣言は出ていない
+
+したがって既存証拠が示すのは「6ケースが完走しforce fileを生成した」ことまでである。
+meshが有効、solverが収束、forceが格子独立、Stage Vが決定的参照——いずれも未成立。
+
+**P1の否定的結果はこの参照の上に乗っている。** dragの3格子一貫反転は重要な観測として
+保持するが、参照側の数値誤差を修復または上限評価するまで一般的No-Goへ昇格させない。
+
+## P13 — 最適化ループの随伴・primal実行契約（最重大・bounded pathで解消）
+
+`scripts/stage_t_python_loop.py:162`が`adjoint_iterations=1`を渡し、
+`fixed_grid_primal.py::_patch_optimisation_dict`がテンプレートの`nIters 4000;`を
+`nIters 1;`へ置換する。実ケースは`drag_adjoint_converged: False`、
+`downforce_adjoint_converged: False`を記録しているが、ループの抽出処理は
+`primal_converged`と有限性しか見ずに`topOSens`を消費した。
+
+P0ベースラインの勾配は随伴713/1143反復で収束していたが、**最初の受理ステップ以降の
+勾配は同じ資格を持たない。**
+
+影響の切り分け:
+
+- 候補A・Bの**目的値は本物**（各ステップを収束primalで再評価している）
+- しかし「検証済み勾配が設計を駆動した」という主張は支持されない
+- 順位検定は2形状の比較なのでこの欠陥に依存しないが、P12の影響は受ける
+
+### 追記（2026-09-22）— 旧fail-open修正後に残るadapter問題
+
+未収束adjointをgradientとして消費する旧問題はfail-closed gateで解消した。一方、PQ0後の
+`make_oracle_from_compiled()` では `evaluate_values` と `evaluate_gradients` が同じ
+`primitive_evaluator(state)` を呼ぶ。後者へ渡す `values` payloadは使われないため、実adapterが
+そのまま接続されるとaccepted parentのprimalを再実行し得る。
+
+さらに `OracleResult.adjoint_converged` はtrialでも必須boolで、payload欠落時の既定値は
+`True` である。primal-only trialにadjointを要求する一方、欠落を合格にするため意味が矛盾する。
+
+PQ0.1では次へ分離する。
+
+- parent primal artifactを入力にadjointだけを実行し、欠落/不一致はfail-closed
+- trialはprimal-onlyでadjoint statusを`not_applicable`
+- accepted trial artifactを次parentで再利用
+- API call countではなく実solver invocation IDで重複を検査
+
+### 追記（2026-09-22）— PQ0.1/PQ0.2 closure
+
+上記4項目はPQ0.1で実装され、PQ0.2の実OpenFOAM smokeでparent artifact reuse、trial
+primal-only、bracket、rollback、resumeを確認した。従ってP13はbounded reduced pathについて
+解消する。continuous-adjointとdiscrete primal FDの量的一致は別問題であり、P6のPath Bを
+維持する。
+
+## P14 — 射影が二重にかかる（高・未修正）
+
+Python側が`beta = h_b(rho)`を作る一方、OpenFOAMケースは`regularise true; function linear;`の
+ままである。実際の評価鎖は次になる。
+
+```text
+canonical rho -> Python射影 -> 保存的平均P -> OpenFOAM raw alpha
+              -> OpenFOAM Helmholtz正則化 -> solver beta -> alphaMax·beta
+```
+
+実測（`work/stage_t_python_loop_v2_floor/iter_004_attempt_00`）:
+
+| | 最大値 | 0.5超のセル |
+| --- | --- | --- |
+| Python側が注入した`rho` | 0.55 | あり |
+| **ソルバが見た`beta`** | **0.436** | **0** |
+
+Stage SはPython側の場を輪郭化するため、**Stage Tが流れ場に使った場とは別物**である。
+対処は射影所有者をPythonへ一本化し、OpenFOAM側を`regularise false`にすること
+（`problem_resolution_plan_2026_09.md` C3）。
+
+## P15 — 最適形状が2セル厚で、格子が表現しきれない（最重大）
+
+### 症状
+
+罰則付き補間により設計は二値化したが、生成される物体は**約2セル厚のスラブ**である。
+`thin_fraction_within_1cell_of_surface` は0.83–0.97、すなわち固体の83–97%が自身の表面から
+1セル以内にあり、実質的に内部が存在しない。
+
+結果として次が同時に起きる。
+
+- `checkMesh`の「行列式の小さいセル」で全格子失格（24/98/303など）
+- 力の積分が壊れる（Cd 7.5–17.8。健全な候補は1.2–1.3）
+- **ダウンフォースが格子収束しない**
+
+### 三つの独立な証拠
+
+| 角度 | 測定 |
+| --- | --- |
+| 差分比 | Cd比 0.16–0.18（収束） vs downforce比 1.00–1.08（**非収束**） |
+| 対照実験 | voxel化した8セル立方体は同一経路で`checkMesh`失敗ゼロ、開いた辺ゼロ、ドリフト面積2.00%・体積1.46% |
+| メッシュ直接測定 | 実候補は濡れ面積が格子間で2.69–2.76%、体積2.25–2.32%変動。開いた辺9–60 |
+
+**薄い物体は格子ごとに別の物体になっている。** 法線方向の力（ダウンフォース）は捉えられた
+厚みを追うので収束せず、流れ方向の力（抗力）は鈍感なので収束する。観測と一致する。
+
+### コードの問題ではない
+
+marching cubesのスリバー洗浄（重度スリバーの90–100%除去、体積変化0.03%未満、watertight維持）を
+実装しても、`checkMesh`失格は24/98/303 → 23/98/303とほぼ不変だった。
+表面品質の問題ではない。
+
+なお「抽出で体積を8–12%失う」という当初の記述は誤解を含む。`cell_threshold_volume`と
+`surface_mesh_volume`の差の大半は**離散化の定義差**である（セル単位 vs marching cubesの補間）。
+意味のある指標は再voxel化後の差で、厚い対照は**1.56%**、薄い候補は**7.74%**である。
+
+### 対照立方体の測定値について
+
+一時、対照立方体のドリフトを7.2%とする測定が報告され、上記の診断と矛盾した。原因は
+**別のパイプラインを測っていたこと**である。誤った方は解析的STLの箱を直接snappyHexMeshへ
+渡しており、voxel化と等値面抽出を飛ばしていた（位置も異なる）。正しい対照（voxel化→Stage S
+全経路）の再測定は面積2.00%・体積1.46%で、当初の値と一致する。7.2%の測定は破棄する。
+
+### 対処の検証結果（2026-09-13）
+
+三つの候補を検証し、**最初の仮説は反証された。**
+
+| 検証 | 結果 |
+| --- | --- |
+| robust erode（半径4セル、η_e=0.75） | **逆効果**。物体が16–36セルまで消失、表面1セル以内の固体率1.000 |
+| 鋭い射影を止める（`b=0`、半径2、q=100） | **厚みを達成**。960–1,600セル、`local_p10`=4.0、median 4.0–5.66、表面率0.613–0.70 |
+| 厚い候補の格子収束 | **ダウンフォースは依然非収束** |
+
+#### 決定的な反証
+
+ここで比較対象に採用した候補は `opt_q100_b0_step0_try0_block` である。960セルとは
+physical `beta` の `n_gt_0.9=960` を指し、`local_thickness_cells_median=4.0` である。
+`half_thickness_cells_median=1.0`、1次元推定slab厚は2.0セルなので、異なる厚さ指標を
+混同しない。この候補は次を満たす。
+
+| 指標 | 候補 | 対照（8セル立方体） |
+| --- | ---: | ---: |
+| `checkMesh` | 登録profileで全3格子合格、small-determinantゼロ | 同じ |
+| 濡れ面積ドリフト | 2.25% | 2.0% |
+| 体積ドリフト | 1.57% | 1.46% |
+| Cdの差分比 | 0.384（収束） | — |
+| **downforceの差分比** | **2.114（発散）** | — |
+
+**幾何は格子間で安定しているのに、ダウンフォースは収束しない。**
+したがって「薄い物体→格子ごとに別物体→非収束」という因果は、この候補について
+**成立しない**。P15の当初の説明は限定的である。
+
+なおraw `checkMesh`はV0/V1/V2の各格子で`Failed 1 mesh checks.`を報告している。
+内容は登録済み`STAGE_V_QUALIFICATION_PROFILE_V1`が数値上限内で許容する
+`Concave cells`のみで、small-determinant failureは0である。本節の「合格」はraw出力が
+無警告という意味ではなく、登録profileによるqualification passを意味する。
+
+#### 非定常仮説も棄却
+
+鈍頭体（Cd 2.7–3.1、健全値の約2倍）に定常解が存在しない可能性を検査した。
+
+- V2（18万セル）の残差履歴: 窓付き標準偏差が 9.6e-4 → 2.7e-7 へ単調減少。
+  周期性なし、undamped driftなし、不動点へ収束
+- pimpleFoamによる遷移再開（V0から5流過時間）: Cd=2.6754、downforce=0.6219 が
+  7桁一致で不変。振動・後流成長なし
+
+**限界**: 遷移検査はコストの都合でV0で実施した。粗い格子は細かい格子でのみ現れる
+不安定性を減衰させうるため、V2での確証ではない。V2での遷移検査が、この判断を
+暫定から確定へ変える唯一の証拠である。
+
+#### 現時点の判断
+
+ダウンフォースの非収束を**通常の意味での解像度不足**とする説明を作業仮説とし、
+body-fitted V3のmesh、solver、force-stationarityを別々に判定した。結果は次節のとおりで、
+実行qualificationは閉じたがgrid convergenceは閉じていない。
+
+#### 正しい候補のV3結果（2026-09-20）
+
+`opt_q100_b0_step0_try0_block`をvoxel `0.0125 m`で再実行した。V3は1,260,201セル、
+minimum determinant 0.0271、small-determinant failure 0で、登録mesh profileを通過した。
+`simpleFoam`は2237反復で`residualControl`を満たし、最終残差は
+`Ux=1.50e-7, Uy=9.98e-7, Uz=3.01e-7, p=6.09e-7`だった。最終25%窓の力も
+stationarity gateを通過した。したがってV3はmesh、solver、forceの全ゲートでqualifiedである。
+
+| level | cells | Cd | downforce | Stage V qualification |
+| --- | ---: | ---: | ---: | --- |
+| V0 | 6,387 | 2.68528 | 0.61446 | pass |
+| V1 | 31,710 | 3.01397 | 0.68146 | pass |
+| V2 | 184,518 | 3.14010 | 0.82310 | pass |
+| V3 | 1,260,201 | 3.13009 | 0.85302 | pass |
+
+候補、V0–V3のraw/profile判定、残差、力定常性、実行時間、ignored `work/` artifactsの
+SHA-256は`docs/evidence/stage_v_v3_requalification_2026_09.json`に固定した。
+
+最細2格子ではCdの相対差が0.319%で登録上限2%を通過した。一方、downforceの絶対差は
+`|0.85302-0.82310|=0.02993`で、登録上限0.005の約6倍である。V1→V2の差0.14164からは
+大きく縮小したが、**downforceのstrict grid convergenceは未成立**である。
+
+この結果は、当初の「薄い形状が格子ごとに別物になることが主因」という説明を反証し、
+細分化でdownforce差が縮むという解像度仮説を方向としては支持する。ただしV3でも合格幅に
+達していないため、通常の解像度不足だけを確定原因とはしない。次は全領域一様V4を自動的に
+追加するのではなく、wake/壁面の局所refinement、格子収束外挿、定常/非定常モデル差を
+一因子ずつ比較する。
+
+なお副次的に判明した設計指針: **鋭いtanh射影はフィルタの長さスケールを打ち消す。**
+厚い物体が欲しければ射影を鋭くしない方がよい。erode による強制は、この規模の設計では
+物体を消す方向に働く。
+
+**注意**: 単純な密度フィルタは公正に検定されていない。厚みは射影後の`beta`で測るが、
+鋭いtanh射影（b=8, b=16）は遷移長`~1/b`のステップへ戻すため、フィルタの物理半径と独立に
+薄い特徴が復活する。より根本的には、**密度フィルタは`rho_tilde`の勾配を縛るのであって、
+超レベル集合`{beta > 0.5}`の厚みを縛らない。** これを閉じるのがrobust定式化である。
+
+## P16 — Stage Vが解像できる最小差（判定基準）
+
+今後のすべての順位主張は候補・response別の最新bandで判定する。次の表は固定domainへ
+移る前のunion-box候補についての歴史的記録であり、現在のbandとして再利用しない。
+
+| | ダウンフォース |
+| --- | --- |
+| 過去の観測ドリフト | 0.078 |
+| 現候補のqualified V2→V3ドリフト | **0.02993** |
+| 登録grid-convergence上限 | **0.005** |
+| 検定に使ったペアの実差 | 0.0219 |
+| 実差 / 現ドリフト | **0.73** |
+
+したがって「全3格子で方向が一致した」は本物の観測だが、**差そのものは現在の最細格子間
+ドリフトより小さい**。V3追加で0.078から0.02993へ改善したものの、0.0219差の順位を独立に
+判別できる状態にはまだ達していない。
+
+抗力は収束する（V1→V2で1.1–1.3%、閾値2%以内）ため、この制約はダウンフォース固有である。
+
+### 固定domain参照への更新と一因子分離（2026-09-20）
+
+旧V0–V3参照のunion-boxは候補と底面が約0.19 mしか離れておらず、地面干渉が未測定のまま
+混入していた。宣言固定domain（bottom z=-0.6 m）下の同一候補はCd≈1.63–1.74、downforce
+≈0.51–0.52となり、union-boxの絶対値・比率・Drift（0.02993を含む）は参照として移転できない。
+
+固定domain下での一因子結果（`evidence/stage_v_fixed_domain_grid_study_2026_09.json`）:
+
+| family | V1 | V2 | V3 | 最細DF drift | 登録bound |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| plain | Cd 1.7395 / DF 0.5139 | Cd 1.6801 / DF 0.5093 | Cd 1.6297 / DF 0.5222 | 0.01291 | 0.005 |
+| wake(level 3 box) | Cd 1.7348 / DF 0.5086 | Cd 1.6771 / DF 0.5048 | Cd 1.6282 / DF 0.5195 | 0.01470 | 0.005 |
+
+- 6実行はすべてmesh profile・`residualControl`・force stationarityゲートでqualified
+  （wake V3はendTime 3000で正しく棄却された後、endTime 6000への宣言付き継続で収束、計4259反復）。
+- **wake近傍のlevel-3局所refinementは力を約0.003しか動かさず、V2→V3遷移のDF変動
+  （0.013–0.017）を説明しない。** driftはwake解像度ではなくglobal refinement familyに
+  付随する誤差であることが一因子比較で判明した。
+- **定常/非定常比較（同一plain V2メッシュ、pimpleFoam 15 s = 5流過回数）**: 時間平均は
+  定常点と一致（Δdownforce = -8.6e-5、ΔCd相対 = -0.09%、最終窓std ≈ 8e-8、シェッディング
+  なし）。定常梯子点は非定常成分に汚染されていない
+  （`evidence/stage_v_transient_check_2026_09.json`）。
+- 定常/非定常因子は上記の比較で除外した。次はscheme因子を一因子で調べた。
+
+### convection scheme因子（2026-09-21）
+
+`bounded Gauss linearUpwind grad(U)`へ変え、V2→V3最細transitionを同じcandidate/domain/gateで
+比較した（[`stage_v_downforce_drift_resolution_2026_09.md`](stage_v_downforce_drift_resolution_2026_09.md)）。
+
+| family | drag relative drift | downforce absolute drift | 判定 |
+| --- | ---: | ---: | --- |
+| baseline upwind | 3.00% | 0.012907 | 両方fail |
+| `linearUpwind` | **0.364%** | **0.010374** | drag pass、downforce fail |
+
+全4 qualification gateは両armで通り、treatment V3は2289 iterationで収束した。dragでは
+schemeが主要因で、`linearUpwind` familyは登録2% boundを満たす。downforceは改善が小さく、
+baseline/treatmentとも三格子が非単調なのでGCIは出さない。現候補のhonestなdownforce
+numerical bandは約0.0104で、grid-independent claimではない。
+
+次は登録済み`evidence/stage_v_domain_boundary_factor_manifest_2026_09.json`を変更せず実行する。
+その結果が出るまで、設計定式化を変えてdriftを見かけ上小さくしない。
+
+## P17 — 候補面とStage V外周境界のclearanceが未検査（最重大）
+
+最初のV3再実行は誤って別候補
+`opt_q100_b0_step5_try1_block_keep_round`（physical `beta>0.9`が1,600セル）を対象にした。
+この候補はV0/V1/V2でもsmall-determinant failureを持つため、P15の960セル候補のV3検定には
+使えない。V3でも220セルが`minDeterminant=0.001`を下回り、mesh gateで棄却した。
+
+220/220セルが`design_candidate` patchに接し、208/220セルは`top` patchにも接していた。
+候補STLの`zmax=0.4 m`はblockMeshのtop `z=0.4 m`と一致し、`sideMin`との隙間も
+V3の1セル幅`0.0125 m`程度しかない。現在のStage V格子は全geometryのunion boundsから
+作られるため、許容領域端まで伸びた候補がCFD外周を動かし、候補面と外周が接触し得る。
+
+一方、P15の正しい候補`opt_q100_b0_step0_try0_block`は外周から離れている。同じV3で
+1,260,201セル、minimum determinant 0.0271、small-determinant failure 0となり、登録mesh
+profileを通過した。この一因子比較から、先の失敗原因はuniform refinement一般ではなく、
+候補固有の外周clearance違反である。
+
+必要な修正はquality閾値の緩和ではない。Stage V case生成前に、候補面とfar-field各patchの
+最小clearance、および候補が宣言されたdesign domain内にあることを物理長で検査し、違反時は
+fail-closedにする。CFD外周は候補union boundsから暗黙生成せず、ProblemSpecが宣言する固定
+far-field domainへ束縛する。P15の正しいV3についてはmesh passとsolver/force qualificationを
+別々に記録する。
+
+### 対処の実装（2026-09-20, WP1）
+
+- Stage Vのouter boxを`grid.domain_bounds_m`（`(-1,-0.8,-0.6)`〜`(2,0.8,0.6)`）へ固定束縛
+  する経路を`problem_spec_to_project_config` → `build_fields` → `blockMeshDict` /
+  `case_metadata.json`まで通した。宣言domainがあるとき`padding_m`は0のみ許容し、extentが
+  voxelの整数倍でない場合は`build_fields`がfail-closedする。
+- `src/cfd_sdf/stage_v_domain_preflight.py`に、meshコマンド前に有限domain・voxel整合・
+  候補in-box判定・6面の物理clearance（パッチ名 `inlet/outlet/sideMin/sideMax/bottom/top`）
+  を検査するpreflightを実装した。marginは宣言されたバージョン付きprofile
+  `stage_v_clearance_v1`の固定値 **0.25 m** であり、セル数由来でも結果由来でもない。
+- `scripts/stage_t_filtered_ramp.py`の`mesh_sweep`と`phase_stagev_level`が
+  `stage_v_domain_preflight.json`を`blockMesh`/`surfaceFeatureExtract`/`snappyHexMesh`/
+  `simpleFoam`の前に書き、不合格時はSystemExitで打ち切る（solver launch artifact不発行）。
+- 記録済み2候補をpreflightのみで判定した（実行なし）:
+  `opt_q100_b0_step0_try0_block`（最小clearance 0.37396 m, `top`）= pass、
+  `opt_q100_b0_step5_try1_block_keep_round`（最小clearance 0.19999997 m, `sideMin`）=
+  fail（`clearance_below_declared_margin`）。  artifactは
+  `work/filtered_ramp/wmin_0.2/stage_v_mesh/<candidate>/<level>/stage_v_domain_preflight.json`、
+  証拠は`evidence/stage_v_domain_clearance_2026_09.json`。
+- 検証: `compileall` + 展開済みテストの包括性向上後 **601 passed, 2 skipped**（新規
+  `tests/test_stage_v_domain_preflight.py`、両記録候補のskip付きfixtureを含む）。
+  これは契約・capability証拠であり、mesh品質・solver収束・target physicsの主張には
+  用いてはならない。
+
+### V14候補での再測定とV15対策（2026-09-24）
+
+- v14の最終受理checkpointを`rho_projection`から0.4/0.5/0.6で再抽出したPQ4.1では、
+  iso 0.5がdiscreteness、extraction profile、volume fidelityを通過した一方、
+  `stage_v_clearance_v1`だけで不合格になった。したがって現時点のStage S blockerは、
+  少なくともこの閾値ではclearanceへ局在する。
+- v15は宣言domainの各面から設計セル中心を0.30 m内側へ制限するsupport boxを登録し、
+  v14 checkpointのbox外design値を決定論的に0へしたbootstrapから開始する。
+  この操作後のprojected volumeは`0.06202391606`、`mean_nd=0.00365951599`、
+  `rho_projection>0.5`のsupport違反は0である。これはclearance合格の証拠ではなく、
+  PQ4.1を再実行する前のtransform-level予防条件である。
+- v15 entry preflightはalpha 1.0で合格した。start/candidateともsupport違反0で、候補の
+  `mean_nd=0.00348178008`、projected volume `0.06216404077`、実trial downforce
+  `2.01655864594`である。実bounded learning campaignは `paused_learning_budget`
+  で停止した（10新規attempt・10受理、同一stateでのsupport違反0最終候補:
+  downforce `2.10035503533`、projected volume `0.06406567400358908`、
+  `mean_nd=0.003213044195919047`、収束window未成立）。support gateを通った最終候補でも、
+  抽出面に対する完全なclearance preflightが合格するまではP17を閉じない。
+- v15 checkpoint 10のPQ4.1では、`rho_projection` iso 0.5の抽出面が
+  `stage_v_clearance_v1` preflightに合格した（iso 0.4はfeature shrink、iso 0.6は
+  volume fidelityで除外）。ただしsolver実行での再確認は未実施のため、この合格は
+  P17自体を閉じない（`evidence/pq4_1_v15_state_stage_s_entry_2026_09.json`）。
+- v16終端（checkpoint 87、blocked stop）のPQ4.1でも、`rho_projection` iso 0.5の
+  抽出面が修理後gateで`stage_v_clearance_v1` preflightに合格した
+  （`evidence/pq4_1_v16_state_stage_s_entry_v2_2026_09.json`）。
+- 2026-09-24 closure: Work F V1 baseline（登録v16 iso-0.5 surface、V1=0.05 m）が
+  body-fitted case（39,848 cells）でmesh/solverを完走し、`stage_v_qualification_v1`の
+  全gate（checkMesh profile、`residualControl`収束、force stationarity）に合格した。
+  これがsolver実行でのclearance再確認であり、P17のclosure条件を満たす
+  （`evidence/stage_s_work_f_v1_solver_2026_09.json`）。closureはこのcandidate/levelに
+  限られ、新candidate・新levelでは同じ実行確認を繰り返す。
+
+---
+
+## 2026-09-12時点で実証できたこと（歴史的記録）
+
+この節の表は初期closed-loop直後のsnapshotであり、現在のstatusではない。特にP6、P12、P16、
+P18はその後のevidenceで更新された。現在の判断には冒頭一覧と各問題の最新追記を使う。
+
+| 項目 | 結果 |
+| --- | --- |
+| canonical閉ループ | 46080 ⇄ 8192セルで成立。主問題161反復、随伴713/1143反復で収束 |
+| 勾配連鎖の正しさ | 勾配方向で相対誤差0.56–1.03%（16実行、全収束） |
+| cell order | `writeCellCentres`で実測導出（identityと判明、ただし初の実測裏付け） |
+| Stage T最適化 | downforce 0.776 → 3.188（5受理ステップ、単調、各ステップ実計算で再評価）。**ただしP13により「検証済み勾配が駆動した」とは言えない。目的値の測定のみが有効** |
+| Stage Sハンドオフ | 実形状を受理。再実行でSTLハッシュがbyte一致（決定論的） |
+| Stage V | v2 specから直接駆動。3解像度、候補Bの2成分とも欠落なくメッシュ化、Cd単調収束。**ただしP12により参照として未資格** |
+| 目的関数の健全性 | 空領域（ρ≡0）で drag = downforce = 0.0 ちょうど。幾何非依存のオフセットなし |
+
+## 現在の未解決の問い（重要度順、2026-09-25）
+
+1. Work F surface FD（fail-closedで確定）: matched-Re laminar V1 caseの32-primal
+   campaignはgradient-alignedが5%以内、random seed方向が5%超で完全な
+   derivative qualificationはfalse（`shape_update_allowed=false`）。D1/D2は欠陥
+   なし、D3（`linearUpwind`）はmixed、D4.1 component監査はclosure完全一致で
+   単一項・単一scalarでは説明不能、D4.2 geometry Jacobianはpass（残差はASCII
+   書き出し丸め由来で1/epsilon則）。D4.3 ablationは`includeSurfaceArea false`が
+   derivative fileをbit同一のまま変えず（`faceSensNormal*`のみ変化）、
+   `includeMeshMovement false`は値を変えるがpass controlを悪化させた。D4.4の
+   判定表に従い、OpenFOAM continuous-adjoint routeはこのWork F profileでは
+   **未資格（fail-closed）**としてD5 holdout・D6/D7へ進まない。その後§21に従い
+   A0登録とA1 native-FI判別を実行した: `sensitivityType surface -> shapeFI` は
+   lineage・schema・convergenceをpassしたが、pass controlの悪化（downforce
+   gradient-aligned `1.0409 -> 1.1333`、drag downforce-aligned `1.0266 ->
+   1.0861`）とfailing rowの残存（downforce seed2026 `0.9094`、drag seed2026
+   `1.5798`）により`candidate_formulation_supported=false`
+   （`evidence/stage_s_work_f_fi_formulation_diagnostic_manifest_2026_09.json`
+   および`evidence/stage_s_work_f_fi_formulation_diagnostic_2026_09.json`）。
+   次の問いはarchitecture decisionであり、0-run memo
+   `stage_s_work_f_architecture_decision_2026_09_25.md` が比較する二案
+   （別sensitivity経路 / 低次元parameterization + centered FD）のいずれかを
+   新しい契約として登録するまで新しいsolver campaignを開始しない。
+   その後、案2（低次元parameterization + centered FD）を採用し、S0契約
+   （`evidence/stage_s_reduced_basis_fd_manifest_2026_09.json`、versioned
+   reduced-basis ProblemSpecは`maximize downforce / J = -downforce`、
+   drag report-only、K=16）とS1 solver-free preflight
+   （`evidence/stage_s_reduced_basis_mode_preflight_2026_09.json`、16 mode、
+   全geometry/mesh/realized gate pass）を完了した。flow solverは未実行で
+   `reduced_basis_fd_qualified=pending`、`shape_update_allowed=false`。PQ2 V2 factor
+   campaignは完了したがNo-Goであり、S2へは進めない。
+2. P2: Stage Tの登録済みterminal convergenceを満たすcandidateを作れるか。v16は
+   extractableだがblocked stopであり、strict terminal criterion上はopen。
+3. P6はjoint canonical/source refinementまたは追加source gridで5% gateへ収束するか、
+   Path Bに留まるか。
+4. Stage V downforce reference remains unresolved after the first domain
+   continuation: the +0.8 m -> +1.6 m transition is still beyond the bound.
+   The next question is whether a further domain continuation converges or a
+   physically justified far-field boundary contract must replace symmetry.
+5. baseline→T→Sの改善は、候補別numerical+extraction uncertaintyを超えるか（PQ5）。
+
+## 2026-09-12時点の主張境界（歴史的記録）
+
+監査の§13に従った当時の記録である。現在は本台帳の最新追記と
+`downforce_optimization_architecture_plan_2026_09.md` §2/§14/§15を優先する。
+
+**主張できる**
+
+- T→S→Vの制御経路は実行できる
+- 既存の灰色候補ではcross-fidelity rankingが否定的だった（未資格の参照に対して）
+- 灰色密度と中実STLの不一致は明確な交絡因子である
+- native ISQPをPython側optimizerへ移す判断は妥当である
+- Stage V全6ケースは完走したが、mesh/solver収束ゲートを通っていない
+
+**主張できない**
+
+- 原因が二値化と格子の2件に確定した
+- 最新の二値化最適化が正しい勾配で進んだ
+- Brinkman surrogateが成立した、または成立しないと確定した
+- Stage V downforceが格子収束した
+- この縮約問題の結果がFSAE全車の高Re空力へ外挿できる
+
+## 次の一手（2026-09-25, S0/S1後）
+
+実行順は`phase_plan.md` §11を正本とし、reduced-basisの契約は
+`evidence/stage_s_reduced_basis_fd_manifest_2026_09.json` に従う。過去の
+manifest、evidence、raw logs、hashは変更しない。
+
+1. 案2を採用（完了）: architecture memoの二案のうち、低次元parameterization +
+   centered FD経路を選択した。案1（discrete-consistent sensitivity）は
+   production/high-dimensional候補として保留する。
+2. S0（完了・solver-free）: versioned reduced-basis ProblemSpec
+   （`work/stage_sv_laminar/project_matched_re_laminar_reduced_basis_v1.yaml`）で
+   objectiveを`maximize downforce / J = -downforce`、dragをreport-only、制約なしに
+   固定した。design spaceは既存`volumetricBSplines` morpher上のK=16 mode
+   （`delta_cp = B q`）、epsilon ladderは物理変位`1e-4..1e-3 m`である。
+3. S1（完了・solver-free）: geometry-only sine mode候補をfrequency順に生成し、
+   正規化（最大法線変位=1 m per unit coefficient）と±最大epsilonの
+   geometry/mesh/realized preflightを行い、16 modeを確定した
+   （`evidence/stage_s_reduced_basis_mode_preflight_2026_09.json`、
+   SHA-256 `1942993f...`）。flow solverは未実行。
+4. PQ2 V2 factor campaignとdomain continuation（完了・No-Go）: far-field
+   extension and top pressure-outlet treatments passed mesh/solver qualification
+   but moved downforce beyond the registered bound. The +1.6 m continuation is
+   also qualified, yet its adjacent +0.8 m transition is -0.0404806281 and
+   remains beyond 0.005. Do not start S2. Register the next domain continuation
+   or a physically justified far-field boundary contract, audit case-construction
+   semantics, and re-register the Stage S baseline only after that contract
+   passes.
+5. S3/S4/S5はS2のprimary epsilon選択に依存する条件付き段階である。16-mode FDは
+   Bのspan内でのみqualificationし、S4 holdout（manifest hash由来の2 random
+   mode方向 + downforce projected-gradient 1方向、6 primals）が完全passするまで
+   一歩のshape stepを登録しない。
+6. `original_adjoint_derivative_qualified=false`、
+   `reduced_basis_fd_qualified=pending`、`shape_update_allowed=false` を維持する。
+   D5/D6/D7（旧648-var route）は未実行のままである。
+7. PQ5/PQ6はStage S後の独立検証・target-physics ladderとして維持する。
+
+直近の判定（2026-09-25）: **reduced-basis mode basisはgeometry-only
+preflightを完全passしたが、PQ2 V2 factor campaignと最初のdomain continuationは
+No-Go**。固定domain baseline (187,942 cells, Cd 1.6800880804, downforce
+0.5092669766)に対し、+0.8 m extension (214,900 cells) は downforce
+0.2146501052、+1.6 m extension (279,993 cells) は 0.1741694770となった。
++0.8 m -> +1.6 m の差分は -0.0404806281、Cd相対変化は -0.12146で、いずれも
+登録boundを超えた。全treatmentはqualifiedだが、これはStage Vの参照資格や
+grid-independent downforceを意味しない。S2 epsilon calibrationと形状更新は
+引き続き禁止し、次のdomain continuationまたは物理的に正当化したfar-field
+boundary contractを登録する。
+
+## 2026-09-25: v16 lineage audit and revised execution order
+
+The previous PQ2 conclusion was re-audited against the live artifacts. The
+Stage S v16 candidate is the STL with SHA-256
+`5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11`, bound by
+`stage_s_baseline_v16_v2_2026_09.json` and the Work F V1 case. The PQ2
+continuation candidate is the STL with SHA-256
+`613637cf0fac8bce8a124a479eb3f18417c06995bdbfbe1c99b792fe1db3686e`. The
+identities differ, so PQ2 factor/domain results are diagnostic evidence for the
+PQ2 candidate only. They cannot reject or qualify the v16 Stage S candidate's
+absolute downforce reference.
+
+The fixed-domain PQ2 grid study also remains candidate-specific and reports no
+grid-independent downforce reference. The Work F V1 case is a separate v16
+lineage at 0.05 m spacing and 39,848 cells. Its registered profile is qualified,
+but the raw `checkMesh` record has `mesh_ok=false` because the allowed concave
+cell marker is retained; this is not a clean mesh claim. The compiler-generated
+case realizes inlet/outlet, sideMin/sideMax, top, bottom, and candidate patches,
+but the ProblemSpec explicitly declares only inlet/outlet roles. A versioned
+six-patch boundary contract is therefore still required before a v16 absolute
+reference campaign.
+
+The solver-free audit is registered in
+`evidence/stage_s_v16_contract_audit_manifest_2026_09.json`. It binds the v16
+surface, Work F case, reduced-basis ProblemSpec, case boundary/field files,
+domain/mesh metadata, and raw qualification semantics. It records
+`solver_started=false`, `mesh_generation_started=false`, and
+`optimization_campaign_started=false`. The audit is contract evidence only.
+
+The revised execution order is:
+
+1. Register and audit a v16-specific factor-resolved Stage V domain/boundary
+   contract using the v16 STL; preserve all PQ2 artifacts unchanged.
+2. Decide whether the reduced-basis S2 calibration may run as local Work F
+   centered-FD evidence under the unchanged S0/S1 contract. It must not be
+   described as an absolute or grid-independent downforce result.
+3. Run the smallest pre-registered same-candidate Stage V family only after its
+   contract passes. Keep full optimization, S4-dependent shape updates, and PQ5
+   ranking stopped until their own gates pass.
+
+The authoritative plan is
+`docs/stage_s_v16_contract_and_execution_plan_2026_09_25.md`; the roadmap and
+status remain controlled by `docs/phase_plan.md`. Until the v16-specific contract
+passes, keep `reduced_basis_fd_qualified=pending`,
+`shape_update_allowed=false`, and do not transfer PQ2 results across the
+candidate hash mismatch.
+
+## 2026-09-25 v16 same-candidate Stage V outer-condition result
+
+The v16 lineage correction is now followed by a solver-backed, candidate-bound
+factor screen. The immutable contract
+`evidence/stage_v_v16_domain_boundary_contract_manifest_v2_2026_09.json`
+(SHA-256 `b8eccba3c0bc26fcc5eb392e52287a8e92a44e9b0541e8f589383fe307c54b8a`)
+uses the Stage S v16 STL
+`5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11` and the
+profile-qualified Work F V1 case. The registered treatments are one-factor
+changes at V1: extending the original domain by `+0.8 m`, and replacing only
+the top `symmetryPlane` with a pressure outlet.
+
+Both treatment cases are qualified under `stage_v_qualification_v1`, while
+their raw `checkMesh.mesh_ok=false` values remain visible because the profile
+allows the recorded concave-cell fraction. The corrected evidence
+`evidence/stage_v_v16_domain_boundary_contract_v2_2026_09.json` reports:
+
+| case | cells | Cd | downforce | change from baseline |
+| --- | ---: | ---: | ---: | ---: |
+| Work F V1 baseline | 39,848 | 2.5234447 | 1.6908433 | — |
+| domain `+0.8 m` | 45,227 | 1.5083067 | 0.6498149 | `-1.0410284` |
+| top pressure outlet | 39,848 | 1.5756433 | 0.4379601 | `-1.2528832` |
+
+The downforce bound is `0.005` and the relative-Cd bound is `0.02`; both
+factors exceed both bounds. An initial top-outlet result showing zero change
+was invalid because a copied `postProcessing/forceCoeffs/0/coefficient.dat`
+was reused while OpenFOAM wrote `coefficient_0.dat`. The preliminary manifest
+and evidence are preserved under
+`*_preliminary_reused_postprocessing_2026_09.json`; the corrected runner
+deletes copied post-processing before each treatment. The canonical source,
+fresh hashes, and boundary identity are recorded in
+`evidence/stage_v_v16_domain_boundary_lineage_audit_2026_09.json` (SHA-256
+`c10d19bff2b47e4e7fd8864af969a1c98f378f1f816d5e09766aa99f3fb76071`).
+
+This is a same-candidate Stage V outer-condition No-Go, not a downforce
+optimization result. It does not qualify the Work F V1 value as an absolute or
+grid-independent reference, and it does not authorize S2, S4, or a shape step.
+
+### v16 domain continuation update
+
+A one-run continuation was registered before computation in
+`evidence/stage_v_v16_domain_continuation_run_manifest_2026_09.json` (SHA-256
+`8d28c55e0d2ab6d1ec3c09af4041e4ee035dfdeccafb736a19a621beb1c1337c`) and its
+parent manifest
+`evidence/stage_v_v16_domain_continuation_manifest_2026_09.json` (SHA-256
+`663ca988c0580d543df8e16a84731a9c4c50f692ff606bef6a77a58b84baaf16`). It
+changes only the same v16 V1 domain size to `+1.6 m` and retains the
+symmetry/freestream/wall boundary semantics. The qualified treatment has
+48,564 cells, `Cd=1.2749976`, and downforce `0.5052721`. Relative to the
+corrected `+0.8 m` treatment, the transition is downforce `-0.1445428` and
+relative Cd `-0.1546828`, both outside their bounds. Evidence is
+`evidence/stage_v_v16_domain_continuation_2026_09.json` (SHA-256
+`e5f02f9091faeab0809dbe80a2e68ed572c2456362ae682fc0ef316e4acf2cb0`).
+
+The active next question is whether a final `+3.2 m` same-candidate
+continuation reaches a stable far-field limit. If its adjacent transition also
+fails, stop the domain-only ladder and register a physically justified
+far-field formulation plus a case-construction audit. Until one of these
+paths is resolved, preserve
+`reduced_basis_fd_qualified=pending` and `shape_update_allowed=false`.
+
+## 2026-09-25 v16 domain ladder closed and mixed far-field No-Go
+
+The final planned same-candidate domain continuation was registered before
+computation in
+`evidence/stage_v_v16_domain_continuation_3p2_run_manifest_2026_09.json`
+(SHA-256 `827d93314a8594a9205aa06ad98aa9c50343a6bb361f8e21d2c4d75f36e4aa22`).
+The unchanged v16 V1 boundary semantics at `+3.2 m` qualified at 82,907 cells,
+Cd `1.0260446`, and downforce `0.4279677`. Relative to the `+1.6 m` case, the
+transition was downforce `-0.0773044` and relative Cd `-0.1952577`, both outside
+the registered bounds. Evidence is
+`evidence/stage_v_v16_domain_continuation_3p2_2026_09.json` (SHA-256
+`a3c706c4d5c67580ec7f350dbf7f3a7a831a7bdd967caa5bdfb86905ce40bc44`). The
+domain-only ladder is closed; another arbitrary expansion is not an accepted
+stopping rule.
+
+The next physically defined diagnostic fixed the `+3.2 m` domain and changed
+only the five outer faces to mesh `patch` with OpenFOAM
+`freestreamVelocity`/`freestreamPressure`, using free-stream velocity
+`(1,0,0)` and pressure `0`; bottom and design-candidate walls were unchanged.
+Its corrected immutable evidence is
+`evidence/stage_v_v16_far_field_contract_v2_2026_09.json` (SHA-256
+`1d58f8651f23e57a78c1d5bf58db47914025e1db2681bcf41f2f6a4d12962dc6`). On the
+same 82,907-cell mesh it qualified at Cd `0.9197727`, downforce `0.3500024`.
+Against the `+3.2 m` symmetry/patch baseline, the change was downforce
+`-0.0779653` and relative Cd `-0.1035744`, again outside the bounds.
+
+The treatment is a boundary-condition No-Go, not an optimizer result. A
+read-only audit
+`evidence/stage_v_v16_far_field_contract_audit_2026_09.json` (SHA-256
+`2b8991ee6a09912fcafeb69121909e35142eb50a45ccc831e77ca10722de68ec`)
+confirms identical non-boundary mesh files and patch face ranges, fresh
+canonical force histories, solver completion, and the exact boundary-field
+types. The initial field-rewrite staging failure was preserved under
+`*_preliminary_staging_2026_09.json`; no solver was started in that attempt.
+
+The active decision is to stop OpenFOAM runs. The next slice is a solver-free
+case-construction/boundary audit covering boundary fluxes, force-patch
+semantics, generated dictionaries versus ProblemSpec, and the reduced laminar
+ground/domain arrangement. Only a single physically justified correction may
+create a new contract. Preserve
+`reduced_basis_fd_qualified=pending` and `shape_update_allowed=false`; do not
+start S2, S4, PQ5 ranking, or shape updates while this audit is unresolved.
+
+## 2026-09-25 solver-free v16 case-construction audit
+
+The existing +3.2 m symmetry baseline and mixed far-field treatment were
+audited without running OpenFOAM. Evidence is
+`evidence/stage_v_v16_case_construction_audit_2026_09.json` (SHA-256
+`9785bfa2e6dd9b8df3b171f765c7543c4f69a4e3e0012d0e55f2bdac3fa3ed27`). The
+audit measured net boundary-flux residuals of approximately `-4.44e-8` and
+`2.38e-7`, confirmed the registered field and mesh boundary types, confirmed
+the `design_candidate` force patch and reference values, and matched the
+laminar operating point and fixed ground/domain bounds.
+
+The audit is `fail` by design: both generated `case_metadata.json` files use
+the stale identity `stage_sv_laminar_matched_re_domain_1p6_v2` even though the
+registered case is the `+3.2 m` contract. Their canonical ProblemSpec hash and
+all measured dictionary/field values match the referenced source file, so the
+finding is a provenance construction blocker. It does not qualify, invalidate,
+or reinterpret the already-recorded outer-condition No-Go as an optimization
+result. The continuation runner has been changed to fail before solver launch
+when this identity mismatch occurs. No new solver contract is permitted until
+the identity is corrected and registered.
+
+### 2026-09-25 physical-profile correction (registered, not run)
+
+The next correction targets the confound exposed by the domain ladder: the
+inlet moved while the bottom remained a stationary no-slip wall, so the
+upstream boundary-layer development changed with the box size.  The Stage V
+body-fitted generator now carries the selected flow case's normalized
+boundary contract and translation profiles.  It retains the legacy
+inlet/outlet-only defaults, and only an explicit `far_field` kind changes the
+outer fields to `freestreamVelocity`/`freestreamPressure`.  The generated
+metadata records the physical-profile hash and the derived ground model.
+
+The solver-free contract is
+`evidence/stage_v_v16_physical_profile_contract_manifest_2026_09.json`, with
+the same v16 candidate, original V1 box, five `far_field` outer patches, and a
+`moving_wall` bottom driven by a `(1,0,0) m/s` translation profile.  Its status
+is `registered_not_run`; `solver_started`, `mesh_generation_started`, and
+`optimization_campaign_started` are all false.  This is a reduced laminar
+diagnostic contract only.  It does not authorize S2, reduced-basis FD, a
+shape update, or a grid-independent downforce claim.
+
+### 2026-09-25 physical-profile contract v2 correction
+
+The previous registration is preserved as immutable evidence and is superseded
+by `evidence/stage_v_v16_physical_profile_contract_manifest_v2_2026_09.json`.
+Before a solver run, the renderer was corrected from
+`movingWallVelocity` to `translatingWallVelocity` with an explicit wall
+velocity vector.  The v2 registration also records free-stream velocity,
+free-stream pressure, turbulence model, and boundary-condition implementation
+in `physical_profile`; the resulting hash is
+`a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca`.
+
+The v2 metric no longer compares the new moving-ground/far-field problem to the
+old stationary-ground result.  It first requires physical-profile gates
+(convergence, stationarity, mass conservation, moving-ground flux, outer-field
+behavior, clearance, and mesh qualification).  Only after that pass may a
+same-profile domain convergence test use the `0.005` downforce and `0.02`
+relative-drag bounds, with at least two domains sharing the same physical
+profile hash and physics.
+
+The v2 canonical ProblemSpec, candidate snapshot, and design-domain snapshot
+are tracked under `evidence/assets/stage_v_v16_physical_profile_v2`; the
+source-to-snapshot mapping is recorded in
+`evidence/stage_v_v16_physical_profile_candidate_lineage_v2_2026_09.json`.
+The v2 status is `registered_not_run`; no solver, mesh generation, optimization
+campaign, S2 calibration, or shape update is authorized by this contract.
+
+## 2026-09-26 SDF-native architecture fork and legacy Stage S freeze
+
+The checksum-verified handoff bundle `docs/CFD_opt_sdf_SDF_native_handoff/`
+is adopted as the subordinate plan for the next architecture line. The
+canonical design state becomes an SDF field (`phi < 0` solid / `phi > 0`
+fluid); STL, B-spline control points and body-fitted meshes become derived
+artifacts. The K=16 B-spline reduced-basis Stage S v2 path is frozen as
+`superseded_reference`
+(`evidence/stage_s_reduced_basis_fd_v2_supersession_2026_09.json`, SHA-256
+`1eee51fdd03bc0402650d45b2d8174f969cbe2216c329c76b7275880f2c4a35d`), and
+**S2 is intentionally not started**. No existing manifest or evidence was
+modified.
+
+The architecture registration
+(`evidence/sdf_native_architecture_registration_2026_09.json`, SHA-256
+`743e90cb58dc46e93392ec3283a6d7f549f7ad8597b93c0d109220ecea637cbe`) binds
+the fork base `ebdd01f`, the bundle file hashes, the new contracts, the
+verified WaterLily PR #285 facts (open at
+`feed49f480b52047b4e9b8bfacdf3e4f8201106b`; CPU reverse works through full
+`sim_step!` with a custom implicit Poisson rule; GPU reverse blocked by a
+missing `cuMemcpyHtoDAsync_v2` rule; Poisson tolerance `1e-4` gives roughly
+10% disagreement versus ForwardDiff and `1e-10` gives roughly `2.4e-5`), and
+all conservative flags false.
+
+PR-01 (solver-free) adds `design/sdf_state.py`, `oracles/base.py`,
+`gradients/base.py`, `runtime/fingerprint.py`, the canonical `f = -CDF`,
+`g_R = R_min*CD - CDF <= 0` and `g_V = V/V_max - 1 <= 0` semantics in
+`canonical_objective.py`, and the repo inventory
+(`evidence/repo_inventory_sdf_native_v1.json`, SHA-256
+`00694da5b33b95893ca256bbd8cd5996686ee266c0e0291b8152ff6c562fa559`). No
+solver ran.
+
+P10 ("Stage S has no shape update") moves from unimplemented to planned on
+the SDF-native line, but remains unqualified until the registered FD/dot-test
+gradient gates pass; it is not closed by this architecture commit. P6/P16
+remain OpenFOAM-path findings and are not reinterpreted. OpenFOAM Stage V and
+PQ5 remain the independent verification gate.
+
+## P22 — SDF-native volume 契約と design-grid/flow-grid 恒等性（2026-09-26, plan v2.1 で契約登録）
+
+### 発見経緯
+
+SDF genesis（`a35e687`）を実際に通したことで、v16 canonical SDF 状態（point grid
+61x33x25, h=0.05 m, origin (-1.0,-0.8,-0.6), x[-1,2] y[-0.8,0.8] z[-0.6,0.6]）の
+sharp 体積と、Stage T が制約していた密集体積が別物であることが初めて実測された
+（`evidence/sdf_native_genesis_v16_2026_09.json` の material diagnostic）:
+
+- mesh-derived / revoxelized discrete volume（handoff 測度、表面 mesh 体積と ~1e-8 相対差）:
+  `0.12925000000000003 m^3`（1034 cells）
+- 契約測度 `V_phi = |{h-cubes with trilinear centre sample < 0}| h^3`（∫H_eps(-φ) の
+  center sampling での sharp 極限）: `0.12612500000000004 m^3`（1009 centers）
+- node 占有 diagnostic（非契約）: `0.17750000000000005 m^3`（1420 nodes）
+- Stage T `V_rho = 0.0719735015`（限界 `Vmax = 0.0763256681`）
+
+`V_sharp/Vmax` ≈ 1.69（契約測度なら ≈1.65）であり、旧 `Vmax` を SDF Stage S に
+持ち込むと初期状態が構成的に大きく infeasible になる。
+
+### 登録した契約（2026-09-26, plan correction v2.1）
+
+- SDF-native の constraint volume は `V_phi`（trilinear center sampling の
+  sharp 極限）。最初の制約は `V_phi <= V_phi_0 = 0.12612500000000004 m^3`
+  （genesis 状態からの再測定値）。evidence:
+  [`evidence/sdf_native_volume_semantics_v1_2026_09.json`](evidence/sdf_native_volume_semantics_v1_2026_09.json)
+  （SHA-256 `0142ace4de9419dd73cc27e90135ed1fe1f847b074ca2faa37fdb0962505bbce`）。
+  実装 module は `src/cfd_sdf/design/volume_semantics.py`。
+- 旧 Stage T `Vmax` は Stage T diagnostic と Stage S entry fidelity observable
+  専用。SDF Stage S 評価に持ち込まない。
+- 物理的に小さい体積を狙う場合は volume-calibrated offset rebuild を伴う別の系統
+  登録が必要（qualified v16 geometry の系統が変わるため）。
+- canonical SDF grid（design grid）と OpenFOAM/WaterLily flow domain は別格子。
+  WaterLily へは world-space trilinear adapter（`GridSDFBody` /
+  `sdf_at_world(xyz_m)`）で埋め込み、flow grid 解像度と domain は独立変数。
+  同一 canonical phi に対する coarse/medium/fine flow grid が可能なことまで契約。
+- 平滑化 volume `smoothed_volume_and_gradient(...)`、optimizer 側 signed residual
+  `g_V = V_epsilon / V_phi_0 - 1`、遷移幅、中心サンプリング、mask ownership は
+  [`sdf_native_smoothed_volume_contract_v1_2026_09.md`](sdf_native_smoothed_volume_contract_v1_2026_09.md)
+  とそのAPIで定義する。sharp volume reportとは別の値として記録する。
+  有限幅の one-sided smoothing は遷移帯の sharp volume を過小評価するため、
+  `g_V <= 0` 単独では保守的な feasibility certificate でも optimizer admission
+  でもない。受入には登録 sharp residual `V_phi - V_phi_0 <= 0` を独立に要求する。
+
+### 状態
+
+**sharp contract 登録済み、P22-01 の smooth volume/value-gradient primitive は
+isolated issue branch に実装済み（software contract/numerical fixture evidence）。**
+登録 evidence（immutable）は変更しない。smooth contract v1 は一セル幅の
+one-sided cosine、全h-cube center sample、design/fixed/forbidden/rootの勾配所有権、
+v16 reference limit、units、state/grid/contract hashを固定する。
+smooth residualは有限遷移幅でsharp体積を上から拘束しないため、単独で受入や
+optimizer/shape updateを許可しない。sharp reference residual/violationの独立確認を要求する。
+このprimitiveの検証は形状更新、WaterLily reverse-mode資格化、optimizer integration、
+全hard gateの通過を意味しない。P22はone constrained SDF stepでvolume契約と
+全hard gateが実際に参照された後にのみ閉じる（登録のみでの閉鎖禁止）。
+
+## P23 — topology birth 用 topology policy（root / disconnected 成分）が未定義（2026-09-26 登録）
+
+### 事実
+
+genesis v16 canonical 状態は `fixed_solid = 0`、`forbidden = 0`、`root = 0`、
+`active_design = 14400`、`solid_design_fraction = 1.0`。Stage S entry evidence も
+`root_connectivity: reason "source root mask is empty", status "not_applicable"`
+を記録している。つまり旧 Stream の root-connectivity hard gate は、この candidate
+については実質何も制約していない。
+
+### 登録した契約
+
+[`sdf_topology_policy_v1_2026_09.md`](sdf_topology_policy_v1_2026_09.md) と
+[`evidence/sdf_topology_policy_v1_2026_09.json`](evidence/sdf_topology_policy_v1_2026_09.json)
+に、immutable SDFTopologyPolicy v1 と fail-closed transition checker を登録した。
+ProblemSpec v2 の root groups/connectivity/minimum-feature definitions は source
+content hash に結び付ける。複数solid componentは各componentが少なくとも一つの
+designated root groupに所有される場合だけ許可し、26-neighbour connectivity を使う。
+Birthとcomponent全削除はdisabled、mergeは他gate通過時に許可、splitは全componentが
+root-ownedの場合だけ許可する。forbidden material、fixed/root保持、solid/voidの最小幅も
+同じsource policyから判定する。
+
+### 状態
+
+**open（Birth-0 前の必須 gate。契約だけ登録済み）。** v16 genesisはroot/fixed/forbidden
+maskが空で、記録された`root_connectivity=not_applicable`はroot rule passを意味しない。
+SDF lineageのProblemSpec v2 digest/topology policy payload、非empty root groupとその
+per-group SDF maskのgeometry-manifest provenance、source付き minimum solid/void width、
+candidate-bound feature measurementは未登録。v16のfeature値から閾値を推測しない。
+policyは`birth_enabled=false`であり、Birth-0、flow-aware proposer、shape updateは
+実装・実行していない。`topology_birth_qualified=false`。これらのsourceとmask-evidence
+gatesが閉じるまでP23とissue #31はopen。WaterLily primal（W0-W4）には影響しない。
+
+## LOWDIM-03 bounded continuation approved (2026-10-10)
+
+After #26 GRID-01's solver-free FEASIBLE_CONE_FOUND, the user approved one
+separately frozen 14-run two-grid actual-primal trial of the saved robust direction.
+Implementation and geometry input preflight are in progress; no actual result yet.
+This tests strict computed drag nonincrease and resolved nominal lift gain on both
+grids at a common step. It does not close #26, GEOM-01, GRAD-03 or OPT-01 (#30), and
+changes no qualification flag. See the sole execution authority in phase_plan.md
+and `evidence/lowdim03_dual_grid_primal_2026_10_10/prerun_note.md`.
+
+### Post-measurement Amendment 1 result (2026-10-10)
+
+The retained 14-run outputs were not rerun or changed. Attempt 1 remains
+`LOWDIM03_INCOMPLETE`; Amendment 1 separately corrected only the analyzer's
+`device_roundtrip_sha256` expectation from C-order to Fortran-order. After
+independent static review and a committed analysis freeze, the saved outputs
+passed `--check` (zero integrity failures) and were analyzed with one `--write`.
+The formal registered result is `LOWDIM03_ACCEPT`, selecting 1.25 mm. This is a
+bounded fixed-direction/two-grid/three-step result and adds no qualification
+flag or physical/grid-convergence claim. `selected_delta` remains unset and
+`shape_update_allowed=false`.
+
+The pre-freeze reviewer exposure of per-state force fields is disclosed in the
+Amendment 1 record; full result blindness is not claimed. See the sole status
+authority in `docs/phase_plan.md` and the complete provenance, force deltas,
+reverse/model diagnostics, and validation at
+`docs/evidence/lowdim03_dual_grid_primal_2026_10_10/amendment1/amendment1_note.md`.
+
+## LOWDIM-04A (#51) — pre-registration blocked (2026-10-11)
+
+The LOWDIM-03 selected experimental parent is byte-verified, but its registered
+sharp volume on the v17 design grid is `0.12925000000000003 m^3`, above the
+existing P22 v16 reference `V_phi_0=0.12612500000000004 m^3`. Its smooth
+residual `g_V=-0.3029303` cannot replace the independent sharp gate. The eight
+fixed-basis ±1.25 mm geometries pass the existing five LOWDIM geometry gates,
+but retain that same absolute sharp-volume violation. No LOWDIM-04A
+preregistration, source freeze, coefficient solve, Kaggle run, or CFD measurement
+was made. This is not an experimental terminal verdict and does not change
+LOWDIM-03's bounded `LOWDIM03_ACCEPT`. The pre-registration blocker and hashes
+are recorded in
+[`docs/evidence/lowdim04_dual_grid_local_model_2026_10_11/pre_registration_blocker.json`](evidence/lowdim04_dual_grid_local_model_2026_10_11/pre_registration_blocker.json).
+Issue #51 remains open for a compatible volume-reference/parent decision;
+execution order and evidence scope remain governed by `phase_plan.md`.
+
+## P22 / #51 volume semantics bridge investigation (2026-10-12)
+
+The same authoritative evaluator reproduces original v16 `0.12612500000000004 m³` and measures both retained v17 baseline and LOWDIM-03 parent at `0.12925000000000003 m³` (parent-minus-baseline zero). The baseline already exceeds the v16 limit. Source mapping cannot currently be reproduced strictly: a saved diagnostic differs at three nonzero near-surface values. Terminal classification is **INCONCLUSIVE** under the frozen numerical-drift stop. #51 remains open and blocked; #27 is not reopened. No threshold, contract, parent or qualification changes, and no CFD/Kaggle/preregistration. Evidence: [audit report](evidence/p22_v17_volume_semantics_bridge_2026_10_11/audit_report.md); status/order authority remains [phase_plan.md](phase_plan.md).
+
+## SRCMAP-01 (#52) — current source mapping non-reproducibility diagnosed (2026-10-12)
+
+The frozen diagnosis is complete with **SOURCE_MAPPING_ALGORITHM_NONDETERMINISTIC**.
+Five identical-condition v17 processes produced registered bit differences
+`4,0,4,0,0`; the two observed v16 controls were exact (finite observations only). Current unsigned distances are stable,
+but the inner ray-containment retry uses entropy-derived directions. Fixed local
+direction controls flip all three historical near-edge node signs. No outer
+production fallback was observed; historical actual paths and historical cause remain unresolved.
+The bounded chunk/order and two-bundle comparison do not establish an individual
+dependency remedy. Evidence and limits: [diagnostic report](evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostic_report.md).
+The previous volume bridge remains INCONCLUSIVE. #51 stays OPEN/blocked with no
+P22-v1 change, P22-v2 registration, LOWDIM-04A restart, CFD/Kaggle, parent or
+qualification change. Execution order remains governed only by `phase_plan.md`.
+
+
+## SRCMAP-02 (#53) — deterministic signer qualification INCONCLUSIVE (2026-10-13)
+
+Both libigl 2.6.3 sign methods passed 42-point analytic fixtures, but first
+canonical Candidate A field generation hit the preregistered zero-scalar /
+positive unsigned-distance blocker. The campaign is incomplete: one attempted,
+zero complete retained fields, 31 unattempted, no rerun. The failed process did
+not persist target arrays; conflicting-node count/coordinates, full A/B agreement,
+repeat/environment identity and deterministic v16/v17 volumes remain unavailable.
+See [diagnostic stop record](evidence/srcmap02_deterministic_signer_2026_10_13/diagnostic_report.md).
+No remedy or signer is qualified. #52 is closed for the completed SRCMAP-01
+diagnosis only, with all evidence preserved. #51 remains OPEN and LOWDIM-04A
+blocked; P22-v1/limits, production mapping/dependencies, references, parent and
+qualification flags unchanged. No P22-v2, CFD, Kaggle or optimizer continuation;
+selected_delta=null; shape_update_allowed=false.
+
+## SRCMAP-03a (#54) — P22-v17 boundary-sign invariance certified (2026-10-13)
+
+For the retained v17 baseline and source STL only, no sign assignment to the 5370 boundary-ambiguous nodes can change the
+P22 hard mask (count 8272), and the five registered LOWDIM gates keep their classification for the baseline and one retained
+parent. Outside-band signs are independently certified numerically. Source-mapping nondeterminism (#52) and the signer
+question (#53, open) are **not** resolved by this result; it shows only that P22's observable does not depend on them for this
+artifact. See [diagnostic report](evidence/srcmap03a_sign_invariance_2026_10_13/diagnostic_report.md). P22-v1, production
+mapping/dependencies and qualification flags unchanged; CFD runs 0; selected_delta=null; shape_update_allowed=false.
+
+## P22-v2 (#55) — v17-lattice discrete volume contract registered (2026-10-13)
+
+The v1 limit (v16 lattice, 1009 centers) cannot hold the unmodified v17 baseline (8272 centers). v2 registers `N_phi <= 8272` on the
+v17 lattice as a representation-specific discrete constraint bound to the hash-pinned baseline artifact; mapping reproducibility remains
+unresolved and is non-blocking for this hard count only. See the [registration](evidence/sdf_native_volume_semantics_v2_2026_10.json) and
+[decision record](evidence/p22_v2_registration_2026_10_13/decision_record.md). LOWDIM-04A (#51) remains blocked pending a separate
+decision; the parent sits exactly at the limit.
+
+## LOWDIM-04A (#51) Stage A — local dual-grid cone found, linear model only (2026-10-13)
+
+At the LOWDIM-03 parent the centered +-1.25 mm secants on flow_24 and flow_32 admit a cone under the linear model (robust t* 0.201 N/m); all sixteen even parts are negative (cause untested) and the flow_24 ones are of the size of the predicted gain (descriptive estimate: flow_24 gain near +2e-5 N, sign and size not established). The registration was non-blind and FOUND was disclosed as near-certain and uninformative about the gain.
+No gain, drag nonincrease or volume claim beyond the lattice count; Stage B needs its own preregistration; #51 remains open. See the [report](evidence/lowdim04a_stage_a_2026_10_13/diagnostic_report.md).
+
+## LOWDIM-04 Stage B (#51) — ladder accepted at the smallest step only, bounded (2026-10-14)
+
+Along the Stage A solution only the 0.3125 mm step met the registered rule (flow_24 +3.57e-5 N, flow_32 +1.15e-4 N, computed drag changes <= 0, flow_32 drag within jitter); the full step loses flow_24 downforce (-5.2e-5 N) against a linear prediction of +1.7e-4 N. The gain is below the Stage V resolution, the 0.3125 and 0.625 mm flow_24 gains are indistinguishable (a threshold artifact) and the rule has no multiplicity
+control (the selected gain is likely biased upward). No physical gain, drag, grid or optimizer claim. The track ends here; #51 is closed. See the [report](evidence/lowdim04b_stage_b_2026_10_13/diagnostic_report.md).
+
+## GRID-01 (#26) — closed by synthesis: both grids must accept a first update (2026-10-14)
+
+flow_24 alone is insufficient (5 of 9 retained states, correlated trials, get opposite accept/reject verdicts; drag secant vectors nearly unrelated across grids); no grid is declared the truth and convergence is not established. Policy: flow_24 proposes the downforce direction, flow_32 confirms, acceptance needs both grids, step size from the dual-grid ladder. See the
+[decision record](evidence/grid01_closure_2026_10_14/decision_record.md). Next: #31, #29, #28, #25 in that order (phase_plan, 2026-10-14).
+
+## #31 topology policy (2026-10-14): research v2 registered, physical limits unresolved
+
+`sdf_topology_policy_v2_research` registered (detached components allowed, root connectivity optional, all four events permitted by policy only; a birth needs separate qualification). Solid/void width, inter-component gap and source binding are unresolved and never inferred, so admissibility cannot pass until they are supplied; #29 owns supplying them and moving `geometry_gates.py` off v1. See the [decision record](issues/31_event_policy_decision_2026_10_14.md).
+
+## #29 GEOM-01/02 (2026-10-15): closed, 12 of 13 gates pass on v17
+
+Complete v2 gate artifact on the v17 baseline and LOWDIM-03 parent; `near_zero_gradient_band` fails (thin-edge kinks plus genesis tie plateaus). Open follow-up for #28/#30: the gradient-floor rule decision. See the [record](issues/29_geom02_result_2026_10_14.md).
+
+## #28 SDF-02 (2026-10-15): REINIT04_NOT_BOUNDED_ON_PARENT, stays open off the critical path
+
+The registered operator inflates distance near the interface and changed the parent's surface topology; first OPT-01 contract excludes reinitialization. See the [record](issues/28_reinit04_result_2026_10_15.md).
+
+## #23 GRAD-03 (2026-10-15): GRAD-TA1 tie-averaged forward-AD BLOCKED at step 700
+
+A second forward-AD convention fails with a different, direction-independent growing tangent mode. See the [record](issues/23_grad_ta1_result_2026_10_15.md).
+
+## #30 OPT-01 (2026-10-15): closed with a prospective REJECT under the OPT-01 v1 contract
+
+All gates passed; the both-grid downforce rule rejected every step (flow_24 vs flow_32 disagree). #25 superseded for this step only and stays open. See the [record](issues/30_opt01_v1_result_2026_10_15.md).
+
+## GRIDRES-01 (2026-10-21): sub-cell response not grid-resolved
+
+flow_24/32/40 give downforce slopes of different sign and growing differences along the OPT-01 direction. See the [record](issues/gridres01_result_2026_10_21.md).
+
+
+## 2026-10-22 — latest evidence and missing work
+
+This is an issue-state projection; [the latest phase-plan amendment](phase_plan.md#2026-10-22-evidence-based-roadmap-correction-and-issue-plan) owns order. [The review](roadmap_review_2026_10_22.md) records the evidence and primary literature.
+
+- #61 UNC-01: `M2_COMPLETE` on v18/Re80; wide-arm paired differences and coarse-mesh retention recorded, not general grid or physics qualification.
+- #62 FID-01: in progress on separate branch `claude/m3a-fid01` (`78e1e76f` reviewed); freeze 3 and flow_32/48 verification do not constitute a final GO.
+- #57 T2-0: closed for the completed feasibility investigation. T2-0b/c/d all NO-GO; there is no adopted high-Re evaluator. #66's old automatic T2-0 fallback is unavailable; #67 needs new registered GO plus M4 scope choice.
+- GRIDRES-01 correction: flow_40 Poisson-confounded; the earlier all-grid discretization-dominated hypothesis was withdrawn on 2026-10-21. The previous ledger line is historical, not the corrected conclusion. GRID-02 and UNC-01 preserve R3 for their measured modes.
+- [EVAL-VALID-01 #68](https://github.com/ramhachi/CFD_opt_sdf/issues/68): open planning task, original experimental data/conditions and validation-case contract, child of #66; no CFD.
+- [EVAL-PT-01 #69](https://github.com/ramhachi/CFD_opt_sdf/issues/69): open conditional task, fixed mesh inputs and existing pseudo-transient/LTS route with a registered numerical/cost gate; M4 and validation inputs first, no automatic adoption.
+- [GEOM-03 #70](https://github.com/ramhachi/CFD_opt_sdf/issues/70): open conditional task before R3-based M3b; registered disjoint validation of represented-width + frozen-node/topology composite. M3a R0 and old results unchanged.
+
+No registration or qualification flag changed; `shape_update_allowed=false`.
+
+## 2026-10-22 — parallel preparation and primary-reference audit
+
+- #68 EVAL-VALID-01: bounded source/condition audit complete, `REFERENCE_INADEQUATE` for quantitative absolute-Cl adoption. Primary Table 15 matches all seven legacy Genua points; the observable is pressure-integrated sectional Cl and the author restricts it to qualitative trends. [Audit and M4 inputs](eval_valid01_reference_audit_2026_10_22.md). No T2-0 verdict/input changed.
+- #65 XV-01: [registration inputs](xv01_registration_requirements_2026_10_22.md) prepared; a single-finalist uncertainty rule, actual geometry/drag feasibility and final-FID label/threshold handoff remain required before freeze. Still blocked on #62 GO and SCREEN finalist.
+- #70 GEOM-03: [draft](geom03_registration_2026_10_22.md), not frozen/run/qualified; source/fixture bindings and reviews remain before any held-out measurement.
+- #62 FID-01: runtime snapshot only, V1 672 + V2 52 completed records, V3 5/9 with four advancing jobs at 22:25 JST. No final verdict, no force inspection by this continuation, no process/input/limit changes.
+
+Order authority: [latest phase-plan entry](phase_plan.md#2026-10-22-parallel-preparation-and-primary-reference-audit). All qualification flags remain false; shape_update_allowed=false.
+
+## 2026-10-23 — GEOM-03 implementation slice
+
+- #70: completed [GEOM03_NO_GO](evidence/geom03_2026_10_23/result.md),180base+354K6=534/534 independently verified. One three-angle plan round, one source round with resolutions,25 development tests and full regression3117/73skip preceded frozen sourcece95612f/release29bcfc4a. K2 W40_th1_q0 and K4 T1_th0_q0 are valid counterexamples; R3 is not adopted and no terminal retry/retuning follows.
+- #62: remote78e1e76f and issue unchanged at02:05JST; four V3 jobs active, Claude owns the frozen analysis. #64/#65 retain their dependencies. #66 may use completed#68 audit, final M4 choice still waits for applicable M3 outcomes.
+- #70's bounded scientific validation is complete with NO_GO and is closed/completed on GitHub; #64 records the R0-clean fixed-pool/parent branch. [Execution history](next_execution_plan_2026_10_23.md), [review evidence](evidence/geom03_2026_10_23/plan_review.json). Order authority: [latest amendment](phase_plan.md#2026-10-23-geom-03-plan-review-and-implementation). All qualification flags false; shape_update_allowed=false.
+
+Live update02:47JST: #62 owner result FID01_GO is merged458e2df5, owner branch removed, no active Docker containers. #64/#65 inherit2.70%/1.27% gain mappings and FID secondary labels. #70 R3-validation route selected, but source review/full regression/freeze/release/resource gates still precede any new geometry data. The earlier02:05 snapshot remains historical.
+
+Downstream preparation: [SCREEN/XV registration choices](screen_xv_preparation_2026_10_23.md). #65 must resolve single-finalist V2 pooled-variance as well as V3 cross-design residual issues; deterministic shift dispersion and iterative-window SD are not silently treated as iid placement SE. The80/96-case options remain proposals without an execution release.

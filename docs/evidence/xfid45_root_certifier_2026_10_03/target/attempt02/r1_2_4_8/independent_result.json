@@ -1,0 +1,2692 @@
+{
+  "absolute_geometry_cases": [
+    {
+      "case": "D0_interface_offset_minus",
+      "double": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0784619012382657,
+          "maximum_certified_lower_distance_m": 0.0030317893229525293,
+          "maximum_certified_upper_distance_m": 0.008316560100594051,
+          "maximum_witness_root_residual_m": 6.575686176124584e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 110560,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0784619012382657,
+          "maximum_certified_lower_distance_m": 0.0030317876188508575,
+          "maximum_certified_upper_distance_m": 0.008320357662071967,
+          "maximum_witness_root_residual_m": 6.635317295611287e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 110560,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 1
+    },
+    {
+      "case": "D0_interface_offset_plus",
+      "double": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0784623959221253,
+          "maximum_certified_lower_distance_m": 0.0034153962723920905,
+          "maximum_certified_upper_distance_m": 0.011816439934662182,
+          "maximum_witness_root_residual_m": 6.006480035569695e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 99280,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0784623959221253,
+          "maximum_certified_lower_distance_m": 0.003415395932149009,
+          "maximum_certified_upper_distance_m": 0.011816444259416267,
+          "maximum_witness_root_residual_m": 6.331740687315346e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 99280,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 1
+    },
+    {
+      "case": "D1_filtered_seed11_minus",
+      "double": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.055581813048561,
+          "maximum_certified_lower_distance_m": 0.004451662031502287,
+          "maximum_certified_upper_distance_m": 0.016252080586579395,
+          "maximum_witness_root_residual_m": 6.331740687315346e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 132720,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.055581813048561,
+          "maximum_certified_lower_distance_m": 0.004451662035144229,
+          "maximum_certified_upper_distance_m": 0.0162520807911059,
+          "maximum_witness_root_residual_m": 5.919484995598156e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 132720,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 1
+    },
+    {
+      "case": "D1_filtered_seed11_plus",
+      "double": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.034256191413426,
+          "maximum_certified_lower_distance_m": 0.004486091175194019,
+          "maximum_certified_upper_distance_m": 0.016328588688112013,
+          "maximum_witness_root_residual_m": 4.85722573273506e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 134240,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.034256191413426,
+          "maximum_certified_lower_distance_m": 0.004486091833678018,
+          "maximum_certified_upper_distance_m": 0.016328587664701934,
+          "maximum_witness_root_residual_m": 5.121211305565105e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 134240,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 1
+    },
+    {
+      "case": "D2_filtered_seed2026_minus",
+      "double": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0535754555972523,
+          "maximum_certified_lower_distance_m": 0.004455819500595706,
+          "maximum_certified_upper_distance_m": 0.016035350459384184,
+          "maximum_witness_root_residual_m": 5.5077470362263625e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 134500,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0535754555972523,
+          "maximum_certified_lower_distance_m": 0.004455822395316962,
+          "maximum_certified_upper_distance_m": 0.016035351651060358,
+          "maximum_witness_root_residual_m": 6.108278341142513e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 134500,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 1
+    },
+    {
+      "case": "D2_filtered_seed2026_plus",
+      "double": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0449894555311023,
+          "maximum_certified_lower_distance_m": 0.0045548702972828346,
+          "maximum_certified_upper_distance_m": 0.016301471242078616,
+          "maximum_witness_root_residual_m": 5.767955557622884e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 135060,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0449894555311023,
+          "maximum_certified_lower_distance_m": 0.0045548696964199656,
+          "maximum_certified_upper_distance_m": 0.016301465198210987,
+          "maximum_witness_root_residual_m": 5.692061405548898e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 135060,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 1
+    },
+    {
+      "case": "baseline",
+      "double": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7320541682122075,
+          "maximum_certified_lower_distance_m": 0.005345825055198898,
+          "maximum_certified_upper_distance_m": 0.02500000002499991,
+          "maximum_witness_root_residual_m": 5.291488235069448e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 102200,
+          "unresolved_sample_count": 88,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7320541682122075,
+          "maximum_certified_lower_distance_m": 0.005345827205991678,
+          "maximum_certified_upper_distance_m": 0.024999997665650277,
+          "maximum_witness_root_residual_m": 5.551113975412662e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 102200,
+          "unresolved_sample_count": 996,
+          "within_limit": false
+        }
+      },
+      "r": 1
+    },
+    {
+      "case": "heldout_R3_eccentric_void",
+      "double": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7308939059964257,
+          "maximum_certified_lower_distance_m": 0.0004264273012197433,
+          "maximum_certified_upper_distance_m": 0.0007424067754068096,
+          "maximum_witness_root_residual_m": 1.9949319973733282e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 40120,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7308939059964257,
+          "maximum_certified_lower_distance_m": 0.00042642548950300527,
+          "maximum_certified_upper_distance_m": 0.0007424036285530118,
+          "maximum_witness_root_residual_m": 1.0742348606542118e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 40120,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 1
+    },
+    {
+      "case": "heldout_R3_torus",
+      "double": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7319093119298397,
+          "maximum_certified_lower_distance_m": 0.0009830312554597544,
+          "maximum_certified_upper_distance_m": 0.0017322964190618368,
+          "maximum_witness_root_residual_m": 2.0816681711721685e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 26560,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7319093119298397,
+          "maximum_certified_lower_distance_m": 0.0009830305091901045,
+          "maximum_certified_upper_distance_m": 0.0017322951197532993,
+          "maximum_witness_root_residual_m": 1.873065452619603e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 26560,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 1
+    },
+    {
+      "case": "heldout_R3_two_ellipsoids",
+      "double": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.4947164687843952,
+          "maximum_certified_lower_distance_m": 0.00040280946045398707,
+          "maximum_certified_upper_distance_m": 0.0006964349248414406,
+          "maximum_witness_root_residual_m": 1.951563910473908e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 31120,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.4947164687843952,
+          "maximum_certified_lower_distance_m": 0.0004028104103144231,
+          "maximum_certified_upper_distance_m": 0.0006964407399275795,
+          "maximum_witness_root_residual_m": 1.1381184116262383e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 31120,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 1
+    },
+    {
+      "case": "D0_interface_offset_minus",
+      "double": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0784619012382657,
+          "maximum_certified_lower_distance_m": 0.0007143784344004597,
+          "maximum_certified_upper_distance_m": 0.003571618403518359,
+          "maximum_witness_root_residual_m": 6.581107186987012e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 435920,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0784619012382657,
+          "maximum_certified_lower_distance_m": 0.000714392374874099,
+          "maximum_certified_upper_distance_m": 0.0035728305735071297,
+          "maximum_witness_root_residual_m": 6.808789643208968e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 435920,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 2
+    },
+    {
+      "case": "D0_interface_offset_plus",
+      "double": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0784623959221253,
+          "maximum_certified_lower_distance_m": 0.0007143815357951908,
+          "maximum_certified_upper_distance_m": 0.004166662802508157,
+          "maximum_witness_root_residual_m": 6.516055056637882e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 413200,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0784623959221253,
+          "maximum_certified_lower_distance_m": 0.0007143749494778607,
+          "maximum_certified_upper_distance_m": 0.004166666776089787,
+          "maximum_witness_root_residual_m": 6.722053469410127e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 413200,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 2
+    },
+    {
+      "case": "D1_filtered_seed11_minus",
+      "double": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.055581813048561,
+          "maximum_certified_lower_distance_m": 0.0010987475892211807,
+          "maximum_certified_upper_distance_m": 0.007784271887429221,
+          "maximum_witness_root_residual_m": 6.331740687315346e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 480160,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.055581813048561,
+          "maximum_certified_lower_distance_m": 0.0010987492825060468,
+          "maximum_certified_upper_distance_m": 0.007784275575467984,
+          "maximum_witness_root_residual_m": 5.919484995598156e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 480160,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 2
+    },
+    {
+      "case": "D1_filtered_seed11_plus",
+      "double": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.034256191413426,
+          "maximum_certified_lower_distance_m": 0.0009182106413771567,
+          "maximum_certified_upper_distance_m": 0.007894652807646839,
+          "maximum_witness_root_residual_m": 5.616167253474913e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 483280,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.034256191413426,
+          "maximum_certified_lower_distance_m": 0.0009182113937246313,
+          "maximum_certified_upper_distance_m": 0.007894651532849946,
+          "maximum_witness_root_residual_m": 5.121211305565105e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 483280,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 2
+    },
+    {
+      "case": "D2_filtered_seed2026_minus",
+      "double": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0535754555972523,
+          "maximum_certified_lower_distance_m": 0.0012245245129416929,
+          "maximum_certified_upper_distance_m": 0.007364571409830959,
+          "maximum_witness_root_residual_m": 5.0523821237824507e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 483540,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0535754555972523,
+          "maximum_certified_lower_distance_m": 0.001224524578440227,
+          "maximum_certified_upper_distance_m": 0.007364573335089884,
+          "maximum_witness_root_residual_m": 6.108278341142513e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 483540,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 2
+    },
+    {
+      "case": "D2_filtered_seed2026_plus",
+      "double": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0449894555311023,
+          "maximum_certified_lower_distance_m": 0.001223068027687224,
+          "maximum_certified_upper_distance_m": 0.007572813057544368,
+          "maximum_witness_root_residual_m": 5.767955557622884e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 484400,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0449894555311023,
+          "maximum_certified_lower_distance_m": 0.0012230671387124699,
+          "maximum_certified_upper_distance_m": 0.007572812963637763,
+          "maximum_witness_root_residual_m": 5.0090140368830305e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 484400,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 2
+    },
+    {
+      "case": "baseline",
+      "double": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7320541682122075,
+          "maximum_certified_lower_distance_m": 0.0014255547075665872,
+          "maximum_certified_upper_distance_m": 0.024303399067436445,
+          "maximum_witness_root_residual_m": 5.5339181209088665e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 416900,
+          "unresolved_sample_count": 90,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "FAIL",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": true,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7320541682122075,
+          "maximum_certified_lower_distance_m": 0.0014255549393019562,
+          "maximum_certified_upper_distance_m": 0.024999997665651013,
+          "maximum_witness_root_residual_m": 5.551113975412662e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 416900,
+          "unresolved_sample_count": 3544,
+          "within_limit": false
+        }
+      },
+      "r": 2
+    },
+    {
+      "case": "heldout_R3_eccentric_void",
+      "double": {
+        "classification": "PASS",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7308939059964257,
+          "maximum_certified_lower_distance_m": 0.00012899335624418282,
+          "maximum_certified_upper_distance_m": 0.00031061739261137105,
+          "maximum_witness_root_residual_m": 1.9949319973733282e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 160000,
+          "unresolved_sample_count": 0,
+          "within_limit": true
+        }
+      },
+      "float32": {
+        "classification": "PASS",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7308939059964257,
+          "maximum_certified_lower_distance_m": 0.00012899287670886786,
+          "maximum_certified_upper_distance_m": 0.00031061623687072897,
+          "maximum_witness_root_residual_m": 1.0742348606542118e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 160000,
+          "unresolved_sample_count": 0,
+          "within_limit": true
+        }
+      },
+      "r": 2
+    },
+    {
+      "case": "heldout_R3_torus",
+      "double": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7319093119298397,
+          "maximum_certified_lower_distance_m": 0.0003183554836162419,
+          "maximum_certified_upper_distance_m": 0.0005849000867676466,
+          "maximum_witness_root_residual_m": 2.0816681711721685e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 100360,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7319093119298397,
+          "maximum_certified_lower_distance_m": 0.00031835591689840446,
+          "maximum_certified_upper_distance_m": 0.0005849008816948612,
+          "maximum_witness_root_residual_m": 1.873065452619603e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 100360,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 2
+    },
+    {
+      "case": "heldout_R3_two_ellipsoids",
+      "double": {
+        "classification": "PASS",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.4947164687843952,
+          "maximum_certified_lower_distance_m": 0.00013135338663306,
+          "maximum_certified_upper_distance_m": 0.00029444196928079885,
+          "maximum_witness_root_residual_m": 1.951563910473908e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 125040,
+          "unresolved_sample_count": 0,
+          "within_limit": true
+        }
+      },
+      "float32": {
+        "classification": "PASS",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.4947164687843952,
+          "maximum_certified_lower_distance_m": 0.00013135471145410576,
+          "maximum_certified_upper_distance_m": 0.0002944419334551925,
+          "maximum_witness_root_residual_m": 1.1381184116262383e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 125040,
+          "unresolved_sample_count": 0,
+          "within_limit": true
+        }
+      },
+      "r": 2
+    },
+    {
+      "case": "D0_interface_offset_minus",
+      "double": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0784619012382657,
+          "maximum_certified_lower_distance_m": 0.00022105739183110276,
+          "maximum_certified_upper_distance_m": 0.0013291821931075796,
+          "maximum_witness_root_residual_m": 6.852157730108388e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 1733320,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0784619012382657,
+          "maximum_certified_lower_distance_m": 0.00022106286988271437,
+          "maximum_certified_upper_distance_m": 0.0013291859145004214,
+          "maximum_witness_root_residual_m": 6.841315708383533e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 1733320,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 4
+    },
+    {
+      "case": "D0_interface_offset_plus",
+      "double": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0784623959221253,
+          "maximum_certified_lower_distance_m": 0.00023070314004094487,
+          "maximum_certified_upper_distance_m": 0.0020832790323920803,
+          "maximum_witness_root_residual_m": 6.526897078362737e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 1682200,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0784623959221253,
+          "maximum_certified_lower_distance_m": 0.00023070664580879423,
+          "maximum_certified_upper_distance_m": 0.002083281019018055,
+          "maximum_witness_root_residual_m": 6.722053469410127e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 1682200,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 4
+    },
+    {
+      "case": "D1_filtered_seed11_minus",
+      "double": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.055581813048561,
+          "maximum_certified_lower_distance_m": 0.0002768264495431062,
+          "maximum_certified_upper_distance_m": 0.0030917624471423744,
+          "maximum_witness_root_residual_m": 6.331740687315346e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 1821080,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.055581813048561,
+          "maximum_certified_lower_distance_m": 0.00027682545088170146,
+          "maximum_certified_upper_distance_m": 0.0030917687514474524,
+          "maximum_witness_root_residual_m": 5.919484995598156e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 1821080,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 4
+    },
+    {
+      "case": "D1_filtered_seed11_plus",
+      "double": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.034256191413426,
+          "maximum_certified_lower_distance_m": 0.00023157552616024117,
+          "maximum_certified_upper_distance_m": 0.0033885191118709335,
+          "maximum_witness_root_residual_m": 4.85722573273506e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 1827280,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.034256191413426,
+          "maximum_certified_lower_distance_m": 0.00023157549773072106,
+          "maximum_certified_upper_distance_m": 0.003388520284305139,
+          "maximum_witness_root_residual_m": 5.121211305565105e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 1827280,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 4
+    },
+    {
+      "case": "D2_filtered_seed2026_minus",
+      "double": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0535754555972523,
+          "maximum_certified_lower_distance_m": 0.00030655281358151165,
+          "maximum_certified_upper_distance_m": 0.00624173378154716,
+          "maximum_witness_root_residual_m": 5.0523821237824507e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 1828600,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0535754555972523,
+          "maximum_certified_lower_distance_m": 0.0003065518995540807,
+          "maximum_certified_upper_distance_m": 0.006241715102803566,
+          "maximum_witness_root_residual_m": 6.108278341142513e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 1828600,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 4
+    },
+    {
+      "case": "D2_filtered_seed2026_plus",
+      "double": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0449894555311023,
+          "maximum_certified_lower_distance_m": 0.00030617190720749537,
+          "maximum_certified_upper_distance_m": 0.003251040018254202,
+          "maximum_witness_root_residual_m": 5.767955557622884e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 1829840,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0449894555311023,
+          "maximum_certified_lower_distance_m": 0.00030617074888830356,
+          "maximum_certified_upper_distance_m": 0.0032510264563403737,
+          "maximum_witness_root_residual_m": 5.0090140368830305e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 1829840,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 4
+    },
+    {
+      "case": "baseline",
+      "double": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7320541682122075,
+          "maximum_certified_lower_distance_m": 0.00037832288539643645,
+          "maximum_certified_upper_distance_m": 0.024303399067436445,
+          "maximum_witness_root_residual_m": 5.5491877606330263e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 1690980,
+          "unresolved_sample_count": 110,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7320541682122075,
+          "maximum_certified_lower_distance_m": 0.0003783231327777645,
+          "maximum_certified_upper_distance_m": 0.02499999766565247,
+          "maximum_witness_root_residual_m": 5.551113975412662e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 1690980,
+          "unresolved_sample_count": 13324,
+          "within_limit": false
+        }
+      },
+      "r": 4
+    },
+    {
+      "case": "heldout_R3_eccentric_void",
+      "double": {
+        "classification": "PASS",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7308939059964257,
+          "maximum_certified_lower_distance_m": 4.406560444685434e-05,
+          "maximum_certified_upper_distance_m": 0.00010837793360862561,
+          "maximum_witness_root_residual_m": 1.9949319973733282e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 638760,
+          "unresolved_sample_count": 0,
+          "within_limit": true
+        }
+      },
+      "float32": {
+        "classification": "PASS",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7308939059964257,
+          "maximum_certified_lower_distance_m": 4.406583093746653e-05,
+          "maximum_certified_upper_distance_m": 0.0001083770636956645,
+          "maximum_witness_root_residual_m": 1.0742348606542118e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 638760,
+          "unresolved_sample_count": 0,
+          "within_limit": true
+        }
+      },
+      "r": 4
+    },
+    {
+      "case": "heldout_R3_torus",
+      "double": {
+        "classification": "PASS",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7319093119298397,
+          "maximum_certified_lower_distance_m": 7.995882606769349e-05,
+          "maximum_certified_upper_distance_m": 0.0001825796038758522,
+          "maximum_witness_root_residual_m": 2.0816681711721685e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 409800,
+          "unresolved_sample_count": 0,
+          "within_limit": true
+        }
+      },
+      "float32": {
+        "classification": "PASS",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7319093119298397,
+          "maximum_certified_lower_distance_m": 7.995931845523587e-05,
+          "maximum_certified_upper_distance_m": 0.00018258274150230252,
+          "maximum_witness_root_residual_m": 1.873065452619603e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 409800,
+          "unresolved_sample_count": 0,
+          "within_limit": true
+        }
+      },
+      "r": 4
+    },
+    {
+      "case": "heldout_R3_two_ellipsoids",
+      "double": {
+        "classification": "PASS",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.4947164687843952,
+          "maximum_certified_lower_distance_m": 3.265215056615301e-05,
+          "maximum_certified_upper_distance_m": 7.583607332493706e-05,
+          "maximum_witness_root_residual_m": 1.951563910473908e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 500400,
+          "unresolved_sample_count": 0,
+          "within_limit": true
+        }
+      },
+      "float32": {
+        "classification": "PASS",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.4947164687843952,
+          "maximum_certified_lower_distance_m": 3.265415688803507e-05,
+          "maximum_certified_upper_distance_m": 7.584067361421158e-05,
+          "maximum_witness_root_residual_m": 1.1411003080290163e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 500400,
+          "unresolved_sample_count": 0,
+          "within_limit": true
+        }
+      },
+      "r": 4
+    },
+    {
+      "case": "D0_interface_offset_minus",
+      "double": {
+        "classification": "PASS",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0784619012382657,
+          "maximum_certified_lower_distance_m": 7.251018504319799e-05,
+          "maximum_certified_upper_distance_m": 0.0004486271093395146,
+          "maximum_witness_root_residual_m": 6.876552278989312e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 6993000,
+          "unresolved_sample_count": 0,
+          "within_limit": true
+        }
+      },
+      "float32": {
+        "classification": "PASS",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0784619012382657,
+          "maximum_certified_lower_distance_m": 7.251498390799691e-05,
+          "maximum_certified_upper_distance_m": 0.00044862134495360156,
+          "maximum_witness_root_residual_m": 6.917209860457518e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 6993000,
+          "unresolved_sample_count": 0,
+          "within_limit": true
+        }
+      },
+      "r": 8
+    },
+    {
+      "case": "D0_interface_offset_plus",
+      "double": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0784623959221253,
+          "maximum_certified_lower_distance_m": 7.756110503787888e-05,
+          "maximum_certified_upper_distance_m": 0.0010415792797608381,
+          "maximum_witness_root_residual_m": 6.526897078362737e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 6707640,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0784623959221253,
+          "maximum_certified_lower_distance_m": 7.756664164190021e-05,
+          "maximum_certified_upper_distance_m": 0.001041579108115307,
+          "maximum_witness_root_residual_m": 6.765421556309548e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 6707640,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 8
+    },
+    {
+      "case": "D1_filtered_seed11_minus",
+      "double": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.055581813048561,
+          "maximum_certified_lower_distance_m": 7.797261183793969e-05,
+          "maximum_certified_upper_distance_m": 0.0013640692867267399,
+          "maximum_witness_root_residual_m": 6.331740687315346e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 7112740,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.055581813048561,
+          "maximum_certified_lower_distance_m": 7.797268918591562e-05,
+          "maximum_certified_upper_distance_m": 0.0013640687436292077,
+          "maximum_witness_root_residual_m": 5.919484995598156e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 7112740,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 8
+    },
+    {
+      "case": "D1_filtered_seed11_plus",
+      "double": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.034256191413426,
+          "maximum_certified_lower_distance_m": 8.173796257567731e-05,
+          "maximum_certified_upper_distance_m": 0.0015017697944872503,
+          "maximum_witness_root_residual_m": 4.85722573273506e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 7124380,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.034256191413426,
+          "maximum_certified_lower_distance_m": 8.17380766667544e-05,
+          "maximum_certified_upper_distance_m": 0.0015017690987003602,
+          "maximum_witness_root_residual_m": 5.121211305565105e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 7124380,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 8
+    },
+    {
+      "case": "D2_filtered_seed2026_minus",
+      "double": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0535754555972523,
+          "maximum_certified_lower_distance_m": 7.842305768109054e-05,
+          "maximum_certified_upper_distance_m": 0.0015639085521211302,
+          "maximum_witness_root_residual_m": 5.0523821237824507e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 7132440,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0535754555972523,
+          "maximum_certified_lower_distance_m": 7.842254315966402e-05,
+          "maximum_certified_upper_distance_m": 0.0015638745568066093,
+          "maximum_witness_root_residual_m": 6.108278341142513e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 7132440,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 8
+    },
+    {
+      "case": "D2_filtered_seed2026_plus",
+      "double": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0449894555311023,
+          "maximum_certified_lower_distance_m": 7.19292886459299e-05,
+          "maximum_certified_upper_distance_m": 0.0015493167527925989,
+          "maximum_witness_root_residual_m": 5.767955557622884e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 7132680,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 2.0449894555311023,
+          "maximum_certified_lower_distance_m": 7.192965682861035e-05,
+          "maximum_certified_upper_distance_m": 0.001549316643707025,
+          "maximum_witness_root_residual_m": 5.074066167232161e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 7132680,
+          "unresolved_sample_count": 0,
+          "within_limit": false
+        }
+      },
+      "r": 8
+    },
+    {
+      "case": "baseline",
+      "double": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7320541682122075,
+          "maximum_certified_lower_distance_m": 9.738677724510655e-05,
+          "maximum_certified_upper_distance_m": 0.024303399067436445,
+          "maximum_witness_root_residual_m": 5.550548824938671e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 6815040,
+          "unresolved_sample_count": 152,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "classification": "UNRESOLVED",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7320541682122075,
+          "maximum_certified_lower_distance_m": 9.738677432014715e-05,
+          "maximum_certified_upper_distance_m": 0.02499999766565537,
+          "maximum_witness_root_residual_m": 5.551113975412662e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 6815040,
+          "unresolved_sample_count": 51604,
+          "within_limit": false
+        }
+      },
+      "r": 8
+    },
+    {
+      "case": "heldout_R3_eccentric_void",
+      "double": {
+        "classification": "PASS",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7308939059964257,
+          "maximum_certified_lower_distance_m": 1.2951367345488272e-05,
+          "maximum_certified_upper_distance_m": 3.1872108420897425e-05,
+          "maximum_witness_root_residual_m": 1.9949319973733282e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 2553160,
+          "unresolved_sample_count": 0,
+          "within_limit": true
+        }
+      },
+      "float32": {
+        "classification": "PASS",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7308939059964257,
+          "maximum_certified_lower_distance_m": 1.2950504703121362e-05,
+          "maximum_certified_upper_distance_m": 3.186998614259988e-05,
+          "maximum_witness_root_residual_m": 1.0742348606542118e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 2553160,
+          "unresolved_sample_count": 0,
+          "within_limit": true
+        }
+      },
+      "r": 8
+    },
+    {
+      "case": "heldout_R3_torus",
+      "double": {
+        "classification": "PASS",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7319093119298397,
+          "maximum_certified_lower_distance_m": 2.2489192123040703e-05,
+          "maximum_certified_upper_distance_m": 5.037860059612655e-05,
+          "maximum_witness_root_residual_m": 2.0816681711721685e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 1624760,
+          "unresolved_sample_count": 0,
+          "within_limit": true
+        }
+      },
+      "float32": {
+        "classification": "PASS",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.7319093119298397,
+          "maximum_certified_lower_distance_m": 2.2488562030589873e-05,
+          "maximum_certified_upper_distance_m": 5.0377189841942936e-05,
+          "maximum_witness_root_residual_m": 1.873065452619603e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 1624760,
+          "unresolved_sample_count": 0,
+          "within_limit": true
+        }
+      },
+      "r": 8
+    },
+    {
+      "case": "heldout_R3_two_ellipsoids",
+      "double": {
+        "classification": "PASS",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.4947164687843952,
+          "maximum_certified_lower_distance_m": 8.128458699327793e-06,
+          "maximum_certified_upper_distance_m": 2.077170660202758e-05,
+          "maximum_witness_root_residual_m": 1.951563910473908e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 1999360,
+          "unresolved_sample_count": 0,
+          "within_limit": true
+        }
+      },
+      "float32": {
+        "classification": "PASS",
+        "round3_saved_triangle_bounds_exact_match": true,
+        "summary": {
+          "certified_exceeds_limit": false,
+          "distance_limit_m": 0.0005,
+          "evidence_scope": "10 fixed face points; locally rounded interval root witnesses and coordinate guard; not interval arithmetic",
+          "global_trilinear_lipschitz_bound": 1.4947164687843952,
+          "maximum_certified_lower_distance_m": 8.127571430515269e-06,
+          "maximum_certified_upper_distance_m": 2.0768847919042805e-05,
+          "maximum_witness_root_residual_m": 1.2472592875268144e-17,
+          "per_triangle_bounds_columns": [
+            "maximum_upper_m",
+            "maximum_lower_m",
+            "unresolved_samples"
+          ],
+          "sample_count": 1999360,
+          "unresolved_sample_count": 0,
+          "within_limit": true
+        }
+      },
+      "r": 8
+    }
+  ],
+  "agreement_pass": false,
+  "certifier_identity": "XFID45-CERT-01",
+  "elapsed_seconds": 3216.980798959732,
+  "evidence_class": "solver_free_successor_root_certifier_replay",
+  "fidelity_pairs": [
+    {
+      "case": "D0_interface_offset_minus",
+      "double": {
+        "comparisons": 2048,
+        "max_nearest_position_delta_m": 7.876338470325095e-14,
+        "max_root_position_delta_m": 3.550406496577452e-11,
+        "nearest_identity_mismatch": 131,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 131,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 111,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 11,
+        "status_mismatch": 131,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 4096,
+        "max_nearest_position_delta_m": 7.876338470325095e-14,
+        "max_root_position_delta_m": 3.550406496577452e-11,
+        "nearest_identity_mismatch": 259,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 259,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 217,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 21,
+        "status_mismatch": 259,
+        "zero_interval_mismatch": 0
+      },
+      "r": 1
+    },
+    {
+      "case": "D0_interface_offset_plus",
+      "double": {
+        "comparisons": 6144,
+        "max_nearest_position_delta_m": 7.876338470325095e-14,
+        "max_root_position_delta_m": 3.550406496577452e-11,
+        "nearest_identity_mismatch": 391,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 391,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 328,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 32,
+        "status_mismatch": 391,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 8192,
+        "max_nearest_position_delta_m": 7.876338470325095e-14,
+        "max_root_position_delta_m": 3.550406496577452e-11,
+        "nearest_identity_mismatch": 520,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 520,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 434,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 42,
+        "status_mismatch": 520,
+        "zero_interval_mismatch": 0
+      },
+      "r": 1
+    },
+    {
+      "case": "D1_filtered_seed11_minus",
+      "double": {
+        "comparisons": 10240,
+        "max_nearest_position_delta_m": 7.87668541502029e-14,
+        "max_root_position_delta_m": 3.550406496577452e-11,
+        "nearest_identity_mismatch": 651,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 651,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 545,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 53,
+        "status_mismatch": 651,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 12288,
+        "max_nearest_position_delta_m": 8.004361062852183e-14,
+        "max_root_position_delta_m": 3.550406496577452e-11,
+        "nearest_identity_mismatch": 779,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 779,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 651,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 63,
+        "status_mismatch": 779,
+        "zero_interval_mismatch": 0
+      },
+      "r": 1
+    },
+    {
+      "case": "D1_filtered_seed11_plus",
+      "double": {
+        "comparisons": 14336,
+        "max_nearest_position_delta_m": 8.004361062852183e-14,
+        "max_root_position_delta_m": 3.550406496577452e-11,
+        "nearest_identity_mismatch": 911,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 911,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 762,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 74,
+        "status_mismatch": 911,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 16384,
+        "max_nearest_position_delta_m": 8.004361062852183e-14,
+        "max_root_position_delta_m": 3.550406496577452e-11,
+        "nearest_identity_mismatch": 1040,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 1040,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 868,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 84,
+        "status_mismatch": 1040,
+        "zero_interval_mismatch": 0
+      },
+      "r": 1
+    },
+    {
+      "case": "D2_filtered_seed2026_minus",
+      "double": {
+        "comparisons": 18432,
+        "max_nearest_position_delta_m": 8.004361062852183e-14,
+        "max_root_position_delta_m": 3.550406496577452e-11,
+        "nearest_identity_mismatch": 1172,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 1172,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 979,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 95,
+        "status_mismatch": 1172,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 20480,
+        "max_nearest_position_delta_m": 8.004361062852183e-14,
+        "max_root_position_delta_m": 3.550406496577452e-11,
+        "nearest_identity_mismatch": 1300,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 1300,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 1085,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 105,
+        "status_mismatch": 1300,
+        "zero_interval_mismatch": 0
+      },
+      "r": 1
+    },
+    {
+      "case": "D2_filtered_seed2026_plus",
+      "double": {
+        "comparisons": 22528,
+        "max_nearest_position_delta_m": 8.004361062852183e-14,
+        "max_root_position_delta_m": 3.550406496577452e-11,
+        "nearest_identity_mismatch": 1434,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 1434,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 1196,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 116,
+        "status_mismatch": 1434,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 24576,
+        "max_nearest_position_delta_m": 8.004361062852183e-14,
+        "max_root_position_delta_m": 3.550406496577452e-11,
+        "nearest_identity_mismatch": 1565,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 1565,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 1302,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 126,
+        "status_mismatch": 1565,
+        "zero_interval_mismatch": 0
+      },
+      "r": 1
+    },
+    {
+      "case": "D0_interface_offset_minus",
+      "double": {
+        "comparisons": 26624,
+        "max_nearest_position_delta_m": 8.004361062852183e-14,
+        "max_root_position_delta_m": 3.550406496577452e-11,
+        "nearest_identity_mismatch": 1698,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 1698,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 1430,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 131,
+        "status_mismatch": 1698,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 28672,
+        "max_nearest_position_delta_m": 8.004361062852183e-14,
+        "max_root_position_delta_m": 3.550406496577452e-11,
+        "nearest_identity_mismatch": 1827,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 1827,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 1553,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 134,
+        "status_mismatch": 1827,
+        "zero_interval_mismatch": 0
+      },
+      "r": 2
+    },
+    {
+      "case": "D0_interface_offset_plus",
+      "double": {
+        "comparisons": 30720,
+        "max_nearest_position_delta_m": 8.004361062852183e-14,
+        "max_root_position_delta_m": 8.164533910060001e-10,
+        "nearest_identity_mismatch": 1973,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 1973,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 1681,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 143,
+        "status_mismatch": 1973,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 32768,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 2.8046086494870615e-09,
+        "nearest_identity_mismatch": 2119,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 2119,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 1804,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 155,
+        "status_mismatch": 2119,
+        "zero_interval_mismatch": 0
+      },
+      "r": 2
+    },
+    {
+      "case": "D1_filtered_seed11_minus",
+      "double": {
+        "comparisons": 34816,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 2.8046086494870615e-09,
+        "nearest_identity_mismatch": 2253,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 2253,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 1932,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 160,
+        "status_mismatch": 2253,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 36864,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 2.8046086494870615e-09,
+        "nearest_identity_mismatch": 2383,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 2383,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 2055,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 163,
+        "status_mismatch": 2383,
+        "zero_interval_mismatch": 0
+      },
+      "r": 2
+    },
+    {
+      "case": "D1_filtered_seed11_plus",
+      "double": {
+        "comparisons": 38912,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 2.8046086494870615e-09,
+        "nearest_identity_mismatch": 2518,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 2518,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 2183,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 168,
+        "status_mismatch": 2518,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 40960,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 2.8046086494870615e-09,
+        "nearest_identity_mismatch": 2649,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 2649,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 2306,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 171,
+        "status_mismatch": 2649,
+        "zero_interval_mismatch": 0
+      },
+      "r": 2
+    },
+    {
+      "case": "D2_filtered_seed2026_minus",
+      "double": {
+        "comparisons": 43008,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 2.8046086494870615e-09,
+        "nearest_identity_mismatch": 2783,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 2783,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 2434,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 176,
+        "status_mismatch": 2783,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 45056,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 2.8046086494870615e-09,
+        "nearest_identity_mismatch": 2913,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 2913,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 2557,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 179,
+        "status_mismatch": 2913,
+        "zero_interval_mismatch": 0
+      },
+      "r": 2
+    },
+    {
+      "case": "D2_filtered_seed2026_plus",
+      "double": {
+        "comparisons": 47104,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 2.8046086494870615e-09,
+        "nearest_identity_mismatch": 3047,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 3047,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 2685,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 184,
+        "status_mismatch": 3047,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 49152,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 2.8046086494870615e-09,
+        "nearest_identity_mismatch": 3177,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 3177,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 2808,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 187,
+        "status_mismatch": 3177,
+        "zero_interval_mismatch": 0
+      },
+      "r": 2
+    },
+    {
+      "case": "D0_interface_offset_minus",
+      "double": {
+        "comparisons": 51200,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 2.8046086494870615e-09,
+        "nearest_identity_mismatch": 3276,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 3276,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 2907,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 188,
+        "status_mismatch": 3276,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 53248,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 2.8046086494870615e-09,
+        "nearest_identity_mismatch": 3373,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 3373,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 3004,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 190,
+        "status_mismatch": 3373,
+        "zero_interval_mismatch": 0
+      },
+      "r": 4
+    },
+    {
+      "case": "D0_interface_offset_plus",
+      "double": {
+        "comparisons": 55296,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.271191649859782e-08,
+        "nearest_identity_mismatch": 3478,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 3478,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 3103,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 197,
+        "status_mismatch": 3478,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 57344,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.271191649859782e-08,
+        "nearest_identity_mismatch": 3576,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 3576,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 3200,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 200,
+        "status_mismatch": 3576,
+        "zero_interval_mismatch": 0
+      },
+      "r": 4
+    },
+    {
+      "case": "D1_filtered_seed11_minus",
+      "double": {
+        "comparisons": 59392,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.271191649859782e-08,
+        "nearest_identity_mismatch": 3676,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 3676,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 3299,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 201,
+        "status_mismatch": 3676,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 61440,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.271191649859782e-08,
+        "nearest_identity_mismatch": 3774,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 3774,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 3396,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 203,
+        "status_mismatch": 3774,
+        "zero_interval_mismatch": 0
+      },
+      "r": 4
+    },
+    {
+      "case": "D1_filtered_seed11_plus",
+      "double": {
+        "comparisons": 63488,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.271191649859782e-08,
+        "nearest_identity_mismatch": 3873,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 3873,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 3495,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 204,
+        "status_mismatch": 3873,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 65536,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.271191649859782e-08,
+        "nearest_identity_mismatch": 3970,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 3970,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 3592,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 206,
+        "status_mismatch": 3970,
+        "zero_interval_mismatch": 0
+      },
+      "r": 4
+    },
+    {
+      "case": "D2_filtered_seed2026_minus",
+      "double": {
+        "comparisons": 67584,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.271191649859782e-08,
+        "nearest_identity_mismatch": 4070,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 4070,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 3691,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 207,
+        "status_mismatch": 4070,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 69632,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.271191649859782e-08,
+        "nearest_identity_mismatch": 4168,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 4168,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 3788,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 209,
+        "status_mismatch": 4168,
+        "zero_interval_mismatch": 0
+      },
+      "r": 4
+    },
+    {
+      "case": "D2_filtered_seed2026_plus",
+      "double": {
+        "comparisons": 71680,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.271191649859782e-08,
+        "nearest_identity_mismatch": 4269,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 4269,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 3887,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 210,
+        "status_mismatch": 4269,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 73728,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.271191649859782e-08,
+        "nearest_identity_mismatch": 4367,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 4367,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 3984,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 212,
+        "status_mismatch": 4367,
+        "zero_interval_mismatch": 0
+      },
+      "r": 4
+    },
+    {
+      "case": "D0_interface_offset_minus",
+      "double": {
+        "comparisons": 75776,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.271191649859782e-08,
+        "nearest_identity_mismatch": 4474,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 4474,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 4086,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 214,
+        "status_mismatch": 4474,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 77824,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.271191649859782e-08,
+        "nearest_identity_mismatch": 4581,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 4581,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 4189,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 215,
+        "status_mismatch": 4581,
+        "zero_interval_mismatch": 0
+      },
+      "r": 8
+    },
+    {
+      "case": "D0_interface_offset_plus",
+      "double": {
+        "comparisons": 79872,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.4335000741994008e-08,
+        "nearest_identity_mismatch": 4694,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 4694,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 4291,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 223,
+        "status_mismatch": 4694,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 81920,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.4335000741994008e-08,
+        "nearest_identity_mismatch": 4803,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 4803,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 4394,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 226,
+        "status_mismatch": 4803,
+        "zero_interval_mismatch": 0
+      },
+      "r": 8
+    },
+    {
+      "case": "D1_filtered_seed11_minus",
+      "double": {
+        "comparisons": 83968,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.4335000741994008e-08,
+        "nearest_identity_mismatch": 4913,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 4913,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 4496,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 227,
+        "status_mismatch": 4913,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 86016,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.4335000741994008e-08,
+        "nearest_identity_mismatch": 5023,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 5023,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 4599,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 228,
+        "status_mismatch": 5023,
+        "zero_interval_mismatch": 0
+      },
+      "r": 8
+    },
+    {
+      "case": "D1_filtered_seed11_plus",
+      "double": {
+        "comparisons": 88064,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.4335000741994008e-08,
+        "nearest_identity_mismatch": 5129,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 5129,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 4701,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 229,
+        "status_mismatch": 5129,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 90112,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.4335000741994008e-08,
+        "nearest_identity_mismatch": 5236,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 5236,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 4804,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 230,
+        "status_mismatch": 5236,
+        "zero_interval_mismatch": 0
+      },
+      "r": 8
+    },
+    {
+      "case": "D2_filtered_seed2026_minus",
+      "double": {
+        "comparisons": 92160,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.4335000741994008e-08,
+        "nearest_identity_mismatch": 5344,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 5344,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 4906,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 231,
+        "status_mismatch": 5344,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 94208,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.4335000741994008e-08,
+        "nearest_identity_mismatch": 5453,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 5453,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 5009,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 232,
+        "status_mismatch": 5453,
+        "zero_interval_mismatch": 0
+      },
+      "r": 8
+    },
+    {
+      "case": "D2_filtered_seed2026_plus",
+      "double": {
+        "comparisons": 96256,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.4335000741994008e-08,
+        "nearest_identity_mismatch": 5561,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 5561,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 5111,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 233,
+        "status_mismatch": 5561,
+        "zero_interval_mismatch": 0
+      },
+      "float32": {
+        "comparisons": 98304,
+        "max_nearest_position_delta_m": 1.0605752387427003e-13,
+        "max_root_position_delta_m": 1.4335000741994008e-08,
+        "nearest_identity_mismatch": 5670,
+        "nearest_position_mismatch": 0,
+        "nearest_status_mismatch": 5670,
+        "position_tolerance_max_m": 3.637978807091713e-13,
+        "root_count_mismatch": 5214,
+        "root_kind_mismatch": 0,
+        "root_position_mismatch": 234,
+        "status_mismatch": 5670,
+        "zero_interval_mismatch": 0
+      },
+      "r": 8
+    }
+  ],
+  "fidelity_root_set_agreement": {
+    "comparisons": 98304,
+    "max_nearest_position_delta_m": 1.0605752387427003e-13,
+    "max_root_position_delta_m": 1.4335000741994008e-08,
+    "nearest_identity_mismatch": 5670,
+    "nearest_position_mismatch": 0,
+    "nearest_status_mismatch": 5670,
+    "position_tolerance_max_m": 3.637978807091713e-13,
+    "root_count_mismatch": 5214,
+    "root_kind_mismatch": 0,
+    "root_position_mismatch": 234,
+    "status_mismatch": 5670,
+    "zero_interval_mismatch": 0
+  },
+  "input_hashes": {
+    "D0_interface_offset_minus": "e7a83328efc9a7a263e54e59fa349e2d57c6cba5dceffff783291056cbc7fd5f",
+    "D0_interface_offset_plus": "de56ae5b73572ac6fecabb81760c83f9b7a65d3894779ed4bfb2a1b732e55683",
+    "D1_filtered_seed11_minus": "b2109466ae483d631ed476a62fd5ae32d5a40ebf325edbfecbfedec76ec454c8",
+    "D1_filtered_seed11_plus": "43d033b0143549369bf8da718019d276abd1ac65d479a23c7c707629bfdb44dc",
+    "D2_filtered_seed2026_minus": "b6ef1bc458e936a0eb286a3f402acab9392fcd198851abc4689b0e7ce8fede9a",
+    "D2_filtered_seed2026_plus": "14ddbeac636268854048d8c3c5734cbdce36aa1922841d79a8acd058d1e09999",
+    "baseline": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "heldout_R3_eccentric_void": "0ec3b62a737cd4c7ae2eacef6160a2787a4fadbdfc12ba4f6725a3260efe1994",
+    "heldout_R3_torus": "2597808d4b800a313242e7bc06c04c0dab01f1cf87b08abd1639c26f67c2966a",
+    "heldout_R3_two_ellipsoids": "e2c310357dcc2807d923a10f43f1425bf195efa84672f1436aa5f0d959b5214a"
+  },
+  "preregistration_amendment_chain_sha256": [
+    "1f7d4c713c591a08e9638e8cd68aa2405fffa7de6fc50a73ed8b3812f052d464",
+    "2a4fca403caada581b5bdeb08f963c89cef469af4978697d60ff14a1c6776a48"
+  ],
+  "preregistration_amendment_sha256": "2a4fca403caada581b5bdeb08f963c89cef469af4978697d60ff14a1c6776a48",
+  "preregistration_branch_head": "c18989e9642de766f55a4460596c4a3a40c68204",
+  "preregistration_remote_head": "c18989e9642de766f55a4460596c4a3a40c68204",
+  "preregistration_sha256": "ceb3dbd5f70ee9905ebc3ddf9aa90c3afde83b046d6fcd9c9799940783d6a7d7",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "solver_qualification": false,
+    "topology": false
+  },
+  "r_values": [
+    1,
+    2,
+    4,
+    8
+  ],
+  "registration_start_head": "3f9322dc0fa0f2847a3204427b81a665932b83b8",
+  "round3_source_and_evidence_unchanged": true,
+  "runtime_identity": {
+    "implementation": "CPython",
+    "machine": "arm64",
+    "numpy": "2.5.2",
+    "platform": "macOS-26.3.1-arm64-arm-64bit",
+    "python_executable": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+    "python_version": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "scipy": "1.18.1",
+    "trimesh": "5.1.0"
+  },
+  "source_sha256": {
+    "julia/CFDSDFWaterLily/src/GridSDFBody.jl": "fa6aecccecbf140158396c9c8e5f3a6c16d3810f792ba45b9c8f4ee481709058",
+    "scripts/diagnose_xfid45_round3_ray_roots.py": "0d1f205386fa36568fd50acb2924ec0d3fd0a8439da1b0f27c102fe7fd657897",
+    "scripts/run_xfid45_root_certifier_replay_2026_10_03.py": "b53980435e13a5c7e24aba4262f058dccaae822dfc8b385f59cb05ca0fc1cdd9",
+    "scripts/verify_xfid45_root_certifier_2026_10_03.py": "2f8bf4f14392b04d4643b654a962f87618411da2897d48105e38f21b5bec72a4",
+    "scripts/verify_xfid45_round3.py": "8232a40d9704d23ac9cfa558de48462ebbfbecf30531f5c0ea374bcc641dd665",
+    "scripts/xfid45_root_certifier_2026_10_03.py": "913516f1884bebb0bc7cf562a5fb03120d7ac65cb0561e6ea51679187c44751a",
+    "scripts/xfid45_round3_export.py": "2d54bf3d987a0eecc0f8ce158c866c8d2b91800d1e37422a2d151a8bff963ba0",
+    "scripts/xfid45_round3_measure.py": "2c557a98f74a595eeabf7580c2076749c55ffb7fcc82b159b72e387a65459aac",
+    "tests/test_xfid45_root_certifier_2026_10_03.py": "3ede8c025f19a5553185ce486b6d1a7c8eada885282396055a6aebb70260a114"
+  },
+  "surface_extraction_rerun": false,
+  "target_attempt_id": "attempt02"
+}

@@ -42,8 +42,45 @@ FIDELITY_REPORT_KIND = "density_to_sdf_fidelity_report"
 SDF_KIND = "stage_s_signed_distance"
 SDF_SIGN_CONVENTION = "negative_inside_positive_outside"
 CANONICAL_CELL_ORDER = "vtk-x-fastest"
+# Standard SIMP measure of non-discreteness, mean(4*rho*(1-rho)) over active
+# design cells, must not exceed this to hand a candidate to Stage S. 0.01
+# rejects both measured real candidates (mean_nd 0.031 and 0.084, rho maxing
+# out at 0.62/0.55 with zero cells above 0.9) while passing a field that is
+# actually binarized, where only a thin, cell-count-limited transition band
+# keeps mean_nd near zero.
+DISCRETENESS_MAX_MEAN_ND = 0.01
+# The mean alone is fooled by a small, entirely-grey body: averaging against
+# a large void drives mean_nd down regardless of how ambiguous the object's
+# own cells are. A density field that never approaches a solid value anywhere
+# cannot represent a solid body at all, so max rho over active cells must
+# clear this bar independent of the mean. 0.9 matches the "count_rho_above_0_9"
+# diagnostic already recorded and rejects both real candidates (max rho
+# 0.62/0.55) while a field with a genuine solid core reaches well above it.
+DISCRETENESS_MIN_MAX_RHO = 0.9
+# Marching cubes through a 1-2-cell-thick voxelized body produces slivers: near-coincident
+# vertices from edge intersections that land a hair's-width from a cell corner, with edges down
+# to ~1e-8 m and face areas down to ~1e-15 m^2 (measured on the three ramp_interp export
+# candidates). snappyHexMesh then reproduces these as small-determinant volume cells, which the
+# Stage V qualification profile does not waive. A point-merge tolerance of 2% of the smallest
+# source cell dimension collapses most of these edges before the STL is written, without
+# visibly perturbing the surface: measured volume shift stayed under 0.03% on all three
+# candidates while the count of triangles with aspect ratio > 100 dropped by 90-100%.
+#
+# Point merging is not sufficient: on the near-binary projected fields marching cubes still
+# emits collinear triples (measured 4-8 faces with area <= 1e-10 m^2 and aspect ratio > 1e7 on
+# the v16 checkpoint-87 surface, unaffected by clean tolerances from 0.1% to 20% of the
+# spacing and by isovalue tie-breaks). Those faces are genuine defects that the direct
+# self-intersection gate rejects fail-closed, and edge-collapsing them creates new crossings.
+# The surface is therefore extracted from the binary cell material with VTK surface nets
+# (contour_labels), which emits only non-degenerate triangles, with no smoothing: the result is
+# the exact voxel-boundary geometry of the material occupancy (measured volume error 0 against
+# the cell-threshold volume on the v16 candidate). The volume-fidelity and feature-survival
+# checks therefore pass by construction; they are retained as guards against future extractor
+# changes, not as evidence about this extractor.
+SURFACE_CLEAN_TOLERANCE_FRACTION = 0.02
+SURFACE_SMOOTHING_ITERATIONS = 0
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
-_RHO_VARIANTS = frozenset({"rho", "rho_filtered", "rho_projected"})
+_RHO_VARIANTS = frozenset({"rho", "rho_filtered", "rho_projected", "rho_projection"})
 _MASK_NAMES = (
     "allowed_mask",
     "forbidden_mask",
@@ -157,6 +194,7 @@ def build_density_to_sdf_handoff(
     masks = _read_masks(arrays, source_grid.cell_count)
     material = _material_mask(density, masks, threshold)
     mask_checks = _mask_checks(masks, material, density, threshold)
+    discreteness = _discreteness_report(density, masks)
     mask_failures = [name for name, check in mask_checks.items() if check.get("available") and not check.get("ok")]
     if mask_failures:
         raise ValueError(
@@ -193,16 +231,47 @@ def build_density_to_sdf_handoff(
             "iso_value must lie strictly inside the interpolated density range; "
             f"iso_value={threshold:g}, range=[{point_min:g}, {point_max:g}]"
         )
-    surface = point_image.contour(
-        isosurfaces=[threshold],
-        scalars=selected_variant,
-    ).triangulate()
+    surface_material = (surface_density >= threshold).astype(np.int32)
+    if not surface_material.any():
+        raise ValueError(
+            f"Density field produced an empty iso-surface at iso_value={threshold:g}"
+        )
+    cell_image = pv.ImageData(
+        dimensions=source_grid.point_dimensions,
+        spacing=source_grid.spacing,
+        origin=source_grid.origin,
+    )
+    cell_image.cell_data["material"] = surface_material
+    surface = cell_image.contour_labels(
+        boundary_style="external",
+        background_value=0,
+        select_inputs=[1],
+        output_mesh_type="triangles",
+        scalars="material",
+        pad_background=True,
+        smoothing=SURFACE_SMOOTHING_ITERATIONS > 0,
+        smoothing_iterations=max(int(SURFACE_SMOOTHING_ITERATIONS), 1),
+    )
     if surface.n_points == 0 or surface.n_cells == 0:
         raise ValueError(
             f"Density field produced an empty iso-surface at iso_value={threshold:g}"
         )
     if not np.isfinite(np.asarray(surface.points)).all():
         raise ValueError("Density field produced an iso-surface with non-finite points")
+    quality_before = _surface_quality_metrics(surface)
+    clean_tolerance = SURFACE_CLEAN_TOLERANCE_FRACTION * float(min(source_grid.spacing))
+    surface = surface.clean(tolerance=clean_tolerance, absolute=True).triangulate()
+    if surface.n_points == 0 or surface.n_cells == 0:
+        raise ValueError("Surface cleaning removed the entire iso-surface")
+    quality_after = _surface_quality_metrics(surface)
+    surface_quality = {
+        "extractor": "vtkSurfaceNets3D.contour_labels",
+        "smoothing_iterations": int(SURFACE_SMOOTHING_ITERATIONS),
+        "clean_tolerance_m": clean_tolerance,
+        "before_cleaning": quality_before,
+        "after_cleaning": quality_after,
+        "faces_removed_by_cleaning": quality_before["face_count"] - quality_after["face_count"],
+    }
 
     target_dir = Path(output_dir).resolve() if output_dir is not None else state_path.parent / "stage_s_handoff"
     target_dir.mkdir(parents=True, exist_ok=True)
@@ -304,6 +373,7 @@ def build_density_to_sdf_handoff(
             revoxelized_mask_checks=revoxelized_mask_checks,
             revoxelized_component_checks=revoxelized_component_checks,
             missing_lineage=geometry_binding["missing_lineage"],
+            discreteness=discreteness,
         )
         report = _build_fidelity_report(
             topology_state_path=state_path,
@@ -325,6 +395,8 @@ def build_density_to_sdf_handoff(
             revoxelized_density=revoxelized_density,
             qualification_reasons=qualification_reasons,
             point_dimensions=source_grid.point_dimensions,
+            discreteness=discreteness,
+            surface_quality=surface_quality,
         )
         _write_json(staged_report, report)
         report_hash = _sha256_path(staged_report)
@@ -353,6 +425,7 @@ def build_density_to_sdf_handoff(
             sdf_values=sdf_values,
             qualification_reasons=qualification_reasons,
             report_path=report_path,
+            discreteness=discreteness,
         )
         _write_json(staged_manifest, manifest)
 
@@ -641,6 +714,53 @@ def _check(**values: object) -> dict[str, object]:
     return dict(values)
 
 
+def _discreteness_report(
+    density: np.ndarray,
+    masks: Mapping[str, np.ndarray],
+) -> dict[str, object]:
+    """Non-discreteness of the source density field over its active cells.
+
+    ``mean_nd`` is the standard measure of non-discreteness used in
+    density-based topology optimization: ``mean(4 * rho * (1 - rho))``,
+    0 for a perfectly binary field and 1 when every active cell sits at
+    rho=0.5.  Falls back to the whole grid when ``active_design_mask`` is
+    not available.
+    """
+    active = masks.get("active_design_mask")
+    if active is None:
+        scope, selected = "all_cells", density
+    else:
+        scope, selected = "active_design_mask", density[active > 0]
+    mean_nd = float(np.mean(4.0 * selected * (1.0 - selected))) if selected.size else 0.0
+    max_rho = float(np.max(selected)) if selected.size else 0.0
+    mean_ok = mean_nd <= DISCRETENESS_MAX_MEAN_ND
+    max_ok = max_rho >= DISCRETENESS_MIN_MAX_RHO
+    return {
+        "measure": "mean_nd",
+        "definition": (
+            "mean(4 * rho * (1 - rho)) over active design cells; "
+            "0 = binary, 1 = fully grey at rho=0.5"
+        ),
+        "scope": scope,
+        "cell_count": int(selected.size),
+        "mean_nd": mean_nd,
+        "max_rho": max_rho,
+        "count_rho_above_0_9": int(np.count_nonzero(selected > 0.9)),
+        "count_rho_below_0_1": int(np.count_nonzero(selected < 0.1)),
+        "count_rho_grey_band": int(np.count_nonzero((selected >= 0.1) & (selected <= 0.9))),
+        "max_mean_nd_allowed": DISCRETENESS_MAX_MEAN_ND,
+        "min_max_rho_allowed": DISCRETENESS_MIN_MAX_RHO,
+        # mean_status: average of active cells is too grey (a small fully-grey
+        # body can still pass this alone). max_status: the field never
+        # reaches a near-solid value anywhere, so it cannot represent a solid
+        # body regardless of how the mean averages out. Both are recorded so
+        # a reader can tell which condition failed; status is their AND.
+        "mean_status": "pass" if mean_ok else "fail",
+        "max_status": "pass" if max_ok else "fail",
+        "status": "pass" if (mean_ok and max_ok) else "fail",
+    }
+
+
 def _component_checks(
     material_flat: np.ndarray,
     root_flat: np.ndarray | None,
@@ -718,6 +838,43 @@ def _cell_density_to_points(
     if point_values.shape != (expected,) or not np.isfinite(point_values).all():
         raise ValueError("cell-data-to-point-data interpolation produced invalid rho values")
     return point_image, point_values
+
+
+def _surface_quality_metrics(surface: pv.PolyData) -> dict[str, object]:
+    """Triangle shape diagnostics for a marching-cubes iso-surface.
+
+    ``aspect_ratio`` is longest-edge / (2 * inradius): sqrt(3) (its minimum) for an equilateral
+    triangle, growing without bound for a sliver. These are the metrics that correlate with
+    snappyHexMesh emitting small-determinant volume cells (see ``SURFACE_CLEAN_TOLERANCE_FRACTION``
+    above).
+    """
+    faces = np.asarray(surface.faces).reshape(-1, 4)[:, 1:4]
+    points = np.asarray(surface.points, dtype=np.float64)
+    if faces.size == 0:
+        return {
+            "face_count": 0,
+            "min_area_m2": 0.0,
+            "max_aspect_ratio": 0.0,
+            "count_aspect_ratio_above_50": 0,
+            "count_aspect_ratio_above_100": 0,
+        }
+    tris = points[faces]
+    a = np.linalg.norm(tris[:, 0] - tris[:, 1], axis=1)
+    b = np.linalg.norm(tris[:, 1] - tris[:, 2], axis=1)
+    c = np.linalg.norm(tris[:, 2] - tris[:, 0], axis=1)
+    s = (a + b + c) / 2.0
+    area = np.sqrt(np.clip(s * (s - a) * (s - b) * (s - c), 0.0, None))
+    longest = np.maximum(np.maximum(a, b), c)
+    inradius = np.divide(area, s, out=np.zeros_like(area), where=s > 0)
+    aspect = np.divide(longest, 2.0 * inradius, out=np.full_like(longest, np.inf), where=inradius > 0)
+    finite_aspect = aspect[np.isfinite(aspect)]
+    return {
+        "face_count": int(len(faces)),
+        "min_area_m2": float(area.min()),
+        "max_aspect_ratio": float(finite_aspect.max()) if finite_aspect.size else float("inf"),
+        "count_aspect_ratio_above_50": int(np.count_nonzero(aspect > 50.0)),
+        "count_aspect_ratio_above_100": int(np.count_nonzero(aspect > 100.0)),
+    }
 
 
 def _read_and_validate_surface(path: Path) -> trimesh.Trimesh:
@@ -893,6 +1050,7 @@ def _handoff_qualification_reasons(
     revoxelized_mask_checks: Mapping[str, Mapping[str, object]],
     revoxelized_component_checks: Mapping[str, Mapping[str, object]],
     missing_lineage: object,
+    discreteness: Mapping[str, object],
 ) -> list[str]:
     reasons = [
         "quantitative_fidelity_limits_not_configured",
@@ -902,6 +1060,8 @@ def _handoff_qualification_reasons(
     ]
     if missing_lineage:
         reasons.append("required_lineage_not_available")
+    if discreteness.get("status") != "pass":
+        reasons.append("density_field_not_sufficiently_discrete")
     if not bool(source_component_checks["root_connectivity"].get("available")):
         reasons.append("source_root_connectivity_not_available")
     if not _checks_ok(revoxelized_mask_checks):
@@ -939,6 +1099,8 @@ def _build_fidelity_report(
     revoxelized_density: np.ndarray,
     qualification_reasons: list[str],
     point_dimensions: tuple[int, int, int],
+    discreteness: Mapping[str, object],
+    surface_quality: Mapping[str, object],
 ) -> dict[str, object]:
     cell_volume = float(np.prod(source_grid.spacing, dtype=np.float64))
     voxel_volume = float(np.count_nonzero(material) * cell_volume)
@@ -977,6 +1139,7 @@ def _build_fidelity_report(
             "max": float(np.max(density)),
             "mean": float(np.mean(density)),
         },
+        "discreteness": discreteness,
         "volume": {
             "cell_threshold_volume_m3": voxel_volume,
             "surface_mesh_volume_m3": mesh_volume,
@@ -990,6 +1153,7 @@ def _build_fidelity_report(
             "status": "diagnostic_only",
             "note": "Cell threshold volume and interpolated iso-surface volume use different discretizations.",
         },
+        "surface_quality": surface_quality,
         "surface": {
             "watertight": bool(mesh.is_watertight),
             "positive_volume": bool(mesh.is_volume and mesh.volume > 0.0),
@@ -1023,6 +1187,7 @@ def _build_fidelity_report(
             "cell_data_contract": True,
             "surface_geometry": True,
             "sdf_sign": True,
+            "discreteness_within_limit": discreteness.get("status") == "pass",
             "source_mask_validation": _checks_ok(source_mask_checks),
             "source_component_validation": _checks_ok(source_component_checks),
             "revoxelized_mask_validation": _checks_ok(
@@ -1061,6 +1226,7 @@ def _build_manifest(
     sdf_values: np.ndarray,
     qualification_reasons: list[str],
     report_path: Path,
+    discreteness: Mapping[str, object],
 ) -> dict[str, object]:
     output_paths = {
         "source_topology_state": {
@@ -1134,6 +1300,7 @@ def _build_manifest(
                 else "rho"
             ),
         },
+        "discreteness": discreteness,
         "grid_transform": grid_transform,
         "sdf": {
             "sign_convention": SDF_SIGN_CONVENTION,
@@ -1215,6 +1382,8 @@ __all__ = [
     "HANDOFF_SCHEMA_VERSION",
     "SDF_KIND",
     "SDF_SIGN_CONVENTION",
+    "SURFACE_CLEAN_TOLERANCE_FRACTION",
+    "SURFACE_SMOOTHING_ITERATIONS",
     "DensityToSdfHandoffArtifacts",
     "build_density_to_sdf_handoff",
     "handoff_density_to_sdf",

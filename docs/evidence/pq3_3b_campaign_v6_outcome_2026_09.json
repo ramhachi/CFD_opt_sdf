@@ -1,0 +1,110 @@
+{
+  "checkpoint": {
+    "accepted_count": 9,
+    "index": 9,
+    "level_index": 1,
+    "rho_file_sha256": "762c61e1d904c05e6952ce29dcc782ed6c81bacb458c7a0914a87b6102b694ea",
+    "rho_sha256": "727cb13d51e7ecc9168262c53ac190ff039fc55cbb160addd0ad1112c0b208df",
+    "verified_chain": true
+  },
+  "claims_not_supported": [
+    "no b16 campaign result, no terminal independent evaluation",
+    "no KKT or convergence conclusion; the volume cap, not stationarity, stopped the run",
+    "no Stage S readiness"
+  ],
+  "claims_supported": [
+    "nine objective steps were accepted at b=8 under the inequality policy, raising same-level downforce from 0.579818003757",
+    "the stopping attempt failed every alpha on the registered projected-volume upper bound",
+    "the b=8 level did not meet the registered convergence window"
+  ],
+  "convergence": {
+    "level_converged": false,
+    "min_accepted_iterations": 10,
+    "objective_delta_abs_max": 0.0001,
+    "reason": "the projected-volume cap Vmax was reached before the convergence window",
+    "window_accepted": 3
+  },
+  "kind": "pq3_3b_campaign_v6_outcome",
+  "level_records": {
+    "level_1_b8_q30": {
+      "accepted_steps": 9,
+      "final_rho_sha256": "727cb13d51e7ecc9168262c53ac190ff039fc55cbb160addd0ad1112c0b208df",
+      "last_metrics": [
+        {
+          "objective_delta_abs": 0.5315138909500003,
+          "projected_field_mean_abs_delta": 0.01018120491123429,
+          "projected_volume_delta_abs": 0.010082272721139006
+        },
+        {
+          "objective_delta_abs": 0.5712893374299997,
+          "projected_field_mean_abs_delta": 0.012748830168894821,
+          "projected_volume_delta_abs": 0.012590079242072345
+        },
+        {
+          "objective_delta_abs": 0.14541260341000006,
+          "projected_field_mean_abs_delta": 0.0036083117840146543,
+          "projected_volume_delta_abs": 0.0035493115736611736
+        }
+      ],
+      "last_trial_downforce": 3.52812272098,
+      "last_trial_objective": -3.52812272098,
+      "projected_volume_final": 0.07562221522434376,
+      "projected_volume_fraction_of_v_max": 0.9907835342015228,
+      "start_rho_sha256": "ffb594427f56670068aeacc6742b0075c1fbd418f834f83033d079b014cecfcd",
+      "stopping_attempt": {
+        "attempt": 10,
+        "candidates": [
+          {
+            "alpha": 1.0,
+            "corrected_update_inf_norm": 0.030000000000000027,
+            "phi_after": 0.09220766668510831,
+            "projected_volume_within_v_max": false,
+            "reason": "gates_failed"
+          },
+          {
+            "alpha": 0.5,
+            "corrected_update_inf_norm": 0.015000000000000013,
+            "phi_after": 0.0833956373728819,
+            "projected_volume_within_v_max": false,
+            "reason": "gates_failed"
+          },
+          {
+            "alpha": 0.25,
+            "corrected_update_inf_norm": 0.007500000000000007,
+            "phi_after": 0.07938509486288585,
+            "projected_volume_within_v_max": false,
+            "reason": "gates_failed"
+          },
+          {
+            "alpha": 0.125,
+            "corrected_update_inf_norm": 0.003750000000000031,
+            "phi_after": 0.07747328694719807,
+            "projected_volume_within_v_max": false,
+            "reason": "gates_failed"
+          },
+          {
+            "alpha": 0.0625,
+            "corrected_update_inf_norm": 0.0018750000000000155,
+            "phi_after": 0.0765403085836778,
+            "projected_volume_within_v_max": false,
+            "reason": "gates_failed"
+          }
+        ],
+        "parent_downforce_coefficient": 3.52812272098
+      }
+    }
+  },
+  "manifest_sha256": "aedd3592e9dc64097c708a141c01e559d4510a0959329aaf3e187f9f4f5a6fd7",
+  "output_directory": "work/pq3_3b_campaign_v6",
+  "output_hashes": {
+    "campaign_meta_json": "4eb3e4025284cef474de4302daa075bf11a85757de7ad3e716ceb9f11da69920",
+    "events_jsonl": "a3eeedd14fbc53dfa259a3b4dd2b97520ef1b4ecb508019e656d5d8cd9c5b67a",
+    "latest_json": "a46ba347f04618f64c8cfd026b0d493c95dacbe6921c750189bed19114456095"
+  },
+  "schema_version": 1,
+  "status": {
+    "level": "level_1_b8_q30",
+    "reason": "objective_rejected",
+    "status": "blocked"
+  }
+}

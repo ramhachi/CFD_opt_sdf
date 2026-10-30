@@ -1,0 +1,16 @@
+{
+  "criteria_sha256": "5718d0c3013a826504e4f8389d35958a67e3b10c3093954ac8958d9a2ef1ac56",
+  "error": "OpenCFD v2512 lock only supports Ubuntu Noble",
+  "error_type": "RuntimeError",
+  "failure_stage": "environment_install",
+  "package_lock_sha256": "8bcf141db29d18800a55a70bca93175a37465ac18494e473efd32985317c7340",
+  "runner_sha256": "67d6021c7386d2297773be71d5bc5de234503506c70037b805e2c483bb91e447",
+  "runtime": {
+    "architecture": "amd64",
+    "executable": "/usr/bin/python3",
+    "os_release": "PRETTY_NAME=\"Ubuntu 22.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\nVERSION=\"22.04.5 LTS (Jammy Jellyfish)\"\nVERSION_CODENAME=jammy\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=jammy\n",
+    "platform": "Linux-6.18.48+-x86_64-with-glibc2.35",
+    "python": "3.12.13"
+  },
+  "status": "FAIL"
+}

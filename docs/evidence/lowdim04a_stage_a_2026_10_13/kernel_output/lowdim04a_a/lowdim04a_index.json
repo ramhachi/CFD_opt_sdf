@@ -1,0 +1,109 @@
+{
+  "case_id": "flow_24",
+  "kernel": "a",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-lowdim04a-a",
+  "solver_process_wall_seconds_total": 1594.3680906295776,
+  "states": [
+    {
+      "complete": true,
+      "direction": null,
+      "exit_code": 0,
+      "forces_csv_sha256": "113eb85bf4b7fbdf7c179b8adf83b46a49834bff9383c472bdbf38d15dd29654",
+      "kind": "parent",
+      "matches_retained_parent_reference": true,
+      "name": "lowdim04a__parent",
+      "seconds": 174.70234036445618,
+      "sign": 0,
+      "step_mm": 0.0
+    },
+    {
+      "complete": true,
+      "direction": "D0_interface_offset",
+      "exit_code": 0,
+      "forces_csv_sha256": "7e103b84b587679760a6cff27b2548331b063344b619cdd2a14c2e35282ef828",
+      "kind": "perturbation",
+      "name": "lowdim04a__D0_interface_offset__minus1.25mm",
+      "seconds": 176.956636428833,
+      "sign": -1,
+      "step_mm": 1.25
+    },
+    {
+      "complete": true,
+      "direction": "D0_interface_offset",
+      "exit_code": 0,
+      "forces_csv_sha256": "294a9243cbea0e36f9e7e7f2503f5c642a88974a205c7c61928fba5ec993f594",
+      "kind": "perturbation",
+      "name": "lowdim04a__D0_interface_offset__plus1.25mm",
+      "seconds": 177.7063410282135,
+      "sign": 1,
+      "step_mm": 1.25
+    },
+    {
+      "complete": true,
+      "direction": "D1_filtered_seed11",
+      "exit_code": 0,
+      "forces_csv_sha256": "874f91d3a6a70eb405a22620ce9613c0009924c46f6afd0d20e12a3733001626",
+      "kind": "perturbation",
+      "name": "lowdim04a__D1_filtered_seed11__minus1.25mm",
+      "seconds": 177.70513558387756,
+      "sign": -1,
+      "step_mm": 1.25
+    },
+    {
+      "complete": true,
+      "direction": "D1_filtered_seed11",
+      "exit_code": 0,
+      "forces_csv_sha256": "defa5fa9f402cfd7d44f1713f3e4e3b0bc285d1bae788f68ea4816137a67ede1",
+      "kind": "perturbation",
+      "name": "lowdim04a__D1_filtered_seed11__plus1.25mm",
+      "seconds": 175.99216270446777,
+      "sign": 1,
+      "step_mm": 1.25
+    },
+    {
+      "complete": true,
+      "direction": "D2_filtered_seed2026",
+      "exit_code": 0,
+      "forces_csv_sha256": "4ad54b91d37934032228fa279ed00eee21de7be78dd8dc2372f5d759bf3dbce3",
+      "kind": "perturbation",
+      "name": "lowdim04a__D2_filtered_seed2026__minus1.25mm",
+      "seconds": 177.25111889839172,
+      "sign": -1,
+      "step_mm": 1.25
+    },
+    {
+      "complete": true,
+      "direction": "D2_filtered_seed2026",
+      "exit_code": 0,
+      "forces_csv_sha256": "c74d808b767b41a48f6f5ac812e9db1ce7cfc651ba666e9f21109b0e931cb9e3",
+      "kind": "perturbation",
+      "name": "lowdim04a__D2_filtered_seed2026__plus1.25mm",
+      "seconds": 177.50015306472778,
+      "sign": 1,
+      "step_mm": 1.25
+    },
+    {
+      "complete": true,
+      "direction": "P1_upstream_lobe",
+      "exit_code": 0,
+      "forces_csv_sha256": "a621a9c843b038104711bad28850f855ba64e0bc664c531ac76bc840dd2877c8",
+      "kind": "perturbation",
+      "name": "lowdim04a__P1_upstream_lobe__minus1.25mm",
+      "seconds": 178.79996967315674,
+      "sign": -1,
+      "step_mm": 1.25
+    },
+    {
+      "complete": true,
+      "direction": "P1_upstream_lobe",
+      "exit_code": 0,
+      "forces_csv_sha256": "de17f149c137389a80696ead2f06ff80f44c11cafc512a47315fa1938fff333e",
+      "kind": "perturbation",
+      "name": "lowdim04a__P1_upstream_lobe__plus1.25mm",
+      "seconds": 177.75423288345337,
+      "sign": 1,
+      "step_mm": 1.25
+    }
+  ],
+  "status": "COMPLETE"
+}

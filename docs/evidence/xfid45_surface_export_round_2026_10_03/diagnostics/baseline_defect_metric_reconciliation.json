@@ -1,0 +1,160 @@
+{
+  "canonical_state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb",
+  "criteria_sha256": "96cece05ee24a2c63f46c27cbbff8b493b71c9340a8e9d21d0a04ac55393a6cd",
+  "diagnostic_source_sha256": "3cf7b2a91357540d82440cc960c0c2f094162c577bd3a9aba804256d41395c49",
+  "evidence_class": "supplemental_solver_free_diagnostic_not_a_candidate_or_gate_change",
+  "exact_candidate_residual_baseline_edges": {
+    "ambiguous_candidate_face_ids": [
+      4224
+    ],
+    "ambiguous_source_triangle_ids": [
+      4712
+    ],
+    "mapping_jsonl_gz": "docs/evidence/xfid45_surface_export_round_2026_10_03/diagnostics/baseline_candidate_residual_edges.jsonl.gz",
+    "mapping_sha256": "3a494d1d330ec6e0f635afea62c4aeaa6aeb1075566871d1354647bbca79cf98",
+    "non_manifold_edge_count": 12
+  },
+  "exact_coordinate_merge_degenerate_triangle_localization": {
+    "degenerate_triangle_count_total": 1126,
+    "degenerate_triangle_count_with_any_vertex_exactly_on_grid_node": 1123,
+    "degenerate_triangles_touching_exact_zero_grid_node": {
+      "repeated_index_after_exact_coordinate_merge": 39
+    },
+    "distinct_contouring_source_cells_involved": 661,
+    "distinct_grid_nodes_where_all_three_triangle_vertices_coincide": 38,
+    "duplicate_faces_removed_before_this_classification": 4,
+    "exact_zero_area_nonrepeated_triangle_count_removed": 0,
+    "mapping_jsonl_gz": "docs/evidence/xfid45_surface_export_round_2026_10_03/diagnostics/baseline_exact_merge_degenerate_triangles_to_grid.jsonl.gz",
+    "mapping_sha256": "772eaa425bf726b5f970b09fbd7c7728baa60d6866aff3b35aab1e022575a6bb",
+    "near_zero_summary_is_descriptive_only_no_threshold_changes_iso_or_candidate_processing": true,
+    "repeated_index_triangle_count_removed": 1126,
+    "source_cell_minimum_absolute_corner_phi_quantiles": {
+      "0.0": 0.0,
+      "0.1": 5.551115123125783e-17,
+      "0.25": 1.1102230246251565e-16,
+      "0.5": 7.450581263057643e-10,
+      "0.75": 1.4901161415892261e-09,
+      "0.9": 5.9604645663569045e-09,
+      "1.0": 8.42937009082334e-09
+    }
+  },
+  "exact_zero_node_count": 498,
+  "formal_xfid_started": false,
+  "kind": "xfid45_post_result_baseline_defect_metric_reconciliation",
+  "local_gradient_vs_winding_conflicts": {
+    "edge_mapping_jsonl_gz": "docs/evidence/xfid45_surface_export_round_2026_10_03/diagnostics/perturbation_orientation_winding_conflicts.jsonl.gz",
+    "edge_mapping_sha256": "1d70a0e0c04a3101b6b2f6960adbf8d45ac4a03694334fa9971832b31f4e95f6",
+    "per_perturbation": {
+      "D0_interface_offset_minus": {
+        "candidate_non_manifold_edge_count": 0,
+        "candidate_same_direction_two_face_edge_count": 0,
+        "candidate_signed_volume_m3": 0.14538381498932013,
+        "locally_oriented_face_count": 11056,
+        "raw_normal_gradient_dot_sign_counts": {
+          "ambiguous": 0,
+          "negative": 11056,
+          "positive": 0
+        }
+      },
+      "D0_interface_offset_plus": {
+        "candidate_non_manifold_edge_count": 0,
+        "candidate_same_direction_two_face_edge_count": 0,
+        "candidate_signed_volume_m3": 0.11083000988206769,
+        "locally_oriented_face_count": 9928,
+        "raw_normal_gradient_dot_sign_counts": {
+          "ambiguous": 0,
+          "negative": 9928,
+          "positive": 0
+        }
+      },
+      "D1_filtered_seed11_minus": {
+        "candidate_non_manifold_edge_count": 0,
+        "candidate_same_direction_two_face_edge_count": 191,
+        "candidate_signed_volume_m3": null,
+        "locally_oriented_face_count": 13195,
+        "raw_normal_gradient_dot_sign_counts": {
+          "ambiguous": 0,
+          "negative": 13195,
+          "positive": 81
+        }
+      },
+      "D1_filtered_seed11_plus": {
+        "candidate_non_manifold_edge_count": 0,
+        "candidate_same_direction_two_face_edge_count": 211,
+        "candidate_signed_volume_m3": null,
+        "locally_oriented_face_count": 13337,
+        "raw_normal_gradient_dot_sign_counts": {
+          "ambiguous": 0,
+          "negative": 13337,
+          "positive": 95
+        }
+      },
+      "D2_filtered_seed2026_minus": {
+        "candidate_non_manifold_edge_count": 0,
+        "candidate_same_direction_two_face_edge_count": 229,
+        "candidate_signed_volume_m3": null,
+        "locally_oriented_face_count": 13347,
+        "raw_normal_gradient_dot_sign_counts": {
+          "ambiguous": 0,
+          "negative": 13347,
+          "positive": 101
+        }
+      },
+      "D2_filtered_seed2026_plus": {
+        "candidate_non_manifold_edge_count": 0,
+        "candidate_same_direction_two_face_edge_count": 248,
+        "candidate_signed_volume_m3": null,
+        "locally_oriented_face_count": 13392,
+        "raw_normal_gradient_dot_sign_counts": {
+          "ambiguous": 0,
+          "negative": 13392,
+          "positive": 108
+        }
+      }
+    }
+  },
+  "prior_712_edge_defect_localization": {
+    "defect_entities_touching_any_exact_zero_grid_node": {
+      "prior_audit_duplicate_face": 4,
+      "prior_audit_edge_incidence_not_two": 183,
+      "prior_audit_winding_conflict_edge": 45
+    },
+    "defect_entity_counts": {
+      "prior_audit_duplicate_face": 4,
+      "prior_audit_edge_incidence_not_two": 712,
+      "prior_audit_winding_conflict_edge": 555
+    },
+    "entity_count_total_categories_may_overlap": 1271,
+    "entity_zero_touch_percent_total_categories_may_overlap": 18.25334382376082,
+    "mapping_jsonl_gz": "docs/evidence/xfid45_surface_export_round_2026_10_03/diagnostics/baseline_original_712_defects_to_grid.jsonl.gz",
+    "mapping_sha256": "baaf9ae3a482326bbe13636f804c85623e0ac706f2150d18309c5e7c3acd83e9",
+    "source_triangle_zero_touch_percent": 25.49563838223632,
+    "unique_source_triangles_involved": 2522,
+    "unique_source_triangles_touching_exact_zero": 643
+  },
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "solver_qualification": false,
+    "topology": false
+  },
+  "raw_mesh_metric_reconciliation": {
+    "candidate_sequence_exact_coordinate_only": true,
+    "duplicate_face_count": 4,
+    "exact_coordinate_merge_non_manifold_edge_count": 666,
+    "exact_coordinate_merge_winding_conflict_edge_count": 524,
+    "exact_merged_vertex_count_in_prior_STL": 4937,
+    "prior_audit_non_manifold_edge_count": 712,
+    "prior_audit_rounded_merged_vertex_count": 4898,
+    "prior_audit_winding_conflict_edge_count": 555,
+    "prior_preflight_contract": "Trimesh merge_vertices() default rounding (8 decimal places) before edge counting",
+    "rounded_merge_used_only_to_reconcile_prior_audit_and_localize_defects": true,
+    "vertices_coalesced_only_by_8dp_audit_rounding": 39
+  },
+  "registered_round_result_sha256": "732a6ac03cbf341cec35d58937ce3bee2cfe84df3413766d6c6f51ad8ea9b4ab",
+  "schema_version": 1,
+  "solver_started": false
+}

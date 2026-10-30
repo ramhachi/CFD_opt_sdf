@@ -1,0 +1,18 @@
+{
+  "constraint_authority": false,
+  "continuum_convergence_claimed": false,
+  "count_ratio": 8,
+  "handoff_cell_spacing_m": 0.05,
+  "handoff_material_cells": 1034,
+  "interpretation": "8272=8*1034 and h17=h16/2 give identical discrete volumes; the signed source-mesh volume is numerically close. Derivations remain distinct. No claim of exact trilinear zero-set identity or grid-converged physical volume.",
+  "mesh_is_watertight": true,
+  "mesh_is_winding_consistent": true,
+  "method": "trimesh.load(path, force=\"mesh\").volume; signed triangle-mesh volume, diagnostic only",
+  "relative_difference_to_mesh": 1.1860403408383902e-08,
+  "signed_mesh_volume_m3": 0.1292499984670429,
+  "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+  "trimesh_version": "5.1.0",
+  "v17_hard_minus_mesh_volume_m3": 1.5329571223521299e-09,
+  "v17_hard_solid_centers": 8272,
+  "v17_spacing_m": 0.025
+}

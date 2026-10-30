@@ -1,0 +1,154 @@
+{
+  "evidence_class": "independent_diagnostic_recomputation_only",
+  "force_closure_max_solver": 5.684341886080802e-14,
+  "input_hashes": {
+    "control/baseline.csv": "e6a4c0840f6befed9274528ee169ba922cb5e21cdd8d826bbb43deb70d166ee1",
+    "control/noise_seed1@+1e-7.csv": "a1d50c0ecb1f8cfd5b02e9995237b83569d0e4a7e848e8fef1c1af6637daa9c9",
+    "control/noise_seed1@+1e-8.csv": "206799cfba457726833bbf30aab682778a44407c36d6bf305eee04f3ec2bf5f2",
+    "control/noise_seed1@-1e-7.csv": "e16ef68a845f8fe018b7d9c700844c9a3d920c1faf9a03f51d00a08d8074b98f",
+    "control/noise_seed1@-1e-8.csv": "0f7ecaad64ecc38b0af27f10d1b881fa89f85c1e9cc631b278660df43c963cbe",
+    "shifted/baseline.csv": "1daac541ad31c3aea7208ceb0cb9f53fd2f85315315232ed2a539f9e18f071c8",
+    "shifted/noise_seed1@+1e-7.csv": "98da33f6fb9c24a642770a78821a956820fcf85093b3a8efc80c542deb729215",
+    "shifted/noise_seed1@+1e-8.csv": "c699d9c330f3a2731cc403481da805f32cbf14af0c7032d9f57ec802674bd73e",
+    "shifted/noise_seed1@-1e-7.csv": "4209fe623289f15fe00ae78f24fe8e7786d06d9685b136507c5b7898e5e44563",
+    "shifted/noise_seed1@-1e-8.csv": "7b45b9b9f5d04bdc877db9f5add4ad9ec9a7a5852a823f5782cc628ef8100edc"
+  },
+  "lattices": {
+    "control": {
+      "deltas_n": {
+        "baseline": {
+          "downforce": 0.0,
+          "drag": 0.0
+        },
+        "noise_seed1@+1e-7": {
+          "downforce": -0.0010155074067853542,
+          "drag": -8.646113264204613e-05
+        },
+        "noise_seed1@+1e-8": {
+          "downforce": 0.0008256995827226055,
+          "drag": 0.00029336626656722986
+        },
+        "noise_seed1@-1e-7": {
+          "downforce": -0.0007160359900187929,
+          "drag": -0.0008014228787899813
+        },
+        "noise_seed1@-1e-8": {
+          "downforce": 0.0009647098836135792,
+          "drag": 0.0003292321853363145
+        }
+      },
+      "means_n": {
+        "baseline": {
+          "downforce": 0.34576017129791925,
+          "drag": 0.3343737666847799
+        },
+        "noise_seed1@+1e-7": {
+          "downforce": 0.3447446638911339,
+          "drag": 0.33428730555213787
+        },
+        "noise_seed1@+1e-8": {
+          "downforce": 0.34658587088064186,
+          "drag": 0.33466713295134715
+        },
+        "noise_seed1@-1e-7": {
+          "downforce": 0.34504413530790046,
+          "drag": 0.33357234380598993
+        },
+        "noise_seed1@-1e-8": {
+          "downforce": 0.34672488118153283,
+          "drag": 0.33470299887011623
+        }
+      },
+      "pairs_n": {
+        "1e-7": {
+          "downforce": {
+            "even": -0.0008657716984020736,
+            "odd": -0.00014973570838328065
+          },
+          "drag": {
+            "even": -0.0004439420057160137,
+            "odd": 0.0003574808730739676
+          }
+        },
+        "1e-8": {
+          "downforce": {
+            "even": 0.0008952047331680646,
+            "odd": -6.950515044548689e-05
+          },
+          "drag": {
+            "even": 0.0003112992259517444,
+            "odd": -1.7932959384542313e-05
+          }
+        }
+      }
+    },
+    "shifted": {
+      "deltas_n": {
+        "baseline": {
+          "downforce": 0.0,
+          "drag": 0.0
+        },
+        "noise_seed1@+1e-7": {
+          "downforce": -0.0016765923614427414,
+          "drag": -0.0005544473907485026
+        },
+        "noise_seed1@+1e-8": {
+          "downforce": -0.0011756956291432141,
+          "drag": -0.000563340995853201
+        },
+        "noise_seed1@-1e-7": {
+          "downforce": -0.0009525815096663726,
+          "drag": -0.0004438868726944212
+        },
+        "noise_seed1@-1e-8": {
+          "downforce": -0.0006749676926409709,
+          "drag": -0.00018062610464397721
+        }
+      },
+      "means_n": {
+        "baseline": {
+          "downforce": 0.3707644267304702,
+          "drag": 0.3740981928926946
+        },
+        "noise_seed1@+1e-7": {
+          "downforce": 0.3690878343690275,
+          "drag": 0.3735437455019461
+        },
+        "noise_seed1@+1e-8": {
+          "downforce": 0.369588731101327,
+          "drag": 0.3735348518968414
+        },
+        "noise_seed1@-1e-7": {
+          "downforce": 0.36981184522080385,
+          "drag": 0.37365430602000016
+        },
+        "noise_seed1@-1e-8": {
+          "downforce": 0.37008945903782925,
+          "drag": 0.3739175667880506
+        }
+      },
+      "pairs_n": {
+        "1e-7": {
+          "downforce": {
+            "even": -0.0013145869355545847,
+            "odd": -0.0003620054258881844
+          },
+          "drag": {
+            "even": -0.0004991671317214341,
+            "odd": -5.52802590270407e-05
+          }
+        },
+        "1e-8": {
+          "downforce": {
+            "even": -0.0009253316608920925,
+            "odd": -0.0002503639682511216
+          },
+          "drag": {
+            "even": -0.0003719835502485891,
+            "odd": -0.00019135744560461188
+          }
+        }
+      }
+    }
+  }
+}

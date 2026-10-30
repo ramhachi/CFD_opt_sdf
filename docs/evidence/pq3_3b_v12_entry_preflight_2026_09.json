@@ -1,0 +1,307 @@
+{
+  "claims_not_supported": [
+    "the long v12 campaign is not started by this artifact",
+    "one accepted step does not establish convergence, Stage S readiness, grid independence, or target physics"
+  ],
+  "claims_supported": [
+    "the registered replay parent was measured on rho_projection over active cells",
+    "if this preflight passes, exactly one fresh b=128 candidate passed the new discreteness gate and the pre-existing numerical gates"
+  ],
+  "input_stop_state": {
+    "level": "level_3_b128_margin",
+    "rho_file_sha256": "339efabbdcfe14f62c908995de92a6d829b1af53947d13b7c33543628bfe4865",
+    "rho_path": "work/pq3_3b_campaign_v10/checkpoints/rho_0005.npy",
+    "rho_sha256": "2347aff4d1d84a2463b974491836e19db910e72a98a302ec87173ab08c6c0630",
+    "source": "v10 accepted checkpoint 5, the last checkpoint measured within mean_nd <= 0.01",
+    "state_path": "work/pq3_3b_campaign_v10/checkpoints/state_0005.json",
+    "state_sha256": "2b65fbcf8a7e34e40f4b009f587c2f30f333ec1655dd4aadca564620d9b6e0e3"
+  },
+  "kind": "pq3_3b_v12_entry_preflight",
+  "manifest": {
+    "path": "docs/evidence/pq3_3b_campaign_manifest_v12_2026_09.json",
+    "sha256": "acf62c6f13f7346cf6022e0b215cdcef3c40880fccb1ca15b57bd7f757d5157f"
+  },
+  "schema_version": 1,
+  "stage": {
+    "accepted_rho_sha256": "c0441ff5551c7e4cb95ee1d34040f4c3e04f885c5f317a80f79408867ba4a7ac",
+    "discreteness_gate_pass": true,
+    "level": "level_3_b128_margin",
+    "parent_run": {
+      "adjoint_iterations": 790,
+      "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v12_entry_preflight/runs/parent_c68cd37f535e/case",
+      "downforce_coefficient": 2.27551379853,
+      "primal_iterations": 105,
+      "reused": false,
+      "solver_status": "converged",
+      "source_rho_sha256": "1e03ae0b4f12948022ca831c0cd618613a857351d10fed24c98aeb38d1b7aa84",
+      "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v12_entry_preflight/runs/parent_c68cd37f535e/case/fixed_grid_primal_summary.json",
+      "summary_sha256": "6d0ef1db8de6cacd33a03bd1eb51c5ae87488f7598f05ed9b93e0aaac16c575b"
+    },
+    "pass": true,
+    "phase2": {
+      "accepted_alpha": 0.125,
+      "all_failed": false,
+      "candidates": [
+        {
+          "accepted": false,
+          "alpha": 1.0,
+          "bracket": null,
+          "bracket_ok": false,
+          "corrected_rho_sha256": "2957e8ee5a8653dc26db244b23e36e71f3817f464d98b8fccda847e2d9610cd7",
+          "corrected_update_inf_norm": 0.010000000000000009,
+          "discreteness_field": "rho_projection",
+          "discreteness_mean_nd_candidate": 0.03123367516628493,
+          "discreteness_mean_nd_max": 0.01,
+          "discreteness_mean_nd_parent": 0.008562322527443773,
+          "discreteness_scope": "transform.active",
+          "frozen_box_face_cells": 9842,
+          "gates": {
+            "projected_discreteness_within_limit": false
+          },
+          "mask_drift_max": 0.0,
+          "move_box_violation_max": 0.0,
+          "occupancy": {
+            "cells_gt_0.3": 1009,
+            "cells_gt_0.4": 1002,
+            "cells_gt_0.5": 990,
+            "cells_gt_0.6": 980,
+            "fraction_gt_0.3": 0.07006944444444445,
+            "fraction_gt_0.4": 0.06958333333333333,
+            "fraction_gt_0.5": 0.06875,
+            "fraction_gt_0.6": 0.06805555555555555,
+            "total_active": 14400
+          },
+          "occupancy_parent": {
+            "cells_gt_0.3": 980,
+            "cells_gt_0.4": 972,
+            "cells_gt_0.5": 963,
+            "cells_gt_0.6": 956,
+            "fraction_gt_0.3": 0.06805555555555555,
+            "fraction_gt_0.4": 0.0675,
+            "fraction_gt_0.5": 0.066875,
+            "fraction_gt_0.6": 0.06638888888888889,
+            "total_active": 14400
+          },
+          "phi_after": 0.07632566813424897,
+          "projected_volume_delta": 0.008412126764940853,
+          "reason": "discreteness_limit_exceeded",
+          "trial_downforce": null,
+          "trial_objective": null,
+          "trial_primal_converged": false,
+          "trial_run": null,
+          "volume_cap_correction_applied": true,
+          "volume_cap_kappa": -0.05252892406533983
+        },
+        {
+          "accepted": false,
+          "alpha": 0.5,
+          "bracket": null,
+          "bracket_ok": false,
+          "corrected_rho_sha256": "768b12c7e92fd24018276d605a5619752376337e8673884914746becfadae170",
+          "corrected_update_inf_norm": 0.0050000000000000044,
+          "discreteness_field": "rho_projection",
+          "discreteness_mean_nd_candidate": 0.015894573729786393,
+          "discreteness_mean_nd_max": 0.01,
+          "discreteness_mean_nd_parent": 0.008562322527443773,
+          "discreteness_scope": "transform.active",
+          "frozen_box_face_cells": 9842,
+          "gates": {
+            "projected_discreteness_within_limit": false
+          },
+          "mask_drift_max": 0.0,
+          "move_box_violation_max": 0.0,
+          "occupancy": {
+            "cells_gt_0.3": 992,
+            "cells_gt_0.4": 983,
+            "cells_gt_0.5": 973,
+            "cells_gt_0.6": 969,
+            "fraction_gt_0.3": 0.06888888888888889,
+            "fraction_gt_0.4": 0.06826388888888889,
+            "fraction_gt_0.5": 0.06756944444444445,
+            "fraction_gt_0.6": 0.06729166666666667,
+            "total_active": 14400
+          },
+          "occupancy_parent": {
+            "cells_gt_0.3": 980,
+            "cells_gt_0.4": 972,
+            "cells_gt_0.5": 963,
+            "cells_gt_0.6": 956,
+            "fraction_gt_0.3": 0.06805555555555555,
+            "fraction_gt_0.4": 0.0675,
+            "fraction_gt_0.5": 0.066875,
+            "fraction_gt_0.6": 0.06638888888888889,
+            "total_active": 14400
+          },
+          "phi_after": 0.07069614330064734,
+          "projected_volume_delta": 0.0027826019313392236,
+          "reason": "discreteness_limit_exceeded",
+          "trial_downforce": null,
+          "trial_objective": null,
+          "trial_primal_converged": false,
+          "trial_run": null,
+          "volume_cap_correction_applied": false,
+          "volume_cap_kappa": null
+        },
+        {
+          "accepted": false,
+          "alpha": 0.25,
+          "bracket": null,
+          "bracket_ok": false,
+          "corrected_rho_sha256": "98b5e7d77f9d270c1c7b970ebd8aaadf16223f433186b3f09099024a36aa2799",
+          "corrected_update_inf_norm": 0.0025000000000000022,
+          "discreteness_field": "rho_projection",
+          "discreteness_mean_nd_candidate": 0.011280557589487985,
+          "discreteness_mean_nd_max": 0.01,
+          "discreteness_mean_nd_parent": 0.008562322527443773,
+          "discreteness_scope": "transform.active",
+          "frozen_box_face_cells": 9842,
+          "gates": {
+            "projected_discreteness_within_limit": false
+          },
+          "mask_drift_max": 0.0,
+          "move_box_violation_max": 0.0,
+          "occupancy": {
+            "cells_gt_0.3": 984,
+            "cells_gt_0.4": 974,
+            "cells_gt_0.5": 972,
+            "cells_gt_0.6": 964,
+            "fraction_gt_0.3": 0.06833333333333333,
+            "fraction_gt_0.4": 0.06763888888888889,
+            "fraction_gt_0.5": 0.0675,
+            "fraction_gt_0.6": 0.06694444444444445,
+            "total_active": 14400
+          },
+          "occupancy_parent": {
+            "cells_gt_0.3": 980,
+            "cells_gt_0.4": 972,
+            "cells_gt_0.5": 963,
+            "cells_gt_0.6": 956,
+            "fraction_gt_0.3": 0.06805555555555555,
+            "fraction_gt_0.4": 0.0675,
+            "fraction_gt_0.5": 0.066875,
+            "fraction_gt_0.6": 0.06638888888888889,
+            "total_active": 14400
+          },
+          "phi_after": 0.06901873825140994,
+          "projected_volume_delta": 0.0011051968821018249,
+          "reason": "discreteness_limit_exceeded",
+          "trial_downforce": null,
+          "trial_objective": null,
+          "trial_primal_converged": false,
+          "trial_run": null,
+          "volume_cap_correction_applied": false,
+          "volume_cap_kappa": null
+        },
+        {
+          "accepted": true,
+          "alpha": 0.125,
+          "bracket": {
+            "d_adj": -35.36191990780431,
+            "d_fd": -34.783047931249975,
+            "details": {
+              "difference": 0.055652876689999964,
+              "noise_floor_abs": 1e-06
+            },
+            "direction_inf_norm": 0.0012500000000000011,
+            "epsilon": 0.0008,
+            "minus_objective": -2.24868324915,
+            "minus_rho_sha256": "b77354d43394060dd4a741352517944b92e19ee49bd628778b3ddaa2ea063add",
+            "ok": true,
+            "plus_objective": -2.30433612584,
+            "plus_rho_sha256": "e6c5ef2cfd843e8c896a089dd3ddd1bbe375b1c7df637f2e2b6e66b5712fbdba",
+            "reason": "descent_sign_match"
+          },
+          "bracket_ok": true,
+          "corrected_rho_sha256": "c0441ff5551c7e4cb95ee1d34040f4c3e04f885c5f317a80f79408867ba4a7ac",
+          "corrected_update_inf_norm": 0.0012500000000000011,
+          "discreteness_field": "rho_projection",
+          "discreteness_mean_nd_candidate": 0.009736849917835135,
+          "discreteness_mean_nd_max": 0.01,
+          "discreteness_mean_nd_parent": 0.008562322527443773,
+          "discreteness_scope": "transform.active",
+          "frozen_box_face_cells": 9842,
+          "gates": {
+            "canonical_objective_improved": true,
+            "corrected_update_above_machine_scale": true,
+            "d_adj_negative": true,
+            "d_fd_below_negative_noise_floor": true,
+            "extractability_guard": true,
+            "mask_invariance": true,
+            "move_box_respected": true,
+            "projected_discreteness_within_limit": true,
+            "projected_volume_within_v_max": true,
+            "raw_downforce_improved": true,
+            "sign_match": true,
+            "trial_primal_converged": true
+          },
+          "mask_drift_max": 0.0,
+          "move_box_violation_max": 0.0,
+          "occupancy": {
+            "cells_gt_0.3": 980,
+            "cells_gt_0.4": 976,
+            "cells_gt_0.5": 968,
+            "cells_gt_0.6": 960,
+            "fraction_gt_0.3": 0.06805555555555555,
+            "fraction_gt_0.4": 0.06777777777777778,
+            "fraction_gt_0.5": 0.06722222222222222,
+            "fraction_gt_0.6": 0.06666666666666667,
+            "total_active": 14400
+          },
+          "occupancy_parent": {
+            "cells_gt_0.3": 980,
+            "cells_gt_0.4": 972,
+            "cells_gt_0.5": 963,
+            "cells_gt_0.6": 956,
+            "fraction_gt_0.3": 0.06805555555555555,
+            "fraction_gt_0.4": 0.0675,
+            "fraction_gt_0.5": 0.066875,
+            "fraction_gt_0.6": 0.06638888888888889,
+            "total_active": 14400
+          },
+          "phi_after": 0.0684122930544652,
+          "projected_volume_delta": 0.0004987516851570756,
+          "reason": "accepted",
+          "trial_downforce": 2.32152697653,
+          "trial_objective": -2.32152697653,
+          "trial_primal_converged": true,
+          "trial_run": {
+            "adjoint_iterations": null,
+            "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v12_entry_preflight/runs/trial_3603a5b04721/case",
+            "downforce_coefficient": 2.32152697653,
+            "primal_iterations": 105,
+            "reused": false,
+            "solver_status": "converged",
+            "source_rho_sha256": "d4dfdd7b3833635a7defd9d982dafcd6c43d18c707e4495eaa6b63ebb484b003",
+            "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v12_entry_preflight/runs/trial_3603a5b04721/case/fixed_grid_primal_summary.json",
+            "summary_sha256": "70f3f49db5e22e1916770424b69b617f5940882f1e6317e532327a4187aafa63"
+          },
+          "volume_cap_correction_applied": false,
+          "volume_cap_kappa": null
+        }
+      ],
+      "corrected_rho_sha256": "c0441ff5551c7e4cb95ee1d34040f4c3e04f885c5f317a80f79408867ba4a7ac",
+      "ladder": [
+        1.0,
+        0.5,
+        0.25,
+        0.125,
+        0.0625
+      ],
+      "policy_id": "objective-oc-inequality-v2",
+      "successful": true
+    }
+  },
+  "summary": {
+    "entry_preflight_pass": true,
+    "long_campaign_started": false
+  },
+  "transform_checks": {
+    "active_cells": 14400,
+    "field": "rho_projection",
+    "mean_nd_max": 0.01,
+    "mean_nd_parent": 0.008562322527443773,
+    "mean_nd_parent_within_limit": true,
+    "projected_volume_parent": 0.06791354136930812,
+    "scope": "active"
+  }
+}

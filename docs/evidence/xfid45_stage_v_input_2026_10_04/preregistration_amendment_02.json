@@ -1,0 +1,8 @@
+{
+ "amendment_id": "XFID45-STAGEV-INPUT-01-AMEND-02",
+ "date": "2026-10-04",
+ "parent_preregistration": "docs/evidence/xfid45_stage_v_input_2026_10_04/preregistration.json",
+ "reason": "the independent recomputation (written from the registered text only) matched every gate, component removal and triangle-coordinate byte of the STLs, but its STL sha256 values differed from the build script's because the script computed the STL unit normals from float32-rounded vertices, contrary to the registered rule 'unit normals from the float64 triangle'. Triangle coordinate arrays were verified bit-identical; only the normal field differed (max abs difference 0.15).",
+ "change": "script defect fix to match the registered stl_format rule; no gate, threshold, input, removal rule or coordinate change. The result of the run after this amendment supersedes the earlier STL hashes.",
+ "script_sha256_after_amendment": "d8dcb1983dddf877a9aa6b0639dd80e81bad0a77a48e3930682fa7cfef680aac"
+}

@@ -1,0 +1,36 @@
+{
+  "kind": "pq4_extraction_sweep_manifest",
+  "created": "2026-09-22",
+  "registered_before_computation": true,
+  "candidate": {
+    "id": "pq3_v5_final",
+    "rho_sha256": "ad96e1dc92227cfe06232728b4aa15e1239e6ad133a91ecc76dd1553f4540a00",
+    "iteration": 3,
+    "downforce": 0.995099373413
+  },
+  "thresholds": [
+    0.2,
+    0.3,
+    0.4,
+    0.5
+  ],
+  "selection_rule": {
+    "kind": "registered_range_first_that_passes",
+    "range": [
+      0.2,
+      0.5
+    ]
+  },
+  "gates": [
+    "volume relative difference",
+    "watertight",
+    "positive volume",
+    "component count",
+    "revoxelized mask/component checks"
+  ],
+  "ready_for_stage_s": "only a threshold passing every gate; otherwise the candidate is not Stage S-ready",
+  "stop_conditions": [
+    "no post-hoc threshold choice",
+    "failed thresholds stay as explicit rows"
+  ]
+}

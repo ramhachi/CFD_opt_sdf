@@ -1,0 +1,69 @@
+{
+  "artifacts": {
+    "error_txt_sha256": "22750269c1809718332712e5e87b50ef7e186abb3c9be3372e5829bf079b03a0",
+    "exact_kaggle_logs_sha256": "144e8bfcbe2fe03bfa980ed869ff1034a4a56f33a93e05dbe1d0784e207c5fdb",
+    "fingerprint_sha256": "4b29d856cd2b937318c84b94388a0fd0992907428a82bc6694521d13da39805b",
+    "input_mount_inventory_sha256": "c3b36444833b81db7255eeb8a34e9dcdb58c2677a112b9ecb9e2972e58853855",
+    "julia_smoke_log_sha256": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+    "julia_type_probe_log_sha256": "84138b04c3b650a6a3567caa8909e83f5ea7fd139e768a4e7aa15189c748986f",
+    "kaggle_downloaded_log_file_sha256": "2612687fabaf266a472d70e9578ce1ad8a79d238d2263c537eb78cef2f8e7401",
+    "kaggle_terminal_status_sha256": "ac9345d566d5d4338ce684e46023d770e5543eea4d54c486847092182ef721ca",
+    "output_sha256_manifest_sha256": "c400b222a64bded7bae969fbe83a4c60659d7cb017b17cda92b847180149064c"
+  },
+  "backend_observed": {
+    "cuda_driver_api_version": "13.3.0",
+    "cuda_jl_version": "6.3.1",
+    "cuda_runtime_version": "12.8.0",
+    "cuda_smoke_sha256": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+    "cuda_visible_devices": "0",
+    "gpu_inventory": [
+      "0, Tesla T4, GPU-f2ada0b4-6032-a1f8-7034-d46938daec15, 15360 MiB, 580.159.04",
+      "1, Tesla T4, GPU-453e7472-9d79-583c-811a-337d18e73ce8, 15360 MiB, 580.159.04"
+    ],
+    "julia_version": "1.12.6",
+    "selected_gpu_uuid": "GPU-f2ada0b4-6032-a1f8-7034-d46938daec15",
+    "waterlily_version": "1.8.0"
+  },
+  "claim_scope": "T4 setup and source reached the exact type-report code, but runtime type identity was not durably recorded; no solver or qualification claim.",
+  "criteria_path": "docs/evidence/kaggle_w3_owner_type_probe_criteria_2026_09.json",
+  "criteria_sha256": "4750e8a8d893a60b9e30d452b8cd211e0ca376d81adbd6d811553110716c9c93",
+  "evidence_id": "kaggle_w3_owner_type_probe_version1_diagnostic_2026_09",
+  "evidence_type": "diagnostic_only_infrastructure_failure",
+  "exact_kernel_ref": "ramhachi888/cfd-opt-sdf-w3-owner-type-probe/1",
+  "execution": {
+    "canonical_w3_input_manifest_verification_succeeded": true,
+    "criteria_dataset_manifest_verification_succeeded": true,
+    "criteria_discovery_succeeded": true,
+    "criteria_sidecar_check_succeeded": true,
+    "cuda_smoke_reached": true,
+    "exact_exception": "MethodError: no method matching json_value(::Vector{Int64}); json_value(::AbstractArray) was missing while serializing owner.size.",
+    "failure_stage": "Julia type-identity report serialization",
+    "gpu_inventory_reached": true,
+    "gpu_phi_roundtrip_completed_before_report_serialization": true,
+    "julia_setup_reached": true,
+    "julia_type_probe_job_started": true,
+    "measured_type_identity_persisted": false,
+    "owner_CuArray_constructed": true,
+    "solver_steps": 0,
+    "source_fetch_reached": true
+  },
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w3-owner-type-probe",
+  "kernel_version": 1,
+  "qualification_flags": {
+    "physical_profile_qualified": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "waterlily_v16_primal_qualified": false
+  },
+  "schema_version": 1,
+  "source_commit": "f5373e8e4656b55de4b1902b01d29ffca24c99de",
+  "source_file_sha256": {
+    "host_verifier": "0a2cfe9fe18b7b4ef94e22d57f9758e3162fffeb6f44bafc596f711f6e383477",
+    "probe_job": "1a8ce428ae144cfcecca5038e354d810cc6f4950248b94e2944fb1b869ae0797",
+    "runner": "89a960b46e9a0da0d23318fe8465d8047cf4fb06d685765fa36fd842e11c579d"
+  },
+  "terminal_status": "KernelWorkerStatus.ERROR"
+}

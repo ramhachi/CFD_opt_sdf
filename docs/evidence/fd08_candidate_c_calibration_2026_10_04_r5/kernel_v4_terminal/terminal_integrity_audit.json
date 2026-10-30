@@ -1,0 +1,117 @@
+{
+  "aggregate_solver_wall_time_limit_s": 5400.0,
+  "aggregate_solver_wall_time_observed_s": 5109.380774259567,
+  "aggregate_solver_wall_time_within_registered_limit": true,
+  "audited_at_utc": "2026-10-05T08:23:12.107079+00:00",
+  "calibration_verdict": "NOT_ISSUED",
+  "catalog_creation_dates": [
+    "5:50 am, Monday 5 October 2026 UTC"
+  ],
+  "catalog_names_match_download": true,
+  "criteria_sha256_expected": "928292ca1911875a564e74ffbe64b7d3d4790d9e49b81272ed39dedd9ebdce6c",
+  "criteria_sha256_in_result": "928292ca1911875a564e74ffbe64b7d3d4790d9e49b81272ed39dedd9ebdce6c",
+  "dataset_audit": {
+    "criteria_sha256": "928292ca1911875a564e74ffbe64b7d3d4790d9e49b81272ed39dedd9ebdce6c",
+    "dataset_root": "/Users/sota/.codex/worktrees/issue45-root-certifier-integration/work/fd08_r5_remote_download_2026_10_05",
+    "inventory_sha256": "593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954",
+    "verified_file_count": 89
+  },
+  "download_transcript_output_line_count": 246,
+  "downloaded_runner_file_count": 246,
+  "evidence_class": "complete_solver_terminal_and_artifact_integrity_only_no_scientific_analysis",
+  "exact_log_archive_metadata_sha256": "ffeb65304cf5ced6ef1aa5fd4bc5b4b1c03108703a8763c8041653ee5b64a61c",
+  "expected_state_count": 47,
+  "kaggle_output_catalog_entry_count": 246,
+  "kaggle_output_catalog_page1_sha256": "6c27234d872dca40ffb7d37cf9eb8a67803489021b3e066639280d6fa92c9e01",
+  "kaggle_output_catalog_page2_sha256": "58eed093c62d1010033181f64f90d023987b6e598e2a2f22b292c2c40fa83e7d",
+  "kaggle_output_catalog_sha256": "5d785a64bdba287bd562e2a3b23d22ad8866ace27aa5ef2706520679def23308",
+  "kaggle_output_download_archive_metadata_sha256": "ec5e195bca54973b08d22a6ce0c226b2584d8ff1e7119119847f48fd57cafc73",
+  "kaggle_output_download_archive_sha256": "d68d986af3e857de76e9c36d19de703083d5fe970b20e043418109b263117d96",
+  "kaggle_status": "ramhachi888/cfd-opt-sdf-fd08-calibration-kernel has status \"KernelWorkerStatus.COMPLETE\"",
+  "kaggle_terminal_log_archive_metadata_sha256": "a9c44cdbecd739ae4190d2c4c229ea06397240f2f17d7e3f119ab63c15ccbe8c",
+  "kaggle_terminal_log_archive_sha256": "801c0aa3036976c3bb167c8776b219c87d44576981959695fcb76e865343e11d",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-calibration-kernel",
+  "kernel_output_log_path": "cfd-opt-sdf-fd08-calibration-kernel.log",
+  "kernel_output_log_sha256": "75f63b13130f248d6c1632b9cc49e28d001375da43dab4ecf357981d0dd74c96",
+  "kernel_version": 4,
+  "kind": "fd08_r5_calibration_kernel_terminal_integrity_audit",
+  "maximum_case_solver_wall_time_observed_s": 110.08135890960693,
+  "observed_state_count": 47,
+  "per_case_wall_time_limit_s": 1800.0,
+  "per_case_wall_time_within_registered_limit": true,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "runner_all_states_completed": true,
+  "runner_elapsed_s": 8596.543698714,
+  "runner_manifest_audit": {
+    "inventory_sha256": "6225f8f94f68ae1ba9c91fadc9f062e346416b1c7c4703c7f8eb3c6993b102d6",
+    "manifest_path": "/Users/sota/.codex/worktrees/issue45-root-certifier-integration/docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/kernel_v4_terminal/fd08_calibration/sha256.json",
+    "manifest_sha256": "1b04c3c2243459d2889dc16aa0f3c02c2ff6a5555a64406bb8177b9ee0b8600e",
+    "terminal_marker_path": "/Users/sota/.codex/worktrees/issue45-root-certifier-integration/docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/kernel_v4_terminal/fd08_calibration/DONE",
+    "terminal_marker_sha256": "90ce87131acaaace1a61b8864ec031afc88ebef5132c77907961f1996ebb0f35",
+    "terminal_status_counts": {
+      "COMPLETED": 47
+    },
+    "verified_file_count": 244
+  },
+  "runner_per_state_process_timeout_s": 5400,
+  "runner_sha256_expected": "508f818d638691f421961103aabd3c6c183b72fab9d128d343f3091ab4d13dd8",
+  "runner_sha256_in_result": "508f818d638691f421961103aabd3c6c183b72fab9d128d343f3091ab4d13dd8",
+  "runtime_artifact_audit": {
+    "driver_version_recorded_not_gated": "580.178.04",
+    "gpu_inventory_path": "nvidia_smi.csv",
+    "gpu_inventory_sha256": "824fcceb8fb7db0c636fc8a1f00a2f46b9deaf1393f1dc74d738c6fb86895400",
+    "gpu_rows": [
+      [
+        "0",
+        "Tesla T4",
+        "GPU-b0031612-4d1e-f20e-7735-3e306741e5e9",
+        "15360 MiB",
+        "580.178.04"
+      ],
+      [
+        "1",
+        "Tesla T4",
+        "GPU-71612c0c-f605-8495-a736-fce98abd41f3",
+        "15360 MiB",
+        "580.178.04"
+      ]
+    ],
+    "gpu_uuid_policy": "recorded_for_each_kernel; physical T4 UUID is not a cross-kernel equality gate",
+    "julia_smoke_path": "julia_smoke.log",
+    "julia_smoke_sha256": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+    "pinned_smoke_markers": [
+      "W0B_SMOKE_DONE",
+      "CUDA_FUNCTIONAL true",
+      "GPU_COMPUTE_CAPABILITY 7.5.0",
+      "CUDA_DRIVER_VERSION 13.3.0",
+      "CUDA_RUNTIME_VERSION 12.8.0",
+      "JULIA_VERSION 1.12.6",
+      "CUDA_JL_VERSION 6.3.1",
+      "WATERLILY_VERSION 1.8.0",
+      "GPU_NAME Tesla T4",
+      "NO_SOLVER_STEP"
+    ],
+    "selected_gpu_uuid": "GPU-b0031612-4d1e-f20e-7735-3e306741e5e9"
+  },
+  "scientific_analysis_run": false,
+  "source_commit_expected": "95bd9cbf8e67f0c718e346f7edca3f343ed1091f",
+  "source_commit_in_result": "95bd9cbf8e67f0c718e346f7edca3f343ed1091f",
+  "source_inputs_match_registered": true,
+  "state_inventory_exact": true,
+  "state_status_counts": {
+    "COMPLETED": 47
+  },
+  "submission_preflight_sha256": "f1236e43ab3f3fac8ed93e34cc51a056c5ff43ae98ab5e1660550f252dfa2d26",
+  "terminal_log_event_count": 59,
+  "terminal_logs_max_elapsed_s": 8602.939200362,
+  "terminal_logs_raw_sha256": "97894e3722408f631f4190925cd9296631394d7c7afbc2609f5cab9f336341e2",
+  "terminal_status_sha256": "10a2bb7e50a58ec37b0f444439b89b8c8280077148fcd36f00ef9683d18fe4fa",
+  "verified_source_input_count": 29
+}

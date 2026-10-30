@@ -1,0 +1,66 @@
+{
+  "kind": "wp6_2_scope_repair_manifest",
+  "created": "2026-09-21",
+  "supersedes": "reachable_set_ranking_manifest.json (claim scope only; the historical file is not rewritten)",
+  "declared_min_width_m": 0.15,
+  "excluded_shape_ids": [
+    "plate_a20_t05",
+    "plate_a20_t10",
+    "wing_endplate_a20",
+    "wing_gurney_a20",
+    "wing_two_element"
+  ],
+  "reachable_claim_candidates": "registered shapes minus excluded_shape_ids",
+  "extraction_sensitivity_status": {
+    "reachable_set_8/downforce/V1": "not_measured",
+    "reachable_set_8/drag/V1": "not_measured",
+    "reachable_set_8/downforce/V2": "not_measured",
+    "reachable_set_8/drag/V2": "not_measured",
+    "combined_pool_17_after_policy_exclusion/downforce/V1/17pool": "not_measured",
+    "combined_pool_17_after_policy_exclusion/drag/V1/17pool": "not_measured",
+    "combined_pool_17_after_policy_exclusion/downforce/V2/17pool": "not_measured",
+    "combined_pool_17_after_policy_exclusion/drag/V2/17pool": "not_measured"
+  },
+  "claim_status": "provisional",
+  "required_pair_policy": "pre-registered pairs only; unresolvable pairs remain explicit rows and never disappear silently",
+  "candidate_specific_uncertainty": {
+    "wing_camber_bent": {
+      "downforce_abs": 0.03760100210971784,
+      "drag_coefficient_rel": 0.034
+    },
+    "wing_chord03_a20": {
+      "downforce_abs": 0.01590066173805238,
+      "drag_coefficient_rel": 0.034
+    },
+    "wing_endplate_a20": {
+      "downforce_abs": 0.022307783292808137,
+      "drag_coefficient_rel": 0.034
+    },
+    "wing_flat_ctrl_c30": {
+      "downforce_abs": 0.0147,
+      "drag_coefficient_rel": 0.05774643326755256
+    },
+    "wing_gurney_a20": {
+      "downforce_abs": 0.0147,
+      "drag_coefficient_rel": 0.034
+    },
+    "wing_tandem_xoff": {
+      "downforce_abs": 0.0147,
+      "drag_coefficient_rel": 0.034
+    },
+    "wing_thick_a20": {
+      "downforce_abs": 0.020277285245178467,
+      "drag_coefficient_rel": 0.034
+    },
+    "wing_two_element": {
+      "downforce_abs": 0.016630966040096617,
+      "drag_coefficient_rel": 0.034
+    }
+  },
+  "source_artifacts": {
+    "manifest": "work/fixed_shape_ranking_2026_09/reachable_set_ranking_manifest.json",
+    "reachable_evidence": "docs/evidence/reachable_set_cross_fidelity_ranking_2026_09.json",
+    "first_program_evidence": "docs/evidence/fixed_shape_cross_fidelity_ranking_2026_09.json",
+    "registry_dir": "work/fixed_shape_ranking_2026_09/shapes_reachable"
+  }
+}

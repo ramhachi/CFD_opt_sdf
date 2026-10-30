@@ -1,0 +1,246 @@
+{
+  "accepted_count_carryover": {
+    "level_3_b128_margin": 10
+  },
+  "cap_stationarity_exit": {
+    "all_candidates_rejected_as": [
+      "machine_scale_update_rejected",
+      "projected_volume_limit_exceeded"
+    ],
+    "does_not_claim_convergence": true,
+    "enabled": true,
+    "id": "cap-stationarity-exit",
+    "independent_repeat": true,
+    "last_accepted_objective_delta_max": 0.0001,
+    "min_accepted_iterations": "cumulative accepted count for the level including the registered carryover",
+    "reproducibility_tolerance": 1e-06
+  },
+  "carryover_metrics": [
+    {
+      "objective_delta_abs": 0.012487713260000088,
+      "projected_field_mean_abs_delta": 0.00027863081452917114,
+      "projected_volume_delta_abs": 0.0002639386291506951
+    },
+    {
+      "objective_delta_abs": 0.013277404970000184,
+      "projected_field_mean_abs_delta": 0.0003029104267682738,
+      "projected_volume_delta_abs": 0.0002848850491702498
+    },
+    {
+      "objective_delta_abs": 0.015386196239999705,
+      "projected_field_mean_abs_delta": 0.00033077877005904485,
+      "projected_volume_delta_abs": 0.0003029135603101335
+    }
+  ],
+  "change": {
+    "description": "the v15 learning campaign stopped at its registered budget while still improving; v16 continues the same b=128 margin level from the recorded checkpoint 10 without transforming the state, carries over the cumulative accepted count and the last three accepted metrics so the registered convergence window is evaluated, and enables the cap-stationarity exit and the independent terminal repeat that v15 explicitly did not evaluate",
+    "does_not_relax": [
+      "the 0.25 m clearance profile, the 0.01 discreteness bound, the volume cap and every threshold",
+      "the PQ4.1 composite gate requirements"
+    ],
+    "evidence": {
+      "v15_accepted_this_campaign": 10,
+      "v15_convergence_window_observed": false,
+      "v15_fresh_attempts": 10,
+      "v15_last_objective_deltas_abs": [
+        0.012487713260000088,
+        0.013277404970000184,
+        0.015386196239999705
+      ],
+      "v15_mean_nd": 0.003213044195919047,
+      "v15_projected_volume": 0.06406567400358908,
+      "v15_stop_status": "paused_learning_budget",
+      "v15_v_max_fraction": 0.8393725933837114
+    },
+    "id": "b128-continuation-from-v15-checkpoint-10"
+  },
+  "claims_not_supported": [
+    "the continuation is registered, not yet qualified",
+    "no convergence, terminal or Stage S readiness claim in this registration"
+  ],
+  "convergence": {
+    "note": "thresholds and the window are unchanged from v15; the last three v15 accepted metrics are carried over, so the window is evaluated across the v15/v16 boundary",
+    "objective_delta_abs_max": 0.0001,
+    "projected_field_mean_abs_delta_max": 0.001,
+    "projected_volume_delta_abs_max": 0.001,
+    "window_accepted": 3,
+    "window_reset": false
+  },
+  "entry_preflight": {
+    "artifact_path": "docs/evidence/pq3_3b_v16_entry_preflight_2026_09.json",
+    "requirement": "must pass before the v16 campaign",
+    "script_path": "scripts/pq3_3b_v16_entry_preflight_2026_09.py",
+    "script_sha256": "aeaf8b390a4a160c59b0cce9ee9085251f357aa151927404e650cd5d467d25c7"
+  },
+  "filter_radius_m": 0.15,
+  "immutable": true,
+  "input_stop_state": {
+    "level": "level_3_b128_margin",
+    "rho_file_sha256": "52e791d520f7dff1df1d347e78ba3d875c0b9addf9366311fc027be1b07d118f",
+    "rho_path": "work/pq3_3b_campaign_v15/checkpoints/rho_0010.npy",
+    "rho_sha256": "00efe715f32c46f8d55a7ace599936ce61613cdfcaa2b8ff35270db8dd711f31",
+    "source": "recorded v15 final accepted checkpoint (checkpoint 10, paused_learning_budget); used unchanged",
+    "state_path": "work/pq3_3b_campaign_v15/checkpoints/state_0010.json",
+    "state_sha256": "b9b0f10e07a2528f94386c99419a50205265f040fa20132ca58d3c531904926e"
+  },
+  "kind": "pq3_3b_campaign_manifest_v16",
+  "levels": [
+    {
+      "b": 128.0,
+      "max_attempts": 90,
+      "min_accepted_iterations": 10,
+      "move_limit": 0.01,
+      "name": "level_3_b128_margin",
+      "q": 100.0
+    }
+  ],
+  "margin_mask": {
+    "rule": "v10-qualified |y_center| <= 0.475",
+    "state": "work/pq3_3b_margin_masks/topology_state.json",
+    "state_sha256": "146bc2f77178456784f2806fb7807be21a7886cea7962639bd768ac37fd01444"
+  },
+  "noise_thresholds": {
+    "downforce": 1e-06,
+    "objective": 1e-06
+  },
+  "objective": {
+    "canonical": "J = -downforce",
+    "sense": "maximize",
+    "sense_sign": -1
+  },
+  "openfoam_image": "opencfd/openfoam-default:2512",
+  "openfoam_image_id": "sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319",
+  "output_directory": "work/pq3_3b_campaign_v16",
+  "path_b": {
+    "epsilon": 0.0008,
+    "noise_floor_abs": 1e-06,
+    "requires_centered_pair": true
+  },
+  "phase1_policy": {
+    "ascent_only": true,
+    "formation_target": 0.018,
+    "id": "projected-volume-restoration-oc",
+    "unchanged_from_v5": true
+  },
+  "phase2_policy": {
+    "alpha_ladder": [
+      1.0,
+      0.5,
+      0.25,
+      0.125,
+      0.0625
+    ],
+    "discreteness_field": "rho_projection",
+    "discreteness_mean_nd_max": 0.01,
+    "discreteness_metric": "mean(4*rho*(1-rho))",
+    "discreteness_scope": "active",
+    "extractability_fraction": 0.5,
+    "extractability_thresholds": [
+      0.4,
+      0.5
+    ],
+    "freeze_exact_box_faces": true,
+    "id": "objective-gradient-discreteness-projected-v1",
+    "min_corrected_update_inf_norm": 1e-08,
+    "module": "src/cfd_sdf/phase2_discreteness_direction.py",
+    "no_joint_volume_projection": true,
+    "response_level_ladder": true,
+    "stop_when_no_transform_candidate_satisfies_d_and_v": true,
+    "support_box": {
+      "x": [
+        -0.675,
+        1.675
+      ],
+      "y": [
+        -0.475,
+        0.475
+      ],
+      "z": [
+        -0.275,
+        0.275
+      ]
+    },
+    "volume_cap_correction": false
+  },
+  "pinned_evidence": {
+    "campaign_v15_outcome": {
+      "path": "docs/evidence/pq3_3b_campaign_v15_outcome_2026_09.json",
+      "sha256": "6c4496c5925233aa1060651346ca3b5a0e9ef0aec07b3ecb0fbda21d5b184e0d"
+    },
+    "manifest_v15": {
+      "path": "docs/evidence/pq3_3b_campaign_manifest_v15_2026_09.json",
+      "sha256": "4a46c740dd4fd2f350326b82bab90a67c64e8bb2de1334bc3bb563b2d2e5ceda"
+    },
+    "p20_volume_calibration_correction": {
+      "path": "docs/evidence/pq4_volume_fidelity_calibration_correction_2026_09.json",
+      "sha256": "d701f9bea08ca62b2ffb3c01e61af2aaf9b73a93f8aa0146f7e31815ba9ff614"
+    },
+    "pq4_1_v15_state": {
+      "path": "docs/evidence/pq4_1_v15_state_stage_s_entry_2026_09.json",
+      "sha256": "1fd35dfd3122de3d0cd14ef50c3b4dab881cfb5ab9e839c323e1413b220c452a"
+    }
+  },
+  "plan": {
+    "first_transform_feasible_only": false,
+    "per_accepted_step": "evaluate a fresh parent/adjoint request, then recompute objective and discreteness gradients and the free-cell set",
+    "response_backtracking": true,
+    "response_failure_action": "continue to the next smaller transform-feasible alpha only after Path B passes and the trial response gates fail; a Path B failure stops the attempt fail-closed, and transform-infeasible alphas never consume solver calls",
+    "result_semantics": "the level exits by the registered convergence window or the cap-stationarity exit; the terminal record is not a Stage S qualification and a fresh PQ4.1 judgment is required",
+    "scope": "unrestricted continuation of the b=128 margin level from the recorded v15 checkpoint 10 (no state transformation)"
+  },
+  "previous_registrations": {
+    "campaign_v15_outcome": {
+      "path": "docs/evidence/pq3_3b_campaign_v15_outcome_2026_09.json",
+      "sha256": "6c4496c5925233aa1060651346ca3b5a0e9ef0aec07b3ecb0fbda21d5b184e0d"
+    },
+    "manifest_v15": {
+      "path": "docs/evidence/pq3_3b_campaign_manifest_v15_2026_09.json",
+      "sha256": "4a46c740dd4fd2f350326b82bab90a67c64e8bb2de1334bc3bb563b2d2e5ceda"
+    },
+    "pq4_1_v15_state": {
+      "path": "docs/evidence/pq4_1_v15_state_stage_s_entry_2026_09.json",
+      "sha256": "1fd35dfd3122de3d0cd14ef50c3b4dab881cfb5ab9e839c323e1413b220c452a"
+    }
+  },
+  "projection_eta": 0.5,
+  "registered_inputs": {
+    "canonical_grid": {
+      "path": "work/pq3_3b_margin_masks/topology_state.json",
+      "sha256": "146bc2f77178456784f2806fb7807be21a7886cea7962639bd768ac37fd01444"
+    },
+    "noise_calibration": {
+      "path": "docs/evidence/pq3_3b_noise_calibration_v3_2026_09.json",
+      "sha256": "3439b291a261ca0086fc259fe9703bd52c8525d032aa53b7cbffc9441374ab3b"
+    },
+    "problem_spec": {
+      "path": "work/pq0_2_smoke/project_downforce_volume.yaml",
+      "sha256": "90314ab78073330a784939b3fe03c24319d217f564d3ebad4dea9a29c82d75fe"
+    },
+    "solver_controls": {
+      "path": "work/df2_fd_refresh/template_frozen/system",
+      "sha256": "ab9a1979361ac26058c9da190e94aa85500f8ff8b48770dd67aad26e3ae63b9b"
+    },
+    "source_grid": {
+      "path": "work/df2_fd_refresh/source_state/provenance.json",
+      "sha256": "04ab53dbce816fbac6794285c09a70dced56a137a5e695315fb2018ec565a9e4"
+    },
+    "template_parent": {
+      "path": "work/df2_fd_refresh/template_frozen",
+      "sha256": "4cd0431d38f985ddc79a3afd45c60f379ff89fc8f30977e6c8b86b53d0448f46"
+    },
+    "template_trial": {
+      "path": "work/pq0_2_smoke/template_trial",
+      "sha256": "87a501c077ed33d9d23bc2b7a1c05314a6b99297b5d47c929a924334d8e45cdf"
+    }
+  },
+  "registered_target": 0.018,
+  "reject_stop_count": 1,
+  "restoration_step_cap": 60,
+  "resume_rule": "resume only from a verified v16 checkpoint while below the registered attempt budget",
+  "schema_version": 12,
+  "source_tree_python_sha256": "c1dec02a7a40a1b5f8b1665fcf9e7da55a50bed89f06cd9fc8e21370edc8dcac",
+  "status": "registered_preflight_pending",
+  "terminal_rule": "the level exits by the registered convergence window or the cap-stationarity exit with at least ten cumulative accepted steps; then an independent repeat primal on the final rho with only the original projected V<=Vmax gate; the terminal record is not a Stage S qualification and a fresh PQ4.1 composite judgment on the repaired gate is required",
+  "v_max_projected": 0.07632566813424899,
+  "volume_tolerance": 0.0001
+}

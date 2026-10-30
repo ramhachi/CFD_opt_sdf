@@ -1,0 +1,49 @@
+{
+  "kind": "pq1_third_source_grid_manifest",
+  "created": "2026-09-22",
+  "registered_before_computation": true,
+  "status": "registered_not_run",
+  "question": "does a third source-grid level (128x64x64) continue the ratio trend toward 1 at the coarse canonical parameterization?",
+  "prerequisites": {
+    "canonical_refined_result": "docs/evidence/pq1_canonical_refined_2026_09.json",
+    "source_grid_refined_tight": "docs/evidence/pq1_source_grid_refined_tight_2026_09.json",
+    "mesh_gate": "measured_pass on the 64x32x32 source grid"
+  },
+  "fixed_conditions": {
+    "canonical_grid": "60x32x24 (0.05), coarse",
+    "source_grid": "128x64x64 (spacing /2 on each axis)",
+    "template": "template_frozen (regularise false, maxInitChange 0)",
+    "residual": "primal 5e-9, nIters 5000",
+    "epsilons": [
+      0.0001,
+      0.0003,
+      0.001,
+      0.003
+    ],
+    "directions": [
+      "gradient_aligned",
+      "random_seed_11",
+      "random_seed_2026"
+    ]
+  },
+  "required_new_artifacts": [
+    "new blockMeshDict + cell-order mapping + qualified transfer and injection on the refined source grid",
+    "one parent (primal+adjoint) base run",
+    "the 24 registered perturbation rows"
+  ],
+  "metric": {
+    "primary": "FD/analytic ratio per direction",
+    "secondary": "plateau spread, sign, mesh gate"
+  },
+  "decision": "three levels of evidence: if the ratio keeps moving toward 1 and plateaus stay tight, register the trend; if it flattens above 1, the continuous-adjoint formulation needs revision; no Richardson/GCI from these levels",
+  "joint_refinement_requirement": "future production configurations must refine the canonical and source grids together; the canonical-only refinement worsened the random-direction ratios",
+  "stop_conditions": [
+    "no threshold change after seeing results",
+    "mesh gate measured before the campaign"
+  ],
+  "budget": {
+    "base_runs": 1,
+    "perturbation_runs": 24,
+    "note": "128x64x64 is ~16x the coarse source grid per run"
+  }
+}

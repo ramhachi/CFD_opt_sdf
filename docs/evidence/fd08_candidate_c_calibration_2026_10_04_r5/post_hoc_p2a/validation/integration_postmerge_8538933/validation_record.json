@@ -1,0 +1,20 @@
+{
+  "evidence_class": "post_merge_software_validation",
+  "tested_commit_sha": "853893307be7c6f130118b714e37611be9ea24c2",
+  "command": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q --junitxml=/tmp/fd08_p2a_integration_postmerge_20261005.xml",
+  "process_exit_code": 1,
+  "junit_counts": {
+    "tests": 1491,
+    "failures": 37,
+    "errors": 0,
+    "skipped": 9
+  },
+  "baseline_failure_ids_path": "docs/evidence/four_track_baseline_2026_10_02/failure_ids.json",
+  "baseline_failure_ids_sha256": "71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a",
+  "current_failure_ids_count": 37,
+  "new_failure_ids": [],
+  "resolved_failure_ids": [],
+  "failure_id_sets_exactly_match": true,
+  "junit_uncompressed_sha256": "b87770308e79491576e2d1fa5fd56b0acf761be675bdbbd2dbda7fbb20203b6a",
+  "junit_gzip_sha256": "99b2cd778d0afd54fb6270fca1b8a412422337d87b1a98d7393f06a3932fc801"
+}

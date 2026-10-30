@@ -1,0 +1,446 @@
+{
+  "baseline": {
+    "case_dir": "work/stage_v_v16_domain_continuation_3p2_2026_09/far_field_domain_extension_3p2/V1",
+    "checks": {
+      "block_mesh_counts": [
+        47,
+        40,
+        22
+      ],
+      "boundary": {
+        "actual": {
+          "bottom": {
+            "U": "noSlip",
+            "mesh": "wall",
+            "p": "zeroGradient"
+          },
+          "design_candidate": {
+            "U": "noSlip",
+            "mesh": "wall",
+            "p": "zeroGradient"
+          },
+          "inlet": {
+            "U": "fixedValue",
+            "mesh": "patch",
+            "p": "zeroGradient"
+          },
+          "outlet": {
+            "U": "zeroGradient",
+            "mesh": "patch",
+            "p": "fixedValue"
+          },
+          "sideMax": {
+            "U": "symmetryPlane",
+            "mesh": "symmetryPlane",
+            "p": "symmetryPlane"
+          },
+          "sideMin": {
+            "U": "symmetryPlane",
+            "mesh": "symmetryPlane",
+            "p": "symmetryPlane"
+          },
+          "top": {
+            "U": "symmetryPlane",
+            "mesh": "symmetryPlane",
+            "p": "symmetryPlane"
+          }
+        },
+        "expected": {
+          "bottom": {
+            "U": "noSlip",
+            "mesh": "wall",
+            "p": "zeroGradient"
+          },
+          "design_candidate": {
+            "U": "noSlip",
+            "mesh": "wall",
+            "p": "zeroGradient"
+          },
+          "inlet": {
+            "U": "fixedValue freestream",
+            "mesh": "patch",
+            "p": "zeroGradient"
+          },
+          "outlet": {
+            "U": "zeroGradient",
+            "mesh": "patch",
+            "p": "fixedValue"
+          },
+          "sideMax": {
+            "U": "symmetryPlane",
+            "mesh": "symmetryPlane",
+            "p": "symmetryPlane"
+          },
+          "sideMin": {
+            "U": "symmetryPlane",
+            "mesh": "symmetryPlane",
+            "p": "symmetryPlane"
+          },
+          "top": {
+            "U": "symmetryPlane",
+            "mesh": "symmetryPlane",
+            "p": "symmetryPlane"
+          }
+        },
+        "matches": false
+      },
+      "boundary_flux": {
+        "checks": {
+          "candidate_zero": true,
+          "global_closure": true,
+          "ground_zero": true,
+          "inlet_inflow": true,
+          "outlet_outflow": true,
+          "symmetry_zero": true
+        },
+        "latest_time": "700",
+        "net_flux": -4.440000367367247e-08,
+        "patches": {
+          "bottom": {
+            "count": 1,
+            "max": 0.0,
+            "min": 0.0,
+            "representation": "uniform",
+            "sum": 0.0,
+            "type": "calculated"
+          },
+          "design_candidate": {
+            "count": 1,
+            "max": 0.0,
+            "min": 0.0,
+            "representation": "uniform",
+            "sum": 0.0,
+            "type": "calculated"
+          },
+          "inlet": {
+            "count": 880,
+            "max": -0.04,
+            "min": -0.04,
+            "representation": "nonuniform",
+            "sum": -35.2,
+            "type": "calculated"
+          },
+          "outlet": {
+            "count": 880,
+            "max": 0.04561693,
+            "min": 0.0039377989,
+            "representation": "nonuniform",
+            "sum": 35.1999999556,
+            "type": "calculated"
+          },
+          "sideMax": {
+            "count": 1,
+            "max": 0.0,
+            "min": 0.0,
+            "representation": "uniform",
+            "sum": 0.0,
+            "type": "symmetryPlane"
+          },
+          "sideMin": {
+            "count": 1,
+            "max": 0.0,
+            "min": 0.0,
+            "representation": "uniform",
+            "sum": 0.0,
+            "type": "symmetryPlane"
+          },
+          "top": {
+            "count": 1,
+            "max": 0.0,
+            "min": 0.0,
+            "representation": "uniform",
+            "sum": 0.0,
+            "type": "symmetryPlane"
+          }
+        }
+      },
+      "force_patch_and_reference": {
+        "Aref": true,
+        "CofR": true,
+        "directions": true,
+        "lRef": true,
+        "magUInf": true,
+        "patches": true,
+        "rhoInf": true
+      },
+      "ground_and_domain": {
+        "block_mesh_lower_matches_spec": true,
+        "block_mesh_upper_matches_spec": true,
+        "bottom_is_wall": true,
+        "candidate_is_wall": true,
+        "location_in_mesh": [
+          -0.7,
+          0.0,
+          0.18
+        ],
+        "location_inside_domain": true
+      },
+      "metadata": {
+        "candidate_hash_matches": true,
+        "grid_bounds_match_source_spec": true,
+        "grid_spacing_matches_source_spec": true,
+        "problem_id_contains_registered_extension": false,
+        "problem_id_matches_source_spec": true,
+        "problem_spec_hash_matches_source_spec": true,
+        "source_project_matches": true
+      },
+      "operating_point": {
+        "density": true,
+        "transport_nu": true,
+        "turbulence": true,
+        "velocity": true,
+        "viscosity": true
+      },
+      "qualification": {
+        "path": "work/stage_v_v16_domain_continuation_3p2_2026_09/far_field_domain_extension_3p2/V1/stage_v_qualification.json",
+        "qualified": true
+      }
+    },
+    "metadata": {
+      "path": "work/stage_v_v16_domain_continuation_3p2_2026_09/far_field_domain_extension_3p2/V1/case_metadata.json",
+      "problem_id": "stage_sv_laminar_matched_re_domain_1p6_v2",
+      "problem_spec_sha256": "dd1039ae76aea6a2b257cd5044958815169d3051637272b629bfed2e1970e209",
+      "sha256": "0ceaf4a48137d8694f06ca2c7f7372db8dbfd164bf5398cbb9c35b3ac3128c77"
+    },
+    "pass": false,
+    "source_spec": {
+      "canonical_sha256": "dd1039ae76aea6a2b257cd5044958815169d3051637272b629bfed2e1970e209",
+      "path": "work/stage_v_v16_domain_continuation_3p2_2026_09/specs/project_matched_re_laminar_domain_extended_3p2_v1.yaml",
+      "problem_id": "stage_sv_laminar_matched_re_domain_1p6_v2"
+    }
+  },
+  "claims_not_supported": [
+    "grid-independent or absolute Stage V downforce",
+    "Stage S S2 qualification",
+    "shape update or optimization authorization"
+  ],
+  "decision": "case construction has a provenance blocker; fix the continuation identity guard before registering any new solver contract, and do not rerun OpenFOAM now",
+  "evidence_class": "diagnostic",
+  "far_field_lineage_audit": {
+    "path": "docs/evidence/stage_v_v16_far_field_contract_audit_2026_09.json",
+    "sha256": "2b8991ee6a09912fcafeb69121909e35142eb50a45ccc831e77ca10722de68ec"
+  },
+  "findings": [
+    "baseline: case_metadata.problem_id='stage_sv_laminar_matched_re_domain_1p6_v2' does not encode the registered +3.2 m case",
+    "mixed_far_field: case_metadata.problem_id='stage_sv_laminar_matched_re_domain_1p6_v2' does not encode the registered +3.2 m case"
+  ],
+  "kind": "stage_v_v16_case_construction_audit",
+  "mixed_far_field": {
+    "case_dir": "work/stage_v_v16_far_field_contract_2026_09/mixed_outer/V1",
+    "checks": {
+      "block_mesh_counts": [
+        47,
+        40,
+        22
+      ],
+      "boundary": {
+        "actual": {
+          "bottom": {
+            "U": "noSlip",
+            "mesh": "wall",
+            "p": "zeroGradient"
+          },
+          "design_candidate": {
+            "U": "noSlip",
+            "mesh": "wall",
+            "p": "zeroGradient"
+          },
+          "inlet": {
+            "U": "freestreamVelocity",
+            "mesh": "patch",
+            "p": "freestreamPressure"
+          },
+          "outlet": {
+            "U": "freestreamVelocity",
+            "mesh": "patch",
+            "p": "freestreamPressure"
+          },
+          "sideMax": {
+            "U": "freestreamVelocity",
+            "mesh": "patch",
+            "p": "freestreamPressure"
+          },
+          "sideMin": {
+            "U": "freestreamVelocity",
+            "mesh": "patch",
+            "p": "freestreamPressure"
+          },
+          "top": {
+            "U": "freestreamVelocity",
+            "mesh": "patch",
+            "p": "freestreamPressure"
+          }
+        },
+        "expected": {
+          "bottom": {
+            "U": "noSlip",
+            "mesh": "wall",
+            "p": "zeroGradient"
+          },
+          "design_candidate": {
+            "U": "noSlip",
+            "mesh": "wall",
+            "p": "zeroGradient"
+          },
+          "inlet": {
+            "U": "freestreamVelocity",
+            "mesh": "patch",
+            "p": "freestreamPressure"
+          },
+          "outlet": {
+            "U": "freestreamVelocity",
+            "mesh": "patch",
+            "p": "freestreamPressure"
+          },
+          "sideMax": {
+            "U": "freestreamVelocity",
+            "mesh": "patch",
+            "p": "freestreamPressure"
+          },
+          "sideMin": {
+            "U": "freestreamVelocity",
+            "mesh": "patch",
+            "p": "freestreamPressure"
+          },
+          "top": {
+            "U": "freestreamVelocity",
+            "mesh": "patch",
+            "p": "freestreamPressure"
+          }
+        },
+        "matches": true
+      },
+      "boundary_flux": {
+        "checks": {
+          "candidate_zero": true,
+          "freestream_outer_recorded": true,
+          "global_closure": true,
+          "ground_zero": true,
+          "inlet_inflow": true,
+          "outlet_outflow": true
+        },
+        "latest_time": "757",
+        "net_flux": 2.380357947417977e-07,
+        "patches": {
+          "bottom": {
+            "count": 1,
+            "max": 0.0,
+            "min": 0.0,
+            "representation": "uniform",
+            "sum": 0.0,
+            "type": "calculated"
+          },
+          "design_candidate": {
+            "count": 1,
+            "max": 0.0,
+            "min": 0.0,
+            "representation": "uniform",
+            "sum": 0.0,
+            "type": "calculated"
+          },
+          "inlet": {
+            "count": 880,
+            "max": -0.04,
+            "min": -0.04,
+            "representation": "nonuniform",
+            "sum": -35.2,
+            "type": "calculated"
+          },
+          "outlet": {
+            "count": 880,
+            "max": 0.042503227,
+            "min": 0.0022259496,
+            "representation": "nonuniform",
+            "sum": 32.1312042015,
+            "type": "calculated"
+          },
+          "sideMax": {
+            "count": 1034,
+            "max": 0.0035283505,
+            "min": -5.4452899e-05,
+            "representation": "nonuniform",
+            "sum": 0.8803033813799,
+            "type": "calculated"
+          },
+          "sideMin": {
+            "count": 1034,
+            "max": 0.0035283689,
+            "min": -5.5657999e-05,
+            "representation": "nonuniform",
+            "sum": 0.8797944481319,
+            "type": "calculated"
+          },
+          "top": {
+            "count": 1880,
+            "max": 0.0012044242,
+            "min": 3.3942099e-05,
+            "representation": "nonuniform",
+            "sum": 1.308698207024,
+            "type": "calculated"
+          }
+        }
+      },
+      "force_patch_and_reference": {
+        "Aref": true,
+        "CofR": true,
+        "directions": true,
+        "lRef": true,
+        "magUInf": true,
+        "patches": true,
+        "rhoInf": true
+      },
+      "ground_and_domain": {
+        "block_mesh_lower_matches_spec": true,
+        "block_mesh_upper_matches_spec": true,
+        "bottom_is_wall": true,
+        "candidate_is_wall": true,
+        "location_in_mesh": [
+          -0.7,
+          0.0,
+          0.18
+        ],
+        "location_inside_domain": true
+      },
+      "metadata": {
+        "candidate_hash_matches": true,
+        "grid_bounds_match_source_spec": true,
+        "grid_spacing_matches_source_spec": true,
+        "problem_id_contains_registered_extension": false,
+        "problem_id_matches_source_spec": true,
+        "problem_spec_hash_matches_source_spec": true,
+        "source_project_matches": true
+      },
+      "operating_point": {
+        "density": true,
+        "transport_nu": true,
+        "turbulence": true,
+        "velocity": true,
+        "viscosity": true
+      },
+      "qualification": {
+        "path": "work/stage_v_v16_far_field_contract_2026_09/mixed_outer/V1/stage_v_qualification.json",
+        "qualified": true
+      }
+    },
+    "metadata": {
+      "path": "work/stage_v_v16_far_field_contract_2026_09/mixed_outer/V1/case_metadata.json",
+      "problem_id": "stage_sv_laminar_matched_re_domain_1p6_v2",
+      "problem_spec_sha256": "dd1039ae76aea6a2b257cd5044958815169d3051637272b629bfed2e1970e209",
+      "sha256": "0ceaf4a48137d8694f06ca2c7f7372db8dbfd164bf5398cbb9c35b3ac3128c77"
+    },
+    "pass": false,
+    "source_spec": {
+      "canonical_sha256": "dd1039ae76aea6a2b257cd5044958815169d3051637272b629bfed2e1970e209",
+      "path": "work/stage_v_v16_domain_continuation_3p2_2026_09/specs/project_matched_re_laminar_domain_extended_3p2_v1.yaml",
+      "problem_id": "stage_sv_laminar_matched_re_domain_1p6_v2"
+    }
+  },
+  "no_solver_started": true,
+  "registered_extension_token": "3p2",
+  "run_manifest": {
+    "path": "docs/evidence/stage_v_v16_far_field_contract_run_manifest_v2_2026_09.json",
+    "sha256": "2bbfc5b0ad4bee7959ac099c92424397d8431c7c99fa58203bbdca4450bb4665"
+  },
+  "schema_version": 1,
+  "status": "fail"
+}

@@ -1,0 +1,53 @@
+[{"stream_name":"stdout","time":14.438877314,"data":"RUN /kaggle/working/grad-ta1-n9wqkk_d/julia-1.12.6/bin/julia --project=/kaggle/working/grad-ta1-n9wqkk_d/source/julia/CFDSDFWaterLilyT4 -e using Pkg; Pkg.instantiate()\n"}
+,{"stream_name":"stdout","time":246.2449568,"data":"Precompiling packages...\n"}
+,{"stream_name":"stdout","time":246.245020357,"data":"   1517.1 ms  ✓ CUDA_Driver_jll\n"}
+,{"stream_name":"stdout","time":246.24502895,"data":"  1 dependency successfully precompiled in 2 seconds. 6 already precompiled.\n"}
+,{"stream_name":"stdout","time":246.245036423,"data":"   Installed LoggingExtras ──── v1.2.0\n"}
+,{"stream_name":"stdout","time":246.245045462,"data":"   Installed EllipsisNotation ─ v1.12.0\n"}
+,{"stream_name":"stdout","time":246.245049491,"data":"   Installed WaterLily ──────── v1.8.0\n"}
+,{"stream_name":"stdout","time":246.245052937,"data":"Precompiling packages...\n"}
+,{"stream_name":"stdout","time":246.245056228,"data":"   1390.3 ms  ✓ LoggingExtras\n"}
+,{"stream_name":"stdout","time":246.245059549,"data":"   1515.8 ms  ✓ tree_sitter_spirv_jll\n"}
+,{"stream_name":"stdout","time":246.245062798,"data":"   1852.7 ms  ✓ LMDB_jll\n"}
+,{"stream_name":"stdout","time":246.245066047,"data":"   1618.7 ms  ✓ tree_sitter_llvm_jll\n"}
+,{"stream_name":"stdout","time":246.245069219,"data":"   1647.3 ms  ✓ tree_sitter_gcn_jll\n"}
+,{"stream_name":"stdout","time":246.245072364,"data":"   1595.4 ms  ✓ tree_sitter_ptx_jll\n"}
+,{"stream_name":"stdout","time":246.245075719,"data":"   2129.1 ms  ✓ LMDB\n"}
+,{"stream_name":"stdout","time":246.24507896,"data":"   5330.6 ms  ✓ CUDA_Driver_jll\n"}
+,{"stream_name":"stdout","time":246.245123062,"data":"   6374.0 ms  ✓ EllipsisNotation\n"}
+,{"stream_name":"stdout","time":246.245129323,"data":"   1568.9 ms  ✓ CompilerCaching\n"}
+,{"stream_name":"stdout","time":246.24513415,"data":"   4732.0 ms  ✓ CUDA_Compiler_jll\n"}
+,{"stream_name":"stdout","time":246.245138917,"data":"   7384.3 ms  ✓ WaterLily\n"}
+,{"stream_name":"stdout","time":246.245143619,"data":"   4166.6 ms  ✓ CUDA_Runtime_jll\n"}
+,{"stream_name":"stdout","time":246.245153908,"data":"  61054.8 ms  ✓ GPUCompiler\n"}
+,{"stream_name":"stdout","time":246.245157544,"data":"  90936.1 ms  ✓ CUDACore\n"}
+,{"stream_name":"stdout","time":246.245160676,"data":"   9607.1 ms  ✓ CUDACore → SpecialFunctionsExt\n"}
+,{"stream_name":"stdout","time":246.245163926,"data":"  11453.9 ms  ✓ cuFFT\n"}
+,{"stream_name":"stdout","time":246.245167124,"data":"  15822.6 ms  ✓ NVML\n"}
+,{"stream_name":"stdout","time":246.245170241,"data":"  20858.8 ms  ✓ cuSPARSE\n"}
+,{"stream_name":"stdout","time":246.245173381,"data":"  11505.1 ms  ✓ cuRAND\n"}
+,{"stream_name":"stdout","time":246.245176499,"data":"  14911.3 ms  ✓ CUPTI\n"}
+,{"stream_name":"stdout","time":246.245179672,"data":"  27585.7 ms  ✓ cuBLAS\n"}
+,{"stream_name":"stdout","time":246.245182775,"data":"  11545.6 ms  ✓ cuSOLVER\n"}
+,{"stream_name":"stdout","time":246.245185889,"data":"  23237.9 ms  ✓ CUDATools\n"}
+,{"stream_name":"stdout","time":246.245188999,"data":"   7683.3 ms  ✓ CUDA\n"}
+,{"stream_name":"stdout","time":246.245192165,"data":"   7395.0 ms  ✓ Atomix → AtomixCUDAExt\n"}
+,{"stream_name":"stdout","time":246.245219313,"data":"   7922.8 ms  ✓ WaterLily → WaterLilyCUDAExt\n"}
+,{"stream_name":"stdout","time":246.245226755,"data":"  27 dependencies successfully precompiled in 223 seconds. 102 already precompiled.\n"}
+,{"stream_name":"stdout","time":246.24523267,"data":"  1 dependency had output during precompilation:\n"}
+,{"stream_name":"stdout","time":246.245237607,"data":"┌ WaterLily\n"}
+,{"stream_name":"stdout","time":246.245266269,"data":"│  ┌ Warning: Using WaterLily in serial (ie. JULIA_NUM_THREADS=1) is not recommended because it defaults to serial CPU execution.\n"}
+,{"stream_name":"stdout","time":246.245269992,"data":"│  │ Use JULIA_NUM_THREADS=auto, or any number of threads greater than 1, to allow multi-threading in CPU backends.\n"}
+,{"stream_name":"stdout","time":246.245279903,"data":"│  │ For a low-overhead single-threaded CPU only backend set: WaterLily.set_backend(\"SIMD\")\n"}
+,{"stream_name":"stdout","time":246.245282762,"data":"│  └ @ WaterLily ~/.julia/packages/WaterLily/yOkji/src/WaterLily.jl:206\n"}
+,{"stream_name":"stdout","time":246.245285299,"data":"└  \n"}
+,{"stream_name":"stdout","time":246.245681981,"data":"RUN /kaggle/working/grad-ta1-n9wqkk_d/julia-1.12.6/bin/julia --project=/kaggle/working/grad-ta1-n9wqkk_d/source/julia/CFDSDFWaterLilyT4 /kaggle/working/grad-ta1-n9wqkk_d/source/scripts/waterlily_grad_ta1_2026_10_15.jl /kaggle/working/grad-ta1-n9wqkk_d/source/docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431 /kaggle/working/grad_ta1 /kaggle/working/grad-ta1-n9wqkk_d/source/docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D0_interface_offset.dir_f4_fortran.raw d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549 /kaggle/working/grad-ta1-n9wqkk_d/source/docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D1_filtered_seed11.dir_f4_fortran.raw 96fe6e62c5fcb7ad0108dd64d6fac68cc488ee49deb188be742530f828037a87 /kaggle/working/grad-ta1-n9wqkk_d/source/docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D2_filtered_seed2026.dir_f4_fortran.raw 2a22eb09407a14755f495fa07d4df8dee2d4632db41a0b75d1bf744fd3d1d5de /kaggle/working/grad-ta1-n9wqkk_d/source/docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/P1_upstream_lobe.dir_f4_fortran.raw 24cc06aeb18e2a5729e560636f13ce78f8f19746268699783e8498921aec5dcc\n"}
+,{"stream_name":"stdout","time":555.217888741,"data":"TA1_RESULT BLOCKED /kaggle/working/grad_ta1\n"}
+,{"stream_name":"stdout","time":555.528875591,"data":"OUTPUT_MANIFEST_SHA256 4ebed7234a58a08bd8b97e4c7489eccd102f0275221ecb39cf4b446a9bcc5834\n"}
+,{"stream_name":"stderr","time":558.062947903,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":558.062980733,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":558.499523199,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":558.499548649,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":560.510144412,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":561.728434348,"data":"[NbConvertApp] Writing 317950 bytes to __results__.html\n"}
+]

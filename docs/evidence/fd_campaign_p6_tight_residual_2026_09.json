@@ -1,0 +1,297 @@
+{
+  "kind": "df2_solver_side_fd_campaign_result",
+  "manifest_hash": "15fa16927ef06d12d9afb9d1407ce6d4ae5d3953541ab26a1c5a5c8baa89e3c1",
+  "rows": [
+    {
+      "direction": "gradient_aligned",
+      "epsilon": 3e-05,
+      "converged": true,
+      "fd": -0.010416949999814129,
+      "analytic": -0.00855210839130539,
+      "ratio": 1.2180563579391317,
+      "primal_iterations_plus": 114,
+      "primal_iterations_minus": 114
+    },
+    {
+      "direction": "gradient_aligned",
+      "epsilon": 0.0001,
+      "converged": true,
+      "fd": -0.010415205000113836,
+      "analytic": -0.00855210839130539,
+      "ratio": 1.2178523147230673,
+      "primal_iterations_plus": 114,
+      "primal_iterations_minus": 114
+    },
+    {
+      "direction": "gradient_aligned",
+      "epsilon": 0.0003,
+      "converged": true,
+      "fd": -0.010415436666651642,
+      "analytic": -0.00855210839130539,
+      "ratio": 1.2178794035445841,
+      "primal_iterations_plus": 114,
+      "primal_iterations_minus": 114
+    },
+    {
+      "direction": "gradient_aligned",
+      "epsilon": 0.001,
+      "converged": true,
+      "fd": -0.010415375500005819,
+      "analytic": -0.00855210839130539,
+      "ratio": 1.2178722513146283,
+      "primal_iterations_plus": 114,
+      "primal_iterations_minus": 114
+    },
+    {
+      "direction": "random_seed_11",
+      "epsilon": 3e-05,
+      "converged": true,
+      "fd": 0.0003850166666966951,
+      "analytic": 0.0002797007809367206,
+      "ratio": 1.3765305388396507,
+      "primal_iterations_plus": 114,
+      "primal_iterations_minus": 114
+    },
+    {
+      "direction": "random_seed_11",
+      "epsilon": 0.0001,
+      "converged": true,
+      "fd": 0.0003845899998466962,
+      "analytic": 0.0002797007809367206,
+      "ratio": 1.3750050985152797,
+      "primal_iterations_plus": 114,
+      "primal_iterations_minus": 114
+    },
+    {
+      "direction": "random_seed_11",
+      "epsilon": 0.0003,
+      "converged": true,
+      "fd": 0.00038497333330426525,
+      "analytic": 0.0002797007809367206,
+      "ratio": 1.376375611161992,
+      "primal_iterations_plus": 114,
+      "primal_iterations_minus": 114
+    },
+    {
+      "direction": "random_seed_11",
+      "epsilon": 0.001,
+      "converged": true,
+      "fd": 0.00038483000000533174,
+      "analytic": 0.0002797007809367206,
+      "ratio": 1.3758631588962047,
+      "primal_iterations_plus": 114,
+      "primal_iterations_minus": 114
+    },
+    {
+      "direction": "random_seed_2026",
+      "epsilon": 3e-05,
+      "converged": true,
+      "fd": 0.0004673166668448895,
+      "analytic": 0.0002984713528883524,
+      "ratio": 1.5657002332806664,
+      "primal_iterations_plus": 114,
+      "primal_iterations_minus": 114
+    },
+    {
+      "direction": "random_seed_2026",
+      "epsilon": 0.0001,
+      "converged": true,
+      "fd": 0.0004682349999396429,
+      "analytic": 0.0002984713528883524,
+      "ratio": 1.568777021340447,
+      "primal_iterations_plus": 114,
+      "primal_iterations_minus": 114
+    },
+    {
+      "direction": "random_seed_2026",
+      "epsilon": 0.0003,
+      "converged": true,
+      "fd": 0.00046832000000218704,
+      "analytic": 0.0002984713528883524,
+      "ratio": 1.5690618059997503,
+      "primal_iterations_plus": 114,
+      "primal_iterations_minus": 114
+    },
+    {
+      "direction": "random_seed_2026",
+      "epsilon": 0.001,
+      "converged": true,
+      "fd": 0.00046810900000693323,
+      "analytic": 0.0002984713528883524,
+      "ratio": 1.568354870499201,
+      "primal_iterations_plus": 114,
+      "primal_iterations_minus": 114
+    }
+  ],
+  "verdict": {
+    "campaign_id": "p6_solver_side_fd_2026_09",
+    "manifest_hash": "15fa16927ef06d12d9afb9d1407ce6d4ae5d3953541ab26a1c5a5c8baa89e3c1",
+    "profile_id": "fd_gradient_v1",
+    "n_rows": 12,
+    "n_failures": 4,
+    "failures": [
+      {
+        "direction": "gradient_aligned",
+        "epsilon": 3e-05,
+        "reason": "relative_error"
+      },
+      {
+        "direction": "gradient_aligned",
+        "epsilon": 0.0001,
+        "reason": "relative_error"
+      },
+      {
+        "direction": "gradient_aligned",
+        "epsilon": 0.0003,
+        "reason": "relative_error"
+      },
+      {
+        "direction": "gradient_aligned",
+        "epsilon": 0.001,
+        "reason": "relative_error"
+      }
+    ],
+    "passed": false,
+    "checks": [
+      {
+        "direction": "gradient_aligned",
+        "epsilon": 3e-05,
+        "status": "relative_rule",
+        "relative_error": 0.21805635793913158,
+        "ratio": 1.2180563579391317,
+        "sign_agreement": true,
+        "passed": false
+      },
+      {
+        "direction": "gradient_aligned",
+        "epsilon": 0.0001,
+        "status": "relative_rule",
+        "relative_error": 0.21785231472306726,
+        "ratio": 1.2178523147230673,
+        "sign_agreement": true,
+        "passed": false
+      },
+      {
+        "direction": "gradient_aligned",
+        "epsilon": 0.0003,
+        "status": "relative_rule",
+        "relative_error": 0.2178794035445842,
+        "ratio": 1.2178794035445841,
+        "sign_agreement": true,
+        "passed": false
+      },
+      {
+        "direction": "gradient_aligned",
+        "epsilon": 0.001,
+        "status": "relative_rule",
+        "relative_error": 0.21787225131462823,
+        "ratio": 1.2178722513146283,
+        "sign_agreement": true,
+        "passed": false
+      },
+      {
+        "direction": "random_seed_11",
+        "epsilon": 3e-05,
+        "status": "absolute_rule",
+        "absolute_error": 0.00010531588575997451,
+        "absolute_floor": 0.0007800000000000001,
+        "passed": true
+      },
+      {
+        "direction": "random_seed_11",
+        "epsilon": 0.0001,
+        "status": "absolute_rule",
+        "absolute_error": 0.00010488921890997559,
+        "absolute_floor": 0.0007800000000000001,
+        "passed": true
+      },
+      {
+        "direction": "random_seed_11",
+        "epsilon": 0.0003,
+        "status": "absolute_rule",
+        "absolute_error": 0.00010527255236754467,
+        "absolute_floor": 0.0007800000000000001,
+        "passed": true
+      },
+      {
+        "direction": "random_seed_11",
+        "epsilon": 0.001,
+        "status": "absolute_rule",
+        "absolute_error": 0.00010512921906861115,
+        "absolute_floor": 0.0007800000000000001,
+        "passed": true
+      },
+      {
+        "direction": "random_seed_2026",
+        "epsilon": 3e-05,
+        "status": "absolute_rule",
+        "absolute_error": 0.00016884531395653708,
+        "absolute_floor": 0.0007800000000000001,
+        "passed": true
+      },
+      {
+        "direction": "random_seed_2026",
+        "epsilon": 0.0001,
+        "status": "absolute_rule",
+        "absolute_error": 0.0001697636470512905,
+        "absolute_floor": 0.0007800000000000001,
+        "passed": true
+      },
+      {
+        "direction": "random_seed_2026",
+        "epsilon": 0.0003,
+        "status": "absolute_rule",
+        "absolute_error": 0.00016984864711383464,
+        "absolute_floor": 0.0007800000000000001,
+        "passed": true
+      },
+      {
+        "direction": "random_seed_2026",
+        "epsilon": 0.001,
+        "status": "absolute_rule",
+        "absolute_error": 0.00016963764711858082,
+        "absolute_floor": 0.0007800000000000001,
+        "passed": true
+      }
+    ]
+  },
+  "sign_convention": "dJ/drho = -d(downforce_coefficient)/drho",
+  "solver_template": "work/df2_fd_refresh/template_frozen (regularise false, maxInitChange 0)",
+  "claims_not_made": [
+    "no target-physics claim",
+    "no claim outside the reduced laminar fixture and the registered rows"
+  ],
+  "artifact_id": "fd_campaign_p6_tight_residual_2026_09",
+  "evidence_class": "numerical_verification_negative_result",
+  "issue": "P6 (DF2)",
+  "what_was_measured": [
+    "same 24 registered rows with the primal residualControl tightened from 5e-7 to 5e-9 and nIters 1000 -> 5000",
+    "primal iterations rose 91 -> 114; ratios unchanged to three decimals vs the un-tightened frozen run",
+    "design frozen across the campaign (see the parent result for the check method)"
+  ],
+  "measured_ratios": {
+    "gradient_aligned": 1.2179,
+    "random_seed_11": 1.3759,
+    "random_seed_2026": 1.5684
+  },
+  "control_comparison": {
+    "baseline_primal_iterations": 91,
+    "tight_primal_iterations": 114,
+    "ratio_delta_max": 0.0005
+  },
+  "conclusions": {
+    "passed": false,
+    "primal_convergence_exonerated": true,
+    "reason": "a two-decade residual tightening moved the ratios by < 0.06%, so the +22% to +57% mismatch is not a convergence artefact; it is the continuous-adjoint-vs-discrete-primal consistency at this state and resolution",
+    "consequence": "the FD gate for this configuration must be recorded as configuration-specific; DF3 acceptance must rely on the primal re-evaluation of every trial (already implemented) rather than on the 5% gradient gate"
+  },
+  "claims_supported": [
+    "the mismatch is stable under residual tightening and epsilon changes"
+  ],
+  "claims_not_supported": [
+    "convergence as the cause",
+    "transfer as the cause",
+    "any target-physics extrapolation",
+    "P6 closure"
+  ]
+}

@@ -1,0 +1,1911 @@
+{
+  "artifact_id": "wp6_2_evidence_audit_2026_09",
+  "created": "2026-09-21",
+  "evidence_class": "contract_and_evidence_audit",
+  "issue": "P18 (DF0)",
+  "inputs": {
+    "manifest": "work/fixed_shape_ranking_2026_09/reachable_set_ranking_manifest.json",
+    "reachable_evidence": "docs/evidence/reachable_set_cross_fidelity_ranking_2026_09.json",
+    "first_program_evidence": "docs/evidence/fixed_shape_cross_fidelity_ranking_2026_09.json",
+    "registry_dir": "work/fixed_shape_ranking_2026_09/shapes_reachable",
+    "manifest_sha256": "ca51b3549f5432c8e796b10a32fb92cb3980365f362a5893aecd2e38ef91fccd",
+    "reachable_evidence_sha256": "4beef93632235108daabc49898ba0f1d0b78e98b522076e204db62e1036f8e74"
+  },
+  "declared_min_width_policy": {
+    "values_m": [
+      0.1,
+      0.15
+    ],
+    "consistent": false
+  },
+  "extraction_sensitivity_status": {
+    "reachable_set_8/downforce/V1": "not_measured",
+    "reachable_set_8/drag/V1": "not_measured",
+    "reachable_set_8/downforce/V2": "not_measured",
+    "reachable_set_8/drag/V2": "not_measured",
+    "combined_pool_17_after_policy_exclusion/downforce/V1/17pool": "not_measured",
+    "combined_pool_17_after_policy_exclusion/drag/V1/17pool": "not_measured",
+    "combined_pool_17_after_policy_exclusion/downforce/V2/17pool": "not_measured",
+    "combined_pool_17_after_policy_exclusion/drag/V2/17pool": "not_measured"
+  },
+  "drift_table": {
+    "bands": {
+      "downforce_abs": 0.0147,
+      "drag_coefficient_rel": 0.034
+    },
+    "per_candidate": {
+      "wing_camber_bent": {
+        "downforce_v1": 0.3460103372121212,
+        "downforce_v2": 0.38361133932183905,
+        "downforce_abs_drift": 0.03760100210971784,
+        "drag_coefficient_v1": 1.5095227966666667,
+        "drag_coefficient_v2": 1.4949468226436782,
+        "drag_relative_drift": 0.009656014506819775,
+        "downforce_within_declared_band": false,
+        "drag_within_declared_band": true
+      },
+      "wing_chord03_a20": {
+        "downforce_v1": -0.2733174621076923,
+        "downforce_v2": -0.2892181238457447,
+        "downforce_abs_drift": 0.01590066173805238,
+        "drag_coefficient_v1": 0.9266369276153846,
+        "drag_coefficient_v2": 0.9167081270531915,
+        "drag_relative_drift": 0.010714876847984034,
+        "downforce_within_declared_band": false,
+        "drag_within_declared_band": true
+      },
+      "wing_endplate_a20": {
+        "downforce_v1": -0.9067441580821919,
+        "downforce_v2": -0.929051941375,
+        "downforce_abs_drift": 0.022307783292808137,
+        "drag_coefficient_v1": 1.6360217257534246,
+        "drag_coefficient_v2": 1.6197643927604168,
+        "drag_relative_drift": 0.00993711314287158,
+        "downforce_within_declared_band": false,
+        "drag_within_declared_band": true
+      },
+      "wing_flat_ctrl_c30": {
+        "downforce_v1": -0.0573065564,
+        "downforce_v2": -0.05402023229293479,
+        "downforce_abs_drift": 0.003286324107065211,
+        "drag_coefficient_v1": 1.15960154203125,
+        "drag_coefficient_v2": 1.0926386889673914,
+        "drag_relative_drift": 0.05774643326755256,
+        "downforce_within_declared_band": true,
+        "drag_within_declared_band": false
+      },
+      "wing_gurney_a20": {
+        "downforce_v1": -0.7089090164054054,
+        "downforce_v2": -0.7202630195777778,
+        "downforce_abs_drift": 0.011354003172372451,
+        "drag_coefficient_v1": 1.2895578802702703,
+        "drag_coefficient_v2": 1.2686572478333333,
+        "drag_relative_drift": 0.016207595453223495,
+        "downforce_within_declared_band": true,
+        "drag_within_declared_band": true
+      },
+      "wing_tandem_xoff": {
+        "downforce_v1": -0.36575407621875,
+        "downforce_v2": -0.3770284031292135,
+        "downforce_abs_drift": 0.011274326910463484,
+        "drag_coefficient_v1": 1.33306089578125,
+        "drag_coefficient_v2": 1.33206649752809,
+        "drag_relative_drift": 0.0007459511086904777,
+        "downforce_within_declared_band": true,
+        "drag_within_declared_band": true
+      },
+      "wing_thick_a20": {
+        "downforce_v1": -0.695455981013889,
+        "downforce_v2": -0.7157332662590674,
+        "downforce_abs_drift": 0.020277285245178467,
+        "drag_coefficient_v1": 1.7015058025,
+        "drag_coefficient_v2": 1.67755337746114,
+        "drag_relative_drift": 0.01407719268642346,
+        "downforce_within_declared_band": false,
+        "drag_within_declared_band": true
+      },
+      "wing_two_element": {
+        "downforce_v1": -0.33746005597101447,
+        "downforce_v2": -0.3540910220111111,
+        "downforce_abs_drift": 0.016630966040096617,
+        "drag_coefficient_v1": 1.1155842757971015,
+        "drag_coefficient_v2": 1.1076474621111112,
+        "drag_relative_drift": 0.00711449045866063,
+        "downforce_within_declared_band": false,
+        "drag_within_declared_band": true
+      }
+    },
+    "candidates_exceeding_downforce_band": [
+      "wing_camber_bent",
+      "wing_chord03_a20",
+      "wing_endplate_a20",
+      "wing_thick_a20",
+      "wing_two_element"
+    ],
+    "candidates_exceeding_drag_band": [
+      "wing_flat_ctrl_c30"
+    ],
+    "max_downforce_abs_drift": 0.03760100210971784,
+    "max_drag_relative_drift": 0.05774643326755256,
+    "common_band_valid_for_all_candidates": false
+  },
+  "feature_sizes": {
+    "spacing_m": 0.05,
+    "threshold_m": 0.1,
+    "n_shapes": 18,
+    "shapes": {
+      "plate_a00_ref": {
+        "shape_id": "plate_a00_ref",
+        "n_parts": 1,
+        "union": {
+          "n_cells": 663,
+          "volume_m3": 0.08287500000000002,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            663
+          ],
+          "max_inscribed_diameter_m": 0.15000000000000002,
+          "thickness_ridge_m_min": 0.15000000000000002,
+          "thickness_ridge_m_p5": 0.15000000000000002,
+          "thickness_ridge_m_p50": 0.15000000000000002,
+          "thickness_ridge_m_max": 0.15000000000000002,
+          "ridge_cells_m": 4872,
+          "fraction_ridge_below_threshold": 0.0,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        },
+        "parts": [
+          {
+            "part_id": "plate_a00_ref",
+            "declared_min_dimension_m": 0.15,
+            "declared_thickness_m": 0.15,
+            "declared_chord_m": 0.6,
+            "declared_span_m": 0.8,
+            "n_cells": 663,
+            "volume_m3": 0.08287500000000002,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              663
+            ],
+            "max_inscribed_diameter_m": 0.15000000000000002,
+            "thickness_ridge_m_min": 0.15000000000000002,
+            "thickness_ridge_m_p5": 0.15000000000000002,
+            "thickness_ridge_m_p50": 0.15000000000000002,
+            "thickness_ridge_m_max": 0.15000000000000002,
+            "ridge_cells_m": 4872,
+            "fraction_ridge_below_threshold": 0.0,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          }
+        ],
+        "part_interactions": [],
+        "min_declared_part_dimension_m": 0.15,
+        "min_measured_feature_size_m": 0.15000000000000002
+      },
+      "plate_a10_nd": {
+        "shape_id": "plate_a10_nd",
+        "n_parts": 1,
+        "union": {
+          "n_cells": 595,
+          "volume_m3": 0.07437500000000002,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            595
+          ],
+          "max_inscribed_diameter_m": 0.15000000000000002,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.15000000000000002,
+          "thickness_ridge_m_max": 0.15000000000000002,
+          "ridge_cells_m": 2392,
+          "fraction_ridge_below_threshold": 0.22073578595317725,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        },
+        "parts": [
+          {
+            "part_id": "plate_a10_nd",
+            "declared_min_dimension_m": 0.15,
+            "declared_thickness_m": 0.15,
+            "declared_chord_m": 0.6,
+            "declared_span_m": 0.8,
+            "n_cells": 595,
+            "volume_m3": 0.07437500000000002,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              595
+            ],
+            "max_inscribed_diameter_m": 0.15000000000000002,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.05,
+            "thickness_ridge_m_p50": 0.15000000000000002,
+            "thickness_ridge_m_max": 0.15000000000000002,
+            "ridge_cells_m": 2392,
+            "fraction_ridge_below_threshold": 0.22073578595317725,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          }
+        ],
+        "part_interactions": [],
+        "min_declared_part_dimension_m": 0.15,
+        "min_measured_feature_size_m": 0.15000000000000002
+      },
+      "plate_a20_nd": {
+        "shape_id": "plate_a20_nd",
+        "n_parts": 1,
+        "union": {
+          "n_cells": 629,
+          "volume_m3": 0.07862500000000001,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            629
+          ],
+          "max_inscribed_diameter_m": 0.15000000000000002,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.125,
+          "thickness_ridge_m_max": 0.15000000000000002,
+          "ridge_cells_m": 1824,
+          "fraction_ridge_below_threshold": 0.2894736842105263,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        },
+        "parts": [
+          {
+            "part_id": "plate_a20_nd",
+            "declared_min_dimension_m": 0.15,
+            "declared_thickness_m": 0.15,
+            "declared_chord_m": 0.6,
+            "declared_span_m": 0.8,
+            "n_cells": 629,
+            "volume_m3": 0.07862500000000001,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              629
+            ],
+            "max_inscribed_diameter_m": 0.15000000000000002,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.05,
+            "thickness_ridge_m_p50": 0.125,
+            "thickness_ridge_m_max": 0.15000000000000002,
+            "ridge_cells_m": 1824,
+            "fraction_ridge_below_threshold": 0.2894736842105263,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          }
+        ],
+        "part_interactions": [],
+        "min_declared_part_dimension_m": 0.15,
+        "min_measured_feature_size_m": 0.15000000000000002
+      },
+      "plate_a30_nd": {
+        "shape_id": "plate_a30_nd",
+        "n_parts": 1,
+        "union": {
+          "n_cells": 629,
+          "volume_m3": 0.07862500000000001,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            629
+          ],
+          "max_inscribed_diameter_m": 0.15000000000000002,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.12747548783981963,
+          "thickness_ridge_m_max": 0.15000000000000002,
+          "ridge_cells_m": 1456,
+          "fraction_ridge_below_threshold": 0.3626373626373626,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        },
+        "parts": [
+          {
+            "part_id": "plate_a30_nd",
+            "declared_min_dimension_m": 0.15,
+            "declared_thickness_m": 0.15,
+            "declared_chord_m": 0.6,
+            "declared_span_m": 0.8,
+            "n_cells": 629,
+            "volume_m3": 0.07862500000000001,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              629
+            ],
+            "max_inscribed_diameter_m": 0.15000000000000002,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.05,
+            "thickness_ridge_m_p50": 0.12747548783981963,
+            "thickness_ridge_m_max": 0.15000000000000002,
+            "ridge_cells_m": 1456,
+            "fraction_ridge_below_threshold": 0.3626373626373626,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          }
+        ],
+        "part_interactions": [],
+        "min_declared_part_dimension_m": 0.15,
+        "min_measured_feature_size_m": 0.15000000000000002
+      },
+      "plate_a20_up": {
+        "shape_id": "plate_a20_up",
+        "n_parts": 1,
+        "union": {
+          "n_cells": 629,
+          "volume_m3": 0.07862500000000001,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            629
+          ],
+          "max_inscribed_diameter_m": 0.15000000000000002,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.125,
+          "thickness_ridge_m_max": 0.15000000000000002,
+          "ridge_cells_m": 1824,
+          "fraction_ridge_below_threshold": 0.2894736842105263,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        },
+        "parts": [
+          {
+            "part_id": "plate_a20_up",
+            "declared_min_dimension_m": 0.15,
+            "declared_thickness_m": 0.15,
+            "declared_chord_m": 0.6,
+            "declared_span_m": 0.8,
+            "n_cells": 629,
+            "volume_m3": 0.07862500000000001,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              629
+            ],
+            "max_inscribed_diameter_m": 0.15000000000000002,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.05,
+            "thickness_ridge_m_p50": 0.125,
+            "thickness_ridge_m_max": 0.15000000000000002,
+            "ridge_cells_m": 1824,
+            "fraction_ridge_below_threshold": 0.2894736842105263,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          }
+        ],
+        "part_interactions": [],
+        "min_declared_part_dimension_m": 0.15,
+        "min_measured_feature_size_m": 0.15000000000000002
+      },
+      "plate_a20_t10": {
+        "shape_id": "plate_a20_t10",
+        "n_parts": 1,
+        "union": {
+          "n_cells": 391,
+          "volume_m3": 0.04887500000000001,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            391
+          ],
+          "max_inscribed_diameter_m": 0.10307764064044153,
+          "thickness_ridge_m_min": 0.1,
+          "thickness_ridge_m_p5": 0.1,
+          "thickness_ridge_m_p50": 0.1,
+          "thickness_ridge_m_max": 0.10307764064044153,
+          "ridge_cells_m": 2600,
+          "fraction_ridge_below_threshold": 0.0,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        },
+        "parts": [
+          {
+            "part_id": "plate_a20_t10",
+            "declared_min_dimension_m": 0.1,
+            "declared_thickness_m": 0.1,
+            "declared_chord_m": 0.6,
+            "declared_span_m": 0.8,
+            "n_cells": 391,
+            "volume_m3": 0.04887500000000001,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              391
+            ],
+            "max_inscribed_diameter_m": 0.10307764064044153,
+            "thickness_ridge_m_min": 0.1,
+            "thickness_ridge_m_p5": 0.1,
+            "thickness_ridge_m_p50": 0.1,
+            "thickness_ridge_m_max": 0.10307764064044153,
+            "ridge_cells_m": 2600,
+            "fraction_ridge_below_threshold": 0.0,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          }
+        ],
+        "part_interactions": [],
+        "min_declared_part_dimension_m": 0.1,
+        "min_measured_feature_size_m": 0.10307764064044153
+      },
+      "plate_a20_t05": {
+        "shape_id": "plate_a20_t05",
+        "n_parts": 1,
+        "union": {
+          "n_cells": 187,
+          "volume_m3": 0.023375000000000007,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            187
+          ],
+          "max_inscribed_diameter_m": 0.05,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.05,
+          "thickness_ridge_m_max": 0.05,
+          "ridge_cells_m": 4488,
+          "fraction_ridge_below_threshold": 1.0,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        },
+        "parts": [
+          {
+            "part_id": "plate_a20_t05",
+            "declared_min_dimension_m": 0.05,
+            "declared_thickness_m": 0.05,
+            "declared_chord_m": 0.6,
+            "declared_span_m": 0.8,
+            "n_cells": 187,
+            "volume_m3": 0.023375000000000007,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              187
+            ],
+            "max_inscribed_diameter_m": 0.05,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.05,
+            "thickness_ridge_m_p50": 0.05,
+            "thickness_ridge_m_max": 0.05,
+            "ridge_cells_m": 4488,
+            "fraction_ridge_below_threshold": 1.0,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          }
+        ],
+        "part_interactions": [],
+        "min_declared_part_dimension_m": 0.05,
+        "min_measured_feature_size_m": 0.05
+      },
+      "plate_a20_span04": {
+        "shape_id": "plate_a20_span04",
+        "n_parts": 1,
+        "union": {
+          "n_cells": 333,
+          "volume_m3": 0.04162500000000001,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            333
+          ],
+          "max_inscribed_diameter_m": 0.15000000000000002,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.125,
+          "thickness_ridge_m_max": 0.15000000000000002,
+          "ridge_cells_m": 864,
+          "fraction_ridge_below_threshold": 0.3148148148148148,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        },
+        "parts": [
+          {
+            "part_id": "plate_a20_span04",
+            "declared_min_dimension_m": 0.15,
+            "declared_thickness_m": 0.15,
+            "declared_chord_m": 0.6,
+            "declared_span_m": 0.4,
+            "n_cells": 333,
+            "volume_m3": 0.04162500000000001,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              333
+            ],
+            "max_inscribed_diameter_m": 0.15000000000000002,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.05,
+            "thickness_ridge_m_p50": 0.125,
+            "thickness_ridge_m_max": 0.15000000000000002,
+            "ridge_cells_m": 864,
+            "fraction_ridge_below_threshold": 0.3148148148148148,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          }
+        ],
+        "part_interactions": [],
+        "min_declared_part_dimension_m": 0.15,
+        "min_measured_feature_size_m": 0.15000000000000002
+      },
+      "plate_a20_zneg15": {
+        "shape_id": "plate_a20_zneg15",
+        "n_parts": 1,
+        "union": {
+          "n_cells": 629,
+          "volume_m3": 0.07862500000000001,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            629
+          ],
+          "max_inscribed_diameter_m": 0.15000000000000002,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.125,
+          "thickness_ridge_m_max": 0.15000000000000002,
+          "ridge_cells_m": 1824,
+          "fraction_ridge_below_threshold": 0.2894736842105263,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        },
+        "parts": [
+          {
+            "part_id": "plate_a20_zneg15",
+            "declared_min_dimension_m": 0.15,
+            "declared_thickness_m": 0.15,
+            "declared_chord_m": 0.6,
+            "declared_span_m": 0.8,
+            "n_cells": 629,
+            "volume_m3": 0.07862500000000001,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              629
+            ],
+            "max_inscribed_diameter_m": 0.15000000000000002,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.05,
+            "thickness_ridge_m_p50": 0.125,
+            "thickness_ridge_m_max": 0.15000000000000002,
+            "ridge_cells_m": 1824,
+            "fraction_ridge_below_threshold": 0.2894736842105263,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          }
+        ],
+        "part_interactions": [],
+        "min_declared_part_dimension_m": 0.15,
+        "min_measured_feature_size_m": 0.15000000000000002
+      },
+      "box_bluff03": {
+        "shape_id": "box_bluff03",
+        "n_parts": 1,
+        "union": {
+          "n_cells": 343,
+          "volume_m3": 0.04287500000000001,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            343
+          ],
+          "max_inscribed_diameter_m": 0.35000000000000003,
+          "thickness_ridge_m_min": 0.35000000000000003,
+          "thickness_ridge_m_p5": 0.35000000000000003,
+          "thickness_ridge_m_p50": 0.35000000000000003,
+          "thickness_ridge_m_max": 0.35000000000000003,
+          "ridge_cells_m": 8,
+          "fraction_ridge_below_threshold": 0.0,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        },
+        "parts": [
+          {
+            "part_id": "box_bluff03",
+            "declared_min_dimension_m": 0.3,
+            "declared_thickness_m": 0.3,
+            "declared_chord_m": 0.3,
+            "declared_span_m": 0.3,
+            "n_cells": 343,
+            "volume_m3": 0.04287500000000001,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              343
+            ],
+            "max_inscribed_diameter_m": 0.35000000000000003,
+            "thickness_ridge_m_min": 0.35000000000000003,
+            "thickness_ridge_m_p5": 0.35000000000000003,
+            "thickness_ridge_m_p50": 0.35000000000000003,
+            "thickness_ridge_m_max": 0.35000000000000003,
+            "ridge_cells_m": 8,
+            "fraction_ridge_below_threshold": 0.0,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          }
+        ],
+        "part_interactions": [],
+        "min_declared_part_dimension_m": 0.3,
+        "min_measured_feature_size_m": 0.35000000000000003
+      },
+      "wing_camber_bent": {
+        "shape_id": "wing_camber_bent",
+        "n_parts": 2,
+        "union": {
+          "n_cells": 612,
+          "volume_m3": 0.07650000000000001,
+          "empty": false,
+          "n_components_26": 2,
+          "component_cells": [
+            323,
+            289
+          ],
+          "max_inscribed_diameter_m": 0.15000000000000002,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.05,
+          "thickness_ridge_m_max": 0.15000000000000002,
+          "ridge_cells_m": 2256,
+          "fraction_ridge_below_threshold": 0.5851063829787234,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        },
+        "parts": [
+          {
+            "part_id": "part_0.3_0.8_0.15_30_0.55_0.05_0.0785",
+            "declared_min_dimension_m": 0.15,
+            "declared_thickness_m": 0.15,
+            "declared_chord_m": 0.3,
+            "declared_span_m": 0.8,
+            "n_cells": 323,
+            "volume_m3": 0.04037500000000001,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              323
+            ],
+            "max_inscribed_diameter_m": 0.15000000000000002,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.05,
+            "thickness_ridge_m_p50": 0.05,
+            "thickness_ridge_m_max": 0.15000000000000002,
+            "ridge_cells_m": 1256,
+            "fraction_ridge_below_threshold": 0.6305732484076433,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          },
+          {
+            "part_id": "part_0.3_0.8_0.15_-10_0.25_0.05_-0.0785",
+            "declared_min_dimension_m": 0.15,
+            "declared_thickness_m": 0.15,
+            "declared_chord_m": 0.3,
+            "declared_span_m": 0.8,
+            "n_cells": 289,
+            "volume_m3": 0.03612500000000001,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              289
+            ],
+            "max_inscribed_diameter_m": 0.15000000000000002,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.05,
+            "thickness_ridge_m_p50": 0.05,
+            "thickness_ridge_m_max": 0.15000000000000002,
+            "ridge_cells_m": 1000,
+            "fraction_ridge_below_threshold": 0.528,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          }
+        ],
+        "part_interactions": [
+          {
+            "part_a": "part_0.3_0.8_0.15_30_0.55_0.05_0.0785",
+            "part_b": "part_0.3_0.8_0.15_-10_0.25_0.05_-0.0785",
+            "overlap_cells": 0,
+            "min_face_gap_m": 0.06180339887498949
+          }
+        ],
+        "min_declared_part_dimension_m": 0.15,
+        "min_measured_feature_size_m": 0.15000000000000002
+      },
+      "wing_gurney_a20": {
+        "shape_id": "wing_gurney_a20",
+        "n_parts": 2,
+        "union": {
+          "n_cells": 646,
+          "volume_m3": 0.08075000000000002,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            646
+          ],
+          "max_inscribed_diameter_m": 0.15000000000000002,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.15000000000000002,
+          "thickness_ridge_m_max": 0.15000000000000002,
+          "ridge_cells_m": 2168,
+          "fraction_ridge_below_threshold": 0.24354243542435425,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        },
+        "parts": [
+          {
+            "part_id": "part_0.6_0.8_0.15_20_0.4_0.05_0",
+            "declared_min_dimension_m": 0.15,
+            "declared_thickness_m": 0.15,
+            "declared_chord_m": 0.6,
+            "declared_span_m": 0.8,
+            "n_cells": 629,
+            "volume_m3": 0.07862500000000001,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              629
+            ],
+            "max_inscribed_diameter_m": 0.15000000000000002,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.05,
+            "thickness_ridge_m_p50": 0.125,
+            "thickness_ridge_m_max": 0.15000000000000002,
+            "ridge_cells_m": 1824,
+            "fraction_ridge_below_threshold": 0.2894736842105263,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          },
+          {
+            "part_id": "part_0.05_0.8_0.12_0_0.3725_0.05_0.05",
+            "declared_min_dimension_m": 0.05,
+            "declared_thickness_m": 0.12,
+            "declared_chord_m": 0.05,
+            "declared_span_m": 0.8,
+            "n_cells": 51,
+            "volume_m3": 0.006375000000000001,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              51
+            ],
+            "max_inscribed_diameter_m": 0.05,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.05,
+            "thickness_ridge_m_p50": 0.05,
+            "thickness_ridge_m_max": 0.05,
+            "ridge_cells_m": 1320,
+            "fraction_ridge_below_threshold": 1.0,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          }
+        ],
+        "part_interactions": [
+          {
+            "part_a": "part_0.6_0.8_0.15_20_0.4_0.05_0",
+            "part_b": "part_0.05_0.8_0.12_0_0.3725_0.05_0.05",
+            "overlap_cells": 34,
+            "min_face_gap_m": 0.0
+          }
+        ],
+        "min_declared_part_dimension_m": 0.05,
+        "min_measured_feature_size_m": 0.05
+      },
+      "wing_chord03_a20": {
+        "shape_id": "wing_chord03_a20",
+        "n_parts": 1,
+        "union": {
+          "n_cells": 289,
+          "volume_m3": 0.03612500000000001,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            289
+          ],
+          "max_inscribed_diameter_m": 0.15000000000000002,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.05,
+          "thickness_ridge_m_max": 0.15000000000000002,
+          "ridge_cells_m": 1408,
+          "fraction_ridge_below_threshold": 0.75,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        },
+        "parts": [
+          {
+            "part_id": "wing_chord03_a20",
+            "declared_min_dimension_m": 0.15,
+            "declared_thickness_m": 0.15,
+            "declared_chord_m": 0.3,
+            "declared_span_m": 0.8,
+            "n_cells": 289,
+            "volume_m3": 0.03612500000000001,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              289
+            ],
+            "max_inscribed_diameter_m": 0.15000000000000002,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.05,
+            "thickness_ridge_m_p50": 0.05,
+            "thickness_ridge_m_max": 0.15000000000000002,
+            "ridge_cells_m": 1408,
+            "fraction_ridge_below_threshold": 0.75,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          }
+        ],
+        "part_interactions": [],
+        "min_declared_part_dimension_m": 0.15,
+        "min_measured_feature_size_m": 0.15000000000000002
+      },
+      "wing_two_element": {
+        "shape_id": "wing_two_element",
+        "n_parts": 2,
+        "union": {
+          "n_cells": 442,
+          "volume_m3": 0.055250000000000014,
+          "empty": false,
+          "n_components_26": 2,
+          "component_cells": [
+            323,
+            119
+          ],
+          "max_inscribed_diameter_m": 0.15000000000000002,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.05,
+          "thickness_ridge_m_max": 0.15000000000000002,
+          "ridge_cells_m": 1972,
+          "fraction_ridge_below_threshold": 0.6693711967545639,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        },
+        "parts": [
+          {
+            "part_id": "part_0.3_0.8_0.15_25_0.25_0.05_0",
+            "declared_min_dimension_m": 0.15,
+            "declared_thickness_m": 0.15,
+            "declared_chord_m": 0.3,
+            "declared_span_m": 0.8,
+            "n_cells": 323,
+            "volume_m3": 0.04037500000000001,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              323
+            ],
+            "max_inscribed_diameter_m": 0.15000000000000002,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.05,
+            "thickness_ridge_m_p50": 0.125,
+            "thickness_ridge_m_max": 0.15000000000000002,
+            "ridge_cells_m": 1120,
+            "fraction_ridge_below_threshold": 0.4714285714285714,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          },
+          {
+            "part_id": "part_0.15_0.8_0.1_35_0.672_0.05_-0.055",
+            "declared_min_dimension_m": 0.1,
+            "declared_thickness_m": 0.1,
+            "declared_chord_m": 0.15,
+            "declared_span_m": 0.8,
+            "n_cells": 119,
+            "volume_m3": 0.014875000000000003,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              119
+            ],
+            "max_inscribed_diameter_m": 0.10307764064044153,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.05,
+            "thickness_ridge_m_p50": 0.05,
+            "thickness_ridge_m_max": 0.10307764064044153,
+            "ridge_cells_m": 852,
+            "fraction_ridge_below_threshold": 0.9295774647887324,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          }
+        ],
+        "part_interactions": [
+          {
+            "part_a": "part_0.3_0.8_0.15_25_0.25_0.05_0",
+            "part_b": "part_0.15_0.8_0.1_35_0.672_0.05_-0.055",
+            "overlap_cells": 0,
+            "min_face_gap_m": 0.15615528128088307
+          }
+        ],
+        "min_declared_part_dimension_m": 0.1,
+        "min_measured_feature_size_m": 0.10307764064044153
+      },
+      "wing_endplate_a20": {
+        "shape_id": "wing_endplate_a20",
+        "n_parts": 3,
+        "union": {
+          "n_cells": 799,
+          "volume_m3": 0.09987500000000002,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            799
+          ],
+          "max_inscribed_diameter_m": 0.158113883008419,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.125,
+          "thickness_ridge_m_max": 0.158113883008419,
+          "ridge_cells_m": 1980,
+          "fraction_ridge_below_threshold": 0.2828282828282828,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        },
+        "parts": [
+          {
+            "part_id": "part_0.6_0.8_0.15_20_0.4_0.05_0",
+            "declared_min_dimension_m": 0.15,
+            "declared_thickness_m": 0.15,
+            "declared_chord_m": 0.6,
+            "declared_span_m": 0.8,
+            "n_cells": 629,
+            "volume_m3": 0.07862500000000001,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              629
+            ],
+            "max_inscribed_diameter_m": 0.15000000000000002,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.05,
+            "thickness_ridge_m_p50": 0.125,
+            "thickness_ridge_m_max": 0.15000000000000002,
+            "ridge_cells_m": 1824,
+            "fraction_ridge_below_threshold": 0.2894736842105263,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          },
+          {
+            "part_id": "part_0.6_0.05_0.25_20_0.4_-0.425_0",
+            "declared_min_dimension_m": 0.05,
+            "declared_thickness_m": 0.25,
+            "declared_chord_m": 0.6,
+            "declared_span_m": 0.05,
+            "n_cells": 122,
+            "volume_m3": 0.015250000000000003,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              122
+            ],
+            "max_inscribed_diameter_m": 0.1,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.1,
+            "thickness_ridge_m_p50": 0.1,
+            "thickness_ridge_m_max": 0.1,
+            "ridge_cells_m": 1064,
+            "fraction_ridge_below_threshold": 0.045112781954887216,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          },
+          {
+            "part_id": "part_0.6_0.05_0.25_20_0.4_0.425_0",
+            "declared_min_dimension_m": 0.05,
+            "declared_thickness_m": 0.25,
+            "declared_chord_m": 0.6,
+            "declared_span_m": 0.05,
+            "n_cells": 122,
+            "volume_m3": 0.015250000000000003,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              122
+            ],
+            "max_inscribed_diameter_m": 0.1,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.1,
+            "thickness_ridge_m_p50": 0.1,
+            "thickness_ridge_m_max": 0.1,
+            "ridge_cells_m": 1064,
+            "fraction_ridge_below_threshold": 0.045112781954887216,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          }
+        ],
+        "part_interactions": [
+          {
+            "part_a": "part_0.6_0.8_0.15_20_0.4_0.05_0",
+            "part_b": "part_0.6_0.05_0.25_20_0.4_-0.425_0",
+            "overlap_cells": 0,
+            "min_face_gap_m": 0.0
+          },
+          {
+            "part_a": "part_0.6_0.8_0.15_20_0.4_0.05_0",
+            "part_b": "part_0.6_0.05_0.25_20_0.4_0.425_0",
+            "overlap_cells": 74,
+            "min_face_gap_m": 0.0
+          },
+          {
+            "part_a": "part_0.6_0.05_0.25_20_0.4_-0.425_0",
+            "part_b": "part_0.6_0.05_0.25_20_0.4_0.425_0",
+            "overlap_cells": 0,
+            "min_face_gap_m": 0.75
+          }
+        ],
+        "min_declared_part_dimension_m": 0.05,
+        "min_measured_feature_size_m": 0.1
+      },
+      "wing_tandem_xoff": {
+        "shape_id": "wing_tandem_xoff",
+        "n_parts": 2,
+        "union": {
+          "n_cells": 612,
+          "volume_m3": 0.07650000000000001,
+          "empty": false,
+          "n_components_26": 2,
+          "component_cells": [
+            323,
+            289
+          ],
+          "max_inscribed_diameter_m": 0.15000000000000002,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.05,
+          "thickness_ridge_m_max": 0.15000000000000002,
+          "ridge_cells_m": 2284,
+          "fraction_ridge_below_threshold": 0.6935201401050788,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        },
+        "parts": [
+          {
+            "part_id": "part_0.3_0.8_0.15_20_0.25_0.05_0",
+            "declared_min_dimension_m": 0.15,
+            "declared_thickness_m": 0.15,
+            "declared_chord_m": 0.3,
+            "declared_span_m": 0.8,
+            "n_cells": 289,
+            "volume_m3": 0.03612500000000001,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              289
+            ],
+            "max_inscribed_diameter_m": 0.15000000000000002,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.05,
+            "thickness_ridge_m_p50": 0.05,
+            "thickness_ridge_m_max": 0.15000000000000002,
+            "ridge_cells_m": 1408,
+            "fraction_ridge_below_threshold": 0.75,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          },
+          {
+            "part_id": "part_0.3_0.8_0.15_40_0.75_0.05_0",
+            "declared_min_dimension_m": 0.15,
+            "declared_thickness_m": 0.15,
+            "declared_chord_m": 0.3,
+            "declared_span_m": 0.8,
+            "n_cells": 323,
+            "volume_m3": 0.04037500000000001,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              323
+            ],
+            "max_inscribed_diameter_m": 0.15000000000000002,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.05,
+            "thickness_ridge_m_p50": 0.05,
+            "thickness_ridge_m_max": 0.15000000000000002,
+            "ridge_cells_m": 876,
+            "fraction_ridge_below_threshold": 0.6027397260273972,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          }
+        ],
+        "part_interactions": [
+          {
+            "part_a": "part_0.3_0.8_0.15_20_0.25_0.05_0",
+            "part_b": "part_0.3_0.8_0.15_40_0.75_0.05_0",
+            "overlap_cells": 0,
+            "min_face_gap_m": 0.15615528128088307
+          }
+        ],
+        "min_declared_part_dimension_m": 0.15,
+        "min_measured_feature_size_m": 0.15000000000000002
+      },
+      "wing_flat_ctrl_c30": {
+        "shape_id": "wing_flat_ctrl_c30",
+        "n_parts": 1,
+        "union": {
+          "n_cells": 595,
+          "volume_m3": 0.07437500000000002,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            595
+          ],
+          "max_inscribed_diameter_m": 0.25,
+          "thickness_ridge_m_min": 0.25,
+          "thickness_ridge_m_p5": 0.25,
+          "thickness_ridge_m_p50": 0.25,
+          "thickness_ridge_m_max": 0.25,
+          "ridge_cells_m": 1000,
+          "fraction_ridge_below_threshold": 0.0,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        },
+        "parts": [
+          {
+            "part_id": "wing_flat_ctrl_c30",
+            "declared_min_dimension_m": 0.25,
+            "declared_thickness_m": 0.25,
+            "declared_chord_m": 0.3,
+            "declared_span_m": 0.8,
+            "n_cells": 595,
+            "volume_m3": 0.07437500000000002,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              595
+            ],
+            "max_inscribed_diameter_m": 0.25,
+            "thickness_ridge_m_min": 0.25,
+            "thickness_ridge_m_p5": 0.25,
+            "thickness_ridge_m_p50": 0.25,
+            "thickness_ridge_m_max": 0.25,
+            "ridge_cells_m": 1000,
+            "fraction_ridge_below_threshold": 0.0,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          }
+        ],
+        "part_interactions": [],
+        "min_declared_part_dimension_m": 0.25,
+        "min_measured_feature_size_m": 0.25
+      },
+      "wing_thick_a20": {
+        "shape_id": "wing_thick_a20",
+        "n_parts": 1,
+        "union": {
+          "n_cells": 1037,
+          "volume_m3": 0.12962500000000002,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            1037
+          ],
+          "max_inscribed_diameter_m": 0.25,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.125,
+          "thickness_ridge_m_max": 0.25,
+          "ridge_cells_m": 1148,
+          "fraction_ridge_below_threshold": 0.45993031358885017,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        },
+        "parts": [
+          {
+            "part_id": "wing_thick_a20",
+            "declared_min_dimension_m": 0.25,
+            "declared_thickness_m": 0.25,
+            "declared_chord_m": 0.6,
+            "declared_span_m": 0.8,
+            "n_cells": 1037,
+            "volume_m3": 0.12962500000000002,
+            "empty": false,
+            "n_components_26": 1,
+            "component_cells": [
+              1037
+            ],
+            "max_inscribed_diameter_m": 0.25,
+            "thickness_ridge_m_min": 0.05,
+            "thickness_ridge_m_p5": 0.05,
+            "thickness_ridge_m_p50": 0.125,
+            "thickness_ridge_m_max": 0.25,
+            "ridge_cells_m": 1148,
+            "fraction_ridge_below_threshold": 0.45993031358885017,
+            "local_thickness_threshold_m": 0.1,
+            "supersample_factor": 4
+          }
+        ],
+        "part_interactions": [],
+        "min_declared_part_dimension_m": 0.25,
+        "min_measured_feature_size_m": 0.25
+      }
+    }
+  },
+  "policy_exclusions": {
+    "policy_widths_m": [
+      0.1,
+      0.15
+    ],
+    "quantization_tolerance_m": 0.025,
+    "per_shape": {
+      "plate_a00_ref": {
+        "min_measured_feature_size_m": 0.15000000000000002,
+        "min_measured_feature_size_cells": 3.0000000000000004,
+        "excluded_under_policy": {
+          "0.1": false,
+          "0.15": false
+        }
+      },
+      "plate_a10_nd": {
+        "min_measured_feature_size_m": 0.15000000000000002,
+        "min_measured_feature_size_cells": 3.0000000000000004,
+        "excluded_under_policy": {
+          "0.1": false,
+          "0.15": false
+        }
+      },
+      "plate_a20_nd": {
+        "min_measured_feature_size_m": 0.15000000000000002,
+        "min_measured_feature_size_cells": 3.0000000000000004,
+        "excluded_under_policy": {
+          "0.1": false,
+          "0.15": false
+        }
+      },
+      "plate_a30_nd": {
+        "min_measured_feature_size_m": 0.15000000000000002,
+        "min_measured_feature_size_cells": 3.0000000000000004,
+        "excluded_under_policy": {
+          "0.1": false,
+          "0.15": false
+        }
+      },
+      "plate_a20_up": {
+        "min_measured_feature_size_m": 0.15000000000000002,
+        "min_measured_feature_size_cells": 3.0000000000000004,
+        "excluded_under_policy": {
+          "0.1": false,
+          "0.15": false
+        }
+      },
+      "plate_a20_t10": {
+        "min_measured_feature_size_m": 0.10307764064044153,
+        "min_measured_feature_size_cells": 2.0615528128088303,
+        "excluded_under_policy": {
+          "0.1": false,
+          "0.15": true
+        }
+      },
+      "plate_a20_t05": {
+        "min_measured_feature_size_m": 0.05,
+        "min_measured_feature_size_cells": 1.0,
+        "excluded_under_policy": {
+          "0.1": true,
+          "0.15": true
+        }
+      },
+      "plate_a20_span04": {
+        "min_measured_feature_size_m": 0.15000000000000002,
+        "min_measured_feature_size_cells": 3.0000000000000004,
+        "excluded_under_policy": {
+          "0.1": false,
+          "0.15": false
+        }
+      },
+      "plate_a20_zneg15": {
+        "min_measured_feature_size_m": 0.15000000000000002,
+        "min_measured_feature_size_cells": 3.0000000000000004,
+        "excluded_under_policy": {
+          "0.1": false,
+          "0.15": false
+        }
+      },
+      "box_bluff03": {
+        "min_measured_feature_size_m": 0.35000000000000003,
+        "min_measured_feature_size_cells": 7.0,
+        "excluded_under_policy": {
+          "0.1": false,
+          "0.15": false
+        }
+      },
+      "wing_camber_bent": {
+        "min_measured_feature_size_m": 0.15000000000000002,
+        "min_measured_feature_size_cells": 3.0000000000000004,
+        "excluded_under_policy": {
+          "0.1": false,
+          "0.15": false
+        }
+      },
+      "wing_gurney_a20": {
+        "min_measured_feature_size_m": 0.05,
+        "min_measured_feature_size_cells": 1.0,
+        "excluded_under_policy": {
+          "0.1": true,
+          "0.15": true
+        }
+      },
+      "wing_chord03_a20": {
+        "min_measured_feature_size_m": 0.15000000000000002,
+        "min_measured_feature_size_cells": 3.0000000000000004,
+        "excluded_under_policy": {
+          "0.1": false,
+          "0.15": false
+        }
+      },
+      "wing_two_element": {
+        "min_measured_feature_size_m": 0.10307764064044153,
+        "min_measured_feature_size_cells": 2.0615528128088303,
+        "excluded_under_policy": {
+          "0.1": false,
+          "0.15": true
+        }
+      },
+      "wing_endplate_a20": {
+        "min_measured_feature_size_m": 0.1,
+        "min_measured_feature_size_cells": 2.0,
+        "excluded_under_policy": {
+          "0.1": false,
+          "0.15": true
+        }
+      },
+      "wing_tandem_xoff": {
+        "min_measured_feature_size_m": 0.15000000000000002,
+        "min_measured_feature_size_cells": 3.0000000000000004,
+        "excluded_under_policy": {
+          "0.1": false,
+          "0.15": false
+        }
+      },
+      "wing_flat_ctrl_c30": {
+        "min_measured_feature_size_m": 0.25,
+        "min_measured_feature_size_cells": 5.0,
+        "excluded_under_policy": {
+          "0.1": false,
+          "0.15": false
+        }
+      },
+      "wing_thick_a20": {
+        "min_measured_feature_size_m": 0.25,
+        "min_measured_feature_size_cells": 5.0,
+        "excluded_under_policy": {
+          "0.1": false,
+          "0.15": false
+        }
+      }
+    },
+    "excluded_shape_ids": {
+      "0.1": [
+        "plate_a20_t05",
+        "wing_gurney_a20"
+      ],
+      "0.15": [
+        "plate_a20_t05",
+        "plate_a20_t10",
+        "wing_endplate_a20",
+        "wing_gurney_a20",
+        "wing_two_element"
+      ]
+    }
+  },
+  "scope_repair_manifest": {
+    "kind": "wp6_2_scope_repair_manifest",
+    "created": "2026-09-21",
+    "supersedes": "reachable_set_ranking_manifest.json (claim scope only; the historical file is not rewritten)",
+    "declared_min_width_m": 0.15,
+    "excluded_shape_ids": [
+      "plate_a20_t05",
+      "plate_a20_t10",
+      "wing_endplate_a20",
+      "wing_gurney_a20",
+      "wing_two_element"
+    ],
+    "reachable_claim_candidates": "registered shapes minus excluded_shape_ids",
+    "extraction_sensitivity_status": {
+      "reachable_set_8/downforce/V1": "not_measured",
+      "reachable_set_8/drag/V1": "not_measured",
+      "reachable_set_8/downforce/V2": "not_measured",
+      "reachable_set_8/drag/V2": "not_measured",
+      "combined_pool_17_after_policy_exclusion/downforce/V1/17pool": "not_measured",
+      "combined_pool_17_after_policy_exclusion/drag/V1/17pool": "not_measured",
+      "combined_pool_17_after_policy_exclusion/downforce/V2/17pool": "not_measured",
+      "combined_pool_17_after_policy_exclusion/drag/V2/17pool": "not_measured"
+    },
+    "claim_status": "provisional",
+    "required_pair_policy": "pre-registered pairs only; unresolvable pairs remain explicit rows and never disappear silently",
+    "candidate_specific_uncertainty": {
+      "wing_camber_bent": {
+        "downforce_abs": 0.03760100210971784,
+        "drag_coefficient_rel": 0.034
+      },
+      "wing_chord03_a20": {
+        "downforce_abs": 0.01590066173805238,
+        "drag_coefficient_rel": 0.034
+      },
+      "wing_endplate_a20": {
+        "downforce_abs": 0.022307783292808137,
+        "drag_coefficient_rel": 0.034
+      },
+      "wing_flat_ctrl_c30": {
+        "downforce_abs": 0.0147,
+        "drag_coefficient_rel": 0.05774643326755256
+      },
+      "wing_gurney_a20": {
+        "downforce_abs": 0.0147,
+        "drag_coefficient_rel": 0.034
+      },
+      "wing_tandem_xoff": {
+        "downforce_abs": 0.0147,
+        "drag_coefficient_rel": 0.034
+      },
+      "wing_thick_a20": {
+        "downforce_abs": 0.020277285245178467,
+        "drag_coefficient_rel": 0.034
+      },
+      "wing_two_element": {
+        "downforce_abs": 0.016630966040096617,
+        "drag_coefficient_rel": 0.034
+      }
+    },
+    "source_artifacts": {
+      "manifest": "work/fixed_shape_ranking_2026_09/reachable_set_ranking_manifest.json",
+      "reachable_evidence": "docs/evidence/reachable_set_cross_fidelity_ranking_2026_09.json",
+      "first_program_evidence": "docs/evidence/fixed_shape_cross_fidelity_ranking_2026_09.json",
+      "registry_dir": "work/fixed_shape_ranking_2026_09/shapes_reachable"
+    }
+  },
+  "findings": [
+    {
+      "finding_id": "declared_min_width_conflict",
+      "severity": "fail",
+      "subject": "manifest",
+      "message": "the manifest purpose and definition declare different minimum solid widths ([0.1, 0.15]); the audit cannot treat the ranking claim as scoped until one value is registered",
+      "evidence": {
+        "purpose_widths_m": [
+          0.15
+        ],
+        "definition_widths_m": [
+          0.1
+        ]
+      }
+    },
+    {
+      "finding_id": "extraction_sensitivity_not_measured",
+      "severity": "fail",
+      "subject": "reachable_set_8/downforce/V1",
+      "message": "extraction_sensitivity is empty; it is recorded as not_measured and must not be treated as zero in the verdict",
+      "evidence": {}
+    },
+    {
+      "finding_id": "pass_requires_measured_extraction",
+      "severity": "fail",
+      "subject": "reachable_set_8/downforce/V1",
+      "message": "a pass verdict with an unmeasured extraction sensitivity is provisional only; the claim scope must be narrowed",
+      "evidence": {}
+    },
+    {
+      "finding_id": "extraction_sensitivity_not_measured",
+      "severity": "fail",
+      "subject": "reachable_set_8/drag/V1",
+      "message": "extraction_sensitivity is empty; it is recorded as not_measured and must not be treated as zero in the verdict",
+      "evidence": {}
+    },
+    {
+      "finding_id": "extraction_sensitivity_not_measured",
+      "severity": "fail",
+      "subject": "reachable_set_8/downforce/V2",
+      "message": "extraction_sensitivity is empty; it is recorded as not_measured and must not be treated as zero in the verdict",
+      "evidence": {}
+    },
+    {
+      "finding_id": "pass_requires_measured_extraction",
+      "severity": "fail",
+      "subject": "reachable_set_8/downforce/V2",
+      "message": "a pass verdict with an unmeasured extraction sensitivity is provisional only; the claim scope must be narrowed",
+      "evidence": {}
+    },
+    {
+      "finding_id": "extraction_sensitivity_not_measured",
+      "severity": "fail",
+      "subject": "reachable_set_8/drag/V2",
+      "message": "extraction_sensitivity is empty; it is recorded as not_measured and must not be treated as zero in the verdict",
+      "evidence": {}
+    },
+    {
+      "finding_id": "extraction_sensitivity_not_measured",
+      "severity": "fail",
+      "subject": "combined_pool_17_after_policy_exclusion/downforce/V1/17pool",
+      "message": "extraction_sensitivity is empty; it is recorded as not_measured and must not be treated as zero in the verdict",
+      "evidence": {}
+    },
+    {
+      "finding_id": "extraction_sensitivity_not_measured",
+      "severity": "fail",
+      "subject": "combined_pool_17_after_policy_exclusion/drag/V1/17pool",
+      "message": "extraction_sensitivity is empty; it is recorded as not_measured and must not be treated as zero in the verdict",
+      "evidence": {}
+    },
+    {
+      "finding_id": "extraction_sensitivity_not_measured",
+      "severity": "fail",
+      "subject": "combined_pool_17_after_policy_exclusion/downforce/V2/17pool",
+      "message": "extraction_sensitivity is empty; it is recorded as not_measured and must not be treated as zero in the verdict",
+      "evidence": {}
+    },
+    {
+      "finding_id": "extraction_sensitivity_not_measured",
+      "severity": "fail",
+      "subject": "combined_pool_17_after_policy_exclusion/drag/V2/17pool",
+      "message": "extraction_sensitivity is empty; it is recorded as not_measured and must not be treated as zero in the verdict",
+      "evidence": {}
+    },
+    {
+      "finding_id": "candidate_drift_exceeds_downforce_band",
+      "severity": "action",
+      "subject": "reachable_set_v1_v2",
+      "message": "the inherited downforce band is exceeded by 5 candidate(s); register the candidate-specific drift and do not reuse the common band for those rows",
+      "evidence": {
+        "candidates": [
+          "wing_camber_bent",
+          "wing_chord03_a20",
+          "wing_endplate_a20",
+          "wing_thick_a20",
+          "wing_two_element"
+        ],
+        "max_downforce_abs_drift": 0.03760100210971784,
+        "declared_band": 0.0147
+      }
+    },
+    {
+      "finding_id": "candidate_drift_exceeds_drag_band",
+      "severity": "action",
+      "subject": "reachable_set_v1_v2",
+      "message": "the inherited drag band is exceeded by 1 candidate(s)",
+      "evidence": {
+        "candidates": [
+          "wing_flat_ctrl_c30"
+        ],
+        "max_drag_relative_drift": 0.05774643326755256,
+        "declared_band": 0.034
+      }
+    },
+    {
+      "finding_id": "declared_vs_measured_feature_mismatch",
+      "severity": "info",
+      "subject": "feature_sizes",
+      "message": "4 shape(s) have measured minimum feature size different from the declared minimum part dimension; each difference is classified (grid quantization is not an error, under-resolution is)",
+      "evidence": {
+        "mismatches": [
+          {
+            "shape_id": "plate_a20_t10",
+            "declared_min_part_dimension_m": 0.1,
+            "measured_min_feature_size_m": 0.10307764064044153,
+            "delta_m": 0.0030776406404415257,
+            "delta_cells": 0.061552812808830515,
+            "classification": "grid_quantized"
+          },
+          {
+            "shape_id": "box_bluff03",
+            "declared_min_part_dimension_m": 0.3,
+            "measured_min_feature_size_m": 0.35000000000000003,
+            "delta_m": 0.050000000000000044,
+            "delta_cells": 1.0000000000000009,
+            "classification": "grid_over_read"
+          },
+          {
+            "shape_id": "wing_two_element",
+            "declared_min_part_dimension_m": 0.1,
+            "measured_min_feature_size_m": 0.10307764064044153,
+            "delta_m": 0.0030776406404415257,
+            "delta_cells": 0.061552812808830515,
+            "classification": "grid_quantized"
+          },
+          {
+            "shape_id": "wing_endplate_a20",
+            "declared_min_part_dimension_m": 0.05,
+            "measured_min_feature_size_m": 0.1,
+            "delta_m": 0.05,
+            "delta_cells": 1.0,
+            "classification": "grid_over_read"
+          }
+        ],
+        "under_resolved_shape_ids": [],
+        "grid_over_read_shape_ids": [
+          "box_bluff03",
+          "wing_endplate_a20"
+        ]
+      }
+    },
+    {
+      "finding_id": "policy_excludes_shapes",
+      "severity": "action",
+      "subject": "feature_sizes",
+      "message": "a declared minimum width of 0.1 m excludes 2 registered shape(s); the reachable-set claim must name the surviving subset",
+      "evidence": {
+        "width_m": 0.1,
+        "excluded_shape_ids": [
+          "plate_a20_t05",
+          "wing_gurney_a20"
+        ]
+      }
+    },
+    {
+      "finding_id": "policy_excludes_shapes",
+      "severity": "action",
+      "subject": "feature_sizes",
+      "message": "a declared minimum width of 0.15 m excludes 5 registered shape(s); the reachable-set claim must name the surviving subset",
+      "evidence": {
+        "width_m": 0.15,
+        "excluded_shape_ids": [
+          "plate_a20_t05",
+          "plate_a20_t10",
+          "wing_endplate_a20",
+          "wing_gurney_a20",
+          "wing_two_element"
+        ]
+      }
+    },
+    {
+      "finding_id": "reachable_set_includes_below_policy_shapes",
+      "severity": "fail",
+      "subject": "manifest",
+      "message": "the manifest's widest declared policy 0.15 m excludes 5 registered shape(s) that are nevertheless in the registered reachable set",
+      "evidence": {
+        "excluded_shape_ids": [
+          "plate_a20_t05",
+          "plate_a20_t10",
+          "wing_endplate_a20",
+          "wing_gurney_a20",
+          "wing_two_element"
+        ]
+      }
+    },
+    {
+      "finding_id": "policy_dependent_scope",
+      "severity": "action",
+      "subject": "manifest",
+      "message": "the shape membership of the reachable set depends on which declared width is used",
+      "evidence": {
+        "excluded_at_strict_width": [
+          "plate_a20_t05",
+          "plate_a20_t10",
+          "wing_endplate_a20",
+          "wing_gurney_a20",
+          "wing_two_element"
+        ],
+        "excluded_at_loose_width": [
+          "plate_a20_t05",
+          "wing_gurney_a20"
+        ],
+        "shapes_only_excluded_at_strict_width": []
+      }
+    }
+  ],
+  "ok": false,
+  "conclusions": {
+    "historical_files_rewritten": false,
+    "blocking_findings": [
+      "declared_min_width_conflict",
+      "extraction_sensitivity_not_measured",
+      "pass_requires_measured_extraction",
+      "extraction_sensitivity_not_measured",
+      "extraction_sensitivity_not_measured",
+      "pass_requires_measured_extraction",
+      "extraction_sensitivity_not_measured",
+      "extraction_sensitivity_not_measured",
+      "extraction_sensitivity_not_measured",
+      "extraction_sensitivity_not_measured",
+      "extraction_sensitivity_not_measured",
+      "reachable_set_includes_below_policy_shapes"
+    ],
+    "action_findings": [
+      "candidate_drift_exceeds_downforce_band",
+      "candidate_drift_exceeds_drag_band",
+      "policy_excludes_shapes",
+      "policy_excludes_shapes",
+      "policy_dependent_scope"
+    ],
+    "claims_requiring_narrowing": [
+      "reachable-set downforce pass is provisional while extraction sensitivity is not_measured",
+      "manifest minimum-width policy must be re-registered with one value"
+    ]
+  },
+  "claims_supported": [
+    "all registered shapes have measured per-part local thickness, connected components, part gaps and overlaps on the canonical grid",
+    "the declared/measured width mismatch and every candidate whose V1->V2 drift exceeds the inherited band are machine-readable"
+  ],
+  "claims_not_supported": [
+    "no new ranking claim is made by this audit",
+    "no extraction sensitivity value is inferred from an empty block",
+    "no optimizer-generated geometry is covered"
+  ],
+  "as_run_registry": {
+    "registry_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/fixed_shape_ranking_2026_09/shapes_reachable",
+    "registry_manifest_sha256": "b7c135c3726d0912ce3468a2d47b5b3e7836537ec31111e4a6a4a7cdcdb7b10d",
+    "spacing_m": 0.05,
+    "threshold_m": 0.1,
+    "shapes": {
+      "wing_camber_bent": {
+        "occupancy_sha256": "7bda9f9a70a78c2ae6e6a8c0b0b65019139df5a20f5032643c4b04b72b6b7cc0",
+        "active_mask_intersected": true,
+        "as_run": {
+          "n_cells": 612,
+          "volume_m3": 0.07650000000000001,
+          "empty": false,
+          "n_components_26": 2,
+          "component_cells": [
+            323,
+            289
+          ],
+          "max_inscribed_diameter_m": 0.15000000000000002,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.05,
+          "thickness_ridge_m_max": 0.15000000000000002,
+          "ridge_cells_m": 2256,
+          "fraction_ridge_below_threshold": 0.5851063829787234,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        }
+      },
+      "wing_chord03_a20": {
+        "occupancy_sha256": "dc3e8b4a579b1a00d54017c1d567e651bf4cb4c20b39d125f681702366987f2b",
+        "active_mask_intersected": true,
+        "as_run": {
+          "n_cells": 289,
+          "volume_m3": 0.03612500000000001,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            289
+          ],
+          "max_inscribed_diameter_m": 0.15000000000000002,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.05,
+          "thickness_ridge_m_max": 0.15000000000000002,
+          "ridge_cells_m": 1408,
+          "fraction_ridge_below_threshold": 0.75,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        }
+      },
+      "wing_endplate_a20": {
+        "occupancy_sha256": "60fd76b0e699602a9656abfe046363e6cc5255dcc29df7b742044a68aaf9da5e",
+        "active_mask_intersected": true,
+        "as_run": {
+          "n_cells": 799,
+          "volume_m3": 0.09987500000000002,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            799
+          ],
+          "max_inscribed_diameter_m": 0.158113883008419,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.125,
+          "thickness_ridge_m_max": 0.158113883008419,
+          "ridge_cells_m": 1980,
+          "fraction_ridge_below_threshold": 0.2828282828282828,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        }
+      },
+      "wing_flat_ctrl_c30": {
+        "occupancy_sha256": "646a8b19195d6e29eae8981706a4df0f773f2ecf099d697b6e6a0bb96afa2eda",
+        "active_mask_intersected": true,
+        "as_run": {
+          "n_cells": 595,
+          "volume_m3": 0.07437500000000002,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            595
+          ],
+          "max_inscribed_diameter_m": 0.25,
+          "thickness_ridge_m_min": 0.25,
+          "thickness_ridge_m_p5": 0.25,
+          "thickness_ridge_m_p50": 0.25,
+          "thickness_ridge_m_max": 0.25,
+          "ridge_cells_m": 1000,
+          "fraction_ridge_below_threshold": 0.0,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        }
+      },
+      "wing_gurney_a20": {
+        "occupancy_sha256": "07e45a3adffca3b025a3417ccb25f5c41a03e921d20632219e0d165626bb7f05",
+        "active_mask_intersected": true,
+        "as_run": {
+          "n_cells": 646,
+          "volume_m3": 0.08075000000000002,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            646
+          ],
+          "max_inscribed_diameter_m": 0.15000000000000002,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.15000000000000002,
+          "thickness_ridge_m_max": 0.15000000000000002,
+          "ridge_cells_m": 2168,
+          "fraction_ridge_below_threshold": 0.24354243542435425,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        }
+      },
+      "wing_tandem_xoff": {
+        "occupancy_sha256": "d6856cc4af9ca1e959a2061ed7595e45faaf7cb7bebf0977d3c3d17d21d2bf16",
+        "active_mask_intersected": true,
+        "as_run": {
+          "n_cells": 612,
+          "volume_m3": 0.07650000000000001,
+          "empty": false,
+          "n_components_26": 2,
+          "component_cells": [
+            323,
+            289
+          ],
+          "max_inscribed_diameter_m": 0.15000000000000002,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.05,
+          "thickness_ridge_m_max": 0.15000000000000002,
+          "ridge_cells_m": 2284,
+          "fraction_ridge_below_threshold": 0.6935201401050788,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        }
+      },
+      "wing_thick_a20": {
+        "occupancy_sha256": "607ab2175e5b584973803361b1d525335efe50180c910742c4d036b5198cf4a6",
+        "active_mask_intersected": true,
+        "as_run": {
+          "n_cells": 1037,
+          "volume_m3": 0.12962500000000002,
+          "empty": false,
+          "n_components_26": 1,
+          "component_cells": [
+            1037
+          ],
+          "max_inscribed_diameter_m": 0.25,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.125,
+          "thickness_ridge_m_max": 0.25,
+          "ridge_cells_m": 1148,
+          "fraction_ridge_below_threshold": 0.45993031358885017,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        }
+      },
+      "wing_two_element": {
+        "occupancy_sha256": "a18b36956e7ac2a1f8d42c9fb95bd9dd8214d7eaaf3e7c5084235877fba77731",
+        "active_mask_intersected": true,
+        "as_run": {
+          "n_cells": 442,
+          "volume_m3": 0.055250000000000014,
+          "empty": false,
+          "n_components_26": 2,
+          "component_cells": [
+            323,
+            119
+          ],
+          "max_inscribed_diameter_m": 0.15000000000000002,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.05,
+          "thickness_ridge_m_max": 0.15000000000000002,
+          "ridge_cells_m": 1972,
+          "fraction_ridge_below_threshold": 0.6693711967545639,
+          "local_thickness_threshold_m": 0.1,
+          "supersample_factor": 4
+        }
+      }
+    }
+  }
+}

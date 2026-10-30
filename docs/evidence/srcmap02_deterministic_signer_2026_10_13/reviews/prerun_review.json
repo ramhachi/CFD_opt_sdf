@@ -1,0 +1,42 @@
+{
+  "verdict": "PASS",
+  "review_stage": "pre-run",
+  "freeze_sha256": "58fe2853fe2b913b82555bd4a5cbcefd2b6fcf93740e88c3c644e9c893d0d707",
+  "reviewer_identity": "Native Codex independent read-only subagent /root/srcmap02_review; inherited model, exact model ID not exposed",
+  "reviewed_utc": "2026-10-13T02:40:34.905573+00:00",
+  "target_geometry_queries_executed_by_reviewer": 0,
+  "execution_marker_absent_during_review": true,
+  "verified_frozen_files": 161,
+  "verified_jobs": 32,
+  "verified_libigl_artifacts_per_inventory": 13,
+  "blocking_findings": [],
+  "checks": [
+    "A is preregistered preferred pseudonormal; B is winding control, with no post-result selection.",
+    "Official libigl exact2.6.3 wheel identity, imported module and binaries are frozen and shared by the two runtime bundles.",
+    "Explicit closest_point unsigned query is separate from libigl scalar sign; randomized signed distance and abs thereof are not used.",
+    "No tolerance relaxation, old-field hash objective, clipping, adaptive node queries or measurement rerun is present.",
+    "Formal fixture stage runs before target queries and failure stops the campaign; smooth-sphere versus convex-polyhedron feature truths are explicitly distinguished.",
+    "Unsigned negative zero rejected; +0 unsigned produces +0 combined; signer zero at unsigned>0 fails closed; Float32 cast zero normalized and underflow counted.",
+    "Five independent process repeats per candidate and full3x3 chunk/order products restore canonical order and use exact unsignedF64/sign/combinedF64/F32/state identity.",
+    "Cross-environment gate requires exact Float64 unsigned and combined field bytes as well as Float32/sign/state; Float32-only agreement cannot rescue the gate.",
+    "A/B nonzero and exact-zero disagreements are evaluated on v16 and v17 and wired into terminal classification.",
+    "Classifer precedence preserves integrity/analytic/zero/runtime blockers, candidate instabilities, disagreement, cross-environment exactness and only then qualification.",
+    "Known nodes are frozen saved-evidence union; closest features derive from already saved outputs with no additional geometry query.",
+    "Current evaluators compute hard and descriptive smooth volumes; no reference migration or hard-feasibility substitution.",
+    "Exclusive execution marker/output writes and runtime/source/mesh/array checks preserve fail-closed partial evidence.",
+    "Self-intersection absence and unconditional global orientation are not independently certified; method corroboration and finite environment claims are bounded."
+  ],
+  "resolved_preliminary_findings": [
+    "Sphere mesh approximation shell distinguished from smooth-sphere observations; shared .9 and1.1 radial points added before freeze.",
+    "Float32 zero normalization implemented before freeze.",
+    "v16 whole-field A/B comparison and classifier wiring implemented before freeze.",
+    "Unexpected metadata preflight exceptions receive INCONCLUSIVE classification before target execution.",
+    "Existing volume contract identifier references corrected before freeze."
+  ],
+  "limitations": [
+    "This PASS approves the frozen design for execution; it does not assert any candidate qualified or field deterministic before observing results.",
+    "Full final pytest baseline comparison remains a completion gate for root; reviewer did not duplicate it.",
+    "Runtime wheel/build identity is frozen; release-source provenance is not a reproducible binary build attestation.",
+    "Topology evidence does not certify non-self-intersection or physical aerodynamic qualification."
+  ]
+}

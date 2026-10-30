@@ -1,0 +1,200 @@
+GAMG:  Solving for p, Initial residual = 1.0081977e-05, Final residual = 9.9274531e-08, No Iterations 3
+time step continuity errors : sum local = 1.4563656e-12, global = -6.9691146e-15, cumulative = -1.148914e-08
+PIMPLE: iteration 2
+smoothSolver:  Solving for Ux, Initial residual = 2.1608212e-08, Final residual = 2.5166013e-10, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.8413565e-07, Final residual = 2.5262461e-09, No Iterations 1
+GAMG:  Solving for p, Initial residual = 5.8968927e-05, Final residual = 4.0993795e-07, No Iterations 5
+GAMG:  Solving for p, Initial residual = 5.1945752e-06, Final residual = 9.7589792e-08, No Iterations 4
+time step continuity errors : sum local = 1.4316508e-12, global = -7.714672e-15, cumulative = -1.1489147e-08
+GAMG:  Solving for p, Initial residual = 1.0561919e-05, Final residual = 7.6463411e-08, No Iterations 6
+GAMG:  Solving for p, Initial residual = 2.1143816e-06, Final residual = 5.5201655e-08, No Iterations 2
+time step continuity errors : sum local = 8.0981164e-13, global = -6.4906408e-16, cumulative = -1.1489148e-08
+smoothSolver:  Solving for nuTilda, Initial residual = 9.7929877e-07, Final residual = 2.1677097e-09, No Iterations 2
+ExecutionTime = 4115.37 s  ClockTime = 4161 s
+
+forceCoeffs forceCoeffs write:
+    Coefficient	Total	Pressure	Viscous	Internal
+    Cd:	0.061110474	0.048808994	0.01230148	0
+    Cd(f):	0.036180206	0.030027186	0.0061530199	0
+    Cd(r):	0.024930268	0.018781809	0.0061484597	0
+    Cl:	1.256618	1.2561086	0.00050937297	0
+    Cl(f):	0.46023719	0.46157609	-0.001338898	0
+    Cl(r):	0.79638082	0.79453254	0.001848271	0
+    CmPitch:	-0.16807181	-0.16647823	-0.0015935845	0
+    CmRoll:	0.0056249687	0.0056226886	2.2800939e-06	0
+    CmYaw:	-0.00027354733	-0.00021848252	-5.5064815e-05	0
+    Cs:	1.293622e-20	1.2782279e-20	1.5394091e-22	0
+    Cs(f):	-0.00027354733	-0.00021848252	-5.5064815e-05	0
+    Cs(r):	0.00027354733	0.00021848252	5.5064815e-05	0
+
+    writing force and moment coefficient files.
+
+forces forces write:
+    Sum of forces
+        Total    : (0.012286872 -0.25265562 2.6009564e-21)
+        Pressure : (0.0098135364 -0.2525532 2.570005e-21)
+        Viscous  : (0.0024733355 -0.00010241453 3.0951358e-23)
+    Sum of moments
+        Total    : (0.00025265562 1.2286872e-05 -0.0075492486)
+        Pressure : (0.0002525532 9.8135364e-06 -0.0074776698)
+        Viscous  : (1.0241453e-07 2.4733355e-06 -7.1578721e-05)
+    writing force and moment files.
+
+Courant Number mean: 0.050913601 max: 8.0359356
+Time = 0.11916
+
+PIMPLE: iteration 1
+smoothSolver:  Solving for Ux, Initial residual = 9.9478285e-07, Final residual = 1.0038376e-08, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.1858194e-05, Final residual = 2.1212219e-07, No Iterations 1
+GAMG:  Solving for p, Initial residual = 6.6388064e-05, Final residual = 3.9106066e-07, No Iterations 6
+GAMG:  Solving for p, Initial residual = 1.2363962e-05, Final residual = 9.5869255e-08, No Iterations 4
+time step continuity errors : sum local = 1.4063996e-12, global = 2.6416326e-15, cumulative = -1.1489145e-08
+GAMG:  Solving for p, Initial residual = 2.5276946e-05, Final residual = 2.4573652e-07, No Iterations 6
+GAMG:  Solving for p, Initial residual = 1.0054039e-05, Final residual = 9.869699e-08, No Iterations 3
+time step continuity errors : sum local = 1.4478844e-12, global = 3.0129888e-15, cumulative = -1.1489142e-08
+PIMPLE: iteration 2
+smoothSolver:  Solving for Ux, Initial residual = 2.1550681e-08, Final residual = 2.5080686e-10, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.8463679e-07, Final residual = 2.5218756e-09, No Iterations 1
+GAMG:  Solving for p, Initial residual = 5.9313116e-05, Final residual = 4.0808486e-07, No Iterations 5
+GAMG:  Solving for p, Initial residual = 5.2022612e-06, Final residual = 9.7263741e-08, No Iterations 4
+time step continuity errors : sum local = 1.4268593e-12, global = -4.1462465e-15, cumulative = -1.1489146e-08
+GAMG:  Solving for p, Initial residual = 1.0606655e-05, Final residual = 7.6247626e-08, No Iterations 6
+GAMG:  Solving for p, Initial residual = 2.1114973e-06, Final residual = 5.5110665e-08, No Iterations 2
+time step continuity errors : sum local = 8.0847208e-13, global = 1.8156461e-15, cumulative = -1.1489145e-08
+smoothSolver:  Solving for nuTilda, Initial residual = 9.7727158e-07, Final residual = 2.162079e-09, No Iterations 2
+ExecutionTime = 4116.04 s  ClockTime = 4162 s
+
+forceCoeffs forceCoeffs write:
+    Coefficient	Total	Pressure	Viscous	Internal
+    Cd:	0.061110472	0.048808992	0.01230148	0
+    Cd(f):	0.036180204	0.030027185	0.0061530199	0
+    Cd(r):	0.024930267	0.018781808	0.0061484597	0
+    Cl:	1.256618	1.2561086	0.00050937295	0
+    Cl(f):	0.46023718	0.46157608	-0.001338898	0
+    Cl(r):	0.79638078	0.7945325	0.0018482709	0
+    CmPitch:	-0.1680718	-0.16647821	-0.0015935845	0
+    CmRoll:	0.0056249685	0.0056226884	2.2800938e-06	0
+    CmYaw:	-0.00027354732	-0.00021848251	-5.5064815e-05	0
+    Cs:	1.2936224e-20	1.2782283e-20	1.5394089e-22	0
+    Cs(f):	-0.00027354732	-0.00021848251	-5.5064815e-05	0
+    Cs(r):	0.00027354732	0.00021848251	5.5064815e-05	0
+
+    writing force and moment coefficient files.
+
+forces forces write:
+    Sum of forces
+        Total    : (0.012286871 -0.25265561 2.6009572e-21)
+        Pressure : (0.009813536 -0.25255319 2.5700059e-21)
+        Viscous  : (0.0024733355 -0.00010241453 3.0951355e-23)
+    Sum of moments
+        Total    : (0.00025265561 1.2286871e-05 -0.007549248)
+        Pressure : (0.00025255319 9.813536e-06 -0.0074776693)
+        Viscous  : (1.0241453e-07 2.4733355e-06 -7.1578721e-05)
+    writing force and moment files.
+
+Courant Number mean: 0.0509136 max: 8.0359356
+Time = 0.11918
+
+PIMPLE: iteration 1
+smoothSolver:  Solving for Ux, Initial residual = 9.934091e-07, Final residual = 1.0020175e-08, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.1835885e-05, Final residual = 2.1169627e-07, No Iterations 1
+GAMG:  Solving for p, Initial residual = 6.4237544e-05, Final residual = 3.8108444e-07, No Iterations 6
+GAMG:  Solving for p, Initial residual = 1.2142263e-05, Final residual = 9.6826315e-08, No Iterations 4
+time step continuity errors : sum local = 1.4204396e-12, global = -9.8834387e-15, cumulative = -1.1489155e-08
+GAMG:  Solving for p, Initial residual = 2.5070194e-05, Final residual = 2.4542612e-07, No Iterations 6
+GAMG:  Solving for p, Initial residual = 1.0050955e-05, Final residual = 9.8821393e-08, No Iterations 3
+time step continuity errors : sum local = 1.4497094e-12, global = -5.1710896e-15, cumulative = -1.148916e-08
+PIMPLE: iteration 2
+smoothSolver:  Solving for Ux, Initial residual = 2.1442226e-08, Final residual = 2.500409e-10, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.8373154e-07, Final residual = 2.5131352e-09, No Iterations 1
+GAMG:  Solving for p, Initial residual = 5.9116403e-05, Final residual = 4.0664992e-07, No Iterations 5
+GAMG:  Solving for p, Initial residual = 5.1877216e-06, Final residual = 9.7299775e-08, No Iterations 4
+time step continuity errors : sum local = 1.4273879e-12, global = -7.5848767e-15, cumulative = -1.1489167e-08
+GAMG:  Solving for p, Initial residual = 1.0591802e-05, Final residual = 7.6102477e-08, No Iterations 6
+GAMG:  Solving for p, Initial residual = 2.108519e-06, Final residual = 5.5019199e-08, No Iterations 2
+time step continuity errors : sum local = 8.0713033e-13, global = 6.7053727e-16, cumulative = -1.1489167e-08
+smoothSolver:  Solving for nuTilda, Initial residual = 9.7524068e-07, Final residual = 2.1558783e-09, No Iterations 2
+ExecutionTime = 4116.69 s  ClockTime = 4163 s
+
+forceCoeffs forceCoeffs write:
+    Coefficient	Total	Pressure	Viscous	Internal
+    Cd:	0.061110469	0.048808989	0.012301479	0
+    Cd(f):	0.036180203	0.030027183	0.0061530198	0
+    Cd(r):	0.024930266	0.018781806	0.0061484597	0
+    Cl:	1.2566179	1.2561085	0.00050937293	0
+    Cl(f):	0.46023717	0.46157607	-0.001338898	0
+    Cl(r):	0.79638074	0.79453247	0.0018482709	0
+    CmPitch:	-0.16807179	-0.1664782	-0.0015935845	0
+    CmRoll:	0.0056249683	0.0056226882	2.2800937e-06	0
+    CmYaw:	-0.00027354731	-0.00021848249	-5.5064814e-05	0
+    Cs:	1.2936211e-20	1.278227e-20	1.5394094e-22	0
+    Cs(f):	-0.00027354731	-0.00021848249	-5.5064814e-05	0
+    Cs(r):	0.00027354731	0.00021848249	5.5064814e-05	0
+
+    writing force and moment coefficient files.
+
+forces forces write:
+    Sum of forces
+        Total    : (0.012286871 -0.2526556 2.6009546e-21)
+        Pressure : (0.0098135354 -0.25255318 2.5700032e-21)
+        Viscous  : (0.0024733355 -0.00010241452 3.0951365e-23)
+    Sum of moments
+        Total    : (0.0002526556 1.2286871e-05 -0.0075492475)
+        Pressure : (0.00025255318 9.8135354e-06 -0.0074776688)
+        Viscous  : (1.0241452e-07 2.4733355e-06 -7.1578721e-05)
+    writing force and moment files.
+
+Courant Number mean: 0.0509136 max: 8.0359355
+Time = 0.1192
+
+PIMPLE: iteration 1
+smoothSolver:  Solving for Ux, Initial residual = 9.9216581e-07, Final residual = 1.0002175e-08, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.1812118e-05, Final residual = 2.1131372e-07, No Iterations 1
+GAMG:  Solving for p, Initial residual = 6.39632e-05, Final residual = 3.8126474e-07, No Iterations 6
+GAMG:  Solving for p, Initial residual = 1.2096326e-05, Final residual = 9.6878491e-08, No Iterations 4
+time step continuity errors : sum local = 1.4212048e-12, global = -1.1100047e-14, cumulative = -1.1489178e-08
+GAMG:  Solving for p, Initial residual = 2.5012117e-05, Final residual = 2.455239e-07, No Iterations 6
+GAMG:  Solving for p, Initial residual = 1.0023995e-05, Final residual = 9.8298247e-08, No Iterations 3
+time step continuity errors : sum local = 1.4420346e-12, global = -5.9748151e-15, cumulative = -1.1489184e-08
+PIMPLE: iteration 2
+smoothSolver:  Solving for Ux, Initial residual = 2.1384872e-08, Final residual = 2.4959759e-10, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.8355107e-07, Final residual = 2.5087127e-09, No Iterations 1
+GAMG:  Solving for p, Initial residual = 5.9122237e-05, Final residual = 4.050309e-07, No Iterations 5
+GAMG:  Solving for p, Initial residual = 5.2014297e-06, Final residual = 9.6867211e-08, No Iterations 4
+time step continuity errors : sum local = 1.421042e-12, global = -6.3670967e-15, cumulative = -1.148919e-08
+GAMG:  Solving for p, Initial residual = 1.0610855e-05, Final residual = 7.5982127e-08, No Iterations 6
+GAMG:  Solving for p, Initial residual = 2.1078374e-06, Final residual = 5.4978477e-08, No Iterations 2
+time step continuity errors : sum local = 8.0653283e-13, global = 9.6789353e-16, cumulative = -1.1489189e-08
+smoothSolver:  Solving for nuTilda, Initial residual = 9.7307753e-07, Final residual = 2.1492449e-09, No Iterations 2
+ExecutionTime = 4117.94 s  ClockTime = 4164 s
+
+forceCoeffs forceCoeffs write:
+    Coefficient	Total	Pressure	Viscous	Internal
+    Cd:	0.061110464	0.048808985	0.012301479	0
+    Cd(f):	0.0361802	0.03002718	0.0061530198	0
+    Cd(r):	0.024930264	0.018781805	0.0061484596	0
+    Cl:	1.2566179	1.2561085	0.00050937291	0
+    Cl(f):	0.46023716	0.46157606	-0.001338898	0
+    Cl(r):	0.7963807	0.79453243	0.0018482709	0
+    CmPitch:	-0.16807177	-0.16647819	-0.0015935845	0
+    CmRoll:	0.005624968	0.0056226879	2.2800936e-06	0
+    CmYaw:	-0.00027354729	-0.00021848247	-5.5064814e-05	0
+    Cs:	1.2936216e-20	1.2782275e-20	1.5394093e-22	0
+    Cs(f):	-0.00027354729	-0.00021848247	-5.5064814e-05	0
+    Cs(r):	0.00027354729	0.00021848247	5.5064814e-05	0
+
+    writing force and moment coefficient files.
+
+forces forces write:
+    Sum of forces
+        Total    : (0.01228687 -0.25265559 2.6009555e-21)
+        Pressure : (0.0098135345 -0.25255317 2.5700042e-21)
+        Viscous  : (0.0024733355 -0.00010241452 3.0951362e-23)
+    Sum of moments
+        Total    : (0.00025265559 1.228687e-05 -0.0075492469)
+        Pressure : (0.00025255317 9.8135345e-06 -0.0074776682)
+        Viscous  : (1.0241452e-07 2.4733355e-06 -7.1578721e-05)
+    writing force and moment files.
+
+End
+

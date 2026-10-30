@@ -1,0 +1,160 @@
+{
+  "amp": -1.0,
+  "base_topology": {
+    "boundary": "b292a1a890bebbf9fda621a28a5dd169e58fdd36ba8bc8e695737b53dc249070",
+    "faces": "b386856b55ec6ea8582c373bf2d9f1fff49b1ac2dfb33d3a38139052cbbbc59a",
+    "neighbour": "bf798b77aeb35d32b9d09eaf06181e29118f06afd86693ce93db01a6c40ae944",
+    "owner": "61bc14bc1ba0f69919212e1414d93233b036df7b084b8163e788769b87c898de"
+  },
+  "bl_thickness_m": 0.007749542399999998,
+  "check_mesh": {
+    "cells": 13828,
+    "diagnostic_lines": [],
+    "failed_check_counts": [],
+    "max_aspect_ratio": "6.7185848",
+    "max_non_orthogonality": "39.172958",
+    "max_skewness": "0.64883837",
+    "mesh_ok": true,
+    "min_determinant": "0.025733761",
+    "min_face_weight": "0.14767131",
+    "min_volume_ratio": "0.12994222",
+    "severe_non_orthogonal_faces": 0,
+    "unused_points": 0
+  },
+  "check_mesh_returncode": 0,
+  "delta_alpha_deg": -1.0,
+  "forces": {
+    "Cd": {
+      "half_window_rel_diff": 7.242513568206537e-06,
+      "last": 0.0532702995,
+      "tail_max": 0.0533213435,
+      "tail_mean": 0.053281115232000006,
+      "tail_min": 0.0532390008,
+      "tail_rel_drift": 3.5466868841685026e-07,
+      "tail_rel_std": 0.00040603549266696263,
+      "tail_std": 2.163402387307033e-05
+    },
+    "Cl": {
+      "half_window_rel_diff": 1.2950598716597243e-05,
+      "last": 1.25884215,
+      "tail_max": 1.25951009,
+      "tail_mean": 1.25895028924,
+      "tail_min": 1.25834224,
+      "tail_rel_drift": 2.5263577984791482e-05,
+      "tail_rel_std": 0.00017332312265923639,
+      "tail_std": 0.00021820519540382565
+    },
+    "cl_block_rel_drift": 2.5550799072383126e-05,
+    "cl_block_rel_std": 0.00011478042441789943,
+    "cl_plateau": true,
+    "force_plateau": true,
+    "history_rows": 5000,
+    "iterations_to_plateau": 121,
+    "last_iteration": 5000.0,
+    "rows": 5000,
+    "tail_rows": 1000
+  },
+  "generator_wall_s": 3.0340486929999315,
+  "h_m": 0.020105999999999995,
+  "h_over_c": 0.09,
+  "id": "sa-wf_h0.09_med30_morphB2-da-1",
+  "iterations_requested": 5000,
+  "mesh": "med30",
+  "mesh_cells_3d": 13828,
+  "mesh_msh_sha256": "6b52081e7b713df71f2fd8dddb2e223ac0f33ec07fead2a1050714fe36f2b78c",
+  "mesh_proxy_failures": [],
+  "method": "morph",
+  "mode": "morph",
+  "model": "sa-wf",
+  "morph": {
+    "airfoil_min_weight": 1.0,
+    "airfoil_nodes": 272,
+    "amp": -1.0,
+    "amp_unit": "deg",
+    "area_ratio_max": 1.1103532855446347,
+    "area_ratio_min": 0.7741015723938449,
+    "base_delta_alpha_deg": 0.5,
+    "base_mesh_msh_sha256": "3d83b962a4a415f3185bfdbe926df149a08a798eab46bc7de480e8422e8aaf01",
+    "blend": "smoothstep",
+    "contour_err_m": 1.1102230246251565e-16,
+    "fixed_nodes": 6500,
+    "fixed_nodes_moved": 0,
+    "inverted_cells": 0,
+    "max_node_displacement_m": 0.01061079997163832,
+    "mode": "incidence",
+    "module_sha256": "156cd8416d3291a42704dc712f78ee62fef5ff9c60b5f552b3800d22a78bc5ad",
+    "te_displacement_m": [
+      0.00032713853579602326,
+      -0.004647784456801134
+    ],
+    "x_lowest_m": 0.047122026338265365
+  },
+  "n_layers": 7,
+  "pre_solver_wall_s": 4.424167246999787,
+  "residual_converged": false,
+  "shape_mode": "incidence",
+  "solver": {
+    "converged_in": null,
+    "foam_fatal": false,
+    "iterations": 5000,
+    "last_initial_residuals": {
+      "ReThetat": null,
+      "Ux": 8.4641702e-05,
+      "Uy": 0.00048996582,
+      "gammaInt": null,
+      "k": null,
+      "nuTilda": 5.564483e-05,
+      "omega": null,
+      "p": 1.2348355e-05
+    },
+    "last_time": 5000.0,
+    "nan_in_log": false,
+    "sigfpe": false
+  },
+  "stages": [
+    {
+      "peak_rss_mb_sampled": 3.203072,
+      "returncode": 0,
+      "stage": "gmshToFoam",
+      "timed_out": false,
+      "wall_s": 0.6182524979994923
+    },
+    {
+      "peak_rss_mb_sampled": 0.507904,
+      "returncode": 0,
+      "stage": "checkMesh",
+      "timed_out": false,
+      "wall_s": 0.7688631149994762
+    },
+    {
+      "peak_rss_mb_sampled": 75.4688,
+      "returncode": 0,
+      "stage": "simpleFoam",
+      "timed_out": false,
+      "wall_s": 190.52008459200079
+    }
+  ],
+  "status": "COMPLETED",
+  "topology": {
+    "boundary": "b292a1a890bebbf9fda621a28a5dd169e58fdd36ba8bc8e695737b53dc249070",
+    "faces": "b386856b55ec6ea8582c373bf2d9f1fff49b1ac2dfb33d3a38139052cbbbc59a",
+    "neighbour": "bf798b77aeb35d32b9d09eaf06181e29118f06afd86693ce93db01a6c40ae944",
+    "owner": "61bc14bc1ba0f69919212e1414d93233b036df7b084b8163e788769b87c898de"
+  },
+  "total_wall_s": 195.50632604800012,
+  "variant": "B2",
+  "x_lowest_m": 0.047122026338265365,
+  "yplus": {
+    "airfoil": {
+      "average": 31.93677,
+      "max": 65.859409,
+      "min": 3.7170762
+    },
+    "ground": {
+      "average": 7.2420328,
+      "max": 34.864728,
+      "min": 0.017141501
+    }
+  },
+  "yplus_returncode": 0
+}

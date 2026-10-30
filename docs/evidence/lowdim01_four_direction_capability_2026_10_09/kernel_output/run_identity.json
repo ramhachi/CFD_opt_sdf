@@ -1,0 +1,33 @@
+{
+  "direction_files": {},
+  "failure_stage": null,
+  "fd08_baseline_csv_sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3",
+  "kernel": "a",
+  "numpy_version": "2.1.3",
+  "pins": {
+    "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "docs/evidence/lowdim01_four_direction_capability_2026_10_09/inputs/proposal_downforce.dir_f4_fortran.raw": "fc239c1169c3336aa283d12734500d882027602e75b619ffffe146ba373c9010",
+    "docs/evidence/lowdim01_four_direction_capability_2026_10_09/inventory.json": "684af1c312fa9d896ce328f7e541d942e404e2315bb2f749539fcab9bc10f325",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/lowdim01_states.py": "456c0110dafb64c2dc4b82e35ba7830aa4b436364802bb6b437f05aa35e82d32",
+    "scripts/step01_states.py": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "scripts/waterlily_xfid_candidate_c_job.jl": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447"
+  },
+  "platform": "Linux 7f9811b6c7e1 6.18.48+ #1 SMP Sun Sep 27 17:32:16 UTC 2026 x86_64",
+  "python_version": "3.13.15 (main, Aug  6 2026, 11:06:22) [GCC 13.3.0]",
+  "runner_sha256": "44b4ba222d05ea749bdd04eba368412f4a944e3b631f9c52dd21d7518a34788a",
+  "source_commit": "4c99143cb0b56fcc8850e5826b8f07e5fd51430b",
+  "verified": {
+    "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "docs/evidence/lowdim01_four_direction_capability_2026_10_09/inputs/proposal_downforce.dir_f4_fortran.raw": "fc239c1169c3336aa283d12734500d882027602e75b619ffffe146ba373c9010",
+    "docs/evidence/lowdim01_four_direction_capability_2026_10_09/inventory.json": "684af1c312fa9d896ce328f7e541d942e404e2315bb2f749539fcab9bc10f325",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/lowdim01_states.py": "456c0110dafb64c2dc4b82e35ba7830aa4b436364802bb6b437f05aa35e82d32",
+    "scripts/step01_states.py": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "scripts/waterlily_xfid_candidate_c_job.jl": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447"
+  }
+}

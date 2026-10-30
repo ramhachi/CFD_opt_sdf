@@ -1,0 +1,1099 @@
+{
+  "kind": "pq3_3b_preflight_v2",
+  "schema_version": 2,
+  "input_checkpoint": {
+    "path": "work/pq3_3_volume_target/checkpoint_chunk02.json",
+    "sha256": "d2868753da3efac6e959a465b964a627c33dc6601e5e4d72ed53b22b15836884",
+    "objective": -2.72646951325,
+    "iteration": 3,
+    "accepted": 3
+  },
+  "diagnostic_evidence": {
+    "path": "docs/evidence/pq3_3b_preflight_2026_09.json",
+    "sha256": "c0a95914bf630d3a2ea3006574ddecee024686889bec3e74075b1dbc3dd7c6bb",
+    "reason_kept": "v1 measured with an ad-hoc phi replica and left the mask drift as None when unbracketed; v1 is kept unmodified"
+  },
+  "corrections_vs_v1": [
+    "measurements go through ProjectedVolumeTargetBackend.propose/_projected_volume",
+    "the oracle beta-space sensitivity is pulled back to design space with transform.pullback_from_beta before the backend consumes it (v1/v2-draft fed it raw, which collapsed the OC family); v1/v2-draft kept unmodified as diagnostic evidence",
+    "mask drift (non_active, forbidden, fixed_solid) is always measured; masks_invariant is always a verdict",
+    "volume basis is mean(rho_projection[active]) judged against V_max in the projected basis; the raw design mean is not used as infeasibility evidence",
+    "intermediate growth level (b=4, q=15, move_limit=0.05) registered ahead of b=8/b=16"
+  ],
+  "registered_target_projected": 0.018,
+  "v_max_projected": 0.07632566813424899,
+  "target_feasible_in_projected_basis": true,
+  "levels": [
+    {
+      "registered_target": 0.018,
+      "move_limit": 0.05,
+      "bracketed": false,
+      "bracket_error": "projected volume target is unreachable inside the move box even at kappa=1.07e+09; register an intermediate continuation level",
+      "phi_design": 0.016602975859949236,
+      "phi_kappa0": 0.013919937176449482,
+      "phi_frontier": 0.014566517657576909,
+      "kappa_frontier": 536870912.0,
+      "frontier_growth": -0.002036458202372327,
+      "monotone_nondecreasing": true,
+      "mask_drift_max": {
+        "non_active": 0.0,
+        "forbidden": 0.0,
+        "fixed_solid": 0.0
+      },
+      "masks_invariant": true,
+      "target_feasible_in_projected_basis": true,
+      "probe": {
+        "target": 0.014243227417013195,
+        "kappa": 40.4830242681613,
+        "phi_after": 0.014243227417013197,
+        "residual": 1.734723475976807e-18,
+        "within_tolerance": true,
+        "mask_drift": {
+          "non_active": 0.0,
+          "forbidden": 0.0,
+          "fixed_solid": 0.0
+        }
+      },
+      "samples": [
+        {
+          "kappa": 0.0,
+          "phi": 0.013919937176449482,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 1.0,
+          "phi": 0.013923997247113467,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 2.0,
+          "phi": 0.013928060621593739,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 4.0,
+          "phi": 0.01393623245728314,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 8.0,
+          "phi": 0.01395261675182845,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 16.0,
+          "phi": 0.013985545111757872,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 32.0,
+          "phi": 0.014099266729566982,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 64.0,
+          "phi": 0.014376290829684155,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 128.0,
+          "phi": 0.014528048168047215,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 256.0,
+          "phi": 0.014561469163907976,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 512.0,
+          "phi": 0.014565996124472761,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 1024.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 2048.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 4096.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 8192.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 16384.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 32768.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 65536.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 131072.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 262144.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 524288.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 1048576.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 2097152.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 4194304.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 8388608.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 16777216.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 33554432.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 67108864.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 134217728.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 268435456.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 536870912.0,
+          "phi": 0.014566517657576909,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        }
+      ],
+      "level": "level_0_growth_b4_q15",
+      "b": 4.0,
+      "q": 15.0,
+      "filter_radius_m": 0.15,
+      "candidate_rho_sha256": "fc8012e81bab301f9e1aa329981de66032f3bc385e293e2d299c3e4a66e24599",
+      "beta_sensitivity_sha256": "fa6f014604bd01b80d56d1673c129f855cd402dc90ebcc32be6994ccb2d0887b",
+      "design_gradient_sha256": "124aa15fe0e69c022fa8269959b34171da865bb105ec014f8778167e7a63cdd5",
+      "gradient_space": "design (transform.pullback_from_beta)",
+      "transform_sha256": "249eee3be02aef6704bf19c5ee515edab360204d11d58fec04da3b9deec4a470"
+    },
+    {
+      "registered_target": 0.018,
+      "move_limit": 0.03,
+      "bracketed": false,
+      "bracket_error": "projected volume target is unreachable inside the move box even at kappa=1.07e+09; register an intermediate continuation level",
+      "phi_design": 0.010933707843866918,
+      "phi_kappa0": 0.009222446674848141,
+      "phi_frontier": 0.00942994528968086,
+      "kappa_frontier": 536870912.0,
+      "frontier_growth": -0.0015037625541860587,
+      "monotone_nondecreasing": true,
+      "mask_drift_max": {
+        "non_active": 0.0,
+        "forbidden": 0.0,
+        "fixed_solid": 0.0
+      },
+      "masks_invariant": true,
+      "target_feasible_in_projected_basis": true,
+      "probe": {
+        "target": 0.009326195982264501,
+        "kappa": 39.42526701570842,
+        "phi_after": 0.009326195982264501,
+        "residual": 0.0,
+        "within_tolerance": true,
+        "mask_drift": {
+          "non_active": 0.0,
+          "forbidden": 0.0,
+          "fixed_solid": 0.0
+        }
+      },
+      "samples": [
+        {
+          "kappa": 0.0,
+          "phi": 0.009222446674848141,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 1.0,
+          "phi": 0.009222446674848141,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 2.0,
+          "phi": 0.009222446674848141,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 4.0,
+          "phi": 0.009222446674848141,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 8.0,
+          "phi": 0.009222446674848141,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 16.0,
+          "phi": 0.009222446674848141,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 32.0,
+          "phi": 0.009226108464871501,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 64.0,
+          "phi": 0.009386305400175796,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 128.0,
+          "phi": 0.009421035708721838,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 256.0,
+          "phi": 0.009428557450417796,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 512.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 1024.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 2048.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 4096.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 8192.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 16384.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 32768.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 65536.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 131072.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 262144.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 524288.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 1048576.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 2097152.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 4194304.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 8388608.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 16777216.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 33554432.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 67108864.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 134217728.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 268435456.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 536870912.0,
+          "phi": 0.00942994528968086,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        }
+      ],
+      "level": "level_1_b8_q30",
+      "b": 8.0,
+      "q": 30.0,
+      "filter_radius_m": 0.15,
+      "candidate_rho_sha256": "fc8012e81bab301f9e1aa329981de66032f3bc385e293e2d299c3e4a66e24599",
+      "beta_sensitivity_sha256": "6f46a28ac6565c471265a952a085825d7d46589ffabe8c75edbe84614ddf6d5f",
+      "design_gradient_sha256": "47ca128ec2d4cbe3fc2a05f4f40cc8f6e74d6e7659e30bbe114bf4b5bf7422f7",
+      "gradient_space": "design (transform.pullback_from_beta)",
+      "transform_sha256": "47697db6defe8babb716c5d6586fca0cc79965fdabd54a741b21bf733f8eda88"
+    },
+    {
+      "registered_target": 0.018,
+      "move_limit": 0.01,
+      "bracketed": false,
+      "bracket_error": "projected volume target is unreachable inside the move box even at kappa=1.07e+09; register an intermediate continuation level",
+      "phi_design": 0.008806530315092527,
+      "phi_kappa0": 0.008153815951170913,
+      "phi_frontier": 0.008475890948287925,
+      "kappa_frontier": 536870912.0,
+      "frontier_growth": -0.0003306393668046012,
+      "monotone_nondecreasing": true,
+      "mask_drift_max": {
+        "non_active": 0.0,
+        "forbidden": 0.0,
+        "fixed_solid": 0.0
+      },
+      "masks_invariant": true,
+      "target_feasible_in_projected_basis": true,
+      "probe": {
+        "target": 0.00831485344972942,
+        "kappa": 28.299885943142655,
+        "phi_after": 0.00831485344972942,
+        "residual": 0.0,
+        "within_tolerance": true,
+        "mask_drift": {
+          "non_active": 0.0,
+          "forbidden": 0.0,
+          "fixed_solid": 0.0
+        }
+      },
+      "samples": [
+        {
+          "kappa": 0.0,
+          "phi": 0.008153815951170913,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 1.0,
+          "phi": 0.008153815951170913,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 2.0,
+          "phi": 0.008153815951170913,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 4.0,
+          "phi": 0.008153815951170913,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 8.0,
+          "phi": 0.008153815951170913,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 16.0,
+          "phi": 0.008153815951170913,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 32.0,
+          "phi": 0.0083558834963544,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 64.0,
+          "phi": 0.008419521339609442,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 128.0,
+          "phi": 0.00846157404496225,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 256.0,
+          "phi": 0.008469586195461402,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 512.0,
+          "phi": 0.008472803837363256,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 1024.0,
+          "phi": 0.008474515617416216,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 2048.0,
+          "phi": 0.008475879349456062,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 4096.0,
+          "phi": 0.008475890948287925,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 8192.0,
+          "phi": 0.008475890948287925,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 16384.0,
+          "phi": 0.008475890948287925,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 32768.0,
+          "phi": 0.008475890948287925,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 65536.0,
+          "phi": 0.008475890948287925,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 131072.0,
+          "phi": 0.008475890948287925,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 262144.0,
+          "phi": 0.008475890948287925,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 524288.0,
+          "phi": 0.008475890948287925,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 1048576.0,
+          "phi": 0.008475890948287925,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 2097152.0,
+          "phi": 0.008475890948287925,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 4194304.0,
+          "phi": 0.008475890948287925,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 8388608.0,
+          "phi": 0.008475890948287925,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 16777216.0,
+          "phi": 0.008475890948287925,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 33554432.0,
+          "phi": 0.008475890948287925,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 67108864.0,
+          "phi": 0.008475890948287925,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 134217728.0,
+          "phi": 0.008475890948287925,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 268435456.0,
+          "phi": 0.008475890948287925,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        },
+        {
+          "kappa": 536870912.0,
+          "phi": 0.008475890948287925,
+          "mask_drift": {
+            "non_active": 0.0,
+            "forbidden": 0.0,
+            "fixed_solid": 0.0
+          },
+          "mask_drift_max": 0.0
+        }
+      ],
+      "level": "level_2_b16_q100",
+      "b": 16.0,
+      "q": 100.0,
+      "filter_radius_m": 0.15,
+      "candidate_rho_sha256": "fc8012e81bab301f9e1aa329981de66032f3bc385e293e2d299c3e4a66e24599",
+      "beta_sensitivity_sha256": "4785ebaf34c57162777a1981f34d66b0787004d3f66575ebbc8bd7e96026df0e",
+      "design_gradient_sha256": "c5fe55ad4512701a610979b8972749057b6e923134f3c2b8547cd5043cb75674",
+      "gradient_space": "design (transform.pullback_from_beta)",
+      "transform_sha256": "92d0444ab7e4cf95c058f1fff5fbfca89f02dd448590ca6c6971dcef7553942d"
+    }
+  ],
+  "summary": {
+    "all_masks_invariant": true,
+    "all_monotone": true,
+    "any_level_brackets_registered_target": false,
+    "all_levels_growth_possible": false,
+    "preflight_pass": false
+  },
+  "claims_supported": [
+    "the projection host contract (non-active, forbidden, fixed-solid cells) is invariant across the backend kappa path, measured per level",
+    "phi(kappa) measured monotone non-decreasing with growth margin per level"
+  ],
+  "claims_not_supported": [
+    "the registered projected target 0.018 is not claimed reachable in one OC step; per-step reachability gates the multi-iteration campaign manifest",
+    "no OpenFOAM optimization iteration has been run: this is a preflight only"
+  ]
+}

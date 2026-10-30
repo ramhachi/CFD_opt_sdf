@@ -1,0 +1,39 @@
+{
+  "R6_parent_source_commit": "f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9",
+  "checks": {
+    "load_criteria": "PASS",
+    "validate_state_files": "FAIL",
+    "verify_dataset": "PASS"
+  },
+  "criteria_sha256": "857c21231eb48708daba784318445c43d115dca48567dfd3378c3ba177bd57fe",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend1",
+  "dataset_manifest_sha256": "82c19abdb3a27da313600b50b8fe7a1fda0119d6a1b2365ee143a715c4c4b535",
+  "dataset_metadata_sha256": "07b8ef9ac50db821abaa92fd6a3a37d472ce4daa80eff9a41615af4e13aedc73",
+  "dataset_uploaded": false,
+  "exception_message": "'geometry_reject_gates'",
+  "exception_type": "KeyError",
+  "expected_state_count": 25,
+  "formal_analyzer_executed": false,
+  "formal_registered": true,
+  "formal_response_observed": false,
+  "formal_solver_executed": false,
+  "formal_source_commit": "30aa20a6891ccabefaa2ef6d41a2e2b5e26701b5",
+  "formal_verdict": null,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend1",
+  "kernel_submitted": false,
+  "kind": "fd08_v2_formal_registration_host_verification",
+  "mounted_file_count": 54,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "reason": "Registered formal criteria use geometry; registered shared runner requires geometry_reject_gates. Source/criteria amendment required; immutable registration preserved; no upload or solver submission.",
+  "source_input_count": 40,
+  "source_input_sha_verification": "PASS",
+  "status": "BLOCKED_INFRASTRUCTURE",
+  "traceback": "Traceback (most recent call last):\n  File \"/Users/sota/.codex/worktrees/issue46-formal-amendment-2026-10-07/CFD2026_09/work/formal_lineage_validation/registration_host_verification.py\", line 27, in <module>\n    r.validate_state_files(mount,c)\n  File \"/Users/sota/.codex/worktrees/issue46-formal-amendment-2026-10-07/CFD2026_09/infra/kaggle/kernel_fd08_v2_r6/runner.py\", line 253, in validate_state_files\n    and measured_margin >= criteria[\"geometry_reject_gates\"][\"minimum_zero_level_margin_m\"],\n                           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\nKeyError: 'geometry_reject_gates'\n"
+}

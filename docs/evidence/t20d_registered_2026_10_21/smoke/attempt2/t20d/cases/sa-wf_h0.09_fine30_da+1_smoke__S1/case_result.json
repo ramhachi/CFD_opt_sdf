@@ -1,0 +1,57 @@
+{
+  "amp": 1.0,
+  "deadline_limited": true,
+  "delta_alpha_deg": 1.0,
+  "geometry": "sa-wf_h0.09_fine30_da+1_smoke",
+  "h_over_c": 0.09,
+  "id": "sa-wf_h0.09_fine30_da+1_smoke__S1",
+  "kind": "S1",
+  "mesh": "fine30",
+  "mesh_cells_3d": 25619,
+  "mesh_msh_sha256": "5eddfd47fc9077cefd82c7529b30042ea867ee33522aad99bba304fa9af6b410",
+  "method": "remesh",
+  "mode": "smoke",
+  "pre_solver_wall_s": 10.114069204999964,
+  "s0_wall_s": 12.056219478000003,
+  "shape_mode": "incidence",
+  "solver": {
+    "converged_in": null,
+    "foam_fatal": false,
+    "iterations": 200,
+    "last_initial_residuals": {
+      "ReThetat": null,
+      "Ux": 0.0018005171,
+      "Uy": 0.008441863,
+      "gammaInt": null,
+      "k": null,
+      "nuTilda": 0.00073755798,
+      "omega": null,
+      "p": 0.0033400328
+    },
+    "last_time": 300.0,
+    "nan_in_log": false,
+    "sigfpe": false
+  },
+  "source_run": "sa-wf_h0.09_fine30_da+1_smoke__S0",
+  "source_status": "COMPLETED",
+  "stage2": {
+    "dt_s": null,
+    "end_iteration": 300,
+    "end_time_s": null,
+    "kind": "S1",
+    "source_time": "100",
+    "transient_s": null
+  },
+  "stage2_wall_s": 25.077161493999938,
+  "stages": [
+    {
+      "peak_rss_mb_sampled": 92.512256,
+      "returncode": 0,
+      "stage": "simpleFoam",
+      "timed_out": false,
+      "wall_s": 25.014265617999854
+    }
+  ],
+  "status": "COMPLETED",
+  "variant": ""
+}

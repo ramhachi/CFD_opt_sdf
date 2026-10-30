@@ -1,0 +1,20 @@
+{
+ "basis": {
+  "case_result_sha256": "50ef203bac2c049f7d3e716b11374bff05bbac8a301a974a084fe65eebcc6129",
+  "cells": 1461141,
+  "converged_in": 4548,
+  "iterations": 4548,
+  "probe": "p0_probe/V3 (sanitised; parent, V3 template 100x52x36, endTime 6000, shift 49 +)",
+  "status": "COMPLETED",
+  "total_wall_s": 28491.395879544
+ },
+ "kind": "fid01_of_levels",
+ "of_levels": [
+  "V1",
+  "V2",
+  "V3"
+ ],
+ "registration": "docs/fid01_registration_2026_10_21.md \u00a75.3",
+ "rule": "V3 is kept iff the V3 probe of the parent reaches SIMPLE solution converged before endTime 6000",
+ "written_utc": "2026-10-21T16:38:20.274120+00:00"
+}

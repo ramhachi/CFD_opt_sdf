@@ -1,0 +1,453 @@
+{
+  "V3_runtime": {
+    "case_size_mib": 466,
+    "peak_case_generation_rss_gib_observed": 9.4,
+    "solver_clock_seconds": 4847,
+    "solver_execution_seconds": 4815.07
+  },
+  "artifacts": {
+    "V0_log_checkMesh": {
+      "path": "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step0_try0_block/V0/log.checkMesh",
+      "sha256": "587490816238f89f7886af4a79f92b899d8807dcdc5e63459b07e2edae6c1498"
+    },
+    "V0_log_simpleFoam": {
+      "path": "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step0_try0_block/V0/log.simpleFoam",
+      "sha256": "d587086bf54f3cbff090b5a60a91f150f8ce50de591195ad7bb541321e13ee0c"
+    },
+    "V0_stage_v_qualification_json": {
+      "path": "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step0_try0_block/V0/stage_v_qualification.json",
+      "sha256": "bf81b71ff3997b321d80ebad8036fb9edf614c3fcb52d29fc749a1b126d017a7"
+    },
+    "V1_log_checkMesh": {
+      "path": "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step0_try0_block/V1/log.checkMesh",
+      "sha256": "3548c56fcd61652a232b17ff8feb480745f2509c377725eedb0c3972da89eed0"
+    },
+    "V1_log_simpleFoam": {
+      "path": "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step0_try0_block/V1/log.simpleFoam",
+      "sha256": "d45ba0e8aefc1bd904a2fee8f3b5042f54418d49e5ac445c2ceb33c8afd0ce99"
+    },
+    "V1_stage_v_qualification_json": {
+      "path": "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step0_try0_block/V1/stage_v_qualification.json",
+      "sha256": "1cfcc519702f6e72803120909395a599eff2bf860caf05d63bed7fd4acaa5e25"
+    },
+    "V2_log_checkMesh": {
+      "path": "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step0_try0_block/V2/log.checkMesh",
+      "sha256": "7efe12d16edc623386c0db5f52e6e14addf87dabf37aedd737b323dcf4e1b31e"
+    },
+    "V2_log_simpleFoam": {
+      "path": "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step0_try0_block/V2/log.simpleFoam",
+      "sha256": "bc909bb1a9aeffe5556c3391cc531fe81300a281efe0dc817c6a8401c9be0407"
+    },
+    "V2_stage_v_qualification_json": {
+      "path": "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step0_try0_block/V2/stage_v_qualification.json",
+      "sha256": "9cda10fbfef65a1551581dfe7fb958191bc193f0e69418123e5f4047fd8dfd54"
+    },
+    "V3_case_metadata_json": {
+      "path": "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step0_try0_block/V3/case_metadata.json",
+      "sha256": "7f143c324bff20e6399aca3eacf417c5168826e2c6ecafae655a427e2f5d5a3d"
+    },
+    "V3_log_checkMesh": {
+      "path": "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step0_try0_block/V3/log.checkMesh",
+      "sha256": "f3f24c23b42cf298202bdf30900d1e119892607113752b7d6e162b6993f894be"
+    },
+    "V3_log_simpleFoam": {
+      "path": "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step0_try0_block/V3/log.simpleFoam",
+      "sha256": "6a1b19aef4649686f0ac6a8ea6998eb1d4a404d166dd55bcbd1767e289f7de9d"
+    },
+    "V3_openfoam_run_summary_json": {
+      "path": "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step0_try0_block/V3/openfoam_run_summary.json",
+      "sha256": "facdc6b9cef23712b6215cc9f79a924735b0ccd61c7a554a27dd2199cd5361cf"
+    },
+    "V3_stage_v_level_preflight_json": {
+      "path": "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step0_try0_block/V3/stage_v_level_preflight.json",
+      "sha256": "07f79813561c6e0b0267514e2ea85f32373d3791a78f068c475703410a1f5e3e"
+    },
+    "V3_stage_v_qualification_json": {
+      "path": "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step0_try0_block/V3/stage_v_qualification.json",
+      "sha256": "392977097a590aaa624954ad469011eb86eeb517739cf12d73b4cf3948ad2c77"
+    },
+    "candidate_manifest": {
+      "path": "work/filtered_ramp/wmin_0.2/export/opt_q100_b0_step0_try0_block/candidate_manifest.json",
+      "sha256": "9f179b0d4efe4a154a7c1fd7181f3b60ecfa21f5f8784e31b612ddad6999fbe9"
+    },
+    "candidate_stl": {
+      "path": "work/filtered_ramp/wmin_0.2/export/opt_q100_b0_step0_try0_block/iso_surface.stl",
+      "sha256": "613637cf0fac8bce8a124a479eb3f18417c06995bdbfbe1c99b792fe1db3686e"
+    },
+    "wrong_V3_checkMesh": {
+      "path": "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step5_try1_block_keep_round/V3/log.checkMesh",
+      "sha256": "4cd9f39defc705eab7d26acae3bcc1b30b274bd0a39843de0151149cedc2f3c4"
+    },
+    "wrong_V3_preflight": {
+      "path": "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step5_try1_block_keep_round/V3/stage_v_level_preflight.json",
+      "sha256": "0a8abb8d52c8060f974cdea8921a77f5948bd4eb1876f791ace5f798f9632e01"
+    }
+  },
+  "candidate": {
+    "design_rho": {
+      "max": 1.0,
+      "mean": 0.08000000022849653,
+      "mean_nd_4x(1-x)": 0.027111632406652094,
+      "n_grey_0.1_0.9": 320,
+      "n_gt_0.9": 1280,
+      "n_lt_0.1": 17600
+    },
+    "formulation": {
+      "alpha_max_1_s": 250.0,
+      "convention": "rho=1 solid",
+      "derivative": "(1 + q) / (1 + q (1 - rho))**2",
+      "formula": "rho_projected = rho / (1 + q (1 - rho)); alpha = betaMax * rho_projected",
+      "kind": "ramp",
+      "openfoam_regularisation": "Helmholtz radius 1e-4 cells + function linear == identity (asserted per run)",
+      "owner": "python",
+      "q": 100.0
+    },
+    "id": "opt_q100_b0_step0_try0_block",
+    "iso_surface_sha256": "613637cf0fac8bce8a124a479eb3f18417c06995bdbfbe1c99b792fe1db3686e",
+    "manifest_sha256": "9f179b0d4efe4a154a7c1fd7181f3b60ecfa21f5f8784e31b612ddad6999fbe9",
+    "physical_beta": {
+      "max": 1.0,
+      "mean": 0.05436232220754267,
+      "mean_nd_4x(1-x)": 0.012923593604948222,
+      "n_grey_0.1_0.9": 320,
+      "n_gt_0.9": 960,
+      "n_lt_0.1": 17920
+    },
+    "thickness_metrics": {
+      "estimated_min_slab_thickness_cells": 2.0,
+      "fraction_thinner_than_4_cells": 0.0,
+      "half_thickness_cells_max": 2.0,
+      "half_thickness_cells_median": 1.0,
+      "half_thickness_cells_p10": 1.0,
+      "local_thickness_cells_max": 4.0,
+      "local_thickness_cells_median": 4.0,
+      "local_thickness_cells_p10": 4.0,
+      "n_solid_cells": 960,
+      "thin_fraction_within_1cell_of_surface": 0.6791666666666667
+    }
+  },
+  "decision": {
+    "V3_stage_v_qualified": true,
+    "architecture_execution_result": "pass for this reduced candidate on a 32 GiB Mac",
+    "downforce_absolute_limit": 0.005,
+    "finest_Cd_transition_pass": true,
+    "finest_downforce_absolute_change": 0.029925135222144128,
+    "finest_downforce_transition_pass": false,
+    "grid_independent_downforce_reference": "not established",
+    "production_or_FSAE_target_physics_qualified": false
+  },
+  "environment": {
+    "execution": "Docker",
+    "host": "Apple M4",
+    "host_memory_gib": 32,
+    "image": "opencfd/openfoam-default:2512",
+    "kinematic_viscosity_m2_s": 0.01,
+    "model": "steady incompressible laminar",
+    "solver": "simpleFoam",
+    "velocity_mps": 1.0
+  },
+  "git": {
+    "base_head": "938c42b41ec1bad074072f8a5ed9519f3d4115f9",
+    "branch": "feat/p0-openfoam-closed-loop",
+    "working_tree_dirty_when_recorded": true
+  },
+  "grid_convergence": {
+    "Cd": {
+      "converged": false,
+      "grid_order": [
+        "V0",
+        "V1",
+        "V2",
+        "V3"
+      ],
+      "transitions": {
+        "V0->V1": {
+          "bound_kind": "relative",
+          "observed": 0.10905574398901433,
+          "status": "fail",
+          "value_current": 3.013965840967742,
+          "value_previous": 2.6852755538235296
+        },
+        "V1->V2": {
+          "bound_kind": "relative",
+          "observed": 0.04016944866251924,
+          "status": "fail",
+          "value_current": 3.1401020073469383,
+          "value_previous": 3.013965840967742
+        },
+        "V2->V3": {
+          "bound_kind": "relative",
+          "observed": 0.0031875764585377804,
+          "status": "pass",
+          "value_current": 3.130092692110912,
+          "value_previous": 3.1401020073469383
+        }
+      },
+      "values": {
+        "V0": 2.6852755538235296,
+        "V1": 3.013965840967742,
+        "V2": 3.1401020073469383,
+        "V3": 3.130092692110912
+      }
+    },
+    "downforce": {
+      "converged": false,
+      "grid_order": [
+        "V0",
+        "V1",
+        "V2",
+        "V3"
+      ],
+      "transitions": {
+        "V0->V1": {
+          "bound_kind": "absolute",
+          "observed": 0.06700055203700195,
+          "status": "fail",
+          "value_current": 0.6814595404193549,
+          "value_previous": 0.6144589883823529
+        },
+        "V1->V2": {
+          "bound_kind": "absolute",
+          "observed": 0.1416362537592165,
+          "status": "fail",
+          "value_current": 0.8230957941785714,
+          "value_previous": 0.6814595404193549
+        },
+        "V2->V3": {
+          "bound_kind": "absolute",
+          "observed": 0.029925135222144128,
+          "status": "fail",
+          "value_current": 0.8530209294007155,
+          "value_previous": 0.8230957941785714
+        }
+      },
+      "values": {
+        "V0": 0.6144589883823529,
+        "V1": 0.6814595404193549,
+        "V2": 0.8230957941785714,
+        "V3": 0.8530209294007155
+      }
+    }
+  },
+  "kind": "stage_v_v3_requalification_evidence",
+  "levels": {
+    "V0": {
+      "Cd": 2.6852755538235296,
+      "downforce": 0.6144589883823529,
+      "failed_check_lines": [
+        "Concave cells (using face planes) found, number of cells: 348"
+      ],
+      "final_residuals": {
+        "Ux": 2.7463258e-07,
+        "Uy": 3.980395e-07,
+        "Uz": 9.1704987e-07,
+        "p": 3.4982992e-06
+      },
+      "force_stationarity_qualified": true,
+      "force_window": {
+        "Cd": {
+          "status": "pass",
+          "std": 1.893241873742892e-06,
+          "window_drift": -5.97403361350591e-06,
+          "window_size": 34
+        },
+        "downforce": {
+          "status": "pass",
+          "std": 3.996693103751013e-06,
+          "window_drift": -1.2504297478979002e-05,
+          "window_size": 34
+        }
+      },
+      "mesh_profile_qualified": true,
+      "minimum_determinant": 0.10280357,
+      "raw_mesh_ok": false,
+      "reported_failed_check_count": 1,
+      "small_determinant_cell_count": 0,
+      "solver_iterations": 137,
+      "solver_qualified": true,
+      "stage_v_qualified": true,
+      "termination_reason": "residual_control_met",
+      "total_cells": 6387,
+      "voxel_size_m": 0.1
+    },
+    "V1": {
+      "Cd": 3.013965840967742,
+      "downforce": 0.6814595404193549,
+      "failed_check_lines": [
+        "Concave cells (using face planes) found, number of cells: 806"
+      ],
+      "final_residuals": {
+        "Ux": 3.1622306e-07,
+        "Uy": 9.7618582e-07,
+        "Uz": 8.0484486e-07,
+        "p": 1.9860775e-06
+      },
+      "force_stationarity_qualified": true,
+      "force_window": {
+        "Cd": {
+          "status": "pass",
+          "std": 7.355724338313091e-07,
+          "window_drift": -2.071213517654461e-06,
+          "window_size": 62
+        },
+        "downforce": {
+          "status": "pass",
+          "std": 9.66670991924986e-06,
+          "window_drift": -3.0715560675887594e-05,
+          "window_size": 62
+        }
+      },
+      "mesh_profile_qualified": true,
+      "minimum_determinant": 0.040969327,
+      "raw_mesh_ok": false,
+      "reported_failed_check_count": 1,
+      "small_determinant_cell_count": 0,
+      "solver_iterations": 246,
+      "solver_qualified": true,
+      "stage_v_qualified": true,
+      "termination_reason": "residual_control_met",
+      "total_cells": 31710,
+      "voxel_size_m": 0.05
+    },
+    "V2": {
+      "Cd": 3.1401020073469383,
+      "downforce": 0.8230957941785714,
+      "failed_check_lines": [
+        "Concave cells (using face planes) found, number of cells: 3470"
+      ],
+      "final_residuals": {
+        "Ux": 2.1796062e-07,
+        "Uy": 9.9404835e-07,
+        "Uz": 3.1356549e-07,
+        "p": 7.3134173e-07
+      },
+      "force_stationarity_qualified": true,
+      "force_window": {
+        "Cd": {
+          "status": "pass",
+          "std": 1.0666642175795103e-06,
+          "window_drift": 2.5074598570340305e-06,
+          "window_size": 196
+        },
+        "downforce": {
+          "status": "pass",
+          "std": 4.231243530126672e-07,
+          "window_drift": 1.1850576504663497e-06,
+          "window_size": 196
+        }
+      },
+      "mesh_profile_qualified": true,
+      "minimum_determinant": 0.03277563,
+      "raw_mesh_ok": false,
+      "reported_failed_check_count": 1,
+      "small_determinant_cell_count": 0,
+      "solver_iterations": 783,
+      "solver_qualified": true,
+      "stage_v_qualified": true,
+      "termination_reason": "residual_control_met",
+      "total_cells": 184518,
+      "voxel_size_m": 0.025
+    },
+    "V3": {
+      "Cd": 3.130092692110912,
+      "downforce": 0.8530209294007155,
+      "failed_check_lines": [
+        "Concave cells (using face planes) found, number of cells: 12384"
+      ],
+      "final_residuals": {
+        "Ux": 1.498624e-07,
+        "Uy": 9.9822172e-07,
+        "Uz": 3.0145397e-07,
+        "p": 6.0918935e-07
+      },
+      "force_stationarity_qualified": true,
+      "force_window": {
+        "Cd": {
+          "status": "pass",
+          "std": 1.8604752067213488e-06,
+          "window_drift": 6.302194224349831e-06,
+          "window_size": 559
+        },
+        "downforce": {
+          "status": "pass",
+          "std": 9.04532196315453e-07,
+          "window_drift": 3.0846565806368277e-06,
+          "window_size": 559
+        }
+      },
+      "mesh_profile_qualified": true,
+      "minimum_determinant": 0.027125156,
+      "raw_mesh_ok": false,
+      "reported_failed_check_count": 1,
+      "small_determinant_cell_count": 0,
+      "solver_iterations": 2237,
+      "solver_qualified": true,
+      "stage_v_qualified": true,
+      "termination_reason": "residual_control_met",
+      "total_cells": 1260201,
+      "voxel_size_m": 0.0125
+    }
+  },
+  "must_not_conclude": [
+    "Brinkman-to-body-fitted ranking is qualified",
+    "full-vehicle FSAE high-Re aerodynamics is qualified",
+    "downforce is grid independent",
+    "all Stage V candidates are mesh-valid"
+  ],
+  "qualification_profile": {
+    "check_mesh": {
+      "allowed_failed_check_markers": [
+        "Concave cells"
+      ],
+      "concave_cell_fraction_max": 0.08,
+      "concave_face_max_angle_deg_max": 170.0
+    },
+    "grid_convergence": {
+      "absolute_change_max": 0.005,
+      "relative_change_max": 0.02,
+      "response_bound_kind": {
+        "Cd": "relative",
+        "downforce": "absolute"
+      }
+    },
+    "id": "stage_v_qualification_v1"
+  },
+  "recorded_date": "2026-09-20",
+  "schema_version": 1,
+  "wrong_candidate_diagnostic": {
+    "V3_candidate_and_top_incident_cells": 208,
+    "V3_candidate_incident_cells": 220,
+    "V3_underdetermined_cells": 220,
+    "blockmesh_top_z_m": 0.4,
+    "candidate_id": "opt_q100_b0_step5_try1_block_keep_round",
+    "candidate_zmax_m": 0.4000000059604645,
+    "conclusion": "candidate-to-far-field clearance violation, not uniform refinement; quality thresholds were not waived",
+    "levels": [
+      {
+        "concave_cell_count": 342,
+        "level": "V0",
+        "small_determinant_cell_count": 67,
+        "total_cells": 7022
+      },
+      {
+        "concave_cell_count": 965,
+        "level": "V1",
+        "small_determinant_cell_count": 123,
+        "total_cells": 33530
+      },
+      {
+        "concave_cell_count": 4718,
+        "level": "V2",
+        "small_determinant_cell_count": 1046,
+        "total_cells": 182720
+      },
+      {
+        "concave_cell_count": 17936,
+        "level": "V3",
+        "small_determinant_cell_count": 220,
+        "total_cells": 1235875
+      }
+    ],
+    "reason_not_comparable": "different 1600-cell candidate; P15 ratios belong to the 960-cell step0 candidate"
+  }
+}

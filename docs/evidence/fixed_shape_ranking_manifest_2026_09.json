@@ -1,0 +1,130 @@
+{
+  "experiment_id": "fixed_shape_cross_fidelity_ranking_2026_09",
+  "created": "2026-09-20",
+  "declared_before_any_shape_run": true,
+  "evidence_context": [
+    "docs/evidence/stage_v_fixed_domain_grid_study_2026_09.json",
+    "docs/evidence/stage_v_transient_check_2026_09.json"
+  ],
+  "user_decision": "The reduced-case refinement question (P16 factor isolation) is closed; the measured downforce uncertainty band 0.0129-0.0147 and Cd relative band ~0.03 are carried as declared uncertainties, not something further V-levels must shrink.",
+  "fixed_conditions": {
+    "operating_point": {
+      "U_mps": 1.0,
+      "rho_kg_m3": 1.0,
+      "nu_m2_s": 0.01,
+      "laminar": true
+    },
+    "reference_values": {
+      "area_m2": 0.64,
+      "length_m": 0.8,
+      "moment_center_m": [
+        0.25,
+        0.0,
+        0.0
+      ]
+    },
+    "stage_t": {
+      "grid": "60x32x24 canonical, voxel 0.05",
+      "alpha_max_1_s": 2500.0,
+      "interpolation_q": 0.0,
+      "note": "binary occupancy: RAMP with q=0 is the identity on {0,1}, so no filter/projection/profile choice is exercised; pure fixed-shape comparison"
+    },
+    "stage_v": {
+      "domain_lower_m": [
+        -1.0,
+        -0.8,
+        -0.6
+      ],
+      "domain_upper_m": [
+        2.0,
+        0.8,
+        0.6
+      ],
+      "geometry_source": "analytic anchor STL (no iso extraction in the ranking block)",
+      "levels": {
+        "V1": 0.05,
+        "V2": 0.025
+      },
+      "profiles": [
+        "stage_v_clearance_v1",
+        "stage_v_qualification_v1"
+      ]
+    }
+  },
+  "pre_registered_uncertainty": {
+    "downforce_abs": 0.0147,
+    "drag_coefficient_rel": 0.034,
+    "source": "worst measured finest-transition drift across the plain (0.0129) and wake (0.0147) fixed-domain families; Cadence: ranges are declared ranges, not fitted",
+    "application": "Gate-4 rule: an improvement counts only if I_f > 2 * max(S_b, S_c, S_extraction). Differences inside the band are 'unresolved', never counted."
+  },
+  "candidates": [
+    "box_bluff03",
+    "plate_a00_ref",
+    "plate_a10_nd",
+    "plate_a20_nd",
+    "plate_a20_span04",
+    "plate_a20_t05",
+    "plate_a20_t10",
+    "plate_a20_up",
+    "plate_a20_zneg15",
+    "plate_a30_nd"
+  ],
+  "extraction_sensitivity_block": {
+    "candidates": [
+      "plate_a20_nd"
+    ],
+    "variants": [
+      "anchor",
+      "iso_0.45",
+      "iso_0.50",
+      "iso_0.55"
+    ],
+    "stage_v_level": "V2"
+  },
+  "alphamax_sweep_block": {
+    "candidates": [
+      "plate_a20_nd",
+      "plate_a00_ref",
+      "box_bluff03"
+    ],
+    "alpha_max_values": [
+      250.0,
+      2500.0
+    ],
+    "recorded_metrics": [
+      "downforce",
+      "drag",
+      "leak_mean_speed_ratio_by_band",
+      "force_by_beta_band"
+    ]
+  },
+  "stage_t_resolution_block": {
+    "candidates": [
+      "plate_a20_nd",
+      "plate_a00_ref"
+    ],
+    "grids": [
+      "T1_46080"
+    ],
+    "note": "T2 (368640 cells) refinement check scheduled separately if Stage T forces look unresolved across the 10-shape set"
+  },
+  "acceptance": {
+    "ranking_rule": "Gate 4 (docs/problem_resolution_plan_2026_09.md): I_f > 2 * max(S_b, S_c, S_extraction)",
+    "response_verdicts": [
+      "pass",
+      "unresolved",
+      "no_go"
+    ],
+    "statistics_reported": [
+      "spearman_rho",
+      "kendall_tau",
+      "every_pair_sign",
+      "uncertainty_echo",
+      "required pair signs: adjacent pairs of the reference order"
+    ]
+  },
+  "stop_rules": [
+    "any Stage V level unqualified (mesh profile / residualControl / stationarity) removes that candidate from the ranking (recorded fail-closed), it does not relax any threshold",
+    "candidates failing the mesh profile are excluded per-candidate and reported; if fewer than 5 candidates survive, report unresolved coverage rather than substituting shapes"
+  ]
+}

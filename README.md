@@ -1,21 +1,54 @@
 # CFD SDF Optimization Prototype
 
-Research tool for external-aerodynamic optimization of rigid objects with
-arbitrary topology, using fixed-grid density/Brinkman search, SDF refinement,
-and body-fitted verification. The front wing is the first complex integration
-benchmark, not a hard-coded definition of the final problem class.
+Research tool for external-aerodynamic shape and topology optimization of
+rigid objects whose canonical design state is a bounded Cartesian
+signed-distance field (SDF) `phi`. A fixed-grid immersed-boundary solver
+(WaterLily.jl on Kaggle T4) measures paired force differences cheaply; a
+body-fitted OpenFOAM solver (local Docker, bitwise-gated) verifies them
+independently on grids not used for optimization. The declared final use is
+FSAE front-wing aerodynamics (high Re, turbulent, moving ground). At present
+the physics is a Re = 80 laminar reduction and no high-Re evaluator is adopted.
 
-This density/Brinkman → SDF → independent body-fitted verification architecture
-is the adopted project direction as of 2026-09-09. Each solver backend still
-has to pass the numerical and physical gates in `docs/phase_plan.md` before it
-is qualified for target aerodynamics.
+## Where the project is (read these first)
 
-Current status: G1 is complete. The G2 generic OpenFOAM case compiler,
-requested/generated manifest, execution-asset staging, patch mapping, and
-convergence evaluator are implemented. The current two-flow G2 specification
-passed numerical convergence gates on ARM64 OpenFOAM v2512. Native artifact
-semantics and target-physics qualification remain pending; see the roadmap
-for the exact evidence scope.
+- [`docs/STATE.md`](docs/STATE.md): the current position in one page.
+- [`docs/phase_plan.md`](docs/phase_plan.md): the only roadmap, status and
+  execution-order authority; the latest dated amendment at the end controls.
+- [`docs/roadmap_review_2026_10_24.md`](docs/roadmap_review_2026_10_24.md):
+  status review, literature survey and research-direction proposal
+  (subordinate to the roadmap).
+- [`docs/README.md`](docs/README.md): documentation map.
+- [`AGENTS.md`](AGENTS.md) and
+  [`docs/git_branching_strategy.md`](docs/git_branching_strategy.md): rules for
+  agents and the branch model. The integration branch is
+  `codex/kaggle-batch-migration`; `main` is a mirror synced from it with
+  `--no-ff` merges at milestones (first sync 2026-10-30).
+
+Status as of 2026-10-30 (evidence-scoped; see STATE.md for the records):
+M0-M3a are done. UNC-01 is `M2_COMPLETE`; FID-01 is `FID01_GO` (differences of
+pre-registered wide shape modes persist in body-fitted OpenFOAM on three
+meshes, retention 0.57-0.77; pure heave does not); GEOM-03 is `GEOM03_NO_GO`;
+the T2-0 high-Re evaluator studies are registered NO-GO. Next are SCREEN-01
+(#64), XV-01 (#65) and the M4 evaluator/scope decision (#66). No optimizer-
+selected shape has yet had its improvement independently confirmed. All
+qualification flags are false and `shape_update_allowed=false`.
+
+## Direction history
+
+- 2026-09-09: density/Brinkman search -> SDF refinement -> body-fitted
+  verification adopted (now historical).
+- 2026-09-26: SDF-native production direction adopted; the density/Brinkman
+  Stage T and B-spline Stage S work is retained as capability and evidence
+  context, not as the production path.
+- 2026-10-16: two-tier evidence process (PROC-01: `EXPLORATORY_COMMITTED` /
+  `REGISTERED_FROZEN`) and the paired-difference rules R1-R6.
+
+## Historical capability sections (retained; not the current path)
+
+Everything below this heading describes the 2026-09 density/Brinkman Stage T
+tooling, the G1/G2 contracts and their commands. It remains runnable where its
+fixtures exist, but it does not define the current status or order; read
+`docs/phase_plan.md` and `docs/STATE.md` for those.
 
 ## macOS / Windows research foundation
 
@@ -37,36 +70,6 @@ five response kinds, weighted aggregates, and typed topology policies:
 This validates and fingerprints the contract. It does not compile or run a CFD
 case and does not replace the later geometry/resolution preflight. See
 `docs/problem_contract_v2.md` and `docs/fixed_grid_data_contract_v2.md`.
-
-## Authoritative Documentation
-
-- `docs/phase_plan.md` is the only roadmap and status source.
-- `docs/problem_contract_v2.md` is the active problem schema.
-- `docs/fixed_grid_data_contract_v2.md` is the active Stage T artifact schema.
-- `docs/README.md` is the documentation index and compatibility policy.
-
-Historical v1 artifacts remain readable, but there is no separate active v1
-roadmap or specification for new development.
-
-The target architecture in the authoritative roadmap is:
-
-```text
-fixed-grid density/Brinkman topology search
-    -> SDF sharp-interface refinement
-    -> body-fitted RANS verification
-```
-
-The repository currently contains a reusable Geometry Service, a body-fitted
-OpenFOAM verification prototype, and an executable fixed-grid OpenFOAM topO
-capability spike with a custom porous-force objective.
-
-Existing geometry capabilities include:
-
-- STL-only input for the first demo.
-- Separate SDFs for design geometry, fixed solids, allowed regions, forbidden regions, and root mounts.
-- Narrow-band masks for each SDF role, configurable with `grid.band_width_m`.
-- Rule-margin checks, tire-clearance checks, root connectivity checks, and eroded-shape thickness checks.
-- VTK/ParaView output for visual inspection.
 
 ## Goal Command Text
 

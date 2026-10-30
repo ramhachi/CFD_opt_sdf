@@ -1,0 +1,48 @@
+{
+  "candidate_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+  "claims_not_supported": [
+    "grid-independent or absolute Stage V downforce",
+    "Stage S S2 qualification",
+    "shape update or optimization authorization"
+  ],
+  "claims_supported": [
+    "one same-candidate v16 V1 +3.2 m domain continuation was compared with the registered +1.6 m treatment"
+  ],
+  "decision": "v16 +1.6 m to +3.2 m transition remains outside the registered band; stop domain-only expansion and register a physically justified far-field contract while keeping S2 blocked",
+  "delta_from_previous": {
+    "downforce": -0.07730440085113449,
+    "downforce_beyond_bound": true,
+    "drag_beyond_bound": true,
+    "relative_Cd_change": -0.19525765960219832
+  },
+  "kind": "stage_v_v16_domain_continuation_3p2",
+  "previous_1p6": {
+    "Cd": 1.2749976332352941,
+    "case_dir": "work/stage_v_v16_domain_continuation_2026_09/far_field_domain_extension_1p6/V1",
+    "cells": 48564,
+    "downforce": 0.505272069639706,
+    "iterations": 544,
+    "qualified": true,
+    "raw_check_mesh_mesh_ok": false,
+    "reasons": []
+  },
+  "run_manifest": {
+    "path": "docs/evidence/stage_v_v16_domain_continuation_3p2_run_manifest_2026_09.json",
+    "sha256": "827d93314a8594a9205aa06ad98aa9c50343a6bb361f8e21d2c4d75f36e4aa22"
+  },
+  "schema_version": 1,
+  "summary": {
+    "adjacent_transition_within_bound": false,
+    "qualified": true,
+    "stage_s_s2_allowed": false
+  },
+  "treatment_3p2": {
+    "Cd": 1.0260445793714286,
+    "cells": 82907,
+    "downforce": 0.42796766878857145,
+    "iterations": 700,
+    "qualified": true,
+    "raw_check_mesh_mesh_ok": false,
+    "reasons": []
+  }
+}

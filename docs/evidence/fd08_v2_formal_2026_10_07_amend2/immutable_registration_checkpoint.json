@@ -1,0 +1,29 @@
+{
+  "AMEND1": "REGISTERED_NOT_RUN_SUPERSEDED_INFRASTRUCTURE",
+  "R6": "IMMUTABLE_PASS_8_OF_8_NO_RERUN_OR_REANALYSIS",
+  "captured_utc": "2026-10-07T07:00:48.036100+00:00",
+  "criteria_id": "FD08-V2-FORMAL-AMEND2-2026-10-07",
+  "criteria_sha256": "ccbe6abd4f41c0900a3dd69612e31af7013d01040b7554b9e394d2f9eef0cf6e",
+  "formal_dataset_uploaded": false,
+  "formal_kernel_submitted": false,
+  "formal_observation_count": 0,
+  "formal_registered": true,
+  "formal_solver_started": false,
+  "kind": "fd08_v2_amend2_immutable_registration_checkpoint",
+  "mounted_file_count": 54,
+  "payload_archive_sha256": "bb08ed8a9649c2e5842a1ac8a8c9d9956727ca7346c674e39512833760c1face",
+  "post_registration_rehearsal": "SUBMITTED_KERNEL_VERSION3_USING_REGISTERED_BYTE_IDENTICAL_REHEARSAL_DATASET_VERSION2",
+  "pre_registration_exact_source_rehearsal": "PASS_25_OF_25_KERNEL_VERSION2",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "scientific_verdict": null,
+  "source_commit": "f072bc7c5a9e98cc84f7a6a225c0780ad10e31be",
+  "source_ready_comment_url": "https://github.com/ramhachi/CFD_opt_sdf/issues/46#issuecomment-6032722158",
+  "state_count": 25
+}

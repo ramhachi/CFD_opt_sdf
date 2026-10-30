@@ -1,0 +1,53 @@
+{
+  "authorized_scope": [
+    "12 CPU initializations without sim_step",
+    "fresh 4-fixture x 3-arm bounded transient CPU run t=0.25 with [0.10,0.25] descriptive reductions",
+    "independent final raw point and field integrity checks"
+  ],
+  "commands": {
+    "init_command": [
+      ".venv/bin/python",
+      "scripts/run_candidate_c_surface_flux_round8.py",
+      "--parent-reviewed",
+      "--preflight-only"
+    ],
+    "outputs": "work/candidate_c_surface_flux_round8/init-001 and run-001 exclusive; partial ERROR retained; DONE only after independent hostintegrity",
+    "parent_external_preregistration_required": true,
+    "run_command": [
+      ".venv/bin/python",
+      "scripts/run_candidate_c_surface_flux_round8.py",
+      "--parent-reviewed"
+    ],
+    "solver_authorized": false,
+    "timeout_s": 1800
+  },
+  "criteria_id": "C-OP-01-CPU-SURFACE-OBSERVABLES-ROUND8",
+  "evidence_class": "parent_source_review_and_external_execution_preregistration_not_solver_evidence",
+  "execution_authorized_after_this_record_is_committed_and_integration_pushed": true,
+  "geometry_inventory_sha256": "a05ae040c5b7395612bd8f774bf45a684f5a47eca501891ebf6534ede25d8650",
+  "job_sha256": "307ccfc302ab69d381a1c6fc148c81d0f3cf9e3f2e8f031e1c195fe9dd985498",
+  "limitations": [
+    "mass or no-through qualification",
+    "closed fluidCV mass/force closure",
+    "stationarity, native/GridSDF accuracy or targetphysics",
+    "production W3-C/W4-C qualification",
+    "FD/reverse/gradient/shape/optimizer/topology"
+  ],
+  "parent_source_integration_commit": "6b45622b044723437978fe19ba2d24b2240065e1",
+  "physical_acceptance_thresholds": null,
+  "plan_sha256": "5f246f4a069fefc3cdf324952fe09fcd6759ba990e580d9637ddb131459e936b",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "recorded_at_utc": "2026-10-02T01:54:32.130395+00:00",
+  "review_result": "source and exact geometry inventories reviewed; 5 Python and 24 Julia controls PASS; full suite 37 failures exact baseline IDs, 1306 passes, 5 skips; no Simulation before this record",
+  "runner_sha256": "f6551033dc65de1c1ef5897ae4201e58f51af3db34f15b8c5b69f3c999b4daa5",
+  "source_feature_commit": "cafc3610298787af785fc49fcfa758d515a0cf1f",
+  "source_inventory_sha256": "aaa429d7ff6971c689edd1853e2bd19fde7a405c0653ce81a75b3cbf7c55591f",
+  "validation_sha256": "0580d95aaecb45853cce3f690d821b5f414553ce66ffabb35d9b0f9c0ce768e9"
+}

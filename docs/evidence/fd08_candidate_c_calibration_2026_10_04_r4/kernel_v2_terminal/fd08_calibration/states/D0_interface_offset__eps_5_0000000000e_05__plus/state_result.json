@@ -1,0 +1,29 @@
+{
+  "cd_time_weighted": 1.0121846629126057,
+  "force_csv_sha256": "f922fc487c162a54c9fd3b2dcc89bafda9338df27cef75cfd83136dac167a080",
+  "forces_n": {
+    "downforce_time_weighted_n": 0.3316703871823103,
+    "drag_time_weighted_n": 0.32389909213203383,
+    "pressure_downforce_time_weighted_n": 0.3398775773232272,
+    "pressure_drag_time_weighted_n": 0.22445094149933198,
+    "viscous_downforce_time_weighted_n": -0.008207190140916584,
+    "viscous_drag_time_weighted_n": 0.09944815063270207
+  },
+  "gates": {
+    "body_and_backend": true,
+    "finite": true,
+    "force_components_consistent": true,
+    "host_metrics_match_summary": true,
+    "solver_step_markers": true,
+    "state_identity": true,
+    "t_end_reached": true,
+    "vram": true
+  },
+  "peak_vram_bytes": 82919596,
+  "phi_margin_m": 0.34999999925494196,
+  "stationarity_drift_max": 6.721654140371216e-06,
+  "stationarity_within_registered_limit": true,
+  "status": "COMPLETED",
+  "steps": 8740,
+  "wall_seconds": 112.83658504486084
+}

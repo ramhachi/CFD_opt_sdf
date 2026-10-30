@@ -1,0 +1,206 @@
+{
+  "adapter_contract": {
+    "affine_map": {
+      "offset_m": [
+        -1.0,
+        -0.8,
+        -0.6
+      ],
+      "role": "W1 measures the map; later registered runs must advertise it in the runtime fingerprint",
+      "scale_solver_per_m": [
+        20.0,
+        20.0,
+        20.0
+      ],
+      "solver_to_world": "x_world = offset_m + x_solver .* h_m",
+      "world_to_solver": "x_solver = (x_world - offset_m) ./ h_m"
+    },
+    "interface_to_boundary_margin_m": 0.15,
+    "outside_design_box": "guaranteed positive read-only fluid extension 3.0 m, exactly returned; never interpolated or extrapolated",
+    "registered_min_run_margin_m": 0.15,
+    "sign_convention": "phi < 0 solid / phi > 0 fluid",
+    "world_space": {
+      "design_box": "closed lattice extent",
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.6
+      ],
+      "point_shape": [
+        61,
+        33,
+        25
+      ],
+      "spacing_m": [
+        0.05,
+        0.05,
+        0.05
+      ]
+    }
+  },
+  "claims_not_supported": [
+    "no WaterLily time step, force value, Simulation, BC or grid-study claim",
+    "no CUDA/Enzyme backend qualification or Manifest change",
+    "no v16 physics behavior; the v16 state is a margin/round-trip fixture only",
+    "no SDF gradient, topology-birth, optimizer or downforce claim"
+  ],
+  "claims_supported": [
+    "the GridSDFBody adapter reproduces the registered world-space trilinear SDF map: affine exactness 1.776e-15 m, world<->solver round-trip bound pass, exact positive outside extension, under the registered fail-closed gates",
+    "the adapter's trilinear representation of the analytic sphere stays within the round-4 analytic truncation bound in the interface band; the measured band error is documented and independently reproduced outside the adapter",
+    "the registered v16 genesis state passes the 0.15 m interface-to-boundary margin gate through the gate constructor (measured conservative clearance ~0.35 m)",
+    "the fail-closed refusal paths work: margin-gate refusal and all-solid refusal"
+  ],
+  "evidence_class": "contract_and_numerical",
+  "existing_evidence_modified": false,
+  "fixture_results": {
+    "affine_exactness": {
+      "pass": true,
+      "registered_judgment": "1.776000e-15 <= 2.000000e-05",
+      "value": "1.776e-15",
+      "verdict": "PASS"
+    },
+    "all_solid_refused": {
+      "pass": true,
+      "registered_judgment": "verdict PASS",
+      "value": "",
+      "verdict": "PASS"
+    },
+    "margin_gate_fail_closed": {
+      "pass": true,
+      "registered_judgment": "verdict PASS",
+      "value": "9.999998808e-02",
+      "verdict": "PASS"
+    },
+    "margin_gate_pass": {
+      "pass": true,
+      "registered_judgment": "9.999999e-02 >= 9.999900e-02",
+      "value": "9.999998808e-02",
+      "verdict": "PASS"
+    },
+    "outside_extension_positive_exactly": {
+      "pass": true,
+      "registered_judgment": "verdict PASS",
+      "value": "n=6",
+      "verdict": "PASS"
+    },
+    "radius_float32": {
+      "pass": true,
+      "registered_judgment": "1.826000e-03 <= 2.000000e-03",
+      "value": "1.826e-03",
+      "verdict": "PASS"
+    },
+    "radius_float64": {
+      "pass": true,
+      "registered_judgment": "1.826000e-03 <= 2.000000e-03",
+      "value": "1.826e-03",
+      "verdict": "PASS"
+    },
+    "sphere_sdf_interface_band": {
+      "pass": true,
+      "registered_judgment": "n=5000 max=1.250000e-03 <= 3.300000e-03",
+      "value": "n=5000 max 1.250e-03",
+      "verdict": "PASS"
+    },
+    "sphere_sdf_interior_diagnostic": {
+      "pass": true,
+      "registered_judgment": "recorded value: float64 1.271e-02 float32 1.271e-02 (recorded, not gated)",
+      "value": "float64 1.271e-02 float32 1.271e-02 (recorded, not gated)",
+      "verdict": "PASS"
+    },
+    "world_solver_roundtrip": {
+      "pass": true,
+      "registered_judgment": "2.220000e-16 <= 1.000000e-14",
+      "value": "2.220e-16",
+      "verdict": "PASS"
+    }
+  },
+  "flags": {
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false
+  },
+  "gate_id": "sdf_native_w1_gridsdfbody_2026_09",
+  "generated_on": {
+    "julia": "julia version 1.12.6",
+    "machine": "arm64",
+    "platform": "macOS-26.3.1-arm64-arm-64bit",
+    "python": "3.12.13"
+  },
+  "genesis_margin_diagnosis": {
+    "gate_constructor_accepted": true,
+    "measure": "conservative Lipschitz bound over solid nodes: min over axes of the node-to-face gap plus the nodal |phi|",
+    "measured_zero_level_margin_m": 0.3499999939931499,
+    "registered_expectation": "~0.35 m >= 0.15 m",
+    "required_run_margin_m": 0.15,
+    "roundtrip_max_m": 2.220446049250313e-16
+  },
+  "immutable": true,
+  "independent_cross_checks": {
+    "band_error_numpy": {
+      "max_m": 0.001252038380329254,
+      "method": "numpy trilinear evaluation of the same analytic-sphere fixture and registered band construction; diagnostic, not gated",
+      "probes": 200000,
+      "seed": 2026
+    },
+    "fixture_transcript": {
+      "path": "work/sdf_native_w1_grid_sdf_body_2026_09/fixture_stdout.txt",
+      "sha256": "9388da0050f568704c67972f62926df5235b31928d67d59d0f6a4e7e5d572a42"
+    },
+    "genesis_probe_transcript": {
+      "path": "work/sdf_native_w1_grid_sdf_body_2026_09/genesis_margin_probe_stdout.txt",
+      "sha256": "9dcf87c2a36605f2ec622101604ff8a80b4b08358814b3c277d07ab1e2a42f2c"
+    }
+  },
+  "inputs": {
+    "genesis_evidence": {
+      "path": "docs/evidence/sdf_native_genesis_v16_2026_09.json",
+      "sha256": "3c8e241681c80962a7fd62f1926e382d473ec8e9f3e6b9140bea9600d41cf670"
+    },
+    "genesis_phi_fortran_raw": {
+      "dtype": "float32",
+      "note": "byte encoding consumed by the Julia probe; derived from the registered phi",
+      "order": "F",
+      "path": "work/sdf_native_w1_grid_sdf_body_2026_09/genesis_phi_f4_fortran.raw",
+      "sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+      "shape": [
+        61,
+        33,
+        25
+      ]
+    },
+    "genesis_state_npz": {
+      "path": "work/sdf_native_genesis_v16/sdf_design_state.npz",
+      "phi_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+      "sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe",
+      "state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8"
+    },
+    "w0_evidence": {
+      "path": "docs/evidence/sdf_native_w0_julia_env_2026_09.json",
+      "sha256": "9689ed58dfda87414bc1a4be8fce49d86405c2619217540bfe08391b98b3e5e7"
+    }
+  },
+  "kind": "sdf_native_w1_grid_sdf_body",
+  "registered_criteria": {
+    "correction_note": "the deterministic fixture measured here is the same quantity that failed the unsound round-3 bound; round 4 replaced the bound with the analytic Kergin truncation bound before this registered evidence run",
+    "correction_round_used": 4,
+    "environment_identity": {
+      "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+      "project_sha256": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+      "waterlily": "1.8.0"
+    },
+    "path": "docs/evidence/sdf_native_w1_adapter_criteria_2026_09.json",
+    "round3_bound_m": 0.001,
+    "round3_failure_measured_m": 0.00125,
+    "round4_bound_m": 0.0033,
+    "sha256": "6da068fad8c79ba39197377157d4a5172dedf04511b2acbd8f69146aefea70ef"
+  },
+  "schema_version": 1,
+  "solver_started": false,
+  "verdict": {
+    "fail_closed": false,
+    "fixture_gates_passed": 10,
+    "w1_adapter_qualified": true
+  }
+}

@@ -1,0 +1,101 @@
+{
+ "comparator": {
+  "path": "scripts/local_openfoam_gate.py",
+  "sha256": "41c6ff987e6d369761b5089dd34ce5d4fae2796688709a6d066d2541845f6715"
+ },
+ "cpus": {
+  "t20b": "4",
+  "t20c_smoke2": "4",
+  "u3_smoke": "1",
+  "x3": "1"
+ },
+ "datasets": {
+  "u3_smoke": {
+   "criteria_sha256": "51f36570c4505fe5080ba6f08d6cf41f501a867a1f254458d6190d5d6fab92fb",
+   "files": 25,
+   "sha256_of_listing": "41daa440449ccf1ce3a7e406d2276aa2bd3f40f017f17d021adeadefeb1fe1fc",
+   "source": "worktree determined-dewdney-cb54d3 work/kaggle_unc01_u3_smoke_dataset (verified against the criteria inputs)"
+  },
+  "x3_formal": {
+   "criteria_sha256": "c2523b2348a986a287a3183ff67d17951187b859bb7d479c791792283776acbc",
+   "files": 23,
+   "made_by": "scripts/local_openfoam.py stage-x3 (verified against the criteria inputs)",
+   "sha256_of_listing": "dde326c10b86b84e197cfc19dc80432ae4c9bb814ee69bc4976025a83741f1bd"
+  }
+ },
+ "date": "2026-10-21",
+ "image_id": "sha256:e9ceb8a79fd8ceb928983000fffa5a4f2056c354c2e599d098fbcabbce8a25eb",
+ "infra_sha256": {
+  "infra/local_openfoam/Dockerfile": "2a5a894900343c17db826dc8ec19330ba316d7158a56c778e20954f02f422bfd",
+  "infra/local_openfoam/dpkg_list.txt": "1d22ec7dd4dec845f22d1a186972e999cf4df04b1163cc34f9e734388440389c",
+  "infra/local_openfoam/requirements.lock": "1e1c7ddd888e082175727c8819e6aa85cd5eeff8b4777da1716249011f46d90c"
+ },
+ "lock_sha256": "c105b7df7faa310561c0fb607f8dcc8a82be3b21789520489677c7326be11fcd",
+ "memory": "8g",
+ "prefreeze": {
+  "probe_gmsh_variants.jsonl": "ab18b38a55f5a2dc284bc561e3130a94e1615c800966f80e3e81a621c5b3f19b",
+  "probe_gmsh_variants.sh": "44c1fe47697ac1b938a56b1688cf20b5f36bb475c3a9b721e535fd503ab842cf"
+ },
+ "qualification_flags": "unchanged (all false)",
+ "references": {
+  "t20b_wf": {
+   "artifact_manifest_sha256": "d3b7dda1eb5d92407f8ac47a6ac844d0e2e84afc4acc2e7f374b297a2905973b",
+   "path": "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b",
+   "result_sha256": "19f2dd36ecc3722314ef1d269e982bff1aa8ba99dc752a91bc207645bcdec3b8"
+  },
+  "t20c_smoke2": {
+   "artifact_manifest_sha256": "191c131a4bf37aaee73556066fba74033c349c85e3721269e095a67ee9312226",
+   "done_sha256": "3129de35fcc1a11e97050eb41338b515db416d329521578c73f5e229432c6621",
+   "files": 270,
+   "path": "docs/evidence/local_openfoam_env_2026_10_20/reference/t20c_smoke2",
+   "sha256_of_listing": "648233b16b3fd0451ec99c21694974a018e65c6f808e22ed5b6d1611b3b4fc66"
+  },
+  "u3_smoke_raw": {
+   "artifact_manifest_sha256": "97d9f8c10e5599f0d276943b7c6d4036d79883b73920bfe986740dc0aabbfd5e",
+   "location": "outside the repository (side-session notes folder, supplied by the M2 session)",
+   "read_by": "u3_forces_blinded only",
+   "result_sha256": "719cc4d91f84f8e8f95616383e4ef71542f3ea2a90c03ad60a3cd2579c0559dc"
+  },
+  "u3_smoke_sanitised": {
+   "commit": "011066baba3133ad921433e9f55c32d051d3425b",
+   "path": "docs/evidence/unc01_2026_10_20/u3/smoke/output",
+   "result_sha256": "51564d606bf55fd0574b2a4d4adff671259d4a341ad7cac74e10c803bf0212c1"
+  },
+  "x3_formal": {
+   "path": "docs/evidence/xfid_gridphase_x3_2026_10_04/formal_result",
+   "result_sha256": "b24a4e19e8d449691ba7793f78e24a2d5849527e98432cd7dcfbd7450d8838b7"
+  }
+ },
+ "registration": {
+  "path": "docs/local_openfoam_env_gate_2026_10_20.md",
+  "sha256": "fb30031bf2fbe8b89a47e6d3332a9758acc6577609df76f9d4b0c7fdd74d94f4"
+ },
+ "round": 1,
+ "run_gate_sh_sha256": "9f642329e637e78e05d59179eeba6cdd3fc8dc2a1676f96fb5b3e0a21b255607",
+ "runner_render": {
+  "t20b": "scripts/build_t20b_kernel.py --source-commit 941e8a766376cb8c87cda9a344ee1f6350f9bb95 --mode wf",
+  "t20c_smoke2": "scripts/build_t20c_kernel.py --source-commit 993623917a53a6c4e01973ed039755dd676760b6 --mode smoke (run at that commit)",
+  "u3_smoke": "infra/kaggle/kernel_unc01_u3_smoke/runner.py at a646e918c8b4ea6ccf47329723964df739b8ce89"
+ },
+ "runner_sha256": {
+  "t20b": "b10aea0d1095e335a3810ff7aca4c3f115d6dfbf46fb0f46ab3df42fe8202602",
+  "t20c_smoke2": "c52a27f98b148a1b52eed7a670784bd2548e8802e6caa9484cd449008f41eef7",
+  "u3_smoke": "1e3d71aa07719957d590c9a8e02eb6c6c4ed9e4ba89454c03819b8d3752d8db3",
+  "x3": "0a649b433b7e85a11bdbff586bd9e96d64ced9b5b8a92af99aa4afeed9e2e9f3"
+ },
+ "sanitiser": {
+  "commit": "a646e918c8b4ea6ccf47329723964df739b8ce89",
+  "path": "scripts/unc01_u3_prepare.py",
+  "sha256": "18de7c67d69d90a7578ce2984b57d99b2228a9eff5da60c7040b4201a44e9e07"
+ },
+ "saved_tar_sha256": "0a7e8c47375cd6298d1e9fee7f9ff6a76c72cb6c30c0a5f244ecd66e07d27ba2",
+ "script_amendments": [],
+ "script_sha256_allowed": [
+  "10fee253e6611141644b1c90a4e0854dbce99894a7038cfba801ad433d4be13d"
+ ],
+ "status": "FROZEN",
+ "tests": {
+  "path": "tests/test_local_openfoam.py",
+  "sha256": "935aeffe3e2d3e483929921b2ab5fde922150b0f304f180645fe9e1bdc22abfb"
+ }
+}

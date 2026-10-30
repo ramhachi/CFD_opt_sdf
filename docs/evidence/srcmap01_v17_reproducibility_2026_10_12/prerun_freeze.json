@@ -1,0 +1,328 @@
+{
+  "classification_precedence": [
+    "incomplete/unexpected structural or instrumentation error=>UNRESOLVED",
+    "any identity group repeated Float32 OR Float64 differing=>ALGORITHM_NONDETERMINISTIC",
+    "proven historical path divergence=>IMPLEMENTATION_PATH_DIVERGENCE",
+    "stable A registered B different=>ENVIRONMENT_DEPENDENT scoped only to frozen bundle; individualdependency/historical localization UNKNOWN",
+    "all current v16/v17 repeats and perturbations registered exact AND no local fixed-retry-vector sensitivity=>REPRODUCIBLE scoped finite observed runs",
+    "otherwise=>UNRESOLVED"
+  ],
+  "files": [
+    {
+      "path": "scripts/diagnose_srcmap01.py",
+      "sha256": "dddb27521283b8fb1ef3a161c4e15919539d8b318c8a32411183992728a5610e"
+    },
+    {
+      "path": "scripts/run_srcmap01.py",
+      "sha256": "9d72e88d70705df9d0d43f0c077b1b984eb9499f50749a29a0e3dfe2add927ff"
+    },
+    {
+      "path": "tests/test_srcmap01_diagnostic.py",
+      "sha256": "9422b5e860b492f174de9b7feda1e0b8a1be9984341cfd5aecfcdf9022f878e4"
+    },
+    {
+      "path": "src/cfd_sdf/sdf.py",
+      "sha256": "9b685c2cc3e0a39cabe14e08089b0491a98bcdd9c19e30ca0eed49f7c19c9a51"
+    },
+    {
+      "path": "src/cfd_sdf/grid.py",
+      "sha256": "b8dcec2f1539feb5b1a2e3a69d0c9d50b2f75a21c2518d8ded19e3e270ff1f4d"
+    },
+    {
+      "path": "src/cfd_sdf/config.py",
+      "sha256": "5fee6612b46b3cc6608fe33cc25fa29770352b88243fd937a631d512dcbb351a"
+    },
+    {
+      "path": "src/cfd_sdf/design/sdf_state.py",
+      "sha256": "74c675ed658c85fa2d8f306652d0de712698daf36e4e86f1f508b676c4f96faf"
+    },
+    {
+      "path": "src/cfd_sdf/runtime/fingerprint.py",
+      "sha256": "e7c4419c0a2ca111c34eebb1855a5885e162d6e1ae43c2aaa7ed9b29b0501553"
+    },
+    {
+      "path": "scripts/sdf_native_genesis_v17_2026_09.py",
+      "sha256": "8235159b566502883009e5d87697a91d716d077ec8ff2062d8e14eb3a607d1ae"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "57f1e869cd99f0f98f80b9189fe27ad37e0cc76b9dfb78411fc38612643a9680"
+    },
+    {
+      "path": "docs/evidence/sdf_native_genesis_v16_2026_09.json",
+      "sha256": "3c8e241681c80962a7fd62f1926e382d473ec8e9f3e6b9140bea9600d41cf670"
+    },
+    {
+      "path": "docs/evidence/sdf_native_genesis_v17_2026_09.json",
+      "sha256": "8335cb7569dae7f75780b133e3f588b802e3b13258f012c391339ffc6a1c10b5"
+    },
+    {
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/runtime_inventory.json",
+      "sha256": "e5054ef998a627466c37cc933b8cda8e9150695e5c0c884e98b5cf5930a88d44"
+    },
+    {
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/alternative_runtime_inventory.json",
+      "sha256": "99cf186e5b511a69ed7e0ee6a0ad6a9c2a2e9a775c3296248bb506888e602f8f"
+    },
+    {
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/historical_runtime_audit.json",
+      "sha256": "8c083605e62e6fdb16b5b12b2112e7ae7b3ec48db4b9c22c5d7327acba92110e"
+    },
+    {
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/prerun_plan.md",
+      "sha256": "204f5f9b3cecab72513a1d0ac4966143b8d71624185fae8cb4fc93302e66d354"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/reference_surface.stl",
+      "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/v16_reference.npz",
+      "sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/v17_baseline.npz",
+      "sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/v17_source_replay_2026_10_12.npz",
+      "sha256": "e768fb8bb01c9a19931a8a129004080acdf7d7091ab1b3670f57377e860d43b4"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/source_replay_recheck_2026_10_12.json",
+      "sha256": "92541c685d84da87a3e8278461a63de8c16e30e781aaf6ed6582e8207b721eb9"
+    }
+  ],
+  "integration_parent_sha": "b94eebacf7d1e4425e1b6303a5e34b4fe08b1863",
+  "issue": 52,
+  "jobs": [
+    {
+      "chunk": 200000,
+      "grid": "v17",
+      "id": "A_v17_1",
+      "mode": "production",
+      "order": "canonical",
+      "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "stage": "A"
+    },
+    {
+      "chunk": 200000,
+      "grid": "v17",
+      "id": "A_v17_2",
+      "mode": "production",
+      "order": "canonical",
+      "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "stage": "A"
+    },
+    {
+      "chunk": 200000,
+      "grid": "v17",
+      "id": "A_v17_3",
+      "mode": "production",
+      "order": "canonical",
+      "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "stage": "A"
+    },
+    {
+      "chunk": 200000,
+      "grid": "v17",
+      "id": "A_v17_4",
+      "mode": "production",
+      "order": "canonical",
+      "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "stage": "A"
+    },
+    {
+      "chunk": 200000,
+      "grid": "v17",
+      "id": "A_v17_5",
+      "mode": "production",
+      "order": "canonical",
+      "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "stage": "A"
+    },
+    {
+      "chunk": 200000,
+      "grid": "v16",
+      "id": "A_v16_1",
+      "mode": "production",
+      "order": "canonical",
+      "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "stage": "A"
+    },
+    {
+      "chunk": 200000,
+      "grid": "v16",
+      "id": "A_v16_2",
+      "mode": "production",
+      "order": "canonical",
+      "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "stage": "A"
+    },
+    {
+      "chunk": 385385,
+      "grid": "v17",
+      "id": "B_chunk_385385",
+      "mode": "production",
+      "order": "canonical",
+      "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "stage": "B"
+    },
+    {
+      "chunk": 50000,
+      "grid": "v17",
+      "id": "B_chunk_50000",
+      "mode": "production",
+      "order": "canonical",
+      "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "stage": "B"
+    },
+    {
+      "chunk": 100000,
+      "grid": "v17",
+      "id": "B_chunk_100000",
+      "mode": "production",
+      "order": "canonical",
+      "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "stage": "B"
+    },
+    {
+      "chunk": 200000,
+      "grid": "v17",
+      "id": "B_chunk_200000",
+      "mode": "production",
+      "order": "canonical",
+      "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "stage": "B"
+    },
+    {
+      "chunk": 368640,
+      "grid": "v17",
+      "id": "B_chunk_368640",
+      "mode": "production",
+      "order": "canonical",
+      "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "stage": "B"
+    },
+    {
+      "chunk": 131071,
+      "grid": "v17",
+      "id": "B_chunk_131071",
+      "mode": "production",
+      "order": "canonical",
+      "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "stage": "B"
+    },
+    {
+      "chunk": 200000,
+      "grid": "v17",
+      "id": "C_canonical",
+      "mode": "production",
+      "order": "canonical",
+      "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "stage": "C"
+    },
+    {
+      "chunk": 200000,
+      "grid": "v17",
+      "id": "C_reverse",
+      "mode": "production",
+      "order": "reverse",
+      "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "stage": "C"
+    },
+    {
+      "chunk": 200000,
+      "grid": "v17",
+      "id": "C_permuted",
+      "mode": "production",
+      "order": "permuted",
+      "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "stage": "C"
+    },
+    {
+      "chunk": 200000,
+      "grid": "v17",
+      "id": "D_direct",
+      "mode": "direct",
+      "order": "canonical",
+      "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "stage": "D"
+    },
+    {
+      "chunk": 200000,
+      "grid": "v17",
+      "id": "D_fallback",
+      "mode": "fallback",
+      "order": "canonical",
+      "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "stage": "D"
+    },
+    {
+      "chunk": 200000,
+      "grid": "v17",
+      "id": "D_unsigned",
+      "mode": "unsigned",
+      "order": "canonical",
+      "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "stage": "D"
+    },
+    {
+      "chunk": 200000,
+      "grid": "v17",
+      "id": "G_minimum_1",
+      "mode": "production",
+      "order": "canonical",
+      "python": "/private/tmp/srcmap01-minimum-env/bin/python",
+      "stage": "G"
+    },
+    {
+      "chunk": 200000,
+      "grid": "v17",
+      "id": "G_minimum_2",
+      "mode": "production",
+      "order": "canonical",
+      "python": "/private/tmp/srcmap01-minimum-env/bin/python",
+      "stage": "G"
+    }
+  ],
+  "local_stage_e": {
+    "fixed_retry_vectors": [
+      [
+        0.137,
+        0.271,
+        0.619
+      ],
+      [
+        0.731,
+        0.419,
+        0.173
+      ],
+      [
+        0.317,
+        0.823,
+        0.457
+      ]
+    ],
+    "independent_processes": 1,
+    "production_seed_modified": false,
+    "python": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python"
+  },
+  "maximum_environment_count": 2,
+  "minimum_environment_role": "project minimum representative, not historical reconstruction",
+  "point_coordinate_hashes": {
+    "v16": "127b71b1c4a2b10a79e2641423c37700798969b897f881a77dd4d19207a9e36e",
+    "v17": "c50b86a5ca1cffedf000893f6df0db5b1b46eba054ba85182c02546b9cc8fef8"
+  },
+  "point_permutation_seed": 20261012,
+  "production_random_seed": "none; preserve entropy streams; log actual draws/states",
+  "prohibited": "all production/contract/retained evidence changes; CFD/Kaggle/optimization; rerun until pass",
+  "pythonhashseed": "0",
+  "runtime_identity_exclusions": [
+    "numpy_legacy_random_state_sha256",
+    "trimesh_entropy_random_state"
+  ],
+  "schema_version": 1,
+  "script_source_commit": "integration parent plus frozen uncommitted diagnostic source hashes; final commit recorded after evidence per user merge conditions",
+  "v17_node_count": 385385
+}

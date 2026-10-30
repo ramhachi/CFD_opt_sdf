@@ -1,0 +1,51 @@
+{
+  "kind": "fixed_grid_transfer_diagnostic",
+  "issue": "P6",
+  "source_grid_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/architecture_effectiveness_20260910/t1_contract/topology_state.json",
+  "target_grid_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/p0_closed_loop/canonical_grid_snapshot.json",
+  "source_grid_sha256": "1d3c60e9f32a9b2105dcbec70c4642dab4aae386ea561ec673fb058ac451010d",
+  "target_grid_sha256": "dad559d4a69aa143ce4f48aad6293db8cb50f9103716495d25a6cd04229e51be",
+  "transfer": {
+    "source_cell_shape": [
+      32,
+      16,
+      16
+    ],
+    "target_cell_shape": [
+      60,
+      32,
+      24
+    ],
+    "source_spacing": [
+      0.09375,
+      0.1,
+      0.075
+    ],
+    "target_spacing": [
+      0.05,
+      0.05,
+      0.05
+    ],
+    "spacing_ratios": [
+      1.875,
+      2.0,
+      1.4999999999999998
+    ],
+    "integer_ratio": false,
+    "source_cell_volume_m3": 0.0007031250000000001,
+    "target_cell_volume_m3": 0.00012500000000000003,
+    "cell_volume_ratio": 5.624999999999999,
+    "consistency_error": 6.439293542825908e-15,
+    "uniform_state_conservation_error": 4.625929269271484e-16,
+    "random_state_conservation_error": 1.5467397546324243e-16,
+    "euclidean_adjoint_identity_error": 5.134987141611413e-15,
+    "volume_weighted_pullback_difference_abs": 0.00010276542337227685,
+    "volume_weighted_pullback_difference_relative": 0.8222222222222222,
+    "verdict": "exact",
+    "notes": [
+      "P maps cell values (source rows sum to 1); P.T is the exact discrete adjoint",
+      "spacing ratios are not integers; overlap coverage is still exact because build() rejects incomplete coverage",
+      "cell volume ratio 5.625; a volume-weighted pullback would differ, but the value-transfer adjoint is P.T by definition"
+    ]
+  }
+}

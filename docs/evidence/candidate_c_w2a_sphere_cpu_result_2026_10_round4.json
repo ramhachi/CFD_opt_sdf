@@ -1,0 +1,442 @@
+{
+  "claims_not_supported": [
+    "mass conservation qualification; mass-flow values are physically weighted boundary diagnostics without an acceptance threshold",
+    "absolute/literature Cd accuracy, flow-grid convergence, target physics, full-vehicle/high-Re FSAE behavior",
+    "Candidate C production acceptance, W3-C/W4-C qualification, FD/reverse/gradient/optimizer/topology/shape-update qualification"
+  ],
+  "claims_supported": [
+    "the exact registered W2a sphere fixture can be time-integrated with Candidate C composite operator on the inherited CPU backend",
+    "the canonical GridSDF Candidate C force response meets unchanged inherited W2a stationary-force and native-sphere comparison bounds"
+  ],
+  "evidence_class": "inherited_W2a_capability_and_numerical",
+  "existing_evidence_modified": false,
+  "fixture": {
+    "affine_map": {
+      "map": "x_world_m = world_origin_m + world_per_solver .* x_solver",
+      "provenance": "registers the W1-measured map for the sphere fixture with D = 1.0 m over 16 solver units",
+      "world_origin_m": [
+        -1.75,
+        -2.0,
+        -2.0
+      ],
+      "world_per_solver": 0.0625
+    },
+    "canonical_phi": {
+      "center_m": [
+        0.25,
+        0.0,
+        0.0
+      ],
+      "construction": "exact float64 sphere SDF on the lattice, cast to Float32 exactly as genesis stores phi; built through the W1 gate constructor",
+      "expected_measured_margin_m": 0.2,
+      "margin_gate_m": 0.15,
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.7
+      ],
+      "outside_value_m": 3.0,
+      "radius_m": 0.5,
+      "shape": [
+        61,
+        33,
+        29
+      ],
+      "spacing_m": [
+        0.05,
+        0.05,
+        0.05
+      ]
+    },
+    "flow": {
+      "boundary_conditions": "uBC = (U,0,0) Dirichlet normal / Neumann tangential, no periodic direction, exitBC disabled",
+      "dims": [
+        96,
+        64,
+        64
+      ],
+      "initial_condition": "uniform u = uBC",
+      "kinematic_viscosity_solver": 0.16,
+      "length_scale_solver": 16.0,
+      "memory": "Array",
+      "note": "solver length unit = one flow cell; 16 cells per diameter; sim_time is in tU/D units",
+      "precision": "Float32",
+      "reynolds_diameter": 100.0,
+      "solver_center": [
+        32.0,
+        32.0,
+        32.0
+      ],
+      "solver_radius": 8.0,
+      "threads": "auto (recorded per run)",
+      "u_inf": 1.0
+    },
+    "geometries": {
+      "analytic": "WaterLily AutoBody with the exact sphere SDF in solver coordinates",
+      "sampled": "GridSDFWaterLilyBody over the canonical_phi fixture and the registered affine map"
+    },
+    "time": {
+      "burn_in_tu_d": 40.0,
+      "force_sampling": "every 4 solver steps; columns step,t_ud,drag,lift,side,pressure_drag,viscous_drag",
+      "measurement_window_tu_d": [
+        40.0,
+        60.0
+      ],
+      "stationarity_split_tu_d": 50.0,
+      "t_end_tu_d": 60.0
+    }
+  },
+  "flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false
+  },
+  "gate_id": "sdf_native_w2a_candidate_c_sphere_cpu_2026_10_round4",
+  "gates": {
+    "G10_sampled_geometry_margin": {
+      "detail": "measured sampled-SDF margin {'grid_upstream': 0.19999998807907104, 'candidate_c': 0.19999998807907104} >= registered 3h gate 0.15 m",
+      "pass": true
+    },
+    "G11_raw_summary_consistency": {
+      "detail": "independent Python endpoint interpolation/trapezoids over raw CSV reproduce reported 40-60, 40-50, and 50-60 drag/lift/side means within 1e-10 relative-scale integrity tolerance",
+      "pass": true
+    },
+    "G1_completion": {
+      "detail": "t_end=60.0 reached for ['analytic', 'grid_upstream', 'candidate_c', 'analytic_repeat']",
+      "pass": true
+    },
+    "G2_finiteness": {
+      "detail": "finite u/p for ['analytic', 'grid_upstream', 'candidate_c', 'analytic_repeat']",
+      "pass": true
+    },
+    "G3_force_finite": {
+      "detail": "every sampled force component finite",
+      "pass": true
+    },
+    "G4_drag_sign": {
+      "detail": "window drag {'analytic': 88.4257796764243, 'grid_upstream': 88.23353781418075, 'candidate_c': 88.23355050454136, 'analytic_repeat': 88.4257796764243}",
+      "pass": true
+    },
+    "G5_stationarity": {
+      "detail": "half-window relative drifts {'analytic': 5.955405001453889e-08, 'candidate_c': 1.9315632653352295e-07, 'analytic_repeat': 5.955405001453889e-08} <= 0.02",
+      "pass": true
+    },
+    "G6_candidate_c_vs_native": {
+      "detail": "|Cd_candidate_c-Cd_analytic|/Cd_analytic=2.173904e-03 <= 0.1",
+      "pass": true
+    },
+    "G7_lift_bound": {
+      "detail": "|lift|/drag {'analytic': 1.822590270843937e-07, 'candidate_c': 3.4182583475146426e-05, 'analytic_repeat': 1.822590270843937e-07} <= 0.1",
+      "pass": true
+    },
+    "G8_reproducibility": {
+      "detail": "repeat relative drag difference 0.000000e+00 <= 1e-06",
+      "pass": true
+    },
+    "G9_boundary_flow_finite": {
+      "detail": "all six physically weighted external-face mass flows and divergence diagnostics finite; no conservation threshold",
+      "pass": true
+    }
+  },
+  "generated_on": {
+    "child_peak_rss_bytes": 599900160,
+    "julia": "1.12.6",
+    "julia_threads": 4,
+    "machine": "arm64",
+    "platform": "macOS-26.3.1-arm64-arm-64bit",
+    "python": "3.12.13",
+    "waterlily": "1.8.0",
+    "waterlily_backend": "KernelAbstractions"
+  },
+  "immutable": true,
+  "inputs": {
+    "inherited_w2a_criteria_sha256": "aea91e6cc8de65ef072b3fbb19a3ca50a01b5e75198e62c128fda3fe8849602f",
+    "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    "source_manifest_sha256": "b1d42a3ff48cfd73c4aeb257447f52323989ab15f3a4da49e543abbd0c95816b",
+    "w1_result": {
+      "path": "docs/evidence/sdf_native_w1_grid_sdf_body_2026_09.json",
+      "sha256": "d618b556ec71c638f8d10f201c4ae4c62a2b163f824dd9466dd928e89c725567"
+    }
+  },
+  "kind": "candidate_c_w2a_sphere_cpu",
+  "qualification_scope": "registered CPU sphere fixture only; no production, mass-conservation, target-physics, W3-C, or W4-C claim",
+  "registered_criteria": {
+    "path": "docs/evidence/candidate_c_w2a_sphere_cpu_criteria_2026_10_round4.json",
+    "sha256": "58750ab16225628d476a6b2a2c44124f145da25fc1a1c88d4165714df6f30cff"
+  },
+  "runs": {
+    "analytic": {
+      "artifact_prefix": "work/candidate_c_w2a_sphere_cpu_2026_10_round4/run-001/analytic",
+      "csv_sha256": "02f2b9049a0f4c6081f7bad3f65c83ec85563e748fae52e3082cb367030fa140",
+      "force_rows": 562,
+      "raw_window_statistics": {
+        "first_half_mean_drag": 88.42578230948094,
+        "second_half_mean_drag": 88.42577704336763,
+        "window_mean_drag": 88.4257796764243,
+        "window_mean_lift": -1.6116396573004046e-05,
+        "window_mean_side": -1.172918884180863e-06
+      },
+      "summary": {
+        "blas_threads": 4,
+        "cd": 0.879587495766111,
+        "final_force": [
+          88.4257713927625,
+          -2.5629346822597654e-06,
+          -2.0122425070212557e-05,
+          56.948673298997164,
+          31.477098093765335
+        ],
+        "finite_forces": true,
+        "finite_p": true,
+        "finite_u": true,
+        "first_half_mean_drag": 88.42578230948092,
+        "first_step_seconds": 3.9973931312561035,
+        "force_samples": 562,
+        "julia_threads": 4,
+        "julia_version": "1.12.6",
+        "mass_flow_window_kg_s": {
+          "divergence_boundary_difference": 5.899779193103454e-11,
+          "inlet": -16.0,
+          "integrated_divergence": 5.899779193103454e-11,
+          "net_outward": 0.0,
+          "outlet": 16.0,
+          "yminus": 0.0,
+          "yplus": 0.0,
+          "zminus": 0.0,
+          "zplus": 0.0
+        },
+        "mode": "analytic",
+        "ms_per_step": 113.13811399888885,
+        "phi_margin_m": null,
+        "phi_sha256": "",
+        "second_half_mean_drag": 88.42577704336762,
+        "steps": 2246,
+        "t_end_reached": 60.00004196166992,
+        "t_end_target": 60.0,
+        "wall_seconds": 253.9950659275055,
+        "waterlily_backend": "KernelAbstractions",
+        "waterlily_version": "1.8.0",
+        "window_force_samples": 187,
+        "window_mean_drag": 88.42577967642424,
+        "window_mean_lift": -1.6116396573004053e-05,
+        "window_mean_side": -1.172918884180863e-06,
+        "world_origin_m": [
+          -1.75,
+          -2.0,
+          -2.0
+        ],
+        "world_per_solver": 0.0625
+      },
+      "summary_sha256": "24fd31b9f102e064d7ac03564eb270cb672e222ab1ff8cfe84f254e724d90308",
+      "transcript_sha256": "33eb51c11ff0afc8a1de6f24daef1a7b65830ef6d3d225f8b5fc3931eb2f085a"
+    },
+    "analytic_repeat": {
+      "artifact_prefix": "work/candidate_c_w2a_sphere_cpu_2026_10_round4/run-001/analytic_repeat",
+      "csv_sha256": "02f2b9049a0f4c6081f7bad3f65c83ec85563e748fae52e3082cb367030fa140",
+      "force_rows": 562,
+      "raw_window_statistics": {
+        "first_half_mean_drag": 88.42578230948094,
+        "second_half_mean_drag": 88.42577704336763,
+        "window_mean_drag": 88.4257796764243,
+        "window_mean_lift": -1.6116396573004046e-05,
+        "window_mean_side": -1.172918884180863e-06
+      },
+      "summary": {
+        "blas_threads": 4,
+        "cd": 0.879587495766111,
+        "final_force": [
+          88.4257713927625,
+          -2.5629346822597654e-06,
+          -2.0122425070212557e-05,
+          56.948673298997164,
+          31.477098093765335
+        ],
+        "finite_forces": true,
+        "finite_p": true,
+        "finite_u": true,
+        "first_half_mean_drag": 88.42578230948092,
+        "first_step_seconds": 4.035308837890625,
+        "force_samples": 562,
+        "julia_threads": 4,
+        "julia_version": "1.12.6",
+        "mass_flow_window_kg_s": {
+          "divergence_boundary_difference": 5.899779193103454e-11,
+          "inlet": -16.0,
+          "integrated_divergence": 5.899779193103454e-11,
+          "net_outward": 0.0,
+          "outlet": 16.0,
+          "yminus": 0.0,
+          "yplus": 0.0,
+          "zminus": 0.0,
+          "zplus": 0.0
+        },
+        "mode": "analytic",
+        "ms_per_step": 114.8538895332999,
+        "phi_margin_m": null,
+        "phi_sha256": "",
+        "second_half_mean_drag": 88.42577704336762,
+        "steps": 2246,
+        "t_end_reached": 60.00004196166992,
+        "t_end_target": 60.0,
+        "wall_seconds": 257.8469820022583,
+        "waterlily_backend": "KernelAbstractions",
+        "waterlily_version": "1.8.0",
+        "window_force_samples": 187,
+        "window_mean_drag": 88.42577967642424,
+        "window_mean_lift": -1.6116396573004053e-05,
+        "window_mean_side": -1.172918884180863e-06,
+        "world_origin_m": [
+          -1.75,
+          -2.0,
+          -2.0
+        ],
+        "world_per_solver": 0.0625
+      },
+      "summary_sha256": "36ac381e5a062ddeb3043ab31d502b5647ccca9853184fa76efac967d0974f29",
+      "transcript_sha256": "62edafe7acda122dbe12ae2f5277db8c1fc6af17cffc053be05899c3e1160d22"
+    },
+    "candidate_c": {
+      "artifact_prefix": "work/candidate_c_w2a_sphere_cpu_2026_10_round4/run-001/candidate_c",
+      "csv_sha256": "09a72372ccad9e952a912e2b454974f40b0b3454ab1a760f7583260ed05cb928",
+      "force_rows": 561,
+      "raw_window_statistics": {
+        "first_half_mean_drag": 88.23355902597561,
+        "second_half_mean_drag": 88.23354198310712,
+        "window_mean_drag": 88.23355050454136,
+        "window_mean_lift": 0.003016050705430033,
+        "window_mean_side": -0.0030419374967687934
+      },
+      "summary": {
+        "blas_threads": 4,
+        "cd": 0.8776753568341347,
+        "final_force": [
+          88.23353413138209,
+          0.003008470852981837,
+          -0.0030394646393672176,
+          56.84240875078548,
+          31.391125380596606
+        ],
+        "finite_forces": true,
+        "finite_p": true,
+        "finite_u": true,
+        "first_half_mean_drag": 88.23355902597561,
+        "first_step_seconds": 4.127941846847534,
+        "force_samples": 561,
+        "julia_threads": 4,
+        "julia_version": "1.12.6",
+        "mass_flow_window_kg_s": {
+          "divergence_boundary_difference": -5.588606490743314e-10,
+          "inlet": -16.0,
+          "integrated_divergence": -5.588606490743314e-10,
+          "net_outward": 0.0,
+          "outlet": 16.0,
+          "yminus": 0.0,
+          "yplus": 0.0,
+          "zminus": 0.0,
+          "zplus": 0.0
+        },
+        "mode": "candidate_c",
+        "ms_per_step": 197.08243335585996,
+        "phi_margin_m": 0.19999998807907104,
+        "phi_sha256": "393d5d7897885d71cda0902129a4aa3db561c59b1a85e8e221d55ce19fca4161",
+        "second_half_mean_drag": 88.23354198310712,
+        "steps": 2242,
+        "t_end_reached": 60.001312255859375,
+        "t_end_target": 60.0,
+        "wall_seconds": 441.6617331504822,
+        "waterlily_backend": "KernelAbstractions",
+        "waterlily_version": "1.8.0",
+        "window_force_samples": 187,
+        "window_mean_drag": 88.23355050454137,
+        "window_mean_lift": 0.0030160507054300336,
+        "window_mean_side": -0.0030419374967687934,
+        "world_origin_m": [
+          -1.75,
+          -2.0,
+          -2.0
+        ],
+        "world_per_solver": 0.0625
+      },
+      "summary_sha256": "fbac85bd7a641a86f063a123117ba0601d52f07e0b510c027c8e5397f02c7aa3",
+      "transcript_sha256": "309f2b968921b4a51b9171da62f951afecf166f80b7e729de28fa7d9143dda7f"
+    },
+    "grid_upstream": {
+      "artifact_prefix": "work/candidate_c_w2a_sphere_cpu_2026_10_round4/run-001/grid_upstream",
+      "csv_sha256": "6ffbf2b4fc09de15d44165b9b78d2f4757736ef6cf50c2eb306673a05ef84f7b",
+      "force_rows": 561,
+      "raw_window_statistics": {
+        "first_half_mean_drag": 88.233545853962,
+        "second_half_mean_drag": 88.2335297743995,
+        "window_mean_drag": 88.23353781418075,
+        "window_mean_lift": 0.003033440057906245,
+        "window_mean_side": -0.0030449920334611655
+      },
+      "summary": {
+        "blas_threads": 4,
+        "cd": 0.877675230600783,
+        "final_force": [
+          88.23352504615181,
+          0.003035466686051258,
+          -0.0030508770618835612,
+          56.842398889029226,
+          31.391126157122585
+        ],
+        "finite_forces": true,
+        "finite_p": true,
+        "finite_u": true,
+        "first_half_mean_drag": 88.23354585396197,
+        "first_step_seconds": 4.09115195274353,
+        "force_samples": 561,
+        "julia_threads": 4,
+        "julia_version": "1.12.6",
+        "mass_flow_window_kg_s": {
+          "divergence_boundary_difference": -5.579676936210276e-10,
+          "inlet": -16.0,
+          "integrated_divergence": -5.579676936210276e-10,
+          "net_outward": 0.0,
+          "outlet": 16.0,
+          "yminus": 0.0,
+          "yplus": 0.0,
+          "zminus": 0.0,
+          "zplus": 0.0
+        },
+        "mode": "grid_upstream",
+        "ms_per_step": 177.8487042091298,
+        "phi_margin_m": 0.19999998807907104,
+        "phi_sha256": "393d5d7897885d71cda0902129a4aa3db561c59b1a85e8e221d55ce19fca4161",
+        "second_half_mean_drag": 88.2335297743995,
+        "steps": 2242,
+        "t_end_reached": 60.001312255859375,
+        "t_end_target": 60.0,
+        "wall_seconds": 398.5589461326599,
+        "waterlily_backend": "KernelAbstractions",
+        "waterlily_version": "1.8.0",
+        "window_force_samples": 187,
+        "window_mean_drag": 88.23353781418072,
+        "window_mean_lift": 0.0030334400579062437,
+        "window_mean_side": -0.003044992033461167,
+        "world_origin_m": [
+          -1.75,
+          -2.0,
+          -2.0
+        ],
+        "world_per_solver": 0.0625
+      },
+      "summary_sha256": "c724af980a95b319832ea8a1ec184f575c15bcbd9ce35ae905ce8ca99991f0d3",
+      "transcript_sha256": "43222a41c4cf7af393c5d4dbf1bc143ab3b180b1fece818a83596c450ef94316"
+    }
+  },
+  "schema_version": 1,
+  "solver_started": true,
+  "verdict": {
+    "candidate_c_w2a_qualified": true,
+    "fail_closed": false
+  }
+}

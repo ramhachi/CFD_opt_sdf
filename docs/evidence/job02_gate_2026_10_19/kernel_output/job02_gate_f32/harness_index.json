@@ -1,0 +1,32 @@
+{
+  "case_id": "flow_32",
+  "kernel": "f32",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-job02-gate-f32",
+  "parent_forces_csv_sha256": "282aceed7ba22a8dbd0c2115f6937f636dcdd0bf336296694faea087029f09b2",
+  "solver_process_wall_seconds_total": 824.5443410873413,
+  "states": [
+    {
+      "complete": true,
+      "direction": null,
+      "exit_code": 0,
+      "forces_csv_sha256": "282aceed7ba22a8dbd0c2115f6937f636dcdd0bf336296694faea087029f09b2",
+      "kind": "parent",
+      "name": "opt01b__parent",
+      "seconds": 410.18909192085266,
+      "sign": 0,
+      "step_mm": 0.0
+    },
+    {
+      "complete": true,
+      "direction": null,
+      "exit_code": 0,
+      "forces_csv_sha256": "667127c5880a54798413e08f5c38c4167967c785f840a521d3661b6226b75b6d",
+      "kind": "parent",
+      "name": "opt01b__parent__grid02_shift",
+      "seconds": 414.35524916648865,
+      "sign": 0,
+      "step_mm": 0.0
+    }
+  ],
+  "status": "COMPLETE"
+}

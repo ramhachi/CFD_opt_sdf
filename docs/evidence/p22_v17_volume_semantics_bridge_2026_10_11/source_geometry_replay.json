@@ -1,0 +1,19 @@
+{
+  "physical_source_surface_same": true,
+  "resampler": "scripts/sdf_native_genesis_v17_2026_09.py:resample",
+  "source_replayed_now": true,
+  "source_stl_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+  "states": {
+    "v16_reference": {
+      "max_absolute_phi_difference_m": 0.0,
+      "phi_bitwise_equal": true,
+      "phi_c_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785"
+    },
+    "v17_baseline": {
+      "max_absolute_phi_difference_m": 0.0,
+      "phi_bitwise_equal": true,
+      "phi_c_sha256": "f6419547c7b58991462a19f8116b819e7bbe60074fa524c01a51ef41cc0e3b1f"
+    }
+  },
+  "trilinear_zero_set_identity_claimed": false
+}

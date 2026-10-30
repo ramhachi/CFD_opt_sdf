@@ -1,0 +1,23 @@
+{
+  "budget_evidence_sha256": "7cf980279daff13e04f00d90187dad8564fe217dda50625cd6d8bb548d99dd5d",
+  "checks": {
+    "all_98_generated_payload_hashes_match_prior_frozen_state_inventory": true,
+    "budget_preflight_passes_exact_caps": true,
+    "dataset_preview_has_expected_payload_count": true,
+    "integration_head_is_current_and_pushed": true,
+    "ladder_and_direction_identity_unchanged": true,
+    "params_sha_matches_existing_frozen_t2": true,
+    "preflight_gates_pass_and_frozen_hash_reproduced": true,
+    "setup_rehearsal_passes_on_exact_source_without_force_history": true
+  },
+  "dataset_payload_count_excluding_metadata": 98,
+  "frozen_t2_params_sha256": "c5f3fe1a3875c44d5fd0b87d48fd0bd0c06bdf22fb74581cb399e382dbac95ba",
+  "integration_remote_head": "f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9",
+  "kind": "fd08_v2_r6_retry2_preregistration_precheck",
+  "params_sha256": "c5f3fe1a3875c44d5fd0b87d48fd0bd0c06bdf22fb74581cb399e382dbac95ba",
+  "preflight_sha256": "8eab67329b66082a23d1c5ef5957671ab1d6c083e7bca8e246564c2de93a911d",
+  "scope": "read-only preregistration review; no solver response or R5 evidence read",
+  "setup_evidence_sha256": "de87aafe92985497d7a686d6867be1add2284b1c6250f46c75b46516c17cb795",
+  "source_commit": "f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9",
+  "status": "PASS"
+}

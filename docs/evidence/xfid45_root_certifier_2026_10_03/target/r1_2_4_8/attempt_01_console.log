@@ -1,0 +1,18 @@
+/Users/sota/.codex/worktrees/issue45-root-certifier/CFD2026_09/scripts/run_xfid45_root_certifier_replay_2026_10_03.py:171: RuntimeWarning: invalid value encountered in subtract
+  np.abs(parent_bounds[:, :2] - independent_bounds[:, :2]), initial=0.0
+Traceback (most recent call last):
+  File "/Users/sota/.codex/worktrees/issue45-root-certifier/CFD2026_09/scripts/run_xfid45_root_certifier_replay_2026_10_03.py", line 861, in <module>
+    main()
+  File "/Users/sota/.codex/worktrees/issue45-root-certifier/CFD2026_09/scripts/run_xfid45_root_certifier_replay_2026_10_03.py", line 857, in main
+    print(run(values))
+          ^^^^^^^^^^^
+  File "/Users/sota/.codex/worktrees/issue45-root-certifier/CFD2026_09/scripts/run_xfid45_root_certifier_replay_2026_10_03.py", line 709, in run
+    pair = _fidelity_replay(
+           ^^^^^^^^^^^^^^^^^
+  File "/Users/sota/.codex/worktrees/issue45-root-certifier/CFD2026_09/scripts/run_xfid45_root_certifier_replay_2026_10_03.py", line 502, in _fidelity_replay
+    prereq = all(
+             ^^^^
+  File "/Users/sota/.codex/worktrees/issue45-root-certifier/CFD2026_09/scripts/run_xfid45_root_certifier_replay_2026_10_03.py", line 503, in <genexpr>
+    surface_results[other][surface_storage]["surface_classification"] == "PASS"
+    ~~~~~~~~~~~~~~~^^^^^^^
+KeyError: 'baseline'

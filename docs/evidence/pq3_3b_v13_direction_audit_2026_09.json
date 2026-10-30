@@ -1,0 +1,140 @@
+{
+  "alpha_ladder": [
+    1.0,
+    0.5,
+    0.25,
+    0.125,
+    0.0625
+  ],
+  "claims_not_supported": [
+    "transform feasibility does not establish Path B sign agreement or real-primal improvement",
+    "this audit does not establish convergence, Stage S readiness, grid independence, or target physics"
+  ],
+  "derivative_checks": [
+    {
+      "absolute_difference": 4.5970177751236685e-11,
+      "analytic": -5.637851296924623e-18,
+      "centered_finite_difference": 4.597017211338539e-11,
+      "epsilon": 1e-06
+    },
+    {
+      "absolute_difference": 5.637851296924623e-18,
+      "analytic": -5.637851296924623e-18,
+      "centered_finite_difference": 0.0,
+      "epsilon": 1e-07
+    }
+  ],
+  "direction": {
+    "active_cells": 14400,
+    "direction_inf_norm": 1.0,
+    "direction_sha256": "ccb66f43c5bcef64c9b734703c5e5b268b01c30bca5fbea0e451b76910739cf0",
+    "discreteness_gradient_sha256": "d1604f7a17bb49429933e3bc5ff8d7f48eb5fab0216dd9bf2a632523880da553",
+    "free_cells": 4558,
+    "frozen_box_face_cells": 9842,
+    "g_discreteness_dot_d0": 0.016564361675213808,
+    "g_discreteness_dot_direction": -5.637851296924623e-18,
+    "g_objective_dot_direction": -13.488385284830994,
+    "objective_gradient_sha256": "d57bf4523aec665beee71160112f0bcd8c75c243d5dbda078048ad68e26f5f8f",
+    "policy_id": "objective-gradient-discreteness-projected-v1",
+    "projection_applied": true,
+    "projection_coefficient": 15.23433206635282
+  },
+  "kind": "pq3_3b_v13_solver_free_direction_audit",
+  "parent": {
+    "cached_parent_reused": true,
+    "downforce_coefficient": 2.32152697653,
+    "objective": -2.32152697653,
+    "projected_volume": 0.0684122930544652,
+    "rho_projection_mean_nd": 0.009736849917835135,
+    "rho_sha256": "c0441ff5551c7e4cb95ee1d34040f4c3e04f885c5f317a80f79408867ba4a7ac"
+  },
+  "schema_version": 1,
+  "selected": {
+    "adjoint_predicted_objective_delta": -0.13488385284830995,
+    "alpha": 1.0,
+    "rho_sha256": "9f6043f54a0c400eb45ca0929a6d38c63049796faf4b719fa7dcab3af816e66a"
+  },
+  "source_tree_python_sha256": "0535ba8d9dbf45436c0ad14946814e6527db666db2f2aac0826cdbc713560a97",
+  "summary": {
+    "long_campaign_started": false,
+    "solver_invocations": 0,
+    "transform_feasible_candidate_found": true
+  },
+  "transform_candidates_through_first_feasible": [
+    {
+      "adjoint_predicted_objective_delta": -0.13488385284830995,
+      "alpha": 1.0,
+      "gates": {
+        "corrected_update_above_machine_scale": true,
+        "extractability_guard": true,
+        "mask_invariance": true,
+        "move_box_respected": true,
+        "projected_discreteness_within_limit": true,
+        "projected_volume_within_v_max": true
+      },
+      "linearized_discreteness_delta": -1.0189806355469233e-18,
+      "metrics": {
+        "corrected_update_inf_norm": 0.010000000000000009,
+        "discreteness_mean_nd_candidate": 0.00975156741154786,
+        "discreteness_mean_nd_parent": 0.009736849917835135,
+        "mask_drift_max": 0.0,
+        "move_box_violation_max": 0.0,
+        "occupancy_candidate": {
+          "cells_gt_0.3": 986,
+          "cells_gt_0.4": 980,
+          "cells_gt_0.5": 974,
+          "cells_gt_0.6": 972,
+          "fraction_gt_0.3": 0.06847222222222223,
+          "fraction_gt_0.4": 0.06805555555555555,
+          "fraction_gt_0.5": 0.06763888888888889,
+          "fraction_gt_0.6": 0.0675,
+          "total_active": 14400
+        },
+        "occupancy_parent": {
+          "cells_gt_0.3": 980,
+          "cells_gt_0.4": 976,
+          "cells_gt_0.5": 968,
+          "cells_gt_0.6": 960,
+          "fraction_gt_0.3": 0.06805555555555555,
+          "fraction_gt_0.4": 0.06777777777777778,
+          "fraction_gt_0.5": 0.06722222222222222,
+          "fraction_gt_0.6": 0.06666666666666667,
+          "total_active": 14400
+        },
+        "projected_field_max_abs_delta": 0.32441930608325587,
+        "projected_field_mean_abs_delta": 0.0007122095907717875,
+        "projected_volume_candidate": 0.06898105838510744,
+        "projected_volume_parent": 0.0684122930544652
+      },
+      "rho_sha256": "9f6043f54a0c400eb45ca0929a6d38c63049796faf4b719fa7dcab3af816e66a",
+      "transform_feasible": true
+    }
+  ],
+  "v12_inputs": {
+    "cached_parent_summary": {
+      "path": "work/pq3_3b_campaign_v12/runs/parent_3603a5b04721/case/fixed_grid_primal_summary.json",
+      "sha256": "4b1b6a1848ec3d8026aac4988dee22432c882647d91a87f446f8bd345f648617"
+    },
+    "campaign_meta": {
+      "path": "work/pq3_3b_campaign_v12/campaign_meta.json",
+      "sha256": "04c3b0b0fb74084586794529fe5e7e34307bdf692db5182b6d8c283d68cf7291"
+    },
+    "checkpoint_rho": {
+      "array_sha256": "c0441ff5551c7e4cb95ee1d34040f4c3e04f885c5f317a80f79408867ba4a7ac",
+      "path": "work/pq3_3b_campaign_v12/checkpoints/rho_0001.npy",
+      "sha256": "f07854a725d528bc9bef0025ce7d2a6f4a02a46e6f5fef8884286183679e668b"
+    },
+    "checkpoint_state": {
+      "path": "work/pq3_3b_campaign_v12/checkpoints/state_0001.json",
+      "sha256": "76d73e8e13b0d667f590de2869c68ee11a58aa362518589ca5de87af800c3f00"
+    },
+    "events": {
+      "path": "work/pq3_3b_campaign_v12/events.jsonl",
+      "sha256": "d95c654402ad8bfe71e69a019c0f62daed4ce15591b4c4059ef14e2f87049f30"
+    },
+    "manifest": {
+      "path": "docs/evidence/pq3_3b_campaign_manifest_v12_2026_09.json",
+      "sha256": "acf62c6f13f7346cf6022e0b215cdcef3c40880fccb1ca15b57bd7f757d5157f"
+    }
+  }
+}

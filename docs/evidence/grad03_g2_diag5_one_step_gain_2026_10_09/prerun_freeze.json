@@ -1,0 +1,296 @@
+{
+  "candidate_c_identity": {
+    "candidate_c_body_source": "2a4b056a1a4a23dc5699ad340faed8ad35bfab4c103302169a93150feedd04c6",
+    "contract_sha256": "516cfb26b9cc11f920918f08224ec2cfa5ed89d1e7372fa8d8dd7d4807bd5efc",
+    "normal_floor_body_source": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf",
+    "operator_identity": "candidate_c_moment_blend+normal_floor_0.25"
+  },
+  "canonical_state": {
+    "active_node_count": 107415,
+    "narrow_band_width_m": 0.025,
+    "npz_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "shape": [
+      121,
+      65,
+      49
+    ],
+    "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "spacing_m": 0.025,
+    "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb"
+  },
+  "classification": [
+    "R1_SELECTOR_CONVENTION",
+    "R2_LINEARISATION_DEFECT",
+    "R3_FINITE_INSTABILITY",
+    "R4_INCONCLUSIVE",
+    "DIAG5_INCOMPLETE"
+  ],
+  "classification_priority": [
+    "R2",
+    "R3",
+    "R1",
+    "R4"
+  ],
+  "declarations": {
+    "bridge_value": null,
+    "d1_d2_p1_run": false,
+    "e4_variants_are_surrogate_derivatives_not_the_derivative_of_the_implemented_map": true,
+    "float64_run": false,
+    "grad03_verdict": null,
+    "r4_is_a_bounded_no_go_of_the_current_programme_not_of_full_field_ad": true,
+    "reverse": "untouched",
+    "selected_delta": null
+  },
+  "diag1_evidence_sha256": {
+    "diag1_analysis.json": "d3e2deee97a3e276056e71cd55c560db9d9c9272e33fb5e7c58ade825657b770",
+    "posthoc_addendum.json": "c933e8dccce0fd58ad8ec42c277ae2fa3dce82ad8d633c1f3fd87f7fb46655ca",
+    "prerun_freeze.json": "215ed319e591788d8791d3bb2034c4bcbaeff8bf59ea807363291d376416e7aa"
+  },
+  "diag2_evidence_sha256": {
+    "diag2_analysis.json": "1f126dccede6222aef366fda6e69b4a6461f7d53112aa357ba84a7fd695c3390",
+    "prerun_freeze.json": "7077cff669de8fef866f6a718c1aa88540df92296161cdc6c2bb782212cafc7a"
+  },
+  "diag3_evidence_sha256": {
+    "diag3_analysis.json": "30cbe1501279080035b63dae16a7951ca9c373ab949da26392ebadb6bbf70b25",
+    "prerun_freeze.json": "42ccd79094ed842b3ea0846a7df0ea9f75dba8c1a02c4418a5a7f8f415092150"
+  },
+  "diag4_evidence_sha256": {
+    "diag4_analysis.json": "628d00c39c027d5e32036760eb1c99352ae966302e63db2015dec9dedf416ab5",
+    "kernel_output/diag_index.json": "9159151093b1cbe3833ec984cd9e7a1f82bcd3d617cc7717250ed5f45af411ae",
+    "prerun_freeze.json": "f650a514af65b2f14af06413cc9c395653cc1454aca9705926360b91a043e5cc"
+  },
+  "directions": {
+    "baseline_phi": {
+      "path": "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw",
+      "sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431"
+    },
+    "fortran_raw_sha256_d0_only": {
+      "D0_interface_offset": "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549"
+    },
+    "inputs_manifest_sha256": "7c01c0ddbc4269bf679361d98c8527e5158797a8d2e5d36d6c040c00f102b711"
+  },
+  "file_hashes": {
+    "analyzer": "0191140b534094ef47130b0650e4655d4b6ca157de648306af0415aabe9ffeb5",
+    "candidate_c_body": "2a4b056a1a4a23dc5699ad340faed8ad35bfab4c103302169a93150feedd04c6",
+    "checksums": "776779dab31eb1c79d3c4599c9faafae30fb14dd56860f803450be49b0744f8c",
+    "diag1_stages": "8c8423946d6ad165a6886ce5dfafd7a3fbb370b8044f75f9809209bc94fb865c",
+    "diag4_job": "1da31094688e683c43bb4302d3a97aeb50b2fbc2da8764689b311062e217e073",
+    "driver": "08d5b64f3e60098dd2216798f575e7f2b09c30639d1f2da4ebdef09fe3ce9b8c",
+    "grid_sdf_body": "fa6aecccecbf140158396c9c8e5f3a6c16d3810f792ba45b9c8f4ee481709058",
+    "job": "85a032c29d9008a8404ddba61f027144a9300408030a588aa9f2687d1e75eb87",
+    "manifest": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    "normal_floor_body": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf",
+    "prerun_note": "62102def70b163478564141f1d0b199de14cdfa0037b7a757889593585567815",
+    "project": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+    "snapshot_index": "38ee230b0e3b139cb3f185358fed08e839b18c4d0d8707c60727d27879d8d2e2",
+    "stages": "b0aa40bfe3c33b75a639853eaf86d36a93b70f0a40b11f100a6020872cbee06a"
+  },
+  "frozen_utc": "2026-10-09T02:30:05.907668+00:00",
+  "kind": "grad03_g2_diag5_one_step_gain_prerun_freeze",
+  "parent_integration_commit": "6a2050fdcd0b97e56f8da199a850f1a97bfc6427",
+  "pins": {
+    "docs/evidence/grad03_g2_diag1_d0_nonfinite_2026_10_08/kernel_output/instrumented_checksums.csv": "776779dab31eb1c79d3c4599c9faafae30fb14dd56860f803450be49b0744f8c",
+    "docs/evidence/grad03_g2_diag1_d0_nonfinite_2026_10_08/kernel_output/snapshot_index.json": "38ee230b0e3b139cb3f185358fed08e839b18c4d0d8707c60727d27879d8d2e2",
+    "julia/CFDSDFWaterLily/Manifest.toml": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    "julia/CFDSDFWaterLily/Project.toml": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "scripts/waterlily_grad_g2_diag5_one_step_gain_2026_10_09.jl": "85a032c29d9008a8404ddba61f027144a9300408030a588aa9f2687d1e75eb87",
+    "scripts/waterlily_grad_g2_diag5_stages.jl": "b0aa40bfe3c33b75a639853eaf86d36a93b70f0a40b11f100a6020872cbee06a"
+  },
+  "pre_freeze_disclosures": [
+    "numpy branch audit (x-direction fluxes only, advecting velocity approximated by a face average) of the stored u at steps 500 and 900: in the corner box about 79% of the limiter calls select the unlimited QUICK candidate, 19% the central value and 2% a limited branch; the median spread of the candidate values is 4.5e-6 (the box velocity has a standard deviation of 2e-5)",
+    "a CPU prototype of the one-step map from stored step 1188 (ring) against the stored step 1189: dt tangent reproduced to 8e-7 (relative), primal u rel L2 3.6e-6, the corner tangent gain 1.12 on CPU against 1.33 on the T4 (corner tangent pattern rel L2 difference 0.47); with +-1 ulp noise on every primal u the corner tangent pattern changed by 1.7e-5 (0.1% of cells), 0.046 (10%) and 0.24 (100%) and the gain by 0 to 2.5%",
+    "CPU timing: plain step 1.8 s, Dual step 2.7 s (1 thread); the bit identity of the instrumented step and of the limiter variants against `sim_step!` over three steps from the initial state",
+    "an independent review found that a plain Float32 simulation is a different rounding of the map than the Dual simulation (@fastmath on quick/div/mu-ddn: 44% of the limiter values and 1.2M of 1.9M u values differ after one step at step 100); the finite-difference runs therefore use Dual simulations with zero tangents, the branch audit replicates WaterLily's median operand selection, and Delta t = CFL(u) is gated against the stored value for every state",
+    "dry runs of every group on the stored step-100 state (not a registered state) with K=3 / ensemble 2, and of E0 on the registered ring state (identical to the registered run): E2 on step 100 showed that 74% of the corner-box limiter calls already have a kink distance below 1e-5; the relative divergence of the stored tangent direction at step 100 is 2.3e-2 (primal 5e-6)"
+  ],
+  "prior_results": {
+    "diag1": "DIAG_LOCALIZED",
+    "diag2": "DIAG2_LOCALIZED",
+    "diag3": "TANGENT_ONLY_NO_SUPPORT",
+    "diag4": "FORCED32_DELAYED_ONSET"
+  },
+  "prohibitions": {
+    "automatic_full_window_run": true,
+    "bridge_analyzer": true,
+    "d1_d2_p1": true,
+    "fd08_comparison": true,
+    "flag_change": true,
+    "float64_simulation": true,
+    "grad03_verdict": true,
+    "post_hoc_thresholds_or_states": true,
+    "reverse": true,
+    "selected_delta": true,
+    "t4_run_unless_e0_fails": true,
+    "tangent_clip_reset_sanitise": true
+  },
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "run": {
+    "box_1based": {
+      "i": [
+        1,
+        12
+      ],
+      "j": [
+        1,
+        8
+      ],
+      "k": [
+        49,
+        56
+      ]
+    },
+    "direction": "t = (delta u, delta p) / max|delta u| (interior, all components): ||eps t||_inf = eps in u; effective direction after Float32 rounding is used for the JVP in E3",
+    "e0_state": "R1188",
+    "e4": {
+      "baseline": "the frozen-branch derivative of the implemented map (ForwardDiff selects the branch of the primal values): the control",
+      "linear": "partials of the unlimited QUICK candidate",
+      "tie": "value unchanged (original quick), partials averaged over the candidates within tau"
+    },
+    "ensemble_n": 16,
+    "eps_e3": [
+      1e-06,
+      1e-05,
+      0.0001,
+      0.001,
+      0.01
+    ],
+    "eps_e5": [
+      "1e-5",
+      "1e-4",
+      "1e-3",
+      "1e-2"
+    ],
+    "eps_e5_variants_b_c": [
+      "1e-4",
+      "1e-3"
+    ],
+    "groups": {
+      "E0": "harness closure: CPU one step from stored 1188 vs stored 1189 (faithful geometry seed, exact power-of-two scaling)",
+      "E1": "stage and term gains of the one-step tangent (full / box-only / outside-only; conv_diff roles x (i,j) x region; BDIM terms)",
+      "E2": "limiter audit (branch counts, kink distances, flip-prone fractions)",
+      "E3": "one-step JVP vs central FD, eps scan, flips, mismatch localisation, derivative variants (E4)",
+      "E3C": "the same with the solenoidal velocity direction (control)",
+      "E5AD": "multi-step AD tangent growth (baseline and derivative variants; direction C)",
+      "E5FD": "multi-step finite-amplitude growth (variants A, B, C)",
+      "E6": "+-1 ulp roundoff ensemble on the primal u"
+    },
+    "k_steps": 40,
+    "persistent_state": "(u incl. ghost cells, p); p is the Poisson initial guess and is perturbed with u; Delta t[end] = CFL(u) is recomputed; u0, f, sigma, mu0, mu1, V are rebuilt by the step",
+    "states": [
+      "S900",
+      "S1000"
+    ],
+    "tie_taus": [
+      1e-05,
+      0.0001
+    ],
+    "variants": {
+      "A": "primary: the stored (delta u, delta p)",
+      "B": "control: p not perturbed",
+      "C": "control: the velocity direction projected onto the discrete solenoidal subspace (the solver's div, L = mu0, face gradient)"
+    }
+  },
+  "runtime_pins": {
+    "cuda_jl": "6.3.1",
+    "forwarddiff": "1.4.5",
+    "julia": "1.12.6",
+    "waterlily": "1.8.0"
+  },
+  "runtime_source_hashes": {
+    "waterlily_flow_jl_sha256": "6138c88f48b04db7ed6861f1f1bec9c450e04214160caef177d85bdad326b7f0",
+    "waterlily_git_tree_sha1": "8e1d973f428df4bae450e1a45f19d0dba3ac6857",
+    "waterlily_multilevelpoisson_jl_sha256": "f6a7b6fb60a27be07133ae3c04a93141defb7a79f70e88a252c3e55399c83009",
+    "waterlily_poisson_jl_sha256": "a77c631c88a7637fa5ffdd80d52610acad9aba7346904cb4a90df55c3d0077fb"
+  },
+  "scientific_state": {
+    "alpha_unit": "metre",
+    "case_id": "flow_24",
+    "device": "CPU (re-evaluation of stored T4 states)",
+    "dual_width": 1,
+    "float": "Float32",
+    "force_semantics": "candidate only, -(pressure+viscous); drag=Fx, downforce=-Fz",
+    "poisson_itmx": 32,
+    "poisson_tol": 0.0001,
+    "remeasure": true,
+    "sample_every_steps_reference": 8,
+    "threads": 1
+  },
+  "source_commit": "e06e3364c3436db1b681e8934ec6a43ed498814f",
+  "stored_state_sha256": {
+    "ring_step1188.p": "3657f325f9209a84c400f41449ec5758bb200e9065379e9a7b8482a194868125",
+    "ring_step1188.u": "cdf834c798d444de9c31b408c9e8d0718cd190b31d6e98fff073b88581871241",
+    "ring_step1189.p": "d5622ad4f6b568145cc815bf84c62c2e0a14c5dec4c9a437955c0590d70fb9a1",
+    "ring_step1189.u": "df5dd67e7ae986fd1620a80700127bc71a7a1545252ae63dde79adfcc9fa2c21",
+    "step0900.p": "f96101522f25476c34ac5292035f5f5d76e6fe5d90e64f85e9891cc1ebf4833e",
+    "step0900.u": "90bbbd9eade1847861c4fa064711e0585ef7266569d48a229453339bbcc5e961",
+    "step1000.p": "cdea146bd32302e0edbe64a28d055bd8750531f85895fde7f15f1e8f452528ea",
+    "step1000.u": "2d1a4d6e9dabad53668bd2b53092ef5d755b9bf119715ab2dfe8b0cedb1e07f2"
+  },
+  "thresholds": {
+    "AD_RATE_MIN": 0.02,
+    "AGREE_COS": 0.99,
+    "AGREE_RATIO": [
+      0.95,
+      1.05
+    ],
+    "AGREE_REL": 0.1,
+    "E0_DT_REL": 0.0001,
+    "E0_PRIMAL_P_REL": 0.001,
+    "E0_PRIMAL_U_REL": 1e-05,
+    "ENSEMBLE_N": 16,
+    "EPS_E3": [
+      1e-06,
+      1e-05,
+      0.0001,
+      0.001,
+      0.01
+    ],
+    "EPS_E5": [
+      "1e-5",
+      "1e-4",
+      "1e-3",
+      "1e-2"
+    ],
+    "EPS_E5_VARIANT_B": [
+      "1e-4",
+      "1e-3"
+    ],
+    "FD_LOWER_FACTOR": 0.5,
+    "FD_MATCH": [
+      0.7,
+      1.3
+    ],
+    "FLIP_RANK_CORRELATION": 0.8,
+    "K_STEPS": 40,
+    "LINEAR_AMPLITUDE": 0.1,
+    "RANK_EPS_MAX": 0.001,
+    "RANK_MIN_POINTS": 4,
+    "RATE_MIN_POINTS": 5,
+    "SMOOTH_FLIP_RATE": 0.01,
+    "SMOOTH_MAX_EPS": 0.001,
+    "SMOOTH_MIN_EPS": 1e-05,
+    "STATES": [
+      "S900",
+      "S1000"
+    ],
+    "SURROGATE_GAIN_TOL": 0.2,
+    "SURROGATE_MISMATCH_REDUCTION": 0.5,
+    "SURROGATE_RATE_FLOOR": 0.02,
+    "SURROGATE_RATE_TOL": 0.3,
+    "ULP_SENSITIVE": 0.05
+  }
+}

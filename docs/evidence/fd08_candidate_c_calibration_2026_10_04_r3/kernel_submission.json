@@ -1,0 +1,32 @@
+{
+  "actual_runtime_identity_status": "pending terminal artifacts and host verification",
+  "calibration_verdict_exists": false,
+  "criteria_path": "docs/evidence/fd08_candidate_c_calibration_2026_10_04_r3/xfidc_criteria.json",
+  "criteria_sha256": "a7a8437394f7b34afc591b45db150b0c5d899e86765acdcb49db783272cd31c5",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-calibration",
+  "dataset_verification_sha256": "84d66a022e0eb5ccc8762207a6a7c5ddd3e68b30bcea514ac6a59da5ab0382f9",
+  "dataset_version": 3,
+  "evidence_class": "registered_calibration_job_submitted_runtime_pending",
+  "formal_epsilon_selected": false,
+  "kaggle_cli_result": "Kernel version 1 successfully pushed",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-calibration-kernel",
+  "kernel_url": "https://www.kaggle.com/code/ramhachi888/cfd-opt-sdf-fd08-calibration-kernel",
+  "kernel_version": 1,
+  "kind": "fd08_candidate_c_calibration_kernel_submission",
+  "observed_status_at_submission_checkpoint": "KernelWorkerStatus.RUNNING",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "requested_backend": "NvidiaTeslaT4",
+  "requested_visibility": "private",
+  "solver_measurement_terminal_available": false,
+  "source_commit": "05c9c59c475f24e3da41e582b49dec3e1e844604",
+  "status_observed_at_utc": "2026-10-04T19:11:19Z",
+  "stdout_snapshot": "empty at first status check; runtime identity not yet observed",
+  "submitted_at_utc": "2026-10-04T19:11:41.777059Z"
+}

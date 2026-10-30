@@ -1,0 +1,72 @@
+{
+  "artifact_id": "stage_v_domain_clearance_2026_09",
+  "created": "2026-09-20",
+  "evidence_class": "contract_and_capability",
+  "branch": "feat/p0-openfoam-closed-loop",
+  "base_commit": "8be881d",
+  "issue": "P17 (WP1)",
+  "what_was_implemented": [
+    "src/cfd_sdf/stage_v_domain_preflight.py: fail-closed fixed-domain binding check plus pre-mesh physical clearance preflight, with a versioned declared profile",
+    "src/cfd_sdf/sdf.py: build_fields now builds the Stage V field grid from the declared problem-spec domain (fail-closed on padding and on extents that are not integer multiples of the voxel)",
+    "src/cfd_sdf/openfoam.py + src/cfd_sdf/config.py: the declared grid.domain_bounds_m is carried from ProblemSpec through problem_spec_to_project_config, field generation, blockMesh rendering, and case_metadata.json",
+    "scripts/stage_t_filtered_ramp.py: mesh_sweep and phase_stagev_level run the preflight and write stage_v_domain_preflight.json before blockMesh/surfaceFeatureExtract/snappyHexMesh/simpleFoam and refuse (SystemExit, no launch) on failure"
+  ],
+  "declared_profile": {
+    "profile_id": "stage_v_clearance_v1",
+    "minimum_clearance_m": 0.25,
+    "margin_rationale": "Fixed physical length registered before judging new runs. The recorded P17 failure left on the order of one finest background cell (~0.0125 m) at the far-field top patch and produced 220 under-determined cells; the margin must be far above any achievable background cell width, not derived from cell counts."
+  },
+  "fixed_domain_binding": {
+    "from": "grid.domain_bounds_m of work/stage_sv_laminar/project_matched_re_laminar.yaml",
+    "lower_m": [-1.0, -0.8, -0.6],
+    "upper_m": [2.0, 0.8, 0.6],
+    "problem_spec_sha256": "25bc379543c96946e7919a7506c312eaf1845781eb7d7bc6a6414072146c80a8"
+  },
+  "runs": {
+    "opt_q100_b0_step0_try0_block": {
+      "role": "correct thick P15 comparison candidate",
+      "verdict_at_V1_voxel_0.05": "pass",
+      "verdict_at_V3_voxel_0.0125": "pass",
+      "minimum_clearance_m": 0.3739590853452682,
+      "limiting_patch": "top (upper_z)",
+      "candidate_stl_sha256": "613637cf0fac8bce8a124a479eb3f18417c06995bdbfbe1c99b792fe1db3686e",
+      "reports": [
+        "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step0_try0_block/V1/stage_v_domain_preflight.json",
+        "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step0_try0_block/V3/stage_v_domain_preflight.json"
+      ]
+    },
+    "opt_q100_b0_step5_try1_block_keep_round": {
+      "role": "wrong candidate recorded in P17",
+      "verdict_at_V1_voxel_0.05": "fail",
+      "verdict_at_V3_voxel_0.0125": "fail",
+      "minimum_clearance_m": 0.19999997615814213,
+      "limiting_patch": "sideMin (lower_y)",
+      "reasons": ["clearance_below_declared_margin"],
+      "candidate_stl_sha256": "9efb63a6d6a04a2db0ae34642f9d5d8c721c32b9e45100c916ce1660fddd8aec",
+      "reports": [
+        "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step5_try1_block_keep_round/V1/stage_v_domain_preflight.json",
+        "work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step5_try1_block_keep_round/V3/stage_v_domain_preflight.json"
+      ]
+    }
+  },
+  "no_launch_guarantee": "The preflight artifacts were written without running blockMesh, surfaceFeatureExtract, snappyHexMesh, checkMesh, or simpleFoam; the rejected candidate class can no longer reach meshing through the wired script paths.",
+  "validation": {
+    "commands": [
+      ".venv/bin/python -m compileall src tests",
+      ".venv/bin/python -m pytest -q",
+      "git diff --check"
+    ],
+    "results": "601 passed, 2 skipped (was 591 passed before this slice); added tests/test_stage_v_domain_preflight.py",
+    "notes": "test_generated_case_records_problem_provenance_and_mesh_refinement voxel changed 0.15 -> 0.1 because 0.15 does not divide the declared 1.6 m y extent; tests/test_stage_v_domain_preflight.py includes skip-gated fixtures for the two recorded candidate STLs (work/ paths, re-validated when present)."
+  },
+  "claims_supported": [
+    "The Stage V far-field box is now bound to the declared ProblemSpec domain for the wired Stage V paths (contract).",
+    "The declared clearance profile rejects the recorded boundary-touching candidate class before any mesh command (capability, no-launch artifact)."
+  ],
+  "claims_not_supported": [
+    "No mesh quality, solver convergence, or target-physics claim.",
+    "No grid-independent downforce or ranking claim; P16 and WP3 remain open.",
+    "The 0.25 m margin is a declared physical length for this profile, not measured optimal clearance."
+  ],
+  "next": "WP2/WP3: with the fixed domain, evaluate the step0 candidate's Stage V reference one factor at a time (pre-declared local refinement around body/wake, three qualified levels, Cd 0.02 relative and downforce 0.005 absolute bounds) before any ranking work."
+}

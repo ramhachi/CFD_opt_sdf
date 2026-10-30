@@ -1,0 +1,23 @@
+{
+  "classification": "INCONCLUSIVE regardless of hard-count equality; no tolerance change",
+  "current_completion_runtime": {
+    "platform": "macOS-26.3.1-arm64-arm-64bit",
+    "python": "3.9.6 (default, Jan  9 2026, 11:03:41) \n[Clang 17.0.0 (clang-1700.6.4.2)]"
+  },
+  "dependency_versions_observed_at_completion": {
+    "embreex": "not installed",
+    "numpy": "2.0.2",
+    "pyembree": "not installed",
+    "rtree": "not installed",
+    "scipy": "1.13.1",
+    "trimesh": "not installed"
+  },
+  "hard_difference_to_retained_v17_m3": 0.0,
+  "hard_formula": "count(existing _corner_mean(saved_phi)<0)*0.025**3",
+  "hard_m3": 0.12925000000000003,
+  "historical_environment_equivalence_established": false,
+  "saved_field": "inputs/v17_source_replay_2026_10_12.npz",
+  "saved_field_sha256": "e768fb8bb01c9a19931a8a129004080acdf7d7091ab1b3670f57377e860d43b4",
+  "scope": "Supplement computed from saved diagnostic field, not a fresh mapping replay. No reference/parent replacement.",
+  "solid_centers": 8272
+}

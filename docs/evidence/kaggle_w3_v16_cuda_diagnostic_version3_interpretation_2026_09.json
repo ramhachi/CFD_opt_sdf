@@ -1,0 +1,201 @@
+{
+  "assessment": {
+    "confirmed": [
+      "T4 CUDA candidate and combined SDF scans return finite values with the expected negative-distance cells and no CPU/CUDA distance-sign mismatches outside the registered zero band.",
+      "The held-owner CUDA diagnostic constructs the v16 simulation and produces nonzero pressure-plus-viscous force after one primal step, with CPU/CUDA one-step totals close and component closure at floating-point roundoff.",
+      "The exact full W3 v4 run still completed its registered horizon with all total, pressure, and viscous force components exactly zero and failed T7."
+    ],
+    "criteria_or_thresholds_changed": false,
+    "force_sign_changed": false,
+    "full_w3_rerun_performed": false,
+    "not_ruled_out": [
+      "The owner may in fact remain live under the observed Julia compiler/runtime despite the missing explicit root.",
+      "A full-horizon simulation or force-history integration issue may be specific to W3 and is not exercised by the one-step diagnostic.",
+      "CUDA candidate normals show localized discrepancy at interpolation/nonsmooth locations; distance/sign agreement and one-step force parity do not qualify all normals or gradients."
+    ],
+    "qualification_flags_all_false": true,
+    "root_cause_confirmed": false,
+    "strong_unconfirmed_hypothesis": "The owning CuArray backing the non-owning CUDA SDF view becomes eligible for collection after W3 body construction and before or during primal integration, corrupting or invalidating candidate geometry on the full-run path."
+  },
+  "claim_scope": "Interpretation of one-step CPU/T4 CUDA implementation diagnostics and pinned source lifetime contract only.",
+  "created_utc_date": "2026-09-28",
+  "diagnostic_id": "w3_v16_cuda_owner_lifetime_interpretation_2026_09",
+  "diagnostic_v3_identity": {
+    "diagnostic_report_sha256": "02f7bb38b4a98578729ac9f694920894d65389fa214084acc8e3eec61d95d617",
+    "exact_kaggle_log_sha256": "4113bfa739c118ec231681e27a2fed95388e2b0f25aef1f720f37c35ede2d216",
+    "exact_kaggle_status_sha256": "e728d1ce05074fee394cf33e6f060f6a09a02868dbd21c289b90701744c0f763",
+    "flow_lattice_csv_sha256": "7ce428a9b0ede9b76abadb8578930acd9e34e1fc3e499c2e5e553aec8eeed02f",
+    "host_artifact_verification_passed": true,
+    "host_verifier_sha256": "e600e8faaa6c7131e68444cfe61b605c9124b3791420c0a2901494ecc240835e",
+    "julia_job_sha256": "4c080a72f48754c758ee999a38b7d7b83737dd01d2fe7573f4b164d7f0e1ce4e",
+    "kernel": "ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/3",
+    "output_manifest_sha256": "f37511b67b0a08dbf9bbcb05723df4efed39f396fe4b296044079862619c9721",
+    "runner_sha256": "678069b00c194fc46c36a3542c3c4155cd57086c9cba380089b6707bc8ce9d6b",
+    "source_commit": "ca67673ccff69a0b79243c461f82158ad8e61522",
+    "status": "KernelWorkerStatus.COMPLETE"
+  },
+  "evidence_type": "append_only_diagnostic_interpretation",
+  "geometry_and_scan_observations": {
+    "candidate_cpu_cuda_distance_max_abs_error_m": 4.76837158203125e-07,
+    "candidate_cpu_cuda_sign_mismatches_outside_zero_band": 0,
+    "candidate_cuda_normal_max_vector_error_vs_cpu_independent_reference": 1.3379748247034526,
+    "candidate_force_support_abs_d_le_1_cells_cpu_cuda": [
+      2481,
+      2476
+    ],
+    "candidate_negative_distance_cells_cpu_cuda": [
+      1009,
+      1009
+    ],
+    "canonical_phi_c_order_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+    "canonical_phi_fortran_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+    "canonical_sdf_origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "canonical_sdf_point_shape": [
+      61,
+      33,
+      25
+    ],
+    "canonical_state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8",
+    "combined_force_support_abs_d_le_1_cells_cpu_cuda": [
+      7281,
+      7276
+    ],
+    "combined_negative_distance_cells_cpu_cuda": [
+      1009,
+      1009
+    ],
+    "flow_dims": [
+      100,
+      48,
+      36
+    ],
+    "flow_lattice_points_per_body_and_backend": 172800,
+    "flow_origin_m": [
+      -2.5,
+      -1.2000000476837158,
+      -0.8999999761581421
+    ],
+    "gpu_roundtrip_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+    "ground_expected_support_cells": 4800,
+    "measured_sdf_margin_m": 0.3499999939931499
+  },
+  "next_minimum_diagnostic": {
+    "arms": [
+      "owner explicitly rooted with GC.@preserve through body measure and one/tiny number of primal steps",
+      "body/simulation built in a helper scope that returns only the non-owning view-backed objects, owner weakly observed, forced full GC before measure/step"
+    ],
+    "decision_rule": "Only a repeatable retained-vs-unrooted difference tied to confirmed owner collection supports the lifetime root cause. If the owner cannot be collected or outputs remain identical, continue to the next minimal full-run-path comparison without changing W3 gates.",
+    "purpose": "Controlled CUDA owner-lifetime A/B using the same frozen W3 round-3 input and T4 runtime, without a long horizon or qualification claim.",
+    "qualification_effect": "none; do not submit W4 or formal FD",
+    "record": [
+      "whether the owner WeakRef clears after forced GC",
+      "candidate/combined measure values at fixed points and full-grid distance/sign/support summary",
+      "finite field summary and pressure/viscous/total force snapshot after each tiny step",
+      "exact source, input, backend, and output hashes"
+    ]
+  },
+  "observed_backend": {
+    "cuda_driver_api": "13.3.0",
+    "cuda_jl": "6.3.1",
+    "cuda_runtime": "12.8.0",
+    "cuda_visible_devices": "0",
+    "gpu_inventory": [
+      "Tesla T4",
+      "Tesla T4"
+    ],
+    "julia": "1.12.6",
+    "nvidia_driver": "580.159.04",
+    "selected_gpu_uuid": "GPU-d5fd398c-ae72-ef9e-54ae-c229cf2ea025",
+    "waterlily": "1.8.0",
+    "waterlily_backend": "KernelAbstractions"
+  },
+  "one_step_force_observations": {
+    "candidate_cpu_projected_downforce_after_one_step": 4627.170259701308,
+    "candidate_cpu_projected_drag_after_one_step": 3485.046517138383,
+    "candidate_cpu_raw_total_force_after_one_step": [
+      -3485.046517138383,
+      -22.466101823903678,
+      4627.170259701308
+    ],
+    "candidate_cuda_projected_downforce_after_one_step": 4627.474694802374,
+    "candidate_cuda_projected_drag_after_one_step": 3485.132996418866,
+    "candidate_cuda_raw_total_force_after_one_step": [
+      -3485.132996418866,
+      -22.258088226113315,
+      4627.474694802374
+    ],
+    "pressure_plus_viscous_componentwise_closure_residual_cpu": [
+      0.0,
+      0.0,
+      2.2737367544323206e-13
+    ],
+    "pressure_plus_viscous_componentwise_closure_residual_cuda": [
+      0.0,
+      0.0,
+      -2.2737367544323206e-13
+    ],
+    "repository_projection": "drag=+Fx; downforce=-Fz",
+    "solver_free_candidate_force_zero_before_step": true,
+    "solver_steps_cpu_cuda": [
+      1,
+      1
+    ],
+    "solver_time_after_step": [
+      0.015625,
+      0.015625
+    ],
+    "w2b_sphere_one_step_projected_drag_cpu_cuda": [
+      4484.3776739777695,
+      4484.377104123025
+    ]
+  },
+  "owner_lifetime_source_audit": {
+    "adapter_contract_file_sha256": "2f02c840f4fad5ba5d26d42f4c24bc83f413502b15487427a7dc52f06a80a874",
+    "adapter_contract_lines": "82-86",
+    "adapter_documents_nonowning_cuda_view_and_requires_owner_liveness": true,
+    "diagnostic_v3_owner_is_top_level_binding_and_preserved_through_cuda_probe": true,
+    "diagnostic_v3_owner_lifetime_source_lines": "312-329,576-584",
+    "interpretation": "The W3 source has a lifetime hazard consistent with the documented DeviceGridSDF contract: it passes a non-owning CuDeviceArray-backed view into bodies/simulation and then does not explicitly keep the owning CuArray alive around the primal. The diagnostic keeps the owner rooted and gets a nonzero one-step CUDA force. This supports, but does not prove, premature owner collection as the cause of the full W3 zero history.",
+    "w3_gc_preserve_around_run_primal": false,
+    "w3_kernel_view_derived_from_owner": true,
+    "w3_owner_created_and_roundtrip_checked": true,
+    "w3_owner_explicitly_referenced_after_body_construction": false,
+    "w3_source_file_sha256": "5fc5e1006e8f39ccde40a7820665f1ab03cae9e062762a59fc6585e395e8f142",
+    "w3_source_lines": "203-211"
+  },
+  "parent_diagnostic": {
+    "path": "docs/evidence/kaggle_w3_v16_cuda_diagnostic_version3_2026_09.json",
+    "sha256": "e0c9f1ee5bff1f07fb6daf268924b55e6b78fb61863d5620afc93dc11191f3cb"
+  },
+  "qualification_claimed": false,
+  "qualification_flags": {
+    "grid_response_qualified": false,
+    "physical_profile_qualified": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "waterlily_v16_primal_qualified": false
+  },
+  "registered_w3_failure_reference": {
+    "T7": false,
+    "all_total_pressure_viscous_components_signed_zero": true,
+    "criteria_path": "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json",
+    "criteria_sha256": "f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2",
+    "kernel": "ramhachi888/cfd-opt-sdf-w3-v16-primal/4",
+    "qualified": false,
+    "raw_force_csv_sha256": "cf20d9ccf0c685500819801be9a6925346d15a2c881031a09cba599135ea8d9c",
+    "solver_steps": 3841,
+    "source_commit": "5e985fa3395a01228c18910d96e09ecbc5497628",
+    "source_job_path": "scripts/waterlily_w3_v16_primal_job.jl",
+    "source_job_sha256": "5fc5e1006e8f39ccde40a7820665f1ab03cae9e062762a59fc6585e395e8f142",
+    "tU_over_L": 120.015625,
+    "terminal_run_evidence_path": "docs/evidence/kaggle_w3_v16_primal_version4_diagnostic_2026_09.json",
+    "terminal_run_evidence_sha256": "1a22808509795a2735589743817fe2287014d7fbce7944492cd7e19bf4d4f51d"
+  }
+}

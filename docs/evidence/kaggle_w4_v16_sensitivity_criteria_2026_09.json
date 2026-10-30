@@ -1,0 +1,501 @@
+{
+  "artifacts_per_case": [
+    "raw force CSV with total, pressure, and viscous x/y/z components",
+    "case summary with mapped grid, physical forces, coefficients, both half-window diagnostics, runtime, and VRAM",
+    "input SDF hashes, CPU-side margin, GPU round-trip hash, and backend fingerprint"
+  ],
+  "backend": {
+    "accelerator": "NvidiaTeslaT4",
+    "compute_capability": "7.5.0",
+    "cuda_driver_api_version": "13.3.0",
+    "cuda_jl_version": "6.3.1",
+    "cuda_runtime_version": "12.8.0",
+    "cuda_visible_devices": "0",
+    "driver_version": "580.159.04",
+    "gpu_count": 2,
+    "gpu_name": "Tesla T4",
+    "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+    "julia_threads": 1,
+    "julia_version": "1.12.6",
+    "machine_shape": "NvidiaTeslaT4",
+    "waterlily_backend": "KernelAbstractions",
+    "waterlily_version": "1.8.0"
+  },
+  "cases": [
+    {
+      "case_id": "flow_16",
+      "cells_per_reference_length": 16,
+      "density_kg_m3": 1.0,
+      "dynamic_viscosity_pa_s": 0.01,
+      "factor": "flow_resolution",
+      "flow_dims": [
+        100,
+        48,
+        36
+      ],
+      "flow_spacing_m": 0.05,
+      "freestream_mps": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "physical_box_m": [
+        [
+          -2.5,
+          2.5
+        ],
+        [
+          -1.2,
+          1.2
+        ],
+        [
+          -0.9,
+          0.9
+        ]
+      ],
+      "reference_area_m2": 0.64,
+      "reference_length_m": 0.8,
+      "reynolds": 80.0,
+      "solver_length": 16.0,
+      "solver_time_unit_s": 0.05,
+      "solver_viscosity": 0.2
+    },
+    {
+      "case_id": "flow_24",
+      "cells_per_reference_length": 24,
+      "density_kg_m3": 1.0,
+      "dynamic_viscosity_pa_s": 0.01,
+      "factor": "flow_resolution",
+      "flow_dims": [
+        150,
+        72,
+        54
+      ],
+      "flow_spacing_m": 0.03333333333333333,
+      "freestream_mps": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "physical_box_m": [
+        [
+          -2.5,
+          2.5
+        ],
+        [
+          -1.2,
+          1.2
+        ],
+        [
+          -0.9,
+          0.9
+        ]
+      ],
+      "reference_area_m2": 0.64,
+      "reference_length_m": 0.8,
+      "reynolds": 80.0,
+      "solver_length": 24.0,
+      "solver_time_unit_s": 0.03333333333333333,
+      "solver_viscosity": 0.3
+    },
+    {
+      "case_id": "flow_32",
+      "cells_per_reference_length": 32,
+      "density_kg_m3": 1.0,
+      "dynamic_viscosity_pa_s": 0.01,
+      "factor": "flow_resolution",
+      "flow_dims": [
+        200,
+        96,
+        72
+      ],
+      "flow_spacing_m": 0.025,
+      "freestream_mps": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "physical_box_m": [
+        [
+          -2.5,
+          2.5
+        ],
+        [
+          -1.2,
+          1.2
+        ],
+        [
+          -0.9,
+          0.9
+        ]
+      ],
+      "reference_area_m2": 0.64,
+      "reference_length_m": 0.8,
+      "reynolds": 80.0,
+      "solver_length": 32.0,
+      "solver_time_unit_s": 0.025,
+      "solver_viscosity": 0.4
+    },
+    {
+      "case_id": "domain_xplus1m_16",
+      "cells_per_reference_length": 16,
+      "density_kg_m3": 1.0,
+      "dynamic_viscosity_pa_s": 0.01,
+      "factor": "domain_extent",
+      "flow_dims": [
+        120,
+        48,
+        36
+      ],
+      "flow_spacing_m": 0.05,
+      "freestream_mps": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "physical_box_m": [
+        [
+          -2.5,
+          3.5
+        ],
+        [
+          -1.2,
+          1.2
+        ],
+        [
+          -0.9,
+          0.9
+        ]
+      ],
+      "reference_area_m2": 0.64,
+      "reference_length_m": 0.8,
+      "reynolds": 80.0,
+      "solver_length": 16.0,
+      "solver_time_unit_s": 0.05,
+      "solver_viscosity": 0.2,
+      "x_plus_extension_m": 1.0
+    }
+  ],
+  "criteria_id": "waterlily_w4_v16_grid_domain_sensitivity_2026_09",
+  "criteria_round": 1,
+  "evidence_scope": {
+    "absolute_downforce_qualified": false,
+    "gradient_qualified": false,
+    "grid_or_domain_convergence_qualified": false,
+    "openfoam_is_independent_physical_verifier": true,
+    "optimizer_qualified": false,
+    "pass_claim": "the registered v16 WaterLily finite-box resolution/domain sensitivity matrix completed, each case passed the registered stationarity and integrity gates, and its response metrics were independently recomputed",
+    "physical_profile_equivalence_qualified": false,
+    "reverse_mode_qualified": false,
+    "shape_update_allowed": false,
+    "stationarity_qualified": false,
+    "topology_qualified": false,
+    "w4_sensitivity_matrix_passed": false,
+    "waterlily_is_optimization_oracle": true
+  },
+  "geometry": {
+    "baseline_flow_origin_m": [
+      -2.5,
+      -1.2,
+      -0.9
+    ],
+    "baseline_physical_box_m": [
+      [
+        -2.5,
+        2.5
+      ],
+      [
+        -1.2,
+        1.2
+      ],
+      [
+        -0.9,
+        0.9
+      ]
+    ],
+    "canonical_phi_c_order_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+    "canonical_phi_fortran_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+    "canonical_sdf_origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "canonical_state_npz_sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe",
+    "canonical_state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8",
+    "cell_shape": [
+      60,
+      32,
+      24
+    ],
+    "density_kg_m3": 1.0,
+    "design_lattice_is_resampled": false,
+    "design_lattice_spacing_m": 0.05,
+    "dynamic_viscosity_pa_s": 0.01,
+    "flow_grid_is_separate_from_design_lattice": true,
+    "freestream_mps": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "phi_expected_margin_m": 0.3499999939931499,
+    "phi_margin_gate_m": 0.15,
+    "phi_margin_tolerance_m": 1e-06,
+    "point_shape": [
+      61,
+      33,
+      25
+    ],
+    "reference_area_m2": 0.64,
+    "reference_length_m": 0.8,
+    "reynolds": 80.0,
+    "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+  },
+  "immutable": true,
+  "input_dataset_id": "ramhachi888/cfd-opt-sdf-v16-w4-sensitivity",
+  "inputs": {
+    "canonical_phi_fortran_raw": {
+      "dtype": "float32_little_endian",
+      "location": "kaggle_dataset",
+      "order": "Fortran",
+      "path": "canonical_v16_phi_f4_fortran.raw",
+      "sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+      "shape": [
+        61,
+        33,
+        25
+      ]
+    },
+    "canonical_state_npz": {
+      "location": "kaggle_dataset",
+      "path": "sdf_design_state.npz",
+      "sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe"
+    },
+    "case_module": {
+      "location": "source_repo",
+      "path": "julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl",
+      "sha256": "f191ad8f72646dbf7bcf62811c56ae1e95072350720543f79faa82477b83eab1"
+    },
+    "contract_tests": {
+      "location": "source_repo",
+      "path": "tests/test_kaggle_w4.py",
+      "sha256": "37560c232c3b1debb00d8257705972745b09d7b3a25f62cae26845cc42f553d7"
+    },
+    "criteria_draft": {
+      "location": "source_repo",
+      "path": "docs/evidence/w4_v16_sensitivity_criteria_draft_2026_09.json",
+      "sha256": "75831a9901b3c869c2b4ba0b93decfd421583943f869fa5ce41b7aa668abe6a4"
+    },
+    "criteria_registrar": {
+      "location": "source_repo",
+      "path": "scripts/register_kaggle_w4_v16_sensitivity_2026_09.py",
+      "sha256": "6ddd844ee5f879b36dc4e378c9ba9c83778b205f3c8bf2691df6ccf0389b324a"
+    },
+    "dataset_preparer": {
+      "location": "source_repo",
+      "path": "scripts/prepare_kaggle_w4_v16_dataset_2026_09.py",
+      "sha256": "a821890cfb8c1c16860cc43b087a221b6ec000b4a3726144967275938dda5cb5"
+    },
+    "device_grid": {
+      "location": "source_repo",
+      "path": "julia/CFDSDFWaterLily/src/DeviceGridSDF.jl",
+      "sha256": "2f02c840f4fad5ba5d26d42f4c24bc83f413502b15487427a7dc52f06a80a874"
+    },
+    "host_verifier": {
+      "location": "source_repo",
+      "path": "scripts/verify_kaggle_w4_v16.py",
+      "sha256": "48db0841409bb1bcbabf2b7edef3adcdb8d5c83e3c3b0f5e2d620ed7c66942b5"
+    },
+    "job": {
+      "location": "source_repo",
+      "path": "scripts/waterlily_w4_v16_sensitivity_job.jl",
+      "sha256": "4f22ad453bee8df2465ec15d96c38f50c2dd24955c2dac28cd7148a707f537ba"
+    },
+    "kaggle_smoke": {
+      "location": "source_repo",
+      "path": "scripts/w0b_t4_smoke.jl",
+      "sha256": "7c6fef06d3c5fb8dc29ca7461ae599761c37c4d0d3eb878fd30e4beb0d794666"
+    },
+    "kernel_runner": {
+      "location": "source_repo",
+      "path": "infra/kaggle/kernel_w4/runner.py",
+      "sha256": "107d718fa9faa623afb91aee4cd5e9be1f84b68ba738d03e995c50b8a1620388"
+    },
+    "manifest": {
+      "location": "source_repo",
+      "path": "julia/CFDSDFWaterLilyT4/Manifest.toml",
+      "sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707"
+    },
+    "owner_run_type": {
+      "location": "source_repo",
+      "path": "julia/CFDSDFWaterLily/src/OwnedV16Run.jl",
+      "sha256": "695872cbc31a35fee222c6304e51daa7a193a8dee2c64438ea51b8af658e35fe"
+    },
+    "profile_adapter": {
+      "location": "source_repo",
+      "path": "julia/CFDSDFWaterLily/src/V16PhysicalProfile.jl",
+      "sha256": "eaae3ca4db17e2d69b73a16626ac6a99f47b85dd892cba005eb93da361403b1c"
+    },
+    "project": {
+      "location": "source_repo",
+      "path": "julia/CFDSDFWaterLilyT4/Project.toml",
+      "sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
+    },
+    "w3_criteria": {
+      "location": "source_repo",
+      "path": "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json",
+      "sha256": "eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb"
+    },
+    "w3_host_verifier": {
+      "location": "source_repo",
+      "path": "scripts/verify_kaggle_w3_v16.py",
+      "sha256": "9efb97b9b80dd8fe2f9470353f4dbb3388d282acbcc8eae7fbcd2abcf5e1c9d5"
+    },
+    "w3_result_evidence": {
+      "location": "source_repo",
+      "path": "docs/evidence/kaggle_w3_v16_primal_result_round4_2026_09.json",
+      "sha256": "d00949d0ea2f2ddcd222f0f376449d9d7aba9b634a650cf75822c640b9e6f4a8"
+    }
+  },
+  "kind": "waterlily_w4_v16_grid_domain_sensitivity_criteria",
+  "measurement": {
+    "aggregate_solver_wall_time_limit_s": 5400.0,
+    "burn_in_t_u_l": 80.0,
+    "downforce_projection": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "drag_projection": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "force_component_absolute_tolerance": 1e-08,
+    "force_component_relative_tolerance": 1e-06,
+    "force_integration_body": "canonical v16 candidate GridSDF only; exclude the auxiliary moving-ground half-space",
+    "force_projection_fixed": true,
+    "force_sample_every_solver_steps": 8,
+    "force_sample_policy": "sample every 8 solver steps and also sample the first step at or beyond tU/L=120 to bracket the exact measurement window",
+    "force_window_t_u_l": [
+      80.0,
+      120.0
+    ],
+    "ground_model_fixed": true,
+    "host_recompute_relative_tolerance": 1e-09,
+    "memory": "CuArray",
+    "minimum_force_window_samples": 4,
+    "native_waterlily_boundary_semantics_fixed": true,
+    "per_case_wall_time_limit_s": 1800.0,
+    "precision": "Float32",
+    "primary_force_metric": "trapezoidal physical-time-weighted mean over exact [80,120] endpoints, with linear interpolation from bracketing raw force samples",
+    "record_first_second_half_means": true,
+    "stationarity": {
+      "formula": "abs(mean_first - mean_second) / max(abs(mean_whole), eps(Float64))",
+      "half_windows_t_u_l": [
+        [
+          80.0,
+          100.0
+        ],
+        [
+          100.0,
+          120.0
+        ]
+      ],
+      "mean_definition": "trapezoidal physical-time-weighted means on exact endpoint-clipped intervals",
+      "precedent": "inherited before W4 measurement from W3 round 4, which carries the registered W2 sphere convention; not selected from W3 v3 or W4 values",
+      "precedent_criteria_path": "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json",
+      "precedent_criteria_sha256": "eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb",
+      "quantities": [
+        "drag",
+        "downforce"
+      ],
+      "relative_half_window_drift_max": 0.02,
+      "window_t_u_l": [
+        80.0,
+        120.0
+      ]
+    },
+    "stationarity_gate": true,
+    "target_t_u_l": 120.0,
+    "vram_gate": "record peak and total; require 0 < peak < total"
+  },
+  "prerequisites": {
+    "all_four_cases_reexecuted": true,
+    "w3_baseline_reused": false,
+    "w3_flow16_comparison_required": true,
+    "w3_flow16_numerical_repeatability_gate_registered": false,
+    "w3_result_evidence": {
+      "backend_identity": {
+        "accelerator": "NvidiaTeslaT4",
+        "compute_capability": "7.5.0",
+        "cuda_driver_api_version": "13.3.0",
+        "cuda_jl_version": "6.3.1",
+        "cuda_runtime_version": "12.8.0",
+        "cuda_visible_devices": "0",
+        "driver_version": "580.159.04",
+        "gpu_count": 2,
+        "gpu_name": "Tesla T4",
+        "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+        "julia_threads": 1,
+        "julia_version": "1.12.6",
+        "machine_shape": "NvidiaTeslaT4",
+        "waterlily_backend": "KernelAbstractions",
+        "waterlily_version": "1.8.0"
+      },
+      "criteria_path": "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json",
+      "criteria_sha256": "eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb",
+      "host_verified": true,
+      "host_verifier_sha256": "9efb97b9b80dd8fe2f9470353f4dbb3388d282acbcc8eae7fbcd2abcf5e1c9d5",
+      "kernel_version": 5,
+      "path": "docs/evidence/kaggle_w3_v16_primal_result_round4_2026_09.json",
+      "sha256": "d00949d0ea2f2ddcd222f0f376449d9d7aba9b634a650cf75822c640b9e6f4a8"
+    },
+    "w3_result_must_pass_host_verification": true
+  },
+  "profile_semantics": {
+    "downforce_projection": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "drag_projection": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "force_integration_body": "canonical v16 candidate GridSDF only; exclude auxiliary moving-ground half-space",
+    "ground_model": "moving planar half-space on the expanded flow-domain bottom at world z=-0.9 m, with +x wall velocity 1 m/s",
+    "native_velocity_boundary": "v16_native_far_field_uBC: +x freestream velocity 1 m/s; other normal components zero",
+    "physical_profile_qualified": false,
+    "pressure_boundary": "WaterLily projection pressure; no per-patch freestreamPressure input",
+    "side_top_tangential_boundary": "WaterLily native tangential zero-Neumann",
+    "source_profile_equivalent": false,
+    "x_plus_boundary": "WaterLily convective exit"
+  },
+  "registered_before_computation": true,
+  "registered_source_commit": "bcb625d01b1d7fb0804a94fcbc819584993156e5",
+  "response_analysis": {
+    "followup_rule": "If the absolute domain delta in either time-weighted force component in N is greater than or equal to its 24-to-32 resolution delta, register and run an extended-domain fine-grid case before centered FD.",
+    "is_grid_or_domain_convergence_gate": false,
+    "relative_delta_definition": "abs(a-b)/max(abs(a),abs(b)); when both values are zero report relative delta as not applicable and retain the absolute delta",
+    "report_domain_delta": "flow_16 to domain_xplus1m_16 for time-weighted drag and downforce in N and relative terms",
+    "report_resolution_delta": "flow_24 to flow_32 for time-weighted drag and downforce in N and relative terms"
+  },
+  "schema_version": 1,
+  "source_commit": "bcb625d01b1d7fb0804a94fcbc819584993156e5",
+  "status": "registered_not_run",
+  "w3_flow16_comparison": {
+    "interpretation_rule": "report all W3 round-4 to W4 flow_16 deltas; if drag force sign differs, stop matrix interpretation and diagnose before FD",
+    "numerical_repeatability_gate_registered": false,
+    "required_fields": [
+      "drag_time_weighted_n",
+      "downforce_time_weighted_n",
+      "cd_time_weighted",
+      "stationarity_relative_half_window_drift_drag",
+      "stationarity_relative_half_window_drift_downforce",
+      "steps",
+      "t_u_l",
+      "force_sign"
+    ]
+  }
+}

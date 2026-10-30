@@ -1,0 +1,4198 @@
+{
+  "baseline": {
+    "case_dir": "work/stage_s_work_f_v1/baseline/V1",
+    "design_patch": "design_candidate",
+    "n_patch_points": 5818,
+    "n_patch_triangles": 11632
+  },
+  "candidates": [
+    {
+      "candidate": {
+        "a": 1,
+        "axis": "x",
+        "b": 1,
+        "c": 1,
+        "frequency": 3,
+        "name": "mode_k03_a1b1c1_x"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 1.0617072832024943,
+      "normalized_vector_sha256": "d40a4bcbaa8f6a408cebed1b01991394a272721aa7b2275769593831ca8c9308",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.0009418791938429935,
+        "normal_efficiency": 0.9418791938429935,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k03_a1b1c1_x__minus",
+          "check_mesh": {
+            "concave_cell_count": 2435,
+            "concave_cell_fraction": 0.06110720738807469,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2435"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.1292880155607897,
+            "volume_relative_difference": 0.0002961874207713936,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0010262799999999905,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0010000005569369965,
+          "morpher_returncode": 0,
+          "normalized_displacement": 1.0000005569369965,
+          "normalized_displacement_ok": true,
+          "pass": true,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k03_a1b1c1_x__plus",
+          "check_mesh": {
+            "concave_cell_count": 2440,
+            "concave_cell_fraction": 0.06123268419995985,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2440"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12921145127002773,
+            "volume_relative_difference": 0.0002961874239470245,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0010262799999999905,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0010000005569369694,
+          "morpher_returncode": 0,
+          "normalized_displacement": 1.0000005569369694,
+          "normalized_displacement_ok": true,
+          "pass": true,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "5a34e4d369985c33beeed136c666326ceb6e26ff332e2fb0d13c91f27633087f",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999999959684,
+        "difference_ok": false,
+        "max_abs_difference": 3.9422860544369165e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 6.905141742161148,
+        "realized_active_l2_norm": 6.905141870257084
+      },
+      "realized_even_component_m": 5.000000025123796e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 1,
+        "axis": "z",
+        "b": 1,
+        "c": 1,
+        "frequency": 3,
+        "name": "mode_k03_a1b1c1_z"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 1.0472772362772609,
+      "normalized_vector_sha256": "ba929822c764c22b14d0b80a30d8d39b2bddda642436f0fef89218379f5fc4d5",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.0009548570000000034,
+        "normal_efficiency": 0.9548570000000034,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k03_a1b1c1_z__minus",
+          "check_mesh": {
+            "concave_cell_count": 2439,
+            "concave_cell_fraction": 0.061207588837582816,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2439"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.1292189539824439,
+            "volume_relative_difference": 0.00023813923910436386,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0010123280000000068,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0010000000000000009,
+          "morpher_returncode": 0,
+          "normalized_displacement": 1.0000000000000009,
+          "normalized_displacement_ok": true,
+          "pass": true,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k03_a1b1c1_z__plus",
+          "check_mesh": {
+            "concave_cell_count": 2442,
+            "concave_cell_fraction": 0.06128287492471391,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2442"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12928051283343345,
+            "volume_relative_difference": 0.00023813912033795716,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.001012327999999993,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0010000000000000009,
+          "morpher_returncode": 0,
+          "normalized_displacement": 1.0000000000000009,
+          "normalized_displacement_ok": true,
+          "pass": true,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c2ad8e3e877b68628e824bb0614b638b9523e996ceb3df63875fc37b99e27855",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999999955212,
+        "difference_ok": false,
+        "max_abs_difference": 3.9181649155728415e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 6.811291468228566,
+        "realized_active_l2_norm": 6.811290800881434
+      },
+      "realized_even_component_m": 4.999999997368221e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 1,
+        "axis": "x",
+        "b": 1,
+        "c": 2,
+        "frequency": 6,
+        "name": "mode_k06_a1b1c2_x"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.5934330178370877,
+      "normalized_vector_sha256": "e3385d189399422ff85d1a330694dd00f7bf7d3599ec0f863d186f7a5f2b7283",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.0016851101471312558,
+        "normal_efficiency": 1.6851101471312557,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k06_a1b1c2_x__minus",
+          "check_mesh": {
+            "concave_cell_count": 2440,
+            "concave_cell_fraction": 0.06123268419995985,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2440"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12927113094659545,
+            "volume_relative_difference": 0.00016555183841431562,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0005736299999999916,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0005589435598284247,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.5589435598284247,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k06_a1b1c2_x__plus",
+          "check_mesh": {
+            "concave_cell_count": 2439,
+            "concave_cell_fraction": 0.061207588837582816,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2439"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12922833586355909,
+            "volume_relative_difference": 0.00016555200145788223,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0005736299999999916,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0005589435598284518,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.5589435598284518,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "5a34e4d369985c33beeed136c666326ceb6e26ff332e2fb0d13c91f27633087f",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.99999999997921,
+        "difference_ok": false,
+        "max_abs_difference": 4.103287287837709e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 3.859575202576805,
+        "realized_active_l2_norm": 3.859575517966224
+      },
+      "realized_even_component_m": 5.000000025123796e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 1,
+        "axis": "z",
+        "b": 1,
+        "c": 2,
+        "frequency": 6,
+        "name": "mode_k06_a1b1c2_z"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.5236386181386323,
+      "normalized_vector_sha256": "19ff96bcac466e3daa49f10aeee1e271a106ccd8a48abbfb44f98835b07a85e7",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.0019097139999999999,
+        "normal_efficiency": 1.909714,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k06_a1b1c2_z__minus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12923434365978217,
+            "volume_relative_difference": 0.00011906992320267084,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0005061640000000034,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0005000000000000004,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.5000000000000004,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k06_a1b1c2_z__plus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12926512314432895,
+            "volume_relative_difference": 0.00011906971340143898,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0005061640000000034,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0005000000000000004,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.5000000000000004,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c2ad8e3e877b68628e824bb0614b638b9523e996ceb3df63875fc37b99e27855",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999999949243,
+        "difference_ok": false,
+        "max_abs_difference": 3.591246103523682e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 3.405645734114295,
+        "realized_active_l2_norm": 3.405645692981054
+      },
+      "realized_even_component_m": 4.999999997368221e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 1,
+        "axis": "y",
+        "b": 2,
+        "c": 1,
+        "frequency": 6,
+        "name": "mode_k06_a1b2c1_y"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.5236386181386323,
+      "normalized_vector_sha256": "eebdf9c494cd5ba4a17b3160fda20bce4d3e11bb94a92cca075c368d37101ba2",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.0019097139999999999,
+        "normal_efficiency": 1.909714,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k06_a1b2c1_y__minus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.1292652819012852,
+            "volume_relative_difference": 0.00012029800960021943,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0005061600000000055,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00047980766217293135,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.47980766217293136,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k06_a1b2c1_y__plus",
+          "check_mesh": {
+            "concave_cell_count": 2440,
+            "concave_cell_fraction": 0.06123268419995985,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2440"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.1292341849272071,
+            "volume_relative_difference": 0.00012029803076536586,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0005061600000000055,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0004798105681608433,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.4798105681608433,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c8b509e6094b73c5784b6a04ab201972d1c22af73db5b77823ee3cc1b54cf463",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999999840549,
+        "difference_ok": false,
+        "max_abs_difference": 4.699973704502813e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 3.405645734114295,
+        "realized_active_l2_norm": 3.405645964398717
+      },
+      "realized_even_component_m": 5.000000025123796e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 2,
+        "axis": "x",
+        "b": 1,
+        "c": 1,
+        "frequency": 6,
+        "name": "mode_k06_a2b1c1_x"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.40498216931356323,
+      "normalized_vector_sha256": "8e41e8c4a4dbecdfa4870e07d1d8531ce3285a08f2d45ff9b4429a02eb579687",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.0024692445143819053,
+        "normal_efficiency": 2.4692445143819053,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k06_a2b1c1_x__minus",
+          "check_mesh": {
+            "concave_cell_count": 2439,
+            "concave_cell_fraction": 0.061207588837582816,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2439"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.1292643359280661,
+            "volume_relative_difference": 0.00011297905277073813,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00039147000000000487,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00038144835334274433,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.3814483533427443,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k06_a2b1c1_x__plus",
+          "check_mesh": {
+            "concave_cell_count": 2439,
+            "concave_cell_fraction": 0.061207588837582816,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2439"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.129235130899336,
+            "volume_relative_difference": 0.00011297908237059054,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00039147000000000487,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0003814483533427715,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.3814483533427715,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "5a34e4d369985c33beeed136c666326ceb6e26ff332e2fb0d13c91f27633087f",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999999734702,
+        "difference_ok": false,
+        "max_abs_difference": 4.021102613271932e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 2.633926814293789,
+        "realized_active_l2_norm": 2.633924141843744
+      },
+      "realized_even_component_m": 5.000000025123796e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 2,
+        "axis": "z",
+        "b": 1,
+        "c": 1,
+        "frequency": 6,
+        "name": "mode_k06_a2b1c1_z"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.3490924120924211,
+      "normalized_vector_sha256": "8b282019252118e37566e6a22766537613f428496f5d51ca1a8db049c7eeb241",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.0028645710000000033,
+        "normal_efficiency": 2.8645710000000033,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k06_a2b1c1_z__minus",
+          "check_mesh": {
+            "concave_cell_count": 2442,
+            "concave_cell_fraction": 0.06128287492471391,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2442"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12923947364859717,
+            "volume_relative_difference": 7.937940563310046e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0003374430000000067,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00033333299999999816,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.33333299999999816,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k06_a2b1c1_z__plus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.129259993170823,
+            "volume_relative_difference": 7.937931427744811e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00033744299999999283,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0003333330000000051,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.3333330000000051,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c2ad8e3e877b68628e824bb0614b638b9523e996ceb3df63875fc37b99e27855",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999999782894,
+        "difference_ok": false,
+        "max_abs_difference": 3.1333158075075307e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 2.270430489409527,
+        "realized_active_l2_norm": 2.270428342493823
+      },
+      "realized_even_component_m": 4.999999997368221e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 1,
+        "axis": "y",
+        "b": 2,
+        "c": 2,
+        "frequency": 9,
+        "name": "mode_k09_a1b2c2_y"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.3490924120924211,
+      "normalized_vector_sha256": "9fb57159bf6ab9ad9a2c9860e7a819e340c507ac01be48bafc69326e3c00c3a9",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.0028645710000000033,
+        "normal_efficiency": 2.8645710000000033,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k09_a1b2c2_y__minus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12926009908588768,
+            "volume_relative_difference": 8.019877488184717e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0003374399999999944,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00031987177478195425,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.3198717747819542,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k09_a1b2c2_y__plus",
+          "check_mesh": {
+            "concave_cell_count": 2440,
+            "concave_cell_fraction": 0.06123268419995985,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2440"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12923936774904174,
+            "volume_relative_difference": 8.019874624318791e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0003374399999999944,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00031987371210723335,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.31987371210723337,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c8b509e6094b73c5784b6a04ab201972d1c22af73db5b77823ee3cc1b54cf463",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999999279102,
+        "difference_ok": false,
+        "max_abs_difference": 4.639388299143565e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 2.270430489409527,
+        "realized_active_l2_norm": 2.2704384847672046
+      },
+      "realized_even_component_m": 5.000000025123796e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 2,
+        "axis": "x",
+        "b": 1,
+        "c": 2,
+        "frequency": 9,
+        "name": "mode_k09_a2b1c2_x"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.303706096708316,
+      "normalized_vector_sha256": "0af589ca01b4caccaeca961c74ea058d4802ff93ec9a54f0e7fbc764b2cf7fe4",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.003292656982649958,
+        "normal_efficiency": 3.292656982649958,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k09_a2b1c2_x__minus",
+          "check_mesh": {
+            "concave_cell_count": 2439,
+            "concave_cell_fraction": 0.061207588837582816,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2439"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12926068426578965,
+            "volume_relative_difference": 8.472628829727446e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00029357000000002076,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0002860569107832888,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.2860569107832888,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k09_a2b1c2_x__plus",
+          "check_mesh": {
+            "concave_cell_count": 2439,
+            "concave_cell_fraction": 0.061207588837582816,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2439"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.1292387825776444,
+            "volume_relative_difference": 8.472619385854574e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.000293569999999993,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0002860569107832888,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.2860569107832888,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "5a34e4d369985c33beeed136c666326ceb6e26ff332e2fb0d13c91f27633087f",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999999442695,
+        "difference_ok": false,
+        "max_abs_difference": 3.9032916965831e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 1.975246547620647,
+        "realized_active_l2_norm": 1.9752451427003392
+      },
+      "realized_even_component_m": 4.999999997368221e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 2,
+        "axis": "z",
+        "b": 1,
+        "c": 2,
+        "frequency": 9,
+        "name": "mode_k09_a2b1c2_z"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.26181930906931616,
+      "normalized_vector_sha256": "b81eee9423952d14237c81d143813dac5d3a8154d17cfcab17b2de3a85abfffa",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.0038194279999999997,
+        "normal_efficiency": 3.819428,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k09_a2b1c2_z__minus",
+          "check_mesh": {
+            "concave_cell_count": 2442,
+            "concave_cell_fraction": 0.06128287492471391,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2442"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12924203860476516,
+            "volume_relative_difference": 5.953444270585997e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0002530820000000017,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0002500000000000002,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.2500000000000002,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k09_a2b1c2_z__plus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12925742828096,
+            "volume_relative_difference": 5.953486434924851e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0002530820000000017,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0002500000000000002,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.2500000000000002,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c2ad8e3e877b68628e824bb0614b638b9523e996ceb3df63875fc37b99e27855",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999999420653,
+        "difference_ok": false,
+        "max_abs_difference": 3.474835719163849e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 1.7028228670571475,
+        "realized_active_l2_norm": 1.7028195470637173
+      },
+      "realized_even_component_m": 4.999999997368221e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 2,
+        "axis": "y",
+        "b": 2,
+        "c": 1,
+        "frequency": 9,
+        "name": "mode_k09_a2b2c1_y"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.26181924051998356,
+      "normalized_vector_sha256": "58ade3d8f5a46121559d499616a6b4946e7d7f66123d3ab0fbf1ca48cac527b1",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.003819428999999999,
+        "normal_efficiency": 3.819428999999999,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k09_a2b2c1_y__minus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12925750764059782,
+            "volume_relative_difference": 6.014886668185302e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0002530800000000166,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00023990867439962983,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.23990867439962982,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k09_a2b2c1_y__plus",
+          "check_mesh": {
+            "concave_cell_count": 2440,
+            "concave_cell_fraction": 0.06123268419995985,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2440"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.1292419591979966,
+            "volume_relative_difference": 6.0148809687137305e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00025307999999998887,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0002399057684117448,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.2399057684117448,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c8b509e6094b73c5784b6a04ab201972d1c22af73db5b77823ee3cc1b54cf463",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999999095842,
+        "difference_ok": false,
+        "max_abs_difference": 4.476143526874199e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 1.7028224212253578,
+        "realized_active_l2_norm": 1.7028246269984
+      },
+      "realized_even_component_m": 5.000000025123796e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 1,
+        "axis": "x",
+        "b": 1,
+        "c": 3,
+        "frequency": 11,
+        "name": "mode_k11_a1b1c3_x"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.24085236992494485,
+      "normalized_vector_sha256": "8b09b18b352f9243a61b6983ae4258dfb64e098a83dd13148c1de55ccbf25532",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.004151920947722553,
+        "normal_efficiency": 4.151920947722553,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k11_a1b1c3_x__minus",
+          "check_mesh": {
+            "concave_cell_count": 2439,
+            "concave_cell_fraction": 0.061207588837582816,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2439"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.1292584178815175,
+            "volume_relative_difference": 6.719136414501418e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00023281000000002772,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00022684944140924783,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.22684944140924782,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k11_a1b1c3_x__plus",
+          "check_mesh": {
+            "concave_cell_count": 2439,
+            "concave_cell_fraction": 0.061207588837582816,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2439"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12924104894694885,
+            "volume_relative_difference": 6.719138551073129e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00023280999999999996,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00022684944140927499,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.226849441409275,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "5a34e4d369985c33beeed136c666326ceb6e26ff332e2fb0d13c91f27633087f",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999999254034,
+        "difference_ok": false,
+        "max_abs_difference": 3.9387284326980465e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 1.5664578924716452,
+        "realized_active_l2_norm": 1.5664571138583199
+      },
+      "realized_even_component_m": 5.000000025123796e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 1,
+        "axis": "z",
+        "b": 1,
+        "c": 3,
+        "frequency": 11,
+        "name": "mode_k11_a1b1c3_z"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.2094554033838776,
+      "normalized_vector_sha256": "6439adcd1354174655b87e68b79139fa00bee83c772e4d5e25fd8ee866aaedff",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.004774286000000003,
+        "normal_efficiency": 4.774286000000003,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k11_a1b1c3_z__minus",
+          "check_mesh": {
+            "concave_cell_count": 2442,
+            "concave_cell_fraction": 0.06128287492471391,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2442"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12924357752065846,
+            "volume_relative_difference": 4.7627912203762156e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00020246599999999837,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0001999999999999988,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.1999999999999988,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k11_a1b1c3_z__plus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12925588934132368,
+            "volume_relative_difference": 4.762815014823939e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00020246599999999837,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0001999999999999988,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.1999999999999988,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c2ad8e3e877b68628e824bb0614b638b9523e996ceb3df63875fc37b99e27855",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999999331942,
+        "difference_ok": false,
+        "max_abs_difference": 3.5565332894282875e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 1.3622580083133566,
+        "realized_active_l2_norm": 1.36226014846072
+      },
+      "realized_even_component_m": 4.999999997368221e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 1,
+        "axis": "x",
+        "b": 3,
+        "c": 1,
+        "frequency": 11,
+        "name": "mode_k11_a1b3c1_x"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.2069625853575882,
+      "normalized_vector_sha256": "6fbda91e88c2880f06519138dc245e37397df216ddd293c8fefe4be553494314",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.00483179120647439,
+        "normal_efficiency": 4.8317912064743895,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k11_a1b3c1_x__minus",
+          "check_mesh": {
+            "concave_cell_count": 2439,
+            "concave_cell_fraction": 0.061207588837582816,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2439"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12925719595302884,
+            "volume_relative_difference": 5.77373524702565e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0002000600000000019,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00019493161541387862,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.19493161541387863,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k11_a1b3c1_x__plus",
+          "check_mesh": {
+            "concave_cell_count": 2439,
+            "concave_cell_fraction": 0.061207588837582816,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2439"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12924227087383264,
+            "volume_relative_difference": 5.773738625288814e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0002000600000000019,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00019493161541387862,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.19493161541387863,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "5a34e4d369985c33beeed136c666326ceb6e26ff332e2fb0d13c91f27633087f",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999998725794,
+        "difference_ok": false,
+        "max_abs_difference": 4.091522430790806e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 1.3460451951573416,
+        "realized_active_l2_norm": 1.3460402047626443
+      },
+      "realized_even_component_m": 5.000000025123796e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 1,
+        "axis": "z",
+        "b": 3,
+        "c": 1,
+        "frequency": 11,
+        "name": "mode_k11_a1b3c1_z"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.17454617557983806,
+      "normalized_vector_sha256": "fd0b99542d14cfc26f188f73d754da1e6f397334c350ab9a3ccb22b799620554",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.005729142999999999,
+        "normal_efficiency": 5.729142999999999,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k11_a1b3c1_z__minus",
+          "check_mesh": {
+            "concave_cell_count": 2442,
+            "concave_cell_fraction": 0.06128287492471391,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2442"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12924460339369478,
+            "volume_relative_difference": 3.9690773695114534e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00016872099999999668,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00016666699999999535,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.16666699999999535,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k11_a1b3c1_z__plus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12925486342188477,
+            "volume_relative_difference": 3.969065262472187e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00016872099999999668,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00016666700000000229,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.16666700000000229,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c2ad8e3e877b68628e824bb0614b638b9523e996ceb3df63875fc37b99e27855",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.999999999905414,
+        "difference_ok": false,
+        "max_abs_difference": 3.6332409858869097e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 1.1352150465572857,
+        "realized_active_l2_norm": 1.1352153124390083
+      },
+      "realized_even_component_m": 4.999999997368221e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 3,
+        "axis": "x",
+        "b": 1,
+        "c": 1,
+        "frequency": 11,
+        "name": "mode_k11_a3b1c1_x"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.17454617557983806,
+      "normalized_vector_sha256": "551e88b2174735de79108b44183f604bf9ce7d48d4edcc355cd587bb1ba29109",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.005729142999999999,
+        "normal_efficiency": 5.729142999999999,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k11_a3b1c1_x__minus",
+          "check_mesh": {
+            "concave_cell_count": 2439,
+            "concave_cell_fraction": 0.061207588837582816,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2439"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12925602708796502,
+            "volume_relative_difference": 4.869389038385221e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00016872000000001108,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00016440322267763342,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.1644032226776334,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k11_a3b1c1_x__plus",
+          "check_mesh": {
+            "concave_cell_count": 2436,
+            "concave_cell_fraction": 0.061132302750451714,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2436"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12924343973852478,
+            "volume_relative_difference": 4.869392704211773e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00016872000000001108,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00016440322267763342,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.1644032226776334,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "5a34e4d369985c33beeed136c666326ceb6e26ff332e2fb0d13c91f27633087f",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999998600761,
+        "difference_ok": false,
+        "max_abs_difference": 3.824420157477748e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 1.1352150465572857,
+        "realized_active_l2_norm": 1.1352165384538546
+      },
+      "realized_even_component_m": 5.000000025123796e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 3,
+        "axis": "z",
+        "b": 1,
+        "c": 1,
+        "frequency": 11,
+        "name": "mode_k11_a3b1c1_z"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.1496110113704368,
+      "normalized_vector_sha256": "0766b85a1fe956428ba34ecc4d6388bd7b15b7beaae7578bac02cf6950030109",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.0066840000000000024,
+        "normal_efficiency": 6.684000000000002,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k11_a3b1c1_z__minus",
+          "check_mesh": {
+            "concave_cell_count": 2442,
+            "concave_cell_fraction": 0.06128287492471391,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2442"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12924533635806965,
+            "volume_relative_difference": 3.4019857744331705e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00014461799999999914,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00014285699999999624,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.14285699999999624,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k11_a3b1c1_z__plus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.1292541304330623,
+            "volume_relative_difference": 3.401954752375701e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00014461799999999914,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00014285700000000318,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.14285700000000318,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c2ad8e3e877b68628e824bb0614b638b9523e996ceb3df63875fc37b99e27855",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999998577636,
+        "difference_ok": false,
+        "max_abs_difference": 3.8078380004552548e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 0.973041492740626,
+        "realized_active_l2_norm": 0.9730362310926646
+      },
+      "realized_even_component_m": 4.999999997368221e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 2,
+        "axis": "y",
+        "b": 2,
+        "c": 2,
+        "frequency": 12,
+        "name": "mode_k12_a2b2c2_y"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.1496110113704368,
+      "normalized_vector_sha256": "eba79bae6f407a44ef20bb837f723f0f16ac7b2a4ba535f8672ee57aff91b2f0",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.0066840000000000024,
+        "normal_efficiency": 6.684000000000002,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k12_a2b2c2_y__minus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.1292541758413556,
+            "volume_relative_difference": 3.4370869666496936e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00014462000000001196,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00013708513587045224,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.13708513587045223,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k12_a2b2c2_y__plus",
+          "check_mesh": {
+            "concave_cell_count": 2440,
+            "concave_cell_fraction": 0.06123268419995985,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2440"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.1292452909805717,
+            "volume_relative_difference": 3.4370941624773615e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0001446199999999842,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.000137089010520997,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.137089010520997,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c8b509e6094b73c5784b6a04ab201972d1c22af73db5b77823ee3cc1b54cf463",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999998037775,
+        "difference_ok": false,
+        "max_abs_difference": 3.988629555029544e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 0.9730414927406261,
+        "realized_active_l2_norm": 0.9730382932695985
+      },
+      "realized_even_component_m": 5.000000025123796e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 1,
+        "axis": "y",
+        "b": 2,
+        "c": 3,
+        "frequency": 14,
+        "name": "mode_k14_a1b2c3_y"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.1496110113704368,
+      "normalized_vector_sha256": "eba79bae6f407a44ef20bb837f723f0f16ac7b2a4ba535f8672ee57aff91b2f0",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.0066840000000000024,
+        "normal_efficiency": 6.684000000000002,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a1b2c3_y__minus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.1292541758413556,
+            "volume_relative_difference": 3.4370869666496936e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00014462000000001196,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00013708513587045224,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.13708513587045223,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a1b2c3_y__plus",
+          "check_mesh": {
+            "concave_cell_count": 2440,
+            "concave_cell_fraction": 0.06123268419995985,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2440"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.1292452909805717,
+            "volume_relative_difference": 3.4370941624773615e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0001446199999999842,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.000137089010520997,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.137089010520997,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c8b509e6094b73c5784b6a04ab201972d1c22af73db5b77823ee3cc1b54cf463",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999998037775,
+        "difference_ok": false,
+        "max_abs_difference": 3.988629555029544e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 0.9730414927406261,
+        "realized_active_l2_norm": 0.9730382932695985
+      },
+      "realized_even_component_m": 5.000000025123796e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 1,
+        "axis": "x",
+        "b": 3,
+        "c": 2,
+        "frequency": 14,
+        "name": "mode_k14_a1b3c2_x"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.1496110113704368,
+      "normalized_vector_sha256": "1d63f78706616f2c2c283a37c8a516580b8824e65f5521b9f28a6ed3236bf678",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.0066840000000000024,
+        "normal_efficiency": 6.684000000000002,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a1b3c2_x__minus",
+          "check_mesh": {
+            "concave_cell_count": 2439,
+            "concave_cell_fraction": 0.061207588837582816,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2439"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12925512798079378,
+            "volume_relative_difference": 4.173753428560329e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0001446199999999842,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00014091984364979012,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.14091984364979013,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a1b3c2_x__plus",
+          "check_mesh": {
+            "concave_cell_count": 2436,
+            "concave_cell_fraction": 0.061132302750451714,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2436"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12924433886617873,
+            "volume_relative_difference": 4.173741247004973e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00014462000000001196,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00014091984364976296,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.14091984364976295,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "5a34e4d369985c33beeed136c666326ceb6e26ff332e2fb0d13c91f27633087f",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999998371868,
+        "difference_ok": false,
+        "max_abs_difference": 3.8078380143330426e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 0.9730414927406261,
+        "realized_active_l2_norm": 0.973036388527321
+      },
+      "realized_even_component_m": 5.000000025123796e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 1,
+        "axis": "z",
+        "b": 3,
+        "c": 2,
+        "frequency": 14,
+        "name": "mode_k14_a1b3c2_z"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.13090963739732267,
+      "normalized_vector_sha256": "245ced678ebb505229b0a5bf61ce17d6bdb15a6c78cf502e513460ea0cd1dbfe",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.007638856999999999,
+        "normal_efficiency": 7.638856999999999,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a1b3c2_z__minus",
+          "check_mesh": {
+            "concave_cell_count": 2442,
+            "concave_cell_fraction": 0.06128287492471391,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2442"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.1292458859889858,
+            "volume_relative_difference": 2.976738540557759e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0001265409999999939,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0001250000000000001,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.1250000000000001,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a1b3c2_z__plus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12925358080802274,
+            "volume_relative_difference": 2.9767120651843315e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0001265409999999939,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0001250000000000001,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.1250000000000001,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c2ad8e3e877b68628e824bb0614b638b9523e996ceb3df63875fc37b99e27855",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999997523628,
+        "difference_ok": false,
+        "max_abs_difference": 3.891345639418786e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 0.8514113220706118,
+        "realized_active_l2_norm": 0.8514101116089479
+      },
+      "realized_even_component_m": 4.999999997368221e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 2,
+        "axis": "x",
+        "b": 1,
+        "c": 3,
+        "frequency": 14,
+        "name": "mode_k14_a2b1c3_x"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.13090963739732267,
+      "normalized_vector_sha256": "55b063d1ea08e934b45ddb7db4c519e75c6b99b390cff9aceed014b63f165c16",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.007638856999999999,
+        "normal_efficiency": 7.638856999999999,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a2b1c3_x__minus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.1292544537158293,
+            "volume_relative_difference": 3.652077331709178e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0001265400000000083,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00012329752463761042,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.12329752463761041,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a2b1c3_x__plus",
+          "check_mesh": {
+            "concave_cell_count": 2437,
+            "concave_cell_fraction": 0.06115739811282875,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2437"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.129245013128142,
+            "volume_relative_difference": 3.6520674721782565e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0001265400000000083,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00012329752463761042,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.12329752463761041,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "5a34e4d369985c33beeed136c666326ceb6e26ff332e2fb0d13c91f27633087f",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999997318867,
+        "difference_ok": false,
+        "max_abs_difference": 3.891345653296574e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 0.8514113220706118,
+        "realized_active_l2_norm": 0.8514093741990045
+      },
+      "realized_even_component_m": 4.999999969612645e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 2,
+        "axis": "z",
+        "b": 1,
+        "c": 3,
+        "frequency": 14,
+        "name": "mode_k14_a2b1c3_z"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.11636412382352959,
+      "normalized_vector_sha256": "7b453cc1c0031092eb6dda2b80d6602d1b4fe0e8f2e9fcaae4e77128f41dd470",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.008593714000000002,
+        "normal_efficiency": 8.593714000000002,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a2b1c3_z__minus",
+          "check_mesh": {
+            "concave_cell_count": 2442,
+            "concave_cell_fraction": 0.06128287492471391,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2442"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12924631358678065,
+            "volume_relative_difference": 2.6459078428328565e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00011248099999999761,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00011111099999999707,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.11111099999999707,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a2b1c3_z__plus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.1292531532203499,
+            "volume_relative_difference": 2.6458891988212974e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00011248099999999761,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00011111100000000401,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.11111100000000401,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c2ad8e3e877b68628e824bb0614b638b9523e996ceb3df63875fc37b99e27855",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999997885702,
+        "difference_ok": false,
+        "max_abs_difference": 3.218012038813667e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 0.7568100750709581,
+        "realized_active_l2_norm": 0.7568169756594175
+      },
+      "realized_even_component_m": 4.999999997368221e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 2,
+        "axis": "x",
+        "b": 3,
+        "c": 1,
+        "frequency": 14,
+        "name": "mode_k14_a2b3c1_x"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.11636412382352959,
+      "normalized_vector_sha256": "6033a5cdce9a14af1cd1f86b2afc5712171146f440d1cc259ced86f1f78f51c1",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.008593714000000002,
+        "normal_efficiency": 8.593714000000002,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a2b3c1_x__minus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12925392916618472,
+            "volume_relative_difference": 3.24623537697581e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00011248000000002589,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0001095988868713368,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.1095988868713368,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a2b3c1_x__plus",
+          "check_mesh": {
+            "concave_cell_count": 2437,
+            "concave_cell_fraction": 0.06115739811282875,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2437"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12924553765894664,
+            "volume_relative_difference": 3.246240093822818e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00011247999999999814,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.0001095988868713368,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.1095988868713368,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "5a34e4d369985c33beeed136c666326ceb6e26ff332e2fb0d13c91f27633087f",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999996516439,
+        "difference_ok": false,
+        "max_abs_difference": 4.1238235475582474e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 0.7568100750709581,
+        "realized_active_l2_norm": 0.7568124789359773
+      },
+      "realized_even_component_m": 5.000000025123796e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 2,
+        "axis": "z",
+        "b": 3,
+        "c": 1,
+        "frequency": 14,
+        "name": "mode_k14_a2b3c1_z"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.10472771265983144,
+      "normalized_vector_sha256": "fe33e992ecdb6fba41531096b2fcd41f14f5d06006a45e4c8943745c4c223e2e",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.009548571000000006,
+        "normal_efficiency": 9.548571000000006,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a2b3c1_z__minus",
+          "check_mesh": {
+            "concave_cell_count": 2442,
+            "concave_cell_fraction": 0.06128287492471391,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2442"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.1292466554532796,
+            "volume_relative_difference": 2.3814071046814945e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00010123300000000612,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 9.999999999999593e-05,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.09999999999999593,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a2b3c1_z__plus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.129252811346473,
+            "volume_relative_difference": 2.3813827523938683e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.00010123300000000612,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 0.00010000000000000286,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.10000000000000286,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c2ad8e3e877b68628e824bb0614b638b9523e996ceb3df63875fc37b99e27855",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999996139007,
+        "difference_ok": false,
+        "max_abs_difference": 4.175242270088031e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 0.681129075489761,
+        "realized_active_l2_norm": 0.681137344968872
+      },
+      "realized_even_component_m": 4.999999997368221e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 3,
+        "axis": "x",
+        "b": 1,
+        "c": 2,
+        "frequency": 14,
+        "name": "mode_k14_a3b1c2_x"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.10472771265983144,
+      "normalized_vector_sha256": "b501a5cac23cba313d4530edf41e86506c044a64552be6292222d5c20ce5df23",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.009548571000000006,
+        "normal_efficiency": 9.548571000000006,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a3b1c2_x__minus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12925350953846537,
+            "volume_relative_difference": 2.921571094689924e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0001012300000000077,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 9.863997665833963e-05,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.09863997665833962,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a3b1c2_x__plus",
+          "check_mesh": {
+            "concave_cell_count": 2437,
+            "concave_cell_fraction": 0.06115739811282875,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2437"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12924595728838273,
+            "volume_relative_difference": 2.9215744833037377e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 0.0001012300000000077,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 9.863997665833963e-05,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.09863997665833962,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "5a34e4d369985c33beeed136c666326ceb6e26ff332e2fb0d13c91f27633087f",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999995842486,
+        "difference_ok": false,
+        "max_abs_difference": 3.936855620473301e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 0.681129075489761,
+        "realized_active_l2_norm": 0.681133540909694
+      },
+      "realized_even_component_m": 5.000000025123796e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 3,
+        "axis": "z",
+        "b": 1,
+        "c": 2,
+        "frequency": 14,
+        "name": "mode_k14_a3b1c2_z"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.09520701241537524,
+      "normalized_vector_sha256": "543b57ebd55038d404fb44b7a1d4d9dd0690aa3222ee56fb4917cceb35b8fa58",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.010503428000000002,
+        "normal_efficiency": 10.503428000000001,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a3b1c2_z__minus",
+          "check_mesh": {
+            "concave_cell_count": 2442,
+            "concave_cell_fraction": 0.06128287492471391,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2442"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12924693525126726,
+            "volume_relative_difference": 2.16492852459178e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 9.203000000000683e-05,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 9.090900000000013e-05,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.09090900000000013,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a3b1c2_z__plus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12925253161230651,
+            "volume_relative_difference": 2.1649535504876782e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 9.202999999999295e-05,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 9.090900000000013e-05,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.09090900000000013,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c2ad8e3e877b68628e824bb0614b638b9523e996ceb3df63875fc37b99e27855",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999994534842,
+        "difference_ok": false,
+        "max_abs_difference": 4.0337645606514094e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 0.6192082563405343,
+        "realized_active_l2_norm": 0.6192083191156361
+      },
+      "realized_even_component_m": 4.999999997368221e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 3,
+        "axis": "y",
+        "b": 2,
+        "c": 1,
+        "frequency": 14,
+        "name": "mode_k14_a3b2c1_y"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.0952070033510009,
+      "normalized_vector_sha256": "ea971c5cb60ab739431930783ce3cfe1ab10b689faf18a13a523153e19e45157",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.010503429000000002,
+        "normal_efficiency": 10.503429,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a3b2c1_y__minus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.1292525604059454,
+            "volume_relative_difference": 2.1872310733335228e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 9.202999999999295e-05,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 8.723775675870624e-05,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.08723775675870624,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k14_a3b2c1_y__plus",
+          "check_mesh": {
+            "concave_cell_count": 2440,
+            "concave_cell_fraction": 0.06123268419995985,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2440"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": false,
+            "positive_volume": true,
+            "self_intersection": "fail",
+            "volume_m3": 0.1292469064240189,
+            "volume_relative_difference": 2.1872320509545567e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": false,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 9.202999999999295e-05,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 8.723872542135251e-05,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.08723872542135251,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c8b509e6094b73c5784b6a04ab201972d1c22af73db5b77823ee3cc1b54cf463",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999990612997,
+        "difference_ok": false,
+        "max_abs_difference": 4.031170247924959e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 0.6192081973875718,
+        "realized_active_l2_norm": 0.6192016259765557
+      },
+      "realized_even_component_m": 5.000000025123796e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 2,
+        "axis": "y",
+        "b": 2,
+        "c": 3,
+        "frequency": 17,
+        "name": "mode_k17_a2b2c3_y"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.0952070033510009,
+      "normalized_vector_sha256": "ea971c5cb60ab739431930783ce3cfe1ab10b689faf18a13a523153e19e45157",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.010503429000000002,
+        "normal_efficiency": 10.503429,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k17_a2b2c3_y__minus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.1292525604059454,
+            "volume_relative_difference": 2.1872310733335228e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 9.202999999999295e-05,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 8.723775675870624e-05,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.08723775675870624,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k17_a2b2c3_y__plus",
+          "check_mesh": {
+            "concave_cell_count": 2440,
+            "concave_cell_fraction": 0.06123268419995985,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2440"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": false,
+            "positive_volume": true,
+            "self_intersection": "fail",
+            "volume_m3": 0.1292469064240189,
+            "volume_relative_difference": 2.1872320509545567e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": false,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 9.202999999999295e-05,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 8.723872542135251e-05,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.08723872542135251,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c8b509e6094b73c5784b6a04ab201972d1c22af73db5b77823ee3cc1b54cf463",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999990612997,
+        "difference_ok": false,
+        "max_abs_difference": 4.031170247924959e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 0.6192081973875718,
+        "realized_active_l2_norm": 0.6192016259765557
+      },
+      "realized_even_component_m": 5.000000025123796e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 2,
+        "axis": "x",
+        "b": 3,
+        "c": 2,
+        "frequency": 17,
+        "name": "mode_k17_a2b3c2_x"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.0952070033510009,
+      "normalized_vector_sha256": "1f62af9f5c1ded085fbf9f6369be4192db4c7ff07aebeb4854ef5657d8167716",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.010503429000000002,
+        "normal_efficiency": 10.503429,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k17_a2b3c2_x__minus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12925316635458928,
+            "volume_relative_difference": 2.6560511071234977e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 9.20300000000207e-05,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 8.967715366269311e-05,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.08967715366269312,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k17_a2b3c2_x__plus",
+          "check_mesh": {
+            "concave_cell_count": 2437,
+            "concave_cell_fraction": 0.06115739811282875,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2437"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12924630047761468,
+            "volume_relative_difference": 2.6560503519340656e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 9.202999999999295e-05,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 8.967715366269311e-05,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.08967715366269312,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "5a34e4d369985c33beeed136c666326ceb6e26ff332e2fb0d13c91f27633087f",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999993958497,
+        "difference_ok": false,
+        "max_abs_difference": 4.031170303432641e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 0.6192081973875718,
+        "realized_active_l2_norm": 0.6192077650336765
+      },
+      "realized_even_component_m": 4.999999997368221e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 2,
+        "axis": "z",
+        "b": 3,
+        "c": 2,
+        "frequency": 17,
+        "name": "mode_k17_a2b3c2_z"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.08727308778991898,
+      "normalized_vector_sha256": "81b3fb52a8ad2d21543a2fa0906f0c0fb89bb9b678889095554ab6f59fa0b603",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.011458286000000005,
+        "normal_efficiency": 11.458286000000005,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k17_a2b3c2_z__minus",
+          "check_mesh": {
+            "concave_cell_count": 2442,
+            "concave_cell_fraction": 0.06128287492471391,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2442"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12924716841403608,
+            "volume_relative_difference": 1.984531426158454e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 8.436100000000502e-05,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 8.333299999999794e-05,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.08333299999999794,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k17_a2b3c2_z__plus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12925229842617192,
+            "volume_relative_difference": 1.9845383740429594e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 8.436100000000502e-05,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 8.333300000000488e-05,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.08333300000000488,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c2ad8e3e877b68628e824bb0614b638b9523e996ceb3df63875fc37b99e27855",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.999999999514463,
+        "difference_ok": false,
+        "max_abs_difference": 3.2789690902236546e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 0.5676075232786425,
+        "realized_active_l2_norm": 0.5676067809824464
+      },
+      "realized_even_component_m": 4.999999997368221e-09,
+      "selected": false,
+      "sign_flipped": false
+    },
+    {
+      "candidate": {
+        "a": 3,
+        "axis": "y",
+        "b": 2,
+        "c": 2,
+        "frequency": 17,
+        "name": "mode_k17_a3b2c2_y"
+      },
+      "exclusion_reason": "preflight_failed",
+      "normalization_factor": 0.08727308778991898,
+      "normalized_vector_sha256": "08012fbbd239b4ce5f58f038e303d17700ccc909f45f0a12719d784ac4f6487d",
+      "pass_a": {
+        "max_abs_normal_displacement_m": 0.011458286000000005,
+        "normal_efficiency": 11.458286000000005,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "preflight": {
+        "minus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k17_a3b2c2_y__minus",
+          "check_mesh": {
+            "concave_cell_count": 2441,
+            "concave_cell_fraction": 0.06125777956233688,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2441"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12925232481864476,
+            "volume_relative_difference": 2.0049581243578127e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 8.436000000000554e-05,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 7.997278700865272e-05,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.07997278700865272,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        },
+        "plus": {
+          "boundary_fixed": true,
+          "case_dir": "work/stage_s_work_f_v1/diagnosis/reduced_basis/modes/mode_k17_a3b2c2_y__plus",
+          "check_mesh": {
+            "concave_cell_count": 2440,
+            "concave_cell_fraction": 0.06123268419995985,
+            "concave_face_max_angle_deg": null,
+            "failed_check_lines": [
+              "Concave cells (using face planes) found, number of cells: 2440"
+            ],
+            "mesh_ok": false,
+            "qualified": true,
+            "ran_to_completion": true,
+            "reasons": [],
+            "reported_failed_check_count": 1,
+            "status": "pass",
+            "total_cells": 39848
+          },
+          "check_mesh_qualified": true,
+          "geometry": {
+            "baseline_volume_m3": 0.12924973341561394,
+            "clearance_qualified": true,
+            "clearance_reasons": [],
+            "minimum_solid_width_m": 0.05,
+            "pass": true,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "volume_m3": 0.12924714201149243,
+            "volume_relative_difference": 2.0049589682149492e-05,
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "geometry_pass": true,
+          "immobility": {
+            "boundary_max_displacement_m": 0.0,
+            "boundary_point_count": 1966,
+            "interior_max_displacement_m": 8.436000000000554e-05,
+            "pass": true
+          },
+          "immobility_pass": true,
+          "inactive_zero": true,
+          "max_abs_normal_displacement_m": 7.996891235813483e-05,
+          "morpher_returncode": 0,
+          "normalized_displacement": 0.07996891235813483,
+          "normalized_displacement_ok": false,
+          "pass": false,
+          "realized_equals_prescribed": true
+        }
+      },
+      "raw_vector_sha256": "c8b509e6094b73c5784b6a04ab201972d1c22af73db5b77823ee3cc1b54cf463",
+      "realized_direction": {
+        "cosine_ok": true,
+        "cosine_similarity": 0.9999999994587474,
+        "difference_ok": false,
+        "max_abs_difference": 4.303449870915466e-06,
+        "max_relative_difference": 1.0,
+        "prescribed_active_l2_norm": 0.5676075232786425,
+        "realized_active_l2_norm": 0.5675997216721123
+      },
+      "realized_even_component_m": 5.000000025123796e-09,
+      "selected": false,
+      "sign_flipped": false
+    }
+  ],
+  "claims_not_supported": [
+    "no flow response, gradient or shape step exists; the derivative is not qualified"
+  ],
+  "claims_supported": [
+    "the selected mode basis and its plus/minus geometry/mesh preflight are recorded solver-free"
+  ],
+  "holdout_rule_preview": {
+    "rule": "seeds are derived from the manifest hash and fixed before any flow response",
+    "seeds": [
+      13804721974436110334,
+      5968576100175364288
+    ]
+  },
+  "kind": "stage_s_reduced_basis_mode_preflight",
+  "manifest": {
+    "path": "docs/evidence/stage_s_reduced_basis_fd_manifest_2026_09.json",
+    "sha256": "261a20f1ad97c0feddc9641765d8ad3171dfd68d4051317a1b1f69b80e24a0d1"
+  },
+  "modes": [],
+  "schema_version": 1,
+  "summary": {
+    "all_preflight_pass": false,
+    "flow_campaign_allowed": false,
+    "n_candidates_evaluated": 32,
+    "n_modes_selected": 0,
+    "reduced_basis_fd_qualified": false,
+    "shape_update_allowed": false
+  }
+}

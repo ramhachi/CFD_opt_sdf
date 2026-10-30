@@ -1,0 +1,118 @@
+{
+  "base_spec": {
+    "path": "work/stage_sv_laminar/project_matched_re_laminar.yaml",
+    "sha256": "dd704b42021334c4e25261c8a2bbc606c4268a5dcbc4e6df0baf8b48d87b7417"
+  },
+  "baseline": {
+    "Cd": 1.6800880803804348,
+    "case_dir": "work/stage_v_fixed_domain_2026_09/opt_q100_b0_step0_try0_block/V2",
+    "cells": 187942,
+    "downforce": 0.5092669766413043,
+    "iterations": 737,
+    "qualification_path": "work/stage_v_fixed_domain_2026_09/opt_q100_b0_step0_try0_block/V2/stage_v_qualification.json",
+    "qualification_sha256": "7d8753ec7eec92b33753fab4ccac7907a9ea0377db87853417f0daa9f8a5af8c",
+    "qualified": true
+  },
+  "budget": {
+    "max_new_runs": 2,
+    "note": "V2 level only",
+    "v3_runs": 0
+  },
+  "candidate": {
+    "case_id": "opt_q100_b0_step0_try0_block",
+    "stl": {
+      "path": "work/filtered_ramp/wmin_0.2/export/opt_q100_b0_step0_try0_block/iso_surface.stl",
+      "sha256": "613637cf0fac8bce8a124a479eb3f18417c06995bdbfbe1c99b792fe1db3686e"
+    }
+  },
+  "claims_not_supported": [
+    "this campaign is V2-only and does not produce a grid-independent downforce reference"
+  ],
+  "decision": "if a factor moves the V2 downforce by more than the registered bound, register that factor, rerun the family, and repeat the V2->V3 drift measurement; otherwise the residual drift is accepted as a measured candidate-specific band and no further factor is registered",
+  "fixed_conditions": {
+    "candidate": "opt_q100_b0_step0_try0_block (same STL hash as the fixed-domain study)",
+    "flow_case": "matched_re_laminar (U=(1,0,0) m/s, nu=1e-2 m^2/s, laminar)",
+    "profiles": [
+      "stage_v_clearance_v1 (0.25 m)",
+      "stage_v_qualification_v1 (unrelaxed)"
+    ],
+    "reference_values": {
+      "area_m2": 0.64,
+      "length_m": 0.8
+    },
+    "scheme": "bounded Gauss linearUpwind grad(U)"
+  },
+  "fixed_domain_evidence": {
+    "path": "docs/evidence/stage_v_fixed_domain_grid_study_2026_09.json",
+    "sha256": "668449c13c4e624756f61a1209f0f69b4e6774eb9bfdc7b776f01077317815c9"
+  },
+  "kind": "stage_v_domain_boundary_factor_run_manifest",
+  "metric": {
+    "bounds": {
+      "downforce_absolute": 0.005,
+      "drag_relative": 0.02
+    },
+    "primary": "downforce change between the baseline V2 and each treatment V2",
+    "secondary": "Cd relative change and force stationarity"
+  },
+  "pq2_manifest": {
+    "path": "docs/evidence/stage_v_domain_boundary_factor_manifest_2026_09.json",
+    "sha256": "4073fe543ea99c11042a68f3366c73fe6d6c80b71fe4a4c0c5d57d66acd5c8d4"
+  },
+  "question": "is the residual non-monotone downforce drift (0.0104 with linearUpwind) dominated by the declared far-field domain or by the far-field boundary treatment?",
+  "registered_before_computation": true,
+  "schema_version": 1,
+  "stop_conditions": [
+    "no V3 runs in this campaign",
+    "a treatment that fails mesh/stationarity gates is reported as failed, never dropped",
+    "changing the treatment definition after seeing results closes the campaign and requires a new manifest"
+  ],
+  "treatments": [
+    {
+      "baseline": "declared fixed domain lower=(-1.0,-0.8,-0.6), upper=(2.0,0.8,0.6)",
+      "case_dir": "work/stage_v_domain_boundary_factor_2026_09/far_field_domain_extension/V2",
+      "extended_spec": {
+        "diff_keys": [
+          "grid",
+          "problem_id"
+        ],
+        "lower_m": [
+          -1.8,
+          -1.6,
+          -0.6
+        ],
+        "path": "work/stage_v_domain_boundary_factor_2026_09/specs/project_matched_re_laminar_domain_extended_v1.yaml",
+        "sha256": "673f867e0c599c3ede2b85c80254c9b35e396ba5e19a7d4d6400ce3b87d5c81e",
+        "upper_m": [
+          2.8,
+          1.6,
+          1.4
+        ]
+      },
+      "factor": "far-field domain size",
+      "far_field_faces": [
+        "inlet",
+        "outlet",
+        "sideMin",
+        "sideMax",
+        "top"
+      ],
+      "ground_face": "bottom",
+      "name": "far_field_domain_extension",
+      "treatment": "extend inlet/outlet/sideMin/sideMax/top by 0.8 m; the bottom ground wall stays at z=-0.6 so the ground clearance is not confounded",
+      "voxel_size_m": 0.025
+    },
+    {
+      "baseline": "top face symmetryPlane on the fixed-domain family",
+      "case_dir": "work/stage_v_domain_boundary_factor_2026_09/top_pressure_outlet/V2",
+      "domain": "unchanged baseline domain and V2 mesh",
+      "factor": "far-field boundary treatment",
+      "name": "top_pressure_outlet",
+      "top_patch": {
+        "U": "zeroGradient",
+        "p": "fixedValue uniform 0"
+      },
+      "treatment": "pressure outlet on the top face: U zeroGradient, p fixedValue uniform 0"
+    }
+  ]
+}

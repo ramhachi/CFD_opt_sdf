@@ -1,0 +1,209 @@
+{
+  "artifact_locations": {
+    "candidate_a_density_vti": "work/stage_t_python_loop_export/candidate_a_seed_reshape/density.vti",
+    "candidate_a_iso_surface_stl": "work/stage_t_python_loop_export/candidate_a_seed_reshape/iso_surface.stl",
+    "candidate_a_laminar_cfd_summary_coarse_json": "work/stage_sv_laminar/case_a_coarse/cfd_summary.json",
+    "candidate_a_laminar_cfd_summary_fine_json": "work/stage_sv_laminar/case_a_fine/cfd_summary.json",
+    "candidate_a_laminar_cfd_summary_medium_json": "work/stage_sv_laminar/case_a_medium/cfd_summary.json",
+    "candidate_a_manifest_json": "work/stage_t_python_loop_export/candidate_a_seed_reshape/candidate_manifest.json",
+    "candidate_b_density_vti": "work/stage_t_python_loop_export/candidate_b_zero_floor/density.vti",
+    "candidate_b_iso_surface_stl": "work/stage_t_python_loop_export/candidate_b_zero_floor/iso_surface.stl",
+    "candidate_b_laminar_cfd_summary_coarse_json": "work/stage_sv_laminar/case_b_coarse/cfd_summary.json",
+    "candidate_b_laminar_cfd_summary_fine_json": "work/stage_sv_laminar/case_b_fine/cfd_summary.json",
+    "candidate_b_laminar_cfd_summary_medium_json": "work/stage_sv_laminar/case_b_medium/cfd_summary.json",
+    "candidate_b_manifest_json": "work/stage_t_python_loop_export/candidate_b_zero_floor/candidate_manifest.json",
+    "earlier_komega_sst_and_pipeline_demo_result_json": "work/stage_sv_demo/result.json",
+    "laminar_ranking_problem_spec_yaml": "work/stage_sv_laminar/project_matched_re_laminar.yaml",
+    "laminar_ranking_result_json": "work/stage_sv_laminar/result.json",
+    "note": "work/ is intentionally Git-ignored (.gitignore); hashes preserve the observed local evidence identity.",
+    "openfoam_adapter_config_py": "src/cfd_sdf/config.py",
+    "openfoam_adapter_py": "src/cfd_sdf/openfoam.py",
+    "optimizer_diagnosis_doc": "docs/stage_t_optimizer_diagnosis_2026_09.md"
+  },
+  "artifact_sha256": {
+    "candidate_a_density_vti": "950ba704915065bae7e861bbfdf043cc28f6ff8da4a7b5f22d19115caa53980c",
+    "candidate_a_iso_surface_stl": "bd9b06b465d7c2288da09721f9f1c0335e5fc4b65847e3dc802e979eeb05f80d",
+    "candidate_a_laminar_cfd_summary_coarse_json": "f7e421297e076554cd6ef97b834e36113a931f262516d9e649d02902b37308f1",
+    "candidate_a_laminar_cfd_summary_fine_json": "109212560b8f0b95f837f45c8d6892d7b5bb9b1136539627f22be018ca9dace4",
+    "candidate_a_laminar_cfd_summary_medium_json": "d4e1588e111130d8b3905e5443c6bb558e88a51b1d95821a83e878b9a22b2636",
+    "candidate_a_manifest_json": "fc1e0d8dd5e7369d844bcdbd525454866fe53ccb5ee802366d1a7f65c9f61dc2",
+    "candidate_b_density_vti": "19c8967d0917f9717b84a871d7618a4c5232ddbb9877c4d3baf5872e5536788f",
+    "candidate_b_iso_surface_stl": "105c9940098720ff84e3f35921f6ceec5ccaa4de5fe31cc4b1b1b1ea27bb0172",
+    "candidate_b_laminar_cfd_summary_coarse_json": "d6afef3c10dad0347ffd52dcdb9886b791428c8177ad807c7105ad0650855d39",
+    "candidate_b_laminar_cfd_summary_fine_json": "2419e0e38a84341c16b21a1c4f5745bab03dd16c03a36be67c89992b98cd967b",
+    "candidate_b_laminar_cfd_summary_medium_json": "3150fbd67c06137b4a1d546d1a45c0657dad1c44cf5cb47446abd0dc001cecc9",
+    "candidate_b_manifest_json": "ed35287775fefcbefd6bd1550f653c93ee838f501b584da8619c51cfd1582688",
+    "earlier_komega_sst_and_pipeline_demo_result_json": "ac95066ad591489bb1e45b0a0c0179aa4727d558c038bef26e4afa29dcced8f0",
+    "laminar_ranking_problem_spec_yaml": "dd704b42021334c4e25261c8a2bbc606c4268a5dcbc4e6df0baf8b48d87b7417",
+    "laminar_ranking_result_json": "e66e0b322777075942030d331381395e57cf219587f853521b65bfca2f9fa069",
+    "openfoam_adapter_config_py": "b6e88bfce5b437bd4c1201ee172c6455b1395f00a27d53c9e8de8c21bcb06a6d",
+    "openfoam_adapter_py": "0816b5fdd2eac43ee23eafe04420c67a664b91bd1484ef1541e3afc8b5e9da81",
+    "optimizer_diagnosis_doc": "71bef25618ccc5b66aff081c6e509ebc32c06425afbd68e43690285a2c8eb648"
+  },
+  "branch": "feat/p0-openfoam-closed-loop",
+  "case": {
+    "based_on": "work/stage_sv_demo/project_matched_re.yaml with flow_cases[0].turbulence.model changed from k_omega_sst to laminar",
+    "candidates": {
+      "candidate_a_seed_reshape": {
+        "candidate_id": "stage_t_python_loop/iter_011_attempt_00",
+        "source": "work/stage_t_python_loop_export/candidate_a_seed_reshape/"
+      },
+      "candidate_b_zero_floor": {
+        "candidate_id": "stage_t_python_loop_v2_floor/iter_004_attempt_00",
+        "source": "work/stage_t_python_loop_export/candidate_b_zero_floor/"
+      }
+    },
+    "grids": {
+      "candidate_a_seed_reshape": {
+        "coarse": 5534,
+        "fine": 179662,
+        "medium": 30464
+      },
+      "candidate_b_zero_floor": {
+        "coarse": 5626,
+        "fine": 182077,
+        "medium": 30322
+      }
+    },
+    "matched_conditions": {
+      "Aref_m2": 0.64,
+      "density_kg_m3": 1.0,
+      "freestream_velocity_mps": 1.0,
+      "kinematic_viscosity_m2_s": 0.01,
+      "lRef_m": 0.8,
+      "reynolds_number_domain_length_basis": 300.0,
+      "turbulence_model": "laminar"
+    },
+    "problem_id": "p0_closed_loop_fixture",
+    "source_problem_spec": "work/stage_sv_laminar/project_matched_re_laminar.yaml",
+    "stage_t_source_grid_cell_count": 8192
+  },
+  "decision": "A cross-fidelity ranking test between the Stage T Brinkman porous surrogate and body-fitted RANS/laminar verification returned negative: the drag ranking between two Stage T candidates is inverted at every body-fitted grid tested, and the downforce ranking agrees with Stage T only at the coarsest, least-converged grid. A turbulence-model confound was ruled out by re-running the comparison laminar (candidate A drag agrees between laminar and kOmegaSST to 0.016% and 0.006% at coarse and medium resolution), so this negative result is not an artifact of comparing mismatched physics. It must NOT be read as 'the Brinkman surrogate is unusable': both Stage T candidates are non-binary density fields (peak rho 0.62 and 0.55, zero cells above 0.9) due to the documented function=linear projection defect, and Stage T's 8192-cell grid is comparable in resolution to the one body-fitted grid at which the fidelities agree. These are two distinct, fixable causes the present data does not separate from a genuine ranking failure. Positively, the Stage S -> Stage V pipeline itself is established as working on real, non-degenerate geometry: deterministic byte-identical STL handoff, both components of candidate B meshed at every resolution, monotonically converging drag coefficients, and successful force post-processing across all six body-fitted runs. Whether the surrogate ranks correctly for a binarized, adequately resolved design remains untested; docs/phase_plan.md section 11 execution item 1 now carries this as the next required step. P0 qualification remains No-Go.",
+  "environment": {
+    "body_fitted_solver": "simpleFoam",
+    "docker_image": "opencfd/openfoam-default:2512",
+    "execution": "Docker",
+    "host": "Apple M4",
+    "host_memory_gib": 32,
+    "meshing": "snappyHexMesh",
+    "openfoam_version": "2512"
+  },
+  "evidence_classes": [
+    "capability",
+    "numerical"
+  ],
+  "grid_convergence": {
+    "caveat": "Because downforce is not grid-converged, the coarse-grid apparent agreement with Stage T's downforce ranking -- the only grid that agrees -- rests on the least-trustworthy number in this study. The disagreement at medium and fine, closer to (but still short of) convergence, is the more credible reading. The drag-ranking inversion, by contrast, is consistent and near-constant in magnitude across all three grids and is not attributable to non-convergence.",
+    "downforce": "Does NOT converge monotonically. A: 0.0132 -> 0.0358 -> 0.0449 (+173%, +26%), still moving substantially between medium and fine. B: 0.0417 -> 0.0321 -> 0.0413 (-23%, +29%), drops then partially recovers.",
+    "drag": "Converges monotonically for both candidates with shrinking relative steps: A 0.857 -> 0.934 -> 0.958 (+9.0%, +2.6%); B 0.728 -> 0.841 -> 0.867 (+15.6%, +3.0%). Not attributable to non-convergence."
+  },
+  "implementation_commit": "14ee0f3",
+  "kind": "cross_fidelity_ranking_evidence",
+  "must_not_conclude": {
+    "defect_1_non_binary_density": {
+      "candidate_a_max_rho": 0.6200000047683716,
+      "candidate_b_max_rho": 0.550000011920929,
+      "cells_above_0_9": 0,
+      "root_cause": "docs/stage_t_optimizer_diagnosis_2026_09.md: the case's Heaviside projection uses function=linear (the identity map) instead of the tutorials' tanh;b 20, so density can never sharpen toward 0/1.",
+      "statement": "Neither candidate's design is binary. Candidate A peaks at rho=0.62 and B at rho=0.55, with zero cells above 0.9 in either. Stage T optimized a semi-permeable blob; Stage S extracted a solid body at the 0.5 contour and Stage V solved that solid -- a different physical object from what Stage T's force integral measures."
+    },
+    "defect_2_stage_t_grid_resolution": {
+      "coarse_body_fitted_cell_count_candidate_a": 5534,
+      "stage_t_source_grid_cell_count": 8192,
+      "statement": "Stage T's own 8192-cell fixed grid is comparable in cell count to the 5534-cell coarse body-fitted mesh -- precisely the resolution at which the two fidelities agree -- and agreement disappears as the body-fitted mesh is refined to 30k-182k cells. Whether Stage T's grid resolves what it optimizes is untested."
+    },
+    "statement": "This data does not support concluding that the Brinkman surrogate is unusable. Two concrete, fixable defects mean this test measured something other than the surrogate's fidelity, and they are distinct claims the present data does not separate."
+  },
+  "open_question": {
+    "roadmap_reference": "docs/phase_plan.md section 11 (Immediate execution order), item 1",
+    "statement": "Whether the surrogate ranks candidates correctly for a binarized, adequately resolved design is untested."
+  },
+  "overall_status": "incomplete",
+  "p0_gate_status": "no_go",
+  "pipeline_capability_evidence": {
+    "cd_convergence": "Cd converges monotonically with mesh refinement for both candidates (see grid_convergence.drag above).",
+    "deterministic_handoff": "Independent re-runs of build-density-sdf-handoff on both candidates reproduced byte-identical iso_surface.stl SHA-256 hashes to the ones already recorded in each candidate_manifest.json (source: work/stage_sv_demo/result.json independent_stage_s_handoff_rerun).",
+    "force_postprocessing": "All six body-fitted runs (2 candidates x 3 resolutions) converged and produced coefficient and Newton force values via postProcessing/forceCoeffs.",
+    "statement": "The Stage S -> Stage V pipeline itself works on real, non-degenerate geometry. This is established positively and is independent of the negative ranking verdict above.",
+    "two_component_meshing": "snappyHexMesh meshed both of candidate B's two disconnected STL components as separate wall-patch regions at all three resolutions (coarse/medium/fine); neither component was silently dropped (source: work/stage_sv_laminar/result.json component_integrity_check_candidate_b)."
+  },
+  "ranking_verdict": {
+    "downforce": "Grid-dependent, and mostly disagrees with Stage T. Only the coarsest grid (5534/5626 cells) agrees in direction and rough magnitude with Stage T (B ~3.17x A vs Stage T's ~3.88x). The medium and more-resolved fine grids both find B has 8-10% LESS downforce than A (ratios 0.896 and 0.918), the opposite of Stage T's claimed improvement.",
+    "drag": "Inverted at every body-fitted grid tested. Stage T predicts candidate B has 2.58x MORE drag than A; body-fitted RANS/laminar finds B has 10-15% LESS drag than A at all three resolutions (ratios 0.849/0.901/0.905), monotone across refinement and not attributable to an unconverged mesh.",
+    "efficiency_L_over_D": "Coarse grid shows a large spurious B advantage (3.73x, larger even than Stage T's claimed 1.50x); medium and fine grids show A and B statistically indistinguishable (ratios 0.995 and 1.015).",
+    "ratio_b_over_a_by_grid": {
+      "L_over_D": {
+        "coarse": 3.7279950384897065,
+        "fine": 1.0152291542384548,
+        "medium": 0.9949842137625727,
+        "stage_t": 1.5030790143615163
+      },
+      "downforce": {
+        "coarse": 3.1667765158559176,
+        "fine": 0.9184717227195095,
+        "medium": 0.896312165824709,
+        "stage_t": 3.881625031780795
+      },
+      "drag": {
+        "coarse": 0.8494583504432047,
+        "fine": 0.9046939982810824,
+        "medium": 0.9008305392457117,
+        "stage_t": 2.582449089297975
+      }
+    },
+    "source": "work/stage_sv_laminar/result.json a_vs_b_ranking_per_grid_laminar and stage_t_ratios"
+  },
+  "recorded_date": "2026-09-12",
+  "references": {
+    "closed_loop_gradient_evidence": "docs/evidence/p0_openfoam_closed_loop_2026_09.json",
+    "closed_loop_prose": "docs/p0_openfoam_closed_loop_2026_09.md",
+    "evidence_class_definitions": "docs/phase_plan.md section 3",
+    "optimizer_diagnosis": "docs/stage_t_optimizer_diagnosis_2026_09.md",
+    "roadmap": "docs/phase_plan.md section 11",
+    "stage_t_first_design_evidence": "docs/evidence/stage_t_first_design_2026_09.json"
+  },
+  "schema_version": 1,
+  "scope": {
+    "evidence_class_definitions_source": "docs/phase_plan.md section 3",
+    "excludes": [
+      "target-physics evidence",
+      "benchmark evidence",
+      "qualification of any solver backend",
+      "evidence about other fixtures, seeds, objectives, or Reynolds numbers",
+      "a resolution of the discreteness or Stage T grid-resolution defects named above"
+    ],
+    "model": "one fixture, two Stage T candidates, Re~300, one machine"
+  },
+  "scope_limits": [
+    "One fixture, two Stage T candidates, Re~300, one machine (Apple M4, 32 GiB, Docker).",
+    "Cross-fidelity and pipeline-capability evidence only.",
+    "Not target-physics evidence.",
+    "Not benchmark evidence.",
+    "Does not qualify any solver backend.",
+    "Does not establish or rule out whether the Brinkman surrogate ranks correctly for a binarized, adequately resolved design -- that is the single most important open question this produces."
+  ],
+  "source_change": {
+    "fail_closed_preserved": "test_unsupported_turbulence_model_is_refused (spalart_allmaras) still raises ValueError; only kOmegaSST and laminar are accepted.",
+    "statement": "A laminar body-fitted path was added to src/cfd_sdf/openfoam.py for this test.",
+    "summary": "ProjectConfig gained turbulence_model: str='kOmegaSST' (src/cfd_sdf/config.py). problem_spec_to_project_config now resolves flow_case.turbulence.model via _resolve_turbulence_model(), accepting 'kOmegaSST' (default) or 'laminar' and failing closed on anything else. generate_openfoam_case writes 'simulationType laminar;' with no RAS block, k/omega/nut fields, or their fvSchemes/fvSolution entries when turbulence_model=='laminar'."
+  },
+  "stage_t_predicted_forces": {
+    "candidate_a_seed_reshape": {
+      "downforce_coefficient": 0.821317856508,
+      "drag_coefficient": 3.79689159129
+    },
+    "candidate_b_zero_floor": {
+      "downforce_coefficient": 3.18804795087,
+      "drag_coefficient": 9.80527923209
+    }
+  },
+  "turbulence_confound_ruled_out": {
+    "candidate_a_drag_relative_diff_pct": {
+      "coarse": -0.015576639711195347,
+      "fine": -0.0023417940897163788,
+      "medium": -0.006147220631870573
+    },
+    "source": "work/stage_sv_laminar/result.json turbulence_confound_check",
+    "statement": "Laminar and kOmegaSST runs of candidate A agree to 0.016% and 0.006% on drag coefficient at coarse and medium resolution respectively. At Re~300 on this geometry, kOmegaSST's eddy-viscosity contribution is negligible: the earlier kOmegaSST-based ranking comparison (work/stage_sv_demo/result.json) was a valid test, not an invalid one confounded by the wrong turbulence physics. This is what makes the negative ranking result trustworthy."
+  }
+}

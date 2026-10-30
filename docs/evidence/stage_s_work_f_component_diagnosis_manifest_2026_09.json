@@ -1,0 +1,260 @@
+{
+  "ablations": [
+    {
+      "baseline": "true",
+      "fixed": {
+        "includeMeshMovement": "true",
+        "sensitivityType": "surface",
+        "shapeType": "volumetricBSplines",
+        "smoothSensitivities": "false"
+      },
+      "option": "includeSurfaceArea",
+      "order": 1,
+      "rationale": "measure the surface-area term contribution; treatment is diagnostic only",
+      "treatment": "false"
+    },
+    {
+      "baseline": "true",
+      "fixed": {
+        "includeSurfaceArea": "as decided by the first ablation",
+        "sensitivityType": "surface",
+        "shapeType": "volumetricBSplines",
+        "smoothSensitivities": "false"
+      },
+      "option": "includeMeshMovement",
+      "order": 2,
+      "rationale": "runs only if the first ablation is not a sole cause; diagnostic only",
+      "treatment": "false"
+    }
+  ],
+  "audit_scope": {
+    "linearUpwind": {
+      "directions": [
+        "downforce_gradient_aligned",
+        "random_seed_11",
+        "random_seed_2026"
+      ],
+      "epsilons_m": [
+        0.0005
+      ],
+      "fd_source": "registered D3 perturbation side means"
+    },
+    "upwind": {
+      "directions": [
+        "downforce_gradient_aligned",
+        "drag_gradient_aligned",
+        "random_seed_11",
+        "random_seed_2026"
+      ],
+      "epsilons_m": [
+        0.0001,
+        0.00025,
+        0.0005,
+        0.001
+      ],
+      "fd_source": "registered surface-FD result rows"
+    }
+  },
+  "claims_not_supported": [
+    "this registration is not a derivative qualification and produces no CFD evidence"
+  ],
+  "component_formula": {
+    "auxiliary": [
+      "distance",
+      "options",
+      "dvdb"
+    ],
+    "closure_absolute_tolerance": 1e-07,
+    "components": [
+      "dxdbVol",
+      "dxdbSurf",
+      "dSdb",
+      "dndb",
+      "dxdbDirect",
+      "dVdb"
+    ],
+    "total": "total = dxdbVol + dxdbSurf + dSdb + dndb + dxdbDirect + dVdb"
+  },
+  "derivative_files": {
+    "linearUpwind": {
+      "downforce": {
+        "final_iteration": 622,
+        "path": "work/stage_s_work_f_v1/discretization_linearUpwind/adjoint/base/optimisation/derivatives/volumetricBSplinesadjDownforceadjDownforceESI622",
+        "rows": 648,
+        "sha256": "a7976b1307630c11ddd81a32625047e972fef7b7055d3fd875cc751d538d91a4",
+        "solver": "adjDownforce"
+      },
+      "drag": {
+        "final_iteration": 485,
+        "path": "work/stage_s_work_f_v1/discretization_linearUpwind/adjoint/base/optimisation/derivatives/volumetricBSplinesadjDragadjDragESI485",
+        "rows": 648,
+        "sha256": "806cc7c60bff8158c6910ca9feffcf653f06cebefe5aabb50d5e87b10a63bc05",
+        "solver": "adjDrag"
+      }
+    },
+    "upwind": {
+      "downforce": {
+        "final_iteration": 425,
+        "path": "work/stage_s_work_f_v1/adjoint/base/optimisation/derivatives/volumetricBSplinesadjDownforceadjDownforceESI425",
+        "rows": 648,
+        "sha256": "322158918cb57ca3b419eeac170bdb01070a173e55fd65671eade58eebae0889",
+        "solver": "adjDownforce"
+      },
+      "drag": {
+        "final_iteration": 562,
+        "path": "work/stage_s_work_f_v1/adjoint/base/optimisation/derivatives/volumetricBSplinesadjDragadjDragESI562",
+        "rows": 648,
+        "sha256": "67760e8098afe5df51352e2fbc362b78ff8f4b8f368c269af2abea2dfbaf2ffb",
+        "solver": "adjDrag"
+      }
+    }
+  },
+  "directions": {
+    "downforce_gradient_aligned": {
+      "l2_norm": 3.8543477586197934,
+      "role": "gradient_aligned",
+      "seed": null,
+      "sha256": "d8eb88f03618e285806be679a7cf5cad38ea89ddda6989f67fdc0ed13e0326fe",
+      "unit_inf_norm": 1.0
+    },
+    "drag_gradient_aligned": {
+      "l2_norm": 3.6114435642778258,
+      "role": "gradient_aligned",
+      "seed": null,
+      "sha256": "d21f0426a447a41e23436108ac0e52f02f330794aabd03a02b9930f07c4b081d",
+      "unit_inf_norm": 1.0
+    },
+    "random_seed_11": {
+      "l2_norm": 6.85080986285085,
+      "role": "random",
+      "seed": 11,
+      "sha256": "fd8ba8bc85aaefde5a6eac26316af1bcc9dad81982a6011c0ab5875899da1040",
+      "unit_inf_norm": 1.0
+    },
+    "random_seed_2026": {
+      "l2_norm": 7.041838797348404,
+      "role": "random",
+      "seed": 2026,
+      "sha256": "0611bfb535ea008d9f2ec6dfc7c4389e4cd6bb5a9e978dd5e1df4fd3c087b69a",
+      "unit_inf_norm": 1.0
+    }
+  },
+  "forbidden": [
+    "adding an ablation factor after seeing the D4 results",
+    "changing more than one option per ablation",
+    "fitting a component scale as a production correction",
+    "calling D4 a derivative qualification"
+  ],
+  "holdout_rule": {
+    "control_direction": "downforce_gradient_aligned",
+    "epsilon_m": 0.0005,
+    "epsilon_rule": "upper central value of the registered epsilon ladder",
+    "minimum_primals": 6,
+    "n_random_directions_min": 2,
+    "normalization": "unit infinity norm over the active variables",
+    "seed_derivation": "seed_i = first 8 bytes (big-endian) of sha256(manifest_sha256 + ':holdout:seed:' + i), i >= 1",
+    "sides": "plus and minus"
+  },
+  "inputs": {
+    "catalog": {
+      "path": "docs/evidence/stage_s_work_f_surface_fd_catalog_2026_09.json",
+      "sha256": "e4cdbe437eaa32dc752ad603a5d921aa94a4a47511e4a0403ead58ac49d5b4a8"
+    },
+    "d1_artifact": {
+      "path": "docs/evidence/stage_s_work_f_realized_direction_audit_2026_09.json",
+      "sha256": "79da4532b9be2d548a725b5a3cbe7d0dc226d997b831b79638b387efe6585193"
+    },
+    "d1_manifest": {
+      "path": "docs/evidence/stage_s_work_f_realized_direction_audit_manifest_2026_09.json",
+      "sha256": "490790f1be1c5344b4b3b6f2f9570c49a85c5b62b3815b30652a89bdf675f0d8"
+    },
+    "d2_artifact": {
+      "path": "docs/evidence/stage_s_work_f_sensitivity_semantics_audit_2026_09.json",
+      "sha256": "c840bca86934716fbc6cef1e3520971c365975895fe6bfcfa97a5b0df98d952a"
+    },
+    "d2_manifest": {
+      "path": "docs/evidence/stage_s_work_f_sensitivity_semantics_audit_manifest_2026_09.json",
+      "sha256": "493c6aa9c5d2eae37712e32c6d26b8ec5525a71ed989a2de71a2875fade22a1c"
+    },
+    "d3_evidence": {
+      "path": "docs/evidence/stage_s_work_f_discretization_diagnostic_2026_09.json",
+      "sha256": "f3a85709817aa67d4fee8123d84d524784b403fd944702211c1677af878e67b6"
+    },
+    "d3_manifest": {
+      "path": "docs/evidence/stage_s_work_f_discretization_diagnostic_manifest_2026_09.json",
+      "sha256": "5bd182f37080d44be77f7347b33a17d5f94922d26afc65b7497538437fa15d2e"
+    },
+    "d3_preflight": {
+      "path": "docs/evidence/stage_s_work_f_discretization_diagnostic_preflight_2026_09.json",
+      "sha256": "d07ffc655d2adb3f8895b8bb794a597a317a8b255d98f8ee37d0cbccb71f3687"
+    },
+    "d3_preserved_ratio_error": {
+      "path": "docs/evidence/stage_s_work_f_discretization_diagnostic_ratio_error_2026_09.json",
+      "sha256": "9bb528e4c472da6ef2b943ba3c33779e57cbdcc0601e52386e6199a484acb3d0"
+    },
+    "fd_diagnosis_plan": {
+      "path": "docs/stage_s_work_f_fd_diagnosis_plan_2026_09_25.md",
+      "sha256": "3cf71fdb202037959a3aa67806b346cb4400a8ede71a681caae75704ab625a28"
+    },
+    "perturbation_sides": {
+      "path": "docs/evidence/stage_s_work_f_perturbation_sides_2026_09.json",
+      "sha256": "01aeda492f43e76e9dad173599f339ba48f9adb8dc5744de062de7ce47cbc9db"
+    },
+    "post_d3_plan": {
+      "path": "docs/stage_s_work_f_post_d3_plan_2026_09_25.md",
+      "sha256": "6f91fd5d1076551369446b8a7100b8ff82571174a44a0259da098597f52e8428"
+    },
+    "qualification": {
+      "path": "docs/evidence/stage_s_work_f_adjoint_qualification_2026_09.json",
+      "sha256": "f0bec416540d3faf7f78dba09bcd3b2cb647740cf90fb53b4038cf9b2dcea606"
+    },
+    "result": {
+      "path": "docs/evidence/stage_s_work_f_surface_fd_result_2026_09.json",
+      "sha256": "048a2f9307d36a645e76dee7fac26c6325568888cfaa28063cf5685a4acbc9ee"
+    },
+    "work_f_manifest": {
+      "path": "docs/evidence/stage_s_work_f_manifest_2026_09.json",
+      "sha256": "03b109f15e79036fe31a6ec76cd58831f8f834926aee2c0eaf654ea80b47dfdd"
+    }
+  },
+  "kind": "stage_s_work_f_component_diagnosis_manifest",
+  "openfoam_image": "opencfd/openfoam-default:2512",
+  "openfoam_image_id": "sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319",
+  "openfoam_source_files": {
+    "sha256": {
+      "src/optimisation/adjointOptimisation/adjoint/optimisation/adjointSensitivity/adjointSensitivity/shape/surfacePoints/sensitivitySurfacePoints.C": "de22dce33d7ad5d1e8a1636f913fbc7281a31afd91d1c71a4d42bc7404b2aa1c",
+      "src/optimisation/adjointOptimisation/adjoint/optimisation/adjointSensitivity/adjointSensitivity/shape/surfacePoints/sensitivitySurfacePoints.H": "10098c73453f84958bfba340036af1998d156ac14850c5991533e4eb45d48756",
+      "src/optimisation/adjointOptimisation/adjoint/optimisation/designVariables/shape/shapeDesignVariables/shapeDesignVariables.C": "fec13259e5bde67e7e31fd27e3a90df8b2a8ce24b5b94b80fcbefc27c2380865",
+      "src/optimisation/adjointOptimisation/adjoint/optimisation/designVariables/shape/shapeDesignVariables/shapeDesignVariables.H": "5ff8fb51b692ac3cedcd3d236dad4692742e3810ba045c0d9429548b3ff00ba7",
+      "src/optimisation/adjointOptimisation/adjoint/optimisation/designVariables/shape/volumetricBSplines/volumetricBSplinesDesignVariables.C": "34675d62fd8585bba5821984ff379402d5e08c68ffec910fd8c959707aec29cc",
+      "src/optimisation/adjointOptimisation/adjoint/optimisation/designVariables/shape/volumetricBSplines/volumetricBSplinesDesignVariables.H": "700b2bf3860428cfe767e643fb3ad9defcadf7d57e41bda457198980df73aafa",
+      "src/optimisation/adjointOptimisation/adjoint/parameterization/NURBS/NURBS3DVolume/NURBS3DVolume/NURBS3DVolume.C": "93077405f9b349b727a1043126d6294a34afbe7cfe8238f6023d15e06bfa2f5b",
+      "src/optimisation/adjointOptimisation/adjoint/parameterization/NURBS/NURBS3DVolume/NURBS3DVolume/NURBS3DVolume.H": "6daf419b318ede0411c817bc021712131a878036738bc19ffe080fe9c77f1332",
+      "src/optimisation/adjointOptimisation/adjoint/parameterization/NURBS/NURBS3DVolume/volBSplinesBase/volBSplinesBase.C": "1f1b7269f7514eac0dfc631f8af60938e4b63a25e5e26a528611f77370b84979",
+      "src/optimisation/adjointOptimisation/adjoint/parameterization/NURBS/NURBS3DVolume/volBSplinesBase/volBSplinesBase.H": "061005ee3878f5f86fd1b3e572681089ff1e3568aa34c05231354c9e5ba3a873"
+    },
+    "source_root_in_image": "/usr/lib/openfoam/openfoam2512"
+  },
+  "post_d3_plan": {
+    "path": "docs/stage_s_work_f_post_d3_plan_2026_09_25.md",
+    "sha256": "6f91fd5d1076551369446b8a7100b8ff82571174a44a0259da098597f52e8428"
+  },
+  "registered_before_computation": true,
+  "schema_version": 1,
+  "sole_cause_rule": {
+    "relative_gate": 0.05,
+    "requirements": [
+      "original failing rows all move within 5% of one",
+      "no original passing control leaves the 5% gate",
+      "sign agreement holds for every direction",
+      "response identity and derivative schema are unchanged",
+      "base primal field/response lineage is unchanged",
+      "no apparent pass from a near-zero/cancellation artifact"
+    ]
+  },
+  "stop_conditions": [
+    "a failed closure gate stops the component audit",
+    "no registered epsilon, direction, threshold or verdict is changed",
+    "this diagnosis never authorizes a shape update"
+  ]
+}

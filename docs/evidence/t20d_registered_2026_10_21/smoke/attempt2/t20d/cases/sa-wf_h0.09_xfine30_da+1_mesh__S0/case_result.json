@@ -1,0 +1,56 @@
+{
+  "amp": 1.0,
+  "bl_thickness_m": 0.0013200000000000002,
+  "check_mesh": {
+    "cells": 49840,
+    "diagnostic_lines": [],
+    "failed_check_counts": [],
+    "max_aspect_ratio": "3.8420478",
+    "max_non_orthogonality": "40.050861",
+    "max_skewness": "0.56962176",
+    "mesh_ok": true,
+    "min_determinant": "0.068860611",
+    "min_face_weight": "0.15106714",
+    "min_volume_ratio": "0.1430343",
+    "severe_non_orthogonal_faces": 0,
+    "unused_points": 0
+  },
+  "delta_alpha_deg": 1.0,
+  "generator_log_tail": "/kaggle/working/t20d/work/sa-wf_h0.09_xfine30_da+1_mesh: xfine30 cells=49840 layers=2",
+  "generator_wall_s": 12.027684457999953,
+  "geometry": "sa-wf_h0.09_xfine30_da+1_mesh",
+  "h_m": 0.020106,
+  "h_over_c": 0.09,
+  "id": "sa-wf_h0.09_xfine30_da+1_mesh__S0",
+  "iterations_requested": 100,
+  "kind": "S0",
+  "mesh": "xfine30",
+  "mesh_cells_3d": 49840,
+  "mesh_msh_sha256": "6c2960cbf7354d6e9c94d53c4ade9f1f89251b7a9127205ebc619ab4dfda2744",
+  "mesh_proxy_failures": [],
+  "method": "remesh",
+  "mode": "smoke",
+  "n_layers": 2,
+  "pre_solver_wall_s": 17.587917369000024,
+  "shape_mode": "incidence",
+  "stages": [
+    {
+      "peak_rss_mb_sampled": 82.751488,
+      "returncode": 0,
+      "stage": "gmshToFoam",
+      "timed_out": false,
+      "wall_s": 2.431049821999977
+    },
+    {
+      "peak_rss_mb_sampled": 120.99584,
+      "returncode": 0,
+      "stage": "checkMesh",
+      "timed_out": false,
+      "wall_s": 3.1274143559999175
+    }
+  ],
+  "status": "MESH_OK",
+  "total_wall_s": 17.588233161999938,
+  "variant": "",
+  "x_lowest_m": 0.04472272673975557
+}

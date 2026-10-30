@@ -4,6 +4,13 @@
 状態: 実装計画  
 対象ブランチ: `feat/p0-semantic-binding`
 
+> **状態注記（2026-09-28）:** 本書の P0–P8 dependency graph と production Stage T →
+> Stage S の実行計画は fork 前の設計スナップショットであり、現行 roadmap ではない。
+> FSAE 全車は将来の評価対象として残るが、現在の production research path は canonical
+> SDF `phi`、WaterLily primal qualification、独立 Stage V verification を中心とする
+> [`phase_plan.md`](phase_plan.md)。本書の旧 Stage T work package を現行の次作業として
+> 開始しない。
+
 ## この文書の位置づけ
 
 この文書は [`phase_plan.md`](phase_plan.md) の下位にある実行計画である。

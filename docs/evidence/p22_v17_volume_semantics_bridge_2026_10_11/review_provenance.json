@@ -1,0 +1,36 @@
+{
+  "final_disposition": "approved record/merge INCONCLUSIVE after B1-B3 wording corrections; applied by root before freeze",
+  "final_permission_denials": [],
+  "final_review_completed": true,
+  "final_review_num_turns": 23,
+  "final_reviewer_result_sha256": "7fe4856790c43d5ee1cc06b9bcf1047ca1da5900a9bc39a608a840fb485081d5",
+  "initial_review_completed": true,
+  "initial_review_num_turns": 21,
+  "permission_denials": [],
+  "primary_effort": "high",
+  "primary_model": "gpt-6-astra",
+  "review_date": "2026-10-12",
+  "reviewer_effort": "high",
+  "reviewer_model": "claude-sonnet-5-5",
+  "root_completion": "Native Codex completed validation/docs/integration after primary Astra usage limit; no primary algorithm change",
+  "routing_history": [
+    {
+      "actual_model": "claude-sonnet-5-5",
+      "attempt_number": 1,
+      "reason": "initial source review terminated exit143 with no result",
+      "requested_model": "claude-sonnet-5-5"
+    },
+    {
+      "actual_model": "gpt-5.6-sol",
+      "attempt_number": 2,
+      "reason": "authorized fallback attempt stopped by account usage limit; no review completed",
+      "requested_model": "gpt-5.6-sol"
+    },
+    {
+      "actual_model": "claude-sonnet-5-5",
+      "attempt_number": 3,
+      "reason": "resumed task; successful read-only review",
+      "requested_model": "claude-sonnet-5-5"
+    }
+  ]
+}

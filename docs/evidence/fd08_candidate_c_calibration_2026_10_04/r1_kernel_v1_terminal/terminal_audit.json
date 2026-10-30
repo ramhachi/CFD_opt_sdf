@@ -1,0 +1,54 @@
+{
+  "actual_kernel_ref": "ramhachi888/cfd-opt-sdf-fd-08-candidate-c-calibration",
+  "calibration_data_available": false,
+  "configured_kernel_id": "ramhachi888/cfd-opt-sdf-fd08-calibration",
+  "criteria_sha256": "23e5eef9f1b7c6a878ea5267c26738089d0cffd3a88b6144a89418ddf9b7ad75",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-calibration",
+  "error": "/kaggle/src/runner_base.py was not uploaded with the single code_file runner.py",
+  "error_type": "FileNotFoundError",
+  "evidence_class": "pre_solver_kaggle_harness_failure",
+  "failure_stage": "wrapper startup before core runner; no solver, Julia, or T4 smoke step started",
+  "kaggle_output_file_catalog": [],
+  "kernel_version": 1,
+  "kind": "fd08_candidate_c_calibration_infrastructure_terminal",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "raw_terminal_artifacts": {
+    "kaggle_downloaded_log.json": {
+      "sha256": "cb23d12c9392952e4d4293bd6621b8c319d53d4d4a5fbff6c461b037348b6f6b",
+      "size_bytes": 2086
+    },
+    "kaggle_kernel_logs.json": {
+      "sha256": "b3c535559576a83c786ebf5149674ca0410d194878f13d386a6b761c45fd29e8",
+      "size_bytes": 2087
+    },
+    "kaggle_output_files.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "size_bytes": 3
+    },
+    "kaggle_status.txt": {
+      "sha256": "1e1d68ecb17ff1ebd85c7308eaa05ce4e693a3574655665443b8d2f986c9c0a2",
+      "size_bytes": 92
+    }
+  },
+  "recorded_at_utc": "2026-10-04T18:13:56.148340Z",
+  "registered_source_commit": "b559c56a123fc62f73da1bea3429f18ec22b3f8f",
+  "registered_source_file_sha256": {
+    "kernel_base_runner": "508f818d638691f421961103aabd3c6c183b72fab9d128d343f3091ab4d13dd8",
+    "kernel_metadata": "4d32fe28d7af9f58fa21cb457b882446c98b6416942283cb03547c519ad501f4",
+    "kernel_wrapper": "6315fa487608d697034963839a09df93bb087332f502d363f0f238e7c641e76f"
+  },
+  "requested_machine_shape": "NvidiaTeslaT4",
+  "returned_kernel_url": "https://www.kaggle.com/code/ramhachi888/cfd-opt-sdf-fd-08-candidate-c-calibration",
+  "root_cause": "Kaggle CLI kernels_push sends metadata code_file as script text; the wrapper incorrectly expected a separate adjacent runner_base.py file to exist in /kaggle/src.",
+  "round_id": "fd08_candidate_c_calibration_2026_10_04_r1",
+  "scientific_measurement_started": false,
+  "submission_checkout_head": "f6a5b8bf9ee3382f62a3e50e70d842a3b816ff6f",
+  "terminal_status": "KernelWorkerStatus.ERROR"
+}

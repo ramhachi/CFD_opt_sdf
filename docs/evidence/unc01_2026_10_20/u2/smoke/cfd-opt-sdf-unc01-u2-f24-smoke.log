@@ -1,0 +1,67 @@
+[{"stream_name":"stdout","time":16.167980098,"data":"RUN /kaggle/working/harness-ijoz2mq4/julia-1.12.6/bin/julia --project=/kaggle/working/harness-ijoz2mq4/source/julia/CFDSDFWaterLilyT4 -e using Pkg; Pkg.instantiate()\n"}
+,{"stream_name":"stdout","time":245.51454112,"data":"   1605.5 ms  ✓ tree_sitter_ptx_jll\n"}
+,{"stream_name":"stdout","time":245.514606272,"data":"   1743.6 ms  ✓ LMDB\n"}
+,{"stream_name":"stdout","time":245.514611633,"data":"   5631.6 ms  ✓ CUDA_Driver_jll\n"}
+,{"stream_name":"stdout","time":245.514615823,"data":"   1552.1 ms  ✓ CompilerCaching\n"}
+,{"stream_name":"stdout","time":245.514620036,"data":"   6615.6 ms  ✓ EllipsisNotation\n"}
+,{"stream_name":"stdout","time":245.514624617,"data":"   3826.1 ms  ✓ CUDA_Compiler_jll\n"}
+,{"stream_name":"stdout","time":245.514629617,"data":"   6427.3 ms  ✓ WaterLily\n"}
+,{"stream_name":"stdout","time":245.514634689,"data":"   3976.8 ms  ✓ CUDA_Runtime_jll\n"}
+,{"stream_name":"stdout","time":245.514639086,"data":"  59269.4 ms  ✓ GPUCompiler\n"}
+,{"stream_name":"stdout","time":245.514643679,"data":"  93620.9 ms  ✓ CUDACore\n"}
+,{"stream_name":"stdout","time":245.5146475,"data":"   9468.9 ms  ✓ CUDACore → SpecialFunctionsExt\n"}
+,{"stream_name":"stdout","time":245.514652328,"data":"  11195.7 ms  ✓ cuFFT\n"}
+,{"stream_name":"stdout","time":245.514656441,"data":"  14740.0 ms  ✓ NVML\n"}
+,{"stream_name":"stdout","time":245.51466134,"data":"  19092.0 ms  ✓ cuSPARSE\n"}
+,{"stream_name":"stdout","time":245.51466542,"data":"  11138.1 ms  ✓ cuRAND\n"}
+,{"stream_name":"stdout","time":245.514669271,"data":"  13961.2 ms  ✓ CUPTI\n"}
+,{"stream_name":"stdout","time":245.514673741,"data":"  24996.6 ms  ✓ cuBLAS\n"}
+,{"stream_name":"stdout","time":245.514678173,"data":"  11010.4 ms  ✓ cuSOLVER\n"}
+,{"stream_name":"stdout","time":245.514682198,"data":"  20934.9 ms  ✓ CUDATools\n"}
+,{"stream_name":"stdout","time":245.514686158,"data":"   6958.1 ms  ✓ CUDA\n"}
+,{"stream_name":"stdout","time":245.514690149,"data":"   7001.9 ms  ✓ Atomix → AtomixCUDAExt\n"}
+,{"stream_name":"stdout","time":245.51469463,"data":"   7346.4 ms  ✓ WaterLily → WaterLilyCUDAExt\n"}
+,{"stream_name":"stdout","time":245.514698956,"data":"  27 dependencies successfully precompiled in 220 seconds. 102 already precompiled.\n"}
+,{"stream_name":"stdout","time":245.514703455,"data":"  1 dependency had output during precompilation:\n"}
+,{"stream_name":"stdout","time":245.514707635,"data":"┌ WaterLily\n"}
+,{"stream_name":"stdout","time":245.514712001,"data":"│  ┌ Warning: Using WaterLily in serial (ie. JULIA_NUM_THREADS=1) is not recommended because it defaults to serial CPU execution.\n"}
+,{"stream_name":"stdout","time":245.514716755,"data":"│  │ Use JULIA_NUM_THREADS=auto, or any number of threads greater than 1, to allow multi-threading in CPU backends.\n"}
+,{"stream_name":"stdout","time":245.514721283,"data":"│  │ For a low-overhead single-threaded CPU only backend set: WaterLily.set_backend(\"SIMD\")\n"}
+,{"stream_name":"stdout","time":245.514725951,"data":"│  └ @ WaterLily ~/.julia/packages/WaterLily/yOkji/src/WaterLily.jl:206\n"}
+,{"stream_name":"stdout","time":245.514739505,"data":"└  \n"}
+,{"stream_name":"stdout","time":245.515070535,"data":"RUN /kaggle/working/harness-ijoz2mq4/julia-1.12.6/bin/julia --startup-file=no --project=/kaggle/working/harness-ijoz2mq4/source/julia/CFDSDFWaterLilyT4 -e \n"}
+,{"stream_name":"stdout","time":245.515084365,"data":"using CUDA\n"}
+,{"stream_name":"stdout","time":245.515088888,"data":"@assert CUDA.functional()\n"}
+,{"stream_name":"stdout","time":245.515093743,"data":"devs = collect(CUDA.devices())\n"}
+,{"stream_name":"stdout","time":245.515109623,"data":"id(d) = \"GPU-\" * string(CUDA.uuid(d))\n"}
+,{"stream_name":"stdout","time":245.515113268,"data":"Q = string(Char(34))\n"}
+,{"stream_name":"stdout","time":245.515116778,"data":"q(x) = (s = string(x); @assert !occursin(Q, s) \u0026\u0026 !occursin(string(Char(92)), s); Q * s * Q)\n"}
+,{"stream_name":"stdout","time":245.515120593,"data":"arr(v) = \"[\" * join(q.(v), \",\") * \"]\"\n"}
+,{"stream_name":"stdout","time":245.515124031,"data":"kv(k, v) = q(k) * \":\" * v\n"}
+,{"stream_name":"stdout","time":245.515127868,"data":"json = \"{\" * join([\n"}
+,{"stream_name":"stdout","time":245.515131093,"data":"    kv(\"logical_device_count\", string(length(devs))),\n"}
+,{"stream_name":"stdout","time":245.515134161,"data":"    kv(\"visible_gpu_names\", arr([CUDA.name(d) for d in devs])),\n"}
+,{"stream_name":"stdout","time":245.515137598,"data":"    kv(\"visible_gpu_uuids\", arr([id(d) for d in devs])),\n"}
+,{"stream_name":"stdout","time":245.515141045,"data":"    kv(\"default_device_uuid\", q(id(CUDA.device()))),\n"}
+,{"stream_name":"stdout","time":245.515144519,"data":"    kv(\"cuda_device_order\", q(ENV[\"CUDA_DEVICE_ORDER\"])),\n"}
+,{"stream_name":"stdout","time":245.515147893,"data":"    kv(\"cuda_visible_devices\", q(ENV[\"CUDA_VISIBLE_DEVICES\"])),\n"}
+,{"stream_name":"stdout","time":245.515151144,"data":"], \",\") * \"}\"\n"}
+,{"stream_name":"stdout","time":245.515154309,"data":"open(ENV[\"GRID01_GPU_PROBE_OUT\"], \"w\") do io\n"}
+,{"stream_name":"stdout","time":245.515157813,"data":"    println(io, json)\n"}
+,{"stream_name":"stdout","time":245.51516069,"data":"end\n"}
+,{"stream_name":"stdout","time":245.515163651,"data":"\n"}
+,{"stream_name":"stdout","time":252.602283326,"data":"RUN /kaggle/working/harness-ijoz2mq4/julia-1.12.6/bin/julia --startup-file=no --project=/kaggle/working/harness-ijoz2mq4/source/julia/CFDSDFWaterLilyT4 /kaggle/working/harness-ijoz2mq4/source/scripts/waterlily_xfid_candidate_c_job.jl /kaggle/working/harness-ijoz2mq4/v18__parent__k1.phi.f32f /kaggle/working/unc01_u2_f24/states/v18__parent__k1\n"}
+,{"stream_name":"stdout","time":419.448097071,"data":"W4_CASE_STARTED flow_24\n"}
+,{"stream_name":"stdout","time":419.448154719,"data":"W4_SOLVER_STEP_INVOKED flow_24\n"}
+,{"stream_name":"stdout","time":419.448159228,"data":"W4_SOLVER_STEP_RETURNED flow_24\n"}
+,{"stream_name":"stdout","time":419.448194415,"data":"W4_V18_CASE_DONE flow_24 {\"case_id\":\"flow_24\",\"cells_per_reference_length\":24,\"flow_dims\":[150,72,54],\"flow_spacing_m\":0.03333333333333333,\"flow_origin_m\":[-2.5,-1.2,-0.9],\"canonical_sdf_origin_m\":[-0.9748374111,-0.7810053236,-0.6],\"physical_box_max_m\":[2.5,1.2,0.9],\"canonical_design_spacing_m\":0.025,\"canonical_state_label\":\"v18\",\"canonical_design_point_shape\":[121,65,49],\"canonical_design_cell_shape\":[120,64,48],\"solver_length\":24.0,\"solver_time_unit_s\":0.03333333333333333,\"solver_velocity\":1.0,\"solver_viscosity\":0.3,\"reynolds\":80.0,\"density_kg_m3\":1.0,\"dynamic_viscosity_pa_s\":0.01,\"freestream_mps\":[1.0,0.0,0.0],\"reference_length_m\":0.8,\"reference_area_m2\":0.64,\"state_sha256\":\"e7376e3576a045daa4c62353052890c43b4ed8b4562033c889cb1a4580d902bd\",\"state_npz_sha256\":\"36967c90cb48b7fe3475436098b138d4e7998212defb6dcb61bf8cefc52d5890\",\"source_surface_sha256\":\"63fe4730ad6216fe4d224ac7f729603f2587bf1b28c507ef3070bbd2aaf30e0e\",\"phi_c_order_sha256\":\"0197e688bf41c87407705e9fee3c78392230fb7edf71b3f58e0aa08c65dceebe\",\"phi_fortran_sha256\":\"29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a\",\"device_roundtrip_sha256\":\"29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a\",\"phi_margin_m\":0.35088423639535904,\"phi_margin_gate_m\":0.15,\"julia_version\":\"1.12.6\",\"julia_threads\":1,\"waterlily_version\":\"1.8.0\",\"waterlily_backend\":\"KernelAbstractions\",\"cuda_jl_version\":\"6.3.1\",\"gpu_name\":\"Tesla T4\",\"gpu_uuid\":\"GPU-ccd5cb2a-7ae2-363a-54a1-e0d0a06e957b\",\"native_velocity_boundary\":\"v16_native_far_field_uBC: +x freestream velocity 1 m/s; other normal components zero\",\"side_top_tangential_boundary\":\"WaterLily native tangential zero-Neumann\",\"x_max_boundary\":\"WaterLily convective exit\",\"pressure_boundary\":\"WaterLily projection pressure; no per-patch freestreamPressure input\",\"ground_model\":\"moving planar half-space on the expanded flow-domain bottom at world z=-0.9 m, with +x wall velocity 1 m/s\",\"force_integration_body\":\"CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))\",\"force_projection_semantics\":\"drag=+Fx; downforce=-Fz\",\"source_profile_equivalent\":false,\"physical_profile_qualified\":false,\"t_end_target\":120.0,\"t_end_reached\":120.00872039794922,\"burn_in_t_u_l\":80.0,\"sample_every_solver_steps\":8,\"steps\":8741,\"wall_seconds\":100.90588712692261,\"first_step_seconds\":18.807712078094482,\"force_samples\":1093,\"window_samples\":364,\"finite_u\":true,\"finite_p\":true,\"finite_forces\":true,\"window_mean_drag_solver\":243.4100863475658,\"window_mean_downforce_solver\":233.9953543735131,\"window_time_weighted_fx_solver\":243.41008630924142,\"window_time_weighted_fy_solver\":-1.1340058002871767,\"window_time_weighted_fz_solver\":-233.9953543139155,\"window_time_weighted_drag_solver\":243.41008630924142,\"window_time_weighted_downforce_solver\":233.9953543139155,\"window_time_weighted_pressure_fx_solver\":139.59398449793812,\"window_time_weighted_pressure_fy_solver\":-0.8633977413131833,\"window_time_weighted_pressure_fz_solver\":-249.91981320898907,\"window_time_weighted_viscous_fx_solver\":103.81610181130316,\"window_time_weighted_viscous_fy_solver\":-0.2706080589739927,\"window_time_weighted_viscous_fz_solver\":15.924458895073778,\"diagnostic_first_half_mean_drag_solver\":243.4100658146206,\"diagnostic_second_half_mean_drag_solver\":243.410106880511,\"diagnostic_first_half_mean_downforce_solver\":233.99535142927053,\"diagnostic_second_half_mean_downforce_solver\":233.99535731775612,\"stationarity_first_half_time_weighted_drag_solver\":243.4100658302215,\"stationarity_second_half_time_weighted_drag_solver\":243.41010678826132,\"stationarity_relative_half_window_drift_drag\":1.6826763606817367e-7,\"stationarity_first_half_time_weighted_downforce_solver\":233.9953514212879,\"stationarity_second_half_time_weighted_downforce_solver\":233.99535720654268,\"stationarity_relative_half_window_drift_downforce\":2.4723801899458668e-8,\"cd_time_weighted\":0.8451739107959771,\"drag_time_weighted_n\":0.2704556514547127,\"downforce_time_weighted_n\":0.25999483812657276,\"pressure_drag_time_weighted_n\":0.15510442721993126,\"viscous_drag_time_weighted_n\":0.11535122423478128,\"pressure_downforce_time_weighted_n\":0.2776886813433212,\"viscous_downforce_time_weighted_n\":-0.017693843216748644,\"peak_vram_bytes\":82916804,\"vram_total_bytes\":15636037632,\"force_csv_sha256\":\"7775c1bc6671980dd1982a8616d4dfee9ef140c99a1c6f4eba55802dc0a68255\"}\n"}
+,{"stream_name":"stdout","time":419.448232239,"data":"\n"}
+,{"stream_name":"stdout","time":419.448234906,"data":"W4_V18_SENSITIVITY_DONE cases=1\n"}
+,{"stream_name":"stdout","time":419.744136014,"data":"OUTPUT_MANIFEST_SHA256 c96b6da4c405c3511ed6d03146f648741089697298bbb18e54f01d70280f633b\n"}
+,{"stream_name":"stderr","time":422.959092919,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":422.959124822,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":423.627552492,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":423.627600356,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":427.143388826,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":428.680941415,"data":"[NbConvertApp] Writing 360775 bytes to __results__.html\n"}
+]

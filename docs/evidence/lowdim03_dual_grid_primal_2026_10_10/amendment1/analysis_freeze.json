@@ -1,0 +1,130 @@
+{
+  "acceptance_rules_changed": false,
+  "amended_analyzer_sha256": "06ac375bcff616226e67dfe4a50642bad96b327d72c1b3f535d3fc5994188a2a",
+  "amended_test_sha256": "0a736c05c3b81a5bb7175fa6f1495bffcbef658f39eb8850322faf52c5e2e538",
+  "analysis_sequence": [
+    "run --check once; require integrity pass and zero failures",
+    "only then run --write exactly once; otherwise stop"
+  ],
+  "analysis_source_commit": "b88ea35b6cecf1252afaf873e43153ee58b6e6d9",
+  "authorized_analysis_write_count": 1,
+  "authorized_semantic_change": {
+    "field": "summary.device_roundtrip_sha256",
+    "new_expected_semantics": "phi_fortran_order_sha256",
+    "old_expected_semantics": "phi_c_order_sha256",
+    "reason": "DeviceGridSDF canonical_phi_sha256 uses Julia column-major vec byte order, and both registered measurement jobs verify device_roundtrip_sha against EXPECTED_PHI_FORTRAN_SHA256 before writing the summary."
+  },
+  "created_utc": "2026-10-10T02:44:52.460884+00:00",
+  "failed_attempt1_commit": "3908c95c068c2c086d86e73673ada104c05b22cc",
+  "failed_attempt1_manifest_entries": 76,
+  "failed_attempt1_sha256sum_manifest": "3ebf4c41b450183e642345118b4407874a3f2d6d6303805b5b24c09c97ebcd96",
+  "independent_review": {
+    "result": "no_blocking_code_defect; static review clear to freeze; validator path receives a separate pre-result --check",
+    "review_file": "docs/evidence/lowdim03_dual_grid_primal_2026_10_10/amendment1/independent_review.md",
+    "review_file_sha256": "cff1c4326529baf49df09e353ba53c9cce9115da5d2a05d07f7afcee0c82136a"
+  },
+  "kaggle_kernel_resubmission_count": 0,
+  "kind": "lowdim03_postmeasurement_analysis_amendment_v1",
+  "measurement_rerun_count": 0,
+  "measurement_source_commit": "e5386910d8b77decd748fdbd5efaee002803d86c",
+  "original_analyzer_sha256": "cf72e83c9cd861263742a0eedd306239cbfdc201efffcddf47d76d43866683c2",
+  "original_inventory_sha256": "e42cf5e8dd05e58ddc0598b8bdab93b4dba3a6740471c0d2ec701492625f8cd3",
+  "original_prerun_freeze_path": "docs/evidence/lowdim03_dual_grid_primal_2026_10_10/prerun_freeze.json",
+  "original_prerun_freeze_sha256": "6009d6b02bd674f78c398b525d6d0319693f12febbb34efae952cb506862b069",
+  "original_runner_sha256": {
+    "a": "b7d2566c3c0e9db52e51fe037e78035c73b08db6ddb4cea764a4b37131855230",
+    "b": "51ad636d7031d929d31ef991001ff573161ca7f5af757adb6f2a767d32ea7499"
+  },
+  "original_test_sha256": "3dcd633052ba6a95de8f463b319883414457d8c28e397d62f050b6afea75a033",
+  "pre_freeze_output_visibility": {
+    "exposed_fields": [
+      "per-state mean/time-weighted drag",
+      "per-state mean/time-weighted downforce",
+      "force CSV SHA-256 values"
+    ],
+    "force_value_fields_exposed_to_independent_reviewer": true,
+    "numeric_values_copied_into_review_record": false,
+    "primary_agent_result_analysis_before_freeze": false,
+    "record": "The reviewer reports that a broad read-only search surfaced an excerpt of a saved summary JSON containing the listed fields. The reviewer reports not interpreting or comparing them. No claim of fully blinded review is made.",
+    "result_blindness_claimed": false,
+    "reviewer_reports_interpretation_or_comparison": false,
+    "reviewer_reports_trial_delta_selected_step_verdict_rho_model_diagnostics_or_acceptance_exposed": false
+  },
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "reinitialization": "none",
+  "saved_output_paths": {
+    "a": "docs/evidence/lowdim03_dual_grid_primal_2026_10_10/failed_attempt1/kernel_output/lowdim03_a",
+    "b": "docs/evidence/lowdim03_dual_grid_primal_2026_10_10/failed_attempt1/kernel_output/lowdim03_b"
+  },
+  "selected_delta": null,
+  "shape_update_allowed": false,
+  "validation_before_saved_output_analysis": {
+    "amended_full_result": {
+      "failed": 37,
+      "passed": 2177,
+      "skipped": 23
+    },
+    "baseline_failure_ids": [
+      "tests/test_canonical_objective.py::test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign",
+      "tests/test_pq3_3b_campaign_v15.py::test_v15_bootstrap_is_deterministic_from_the_pinned_v14_checkpoint",
+      "tests/test_pq3_3b_campaign_v15.py::test_pinned_evidence_and_margin_mask_hashes_verify",
+      "tests/test_pq3_3b_campaign_v16.py::test_start_state_is_the_recorded_v15_checkpoint_10_unchanged",
+      "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_preflight_reverifies",
+      "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_run_reverifies",
+      "tests/test_stage_s_adjoint_qualification.py::test_registered_qualification_reverifies",
+      "tests/test_stage_s_baseline_v16.py::test_baseline_file_hashes_reverify",
+      "tests/test_stage_s_baseline_v16.py::test_baseline_v2_supersedes_v1_and_binds_the_repaired_judgment",
+      "tests/test_stage_s_component_diagnosis.py::test_registered_component_manifest_reverifies",
+      "tests/test_stage_s_fd_diagnosis.py::test_control_point_parsers_and_count_validation",
+      "tests/test_stage_s_fd_diagnosis.py::test_case_audit_detects_clipping_and_accepts_exact_application",
+      "tests/test_stage_s_fd_diagnosis.py::test_pair_audit_odd_even_and_direction_comparison",
+      "tests/test_stage_s_fd_diagnosis.py::test_registered_d1_audit_reverifies",
+      "tests/test_stage_s_fd_diagnosis.py::test_registered_d2_audit_reverifies",
+      "tests/test_stage_s_perturbation.py::test_baseline_patch_extraction_is_closed_and_oriented",
+      "tests/test_stage_s_perturbation.py::test_fixed_patches_do_not_move_in_a_registered_side",
+      "tests/test_stage_s_perturbation.py::test_registered_side_evidence_reverifies",
+      "tests/test_stage_s_perturbation.py::test_registered_surface_fd_result_reverifies",
+      "tests/test_stage_s_reduced_basis.py::test_registered_manifest_contract_and_reduced_spec",
+      "tests/test_stage_s_v16_contract_audit.py::test_every_recorded_artifact_hash_is_current",
+      "tests/test_stage_s_v16_contract_audit.py::test_build_manifest_refuses_a_pq2_hash_registration_mismatch",
+      "tests/test_stage_s_work_f.py::test_registration_binds_the_baseline_and_response_identities",
+      "tests/test_stage_s_work_f.py::test_preflight_artifact_passed_and_matches_the_manifest",
+      "tests/test_stage_s_work_f.py::test_solver_evidence_qualified_and_reconfirmed_clearance",
+      "tests/test_stage_s_work_f_surface_fd.py::test_response_manifests_share_the_catalog_and_identity_contract",
+      "tests/test_stage_s_work_f_surface_fd.py::test_manifest_validation_rejects_missing_roles_and_seeds",
+      "tests/test_stage_s_work_f_surface_fd.py::test_evaluation_requires_both_responses_and_resolvable_aligned_directions",
+      "tests/test_stage_v16_domain_boundary_contract.py::test_extended_spec_changes_only_domain_and_problem_id",
+      "tests/test_stage_v16_domain_boundary_contract.py::test_registered_artifacts_are_current",
+      "tests/test_stage_v_domain_boundary_factor.py::test_registered_run_manifest_contract",
+      "tests/test_stage_v_domain_boundary_factor.py::test_extended_spec_diff_and_top_block_helper",
+      "tests/test_stage_v_domain_boundary_factor.py::test_extended_domain_reuses_baseline_location_in_mesh",
+      "tests/test_stage_v_domain_boundary_factor.py::test_extended_case_bundle_uses_declared_grid_without_sdf_arrays",
+      "tests/test_stage_v_domain_boundary_factor.py::test_treatment_cases_match_the_registered_definition",
+      "tests/test_stage_v_domain_continuation.py::test_staged_geometry_is_byte_identical_to_base",
+      "tests/test_stage_v_qualification.py::test_real_historical_run_without_residual_control_is_not_called_converged"
+    ],
+    "baseline_full_result": {
+      "failed": 37,
+      "passed": 2176,
+      "skipped": 23
+    },
+    "compile_command": ".venv/bin/python -m compileall src scripts tests",
+    "compile_result": "passed",
+    "context": "The same 37 failures refer to ignored historical work/ artifacts absent from this separate worktree.",
+    "diff_check_command": "git diff --check",
+    "diff_check_result": "passed",
+    "failure_ids_unchanged": true,
+    "focused_command": ".venv/bin/python -m pytest -q tests/test_lowdim03_contract.py tests/test_lowdim03_analyzer.py tests/test_lowdim03_prereg.py",
+    "focused_result": "63 passed in 154.03s",
+    "full_command": ".venv/bin/python -m pytest -q --tb=no",
+    "full_runtime_seconds": 563.97,
+    "new_failure_count": 0
+  }
+}

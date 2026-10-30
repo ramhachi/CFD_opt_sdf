@@ -1,0 +1,286 @@
+{
+  "canonical_inputs": {
+    "candidate": {
+      "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/v16_candidate_threshold_0p5.iso_surface.stl",
+      "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+    },
+    "design_domain": {
+      "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/geometry/design_domain.stl",
+      "sha256": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446"
+    },
+    "expanded_spec": {
+      "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/project_matched_re_laminar_moving_ground_far_field_v2_expanded_domain_v3.yaml",
+      "sha256": "26b918c30d2a46c2cf6b9746bb8ef206b65d56d24dc084498f03fefbdbe10a04"
+    },
+    "physical_profile_sha256": "a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca",
+    "problem_spec_sha256": "7c1f27ad71b8713ef0b8508383249db1ea7b2dbdcf3a7af66b71ee19deecb2cb"
+  },
+  "claims_not_supported": [
+    "agreement with the old stationary-ground result",
+    "same-profile domain convergence before this profile passes",
+    "grid-independent or absolute downforce",
+    "Stage S reduced-basis FD qualification or a shape update",
+    "an optimization campaign"
+  ],
+  "clearance_preflight": {
+    "candidate_bounds_m": {
+      "lower": [
+        -0.6000000238418579,
+        -0.44999998807907104,
+        -0.25
+      ],
+      "upper": [
+        0.550000011920929,
+        0.44999998807907104,
+        0.25
+      ]
+    },
+    "candidate_inside_fixed_box": true,
+    "candidate_stl": "/Users/sota/projects/FomulaTMU/CFD2026_09/docs/evidence/assets/stage_v_v16_physical_profile_v2/v16_candidate_threshold_0p5.iso_surface.stl",
+    "candidate_stl_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "clearances_m": {
+      "bottom (lower_z)": 0.65,
+      "inlet (lower_x)": 1.899999976158142,
+      "outlet (upper_x)": 2.949999988079071,
+      "sideMax (upper_y)": 0.7500000119209289,
+      "sideMin (lower_y)": 0.7500000119209289,
+      "top (upper_z)": 0.65
+    },
+    "fixed_domain_binding": {
+      "domain_bounds_m": {
+        "lower": [
+          -2.5,
+          -1.2,
+          -0.9
+        ],
+        "upper": [
+          3.5,
+          1.2,
+          0.9
+        ]
+      },
+      "from_problem_spec_grid_domain_bounds_m": true
+    },
+    "flow_case_id": null,
+    "limiting_patch": "bottom (lower_z)",
+    "measured_before_any_mesh_command": true,
+    "minimum_clearance_m": 0.65,
+    "problem_spec_sha256": "7c1f27ad71b8713ef0b8508383249db1ea7b2dbdcf3a7af66b71ee19deecb2cb",
+    "qualification_profile": {
+      "minimum_clearance_m": 0.25,
+      "profile_id": "stage_v_clearance_v1"
+    },
+    "qualified": true,
+    "reasons": [],
+    "schema_version": 1,
+    "status": "pass",
+    "voxel_size_m": 0.05
+  },
+  "docker": {
+    "image": "opencfd/openfoam-default:2512",
+    "image_id": "sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319"
+  },
+  "domain_convergence_profile": {
+    "cd_relative_delta_threshold": 0.02,
+    "comparison_denominator": "parent_v2_cd_mean",
+    "downforce_absolute_delta_threshold": 0.005,
+    "requires_both_physical_profile_outcomes_qualified": true
+  },
+  "domain_factor": {
+    "base_domain_bounds_m": {
+      "lower": [
+        -2.5,
+        -1.2,
+        -0.9
+      ],
+      "upper": [
+        2.5,
+        1.2,
+        0.9
+      ]
+    },
+    "base_problem_id": "stage_sv_v2_expanded_domain_v2",
+    "expanded_domain_bounds_m": {
+      "lower": [
+        -2.5,
+        -1.2,
+        -0.9
+      ],
+      "upper": [
+        3.5,
+        1.2,
+        0.9
+      ]
+    },
+    "expanded_problem_id": "stage_sv_v2_expanded_domain_v3",
+    "only_domain_bounds_changed": true
+  },
+  "execution": {
+    "case_dir": "work/stage_v_v16_physical_profile_domain_convergence_v1_2026_09/case",
+    "maximum_new_runs": 1,
+    "mesh_generation_started": false,
+    "new_run_count": 0,
+    "optimization_campaign_started": false,
+    "solver_started": false
+  },
+  "gate_profile": {
+    "candidate_clearance": {
+      "measured_before_any_mesh_command": true,
+      "minimum_clearance_m": 0.25,
+      "profile_id": "stage_v_clearance_v1"
+    },
+    "candidate_wall": {
+      "max_normal_flux_abs": 1e-08,
+      "patch": "design_candidate"
+    },
+    "mass_conservation": {
+      "denominator": "0.5*sum(abs(phi) over every boundary face)",
+      "normalized_mass_imbalance_max": 0.0001
+    },
+    "moving_ground": {
+      "max_normal_flux_abs": 1e-08,
+      "max_velocity_component_error_mps": 1e-08,
+      "patch": "bottom",
+      "target_velocity_mps": [
+        1.0,
+        0.0,
+        0.0
+      ]
+    },
+    "near_candidate_upstream_velocity": {
+      "location": "inlet boundary-face mean (upstream outer boundary proxy)",
+      "minimum_faces": 1,
+      "relative_l2_error_max": 0.05,
+      "target_velocity_mps": [
+        1.0,
+        0.0,
+        0.0
+      ]
+    },
+    "outer_patch_backflow_and_pressure_disturbance": {
+      "backflow_ratio_max": 0.05,
+      "minimum_faces": 1,
+      "patches": [
+        "inlet",
+        "outlet",
+        "sideMin",
+        "sideMax",
+        "top"
+      ],
+      "pressure_face_max_abs_normalized": 0.05,
+      "pressure_normalization": "U_inf^2 (kinematic p; rho=1 in the registered case)"
+    },
+    "solver_and_mesh": {
+      "qualification_profile": {
+        "check_mesh": {
+          "allowed_failed_check_markers": [
+            "Concave cells"
+          ],
+          "concave_cell_fraction_max": 0.08,
+          "concave_face_max_angle_deg_max": 170.0
+        },
+        "force_stationarity": {
+          "absolute_drift_max": 0.001,
+          "absolute_std_max": 0.001,
+          "relative_drift_max": 0.01,
+          "relative_std_max": 0.01,
+          "response_bound_kind": {
+            "Cd": "relative",
+            "downforce": "absolute"
+          },
+          "window_fraction": 0.25,
+          "window_min_rows": 20
+        },
+        "grid_convergence": {
+          "absolute_change_max": 0.005,
+          "relative_change_max": 0.02,
+          "response_bound_kind": {
+            "Cd": "relative",
+            "downforce": "absolute"
+          }
+        },
+        "profile_id": "stage_v_qualification_v1"
+      },
+      "qualification_profile_id": "stage_v_qualification_v1",
+      "residual_gate": {
+        "final_residual_max": {
+          "Ux": 1e-06,
+          "Uy": 1e-06,
+          "Uz": 1e-06,
+          "p": 1e-05
+        },
+        "requires_residual_control_message": true
+      }
+    }
+  },
+  "immutable": true,
+  "kind": "stage_v_v16_physical_profile_domain_convergence_manifest",
+  "parent_v2": {
+    "manifest": {
+      "path": "docs/evidence/stage_v_v16_physical_profile_expanded_domain_v2_manifest_v1_2026_09.json",
+      "sha256": "6fe9168be5b40295c303a26ade0c13bc23ca23eedc4ffebabfc0f4d0a80cae6f"
+    },
+    "outcome": {
+      "path": "docs/evidence/stage_v_v16_physical_profile_expanded_domain_v2_2026_09.json",
+      "sha256": "8871255838b9666683581a3cb50d949764f6a4b27fb3dab24d6f6f52b4a75e66"
+    },
+    "outcome_qualified": true,
+    "outcome_status": "pass",
+    "run_manifest": {
+      "path": "docs/evidence/stage_v_v16_physical_profile_expanded_domain_v2_run_manifest_v1_2026_09.json",
+      "sha256": "1e419a37c3c0ec51cfdcf8d2ca497faffe4cc0179560d54f927a29b06c76d4b0"
+    }
+  },
+  "physical_profile_sha256": "a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca",
+  "problem_spec_sha256": "7c1f27ad71b8713ef0b8508383249db1ea7b2dbdcf3a7af66b71ee19deecb2cb",
+  "question": "Does the same v2 physical profile converge when downstream clearance increases?",
+  "registered_before_computation": true,
+  "run_manifest": {
+    "path": "docs/evidence/stage_v_v16_physical_profile_domain_convergence_v1_run_manifest_2026_09.json",
+    "sha256": "14b46204d9ae238cbb1453c1edd846f3ffd41594556bff53185d37cbe55d60c8"
+  },
+  "schema_version": 1,
+  "source_artifacts": {
+    "base_spec": {
+      "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/project_matched_re_laminar_moving_ground_far_field_v2_expanded_domain_v2.yaml",
+      "sha256": "6e41d2bbe9ac6a272f122f7e2556fe2ae9904b0572415eb548f438406885278e"
+    },
+    "candidate": {
+      "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/v16_candidate_threshold_0p5.iso_surface.stl",
+      "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+    },
+    "design_domain": {
+      "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/geometry/design_domain.stl",
+      "sha256": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446"
+    },
+    "expanded_spec": {
+      "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/project_matched_re_laminar_moving_ground_far_field_v2_expanded_domain_v3.yaml",
+      "sha256": "26b918c30d2a46c2cf6b9746bb8ef206b65d56d24dc084498f03fefbdbe10a04"
+    },
+    "parent_manifest": {
+      "path": "docs/evidence/stage_v_v16_physical_profile_expanded_domain_v2_manifest_v1_2026_09.json",
+      "sha256": "6fe9168be5b40295c303a26ade0c13bc23ca23eedc4ffebabfc0f4d0a80cae6f"
+    },
+    "parent_outcome": {
+      "path": "docs/evidence/stage_v_v16_physical_profile_expanded_domain_v2_2026_09.json",
+      "sha256": "8871255838b9666683581a3cb50d949764f6a4b27fb3dab24d6f6f52b4a75e66"
+    },
+    "parent_run_manifest": {
+      "path": "docs/evidence/stage_v_v16_physical_profile_expanded_domain_v2_run_manifest_v1_2026_09.json",
+      "sha256": "1e419a37c3c0ec51cfdcf8d2ca497faffe4cc0179560d54f927a29b06c76d4b0"
+    },
+    "registration_script": {
+      "path": "scripts/register_stage_v16_physical_profile_domain_convergence_v1_2026_09.py",
+      "sha256": "98db5794a0a4c3b7d12e705a32454c339d4239909242a14777a8e77338d53ae2"
+    },
+    "renderer": {
+      "path": "src/cfd_sdf/openfoam.py",
+      "sha256": "9c5bb31d15027d5055ac58884774621ec8bbdb29ec2541eecc3dac86eb32ea66"
+    },
+    "solver_gate_module": {
+      "path": "src/cfd_sdf/stage_v_physical_profile.py",
+      "sha256": "7ceb68ad63a2846c0a33ad9eea7c46dfc9172b49276a0947826a39fef261300d"
+    }
+  },
+  "status": "registered_not_run"
+}

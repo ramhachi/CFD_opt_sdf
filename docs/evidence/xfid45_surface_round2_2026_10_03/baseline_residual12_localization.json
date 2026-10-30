@@ -1,0 +1,4365 @@
+{
+  "definition": "h times float32 machine epsilon; fixed analytically",
+  "edge_count": 12,
+  "edges": [
+    {
+      "candidate_edge_id": [
+        1406,
+        1407
+      ],
+      "candidate_edge_incidence": 3,
+      "candidate_edge_vertex_coordinates_m": [
+        [
+          -0.25,
+          0.20000000298023224,
+          -0.10000000149011612
+        ],
+        [
+          -0.25,
+          0.20000000298023224,
+          -0.07500000298023224
+        ]
+      ],
+      "has_exact_zero_source_cell": true,
+      "has_near_zero_source_cell": true,
+      "minimum_abs_source_node_phi_m": 0.0,
+      "source_triangles": [
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              2594
+            ],
+            [
+              2048
+            ],
+            [
+              2604
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              30,
+              39,
+              20
+            ],
+            [
+              30,
+              39,
+              21
+            ],
+            [
+              30,
+              40,
+              20
+            ],
+            [
+              30,
+              40,
+              21
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                30,
+                39,
+                20
+              ],
+              [
+                30,
+                39,
+                21
+              ],
+              [
+                30,
+                40,
+                20
+              ],
+              [
+                30,
+                40,
+                21
+              ],
+              [
+                31,
+                39,
+                20
+              ],
+              [
+                31,
+                39,
+                21
+              ],
+              [
+                31,
+                40,
+                20
+              ],
+              [
+                31,
+                40,
+                21
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  39,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  39,
+                  21
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  40,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  40,
+                  21
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  31,
+                  39,
+                  20
+                ],
+                "phi": -0.02500000037252903
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  31,
+                  39,
+                  21
+                ],
+                "phi": -0.02499999850988388
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  31,
+                  40,
+                  20
+                ],
+                "phi": -0.02500000037252903
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  31,
+                  40,
+                  21
+                ],
+                "phi": -0.02499999850988388
+              }
+            ],
+            "source_grid_cell_id": 158310
+          },
+          "source_contouring_cell_id": 158310,
+          "source_triangle_id": 4689,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.00031250005587935004,
+          "triangle_vertex_coordinates_m": [
+            [
+              -0.25,
+              0.17499999701976776,
+              -0.07500000298023224
+            ],
+            [
+              -0.25,
+              0.20000000298023224,
+              -0.10000000149011612
+            ],
+            [
+              -0.25,
+              0.20000000298023224,
+              -0.07500000298023224
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": [
+            [
+              30,
+              39,
+              21
+            ],
+            [
+              30,
+              40,
+              20
+            ],
+            [
+              30,
+              40,
+              21
+            ]
+          ]
+        },
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              2301
+            ],
+            [
+              2604
+            ],
+            [
+              2048
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              30,
+              40,
+              20
+            ],
+            [
+              30,
+              40,
+              21
+            ],
+            [
+              30,
+              41,
+              20
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                29,
+                40,
+                20
+              ],
+              [
+                29,
+                40,
+                21
+              ],
+              [
+                29,
+                41,
+                20
+              ],
+              [
+                29,
+                41,
+                21
+              ],
+              [
+                30,
+                40,
+                20
+              ],
+              [
+                30,
+                40,
+                21
+              ],
+              [
+                30,
+                41,
+                20
+              ],
+              [
+                30,
+                41,
+                21
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  40,
+                  20
+                ],
+                "phi": -1.4901161415892261e-09
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  40,
+                  21
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  41,
+                  20
+                ],
+                "phi": -1.4901161415892261e-09
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  41,
+                  21
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  40,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  40,
+                  21
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  41,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  30,
+                  41,
+                  21
+                ],
+                "phi": -2.6341778758265377e-10
+              }
+            ],
+            "source_grid_cell_id": 158429
+          },
+          "source_contouring_cell_id": 158429,
+          "source_triangle_id": 4702,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.00031250005587935004,
+          "triangle_vertex_coordinates_m": [
+            [
+              -0.2750000059604645,
+              0.20000000298023224,
+              -0.10000000149011612
+            ],
+            [
+              -0.25,
+              0.20000000298023224,
+              -0.07500000298023224
+            ],
+            [
+              -0.25,
+              0.20000000298023224,
+              -0.10000000149011612
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": [
+            [
+              29,
+              40,
+              20
+            ],
+            [
+              30,
+              40,
+              21
+            ],
+            [
+              30,
+              40,
+              20
+            ]
+          ]
+        },
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              2048
+            ],
+            [
+              2604
+            ],
+            [
+              2055
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              30,
+              40,
+              20
+            ],
+            [
+              30,
+              40,
+              21
+            ],
+            [
+              30,
+              41,
+              20
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                29,
+                40,
+                20
+              ],
+              [
+                29,
+                40,
+                21
+              ],
+              [
+                29,
+                41,
+                20
+              ],
+              [
+                29,
+                41,
+                21
+              ],
+              [
+                30,
+                40,
+                20
+              ],
+              [
+                30,
+                40,
+                21
+              ],
+              [
+                30,
+                41,
+                20
+              ],
+              [
+                30,
+                41,
+                21
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  40,
+                  20
+                ],
+                "phi": -1.4901161415892261e-09
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  40,
+                  21
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  41,
+                  20
+                ],
+                "phi": -1.4901161415892261e-09
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  41,
+                  21
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  40,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  40,
+                  21
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  41,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  30,
+                  41,
+                  21
+                ],
+                "phi": -2.6341778758265377e-10
+              }
+            ],
+            "source_grid_cell_id": 158429
+          },
+          "source_contouring_cell_id": 158429,
+          "source_triangle_id": 4703,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.0003124998696148462,
+          "triangle_vertex_coordinates_m": [
+            [
+              -0.25,
+              0.20000000298023224,
+              -0.10000000149011612
+            ],
+            [
+              -0.25,
+              0.20000000298023224,
+              -0.07500000298023224
+            ],
+            [
+              -0.25,
+              0.22499999403953552,
+              -0.10000000149011612
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": [
+            [
+              30,
+              40,
+              20
+            ],
+            [
+              30,
+              40,
+              21
+            ],
+            [
+              30,
+              41,
+              20
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_edge_id": [
+        1406,
+        1410
+      ],
+      "candidate_edge_incidence": 1,
+      "candidate_edge_vertex_coordinates_m": [
+        [
+          -0.25,
+          0.20000000298023224,
+          -0.10000000149011612
+        ],
+        [
+          -0.25,
+          0.22499999403953552,
+          -0.10000000149011612
+        ]
+      ],
+      "has_exact_zero_source_cell": true,
+      "has_near_zero_source_cell": true,
+      "minimum_abs_source_node_phi_m": 0.0,
+      "source_triangles": [
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              2048
+            ],
+            [
+              2604
+            ],
+            [
+              2055
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              30,
+              40,
+              20
+            ],
+            [
+              30,
+              40,
+              21
+            ],
+            [
+              30,
+              41,
+              20
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                29,
+                40,
+                20
+              ],
+              [
+                29,
+                40,
+                21
+              ],
+              [
+                29,
+                41,
+                20
+              ],
+              [
+                29,
+                41,
+                21
+              ],
+              [
+                30,
+                40,
+                20
+              ],
+              [
+                30,
+                40,
+                21
+              ],
+              [
+                30,
+                41,
+                20
+              ],
+              [
+                30,
+                41,
+                21
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  40,
+                  20
+                ],
+                "phi": -1.4901161415892261e-09
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  40,
+                  21
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  41,
+                  20
+                ],
+                "phi": -1.4901161415892261e-09
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  41,
+                  21
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  40,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  40,
+                  21
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  41,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  30,
+                  41,
+                  21
+                ],
+                "phi": -2.6341778758265377e-10
+              }
+            ],
+            "source_grid_cell_id": 158429
+          },
+          "source_contouring_cell_id": 158429,
+          "source_triangle_id": 4703,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.0003124998696148462,
+          "triangle_vertex_coordinates_m": [
+            [
+              -0.25,
+              0.20000000298023224,
+              -0.10000000149011612
+            ],
+            [
+              -0.25,
+              0.20000000298023224,
+              -0.07500000298023224
+            ],
+            [
+              -0.25,
+              0.22499999403953552,
+              -0.10000000149011612
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": [
+            [
+              30,
+              40,
+              20
+            ],
+            [
+              30,
+              40,
+              21
+            ],
+            [
+              30,
+              41,
+              20
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_edge_id": [
+        1407,
+        1410
+      ],
+      "candidate_edge_incidence": 1,
+      "candidate_edge_vertex_coordinates_m": [
+        [
+          -0.25,
+          0.20000000298023224,
+          -0.07500000298023224
+        ],
+        [
+          -0.25,
+          0.22499999403953552,
+          -0.10000000149011612
+        ]
+      ],
+      "has_exact_zero_source_cell": true,
+      "has_near_zero_source_cell": true,
+      "minimum_abs_source_node_phi_m": 0.0,
+      "source_triangles": [
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              2048
+            ],
+            [
+              2604
+            ],
+            [
+              2055
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              30,
+              40,
+              20
+            ],
+            [
+              30,
+              40,
+              21
+            ],
+            [
+              30,
+              41,
+              20
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                29,
+                40,
+                20
+              ],
+              [
+                29,
+                40,
+                21
+              ],
+              [
+                29,
+                41,
+                20
+              ],
+              [
+                29,
+                41,
+                21
+              ],
+              [
+                30,
+                40,
+                20
+              ],
+              [
+                30,
+                40,
+                21
+              ],
+              [
+                30,
+                41,
+                20
+              ],
+              [
+                30,
+                41,
+                21
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  40,
+                  20
+                ],
+                "phi": -1.4901161415892261e-09
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  40,
+                  21
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  41,
+                  20
+                ],
+                "phi": -1.4901161415892261e-09
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  41,
+                  21
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  40,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  40,
+                  21
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  41,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  30,
+                  41,
+                  21
+                ],
+                "phi": -2.6341778758265377e-10
+              }
+            ],
+            "source_grid_cell_id": 158429
+          },
+          "source_contouring_cell_id": 158429,
+          "source_triangle_id": 4703,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.0003124998696148462,
+          "triangle_vertex_coordinates_m": [
+            [
+              -0.25,
+              0.20000000298023224,
+              -0.10000000149011612
+            ],
+            [
+              -0.25,
+              0.20000000298023224,
+              -0.07500000298023224
+            ],
+            [
+              -0.25,
+              0.22499999403953552,
+              -0.10000000149011612
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": [
+            [
+              30,
+              40,
+              20
+            ],
+            [
+              30,
+              40,
+              21
+            ],
+            [
+              30,
+              41,
+              20
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_edge_id": [
+        1410,
+        1414
+      ],
+      "candidate_edge_incidence": 1,
+      "candidate_edge_vertex_coordinates_m": [
+        [
+          -0.25,
+          0.22499999403953552,
+          -0.10000000149011612
+        ],
+        [
+          -0.25,
+          0.25,
+          -0.10000000149011612
+        ]
+      ],
+      "has_exact_zero_source_cell": true,
+      "has_near_zero_source_cell": true,
+      "minimum_abs_source_node_phi_m": 0.0,
+      "source_triangles": [
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              2055
+            ],
+            [
+              2615
+            ],
+            [
+              2062
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              30,
+              41,
+              20
+            ],
+            [
+              30,
+              42,
+              20
+            ],
+            [
+              30,
+              42,
+              21
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                29,
+                41,
+                20
+              ],
+              [
+                29,
+                41,
+                21
+              ],
+              [
+                29,
+                42,
+                20
+              ],
+              [
+                29,
+                42,
+                21
+              ],
+              [
+                30,
+                41,
+                20
+              ],
+              [
+                30,
+                41,
+                21
+              ],
+              [
+                30,
+                42,
+                20
+              ],
+              [
+                30,
+                42,
+                21
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  41,
+                  20
+                ],
+                "phi": -1.4901161415892261e-09
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  41,
+                  21
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  42,
+                  20
+                ],
+                "phi": -1.4901161415892261e-09
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  42,
+                  21
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  41,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  30,
+                  41,
+                  21
+                ],
+                "phi": -2.6341778758265377e-10
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  42,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  42,
+                  21
+                ],
+                "phi": -0.0
+              }
+            ],
+            "source_grid_cell_id": 158549
+          },
+          "source_contouring_cell_id": 158549,
+          "source_triangle_id": 4711,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.00031250005587935004,
+          "triangle_vertex_coordinates_m": [
+            [
+              -0.25,
+              0.22499999403953552,
+              -0.10000000149011612
+            ],
+            [
+              -0.25,
+              0.25,
+              -0.07500000298023224
+            ],
+            [
+              -0.25,
+              0.25,
+              -0.10000000149011612
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": [
+            [
+              30,
+              41,
+              20
+            ],
+            [
+              30,
+              42,
+              21
+            ],
+            [
+              30,
+              42,
+              20
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_edge_id": [
+        1410,
+        1415
+      ],
+      "candidate_edge_incidence": 1,
+      "candidate_edge_vertex_coordinates_m": [
+        [
+          -0.25,
+          0.22499999403953552,
+          -0.10000000149011612
+        ],
+        [
+          -0.25,
+          0.25,
+          -0.07500000298023224
+        ]
+      ],
+      "has_exact_zero_source_cell": true,
+      "has_near_zero_source_cell": true,
+      "minimum_abs_source_node_phi_m": 0.0,
+      "source_triangles": [
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              2055
+            ],
+            [
+              2615
+            ],
+            [
+              2062
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              30,
+              41,
+              20
+            ],
+            [
+              30,
+              42,
+              20
+            ],
+            [
+              30,
+              42,
+              21
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                29,
+                41,
+                20
+              ],
+              [
+                29,
+                41,
+                21
+              ],
+              [
+                29,
+                42,
+                20
+              ],
+              [
+                29,
+                42,
+                21
+              ],
+              [
+                30,
+                41,
+                20
+              ],
+              [
+                30,
+                41,
+                21
+              ],
+              [
+                30,
+                42,
+                20
+              ],
+              [
+                30,
+                42,
+                21
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  41,
+                  20
+                ],
+                "phi": -1.4901161415892261e-09
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  41,
+                  21
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  42,
+                  20
+                ],
+                "phi": -1.4901161415892261e-09
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  42,
+                  21
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  41,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  30,
+                  41,
+                  21
+                ],
+                "phi": -2.6341778758265377e-10
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  42,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  42,
+                  21
+                ],
+                "phi": -0.0
+              }
+            ],
+            "source_grid_cell_id": 158549
+          },
+          "source_contouring_cell_id": 158549,
+          "source_triangle_id": 4711,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.00031250005587935004,
+          "triangle_vertex_coordinates_m": [
+            [
+              -0.25,
+              0.22499999403953552,
+              -0.10000000149011612
+            ],
+            [
+              -0.25,
+              0.25,
+              -0.07500000298023224
+            ],
+            [
+              -0.25,
+              0.25,
+              -0.10000000149011612
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": [
+            [
+              30,
+              41,
+              20
+            ],
+            [
+              30,
+              42,
+              21
+            ],
+            [
+              30,
+              42,
+              20
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_edge_id": [
+        1414,
+        1415
+      ],
+      "candidate_edge_incidence": 3,
+      "candidate_edge_vertex_coordinates_m": [
+        [
+          -0.25,
+          0.25,
+          -0.10000000149011612
+        ],
+        [
+          -0.25,
+          0.25,
+          -0.07500000298023224
+        ]
+      ],
+      "has_exact_zero_source_cell": true,
+      "has_near_zero_source_cell": true,
+      "minimum_abs_source_node_phi_m": 0.0,
+      "source_triangles": [
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              2055
+            ],
+            [
+              2615
+            ],
+            [
+              2062
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              30,
+              41,
+              20
+            ],
+            [
+              30,
+              42,
+              20
+            ],
+            [
+              30,
+              42,
+              21
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                29,
+                41,
+                20
+              ],
+              [
+                29,
+                41,
+                21
+              ],
+              [
+                29,
+                42,
+                20
+              ],
+              [
+                29,
+                42,
+                21
+              ],
+              [
+                30,
+                41,
+                20
+              ],
+              [
+                30,
+                41,
+                21
+              ],
+              [
+                30,
+                42,
+                20
+              ],
+              [
+                30,
+                42,
+                21
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  41,
+                  20
+                ],
+                "phi": -1.4901161415892261e-09
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  41,
+                  21
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  42,
+                  20
+                ],
+                "phi": -1.4901161415892261e-09
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  42,
+                  21
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  41,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  30,
+                  41,
+                  21
+                ],
+                "phi": -2.6341778758265377e-10
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  42,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  42,
+                  21
+                ],
+                "phi": -0.0
+              }
+            ],
+            "source_grid_cell_id": 158549
+          },
+          "source_contouring_cell_id": 158549,
+          "source_triangle_id": 4711,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.00031250005587935004,
+          "triangle_vertex_coordinates_m": [
+            [
+              -0.25,
+              0.22499999403953552,
+              -0.10000000149011612
+            ],
+            [
+              -0.25,
+              0.25,
+              -0.07500000298023224
+            ],
+            [
+              -0.25,
+              0.25,
+              -0.10000000149011612
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": [
+            [
+              30,
+              41,
+              20
+            ],
+            [
+              30,
+              42,
+              21
+            ],
+            [
+              30,
+              42,
+              20
+            ]
+          ]
+        },
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              2062
+            ],
+            [
+              2615
+            ],
+            [
+              2309
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              30,
+              41,
+              20
+            ],
+            [
+              30,
+              42,
+              20
+            ],
+            [
+              30,
+              42,
+              21
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                29,
+                41,
+                20
+              ],
+              [
+                29,
+                41,
+                21
+              ],
+              [
+                29,
+                42,
+                20
+              ],
+              [
+                29,
+                42,
+                21
+              ],
+              [
+                30,
+                41,
+                20
+              ],
+              [
+                30,
+                41,
+                21
+              ],
+              [
+                30,
+                42,
+                20
+              ],
+              [
+                30,
+                42,
+                21
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  41,
+                  20
+                ],
+                "phi": -1.4901161415892261e-09
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  41,
+                  21
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  42,
+                  20
+                ],
+                "phi": -1.4901161415892261e-09
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  29,
+                  42,
+                  21
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  41,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  30,
+                  41,
+                  21
+                ],
+                "phi": -2.6341778758265377e-10
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  42,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  42,
+                  21
+                ],
+                "phi": -0.0
+              }
+            ],
+            "source_grid_cell_id": 158549
+          },
+          "source_contouring_cell_id": 158549,
+          "source_triangle_id": 4712,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.00031250005587935004,
+          "triangle_vertex_coordinates_m": [
+            [
+              -0.25,
+              0.25,
+              -0.10000000149011612
+            ],
+            [
+              -0.25,
+              0.25,
+              -0.07500000298023224
+            ],
+            [
+              -0.2750000059604645,
+              0.25,
+              -0.10000000149011612
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": [
+            [
+              30,
+              42,
+              20
+            ],
+            [
+              30,
+              42,
+              21
+            ],
+            [
+              29,
+              42,
+              20
+            ]
+          ]
+        },
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              2062
+            ],
+            [
+              2069
+            ],
+            [
+              2615
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              30,
+              42,
+              20
+            ],
+            [
+              30,
+              42,
+              21
+            ],
+            [
+              30,
+              43,
+              20
+            ],
+            [
+              30,
+              43,
+              21
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                30,
+                42,
+                20
+              ],
+              [
+                30,
+                42,
+                21
+              ],
+              [
+                30,
+                43,
+                20
+              ],
+              [
+                30,
+                43,
+                21
+              ],
+              [
+                31,
+                42,
+                20
+              ],
+              [
+                31,
+                42,
+                21
+              ],
+              [
+                31,
+                43,
+                20
+              ],
+              [
+                31,
+                43,
+                21
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  42,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  42,
+                  21
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  43,
+                  20
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  30,
+                  43,
+                  21
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  31,
+                  42,
+                  20
+                ],
+                "phi": -0.02500000037252903
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  31,
+                  42,
+                  21
+                ],
+                "phi": -0.02499999850988388
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  31,
+                  43,
+                  20
+                ],
+                "phi": -0.02500000037252903
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  31,
+                  43,
+                  21
+                ],
+                "phi": -0.02499999850988388
+              }
+            ],
+            "source_grid_cell_id": 158670
+          },
+          "source_contouring_cell_id": 158670,
+          "source_triangle_id": 4724,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.00031250005587935004,
+          "triangle_vertex_coordinates_m": [
+            [
+              -0.25,
+              0.25,
+              -0.10000000149011612
+            ],
+            [
+              -0.25,
+              0.2750000059604645,
+              -0.10000000149011612
+            ],
+            [
+              -0.25,
+              0.25,
+              -0.07500000298023224
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": [
+            [
+              30,
+              42,
+              20
+            ],
+            [
+              30,
+              43,
+              20
+            ],
+            [
+              30,
+              42,
+              21
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_edge_id": [
+        3405,
+        3542
+      ],
+      "candidate_edge_incidence": 3,
+      "candidate_edge_vertex_coordinates_m": [
+        [
+          0.22499999403953552,
+          0.4000000059604645,
+          5.551115123125783e-17
+        ],
+        [
+          0.25,
+          0.4000000059604645,
+          5.551115123125783e-17
+        ]
+      ],
+      "has_exact_zero_source_cell": true,
+      "has_near_zero_source_cell": true,
+      "minimum_abs_source_node_phi_m": 0.0,
+      "source_triangles": [
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              3292
+            ],
+            [
+              3294
+            ],
+            [
+              3286
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              49,
+              47,
+              24
+            ],
+            [
+              49,
+              48,
+              24
+            ],
+            [
+              50,
+              47,
+              24
+            ],
+            [
+              50,
+              48,
+              24
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                49,
+                47,
+                23
+              ],
+              [
+                49,
+                47,
+                24
+              ],
+              [
+                49,
+                48,
+                23
+              ],
+              [
+                49,
+                48,
+                24
+              ],
+              [
+                50,
+                47,
+                23
+              ],
+              [
+                50,
+                47,
+                24
+              ],
+              [
+                50,
+                48,
+                23
+              ],
+              [
+                50,
+                48,
+                24
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  47,
+                  23
+                ],
+                "phi": 0.02499999664723873
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  49,
+                  47,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  48,
+                  23
+                ],
+                "phi": -5.960464122267695e-09
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  49,
+                  48,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  50,
+                  47,
+                  23
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  47,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  50,
+                  48,
+                  23
+                ],
+                "phi": -5.960464122267695e-09
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  48,
+                  24
+                ],
+                "phi": -0.0
+              }
+            ],
+            "source_grid_cell_id": 182329
+          },
+          "source_contouring_cell_id": 182329,
+          "source_triangle_id": 6593,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.00031250007916242066,
+          "triangle_vertex_coordinates_m": [
+            [
+              0.22499999403953552,
+              0.4000000059604645,
+              5.551115123125783e-17
+            ],
+            [
+              0.25,
+              0.4000000059604645,
+              5.551115123125783e-17
+            ],
+            [
+              0.22499999403953552,
+              0.4000000059604645,
+              -0.02500000037252903
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": [
+            [
+              49,
+              48,
+              23
+            ]
+          ]
+        },
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              3292
+            ],
+            [
+              3316
+            ],
+            [
+              3294
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              49,
+              48,
+              24
+            ],
+            [
+              50,
+              48,
+              24
+            ],
+            [
+              50,
+              49,
+              24
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                49,
+                48,
+                23
+              ],
+              [
+                49,
+                48,
+                24
+              ],
+              [
+                49,
+                49,
+                23
+              ],
+              [
+                49,
+                49,
+                24
+              ],
+              [
+                50,
+                48,
+                23
+              ],
+              [
+                50,
+                48,
+                24
+              ],
+              [
+                50,
+                49,
+                23
+              ],
+              [
+                50,
+                49,
+                24
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  48,
+                  23
+                ],
+                "phi": -5.960464122267695e-09
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  49,
+                  48,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  49,
+                  23
+                ],
+                "phi": -0.024999987334012985
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  49,
+                  24
+                ],
+                "phi": -0.024999987334012985
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  50,
+                  48,
+                  23
+                ],
+                "phi": -5.960464122267695e-09
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  48,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  50,
+                  49,
+                  23
+                ],
+                "phi": -6.938893903907228e-18
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  49,
+                  24
+                ],
+                "phi": -0.0
+              }
+            ],
+            "source_grid_cell_id": 182449
+          },
+          "source_contouring_cell_id": 182449,
+          "source_triangle_id": 6603,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.0003125001490116297,
+          "triangle_vertex_coordinates_m": [
+            [
+              0.22499999403953552,
+              0.4000000059604645,
+              5.551115123125783e-17
+            ],
+            [
+              0.25,
+              0.42500001192092896,
+              5.551115123125783e-17
+            ],
+            [
+              0.25,
+              0.4000000059604645,
+              5.551115123125783e-17
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": []
+        },
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              3294
+            ],
+            [
+              3292
+            ],
+            [
+              3562
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              49,
+              47,
+              24
+            ],
+            [
+              49,
+              48,
+              24
+            ],
+            [
+              50,
+              47,
+              24
+            ],
+            [
+              50,
+              48,
+              24
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                49,
+                47,
+                24
+              ],
+              [
+                49,
+                47,
+                25
+              ],
+              [
+                49,
+                48,
+                24
+              ],
+              [
+                49,
+                48,
+                25
+              ],
+              [
+                50,
+                47,
+                24
+              ],
+              [
+                50,
+                47,
+                25
+              ],
+              [
+                50,
+                48,
+                24
+              ],
+              [
+                50,
+                48,
+                25
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": true,
+                "ijk": [
+                  49,
+                  47,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  47,
+                  25
+                ],
+                "phi": -0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  49,
+                  48,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  48,
+                  25
+                ],
+                "phi": -0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  47,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  50,
+                  47,
+                  25
+                ],
+                "phi": -0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  48,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  50,
+                  48,
+                  25
+                ],
+                "phi": -0.02500000037252903
+              }
+            ],
+            "source_grid_cell_id": 190009
+          },
+          "source_contouring_cell_id": 190009,
+          "source_triangle_id": 7237,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.0003125001490116297,
+          "triangle_vertex_coordinates_m": [
+            [
+              0.25,
+              0.4000000059604645,
+              5.551115123125783e-17
+            ],
+            [
+              0.22499999403953552,
+              0.4000000059604645,
+              5.551115123125783e-17
+            ],
+            [
+              0.22499999403953552,
+              0.375,
+              5.551115123125783e-17
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": []
+        }
+      ]
+    },
+    {
+      "candidate_edge_id": [
+        3405,
+        3549
+      ],
+      "candidate_edge_incidence": 1,
+      "candidate_edge_vertex_coordinates_m": [
+        [
+          0.22499999403953552,
+          0.4000000059604645,
+          5.551115123125783e-17
+        ],
+        [
+          0.25,
+          0.42500001192092896,
+          5.551115123125783e-17
+        ]
+      ],
+      "has_exact_zero_source_cell": true,
+      "has_near_zero_source_cell": true,
+      "minimum_abs_source_node_phi_m": 0.0,
+      "source_triangles": [
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              3292
+            ],
+            [
+              3316
+            ],
+            [
+              3294
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              49,
+              48,
+              24
+            ],
+            [
+              50,
+              48,
+              24
+            ],
+            [
+              50,
+              49,
+              24
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                49,
+                48,
+                23
+              ],
+              [
+                49,
+                48,
+                24
+              ],
+              [
+                49,
+                49,
+                23
+              ],
+              [
+                49,
+                49,
+                24
+              ],
+              [
+                50,
+                48,
+                23
+              ],
+              [
+                50,
+                48,
+                24
+              ],
+              [
+                50,
+                49,
+                23
+              ],
+              [
+                50,
+                49,
+                24
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  48,
+                  23
+                ],
+                "phi": -5.960464122267695e-09
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  49,
+                  48,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  49,
+                  23
+                ],
+                "phi": -0.024999987334012985
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  49,
+                  24
+                ],
+                "phi": -0.024999987334012985
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  50,
+                  48,
+                  23
+                ],
+                "phi": -5.960464122267695e-09
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  48,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  50,
+                  49,
+                  23
+                ],
+                "phi": -6.938893903907228e-18
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  49,
+                  24
+                ],
+                "phi": -0.0
+              }
+            ],
+            "source_grid_cell_id": 182449
+          },
+          "source_contouring_cell_id": 182449,
+          "source_triangle_id": 6603,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.0003125001490116297,
+          "triangle_vertex_coordinates_m": [
+            [
+              0.22499999403953552,
+              0.4000000059604645,
+              5.551115123125783e-17
+            ],
+            [
+              0.25,
+              0.42500001192092896,
+              5.551115123125783e-17
+            ],
+            [
+              0.25,
+              0.4000000059604645,
+              5.551115123125783e-17
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": []
+        }
+      ]
+    },
+    {
+      "candidate_edge_id": [
+        3516,
+        3517
+      ],
+      "candidate_edge_incidence": 1,
+      "candidate_edge_vertex_coordinates_m": [
+        [
+          0.25,
+          0.25,
+          -0.05000000074505806
+        ],
+        [
+          0.25,
+          0.25,
+          -0.02500000037252903
+        ]
+      ],
+      "has_exact_zero_source_cell": true,
+      "has_near_zero_source_cell": true,
+      "minimum_abs_source_node_phi_m": 0.0,
+      "source_triangles": [
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              3244
+            ],
+            [
+              2960
+            ],
+            [
+              2980
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              50,
+              42,
+              22
+            ],
+            [
+              50,
+              42,
+              23
+            ],
+            [
+              50,
+              43,
+              23
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                49,
+                42,
+                22
+              ],
+              [
+                49,
+                42,
+                23
+              ],
+              [
+                49,
+                43,
+                22
+              ],
+              [
+                49,
+                43,
+                23
+              ],
+              [
+                50,
+                42,
+                22
+              ],
+              [
+                50,
+                42,
+                23
+              ],
+              [
+                50,
+                43,
+                22
+              ],
+              [
+                50,
+                43,
+                23
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  42,
+                  22
+                ],
+                "phi": -7.450581263057643e-10
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  42,
+                  23
+                ],
+                "phi": -0.02500000037252903
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  43,
+                  22
+                ],
+                "phi": -7.450581263057643e-10
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  43,
+                  23
+                ],
+                "phi": -0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  42,
+                  22
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  42,
+                  23
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  50,
+                  43,
+                  22
+                ],
+                "phi": -7.450581263057643e-10
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  43,
+                  23
+                ],
+                "phi": -0.0
+              }
+            ],
+            "source_grid_cell_id": 174049
+          },
+          "source_contouring_cell_id": 174049,
+          "source_triangle_id": 6068,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.00031250007916241995,
+          "triangle_vertex_coordinates_m": [
+            [
+              0.25,
+              0.25,
+              -0.02500000037252903
+            ],
+            [
+              0.25,
+              0.25,
+              -0.05000000074505806
+            ],
+            [
+              0.25,
+              0.2750000059604645,
+              -0.02500000037252903
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": [
+            [
+              50,
+              42,
+              23
+            ],
+            [
+              50,
+              42,
+              22
+            ],
+            [
+              50,
+              43,
+              23
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_edge_id": [
+        3516,
+        3522
+      ],
+      "candidate_edge_incidence": 1,
+      "candidate_edge_vertex_coordinates_m": [
+        [
+          0.25,
+          0.25,
+          -0.05000000074505806
+        ],
+        [
+          0.25,
+          0.2750000059604645,
+          -0.02500000037252903
+        ]
+      ],
+      "has_exact_zero_source_cell": true,
+      "has_near_zero_source_cell": true,
+      "minimum_abs_source_node_phi_m": 0.0,
+      "source_triangles": [
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              3244
+            ],
+            [
+              2960
+            ],
+            [
+              2980
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              50,
+              42,
+              22
+            ],
+            [
+              50,
+              42,
+              23
+            ],
+            [
+              50,
+              43,
+              23
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                49,
+                42,
+                22
+              ],
+              [
+                49,
+                42,
+                23
+              ],
+              [
+                49,
+                43,
+                22
+              ],
+              [
+                49,
+                43,
+                23
+              ],
+              [
+                50,
+                42,
+                22
+              ],
+              [
+                50,
+                42,
+                23
+              ],
+              [
+                50,
+                43,
+                22
+              ],
+              [
+                50,
+                43,
+                23
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  42,
+                  22
+                ],
+                "phi": -7.450581263057643e-10
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  42,
+                  23
+                ],
+                "phi": -0.02500000037252903
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  43,
+                  22
+                ],
+                "phi": -7.450581263057643e-10
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  43,
+                  23
+                ],
+                "phi": -0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  42,
+                  22
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  42,
+                  23
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  50,
+                  43,
+                  22
+                ],
+                "phi": -7.450581263057643e-10
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  43,
+                  23
+                ],
+                "phi": -0.0
+              }
+            ],
+            "source_grid_cell_id": 174049
+          },
+          "source_contouring_cell_id": 174049,
+          "source_triangle_id": 6068,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.00031250007916241995,
+          "triangle_vertex_coordinates_m": [
+            [
+              0.25,
+              0.25,
+              -0.02500000037252903
+            ],
+            [
+              0.25,
+              0.25,
+              -0.05000000074505806
+            ],
+            [
+              0.25,
+              0.2750000059604645,
+              -0.02500000037252903
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": [
+            [
+              50,
+              42,
+              23
+            ],
+            [
+              50,
+              42,
+              22
+            ],
+            [
+              50,
+              43,
+              23
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_edge_id": [
+        3517,
+        3522
+      ],
+      "candidate_edge_incidence": 3,
+      "candidate_edge_vertex_coordinates_m": [
+        [
+          0.25,
+          0.25,
+          -0.02500000037252903
+        ],
+        [
+          0.25,
+          0.2750000059604645,
+          -0.02500000037252903
+        ]
+      ],
+      "has_exact_zero_source_cell": true,
+      "has_near_zero_source_cell": true,
+      "minimum_abs_source_node_phi_m": 0.0,
+      "source_triangles": [
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              3244
+            ],
+            [
+              2960
+            ],
+            [
+              2980
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              50,
+              42,
+              22
+            ],
+            [
+              50,
+              42,
+              23
+            ],
+            [
+              50,
+              43,
+              23
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                49,
+                42,
+                22
+              ],
+              [
+                49,
+                42,
+                23
+              ],
+              [
+                49,
+                43,
+                22
+              ],
+              [
+                49,
+                43,
+                23
+              ],
+              [
+                50,
+                42,
+                22
+              ],
+              [
+                50,
+                42,
+                23
+              ],
+              [
+                50,
+                43,
+                22
+              ],
+              [
+                50,
+                43,
+                23
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  42,
+                  22
+                ],
+                "phi": -7.450581263057643e-10
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  42,
+                  23
+                ],
+                "phi": -0.02500000037252903
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  43,
+                  22
+                ],
+                "phi": -7.450581263057643e-10
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  43,
+                  23
+                ],
+                "phi": -0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  42,
+                  22
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  42,
+                  23
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  50,
+                  43,
+                  22
+                ],
+                "phi": -7.450581263057643e-10
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  43,
+                  23
+                ],
+                "phi": -0.0
+              }
+            ],
+            "source_grid_cell_id": 174049
+          },
+          "source_contouring_cell_id": 174049,
+          "source_triangle_id": 6068,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.00031250007916241995,
+          "triangle_vertex_coordinates_m": [
+            [
+              0.25,
+              0.25,
+              -0.02500000037252903
+            ],
+            [
+              0.25,
+              0.25,
+              -0.05000000074505806
+            ],
+            [
+              0.25,
+              0.2750000059604645,
+              -0.02500000037252903
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": [
+            [
+              50,
+              42,
+              23
+            ],
+            [
+              50,
+              42,
+              22
+            ],
+            [
+              50,
+              43,
+              23
+            ]
+          ]
+        },
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              3244
+            ],
+            [
+              2980
+            ],
+            [
+              3253
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              50,
+              42,
+              22
+            ],
+            [
+              50,
+              42,
+              23
+            ],
+            [
+              50,
+              43,
+              23
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                50,
+                42,
+                22
+              ],
+              [
+                50,
+                42,
+                23
+              ],
+              [
+                50,
+                43,
+                22
+              ],
+              [
+                50,
+                43,
+                23
+              ],
+              [
+                51,
+                42,
+                22
+              ],
+              [
+                51,
+                42,
+                23
+              ],
+              [
+                51,
+                43,
+                22
+              ],
+              [
+                51,
+                43,
+                23
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  42,
+                  22
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  42,
+                  23
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  50,
+                  43,
+                  22
+                ],
+                "phi": -7.450581263057643e-10
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  43,
+                  23
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  51,
+                  42,
+                  22
+                ],
+                "phi": -7.450581263057643e-10
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  51,
+                  42,
+                  23
+                ],
+                "phi": -3.469446951953614e-18
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  51,
+                  43,
+                  22
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  51,
+                  43,
+                  23
+                ],
+                "phi": 0.02500000037252903
+              }
+            ],
+            "source_grid_cell_id": 174050
+          },
+          "source_contouring_cell_id": 174050,
+          "source_triangle_id": 6070,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.0003125001490116297,
+          "triangle_vertex_coordinates_m": [
+            [
+              0.25,
+              0.25,
+              -0.02500000037252903
+            ],
+            [
+              0.25,
+              0.2750000059604645,
+              -0.02500000037252903
+            ],
+            [
+              0.2750000059604645,
+              0.25,
+              -0.02500000037252903
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": [
+            [
+              50,
+              42,
+              23
+            ],
+            [
+              50,
+              43,
+              23
+            ],
+            [
+              51,
+              42,
+              23
+            ]
+          ]
+        },
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              3244
+            ],
+            [
+              3516
+            ],
+            [
+              2980
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              50,
+              42,
+              23
+            ],
+            [
+              50,
+              42,
+              24
+            ],
+            [
+              50,
+              43,
+              23
+            ],
+            [
+              50,
+              43,
+              24
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                49,
+                42,
+                23
+              ],
+              [
+                49,
+                42,
+                24
+              ],
+              [
+                49,
+                43,
+                23
+              ],
+              [
+                49,
+                43,
+                24
+              ],
+              [
+                50,
+                42,
+                23
+              ],
+              [
+                50,
+                42,
+                24
+              ],
+              [
+                50,
+                43,
+                23
+              ],
+              [
+                50,
+                43,
+                24
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  42,
+                  23
+                ],
+                "phi": -0.02500000037252903
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  42,
+                  24
+                ],
+                "phi": -0.02500000037252903
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  43,
+                  23
+                ],
+                "phi": -0.02500000037252903
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  43,
+                  24
+                ],
+                "phi": -0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  42,
+                  23
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  42,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  43,
+                  23
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  43,
+                  24
+                ],
+                "phi": -0.0
+              }
+            ],
+            "source_grid_cell_id": 181729
+          },
+          "source_contouring_cell_id": 181729,
+          "source_triangle_id": 6533,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.00031250007916242066,
+          "triangle_vertex_coordinates_m": [
+            [
+              0.25,
+              0.25,
+              -0.02500000037252903
+            ],
+            [
+              0.25,
+              0.25,
+              5.551115123125783e-17
+            ],
+            [
+              0.25,
+              0.2750000059604645,
+              -0.02500000037252903
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": [
+            [
+              50,
+              42,
+              23
+            ],
+            [
+              50,
+              43,
+              23
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_edge_id": [
+        3542,
+        3549
+      ],
+      "candidate_edge_incidence": 3,
+      "candidate_edge_vertex_coordinates_m": [
+        [
+          0.25,
+          0.4000000059604645,
+          5.551115123125783e-17
+        ],
+        [
+          0.25,
+          0.42500001192092896,
+          5.551115123125783e-17
+        ]
+      ],
+      "has_exact_zero_source_cell": true,
+      "has_near_zero_source_cell": true,
+      "minimum_abs_source_node_phi_m": 0.0,
+      "source_triangles": [
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              3292
+            ],
+            [
+              3316
+            ],
+            [
+              3294
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              49,
+              48,
+              24
+            ],
+            [
+              50,
+              48,
+              24
+            ],
+            [
+              50,
+              49,
+              24
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                49,
+                48,
+                23
+              ],
+              [
+                49,
+                48,
+                24
+              ],
+              [
+                49,
+                49,
+                23
+              ],
+              [
+                49,
+                49,
+                24
+              ],
+              [
+                50,
+                48,
+                23
+              ],
+              [
+                50,
+                48,
+                24
+              ],
+              [
+                50,
+                49,
+                23
+              ],
+              [
+                50,
+                49,
+                24
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  48,
+                  23
+                ],
+                "phi": -5.960464122267695e-09
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  49,
+                  48,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  49,
+                  23
+                ],
+                "phi": -0.024999987334012985
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  49,
+                  49,
+                  24
+                ],
+                "phi": -0.024999987334012985
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  50,
+                  48,
+                  23
+                ],
+                "phi": -5.960464122267695e-09
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  48,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  50,
+                  49,
+                  23
+                ],
+                "phi": -6.938893903907228e-18
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  49,
+                  24
+                ],
+                "phi": -0.0
+              }
+            ],
+            "source_grid_cell_id": 182449
+          },
+          "source_contouring_cell_id": 182449,
+          "source_triangle_id": 6603,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.0003125001490116297,
+          "triangle_vertex_coordinates_m": [
+            [
+              0.22499999403953552,
+              0.4000000059604645,
+              5.551115123125783e-17
+            ],
+            [
+              0.25,
+              0.42500001192092896,
+              5.551115123125783e-17
+            ],
+            [
+              0.25,
+              0.4000000059604645,
+              5.551115123125783e-17
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": []
+        },
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              3294
+            ],
+            [
+              3316
+            ],
+            [
+              3287,
+              3293
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              50,
+              48,
+              24
+            ],
+            [
+              50,
+              49,
+              24
+            ],
+            [
+              51,
+              48,
+              24
+            ],
+            [
+              51,
+              49,
+              24
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                50,
+                48,
+                23
+              ],
+              [
+                50,
+                48,
+                24
+              ],
+              [
+                50,
+                49,
+                23
+              ],
+              [
+                50,
+                49,
+                24
+              ],
+              [
+                51,
+                48,
+                23
+              ],
+              [
+                51,
+                48,
+                24
+              ],
+              [
+                51,
+                49,
+                23
+              ],
+              [
+                51,
+                49,
+                24
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": false,
+                "ijk": [
+                  50,
+                  48,
+                  23
+                ],
+                "phi": -5.960464122267695e-09
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  48,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  50,
+                  49,
+                  23
+                ],
+                "phi": -6.938893903907228e-18
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  49,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  51,
+                  48,
+                  23
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  51,
+                  48,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  51,
+                  49,
+                  23
+                ],
+                "phi": 0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  51,
+                  49,
+                  24
+                ],
+                "phi": -0.0
+              }
+            ],
+            "source_grid_cell_id": 182450
+          },
+          "source_contouring_cell_id": 182450,
+          "source_triangle_id": 6605,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.00031250007916242066,
+          "triangle_vertex_coordinates_m": [
+            [
+              0.25,
+              0.4000000059604645,
+              5.551115123125783e-17
+            ],
+            [
+              0.25,
+              0.42500001192092896,
+              5.551115123125783e-17
+            ],
+            [
+              0.25,
+              0.4000000059604645,
+              -0.02500000037252903
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": [
+            [
+              50,
+              48,
+              23
+            ]
+          ]
+        },
+        {
+          "coincident_ply_vertex_instance_ids_per_corner": [
+            [
+              3294
+            ],
+            [
+              3316
+            ],
+            [
+              3586
+            ]
+          ],
+          "exact_zero_grid_nodes_involved_ijk": [
+            [
+              50,
+              48,
+              24
+            ],
+            [
+              50,
+              49,
+              24
+            ],
+            [
+              51,
+              48,
+              24
+            ],
+            [
+              51,
+              49,
+              24
+            ]
+          ],
+          "source_cell": {
+            "contains_exact_zero_grid_node": true,
+            "grid_node_indices_ijk": [
+              [
+                50,
+                48,
+                24
+              ],
+              [
+                50,
+                48,
+                25
+              ],
+              [
+                50,
+                49,
+                24
+              ],
+              [
+                50,
+                49,
+                25
+              ],
+              [
+                51,
+                48,
+                24
+              ],
+              [
+                51,
+                48,
+                25
+              ],
+              [
+                51,
+                49,
+                24
+              ],
+              [
+                51,
+                49,
+                25
+              ]
+            ],
+            "node_phi_values_and_exact_zero": [
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  48,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  50,
+                  48,
+                  25
+                ],
+                "phi": -0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  50,
+                  49,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  50,
+                  49,
+                  25
+                ],
+                "phi": -0.024999987334012985
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  51,
+                  48,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  51,
+                  48,
+                  25
+                ],
+                "phi": -0.02500000037252903
+              },
+              {
+                "exact_zero": true,
+                "ijk": [
+                  51,
+                  49,
+                  24
+                ],
+                "phi": -0.0
+              },
+              {
+                "exact_zero": false,
+                "ijk": [
+                  51,
+                  49,
+                  25
+                ],
+                "phi": -0.024999987334012985
+              }
+            ],
+            "source_grid_cell_id": 190130
+          },
+          "source_contouring_cell_id": 190130,
+          "source_triangle_id": 7254,
+          "touches_exact_zero_grid_node": true,
+          "triangle_area_m2": 0.0003125001490116297,
+          "triangle_vertex_coordinates_m": [
+            [
+              0.25,
+              0.4000000059604645,
+              5.551115123125783e-17
+            ],
+            [
+              0.25,
+              0.42500001192092896,
+              5.551115123125783e-17
+            ],
+            [
+              0.2750000059604645,
+              0.42500001192092896,
+              5.551115123125783e-17
+            ]
+          ],
+          "triangle_vertices_exactly_on_grid_nodes_ijk": []
+        }
+      ]
+    }
+  ],
+  "exact_zero_cell_touch_count": 12,
+  "near_zero_cell_touch_count": 12,
+  "near_zero_threshold_m": 2.9802322831784522e-09,
+  "source_sha256": "3a494d1d330ec6e0f635afea62c4aeaa6aeb1075566871d1354647bbca79cf98"
+}

@@ -1,0 +1,269 @@
+from __future__ import annotations
+
+import hashlib
+import json
+from pathlib import Path
+
+import numpy as np
+from typer.testing import CliRunner
+
+from cfd_sdf.canonical_grid_snapshot import CANONICAL_MASK_IDS, write_canonical_grid_snapshot
+from cfd_sdf.cli import app
+from cfd_sdf.openfoam_grid_transfer import UniformCartesianCellGrid
+from cfd_sdf.problem_spec import load_problem_spec
+
+
+runner = CliRunner()
+PROBLEM_YAML = Path("examples/g2_openfoam_compile/project.yaml")
+SOLVER_ID = "resp_rotated_force"
+
+
+def _field(name: str, values: list[float]) -> str:
+    return (
+        "FoamFile\n{\n    class volScalarField;\n"
+        f"    object {name};\n}}\n\n"
+        "dimensions [0 0 0 0 0 0 0];\n"
+        f"internalField nonuniform List<scalar> {len(values)}\n(\n"
+        + "\n".join(str(value) for value in values)
+        + "\n);\n"
+    )
+
+
+def _labels(values: list[int]) -> str:
+    return (
+        "FoamFile\n{\n    class labelList;\n    object cellProcAddressing;\n}\n\n"
+        f"{len(values)}\n(\n" + "\n".join(str(value) for value in values) + "\n);\n"
+    )
+
+
+def _uniform_alpha(value: float) -> str:
+    return (
+        "FoamFile\n{\n    class volScalarField;\n    object alpha;\n}\n\n"
+        "dimensions [0 0 0 0 0 0 0];\n"
+        f"internalField uniform {value};\n"
+    )
+
+
+def _write_case(tmp_path: Path, *, solver_id: str = SOLVER_ID) -> Path:
+    case = tmp_path / "case"
+    root = case / "processor0"
+    (root / "constant/polyMesh").mkdir(parents=True)
+    (root / "constant/polyMesh/cellProcAddressing").write_text(_labels(list(range(6))), encoding="utf-8")
+    (root / "1").mkdir()
+    (root / f"1/topOSens{solver_id}").write_text(_field(f"topOSens{solver_id}", [1, 2, 3, 4, 5, 6]), encoding="utf-8")
+    (root / "1/alphaTilda").write_text(_field("alphaTilda", [0.1] * 6), encoding="utf-8")
+    (root / "1/beta").write_text(_field("beta", [0.9] * 6), encoding="utf-8")
+    (root / "0").mkdir()
+    (root / "0/alpha").write_text(_uniform_alpha(0.5), encoding="utf-8")
+    (case / "log.adjointOptimisationFoam").write_text(
+        "DILUPBiCGStab:  Solving for Ux, Initial residual = 1e-7, Final residual = 1e-8, No Iterations 1\n"
+        "op1 solution converged in 161 iterations\n"
+        f"Adjoint solver {solver_id}\n"
+        "DILUPBiCGStab:  Solving for Uax, Initial residual = 1e-7, Final residual = 1e-8, No Iterations 1\n"
+        f"{solver_id} solution converged in 713 iterations\n"
+        "\nEnd\n\nFinalising parallel run\n",
+        encoding="utf-8",
+    )
+    optimisation = case / "system" / "optimisationDict"
+    optimisation.parent.mkdir()
+    optimisation.write_text("qualified controls\n", encoding="utf-8")
+    (case / "fixed_grid_primal_case_metadata.json").write_text(
+        json.dumps(
+            {
+                "kind": "fixed_grid_primal_case",
+                "case_dir": str(case.resolve()),
+                "source_solver": {
+                    "audit_only": False,
+                    "adjoint_iterations": None,
+                },
+                "qualification_inputs": {
+                    "optimisation_dict": {
+                        "path": str(optimisation.resolve()),
+                        "sha256": hashlib.sha256(optimisation.read_bytes()).hexdigest(),
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    metadata_path = case / "fixed_grid_primal_case_metadata.json"
+    log_path = case / "log.adjointOptimisationFoam"
+    (case / "fixed_grid_primal_summary.json").write_text(
+        json.dumps(
+            {
+                "kind": "fixed_grid_primal_summary",
+                "case_dir": str(case.resolve()),
+                "status": "converged",
+                "openfoam_run": {
+                    "ok": True,
+                    "returncode": 0,
+                    "dry_run": False,
+                    "timed_out": False,
+                },
+                "qualification_inputs": {
+                    "case_metadata": {
+                        "path": str(metadata_path.resolve()),
+                        "sha256": hashlib.sha256(metadata_path.read_bytes()).hexdigest(),
+                    },
+                    "optimisation_dict": {
+                        "path": str(optimisation.resolve()),
+                        "sha256": hashlib.sha256(optimisation.read_bytes()).hexdigest(),
+                    },
+                    "solver_log": {
+                        "path": str(log_path.resolve()),
+                        "sha256": hashlib.sha256(log_path.read_bytes()).hexdigest(),
+                    },
+                },
+                "fixed_grid_convergence_qualification": {
+                    "qualified": True,
+                    "run_ok": True,
+                    "solver_completed": True,
+                    "solvers": {
+                        "op1": {"qualified": True},
+                        solver_id: {"qualified": True},
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    return case
+
+
+def _write_block_mesh(path: Path) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        """scale 1;
+vertices
+(
+    (-0.2 -0.1 -0.04)
+    (-0.16 -0.1 -0.04)
+    (-0.16 -0.04 -0.04)
+    (-0.2 -0.04 -0.04)
+    (-0.2 -0.1 0)
+    (-0.16 -0.1 0)
+    (-0.16 -0.04 0)
+    (-0.2 -0.04 0)
+);
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (1 3 2) simpleGrading (1 1 1)
+);
+edges
+(
+);
+""",
+        encoding="utf-8",
+    )
+    return path
+
+
+def test_transfer_openfoam_gradient_to_canonical_writes_expected_artifacts(tmp_path: Path) -> None:
+    spec = load_problem_spec(PROBLEM_YAML)
+    grid = UniformCartesianCellGrid(
+        origin=(-0.2, -0.1, -0.04), spacing=(0.02, 0.02, 0.02), cell_shape=(2, 3, 2)
+    )
+    masks = {mask_id: np.ones(grid.cell_count, dtype=np.uint8) for mask_id in CANONICAL_MASK_IDS}
+    snapshot_path = write_canonical_grid_snapshot(spec, grid=grid, masks=masks, path=tmp_path / "snapshot.json")
+
+    case_dir = _write_case(tmp_path)
+    block_mesh = _write_block_mesh(tmp_path / "system/blockMeshDict")
+    mapping_path = tmp_path / "source_global_cell_labels_by_xfastest.npy"
+    np.save(mapping_path, np.asarray([1, 0, 3, 2, 5, 4], dtype=np.int64), allow_pickle=False)
+    output_directory = tmp_path / "canonical_result"
+
+    result = runner.invoke(
+        app,
+        [
+            "transfer-openfoam-gradient-to-canonical",
+            str(case_dir),
+            SOLVER_ID,
+            str(block_mesh),
+            str(snapshot_path),
+            str(PROBLEM_YAML),
+            str(mapping_path),
+            str(output_directory),
+            "--response-id",
+            "rotated_force",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert (output_directory / "canonical_gradient.npz").exists()
+    assert (output_directory / "provenance.json").exists()
+    normalized_output = "".join(result.output.split())
+    assert str(output_directory / "canonical_gradient.npz").replace(" ", "") in normalized_output
+    assert str(output_directory / "provenance.json").replace(" ", "") in normalized_output
+
+    with np.load(output_directory / "canonical_gradient.npz", allow_pickle=False) as payload:
+        assert payload["top_o_sensitivity_gradient"].shape == (grid.cell_count,)
+
+
+def test_transfer_openfoam_gradient_to_canonical_refuses_undeclared_response(tmp_path: Path) -> None:
+    spec = load_problem_spec(PROBLEM_YAML)
+    grid = UniformCartesianCellGrid(
+        origin=(-0.2, -0.1, -0.04), spacing=(0.02, 0.02, 0.02), cell_shape=(2, 3, 2)
+    )
+    masks = {mask_id: np.ones(grid.cell_count, dtype=np.uint8) for mask_id in CANONICAL_MASK_IDS}
+    snapshot_path = write_canonical_grid_snapshot(spec, grid=grid, masks=masks, path=tmp_path / "snapshot.json")
+    case_dir = _write_case(tmp_path)
+    block_mesh = _write_block_mesh(tmp_path / "system/blockMeshDict")
+    mapping_path = tmp_path / "source_global_cell_labels_by_xfastest.npy"
+    np.save(mapping_path, np.asarray([1, 0, 3, 2, 5, 4], dtype=np.int64), allow_pickle=False)
+
+    result = runner.invoke(
+        app,
+        [
+            "transfer-openfoam-gradient-to-canonical",
+            str(case_dir),
+            SOLVER_ID,
+            str(block_mesh),
+            str(snapshot_path),
+            str(PROBLEM_YAML),
+            str(mapping_path),
+            str(tmp_path / "canonical_result"),
+            "--response-id",
+            "downforce",
+        ],
+    )
+
+    assert result.exit_code != 0
+    assert not (tmp_path / "canonical_result").exists()
+
+
+def test_transfer_openfoam_gradient_to_canonical_refuses_mismatched_solver_binding(tmp_path: Path) -> None:
+    """CLI-level regression for the audit's headline defect: response_id="drag"
+    (here "rotated_force") must not accept a gradient reconstructed from a
+    different response's adjoint solver ("resp_yaw_side_force")."""
+
+    spec = load_problem_spec(PROBLEM_YAML)
+    grid = UniformCartesianCellGrid(
+        origin=(-0.2, -0.1, -0.04), spacing=(0.02, 0.02, 0.02), cell_shape=(2, 3, 2)
+    )
+    masks = {mask_id: np.ones(grid.cell_count, dtype=np.uint8) for mask_id in CANONICAL_MASK_IDS}
+    snapshot_path = write_canonical_grid_snapshot(spec, grid=grid, masks=masks, path=tmp_path / "snapshot.json")
+    mismatched_solver_id = "resp_yaw_side_force"
+    case_dir = _write_case(tmp_path, solver_id=mismatched_solver_id)
+    block_mesh = _write_block_mesh(tmp_path / "system/blockMeshDict")
+    mapping_path = tmp_path / "source_global_cell_labels_by_xfastest.npy"
+    np.save(mapping_path, np.asarray([1, 0, 3, 2, 5, 4], dtype=np.int64), allow_pickle=False)
+    output_directory = tmp_path / "canonical_result"
+
+    result = runner.invoke(
+        app,
+        [
+            "transfer-openfoam-gradient-to-canonical",
+            str(case_dir),
+            mismatched_solver_id,
+            str(block_mesh),
+            str(snapshot_path),
+            str(PROBLEM_YAML),
+            str(mapping_path),
+            str(output_directory),
+            "--response-id",
+            "rotated_force",
+        ],
+    )
+
+    assert result.exit_code != 0
+    assert not output_directory.exists()

@@ -1,0 +1,28 @@
+{
+  "criteria_path": "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round2.json",
+  "criteria_round": 2,
+  "criteria_sha256": "dd5121e3fbc9867a6913a2dae03dace90d61c0a6c6ad6e80acf3f7e4457ff3bf",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-v17-candidate-c",
+  "driver_policy": "recorded_not_gated (user decision 2026-10-02); GPU model, CUDA driver API/runtime, Julia, CUDA.jl, WaterLily, source hashes remain gated",
+  "immutable": true,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w3-v17-candidate-c",
+  "numerical_contract_preserved": true,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "registered_before_kaggle_submission": true,
+  "scope": "No solver run and no W3-C verdict; W4-C registration requires actual host-verified W3-C PASS.",
+  "source_commit": "729e86f2d722e7386f50b8cc5c451d5d48fe70da",
+  "supersedes_round1_criteria_sha256": "cff792c51fbb24218bd7f21d336a3d4b704aeb20498d18a9e16976e6a295597e",
+  "validation": {
+    "compileall": "PASS",
+    "diff_check": "PASS",
+    "focused": "10 passed (test_candidate_c_w3_w4_source_prep) + identity 1 file",
+    "full_suite": "1 failed,1374 passed,3 skipped with work/ symlinked; the single failure (test_stage_s_v16_contract_audit::test_build_manifest_refuses_a_pq2_hash_registration_mismatch) is an absolute-path artifact of the symlinked work/ and fails identically without these changes; zero new failures"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "kind": "fd08_v2_formal_amend2_independent_schema_review",
+  "review_role": "Independent Review A — schema/infrastructure",
+  "reviewer_agent": "/root/amend2_schema_review",
+  "verdict": "PASS",
+  "scientific_contract_changed": false,
+  "baseline_commit": "95fda3cf531e6e971b777f62eb71ce8447943465",
+  "baseline_runner_sha256": "43cb6e75f08bf2a3333f0e0827422c041cbe572944bdd7644cf5520616f39baf",
+  "runner_sha256": "d7fe9bc013bf8770c0c34a891be982907295b94f52bd62ce46030b2325a8950a",
+  "registrar_sha256": "b00805dafa86d1c3abe9740575597f665af21ab8dc77f359fc177ca66a18624a",
+  "presolver_builder_sha256": "a0e971704c179c4f207901a93efeaa36a7957064e116cf2b354007749f04448e",
+  "amend1_criteria_sha256": "857c21231eb48708daba784318445c43d115dca48567dfd3378c3ba177bd57fe",
+  "prospective_scientific_content_sha256": "8d76b3b4b5837dda38259d560f163223be92531d83b62236a21f5788a01cdb0f",
+  "checks": {
+    "formal_geometry_read": "PASS: explicit kind dispatch selects geometry, with no fallback alias; missing/non-dict geometry or missing margin threshold fails closed",
+    "r6_geometry_reject_gates_preserved": "PASS: R6 selects geometry_reject_gates; exact preserved mounted-input compatibility passed",
+    "setup_schema_and_execution_preserved": "PASS: setup retains two states, its existing timeout, no geometry requirement, and SETUP_ONLY_COMPLETE/DONE; rehearsal flag rejected for setup",
+    "runner_required_schema_coverage": "PASS: inspected direct and aliased access for immutable/source/canonical/state/runtime/measurement/dataset/output fields; independently mounted AMEND1 54-file payload, verified all 25 states and constructed 25 state environments",
+    "presolver_boundary": "PASS: hook follows actual measured-state argv, environment, timeout and output construction, immediately before command invocation",
+    "upstream_path_preserved": "PASS: criteria/dataset/state integrity, GPU inventory, source checkout and hashes, Julia archive/install/instantiate, Project/Manifest hashes and registered runtime smoke remain upstream of the hook",
+    "default_execution": "PASS: absent or zero flag preserves measurement execution; invalid values fail closed",
+    "scientific_and_payload_preservation": "PASS: exact AMEND1 scientific projection and state inventory equality; archived state bytes copied unchanged",
+    "source_inventory": "PASS: 43 exact-tree entries; 33 old entries outside intended replacements independently matched; unchanged AMEND1 helper dependency retained",
+    "other_schema_mismatch": "PASS: no additional blocking mismatch identified; terminal verifier recursively locates DONE and iterates arbitrary complete source inventory"
+  },
+  "resolved_pre_freeze_finding": {
+    "id": "A-001",
+    "priority": "P2",
+    "initial_registrar_sha256": "ba9f572e000bd29c3d06c6b05678405186ee5a891a434a2fc2ae46c46e74cfcc",
+    "failure": "Standalone test collection raised ModuleNotFoundError: register_fd08_v2_formal before scripts import bootstrap",
+    "resolution": "Added scripts-directory import bootstrap before helper imports; independently retested exact repaired source",
+    "scientific_contract_changed": false
+  },
+  "validation": [
+    {
+      "command": ".venv/bin/python -B -m pytest -q -p no:cacheprovider tests/test_fd08_v2_runner_schema.py tests/test_fd08_v2_formal_amend2.py",
+      "result": "47 passed, 3 skipped in 5.10s",
+      "exit_code": 0
+    },
+    {
+      "command": "Independent archive mount: load_criteria, verify_dataset, validate_state_files and 25 state_env constructions",
+      "result": "PASS for actual immutable AMEND1 input bytes; placeholder GPU UUID used for host schema check"
+    },
+    {
+      "command": "Independent scientific projection and unchanged-source SHA comparison; git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "limitations": [
+    "Review establishes source/schema implementation only; no T4 rehearsal, immutable registration, formal execution or scientific success",
+    "Three committed-source candidate tests, full pytest and actual T4 rehearsal remain parent operational gates",
+    "Host tests mock infrastructure/process boundaries; no actual GPU/runtime verification was claimed",
+    "Hook does not execute measured Julia job internals, simulation construction, warmup or solver",
+    "AMEND2 verifier/analyzer calls must supply explicit new criteria, dataset and evidence paths",
+    "No R6 analyzer, formal force data, solver, Kaggle operation, commit or push performed by reviewer"
+  ],
+  "recording": "Primary faithfully condensed the independent reviewer's final structured report; primary safety conclusion was not supplied to reviewer"
+}

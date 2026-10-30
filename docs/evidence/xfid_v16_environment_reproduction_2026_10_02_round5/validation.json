@@ -1,0 +1,115 @@
+{
+  "checks": {
+    "baseline_failure_count": 37,
+    "baseline_failure_ids_sha256": "71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a",
+    "compileall_command": ".venv/bin/python -m compileall src tests infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/runner.py infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/test_runner.py infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/verify_artifact.py",
+    "compileall_result": "PASS",
+    "diff_check_command": "git diff --check",
+    "diff_check_result": "PASS",
+    "direct_runner_self_check": "PASS",
+    "final_failure_count": 37,
+    "final_full_suite_command": "PYTHONPATH=src .venv/bin/python -m pytest -q --tb=short",
+    "final_full_suite_result": "37 failed, 1291 passed, 5 skipped",
+    "focused_command": "PYTHONPATH=src .venv/bin/python -m pytest -q infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/test_runner.py tests/test_sdf_native_geometry_gates.py",
+    "focused_result": "6 passed",
+    "logs": {
+      "compileall_final": {
+        "encoding": "gzip mtime=0; decompression SHA checked",
+        "retained_path": "docs/evidence/xfid_v16_environment_reproduction_2026_10_02_round5/compileall_final.log.gz",
+        "retained_sha256": "427158affbcb2ccea9b089785a240a7dda39041a4d98fc56fa0444f52b9f5d78",
+        "source_path": "work/issue_45_round5/compileall_final.log",
+        "source_sha256": "c304702758051fb2600e1ad43690f1e689e650d9a29fc96c2fb676117dfdec57"
+      },
+      "embedded_only_selfcheck": {
+        "encoding": "gzip mtime=0; decompression SHA checked",
+        "retained_path": "docs/evidence/xfid_v16_environment_reproduction_2026_10_02_round5/embedded_only_selfcheck_final.log.gz",
+        "retained_sha256": "2fac2e5553e0d060b1fdeea9a99964249c2f7dcaee436d43869880bb2efb851d",
+        "source_path": "work/issue_45_round5/embedded_only_selfcheck_final.log",
+        "source_sha256": "a93d585acb9414a3b6145a810b04b7b4df338ec11769bc92d34c6001643ce698"
+      },
+      "final_full": {
+        "encoding": "gzip mtime=0; decompression SHA checked",
+        "retained_path": "docs/evidence/xfid_v16_environment_reproduction_2026_10_02_round5/final_full_pytest.log.gz",
+        "retained_sha256": "5af6707b4a75356c3b57cc1205292e888ce0466a1e74ae33a3c3a162d655edfe",
+        "source_path": "work/issue_45_round5/final_full_pytest.log",
+        "source_sha256": "747bfc193e3bd1821fb8a6f67de4c15bf2a32227667d823f9fc010dd36ac5db1"
+      },
+      "focused_final": {
+        "encoding": "gzip mtime=0; decompression SHA checked",
+        "retained_path": "docs/evidence/xfid_v16_environment_reproduction_2026_10_02_round5/focused_final.log.gz",
+        "retained_sha256": "174b13e0ceba56d0095b07aaa9d57e45d2b049feeaf846e9c8e383dd403c1c50",
+        "source_path": "work/issue_45_round5/focused_final.log",
+        "source_sha256": "da7f71384179f13072049cc381f9bc734c7005430fdfda5299ec12bbb7c248aa"
+      },
+      "initial_full_before_runner_metadata_fix": {
+        "encoding": "gzip mtime=0; decompression SHA checked",
+        "retained_path": "docs/evidence/xfid_v16_environment_reproduction_2026_10_02_round5/full_pytest.log.gz",
+        "retained_sha256": "78f726b098681c5c8b9b22912987d3d3b7388291ad3286944024bfb835c34878",
+        "source_path": "work/issue_45_round5/full_pytest.log",
+        "source_sha256": "2fcc3634b8dd630e4f272f2b7c040e11b979e0b03c9b629419430de3e9e7899d"
+      },
+      "postfix_premerge_full": {
+        "encoding": "gzip mtime=0; decompression SHA checked",
+        "retained_path": "docs/evidence/xfid_v16_environment_reproduction_2026_10_02_round5/full_pytest_after_source_fix.log.gz",
+        "retained_sha256": "7de557c809cf85b9f145eaa727c24cfd94ca8a5673cdf1d64f5677754132eb57",
+        "source_path": "work/issue_45_round5/full_pytest_after_source_fix.log",
+        "source_sha256": "2229dda09d3672b72d05b2b6236cae5ef07707ca1c85db39a2c4f6df4fae0ace"
+      }
+    },
+    "new_failure_ids": [],
+    "removed_baseline_failure_ids": [],
+    "runner_copied_alone_to_temporary_directory_self_check": "PASS"
+  },
+  "evidence_class": "round5_source_bound_harness_validation",
+  "initial_pre_merge_full_suite": {
+    "new_failure_ids": [
+      "tests/test_sdf_native_geometry_gates.py::test_unresolved_canonical_policy_is_complete_but_not_qualified"
+    ],
+    "note": "The sole added failure was the concurrent #29 test reading a gitignored canonical NPZ. After its committed portable-fixture repair was merged no-ff, the final suite returned to exact baseline IDs.",
+    "result": "38 failed, 1290 passed, 5 skipped"
+  },
+  "integration_branch": "codex/kaggle-batch-migration",
+  "limitations": [
+    "No Kaggle submission was made.",
+    "No apt installation, meshing, or solver execution occurred.",
+    "This establishes local source/harness contract checks only; it does not reproduce the Stage V environment or qualify XFID."
+  ],
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "round4_unchanged_contract_assertions": {
+    "apt_package_lock_equal": true,
+    "case_file_count": 13,
+    "case_template_file_hashes_equal": true,
+    "fixture_declared_input_hashes_match_round5_bytes": true,
+    "fixture_file_count": 3,
+    "fixture_file_hashes_equal": true,
+    "force_and_response_thresholds_changed": false,
+    "host_verifier_bytes_equal": true,
+    "numerical_gates_equal": true,
+    "observed_environment_equal": true
+  },
+  "round5_source": {
+    "criteria_sha256": "7d5215fd3ba681230ffe183952a8e2a91cca1cbb6fc06eecaa85ff6cd67c2867",
+    "focused_test_sha256": "094604761b1c1b5c18e9e267d6936520b1ab9fd3db0473bc72f6aabc6085e0d5",
+    "kernel_metadata_sha256": "28ffa72c980ac0e0b833423a6060c5cc6de5bfec701abf3de71e4d8dfc30d4e8",
+    "package_lock_sha256": "b5e59f8a7da34820fc3c6bda93b3524204dcaf4fa6e4f7f11d6c46ddddb66746",
+    "runner_sha256": "19e336893f7b9dc8f1c84503a1218d654fa50eb8b3b3ba4d1530eedfa80f3195",
+    "verifier_sha256": "d4c3a765611f4bcfae4f9b71dbc296fb375fdfbaad11b1a2e799a6010a48207b"
+  },
+  "round_id": "v16_environment_reproduction_r5_jammy_noninteractive_version",
+  "runtime_fix_regression": {
+    "exact_package_aliases_file_sha256": "281b1d4efb094b7fe3a8ee3fae73e822fc084ae7ccfa31609467f7f58661ec09",
+    "new_probe": "OpenFOAM-v2512",
+    "noninteractive_old_probe_returncode": 127,
+    "recorded_version_command_uses_same_shared_command_as_subprocess": true,
+    "round4_failure_package_shell_sources_path": "docs/evidence/xfid_v16_environment_reproduction_2026_10_02_round4/terminal_failure_kernel_v3/package_shell_sources"
+  },
+  "submission_or_solver_execution": false,
+  "work_branch": "feat/issue-45-kaggle-openfoam"
+}

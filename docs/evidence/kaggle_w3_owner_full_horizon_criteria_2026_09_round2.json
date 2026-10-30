@@ -1,0 +1,412 @@
+{
+  "arm_order": [
+    "A-natural",
+    "A-forced",
+    "B-natural-1",
+    "B-natural-2",
+    "B-forced-1",
+    "B-forced-2"
+  ],
+  "arm_semantics": {
+    "A-forced": "same retained owner and exact forced-GC bracket as B-forced arms; owner retention isolates the GC intervention",
+    "A-natural": "structurally retain backing DeviceGridSDF owner for full horizon; automatic GC enabled; no explicit GC",
+    "B-forced-1/B-forced-2": "same unrooted helper boundary, automatic GC suppressed during setup/warmup, then registered two-call forced-GC bracket after warmup step 1; diagnostic causal control only",
+    "B-natural-1/B-natural-2": "production-equivalent helper boundary returns only bodies/simulation/WeakRef; no strong owner reference; ordinary automatic GC; independent Julia process per replicate; no explicit GC",
+    "production_equivalence": "same canonical input, DeviceGridSDF->CuDeviceArray mapping, v16 bodies, WaterLily simulation and sim_step! sequence, warm-up, tU/L=120 loop, force body/signs, stride and time window as the pinned W3 production job; no production source edits"
+  },
+  "backend": {
+    "compute_capability": "7.5.0",
+    "cuda_driver_api_version": "13.3.0",
+    "cuda_jl_version": "6.3.1",
+    "cuda_runtime_version": "12.8.0",
+    "cuda_visible_devices": "0",
+    "cudacore_version": "6.3.1",
+    "driver_version": "580.159.04",
+    "gpu_count": 2,
+    "gpu_name": "Tesla T4",
+    "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+    "julia_threads": 1,
+    "julia_version": "1.12.6",
+    "machine_shape": "NvidiaTeslaT4",
+    "selected_gpu_policy": "visible GPU index 0; record runtime UUID",
+    "waterlily_backend": "KernelAbstractions",
+    "waterlily_version": "1.8.0"
+  },
+  "causal_decision_rules": {
+    "exact_zero_definition": "all sampled total, pressure, viscous, drag and downforce components are finite and exactly numerically zero",
+    "force_component_absolute_tolerance": 1e-08,
+    "force_component_relative_tolerance": 1e-06,
+    "force_divergence_absolute_tolerance": 1e-08,
+    "force_divergence_relative_tolerance": 1e-06,
+    "forced_gc_role": "B-forced can corroborate the mechanism but cannot by itself satisfy the production-fix gate or prove ordinary-GC causation",
+    "full_horizon_v4_correspondence": "full horizon reaches tU/L>=120, all raw force components exactly zero across the history, finite endpoint velocity and pressure, and at least the registered minimum count of post-collection force samples",
+    "if_natural_owner_not_collected": "do not apply a production fix based on forced-only results; classify ordinary-GC hypothesis as weakened and preserve the exact W3 v4 cause as open",
+    "minimum_post_collection_force_samples": 4,
+    "owner_lifetime_bug_confirmed": "A-natural and A-forced both retain the backing owner and complete the full horizon with finite fields and nonzero forces; both independent B-natural replicates complete the full horizon, observe owner collection, and show at least the registered number of post-collection samples with reproducible corruption beginning after collection; pre-collection force samples, when present, match A-natural within the registered W3 component tolerances; both B-natural replicates have the same post-collection failure class",
+    "strong_w3_v4_root_cause_support": "owner-lifetime implementation-bug rule passes and both B-natural replicates reproduce the exact full-horizon zero-force/finite-field W3 v4 failure class while A controls remain nonzero and finite",
+    "threshold_policy": "all force component and divergence tolerances are inherited unchanged from immutable W3 round-3 criteria; no post-measurement threshold adjustment"
+  },
+  "claim_scope": "test whether backing CuArray owner collection reproduces the W3 v4 all-zero force history on the exact registered full-horizon WaterLily path; no primal qualification",
+  "comparison_production_source": {
+    "production_job_path": "scripts/waterlily_w3_v16_primal_job.jl",
+    "production_job_sha256": "5fc5e1006e8f39ccde40a7820665f1ab03cae9e062762a59fc6585e395e8f142",
+    "same_as_immutable_w3_round3_job": true,
+    "w3_v4_all_total_pressure_viscous_force_components_exact_zero": true,
+    "w3_v4_force_rows": 481,
+    "w3_v4_observed_solver_steps": 3841,
+    "w3_v4_observed_t_u_l": 120.015625,
+    "w3_v4_source_commit": "5e985fa3395a01228c18910d96e09ecbc5497628",
+    "w3_v4_velocity_pressure_finite": true
+  },
+  "criteria_dataset_id": "ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-criteria-round2",
+  "criteria_id": "kaggle_w3_owner_full_horizon_2026_09_round2",
+  "evidence_output": {
+    "artifact_schema": [
+      "fingerprint.json",
+      "execution.json",
+      "input_mount_inventory.json",
+      "per-arm summary/force/progress/field/probe/memory/log files",
+      "sha256.json",
+      "DONE or ERROR.txt"
+    ],
+    "qualification": false,
+    "qualification_flags": {
+      "grid_response_qualified": false,
+      "physical_profile_qualified": false,
+      "sdf_gradient_qualified": false,
+      "shape_update_allowed": false,
+      "topology_birth_qualified": false,
+      "waterlily_reverse_cpu_qualified": false,
+      "waterlily_reverse_cuda_qualified": false,
+      "waterlily_v16_primal_qualified": false
+    }
+  },
+  "evidence_type": "diagnostic_only",
+  "fixture": {
+    "body_composition": "canonical v16 candidate plus registered moving-ground half-space",
+    "boundary_semantics": "unchanged native WaterLily 1.8.0 finite-box adapter; not equivalent to OpenFOAM per-patch freestream pressure/velocity",
+    "candidate_force_body": "canonical candidate GridSDF only; do not integrate auxiliary moving ground",
+    "candidate_probe_points": [
+      {
+        "canonical_index_1based": [
+          16,
+          16,
+          10
+        ],
+        "flow_solver": [
+          45.0,
+          23.000001907348633,
+          15.0
+        ],
+        "name": "candidate_min_phi",
+        "world_m": [
+          -0.25,
+          -0.05000000074505806,
+          -0.15000000596046448
+        ]
+      },
+      {
+        "canonical_index_1based": [
+          16,
+          9,
+          11
+        ],
+        "flow_solver": [
+          45.0,
+          16.000001907348633,
+          15.999999046325684
+        ],
+        "name": "candidate_surface_min_abs_phi",
+        "world_m": [
+          -0.25,
+          -0.4000000059604645,
+          -0.10000000149011612
+        ]
+      },
+      {
+        "canonical_index_1based": [
+          11,
+          8,
+          8
+        ],
+        "flow_solver": [
+          40.0,
+          15.000000953674316,
+          12.999999046325684
+        ],
+        "name": "candidate_nearest_positive",
+        "world_m": [
+          -0.5,
+          -0.44999998807907104,
+          -0.25
+        ]
+      },
+      {
+        "canonical_index_1based": [
+          0,
+          0,
+          0
+        ],
+        "flow_solver": [
+          50.0,
+          24.0,
+          18.0
+        ],
+        "name": "world_origin",
+        "world_m": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "canonical_phi_margin_m": 0.3499999939931499,
+    "canonical_sdf_origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "density_kg_m3": 1.0,
+    "downforce_projection": "-Fz_body",
+    "drag_projection": "+Fx_body",
+    "flow_dims": [
+      100,
+      48,
+      36
+    ],
+    "flow_origin_m": [
+      -2.5,
+      -1.2,
+      -0.9
+    ],
+    "flow_upper_m": [
+      2.5,
+      1.2,
+      0.9
+    ],
+    "force_scale_n_per_solver_unit": 0.0025000000000000005,
+    "freestream_mps": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "point_shape": [
+      61,
+      33,
+      25
+    ],
+    "reference_area_m2": 0.64,
+    "reynolds": 80.0,
+    "solver_length": 16.0,
+    "solver_viscosity": 0.19999999999999996,
+    "spacing_m": 0.05
+  },
+  "immutable": true,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-diagnostic",
+  "kernel_version": 2,
+  "measurement": {
+    "candidate_sdf_normal_probes": "at first observed collection and full-horizon endpoint; four preregistered world points from unchanged canonical phi plus registered flow-origin mapping",
+    "cuda_memory_sampling": "after warm-up, every 50 steps, and at full-horizon endpoint",
+    "endpoint_policy": "if exact 80 or 120 samples are absent, linearly interpolate from bracketing raw force samples",
+    "finite_field_snapshots": "at first observed collection and full-horizon endpoint; summarize finite flags and min/max/mean for velocity and pressure",
+    "force_sample_stride_steps": 8,
+    "force_window_t_u_l": [
+      80.0,
+      120.0
+    ],
+    "host_recompute_absolute_tolerance": 1e-10,
+    "host_recompute_absolute_tolerance_precedent": "inherited unchanged from scripts/verify_kaggle_w3_v16.py",
+    "host_recompute_relative_tolerance": 1e-09,
+    "integration": "trapezoidal time-weighted means on exact [80,120], [80,100], and [100,120] intervals",
+    "kernel_runtime_limit_s": 7200,
+    "minimum_t_u_l": 120.0,
+    "minimum_window_samples": 4,
+    "owner_weakref": "observe backing owner.grid.phi after each sim_step!, after the production force and CUDA memory sampling operations; never promote the WeakRef target to a retained local",
+    "per_arm_runtime_limit_s": 1800,
+    "pressure_viscous_projection": "pressure=-WaterLily.pressure_force; viscous=-WaterLily.viscous_force; total=pressure+viscous",
+    "target_t_u_l": 120.0,
+    "warmup": "one sim_step! before timed horizon, same as W3 production job"
+  },
+  "prior_evidence": {
+    "owner_full_horizon_round1_criteria": {
+      "path": "docs/evidence/kaggle_w3_owner_full_horizon_criteria_2026_09.json",
+      "sha256": "ea076b8bf0f01a67f99962c834b38fccd0dd76d7988e1e230238f90abde78577",
+      "sidecar_sha256": "eff48c89b37a91d694179a4e51d25fdcc15648c3a7e65d24b0821e8da622c0ad"
+    },
+    "owner_lifetime_round4_criteria": {
+      "path": "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round4.json",
+      "sha256": "58867bf2e68e989200edb39b401f8db2f52df340db2d84534853dad01679530e",
+      "sidecar_sha256": "0637966ce609c452797241e42498e6503a02dde6ba09298b93e692ac5373f3c0"
+    },
+    "owner_lifetime_v7_host_correction": {
+      "path": "docs/evidence/kaggle_w3_v16_cuda_diagnostic_version7_host_correction_2026_09.json",
+      "sha256": "53900176b17b0f91a0513c40b531ad538ae028da0b13034244d7fe6ea939ba6c",
+      "sidecar_sha256": "a96616d0f4a2c5896abbf54f2bb58798d541c9689a7e48dedc2768e8d34f116e"
+    },
+    "owner_lifetime_v7_result": {
+      "path": "docs/evidence/kaggle_w3_v16_cuda_diagnostic_version7_2026_09.json",
+      "sha256": "66dd9396967f95ef92cb682b24ed14ac4a56345b12cfb2d38f67d4e5bbbb63c3",
+      "sidecar_sha256": "3bb9ff86ba136f47c23ca167945f171f71130a045ac9a22bc2990b00c47c550f"
+    },
+    "type_probe_round1_diagnostic": {
+      "path": "docs/evidence/kaggle_w3_owner_type_probe_version1_diagnostic_2026_09.json",
+      "sha256": "e7174210c6fc15f62e19918cd476425f999653c14fd274d084d63e4a904e1816",
+      "sidecar_sha256": "5a5d3724ab410a03221ea4a95bdad33d148b1d74d66cfce50ea9b0ade5987b50"
+    },
+    "type_probe_round2_criteria": {
+      "path": "docs/evidence/kaggle_w3_owner_type_probe_criteria_2026_09_round2.json",
+      "sha256": "2a332a1e5cbbdf82ba31f684d00a8a859a5b8a460ebf767a3c6a6efd62149a79",
+      "sidecar_sha256": "e30dd216ba02f28081b6e15a154434e2e89e22494fb545e4d79dbe38a1a5be2d"
+    },
+    "type_probe_round2_result": {
+      "path": "docs/evidence/kaggle_w3_owner_type_probe_result_2026_09.json",
+      "sha256": "91667c7dc783bd7f8f05dd8b2b596ec6242c2c887f60c8f7d142f4c53ea67fb6",
+      "sidecar_sha256": "5b2b0275689b13240edf135270a96de7adb4c9337eeb9c75ceab9e2ef716055b"
+    },
+    "w3_v4_fixture_mapping_followup": {
+      "path": "docs/evidence/kaggle_w3_v16_primal_version4_followup_diagnostic_2026_09.json",
+      "sha256": "360f7b12f4090fe9447d9aa3b1a13cce9d3e7fc58998329cb1a9884faddf2ac5",
+      "sidecar_sha256": "aba5f47b11f8cfbd352835fcdfb38c55c3791d7fbf6d3d632e9972f8ed662751"
+    },
+    "w3_v4_zero_force_diagnostic": {
+      "path": "docs/evidence/kaggle_w3_v16_primal_version4_diagnostic_2026_09.json",
+      "sha256": "1a22808509795a2735589743817fe2287014d7fbce7944492cd7e19bf4d4f51d",
+      "sidecar_sha256": "4260a660cfb651daa7ef68283620ec4dbaf9808b6a0a64ee52239d11de38da34"
+    }
+  },
+  "registered_before_computation": true,
+  "round": 2,
+  "round_reason": "round 1 was submitted under the title-derived Kaggle slug, which differed from the registered kernel-metadata id; round 2 binds the exact observed slug and changes no solver semantics, thresholds, arms, inputs, or measurement rules",
+  "schema_version": 1,
+  "source_branch": "codex/kaggle-batch-migration",
+  "source_commit": "274bd0badb90cddde54b42e2a9dfc41c9ff2dbf7",
+  "source_files": {
+    "cfd_sdf_module": {
+      "path": "julia/CFDSDFWaterLily/src/CFDSDFWaterLily.jl",
+      "sha256": "996224432490df72726e208ad36d1a68657b506ba4058d79a0f9eb72154d4e9e"
+    },
+    "criteria_registrar": {
+      "path": "scripts/register_kaggle_w3_owner_full_horizon_2026_09.py",
+      "sha256": "5d5c92c0adff70d92f1d1bb4e6e985ede0d4f6d56e14f651c196b27a403d9166"
+    },
+    "dataset_preparer": {
+      "path": "scripts/prepare_kaggle_w3_owner_full_horizon_dataset_2026_09.py",
+      "sha256": "f978739753f1aeec89b1769491a4a698296e6a4c08319c34f926a6f546766e9c"
+    },
+    "device_grid_sdf": {
+      "path": "julia/CFDSDFWaterLily/src/DeviceGridSDF.jl",
+      "sha256": "2f02c840f4fad5ba5d26d42f4c24bc83f413502b15487427a7dc52f06a80a874"
+    },
+    "forces": {
+      "path": "julia/CFDSDFWaterLily/src/Forces.jl",
+      "sha256": "0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e"
+    },
+    "grid_sdf_body": {
+      "path": "julia/CFDSDFWaterLily/src/GridSDFBody.jl",
+      "sha256": "fa6aecccecbf140158396c9c8e5f3a6c16d3810f792ba45b9c8f4ee481709058"
+    },
+    "host_verifier": {
+      "path": "scripts/verify_kaggle_w3_owner_full_horizon.py",
+      "sha256": "3a9285e0b82eb42d51707bec13eb215994e5e46f4e64dab4ade968f5f78aefba"
+    },
+    "job": {
+      "path": "scripts/waterlily_w3_v16_owner_full_horizon_job.jl",
+      "sha256": "a89fef84938c52f251d9ff603ecd6ec796c5242497c14df2b8538ed31dbfc978"
+    },
+    "kernel_metadata": {
+      "path": "infra/kaggle/kernel_w3_owner_full_horizon/kernel-metadata.json",
+      "sha256": "6acba15eb09369f80c45d4336e80ae79c009e8a5b56461b2946779123de1eb24"
+    },
+    "manifest": {
+      "path": "julia/CFDSDFWaterLilyT4/Manifest.toml",
+      "sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707"
+    },
+    "production_w3_job": {
+      "path": "scripts/waterlily_w3_v16_primal_job.jl",
+      "sha256": "5fc5e1006e8f39ccde40a7820665f1ab03cae9e062762a59fc6585e395e8f142"
+    },
+    "project": {
+      "path": "julia/CFDSDFWaterLilyT4/Project.toml",
+      "sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
+    },
+    "python_tests": {
+      "path": "tests/test_kaggle_w3_owner_full_horizon.py",
+      "sha256": "cb6909c9d8532cb4941dfe8830d16dab603b9274b8a3ba6569b2cc40b1519644"
+    },
+    "runner": {
+      "path": "infra/kaggle/kernel_w3_owner_full_horizon/runner.py",
+      "sha256": "2bad91827e6e7d502b0aea2d700dd14b6daf13622b107068b2bf025103209537"
+    },
+    "runtime": {
+      "path": "julia/CFDSDFWaterLily/src/Runtime.jl",
+      "sha256": "bd830f7f307f7bd5de67642b4e9243ae5586959fd475765b13ef14d19637d458"
+    },
+    "simulation": {
+      "path": "julia/CFDSDFWaterLily/src/Simulation.jl",
+      "sha256": "99cfc7a30741c17b7e83f4451270e0536e336dd2c79cc1f904492910e8588cc2"
+    },
+    "t4_smoke": {
+      "path": "scripts/w0b_t4_smoke.jl",
+      "sha256": "7c6fef06d3c5fb8dc29ca7461ae599761c37c4d0d3eb878fd30e4beb0d794666"
+    },
+    "v16_profile": {
+      "path": "julia/CFDSDFWaterLily/src/V16PhysicalProfile.jl",
+      "sha256": "eaae3ca4db17e2d69b73a16626ac6a99f47b85dd892cba005eb93da361403b1c"
+    },
+    "waterlily_body": {
+      "path": "julia/CFDSDFWaterLily/src/WaterLilyBody.jl",
+      "sha256": "e5b9329fbf29bc86fa1eb1a5481b255535e255e04418d0d2582f1d33e42df369"
+    }
+  },
+  "type_probe_prerequisite": {
+    "criteria_id": "kaggle_w3_owner_type_probe_2026_09_round2",
+    "criteria_path": "docs/evidence/kaggle_w3_owner_type_probe_criteria_2026_09_round2.json",
+    "criteria_sha256": "2a332a1e5cbbdf82ba31f684d00a8a859a5b8a460ebf767a3c6a6efd62149a79",
+    "criteria_sidecar_sha256": "e30dd216ba02f28081b6e15a154434e2e89e22494fb545e4d79dbe38a1a5be2d",
+    "exact_identity_claim": "CUDA.DeviceMemory is defined and identical by === to the owner array's third type parameter, CUDACore.DeviceMemory, on the registered Julia 1.12.6 / CUDA.jl 6.3.1 / CUDACore 6.3.1 T4 runtime",
+    "exact_kernel_ref": "ramhachi888/cfd-opt-sdf-w3-owner-type-probe/2",
+    "host_verifier_sha256": "0a2cfe9fe18b7b4ef94e22d57f9758e3162fffeb6f44bafc596f711f6e383477",
+    "kaggle_log_sha256": "80cb33c2e83a6f13182d5c47da8ad07715dce75d6c003eb4f39f6fd444c93cb7",
+    "output_manifest_sha256": "4769c6fc18f4c8b4402420b2301228e16c4405a7c097a519aa0ec8a1bd84654d",
+    "result_path": "docs/evidence/kaggle_w3_owner_type_probe_result_2026_09.json",
+    "result_sha256": "91667c7dc783bd7f8f05dd8b2b596ec6242c2c887f60c8f7d142f4c53ea67fb6",
+    "result_sidecar_sha256": "5b2b0275689b13240edf135270a96de7adb4c9337eeb9c75ceab9e2ef716055b",
+    "runtime_type_identity": {
+      "cuda_device_memory_defined": true,
+      "cuda_device_memory_is_module_binding": true,
+      "cuda_device_memory_is_parameter": true,
+      "eltype": "Float32",
+      "memory_module": {
+        "module": "CUDACore",
+        "module_fullname": "CUDACore",
+        "package_name": "CUDACore",
+        "package_uuid": "bd0ed864-bdfe-4181-a5ed-ce625a5fdea2",
+        "package_version": "6.3.1"
+      },
+      "memory_parameter": "CUDACore.DeviceMemory",
+      "memory_parameter_type": "DataType",
+      "module_device_memory_defined": true,
+      "module_device_memory_is_parameter": true,
+      "ndims": 3,
+      "size": [
+        61,
+        33,
+        25
+      ],
+      "type": "CuArray{Float32, 3, CUDACore.DeviceMemory}"
+    }
+  },
+  "w3_input": {
+    "canonical_npz_sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe",
+    "criteria_path": "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json",
+    "criteria_sha256": "f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2",
+    "criteria_sidecar_sha256": "dcb5a919575f495d53e67cb950bd4f5a3326e85d9be5131e68c6c892d6a04b05",
+    "dataset_id": "ramhachi888/cfd-opt-sdf-v16-genesis-state",
+    "dataset_manifest_sha256": "17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b",
+    "design_domain_sha256": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446",
+    "phi_c_order_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+    "phi_fortran_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+    "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8"
+  }
+}

@@ -1,0 +1,4288 @@
+{
+  "basis_order": [
+    "D0_interface_offset",
+    "D1_filtered_seed11",
+    "D2_filtered_seed2026",
+    "P1_upstream_lobe"
+  ],
+  "blockers": [],
+  "contract": {
+    "contract_id": "opt01_v1_1_phi_space_dual_grid_update_2026_10_15",
+    "path": "docs/evidence/opt01_v1_2026_10_15/opt01_v1_1_contract.json",
+    "pins_verified": 21,
+    "sha256": "0f164a4e555d6a2169fc5e30b6e2cf12957da76d1d1560f05121d3e3efbf0ba1"
+  },
+  "directions": {
+    "D0_interface_offset": {
+      "path": "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D0_interface_offset.dir_f4_fortran.raw",
+      "sha256_fortran_raw": "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549"
+    },
+    "D1_filtered_seed11": {
+      "path": "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D1_filtered_seed11.dir_f4_fortran.raw",
+      "sha256_fortran_raw": "96fe6e62c5fcb7ad0108dd64d6fac68cc488ee49deb188be742530f828037a87"
+    },
+    "D2_filtered_seed2026": {
+      "path": "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D2_filtered_seed2026.dir_f4_fortran.raw",
+      "sha256_fortran_raw": "2a22eb09407a14755f495fa07d4df8dee2d4632db41a0b75d1bf744fd3d1d5de"
+    },
+    "P1_upstream_lobe": {
+      "path": "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/P1_upstream_lobe.dir_f4_fortran.raw",
+      "sha256_fortran_raw": "24cc06aeb18e2a5729e560636f13ce78f8f19746268699783e8498921aec5dcc"
+    }
+  },
+  "gate_scope": {
+    "probe": {
+      "hard_before_cfd": "the other twelve GEOM-02 profile v2 gates, P22-v2 (N_phi <= 8272 with a positive count-equal margin), the retained LOWDIM gates, allowed_events = ()",
+      "report_only": [
+        "near_zero_gradient_band"
+      ],
+      "states": "secant probe states (Stage A +-1.25 mm perturbations): measurement points, never proposed or accepted"
+    },
+    "proposal": {
+      "hard_before_cfd": "the full bundle: all thirteen GEOM-02 profile v2 gates including the crossing-slope near_zero_gradient_band, P22-v2, the retained LOWDIM gates",
+      "ladder_step_failure": "a ladder step failing any hard gate (including crossing-slope) is a REJECT of that step (E4/E5 unchanged)",
+      "states": "the parent and every Stage B ladder step (proposed or accepted states)"
+    },
+    "reported_for_probes": "near_zero_gradient_band failing-node counts with their attribution to the baseline |phi| < 1e-6 tie plateau",
+    "source": "plan Amendment 2 F1-F3"
+  },
+  "geometry_gate_base": "canonical v17 baseline (smoothed_volume_band) and the new parent (GEOM-02 transition)",
+  "grids": {
+    "a": {
+      "baseline_reference": {
+        "force_scale_n_per_solver_force": 0.0011111111111111111,
+        "forces_csv_path": "docs/evidence/lowdim04b_stage_b_2026_10_13/kernel_output/lowdim04b_a/states/lowdim04b__prop__s0.3125mm/flow_24.forces.csv",
+        "forces_csv_sha256": "e62b6babf8ffc5c3bd361de6d2ddcae8e047d8554db3a825a84d8c885f6a332e",
+        "host_recomputed_n": {
+          "downforce": 0.3318793344262274,
+          "drag": 0.3237167820782731
+        },
+        "role": "retained LOWDIM-04B prop s0.3125 mm run of the identical phi bytes (the new parent)"
+      },
+      "case_id": "flow_24",
+      "job": "scripts/waterlily_xfid_candidate_c_job.jl",
+      "measurement": {
+        "aggregate_solver_time_definition": "sum of registered per-state Julia wall_seconds excluding each state's first compile/warmup step, consistent with the bound W4 job",
+        "candidate_operator": "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))",
+        "case": {
+          "case_id": "flow_24",
+          "density_kg_m3": 1.0,
+          "dynamic_viscosity_pa_s": 0.01,
+          "flow_dims": [
+            150,
+            72,
+            54
+          ],
+          "flow_spacing_m": 0.03333333333333333,
+          "freestream_mps": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "precedent_criteria_path": "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10_round2.json",
+          "precedent_criteria_sha256": "09e25e88767110312a134de8c10f3c2668a4d7f9a2f29829d163c72a1f5f3ef1",
+          "reference_area_m2": 0.64,
+          "reference_length_m": 0.8,
+          "reynolds": 80.0,
+          "solver_length": 24.0,
+          "solver_time_unit_s": 0.03333333333333333,
+          "solver_viscosity": 0.3
+        },
+        "case_id": "flow_24",
+        "force_unit": "N",
+        "kernel_execution_allowance_s": 10800,
+        "per_state_timeout_s": 900,
+        "qualification_claim": "bounded OPT-01 v1 Stage A local dual-grid model evidence; no qualification",
+        "solver_wall_time_cap_s": 8100,
+        "time_window_t_u_l": [
+          80.0,
+          120.0
+        ]
+      }
+    },
+    "b": {
+      "baseline_reference": {
+        "force_scale_n_per_solver_force": 0.0006250000000000001,
+        "forces_csv_path": "docs/evidence/lowdim04b_stage_b_2026_10_13/kernel_output/lowdim04b_b/states/lowdim04b__prop__s0.3125mm/flow_32.forces.csv",
+        "forces_csv_sha256": "282aceed7ba22a8dbd0c2115f6937f636dcdd0bf336296694faea087029f09b2",
+        "host_recomputed_n": {
+          "downforce": 0.3617803467641676,
+          "drag": 0.34995220207309585
+        },
+        "role": "retained LOWDIM-04B prop s0.3125 mm run of the identical phi bytes (the new parent)"
+      },
+      "case_id": "flow_32",
+      "job": "scripts/waterlily_lowdim02_flow32_job.jl",
+      "measurement": {
+        "aggregate_solver_time_definition": "sum of registered per-state Julia wall_seconds excluding each state's first compile/warmup step, consistent with the bound W4 job",
+        "candidate_operator": "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))",
+        "case": {
+          "case_id": "flow_32",
+          "density_kg_m3": 1.0,
+          "dynamic_viscosity_pa_s": 0.01,
+          "flow_dims": [
+            200,
+            96,
+            72
+          ],
+          "flow_spacing_m": 0.025,
+          "freestream_mps": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "precedent_criteria_path": "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10_round2.json",
+          "precedent_criteria_sha256": "09e25e88767110312a134de8c10f3c2668a4d7f9a2f29829d163c72a1f5f3ef1",
+          "reference_area_m2": 0.64,
+          "reference_length_m": 0.8,
+          "reynolds": 80.0,
+          "solver_length": 32.0,
+          "solver_time_unit_s": 0.025,
+          "solver_viscosity": 0.4
+        },
+        "case_id": "flow_32",
+        "force_unit": "N",
+        "kernel_execution_allowance_s": 10800,
+        "per_state_timeout_s": 900,
+        "qualification_claim": "bounded OPT-01 v1 Stage A local dual-grid model evidence; no qualification",
+        "solver_wall_time_cap_s": 8100,
+        "time_window_t_u_l": [
+          80.0,
+          120.0
+        ]
+      }
+    }
+  },
+  "job_env_common": {
+    "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+    "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+    "W4_CANONICAL_STATE_LABEL": "v17",
+    "W4_CELL_SHAPE": "120,64,48",
+    "W4_MARGIN_GATE_M": "0.15",
+    "W4_MARGIN_TOLERANCE_M": "1e-6",
+    "W4_POINT_SHAPE": "121,65,49",
+    "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+  },
+  "kernels": {
+    "a": [
+      "opt01a__parent",
+      "opt01a__D0_interface_offset__minus1.25mm",
+      "opt01a__D0_interface_offset__plus1.25mm",
+      "opt01a__D1_filtered_seed11__minus1.25mm",
+      "opt01a__D1_filtered_seed11__plus1.25mm",
+      "opt01a__D2_filtered_seed2026__minus1.25mm",
+      "opt01a__D2_filtered_seed2026__plus1.25mm",
+      "opt01a__P1_upstream_lobe__minus1.25mm",
+      "opt01a__P1_upstream_lobe__plus1.25mm"
+    ],
+    "b": [
+      "opt01a__parent",
+      "opt01a__D0_interface_offset__minus1.25mm",
+      "opt01a__D0_interface_offset__plus1.25mm",
+      "opt01a__D1_filtered_seed11__minus1.25mm",
+      "opt01a__D1_filtered_seed11__plus1.25mm",
+      "opt01a__D2_filtered_seed2026__minus1.25mm",
+      "opt01a__D2_filtered_seed2026__plus1.25mm",
+      "opt01a__P1_upstream_lobe__minus1.25mm",
+      "opt01a__P1_upstream_lobe__plus1.25mm"
+    ]
+  },
+  "kind": "opt01a_stage_a_inventory",
+  "lowdim04a_reference": {
+    "analysis_path": "docs/evidence/lowdim04a_stage_a_2026_10_13/lowdim04a_analysis.json",
+    "analysis_sha256": "414d08677fb263db09e33f9a253d004c505fd4910d1859261ec6ffc5c4fd119d",
+    "base": "LOWDIM-03 parent (the parent of the 04B selected state)",
+    "coefficient_vectors_n_per_m": {
+      "downforce": {
+        "flow_24": [
+          0.3195649387154553,
+          -0.16607763598404102,
+          -0.13470757622724427,
+          -0.12900096867283217
+        ],
+        "flow_32": [
+          0.7489900176316233,
+          0.052235625421581666,
+          -0.1512458193768662,
+          -0.39777510082918965
+        ]
+      },
+      "drag": {
+        "flow_24": [
+          -0.32707801574884954,
+          -0.06186471629126,
+          -0.1915655524360904,
+          -0.11492864714621742
+        ],
+        "flow_32": [
+          0.07621103941577445,
+          -0.10569142685599164,
+          -0.1405667989938575,
+          0.005922123173029981
+        ]
+      }
+    },
+    "step_m": 0.00125
+  },
+  "margin_gate_m": 0.15,
+  "p22_v2": {
+    "meaning": "lattice count only; constrains no physical or sub-voxel volume",
+    "n_max": 8272,
+    "registration_path": "docs/evidence/sdf_native_volume_semantics_v2_2026_10.json",
+    "registration_sha256": "735a0cc45ffd8920ac0f4716ddd9154d21b1f86fb05317cc713f44dad95843f3"
+  },
+  "parent": {
+    "generation": 1,
+    "lineage": {
+      "generation_bump": "construct_state keeps the parent generation; OPT-01 v1 (E4) makes the 04B selected state the parent with generation + 1: phi hashes unchanged, state_sha256 changes. Children keep the new parent's generation (construct_state semantics).",
+      "lowdim03_parent_npz_sha256": "0ce3256b0f3e5c919caeb2ac1b36f1a33838f34c767c091cb89bda0234ac750b",
+      "lowdim04b_selected_state": {
+        "generation": 0,
+        "inventory_path": "docs/evidence/lowdim04b_stage_b_2026_10_13/inventory.json",
+        "inventory_row": "lowdim04b__prop__s0.3125mm",
+        "inventory_sha256": "e85dd9c37377e57f7a80bc3d97f204a8fd9409f0ccd87545f0d9502c72d95cfe",
+        "phi_c_order_sha256": "ff4d30589c91fe40b975f79f94e8218c2fb8014b1f197946ed8ca065d0f82b54",
+        "phi_fortran_order_sha256": "2f23be7824d31d6c270ada9b3ff2b815601b3435da78e4e7e9089908608bf3d7",
+        "state_sha256": "64e4efb1d800dffd5f1019a060683578aaa8bf9a2715bfbccd39c7b5893dc42d"
+      },
+      "robust_stage_a_direction_sha256": "cda4c9d7b1e9f287a286c61c16d8889830328aa6c2b372243c98106ce227b451",
+      "sign": 1,
+      "step_mm": 0.3125
+    },
+    "npz_path": "docs/evidence/opt01a_stage_a_2026_10_15/inputs/opt01_v1_parent.npz",
+    "phi_c_order_sha256": "ff4d30589c91fe40b975f79f94e8218c2fb8014b1f197946ed8ca065d0f82b54",
+    "phi_fortran_order_sha256": "2f23be7824d31d6c270ada9b3ff2b815601b3435da78e4e7e9089908608bf3d7",
+    "raw_path": "docs/evidence/opt01a_stage_a_2026_10_15/inputs/parent.phi_f4_fortran.raw",
+    "state_sha256": "c9e12f62460a3694b950c79c2bb064eefbb209e522d6fa5ef78f88e494172e3a"
+  },
+  "parent_volume": {
+    "v_cont_m3": 0.12618829261821704,
+    "v_eps_m3": 0.08756844118885171
+  },
+  "prior_robust_proposal": {
+    "coefficient_vector": [
+      0.6919060097241811,
+      0.0060147766714769785,
+      0.4951778946498968,
+      -0.5253843819711901
+    ],
+    "m_max_abs_sum": 1.6174292308900298,
+    "sha256_fortran_raw": "cda4c9d7b1e9f287a286c61c16d8889830328aa6c2b372243c98106ce227b451"
+  },
+  "stage_status": "READY",
+  "states": [
+    {
+      "changed_node_count": 0,
+      "direction": null,
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.9999729654518887,
+        "eikonal_median_abs_deviation": 0.014469842659309506,
+        "eikonal_p95_abs_deviation": 0.3195300413171982,
+        "node_components": 1,
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.08756844118885171
+      },
+      "hard_count": {
+        "count_equal_margin_m": 0.002199373195310656,
+        "count_no_increase_margin_m": 0.0033372219059519207,
+        "min_abs_parent_centre_m": 0.002200862392783165,
+        "min_fluid_parent_centre_m": 0.00333871110342443,
+        "residual_vs_n_max": 0,
+        "rounding_allowance_m": 1.4891974725092667e-06,
+        "sampled_solid_centers": 8272,
+        "sup_norm_dphi_m": 0.0
+      },
+      "kind": "parent",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0,
+      "name": "opt01a__parent",
+      "npz_sha256": "c0b949b3ba24ab9cdd110a23a80ba30c663acfabf8f30b132aee2b016eebe22b",
+      "phi_c_order_sha256": "ff4d30589c91fe40b975f79f94e8218c2fb8014b1f197946ed8ca065d0f82b54",
+      "phi_fortran_order_sha256": "2f23be7824d31d6c270ada9b3ff2b815601b3435da78e4e7e9089908608bf3d7",
+      "pre_cfd_gates": {
+        "all_pass": true,
+        "e4_vs_lowdim03_parent": {
+          "all_pass": true,
+          "geom02_v2_verdict": {
+            "failed": [],
+            "pass": true,
+            "passed": [
+              "sdf_finite_structure",
+              "sdf_distance_property",
+              "near_zero_gradient_band",
+              "sdf_boundary_margin",
+              "mask_preservation",
+              "component_connectivity",
+              "topology_change_classification",
+              "min_feature_width",
+              "inter_component_gap",
+              "export_surface_integrity",
+              "surface_self_intersection",
+              "domain_clearance",
+              "volume_semantics"
+            ],
+            "rule": "AND of all gates; unmeasured blocks like fail",
+            "unmeasured": []
+          }
+        },
+        "failed": [],
+        "geom02_v2_gate_count": 13,
+        "geom02_v2_pass_count": 13,
+        "near_zero_gradient_band": {
+          "baseline_plateau_nodes": 5370,
+          "failing_nodes": 0,
+          "off_plateau": 0,
+          "on_baseline_tie_plateau": 0,
+          "plateau_abs_phi_m": 1e-06
+        },
+        "record": {
+          "all_pass": true,
+          "central_gradient_classification": {
+            "class_counts": {
+              "kink": 149,
+              "other": 4,
+              "tie_plateau": 0
+            },
+            "failing_nodes": 153,
+            "interior_sign_change_nodes": 8038,
+            "kink_nodes_by_axis": {
+              "x": 0,
+              "y": 26,
+              "z": 124
+            },
+            "kink_nodes_including_tie_plateau": 149,
+            "max_one_sided_slope_quantiles": {
+              "0.0": 0.9999999701976847,
+              "0.25": 1.0264260950498283,
+              "0.5": 1.0290621244348586,
+              "0.75": 1.0329044656828046,
+              "0.9": 1.0358025352470577,
+              "1.0": 1.0417565051466227
+            },
+            "solid_fluid": {
+              "fluid_or_zero": 0,
+              "solid": 153
+            }
+          },
+          "geom02_v2": {
+            "contract_id": "sdf_native_geometry_gates_v2",
+            "evidence_class": "contract_and_capability",
+            "gates": {
+              "component_connectivity": {
+                "fail_reasons": [],
+                "measured": {
+                  "connectivity": "26-neighbour, node occupancy phi<0",
+                  "disconnected_components": "allowed",
+                  "node_occupancy_components": 1,
+                  "root_connectivity": "optional"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "max_components": null,
+                  "policy": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41"
+                },
+                "unmeasured_reasons": []
+              },
+              "domain_clearance": {
+                "fail_reasons": [],
+                "measured": {
+                  "clearances_m": {
+                    "lower_x": 1.9,
+                    "lower_y": 0.75,
+                    "lower_z": 0.6500000000000001,
+                    "upper_x": 1.95,
+                    "upper_y": 0.75,
+                    "upper_z": 0.6499999999999999
+                  },
+                  "domain_bounds_m": [
+                    [
+                      -2.5,
+                      -1.2,
+                      -0.9
+                    ],
+                    [
+                      2.5,
+                      1.2,
+                      0.9
+                    ]
+                  ],
+                  "min_clearance_m": 0.6499999999999999
+                },
+                "status": "pass",
+                "thresholds": {
+                  "min_clearance_m": 0.25
+                },
+                "unmeasured_reasons": []
+              },
+              "export_surface_integrity": {
+                "fail_reasons": [],
+                "measured": {
+                  "edge_connected_components": 1,
+                  "extracted_triangles": 680846,
+                  "mesh_area_m2": 3.195669494757709,
+                  "mesh_signed_volume_m3": 0.1261320342709231,
+                  "mesh_volume_relative_to_sharp": 0.9758764740496949,
+                  "orientation_flips": 1,
+                  "orientation_status": "PASS",
+                  "refinement": 8,
+                  "removed_subcell_components": [],
+                  "sharp_cell_count_volume_m3": 0.12925000000000003,
+                  "triangles": 680846,
+                  "volume_comparison": "informational; the sharp count volume is not the zero-level volume"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "rule": "watertight, edge- and vertex-link-manifold, no duplicate/degenerate faces, positive volume, orientation established"
+                },
+                "unmeasured_reasons": []
+              },
+              "inter_component_gap": {
+                "fail_reasons": [],
+                "measured": {
+                  "cell_occupancy_components": 1,
+                  "label": "not_applicable_single_component",
+                  "min_gap_m": null
+                },
+                "status": "pass",
+                "thresholds": {
+                  "label": "lattice representability limit (research), not physical",
+                  "minimum_gap_m": 0.0625,
+                  "sampling_resolution_guard_m": 0.025
+                },
+                "unmeasured_reasons": []
+              },
+              "mask_preservation": {
+                "fail_reasons": [],
+                "measured": {
+                  "design_cells": 107415,
+                  "empty_masks": [
+                    "fixed_solid",
+                    "forbidden",
+                    "root"
+                  ],
+                  "source_problem_spec_bound": false,
+                  "vacuous_empty_masks": true
+                },
+                "status": "pass",
+                "thresholds": {
+                  "rule": "material only in design|fixed|root, none in forbidden, fixed/root retained"
+                },
+                "unmeasured_reasons": []
+              },
+              "min_feature_width": {
+                "fail_reasons": [],
+                "measured": {
+                  "method": "2*EDT ridge minimum, 4x supersampled cell occupancy; void measured inside the solid AABB padded by one cell",
+                  "min_solid_width_m": 0.05,
+                  "min_void_width_m": null,
+                  "void_width_label": "not_applicable_no_enclosed_or_slot_void"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "label": "lattice representability limit (research), not physical",
+                  "minimum_solid_width_m": 0.037500000000000006,
+                  "minimum_void_width_m": 0.037500000000000006,
+                  "sampling_guard_m": 0.00625
+                },
+                "unmeasured_reasons": []
+              },
+              "near_zero_gradient_band": {
+                "fail_reasons": [],
+                "measured": {
+                  "central_nodes_below_floor": 153,
+                  "crossing_slope_median": 1.0282198945060372,
+                  "crossing_slope_min": 0.9999999701976847,
+                  "nodes_below_threshold": 0,
+                  "sign_change_nodes_interior": 8038,
+                  "sign_change_nodes_on_array_boundary": 0
+                },
+                "status": "pass",
+                "thresholds": {
+                  "nodes": "interior nodes with a 6-neighbour of the opposite class; exact zero is fluid; crossing slope over opposite-class neighbours only",
+                  "rule": "crossing_slope_v1",
+                  "threshold": 0.5,
+                  "zero_level_gradient_floor_central_reported_only": 0.5
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_boundary_margin": {
+                "fail_reasons": [],
+                "measured": {
+                  "clearances_m": {
+                    "lower_x": 0.4,
+                    "lower_y": 0.35000000000000003,
+                    "lower_z": 0.35000000000000003,
+                    "upper_x": 1.45,
+                    "upper_y": 0.3500000000000001,
+                    "upper_z": 0.3500000000000001
+                  },
+                  "min_clearance_cells": 14.0
+                },
+                "status": "pass",
+                "thresholds": {
+                  "boundary_margin_cells": 1
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_distance_property": {
+                "fail_reasons": [],
+                "measured": {
+                  "eikonal_band_node_count": 11995,
+                  "gradient_norm_median": 0.9999999776482582,
+                  "gradient_norm_min": 0.0,
+                  "gradient_norm_p01": 1.1175870895385742e-07,
+                  "gradient_norm_p99": 1.0420104550096922,
+                  "low_gradient_band_m": 0.05,
+                  "low_gradient_band_node_count": 19701,
+                  "max_abs_gradient_deviation": 0.9999729654518887,
+                  "median_abs_gradient_deviation": 0.014469842659309506,
+                  "p95_abs_gradient_deviation": 0.3195300413171982,
+                  "prior_descriptive_bins": {
+                    "at_or_above_0_25_count": 19014,
+                    "below_1e-6_count": 377,
+                    "meaning": "descriptive only; not a registered acceptance threshold"
+                  }
+                },
+                "status": "pass",
+                "thresholds": {
+                  "eikonal_median_tolerance": 0.1
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_finite_structure": {
+                "fail_reasons": [],
+                "measured": {
+                  "phi_finite": true,
+                  "phi_max": 1.713184118270874,
+                  "phi_min": -0.07500000298023224
+                },
+                "status": "pass",
+                "thresholds": {},
+                "unmeasured_reasons": []
+              },
+              "surface_self_intersection": {
+                "fail_reasons": [],
+                "measured": {
+                  "aabb_overlap_pairs": 5147740,
+                  "candidate_pairs": 26402903,
+                  "complete": true,
+                  "narrow_phase_pairs": 1373064,
+                  "tolerance_rel_to_extent": 1e-12,
+                  "triangles": 680846
+                },
+                "status": "pass",
+                "thresholds": {},
+                "unmeasured_reasons": []
+              },
+              "topology_change_classification": {
+                "fail_reasons": [],
+                "measured": {
+                  "component_count": 1,
+                  "detected_events": [],
+                  "parent_component_count": 1,
+                  "parent_kind": "identity",
+                  "scope": "solid components only; cavities and tunnels are not judged"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "allowed_events": [],
+                  "birth_qualified": false
+                },
+                "unmeasured_reasons": []
+              },
+              "volume_semantics": {
+                "fail_reasons": [],
+                "measured": {
+                  "lattice": {
+                    "node_shape": [
+                      121,
+                      65,
+                      49
+                    ],
+                    "origin_m": [
+                      -1.0,
+                      -0.8,
+                      -0.6
+                    ],
+                    "spacing_m": 0.025
+                  },
+                  "sampled_solid_centers": 8272
+                },
+                "status": "pass",
+                "thresholds": {
+                  "lattice": {
+                    "node_shape": [
+                      121,
+                      65,
+                      49
+                    ],
+                    "origin_m": [
+                      -1.0,
+                      -0.8,
+                      -0.6
+                    ],
+                    "spacing_m": 0.025
+                  },
+                  "max_solid_centers": 8272,
+                  "rule": "P22-v2 integer hard count; representation-specific, not a physical volume"
+                },
+                "unmeasured_reasons": []
+              }
+            },
+            "grid": {
+              "origin_m": [
+                -1.0,
+                -0.8,
+                -0.6
+              ],
+              "shape": [
+                121,
+                65,
+                49
+              ],
+              "spacing_m": 0.025
+            },
+            "kind": "sdf_native_geometry_gates",
+            "parent_state_sha256": "c9e12f62460a3694b950c79c2bb064eefbb209e522d6fa5ef78f88e494172e3a",
+            "phi_sha256": "ff4d30589c91fe40b975f79f94e8218c2fb8014b1f197946ed8ca065d0f82b54",
+            "policy_binding": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41",
+            "profile_id": "geom02_v17_research_gates_v2_crossing_slope_2026_10_15",
+            "schema_version": 2,
+            "state_sha256": "c9e12f62460a3694b950c79c2bb064eefbb209e522d6fa5ef78f88e494172e3a",
+            "stored_topology_policy_id": {
+              "parent": "sdf_native_topology_policy_v1",
+              "state": "sdf_native_topology_policy_v1"
+            },
+            "verdict": {
+              "failed": [],
+              "pass": true,
+              "passed": [
+                "sdf_finite_structure",
+                "sdf_distance_property",
+                "near_zero_gradient_band",
+                "sdf_boundary_margin",
+                "mask_preservation",
+                "component_connectivity",
+                "topology_change_classification",
+                "min_feature_width",
+                "inter_component_gap",
+                "export_surface_integrity",
+                "surface_self_intersection",
+                "domain_clearance",
+                "volume_semantics"
+              ],
+              "rule": "AND of all gates; unmeasured blocks like fail",
+              "unmeasured": []
+            }
+          },
+          "p22_v2": {
+            "n_max": 8272,
+            "pass": true,
+            "sampled_solid_centers": 8272
+          },
+          "retained_lowdim": {
+            "all_pass": true,
+            "gates": {
+              "clearance": true,
+              "smoothed_volume_band": true
+            },
+            "margin_gate_m": 0.15,
+            "relative_smoothed_volume_change": -0.01575674050107112,
+            "volume_band": 0.1,
+            "zero_level_margin_m": 0.34999999925494196
+          }
+        },
+        "report_only_failed": [],
+        "table": {
+          "component_connectivity": "pass",
+          "count_equal_margin_positive": "pass",
+          "domain_clearance": "pass",
+          "export_surface_integrity": "pass",
+          "inter_component_gap": "pass",
+          "mask_preservation": "pass",
+          "min_feature_width": "pass",
+          "near_zero_gradient_band": "pass",
+          "p22_v2": "pass",
+          "retained_clearance": "pass",
+          "retained_smoothed_volume_band": "pass",
+          "sdf_boundary_margin": "pass",
+          "sdf_distance_property": "pass",
+          "sdf_finite_structure": "pass",
+          "surface_self_intersection": "pass",
+          "topology_change_classification": "pass",
+          "volume_semantics": "pass"
+        }
+      },
+      "sign": 0,
+      "state_sha256": "c9e12f62460a3694b950c79c2bb064eefbb209e522d6fa5ef78f88e494172e3a",
+      "step_mm": 0.0,
+      "volume": {
+        "sharp_volume_m3": 0.12925000000000003,
+        "v_cont_m3": 0.12618829261821704,
+        "v_cont_vs_parent": 0.0,
+        "v_eps_m3": 0.08756844118885171,
+        "v_eps_vs_parent": 0.0
+      },
+      "zero_level_margin_m": 0.34999999925494196
+    },
+    {
+      "changed_node_count": 4718,
+      "direction": "D0_interface_offset",
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.9999729660339653,
+        "eikonal_median_abs_deviation": 0.012620854889973998,
+        "eikonal_p95_abs_deviation": 0.3147329374285448,
+        "node_components": 1,
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.09005299101330215
+      },
+      "hard_count": {
+        "count_equal_margin_m": 0.0009493731395768204,
+        "count_no_increase_margin_m": 0.0020872218502180854,
+        "min_abs_parent_centre_m": 0.002200862392783165,
+        "min_fluid_parent_centre_m": 0.00333871110342443,
+        "residual_vs_n_max": 0,
+        "rounding_allowance_m": 1.4891974725092667e-06,
+        "sampled_solid_centers": 8272,
+        "sup_norm_dphi_m": 0.0012500000557338353
+      },
+      "kind": "perturbation",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0012500000557338353,
+      "name": "opt01a__D0_interface_offset__minus1.25mm",
+      "npz_sha256": "4ee04c92a2e802754166944f771d96ce18841a6f88383a374572b7a1c3809575",
+      "phi_c_order_sha256": "e25b3a9151fd2736b22dcc26e7ca91a9d16177ca562b3c99fccb241b2e4c5381",
+      "phi_fortran_order_sha256": "24be7b1b42075beeca1b57e201d30f5e388e7a9ad2046e96768042cc467dcf53",
+      "pre_cfd_gates": {
+        "all_pass": true,
+        "failed": [],
+        "geom02_v2_gate_count": 13,
+        "geom02_v2_pass_count": 12,
+        "near_zero_gradient_band": {
+          "baseline_plateau_nodes": 5370,
+          "failing_nodes": 284,
+          "off_plateau": 0,
+          "on_baseline_tie_plateau": 284,
+          "plateau_abs_phi_m": 1e-06
+        },
+        "record": {
+          "all_pass": false,
+          "central_gradient_classification": {
+            "class_counts": {
+              "kink": 71,
+              "other": 4,
+              "tie_plateau": 0
+            },
+            "failing_nodes": 75,
+            "interior_sign_change_nodes": 9299,
+            "kink_nodes_by_axis": {
+              "x": 0,
+              "y": 71,
+              "z": 2
+            },
+            "kink_nodes_including_tie_plateau": 71,
+            "max_one_sided_slope_quantiles": {
+              "0.0": 0.9999999701976847,
+              "0.25": 0.9999999701976847,
+              "0.5": 0.9999999701976847,
+              "0.75": 0.9999999701976847,
+              "0.9": 0.9999999711281049,
+              "1.0": 0.9999999711281049
+            },
+            "solid_fluid": {
+              "fluid_or_zero": 0,
+              "solid": 75
+            }
+          },
+          "geom02_v2": {
+            "contract_id": "sdf_native_geometry_gates_v2",
+            "evidence_class": "contract_and_capability",
+            "gates": {
+              "component_connectivity": {
+                "fail_reasons": [],
+                "measured": {
+                  "connectivity": "26-neighbour, node occupancy phi<0",
+                  "disconnected_components": "allowed",
+                  "node_occupancy_components": 1,
+                  "root_connectivity": "optional"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "max_components": null,
+                  "policy": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41"
+                },
+                "unmeasured_reasons": []
+              },
+              "domain_clearance": {
+                "fail_reasons": [],
+                "measured": {
+                  "clearances_m": {
+                    "lower_x": 1.9,
+                    "lower_y": 0.75,
+                    "lower_z": 0.6500000000000001,
+                    "upper_x": 1.95,
+                    "upper_y": 0.75,
+                    "upper_z": 0.6499999999999999
+                  },
+                  "domain_bounds_m": [
+                    [
+                      -2.5,
+                      -1.2,
+                      -0.9
+                    ],
+                    [
+                      2.5,
+                      1.2,
+                      0.9
+                    ]
+                  ],
+                  "min_clearance_m": 0.6499999999999999
+                },
+                "status": "pass",
+                "thresholds": {
+                  "min_clearance_m": 0.25
+                },
+                "unmeasured_reasons": []
+              },
+              "export_surface_integrity": {
+                "fail_reasons": [],
+                "measured": {
+                  "edge_connected_components": 1,
+                  "extracted_triangles": 691188,
+                  "mesh_area_m2": 3.2506386228911137,
+                  "mesh_signed_volume_m3": 0.1316082007234812,
+                  "mesh_volume_relative_to_sharp": 1.01824526671939,
+                  "orientation_flips": 1,
+                  "orientation_status": "PASS",
+                  "refinement": 8,
+                  "removed_subcell_components": [],
+                  "sharp_cell_count_volume_m3": 0.12925000000000003,
+                  "triangles": 691188,
+                  "volume_comparison": "informational; the sharp count volume is not the zero-level volume"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "rule": "watertight, edge- and vertex-link-manifold, no duplicate/degenerate faces, positive volume, orientation established"
+                },
+                "unmeasured_reasons": []
+              },
+              "inter_component_gap": {
+                "fail_reasons": [],
+                "measured": {
+                  "cell_occupancy_components": 1,
+                  "label": "not_applicable_single_component",
+                  "min_gap_m": null
+                },
+                "status": "pass",
+                "thresholds": {
+                  "label": "lattice representability limit (research), not physical",
+                  "minimum_gap_m": 0.0625,
+                  "sampling_resolution_guard_m": 0.025
+                },
+                "unmeasured_reasons": []
+              },
+              "mask_preservation": {
+                "fail_reasons": [],
+                "measured": {
+                  "design_cells": 107415,
+                  "empty_masks": [
+                    "fixed_solid",
+                    "forbidden",
+                    "root"
+                  ],
+                  "source_problem_spec_bound": false,
+                  "vacuous_empty_masks": true
+                },
+                "status": "pass",
+                "thresholds": {
+                  "rule": "material only in design|fixed|root, none in forbidden, fixed/root retained"
+                },
+                "unmeasured_reasons": []
+              },
+              "min_feature_width": {
+                "fail_reasons": [],
+                "measured": {
+                  "method": "2*EDT ridge minimum, 4x supersampled cell occupancy; void measured inside the solid AABB padded by one cell",
+                  "min_solid_width_m": 0.05,
+                  "min_void_width_m": null,
+                  "void_width_label": "not_applicable_no_enclosed_or_slot_void"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "label": "lattice representability limit (research), not physical",
+                  "minimum_solid_width_m": 0.037500000000000006,
+                  "minimum_void_width_m": 0.037500000000000006,
+                  "sampling_guard_m": 0.00625
+                },
+                "unmeasured_reasons": []
+              },
+              "near_zero_gradient_band": {
+                "fail_reasons": [
+                  "crossing_slope_below_threshold_at_zero_level"
+                ],
+                "measured": {
+                  "central_nodes_below_floor": 75,
+                  "crossing_slope_median": 1.0203759046271443,
+                  "crossing_slope_min": 0.0005769903253138864,
+                  "failing_nodes": {
+                    "abs_phi_min_max_m": [
+                      1.1920929132713809e-08,
+                      0.0010967794805765152
+                    ],
+                    "adjacent_to_exact_zero_phi": 0,
+                    "exact_zero_phi": 0,
+                    "other_near_tie": 284
+                  },
+                  "nodes_below_threshold": 284,
+                  "sign_change_nodes_interior": 9299,
+                  "sign_change_nodes_on_array_boundary": 0
+                },
+                "status": "fail",
+                "thresholds": {
+                  "nodes": "interior nodes with a 6-neighbour of the opposite class; exact zero is fluid; crossing slope over opposite-class neighbours only",
+                  "rule": "crossing_slope_v1",
+                  "threshold": 0.5,
+                  "zero_level_gradient_floor_central_reported_only": 0.5
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_boundary_margin": {
+                "fail_reasons": [],
+                "measured": {
+                  "clearances_m": {
+                    "lower_x": 0.4,
+                    "lower_y": 0.35000000000000003,
+                    "lower_z": 0.35000000000000003,
+                    "upper_x": 1.45,
+                    "upper_y": 0.3500000000000001,
+                    "upper_z": 0.3500000000000001
+                  },
+                  "min_clearance_cells": 14.0
+                },
+                "status": "pass",
+                "thresholds": {
+                  "boundary_margin_cells": 1
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_distance_property": {
+                "fail_reasons": [],
+                "measured": {
+                  "eikonal_band_node_count": 11995,
+                  "gradient_norm_median": 0.9999999999999964,
+                  "gradient_norm_min": 0.0,
+                  "gradient_norm_p01": 1.1175870895385742e-07,
+                  "gradient_norm_p99": 1.0451441787618012,
+                  "low_gradient_band_m": 0.05,
+                  "low_gradient_band_node_count": 19701,
+                  "max_abs_gradient_deviation": 0.9999729660339653,
+                  "median_abs_gradient_deviation": 0.012620854889973998,
+                  "p95_abs_gradient_deviation": 0.3147329374285448,
+                  "prior_descriptive_bins": {
+                    "at_or_above_0_25_count": 19014,
+                    "below_1e-6_count": 377,
+                    "meaning": "descriptive only; not a registered acceptance threshold"
+                  }
+                },
+                "status": "pass",
+                "thresholds": {
+                  "eikonal_median_tolerance": 0.1
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_finite_structure": {
+                "fail_reasons": [],
+                "measured": {
+                  "phi_finite": true,
+                  "phi_max": 1.713184118270874,
+                  "phi_min": -0.07500000298023224
+                },
+                "status": "pass",
+                "thresholds": {},
+                "unmeasured_reasons": []
+              },
+              "surface_self_intersection": {
+                "fail_reasons": [],
+                "measured": {
+                  "aabb_overlap_pairs": 5212524,
+                  "candidate_pairs": 27338570,
+                  "complete": true,
+                  "narrow_phase_pairs": 1393341,
+                  "tolerance_rel_to_extent": 1e-12,
+                  "triangles": 691188
+                },
+                "status": "pass",
+                "thresholds": {},
+                "unmeasured_reasons": []
+              },
+              "topology_change_classification": {
+                "fail_reasons": [],
+                "measured": {
+                  "component_count": 1,
+                  "detected_events": [],
+                  "parent_component_count": 1,
+                  "parent_kind": "distinct",
+                  "scope": "solid components only; cavities and tunnels are not judged"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "allowed_events": [],
+                  "birth_qualified": false
+                },
+                "unmeasured_reasons": []
+              },
+              "volume_semantics": {
+                "fail_reasons": [],
+                "measured": {
+                  "lattice": {
+                    "node_shape": [
+                      121,
+                      65,
+                      49
+                    ],
+                    "origin_m": [
+                      -1.0,
+                      -0.8,
+                      -0.6
+                    ],
+                    "spacing_m": 0.025
+                  },
+                  "sampled_solid_centers": 8272
+                },
+                "status": "pass",
+                "thresholds": {
+                  "lattice": {
+                    "node_shape": [
+                      121,
+                      65,
+                      49
+                    ],
+                    "origin_m": [
+                      -1.0,
+                      -0.8,
+                      -0.6
+                    ],
+                    "spacing_m": 0.025
+                  },
+                  "max_solid_centers": 8272,
+                  "rule": "P22-v2 integer hard count; representation-specific, not a physical volume"
+                },
+                "unmeasured_reasons": []
+              }
+            },
+            "grid": {
+              "origin_m": [
+                -1.0,
+                -0.8,
+                -0.6
+              ],
+              "shape": [
+                121,
+                65,
+                49
+              ],
+              "spacing_m": 0.025
+            },
+            "kind": "sdf_native_geometry_gates",
+            "parent_state_sha256": "c9e12f62460a3694b950c79c2bb064eefbb209e522d6fa5ef78f88e494172e3a",
+            "phi_sha256": "e25b3a9151fd2736b22dcc26e7ca91a9d16177ca562b3c99fccb241b2e4c5381",
+            "policy_binding": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41",
+            "profile_id": "geom02_v17_research_gates_v2_crossing_slope_2026_10_15",
+            "schema_version": 2,
+            "state_sha256": "5c8d56bdc665c15ccfb83cab801a31e426c946a91c67e59e6bbdb026c08089ac",
+            "stored_topology_policy_id": {
+              "parent": "sdf_native_topology_policy_v1",
+              "state": "sdf_native_topology_policy_v1"
+            },
+            "verdict": {
+              "failed": [
+                "near_zero_gradient_band"
+              ],
+              "pass": false,
+              "passed": [
+                "sdf_finite_structure",
+                "sdf_distance_property",
+                "sdf_boundary_margin",
+                "mask_preservation",
+                "component_connectivity",
+                "topology_change_classification",
+                "min_feature_width",
+                "inter_component_gap",
+                "export_surface_integrity",
+                "surface_self_intersection",
+                "domain_clearance",
+                "volume_semantics"
+              ],
+              "rule": "AND of all gates; unmeasured blocks like fail",
+              "unmeasured": []
+            }
+          },
+          "p22_v2": {
+            "n_max": 8272,
+            "pass": true,
+            "sampled_solid_centers": 8272
+          },
+          "retained_lowdim": {
+            "all_pass": true,
+            "gates": {
+              "clearance": true,
+              "smoothed_volume_band": true
+            },
+            "margin_gate_m": 0.15,
+            "relative_smoothed_volume_change": 0.012168861284288957,
+            "volume_band": 0.1,
+            "zero_level_margin_m": 0.34879721389152113
+          }
+        },
+        "report_only_failed": [
+          "near_zero_gradient_band"
+        ],
+        "table": {
+          "component_connectivity": "pass",
+          "count_equal_margin_positive": "pass",
+          "domain_clearance": "pass",
+          "export_surface_integrity": "pass",
+          "inter_component_gap": "pass",
+          "mask_preservation": "pass",
+          "min_feature_width": "pass",
+          "near_zero_gradient_band": "fail",
+          "p22_v2": "pass",
+          "retained_clearance": "pass",
+          "retained_smoothed_volume_band": "pass",
+          "sdf_boundary_margin": "pass",
+          "sdf_distance_property": "pass",
+          "sdf_finite_structure": "pass",
+          "surface_self_intersection": "pass",
+          "topology_change_classification": "pass",
+          "volume_semantics": "pass"
+        }
+      },
+      "sign": -1,
+      "state_sha256": "5c8d56bdc665c15ccfb83cab801a31e426c946a91c67e59e6bbdb026c08089ac",
+      "step_mm": 1.25,
+      "volume": {
+        "sharp_volume_m3": 0.12925000000000003,
+        "v_cont_m3": 0.13158217558418472,
+        "v_cont_vs_parent": 0.04274471786607714,
+        "v_eps_m3": 0.09005299101330215,
+        "v_eps_vs_parent": 0.028372662465147913
+      },
+      "zero_level_margin_m": 0.34879721389152113
+    },
+    {
+      "changed_node_count": 4718,
+      "direction": "D0_interface_offset",
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.9999729660339653,
+        "eikonal_median_abs_deviation": 0.03816848760470748,
+        "eikonal_p95_abs_deviation": 0.3548853490982331,
+        "node_components": 1,
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.08515478377861276
+      },
+      "hard_count": {
+        "count_equal_margin_m": 0.0009493731068350111,
+        "count_no_increase_margin_m": 0.002087221817476276,
+        "min_abs_parent_centre_m": 0.002200862392783165,
+        "min_fluid_parent_centre_m": 0.00333871110342443,
+        "residual_vs_n_max": 0,
+        "rounding_allowance_m": 1.4891974725092667e-06,
+        "sampled_solid_centers": 8272,
+        "sup_norm_dphi_m": 0.0012500000884756446
+      },
+      "kind": "perturbation",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0012500000884756446,
+      "name": "opt01a__D0_interface_offset__plus1.25mm",
+      "npz_sha256": "e7a9903270717f76d7132c943701bfe8b012f0d19675575eccdd17e8ba8cd32b",
+      "phi_c_order_sha256": "e4048ed2d4c69c41b742d079a63208f2ac6cc67d40edd9970943c602528fcb7c",
+      "phi_fortran_order_sha256": "8f35ba75466e20881edbe55fd658164276b7cc16f138fda9cd0cde1fa6f6ca31",
+      "pre_cfd_gates": {
+        "all_pass": true,
+        "failed": [],
+        "geom02_v2_gate_count": 13,
+        "geom02_v2_pass_count": 13,
+        "near_zero_gradient_band": {
+          "baseline_plateau_nodes": 5370,
+          "failing_nodes": 0,
+          "off_plateau": 0,
+          "on_baseline_tie_plateau": 0,
+          "plateau_abs_phi_m": 1e-06
+        },
+        "record": {
+          "all_pass": true,
+          "central_gradient_classification": {
+            "class_counts": {
+              "kink": 149,
+              "other": 4,
+              "tie_plateau": 0
+            },
+            "failing_nodes": 153,
+            "interior_sign_change_nodes": 8038,
+            "kink_nodes_by_axis": {
+              "x": 0,
+              "y": 26,
+              "z": 124
+            },
+            "kink_nodes_including_tie_plateau": 149,
+            "max_one_sided_slope_quantiles": {
+              "0.0": 0.9999999701976847,
+              "0.25": 1.0764260962605476,
+              "0.5": 1.079062120988965,
+              "0.75": 1.0829044692218304,
+              "0.9": 1.0858025327324867,
+              "1.0": 1.0917565040290356
+            },
+            "solid_fluid": {
+              "fluid_or_zero": 0,
+              "solid": 153
+            }
+          },
+          "geom02_v2": {
+            "contract_id": "sdf_native_geometry_gates_v2",
+            "evidence_class": "contract_and_capability",
+            "gates": {
+              "component_connectivity": {
+                "fail_reasons": [],
+                "measured": {
+                  "connectivity": "26-neighbour, node occupancy phi<0",
+                  "disconnected_components": "allowed",
+                  "node_occupancy_components": 1,
+                  "root_connectivity": "optional"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "max_components": null,
+                  "policy": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41"
+                },
+                "unmeasured_reasons": []
+              },
+              "domain_clearance": {
+                "fail_reasons": [],
+                "measured": {
+                  "clearances_m": {
+                    "lower_x": 1.9,
+                    "lower_y": 0.75,
+                    "lower_z": 0.6500000000000001,
+                    "upper_x": 1.95,
+                    "upper_y": 0.75,
+                    "upper_z": 0.6499999999999999
+                  },
+                  "domain_bounds_m": [
+                    [
+                      -2.5,
+                      -1.2,
+                      -0.9
+                    ],
+                    [
+                      2.5,
+                      1.2,
+                      0.9
+                    ]
+                  ],
+                  "min_clearance_m": 0.6499999999999999
+                },
+                "status": "pass",
+                "thresholds": {
+                  "min_clearance_m": 0.25
+                },
+                "unmeasured_reasons": []
+              },
+              "export_surface_integrity": {
+                "fail_reasons": [],
+                "measured": {
+                  "edge_connected_components": 1,
+                  "extracted_triangles": 680342,
+                  "mesh_area_m2": 3.1169658753504557,
+                  "mesh_signed_volume_m3": 0.12201324946489019,
+                  "mesh_volume_relative_to_sharp": 0.9440096670397691,
+                  "orientation_flips": 1,
+                  "orientation_status": "PASS",
+                  "refinement": 8,
+                  "removed_subcell_components": [],
+                  "sharp_cell_count_volume_m3": 0.12925000000000003,
+                  "triangles": 680342,
+                  "volume_comparison": "informational; the sharp count volume is not the zero-level volume"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "rule": "watertight, edge- and vertex-link-manifold, no duplicate/degenerate faces, positive volume, orientation established"
+                },
+                "unmeasured_reasons": []
+              },
+              "inter_component_gap": {
+                "fail_reasons": [],
+                "measured": {
+                  "cell_occupancy_components": 1,
+                  "label": "not_applicable_single_component",
+                  "min_gap_m": null
+                },
+                "status": "pass",
+                "thresholds": {
+                  "label": "lattice representability limit (research), not physical",
+                  "minimum_gap_m": 0.0625,
+                  "sampling_resolution_guard_m": 0.025
+                },
+                "unmeasured_reasons": []
+              },
+              "mask_preservation": {
+                "fail_reasons": [],
+                "measured": {
+                  "design_cells": 107415,
+                  "empty_masks": [
+                    "fixed_solid",
+                    "forbidden",
+                    "root"
+                  ],
+                  "source_problem_spec_bound": false,
+                  "vacuous_empty_masks": true
+                },
+                "status": "pass",
+                "thresholds": {
+                  "rule": "material only in design|fixed|root, none in forbidden, fixed/root retained"
+                },
+                "unmeasured_reasons": []
+              },
+              "min_feature_width": {
+                "fail_reasons": [],
+                "measured": {
+                  "method": "2*EDT ridge minimum, 4x supersampled cell occupancy; void measured inside the solid AABB padded by one cell",
+                  "min_solid_width_m": 0.05,
+                  "min_void_width_m": null,
+                  "void_width_label": "not_applicable_no_enclosed_or_slot_void"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "label": "lattice representability limit (research), not physical",
+                  "minimum_solid_width_m": 0.037500000000000006,
+                  "minimum_void_width_m": 0.037500000000000006,
+                  "sampling_guard_m": 0.00625
+                },
+                "unmeasured_reasons": []
+              },
+              "near_zero_gradient_band": {
+                "fail_reasons": [],
+                "measured": {
+                  "central_nodes_below_floor": 153,
+                  "crossing_slope_median": 1.0782198933884501,
+                  "crossing_slope_min": 0.9999999701976847,
+                  "nodes_below_threshold": 0,
+                  "sign_change_nodes_interior": 8038,
+                  "sign_change_nodes_on_array_boundary": 0
+                },
+                "status": "pass",
+                "thresholds": {
+                  "nodes": "interior nodes with a 6-neighbour of the opposite class; exact zero is fluid; crossing slope over opposite-class neighbours only",
+                  "rule": "crossing_slope_v1",
+                  "threshold": 0.5,
+                  "zero_level_gradient_floor_central_reported_only": 0.5
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_boundary_margin": {
+                "fail_reasons": [],
+                "measured": {
+                  "clearances_m": {
+                    "lower_x": 0.4,
+                    "lower_y": 0.35000000000000003,
+                    "lower_z": 0.35000000000000003,
+                    "upper_x": 1.45,
+                    "upper_y": 0.3500000000000001,
+                    "upper_z": 0.3500000000000001
+                  },
+                  "min_clearance_cells": 14.0
+                },
+                "status": "pass",
+                "thresholds": {
+                  "boundary_margin_cells": 1
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_distance_property": {
+                "fail_reasons": [],
+                "measured": {
+                  "eikonal_band_node_count": 11995,
+                  "gradient_norm_median": 0.9845561437259431,
+                  "gradient_norm_min": 0.0,
+                  "gradient_norm_p01": 1.1175870895385742e-07,
+                  "gradient_norm_p99": 1.0627740584448615,
+                  "low_gradient_band_m": 0.05,
+                  "low_gradient_band_node_count": 19701,
+                  "max_abs_gradient_deviation": 0.9999729660339653,
+                  "median_abs_gradient_deviation": 0.03816848760470748,
+                  "p95_abs_gradient_deviation": 0.3548853490982331,
+                  "prior_descriptive_bins": {
+                    "at_or_above_0_25_count": 19014,
+                    "below_1e-6_count": 377,
+                    "meaning": "descriptive only; not a registered acceptance threshold"
+                  }
+                },
+                "status": "pass",
+                "thresholds": {
+                  "eikonal_median_tolerance": 0.1
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_finite_structure": {
+                "fail_reasons": [],
+                "measured": {
+                  "phi_finite": true,
+                  "phi_max": 1.713184118270874,
+                  "phi_min": -0.07500000298023224
+                },
+                "status": "pass",
+                "thresholds": {},
+                "unmeasured_reasons": []
+              },
+              "surface_self_intersection": {
+                "fail_reasons": [],
+                "measured": {
+                  "aabb_overlap_pairs": 5144667,
+                  "candidate_pairs": 27557896,
+                  "complete": true,
+                  "narrow_phase_pairs": 1351354,
+                  "tolerance_rel_to_extent": 1e-12,
+                  "triangles": 680342
+                },
+                "status": "pass",
+                "thresholds": {},
+                "unmeasured_reasons": []
+              },
+              "topology_change_classification": {
+                "fail_reasons": [],
+                "measured": {
+                  "component_count": 1,
+                  "detected_events": [],
+                  "parent_component_count": 1,
+                  "parent_kind": "distinct",
+                  "scope": "solid components only; cavities and tunnels are not judged"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "allowed_events": [],
+                  "birth_qualified": false
+                },
+                "unmeasured_reasons": []
+              },
+              "volume_semantics": {
+                "fail_reasons": [],
+                "measured": {
+                  "lattice": {
+                    "node_shape": [
+                      121,
+                      65,
+                      49
+                    ],
+                    "origin_m": [
+                      -1.0,
+                      -0.8,
+                      -0.6
+                    ],
+                    "spacing_m": 0.025
+                  },
+                  "sampled_solid_centers": 8272
+                },
+                "status": "pass",
+                "thresholds": {
+                  "lattice": {
+                    "node_shape": [
+                      121,
+                      65,
+                      49
+                    ],
+                    "origin_m": [
+                      -1.0,
+                      -0.8,
+                      -0.6
+                    ],
+                    "spacing_m": 0.025
+                  },
+                  "max_solid_centers": 8272,
+                  "rule": "P22-v2 integer hard count; representation-specific, not a physical volume"
+                },
+                "unmeasured_reasons": []
+              }
+            },
+            "grid": {
+              "origin_m": [
+                -1.0,
+                -0.8,
+                -0.6
+              ],
+              "shape": [
+                121,
+                65,
+                49
+              ],
+              "spacing_m": 0.025
+            },
+            "kind": "sdf_native_geometry_gates",
+            "parent_state_sha256": "c9e12f62460a3694b950c79c2bb064eefbb209e522d6fa5ef78f88e494172e3a",
+            "phi_sha256": "e4048ed2d4c69c41b742d079a63208f2ac6cc67d40edd9970943c602528fcb7c",
+            "policy_binding": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41",
+            "profile_id": "geom02_v17_research_gates_v2_crossing_slope_2026_10_15",
+            "schema_version": 2,
+            "state_sha256": "06189f6b1bcf894c4ce989a5f9ebc2c4770b5bbe9b7ba3543471f451dd5a8535",
+            "stored_topology_policy_id": {
+              "parent": "sdf_native_topology_policy_v1",
+              "state": "sdf_native_topology_policy_v1"
+            },
+            "verdict": {
+              "failed": [],
+              "pass": true,
+              "passed": [
+                "sdf_finite_structure",
+                "sdf_distance_property",
+                "near_zero_gradient_band",
+                "sdf_boundary_margin",
+                "mask_preservation",
+                "component_connectivity",
+                "topology_change_classification",
+                "min_feature_width",
+                "inter_component_gap",
+                "export_surface_integrity",
+                "surface_self_intersection",
+                "domain_clearance",
+                "volume_semantics"
+              ],
+              "rule": "AND of all gates; unmeasured blocks like fail",
+              "unmeasured": []
+            }
+          },
+          "p22_v2": {
+            "n_max": 8272,
+            "pass": true,
+            "sampled_solid_centers": 8272
+          },
+          "retained_lowdim": {
+            "all_pass": true,
+            "gates": {
+              "clearance": true,
+              "smoothed_volume_band": true
+            },
+            "margin_gate_m": 0.15,
+            "relative_smoothed_volume_change": -0.042885532615161814,
+            "volume_band": 0.1,
+            "zero_level_margin_m": 0.34999999925494196
+          }
+        },
+        "report_only_failed": [],
+        "table": {
+          "component_connectivity": "pass",
+          "count_equal_margin_positive": "pass",
+          "domain_clearance": "pass",
+          "export_surface_integrity": "pass",
+          "inter_component_gap": "pass",
+          "mask_preservation": "pass",
+          "min_feature_width": "pass",
+          "near_zero_gradient_band": "pass",
+          "p22_v2": "pass",
+          "retained_clearance": "pass",
+          "retained_smoothed_volume_band": "pass",
+          "sdf_boundary_margin": "pass",
+          "sdf_distance_property": "pass",
+          "sdf_finite_structure": "pass",
+          "surface_self_intersection": "pass",
+          "topology_change_classification": "pass",
+          "volume_semantics": "pass"
+        }
+      },
+      "sign": 1,
+      "state_sha256": "06189f6b1bcf894c4ce989a5f9ebc2c4770b5bbe9b7ba3543471f451dd5a8535",
+      "step_mm": 1.25,
+      "volume": {
+        "sharp_volume_m3": 0.12925000000000003,
+        "v_cont_m3": 0.12204578519849715,
+        "v_cont_vs_parent": -0.03282798533658782,
+        "v_eps_m3": 0.08515478377861276,
+        "v_eps_vs_parent": -0.027563096675817467
+      },
+      "zero_level_margin_m": 0.34999999925494196
+    },
+    {
+      "changed_node_count": 4718,
+      "direction": "D1_filtered_seed11",
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.9999698224523768,
+        "eikonal_median_abs_deviation": 0.014703850960358977,
+        "eikonal_p95_abs_deviation": 0.3240398811251037,
+        "node_components": 3,
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.08757018906703315
+      },
+      "hard_count": {
+        "count_equal_margin_m": 0.0009493731941465025,
+        "count_no_increase_margin_m": 0.0020872219047877675,
+        "min_abs_parent_centre_m": 0.002200862392783165,
+        "min_fluid_parent_centre_m": 0.00333871110342443,
+        "residual_vs_n_max": 0,
+        "rounding_allowance_m": 1.4891974725092667e-06,
+        "sampled_solid_centers": 8272,
+        "sup_norm_dphi_m": 0.0012500000011641532
+      },
+      "kind": "perturbation",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0012500000011641532,
+      "name": "opt01a__D1_filtered_seed11__minus1.25mm",
+      "npz_sha256": "d716fe5293933ab177744a87995aba0f052d7b4d2ba6e143204f9ea18be77030",
+      "phi_c_order_sha256": "37ff2e84ba7aaa67aeb6f1fddc514aab93bae4acf5f014df2798bf6aca19dddd",
+      "phi_fortran_order_sha256": "451cf932ef8e9a60fc646faf8a0f90426392f68da956f451856c0f64406b84d0",
+      "pre_cfd_gates": {
+        "all_pass": true,
+        "failed": [],
+        "geom02_v2_gate_count": 13,
+        "geom02_v2_pass_count": 12,
+        "near_zero_gradient_band": {
+          "baseline_plateau_nodes": 5370,
+          "failing_nodes": 40,
+          "off_plateau": 0,
+          "on_baseline_tie_plateau": 40,
+          "plateau_abs_phi_m": 1e-06
+        },
+        "record": {
+          "all_pass": false,
+          "central_gradient_classification": {
+            "class_counts": {
+              "kink": 150,
+              "other": 10,
+              "tie_plateau": 0
+            },
+            "failing_nodes": 160,
+            "interior_sign_change_nodes": 8134,
+            "kink_nodes_by_axis": {
+              "x": 0,
+              "y": 27,
+              "z": 124
+            },
+            "kink_nodes_including_tie_plateau": 150,
+            "max_one_sided_slope_quantiles": {
+              "0.0": 0.012850610546593089,
+              "0.25": 1.0233062476618215,
+              "0.5": 1.0307868220843375,
+              "0.75": 1.0393755557015538,
+              "0.9": 1.0465731304138899,
+              "1.0": 1.0580318653956056
+            },
+            "solid_fluid": {
+              "fluid_or_zero": 3,
+              "solid": 157
+            }
+          },
+          "geom02_v2": {
+            "contract_id": "sdf_native_geometry_gates_v2",
+            "evidence_class": "contract_and_capability",
+            "gates": {
+              "component_connectivity": {
+                "fail_reasons": [],
+                "measured": {
+                  "connectivity": "26-neighbour, node occupancy phi<0",
+                  "disconnected_components": "allowed",
+                  "node_occupancy_components": 1,
+                  "root_connectivity": "optional"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "max_components": null,
+                  "policy": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41"
+                },
+                "unmeasured_reasons": []
+              },
+              "domain_clearance": {
+                "fail_reasons": [],
+                "measured": {
+                  "clearances_m": {
+                    "lower_x": 1.9,
+                    "lower_y": 0.75,
+                    "lower_z": 0.6500000000000001,
+                    "upper_x": 1.95,
+                    "upper_y": 0.75,
+                    "upper_z": 0.6499999999999999
+                  },
+                  "domain_bounds_m": [
+                    [
+                      -2.5,
+                      -1.2,
+                      -0.9
+                    ],
+                    [
+                      2.5,
+                      1.2,
+                      0.9
+                    ]
+                  ],
+                  "min_clearance_m": 0.6499999999999999
+                },
+                "status": "pass",
+                "thresholds": {
+                  "min_clearance_m": 0.25
+                },
+                "unmeasured_reasons": []
+              },
+              "export_surface_integrity": {
+                "fail_reasons": [],
+                "measured": {
+                  "edge_connected_components": 1,
+                  "extracted_triangles": 683400,
+                  "mesh_area_m2": 3.1998732734217796,
+                  "mesh_signed_volume_m3": 0.12616945383346256,
+                  "mesh_volume_relative_to_sharp": 0.9761659871060931,
+                  "orientation_flips": 1,
+                  "orientation_status": "PASS",
+                  "refinement": 8,
+                  "removed_subcell_components": [],
+                  "sharp_cell_count_volume_m3": 0.12925000000000003,
+                  "triangles": 683400,
+                  "volume_comparison": "informational; the sharp count volume is not the zero-level volume"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "rule": "watertight, edge- and vertex-link-manifold, no duplicate/degenerate faces, positive volume, orientation established"
+                },
+                "unmeasured_reasons": []
+              },
+              "inter_component_gap": {
+                "fail_reasons": [],
+                "measured": {
+                  "cell_occupancy_components": 1,
+                  "label": "not_applicable_single_component",
+                  "min_gap_m": null
+                },
+                "status": "pass",
+                "thresholds": {
+                  "label": "lattice representability limit (research), not physical",
+                  "minimum_gap_m": 0.0625,
+                  "sampling_resolution_guard_m": 0.025
+                },
+                "unmeasured_reasons": []
+              },
+              "mask_preservation": {
+                "fail_reasons": [],
+                "measured": {
+                  "design_cells": 107415,
+                  "empty_masks": [
+                    "fixed_solid",
+                    "forbidden",
+                    "root"
+                  ],
+                  "source_problem_spec_bound": false,
+                  "vacuous_empty_masks": true
+                },
+                "status": "pass",
+                "thresholds": {
+                  "rule": "material only in design|fixed|root, none in forbidden, fixed/root retained"
+                },
+                "unmeasured_reasons": []
+              },
+              "min_feature_width": {
+                "fail_reasons": [],
+                "measured": {
+                  "method": "2*EDT ridge minimum, 4x supersampled cell occupancy; void measured inside the solid AABB padded by one cell",
+                  "min_solid_width_m": 0.05,
+                  "min_void_width_m": null,
+                  "void_width_label": "not_applicable_no_enclosed_or_slot_void"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "label": "lattice representability limit (research), not physical",
+                  "minimum_solid_width_m": 0.037500000000000006,
+                  "minimum_void_width_m": 0.037500000000000006,
+                  "sampling_guard_m": 0.00625
+                },
+                "unmeasured_reasons": []
+              },
+              "near_zero_gradient_band": {
+                "fail_reasons": [
+                  "crossing_slope_below_threshold_at_zero_level"
+                ],
+                "measured": {
+                  "central_nodes_below_floor": 160,
+                  "crossing_slope_median": 1.0278243152424693,
+                  "crossing_slope_min": 8.175210314931292e-05,
+                  "failing_nodes": {
+                    "abs_phi_min_max_m": [
+                      1.1920929132713809e-08,
+                      0.00030702631920576096
+                    ],
+                    "adjacent_to_exact_zero_phi": 0,
+                    "exact_zero_phi": 0,
+                    "other_near_tie": 40
+                  },
+                  "nodes_below_threshold": 40,
+                  "sign_change_nodes_interior": 8134,
+                  "sign_change_nodes_on_array_boundary": 0
+                },
+                "status": "fail",
+                "thresholds": {
+                  "nodes": "interior nodes with a 6-neighbour of the opposite class; exact zero is fluid; crossing slope over opposite-class neighbours only",
+                  "rule": "crossing_slope_v1",
+                  "threshold": 0.5,
+                  "zero_level_gradient_floor_central_reported_only": 0.5
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_boundary_margin": {
+                "fail_reasons": [],
+                "measured": {
+                  "clearances_m": {
+                    "lower_x": 0.4,
+                    "lower_y": 0.35000000000000003,
+                    "lower_z": 0.35000000000000003,
+                    "upper_x": 1.45,
+                    "upper_y": 0.3500000000000001,
+                    "upper_z": 0.3500000000000001
+                  },
+                  "min_clearance_cells": 14.0
+                },
+                "status": "pass",
+                "thresholds": {
+                  "boundary_margin_cells": 1
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_distance_property": {
+                "fail_reasons": [],
+                "measured": {
+                  "eikonal_band_node_count": 11995,
+                  "gradient_norm_median": 0.9999999776482582,
+                  "gradient_norm_min": 0.0,
+                  "gradient_norm_p01": 1.1175870895385742e-07,
+                  "gradient_norm_p99": 1.0420107303517234,
+                  "low_gradient_band_m": 0.05,
+                  "low_gradient_band_node_count": 19701,
+                  "max_abs_gradient_deviation": 0.9999698224523768,
+                  "median_abs_gradient_deviation": 0.014703850960358977,
+                  "p95_abs_gradient_deviation": 0.3240398811251037,
+                  "prior_descriptive_bins": {
+                    "at_or_above_0_25_count": 19014,
+                    "below_1e-6_count": 377,
+                    "meaning": "descriptive only; not a registered acceptance threshold"
+                  }
+                },
+                "status": "pass",
+                "thresholds": {
+                  "eikonal_median_tolerance": 0.1
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_finite_structure": {
+                "fail_reasons": [],
+                "measured": {
+                  "phi_finite": true,
+                  "phi_max": 1.713184118270874,
+                  "phi_min": -0.07500000298023224
+                },
+                "status": "pass",
+                "thresholds": {},
+                "unmeasured_reasons": []
+              },
+              "surface_self_intersection": {
+                "fail_reasons": [],
+                "measured": {
+                  "aabb_overlap_pairs": 5193099,
+                  "candidate_pairs": 26877300,
+                  "complete": true,
+                  "narrow_phase_pairs": 1308077,
+                  "tolerance_rel_to_extent": 1e-12,
+                  "triangles": 683400
+                },
+                "status": "pass",
+                "thresholds": {},
+                "unmeasured_reasons": []
+              },
+              "topology_change_classification": {
+                "fail_reasons": [],
+                "measured": {
+                  "component_count": 1,
+                  "detected_events": [],
+                  "parent_component_count": 1,
+                  "parent_kind": "distinct",
+                  "scope": "solid components only; cavities and tunnels are not judged"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "allowed_events": [],
+                  "birth_qualified": false
+                },
+                "unmeasured_reasons": []
+              },
+              "volume_semantics": {
+                "fail_reasons": [],
+                "measured": {
+                  "lattice": {
+                    "node_shape": [
+                      121,
+                      65,
+                      49
+                    ],
+                    "origin_m": [
+                      -1.0,
+                      -0.8,
+                      -0.6
+                    ],
+                    "spacing_m": 0.025
+                  },
+                  "sampled_solid_centers": 8272
+                },
+                "status": "pass",
+                "thresholds": {
+                  "lattice": {
+                    "node_shape": [
+                      121,
+                      65,
+                      49
+                    ],
+                    "origin_m": [
+                      -1.0,
+                      -0.8,
+                      -0.6
+                    ],
+                    "spacing_m": 0.025
+                  },
+                  "max_solid_centers": 8272,
+                  "rule": "P22-v2 integer hard count; representation-specific, not a physical volume"
+                },
+                "unmeasured_reasons": []
+              }
+            },
+            "grid": {
+              "origin_m": [
+                -1.0,
+                -0.8,
+                -0.6
+              ],
+              "shape": [
+                121,
+                65,
+                49
+              ],
+              "spacing_m": 0.025
+            },
+            "kind": "sdf_native_geometry_gates",
+            "parent_state_sha256": "c9e12f62460a3694b950c79c2bb064eefbb209e522d6fa5ef78f88e494172e3a",
+            "phi_sha256": "37ff2e84ba7aaa67aeb6f1fddc514aab93bae4acf5f014df2798bf6aca19dddd",
+            "policy_binding": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41",
+            "profile_id": "geom02_v17_research_gates_v2_crossing_slope_2026_10_15",
+            "schema_version": 2,
+            "state_sha256": "88dc3af3d148be8722c189e5bb67be1d78d3eb13056303cb92189ef029265658",
+            "stored_topology_policy_id": {
+              "parent": "sdf_native_topology_policy_v1",
+              "state": "sdf_native_topology_policy_v1"
+            },
+            "verdict": {
+              "failed": [
+                "near_zero_gradient_band"
+              ],
+              "pass": false,
+              "passed": [
+                "sdf_finite_structure",
+                "sdf_distance_property",
+                "sdf_boundary_margin",
+                "mask_preservation",
+                "component_connectivity",
+                "topology_change_classification",
+                "min_feature_width",
+                "inter_component_gap",
+                "export_surface_integrity",
+                "surface_self_intersection",
+                "domain_clearance",
+                "volume_semantics"
+              ],
+              "rule": "AND of all gates; unmeasured blocks like fail",
+              "unmeasured": []
+            }
+          },
+          "p22_v2": {
+            "n_max": 8272,
+            "pass": true,
+            "sampled_solid_centers": 8272
+          },
+          "retained_lowdim": {
+            "all_pass": true,
+            "gates": {
+              "clearance": true,
+              "smoothed_volume_band": true
+            },
+            "margin_gate_m": 0.15,
+            "relative_smoothed_volume_change": -0.015737094869663792,
+            "volume_band": 0.1,
+            "zero_level_margin_m": 0.3494446257478558
+          }
+        },
+        "report_only_failed": [
+          "near_zero_gradient_band"
+        ],
+        "table": {
+          "component_connectivity": "pass",
+          "count_equal_margin_positive": "pass",
+          "domain_clearance": "pass",
+          "export_surface_integrity": "pass",
+          "inter_component_gap": "pass",
+          "mask_preservation": "pass",
+          "min_feature_width": "pass",
+          "near_zero_gradient_band": "fail",
+          "p22_v2": "pass",
+          "retained_clearance": "pass",
+          "retained_smoothed_volume_band": "pass",
+          "sdf_boundary_margin": "pass",
+          "sdf_distance_property": "pass",
+          "sdf_finite_structure": "pass",
+          "surface_self_intersection": "pass",
+          "topology_change_classification": "pass",
+          "volume_semantics": "pass"
+        }
+      },
+      "sign": -1,
+      "state_sha256": "88dc3af3d148be8722c189e5bb67be1d78d3eb13056303cb92189ef029265658",
+      "step_mm": 1.25,
+      "volume": {
+        "sharp_volume_m3": 0.12925000000000003,
+        "v_cont_m3": 0.126219316372186,
+        "v_cont_vs_parent": 0.00024585287054179616,
+        "v_eps_m3": 0.08757018906703315,
+        "v_eps_vs_parent": 1.9960138124108795e-05
+      },
+      "zero_level_margin_m": 0.3494446257478558
+    },
+    {
+      "changed_node_count": 4718,
+      "direction": "D1_filtered_seed11",
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.999911835058395,
+        "eikonal_median_abs_deviation": 0.01570919086225331,
+        "eikonal_p95_abs_deviation": 0.32814760142322363,
+        "node_components": 8,
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.08757215099616164
+      },
+      "hard_count": {
+        "count_equal_margin_m": 0.0009493732814579938,
+        "count_no_increase_margin_m": 0.002087221992099259,
+        "min_abs_parent_centre_m": 0.002200862392783165,
+        "min_fluid_parent_centre_m": 0.00333871110342443,
+        "residual_vs_n_max": 0,
+        "rounding_allowance_m": 1.4891974725092667e-06,
+        "sampled_solid_centers": 8272,
+        "sup_norm_dphi_m": 0.0012499999138526618
+      },
+      "kind": "perturbation",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0012499999138526618,
+      "name": "opt01a__D1_filtered_seed11__plus1.25mm",
+      "npz_sha256": "61d7a175a469751def68e630387abdcd399eb87c3942b7914240aa976d21e105",
+      "phi_c_order_sha256": "260395a0b38a446e0c7dcfc63fbcbcff92c93924975a278befcc54ad9ced6d36",
+      "phi_fortran_order_sha256": "0819576915f2943c07a3c961a0d501643b78728cdd07275bed6bf68134b56dee",
+      "pre_cfd_gates": {
+        "all_pass": true,
+        "failed": [],
+        "geom02_v2_gate_count": 13,
+        "geom02_v2_pass_count": 12,
+        "near_zero_gradient_band": {
+          "baseline_plateau_nodes": 5370,
+          "failing_nodes": 153,
+          "off_plateau": 0,
+          "on_baseline_tie_plateau": 153,
+          "plateau_abs_phi_m": 1e-06
+        },
+        "record": {
+          "all_pass": false,
+          "central_gradient_classification": {
+            "class_counts": {
+              "kink": 152,
+              "other": 12,
+              "tie_plateau": 0
+            },
+            "failing_nodes": 164,
+            "interior_sign_change_nodes": 8326,
+            "kink_nodes_by_axis": {
+              "x": 0,
+              "y": 29,
+              "z": 124
+            },
+            "kink_nodes_including_tie_plateau": 152,
+            "max_one_sided_slope_quantiles": {
+              "0.0": 0.9856040636077523,
+              "0.25": 1.0182135051582009,
+              "0.5": 1.0296465153805912,
+              "0.75": 1.038233243743889,
+              "0.9": 1.0461107157170773,
+              "1.0": 1.0655867587774992
+            },
+            "solid_fluid": {
+              "fluid_or_zero": 4,
+              "solid": 160
+            }
+          },
+          "geom02_v2": {
+            "contract_id": "sdf_native_geometry_gates_v2",
+            "evidence_class": "contract_and_capability",
+            "gates": {
+              "component_connectivity": {
+                "fail_reasons": [],
+                "measured": {
+                  "connectivity": "26-neighbour, node occupancy phi<0",
+                  "disconnected_components": "allowed",
+                  "node_occupancy_components": 1,
+                  "root_connectivity": "optional"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "max_components": null,
+                  "policy": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41"
+                },
+                "unmeasured_reasons": []
+              },
+              "domain_clearance": {
+                "fail_reasons": [],
+                "measured": {
+                  "clearances_m": {
+                    "lower_x": 1.9,
+                    "lower_y": 0.75,
+                    "lower_z": 0.6500000000000001,
+                    "upper_x": 1.95,
+                    "upper_y": 0.75,
+                    "upper_z": 0.6499999999999999
+                  },
+                  "domain_bounds_m": [
+                    [
+                      -2.5,
+                      -1.2,
+                      -0.9
+                    ],
+                    [
+                      2.5,
+                      1.2,
+                      0.9
+                    ]
+                  ],
+                  "min_clearance_m": 0.6499999999999999
+                },
+                "status": "pass",
+                "thresholds": {
+                  "min_clearance_m": 0.25
+                },
+                "unmeasured_reasons": []
+              },
+              "export_surface_integrity": {
+                "fail_reasons": [],
+                "measured": {
+                  "edge_connected_components": 1,
+                  "extracted_triangles": 689828,
+                  "mesh_area_m2": 3.204811480589102,
+                  "mesh_signed_volume_m3": 0.12627158555778106,
+                  "mesh_volume_relative_to_sharp": 0.9769561745282865,
+                  "orientation_flips": 1,
+                  "orientation_status": "PASS",
+                  "refinement": 8,
+                  "removed_subcell_components": [],
+                  "sharp_cell_count_volume_m3": 0.12925000000000003,
+                  "triangles": 689828,
+                  "volume_comparison": "informational; the sharp count volume is not the zero-level volume"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "rule": "watertight, edge- and vertex-link-manifold, no duplicate/degenerate faces, positive volume, orientation established"
+                },
+                "unmeasured_reasons": []
+              },
+              "inter_component_gap": {
+                "fail_reasons": [],
+                "measured": {
+                  "cell_occupancy_components": 1,
+                  "label": "not_applicable_single_component",
+                  "min_gap_m": null
+                },
+                "status": "pass",
+                "thresholds": {
+                  "label": "lattice representability limit (research), not physical",
+                  "minimum_gap_m": 0.0625,
+                  "sampling_resolution_guard_m": 0.025
+                },
+                "unmeasured_reasons": []
+              },
+              "mask_preservation": {
+                "fail_reasons": [],
+                "measured": {
+                  "design_cells": 107415,
+                  "empty_masks": [
+                    "fixed_solid",
+                    "forbidden",
+                    "root"
+                  ],
+                  "source_problem_spec_bound": false,
+                  "vacuous_empty_masks": true
+                },
+                "status": "pass",
+                "thresholds": {
+                  "rule": "material only in design|fixed|root, none in forbidden, fixed/root retained"
+                },
+                "unmeasured_reasons": []
+              },
+              "min_feature_width": {
+                "fail_reasons": [],
+                "measured": {
+                  "method": "2*EDT ridge minimum, 4x supersampled cell occupancy; void measured inside the solid AABB padded by one cell",
+                  "min_solid_width_m": 0.05,
+                  "min_void_width_m": null,
+                  "void_width_label": "not_applicable_no_enclosed_or_slot_void"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "label": "lattice representability limit (research), not physical",
+                  "minimum_solid_width_m": 0.037500000000000006,
+                  "minimum_void_width_m": 0.037500000000000006,
+                  "sampling_guard_m": 0.00625
+                },
+                "unmeasured_reasons": []
+              },
+              "near_zero_gradient_band": {
+                "fail_reasons": [
+                  "crossing_slope_below_threshold_at_zero_level"
+                ],
+                "measured": {
+                  "central_nodes_below_floor": 164,
+                  "crossing_slope_median": 1.0262517491355538,
+                  "crossing_slope_min": 5.729142323218639e-05,
+                  "failing_nodes": {
+                    "abs_phi_min_max_m": [
+                      1.1920929132713809e-08,
+                      0.0006091557443141937
+                    ],
+                    "adjacent_to_exact_zero_phi": 0,
+                    "exact_zero_phi": 0,
+                    "other_near_tie": 153
+                  },
+                  "nodes_below_threshold": 153,
+                  "sign_change_nodes_interior": 8326,
+                  "sign_change_nodes_on_array_boundary": 0
+                },
+                "status": "fail",
+                "thresholds": {
+                  "nodes": "interior nodes with a 6-neighbour of the opposite class; exact zero is fluid; crossing slope over opposite-class neighbours only",
+                  "rule": "crossing_slope_v1",
+                  "threshold": 0.5,
+                  "zero_level_gradient_floor_central_reported_only": 0.5
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_boundary_margin": {
+                "fail_reasons": [],
+                "measured": {
+                  "clearances_m": {
+                    "lower_x": 0.4,
+                    "lower_y": 0.35000000000000003,
+                    "lower_z": 0.35000000000000003,
+                    "upper_x": 1.45,
+                    "upper_y": 0.3500000000000001,
+                    "upper_z": 0.3500000000000001
+                  },
+                  "min_clearance_cells": 14.0
+                },
+                "status": "pass",
+                "thresholds": {
+                  "boundary_margin_cells": 1
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_distance_property": {
+                "fail_reasons": [],
+                "measured": {
+                  "eikonal_band_node_count": 11995,
+                  "gradient_norm_median": 0.9999999776482582,
+                  "gradient_norm_min": 0.0,
+                  "gradient_norm_p01": 1.1175870895385742e-07,
+                  "gradient_norm_p99": 1.0438239958902056,
+                  "low_gradient_band_m": 0.05,
+                  "low_gradient_band_node_count": 19701,
+                  "max_abs_gradient_deviation": 0.999911835058395,
+                  "median_abs_gradient_deviation": 0.01570919086225331,
+                  "p95_abs_gradient_deviation": 0.32814760142322363,
+                  "prior_descriptive_bins": {
+                    "at_or_above_0_25_count": 19014,
+                    "below_1e-6_count": 377,
+                    "meaning": "descriptive only; not a registered acceptance threshold"
+                  }
+                },
+                "status": "pass",
+                "thresholds": {
+                  "eikonal_median_tolerance": 0.1
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_finite_structure": {
+                "fail_reasons": [],
+                "measured": {
+                  "phi_finite": true,
+                  "phi_max": 1.713184118270874,
+                  "phi_min": -0.07500000298023224
+                },
+                "status": "pass",
+                "thresholds": {},
+                "unmeasured_reasons": []
+              },
+              "surface_self_intersection": {
+                "fail_reasons": [],
+                "measured": {
+                  "aabb_overlap_pairs": 5197607,
+                  "candidate_pairs": 27459189,
+                  "complete": true,
+                  "narrow_phase_pairs": 1191501,
+                  "tolerance_rel_to_extent": 1e-12,
+                  "triangles": 689828
+                },
+                "status": "pass",
+                "thresholds": {},
+                "unmeasured_reasons": []
+              },
+              "topology_change_classification": {
+                "fail_reasons": [],
+                "measured": {
+                  "component_count": 1,
+                  "detected_events": [],
+                  "parent_component_count": 1,
+                  "parent_kind": "distinct",
+                  "scope": "solid components only; cavities and tunnels are not judged"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "allowed_events": [],
+                  "birth_qualified": false
+                },
+                "unmeasured_reasons": []
+              },
+              "volume_semantics": {
+                "fail_reasons": [],
+                "measured": {
+                  "lattice": {
+                    "node_shape": [
+                      121,
+                      65,
+                      49
+                    ],
+                    "origin_m": [
+                      -1.0,
+                      -0.8,
+                      -0.6
+                    ],
+                    "spacing_m": 0.025
+                  },
+                  "sampled_solid_centers": 8272
+                },
+                "status": "pass",
+                "thresholds": {
+                  "lattice": {
+                    "node_shape": [
+                      121,
+                      65,
+                      49
+                    ],
+                    "origin_m": [
+                      -1.0,
+                      -0.8,
+                      -0.6
+                    ],
+                    "spacing_m": 0.025
+                  },
+                  "max_solid_centers": 8272,
+                  "rule": "P22-v2 integer hard count; representation-specific, not a physical volume"
+                },
+                "unmeasured_reasons": []
+              }
+            },
+            "grid": {
+              "origin_m": [
+                -1.0,
+                -0.8,
+                -0.6
+              ],
+              "shape": [
+                121,
+                65,
+                49
+              ],
+              "spacing_m": 0.025
+            },
+            "kind": "sdf_native_geometry_gates",
+            "parent_state_sha256": "c9e12f62460a3694b950c79c2bb064eefbb209e522d6fa5ef78f88e494172e3a",
+            "phi_sha256": "260395a0b38a446e0c7dcfc63fbcbcff92c93924975a278befcc54ad9ced6d36",
+            "policy_binding": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41",
+            "profile_id": "geom02_v17_research_gates_v2_crossing_slope_2026_10_15",
+            "schema_version": 2,
+            "state_sha256": "5887eb9182d91a3ff08b434e7835dcf76a3ad1a6d0ea2fd8abbfe37fc10bcac8",
+            "stored_topology_policy_id": {
+              "parent": "sdf_native_topology_policy_v1",
+              "state": "sdf_native_topology_policy_v1"
+            },
+            "verdict": {
+              "failed": [
+                "near_zero_gradient_band"
+              ],
+              "pass": false,
+              "passed": [
+                "sdf_finite_structure",
+                "sdf_distance_property",
+                "sdf_boundary_margin",
+                "mask_preservation",
+                "component_connectivity",
+                "topology_change_classification",
+                "min_feature_width",
+                "inter_component_gap",
+                "export_surface_integrity",
+                "surface_self_intersection",
+                "domain_clearance",
+                "volume_semantics"
+              ],
+              "rule": "AND of all gates; unmeasured blocks like fail",
+              "unmeasured": []
+            }
+          },
+          "p22_v2": {
+            "n_max": 8272,
+            "pass": true,
+            "sampled_solid_centers": 8272
+          },
+          "retained_lowdim": {
+            "all_pass": true,
+            "gates": {
+              "clearance": true,
+              "smoothed_volume_band": true
+            },
+            "margin_gate_m": 0.15,
+            "relative_smoothed_volume_change": -0.015715043369213255,
+            "volume_band": 0.1,
+            "zero_level_margin_m": 0.3490755860926584
+          }
+        },
+        "report_only_failed": [
+          "near_zero_gradient_band"
+        ],
+        "table": {
+          "component_connectivity": "pass",
+          "count_equal_margin_positive": "pass",
+          "domain_clearance": "pass",
+          "export_surface_integrity": "pass",
+          "inter_component_gap": "pass",
+          "mask_preservation": "pass",
+          "min_feature_width": "pass",
+          "near_zero_gradient_band": "fail",
+          "p22_v2": "pass",
+          "retained_clearance": "pass",
+          "retained_smoothed_volume_band": "pass",
+          "sdf_boundary_margin": "pass",
+          "sdf_distance_property": "pass",
+          "sdf_finite_structure": "pass",
+          "surface_self_intersection": "pass",
+          "topology_change_classification": "pass",
+          "volume_semantics": "pass"
+        }
+      },
+      "sign": 1,
+      "state_sha256": "5887eb9182d91a3ff08b434e7835dcf76a3ad1a6d0ea2fd8abbfe37fc10bcac8",
+      "step_mm": 1.25,
+      "volume": {
+        "sharp_volume_m3": 0.12925000000000003,
+        "v_cont_m3": 0.12630856207621674,
+        "v_cont_vs_parent": 0.0009530952159213513,
+        "v_eps_m3": 0.08757215099616164,
+        "v_eps_vs_parent": 4.236466082496726e-05
+      },
+      "zero_level_margin_m": 0.3490755860926584
+    },
+    {
+      "changed_node_count": 4718,
+      "direction": "D2_filtered_seed2026",
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.9999639508314431,
+        "eikonal_median_abs_deviation": 0.014755303505808115,
+        "eikonal_p95_abs_deviation": 0.3208524903973562,
+        "node_components": 1,
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.08756726349056992
+      },
+      "hard_count": {
+        "count_equal_margin_m": 0.0009493731941465025,
+        "count_no_increase_margin_m": 0.0020872219047877675,
+        "min_abs_parent_centre_m": 0.002200862392783165,
+        "min_fluid_parent_centre_m": 0.00333871110342443,
+        "residual_vs_n_max": 0,
+        "rounding_allowance_m": 1.4891974725092667e-06,
+        "sampled_solid_centers": 8272,
+        "sup_norm_dphi_m": 0.0012500000011641532
+      },
+      "kind": "perturbation",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0012500000011641532,
+      "name": "opt01a__D2_filtered_seed2026__minus1.25mm",
+      "npz_sha256": "90ca22f6f1928faa7aaa085afd70eed5f83febffc72341229de3caf1783d0a27",
+      "phi_c_order_sha256": "2deb4e8eda0c28004fc1fb5059f30d0ee7d7a069f80601bee04bf2a0767e2744",
+      "phi_fortran_order_sha256": "926d59458b45fa4f784e0d4ba4ee5d21a740d4b193b28dda4f242e35d83baa18",
+      "pre_cfd_gates": {
+        "all_pass": true,
+        "failed": [],
+        "geom02_v2_gate_count": 13,
+        "geom02_v2_pass_count": 12,
+        "near_zero_gradient_band": {
+          "baseline_plateau_nodes": 5370,
+          "failing_nodes": 3,
+          "off_plateau": 0,
+          "on_baseline_tie_plateau": 3,
+          "plateau_abs_phi_m": 1e-06
+        },
+        "record": {
+          "all_pass": false,
+          "central_gradient_classification": {
+            "class_counts": {
+              "kink": 149,
+              "other": 4,
+              "tie_plateau": 0
+            },
+            "failing_nodes": 153,
+            "interior_sign_change_nodes": 8045,
+            "kink_nodes_by_axis": {
+              "x": 0,
+              "y": 26,
+              "z": 124
+            },
+            "kink_nodes_including_tie_plateau": 149,
+            "max_one_sided_slope_quantiles": {
+              "0.0": 0.9999999701976847,
+              "0.25": 1.0225083027034998,
+              "0.5": 1.031073632184416,
+              "0.75": 1.0361454426310956,
+              "0.9": 1.039198787882924,
+              "1.0": 1.0437647718936205
+            },
+            "solid_fluid": {
+              "fluid_or_zero": 0,
+              "solid": 153
+            }
+          },
+          "geom02_v2": {
+            "contract_id": "sdf_native_geometry_gates_v2",
+            "evidence_class": "contract_and_capability",
+            "gates": {
+              "component_connectivity": {
+                "fail_reasons": [],
+                "measured": {
+                  "connectivity": "26-neighbour, node occupancy phi<0",
+                  "disconnected_components": "allowed",
+                  "node_occupancy_components": 1,
+                  "root_connectivity": "optional"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "max_components": null,
+                  "policy": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41"
+                },
+                "unmeasured_reasons": []
+              },
+              "domain_clearance": {
+                "fail_reasons": [],
+                "measured": {
+                  "clearances_m": {
+                    "lower_x": 1.9,
+                    "lower_y": 0.75,
+                    "lower_z": 0.6500000000000001,
+                    "upper_x": 1.95,
+                    "upper_y": 0.75,
+                    "upper_z": 0.6499999999999999
+                  },
+                  "domain_bounds_m": [
+                    [
+                      -2.5,
+                      -1.2,
+                      -0.9
+                    ],
+                    [
+                      2.5,
+                      1.2,
+                      0.9
+                    ]
+                  ],
+                  "min_clearance_m": 0.6499999999999999
+                },
+                "status": "pass",
+                "thresholds": {
+                  "min_clearance_m": 0.25
+                },
+                "unmeasured_reasons": []
+              },
+              "export_surface_integrity": {
+                "fail_reasons": [],
+                "measured": {
+                  "edge_connected_components": 1,
+                  "extracted_triangles": 681132,
+                  "mesh_area_m2": 3.196749797454614,
+                  "mesh_signed_volume_m3": 0.12614287447644104,
+                  "mesh_volume_relative_to_sharp": 0.9759603441117293,
+                  "orientation_flips": 1,
+                  "orientation_status": "PASS",
+                  "refinement": 8,
+                  "removed_subcell_components": [],
+                  "sharp_cell_count_volume_m3": 0.12925000000000003,
+                  "triangles": 681132,
+                  "volume_comparison": "informational; the sharp count volume is not the zero-level volume"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "rule": "watertight, edge- and vertex-link-manifold, no duplicate/degenerate faces, positive volume, orientation established"
+                },
+                "unmeasured_reasons": []
+              },
+              "inter_component_gap": {
+                "fail_reasons": [],
+                "measured": {
+                  "cell_occupancy_components": 1,
+                  "label": "not_applicable_single_component",
+                  "min_gap_m": null
+                },
+                "status": "pass",
+                "thresholds": {
+                  "label": "lattice representability limit (research), not physical",
+                  "minimum_gap_m": 0.0625,
+                  "sampling_resolution_guard_m": 0.025
+                },
+                "unmeasured_reasons": []
+              },
+              "mask_preservation": {
+                "fail_reasons": [],
+                "measured": {
+                  "design_cells": 107415,
+                  "empty_masks": [
+                    "fixed_solid",
+                    "forbidden",
+                    "root"
+                  ],
+                  "source_problem_spec_bound": false,
+                  "vacuous_empty_masks": true
+                },
+                "status": "pass",
+                "thresholds": {
+                  "rule": "material only in design|fixed|root, none in forbidden, fixed/root retained"
+                },
+                "unmeasured_reasons": []
+              },
+              "min_feature_width": {
+                "fail_reasons": [],
+                "measured": {
+                  "method": "2*EDT ridge minimum, 4x supersampled cell occupancy; void measured inside the solid AABB padded by one cell",
+                  "min_solid_width_m": 0.05,
+                  "min_void_width_m": null,
+                  "void_width_label": "not_applicable_no_enclosed_or_slot_void"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "label": "lattice representability limit (research), not physical",
+                  "minimum_solid_width_m": 0.037500000000000006,
+                  "minimum_void_width_m": 0.037500000000000006,
+                  "sampling_guard_m": 0.00625
+                },
+                "unmeasured_reasons": []
+              },
+              "near_zero_gradient_band": {
+                "fail_reasons": [
+                  "crossing_slope_below_threshold_at_zero_level"
+                ],
+                "measured": {
+                  "central_nodes_below_floor": 153,
+                  "crossing_slope_median": 1.027852117549628,
+                  "crossing_slope_min": 0.011588755733100697,
+                  "failing_nodes": {
+                    "abs_phi_min_max_m": [
+                      1.9246839656261727e-05,
+                      0.000229282581130974
+                    ],
+                    "adjacent_to_exact_zero_phi": 0,
+                    "exact_zero_phi": 0,
+                    "other_near_tie": 3
+                  },
+                  "nodes_below_threshold": 3,
+                  "sign_change_nodes_interior": 8045,
+                  "sign_change_nodes_on_array_boundary": 0
+                },
+                "status": "fail",
+                "thresholds": {
+                  "nodes": "interior nodes with a 6-neighbour of the opposite class; exact zero is fluid; crossing slope over opposite-class neighbours only",
+                  "rule": "crossing_slope_v1",
+                  "threshold": 0.5,
+                  "zero_level_gradient_floor_central_reported_only": 0.5
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_boundary_margin": {
+                "fail_reasons": [],
+                "measured": {
+                  "clearances_m": {
+                    "lower_x": 0.4,
+                    "lower_y": 0.35000000000000003,
+                    "lower_z": 0.35000000000000003,
+                    "upper_x": 1.45,
+                    "upper_y": 0.3500000000000001,
+                    "upper_z": 0.3500000000000001
+                  },
+                  "min_clearance_cells": 14.0
+                },
+                "status": "pass",
+                "thresholds": {
+                  "boundary_margin_cells": 1
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_distance_property": {
+                "fail_reasons": [],
+                "measured": {
+                  "eikonal_band_node_count": 11995,
+                  "gradient_norm_median": 0.9999999776482582,
+                  "gradient_norm_min": 0.0,
+                  "gradient_norm_p01": 1.1175870895385742e-07,
+                  "gradient_norm_p99": 1.0420105049122557,
+                  "low_gradient_band_m": 0.05,
+                  "low_gradient_band_node_count": 19701,
+                  "max_abs_gradient_deviation": 0.9999639508314431,
+                  "median_abs_gradient_deviation": 0.014755303505808115,
+                  "p95_abs_gradient_deviation": 0.3208524903973562,
+                  "prior_descriptive_bins": {
+                    "at_or_above_0_25_count": 19014,
+                    "below_1e-6_count": 377,
+                    "meaning": "descriptive only; not a registered acceptance threshold"
+                  }
+                },
+                "status": "pass",
+                "thresholds": {
+                  "eikonal_median_tolerance": 0.1
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_finite_structure": {
+                "fail_reasons": [],
+                "measured": {
+                  "phi_finite": true,
+                  "phi_max": 1.713184118270874,
+                  "phi_min": -0.07500000298023224
+                },
+                "status": "pass",
+                "thresholds": {},
+                "unmeasured_reasons": []
+              },
+              "surface_self_intersection": {
+                "fail_reasons": [],
+                "measured": {
+                  "aabb_overlap_pairs": 5175412,
+                  "candidate_pairs": 26543090,
+                  "complete": true,
+                  "narrow_phase_pairs": 1367971,
+                  "tolerance_rel_to_extent": 1e-12,
+                  "triangles": 681132
+                },
+                "status": "pass",
+                "thresholds": {},
+                "unmeasured_reasons": []
+              },
+              "topology_change_classification": {
+                "fail_reasons": [],
+                "measured": {
+                  "component_count": 1,
+                  "detected_events": [],
+                  "parent_component_count": 1,
+                  "parent_kind": "distinct",
+                  "scope": "solid components only; cavities and tunnels are not judged"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "allowed_events": [],
+                  "birth_qualified": false
+                },
+                "unmeasured_reasons": []
+              },
+              "volume_semantics": {
+                "fail_reasons": [],
+                "measured": {
+                  "lattice": {
+                    "node_shape": [
+                      121,
+                      65,
+                      49
+                    ],
+                    "origin_m": [
+                      -1.0,
+                      -0.8,
+                      -0.6
+                    ],
+                    "spacing_m": 0.025
+                  },
+                  "sampled_solid_centers": 8272
+                },
+                "status": "pass",
+                "thresholds": {
+                  "lattice": {
+                    "node_shape": [
+                      121,
+                      65,
+                      49
+                    ],
+                    "origin_m": [
+                      -1.0,
+                      -0.8,
+                      -0.6
+                    ],
+                    "spacing_m": 0.025
+                  },
+                  "max_solid_centers": 8272,
+                  "rule": "P22-v2 integer hard count; representation-specific, not a physical volume"
+                },
+                "unmeasured_reasons": []
+              }
+            },
+            "grid": {
+              "origin_m": [
+                -1.0,
+                -0.8,
+                -0.6
+              ],
+              "shape": [
+                121,
+                65,
+                49
+              ],
+              "spacing_m": 0.025
+            },
+            "kind": "sdf_native_geometry_gates",
+            "parent_state_sha256": "c9e12f62460a3694b950c79c2bb064eefbb209e522d6fa5ef78f88e494172e3a",
+            "phi_sha256": "2deb4e8eda0c28004fc1fb5059f30d0ee7d7a069f80601bee04bf2a0767e2744",
+            "policy_binding": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41",
+            "profile_id": "geom02_v17_research_gates_v2_crossing_slope_2026_10_15",
+            "schema_version": 2,
+            "state_sha256": "4c1e2cc85bd98f505c6631cf0540d81714d6eb378ded7a0d6a78a655f15a3c72",
+            "stored_topology_policy_id": {
+              "parent": "sdf_native_topology_policy_v1",
+              "state": "sdf_native_topology_policy_v1"
+            },
+            "verdict": {
+              "failed": [
+                "near_zero_gradient_band"
+              ],
+              "pass": false,
+              "passed": [
+                "sdf_finite_structure",
+                "sdf_distance_property",
+                "sdf_boundary_margin",
+                "mask_preservation",
+                "component_connectivity",
+                "topology_change_classification",
+                "min_feature_width",
+                "inter_component_gap",
+                "export_surface_integrity",
+                "surface_self_intersection",
+                "domain_clearance",
+                "volume_semantics"
+              ],
+              "rule": "AND of all gates; unmeasured blocks like fail",
+              "unmeasured": []
+            }
+          },
+          "p22_v2": {
+            "n_max": 8272,
+            "pass": true,
+            "sampled_solid_centers": 8272
+          },
+          "retained_lowdim": {
+            "all_pass": true,
+            "gates": {
+              "clearance": true,
+              "smoothed_volume_band": true
+            },
+            "margin_gate_m": 0.15,
+            "relative_smoothed_volume_change": -0.015769977479825448,
+            "volume_band": 0.1,
+            "zero_level_margin_m": 0.34999999925494196
+          }
+        },
+        "report_only_failed": [
+          "near_zero_gradient_band"
+        ],
+        "table": {
+          "component_connectivity": "pass",
+          "count_equal_margin_positive": "pass",
+          "domain_clearance": "pass",
+          "export_surface_integrity": "pass",
+          "inter_component_gap": "pass",
+          "mask_preservation": "pass",
+          "min_feature_width": "pass",
+          "near_zero_gradient_band": "fail",
+          "p22_v2": "pass",
+          "retained_clearance": "pass",
+          "retained_smoothed_volume_band": "pass",
+          "sdf_boundary_margin": "pass",
+          "sdf_distance_property": "pass",
+          "sdf_finite_structure": "pass",
+          "surface_self_intersection": "pass",
+          "topology_change_classification": "pass",
+          "volume_semantics": "pass"
+        }
+      },
+      "sign": -1,
+      "state_sha256": "4c1e2cc85bd98f505c6631cf0540d81714d6eb378ded7a0d6a78a655f15a3c72",
+      "step_mm": 1.25,
+      "volume": {
+        "sharp_volume_m3": 0.12925000000000003,
+        "v_cont_m3": 0.12619506054231225,
+        "v_cont_vs_parent": 5.3633534100372415e-05,
+        "v_eps_m3": 0.08756726349056992,
+        "v_eps_vs_parent": -1.3448889414902077e-05
+      },
+      "zero_level_margin_m": 0.34999999925494196
+    },
+    {
+      "changed_node_count": 4718,
+      "direction": "D2_filtered_seed2026",
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.9999671021942049,
+        "eikonal_median_abs_deviation": 0.015506228432059288,
+        "eikonal_p95_abs_deviation": 0.32993553505449014,
+        "node_components": 6,
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.08757438105987765
+      },
+      "hard_count": {
+        "count_equal_margin_m": 0.0009493731068350111,
+        "count_no_increase_margin_m": 0.002087221817476276,
+        "min_abs_parent_centre_m": 0.002200862392783165,
+        "min_fluid_parent_centre_m": 0.00333871110342443,
+        "residual_vs_n_max": 0,
+        "rounding_allowance_m": 1.4891974725092667e-06,
+        "sampled_solid_centers": 8272,
+        "sup_norm_dphi_m": 0.0012500000884756446
+      },
+      "kind": "perturbation",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0012500000884756446,
+      "name": "opt01a__D2_filtered_seed2026__plus1.25mm",
+      "npz_sha256": "3e94bcc26d6f8c899628e17068b0f6565b091925c47c4c4b98c8891ccfe723db",
+      "phi_c_order_sha256": "03f2b18f2f1c2be90ef1486fdaa16e731a1113864965c0337239405e1c3cb812",
+      "phi_fortran_order_sha256": "5ac170a268f6e2b9122fc63404df0a109d4de601822685b97362b1f8ff59d875",
+      "pre_cfd_gates": {
+        "all_pass": true,
+        "failed": [],
+        "geom02_v2_gate_count": 13,
+        "geom02_v2_pass_count": 12,
+        "near_zero_gradient_band": {
+          "baseline_plateau_nodes": 5370,
+          "failing_nodes": 206,
+          "off_plateau": 0,
+          "on_baseline_tie_plateau": 206,
+          "plateau_abs_phi_m": 1e-06
+        },
+        "record": {
+          "all_pass": false,
+          "central_gradient_classification": {
+            "class_counts": {
+              "kink": 157,
+              "other": 15,
+              "tie_plateau": 0
+            },
+            "failing_nodes": 172,
+            "interior_sign_change_nodes": 8416,
+            "kink_nodes_by_axis": {
+              "x": 0,
+              "y": 34,
+              "z": 124
+            },
+            "kink_nodes_including_tie_plateau": 157,
+            "max_one_sided_slope_quantiles": {
+              "0.0": 0.014791124558541924,
+              "0.25": 1.0176682699238881,
+              "0.5": 1.029216245515272,
+              "0.75": 1.0447852173820138,
+              "0.9": 1.0562218856066465,
+              "1.0": 1.0706072766333818
+            },
+            "solid_fluid": {
+              "fluid_or_zero": 6,
+              "solid": 166
+            }
+          },
+          "geom02_v2": {
+            "contract_id": "sdf_native_geometry_gates_v2",
+            "evidence_class": "contract_and_capability",
+            "gates": {
+              "component_connectivity": {
+                "fail_reasons": [],
+                "measured": {
+                  "connectivity": "26-neighbour, node occupancy phi<0",
+                  "disconnected_components": "allowed",
+                  "node_occupancy_components": 1,
+                  "root_connectivity": "optional"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "max_components": null,
+                  "policy": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41"
+                },
+                "unmeasured_reasons": []
+              },
+              "domain_clearance": {
+                "fail_reasons": [],
+                "measured": {
+                  "clearances_m": {
+                    "lower_x": 1.9,
+                    "lower_y": 0.75,
+                    "lower_z": 0.6500000000000001,
+                    "upper_x": 1.95,
+                    "upper_y": 0.75,
+                    "upper_z": 0.6499999999999999
+                  },
+                  "domain_bounds_m": [
+                    [
+                      -2.5,
+                      -1.2,
+                      -0.9
+                    ],
+                    [
+                      2.5,
+                      1.2,
+                      0.9
+                    ]
+                  ],
+                  "min_clearance_m": 0.6499999999999999
+                },
+                "status": "pass",
+                "thresholds": {
+                  "min_clearance_m": 0.25
+                },
+                "unmeasured_reasons": []
+              },
+              "export_surface_integrity": {
+                "fail_reasons": [],
+                "measured": {
+                  "edge_connected_components": 1,
+                  "extracted_triangles": 692894,
+                  "mesh_area_m2": 3.2046935359036226,
+                  "mesh_signed_volume_m3": 0.12628083141130286,
+                  "mesh_volume_relative_to_sharp": 0.9770277091783585,
+                  "orientation_flips": 1,
+                  "orientation_status": "PASS",
+                  "refinement": 8,
+                  "removed_subcell_components": [],
+                  "sharp_cell_count_volume_m3": 0.12925000000000003,
+                  "triangles": 692894,
+                  "volume_comparison": "informational; the sharp count volume is not the zero-level volume"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "rule": "watertight, edge- and vertex-link-manifold, no duplicate/degenerate faces, positive volume, orientation established"
+                },
+                "unmeasured_reasons": []
+              },
+              "inter_component_gap": {
+                "fail_reasons": [],
+                "measured": {
+                  "cell_occupancy_components": 1,
+                  "label": "not_applicable_single_component",
+                  "min_gap_m": null
+                },
+                "status": "pass",
+                "thresholds": {
+                  "label": "lattice representability limit (research), not physical",
+                  "minimum_gap_m": 0.0625,
+                  "sampling_resolution_guard_m": 0.025
+                },
+                "unmeasured_reasons": []
+              },
+              "mask_preservation": {
+                "fail_reasons": [],
+                "measured": {
+                  "design_cells": 107415,
+                  "empty_masks": [
+                    "fixed_solid",
+                    "forbidden",
+                    "root"
+                  ],
+                  "source_problem_spec_bound": false,
+                  "vacuous_empty_masks": true
+                },
+                "status": "pass",
+                "thresholds": {
+                  "rule": "material only in design|fixed|root, none in forbidden, fixed/root retained"
+                },
+                "unmeasured_reasons": []
+              },
+              "min_feature_width": {
+                "fail_reasons": [],
+                "measured": {
+                  "method": "2*EDT ridge minimum, 4x supersampled cell occupancy; void measured inside the solid AABB padded by one cell",
+                  "min_solid_width_m": 0.05,
+                  "min_void_width_m": null,
+                  "void_width_label": "not_applicable_no_enclosed_or_slot_void"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "label": "lattice representability limit (research), not physical",
+                  "minimum_solid_width_m": 0.037500000000000006,
+                  "minimum_void_width_m": 0.037500000000000006,
+                  "sampling_guard_m": 0.00625
+                },
+                "unmeasured_reasons": []
+              },
+              "near_zero_gradient_band": {
+                "fail_reasons": [
+                  "crossing_slope_below_threshold_at_zero_level"
+                ],
+                "measured": {
+                  "central_nodes_below_floor": 172,
+                  "crossing_slope_median": 1.0266656219027936,
+                  "crossing_slope_min": 5.846861860447916e-05,
+                  "failing_nodes": {
+                    "abs_phi_min_max_m": [
+                      1.1920929132713809e-08,
+                      0.0006304294802248478
+                    ],
+                    "adjacent_to_exact_zero_phi": 0,
+                    "exact_zero_phi": 0,
+                    "other_near_tie": 206
+                  },
+                  "nodes_below_threshold": 206,
+                  "sign_change_nodes_interior": 8416,
+                  "sign_change_nodes_on_array_boundary": 0
+                },
+                "status": "fail",
+                "thresholds": {
+                  "nodes": "interior nodes with a 6-neighbour of the opposite class; exact zero is fluid; crossing slope over opposite-class neighbours only",
+                  "rule": "crossing_slope_v1",
+                  "threshold": 0.5,
+                  "zero_level_gradient_floor_central_reported_only": 0.5
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_boundary_margin": {
+                "fail_reasons": [],
+                "measured": {
+                  "clearances_m": {
+                    "lower_x": 0.4,
+                    "lower_y": 0.35000000000000003,
+                    "lower_z": 0.35000000000000003,
+                    "upper_x": 1.45,
+                    "upper_y": 0.3500000000000001,
+                    "upper_z": 0.3500000000000001
+                  },
+                  "min_clearance_cells": 14.0
+                },
+                "status": "pass",
+                "thresholds": {
+                  "boundary_margin_cells": 1
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_distance_property": {
+                "fail_reasons": [],
+                "measured": {
+                  "eikonal_band_node_count": 11995,
+                  "gradient_norm_median": 0.9999999776482582,
+                  "gradient_norm_min": 0.0,
+                  "gradient_norm_p01": 1.1175870895385742e-07,
+                  "gradient_norm_p99": 1.0452481733524353,
+                  "low_gradient_band_m": 0.05,
+                  "low_gradient_band_node_count": 19701,
+                  "max_abs_gradient_deviation": 0.9999671021942049,
+                  "median_abs_gradient_deviation": 0.015506228432059288,
+                  "p95_abs_gradient_deviation": 0.32993553505449014,
+                  "prior_descriptive_bins": {
+                    "at_or_above_0_25_count": 19014,
+                    "below_1e-6_count": 377,
+                    "meaning": "descriptive only; not a registered acceptance threshold"
+                  }
+                },
+                "status": "pass",
+                "thresholds": {
+                  "eikonal_median_tolerance": 0.1
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_finite_structure": {
+                "fail_reasons": [],
+                "measured": {
+                  "phi_finite": true,
+                  "phi_max": 1.713184118270874,
+                  "phi_min": -0.07500000298023224
+                },
+                "status": "pass",
+                "thresholds": {},
+                "unmeasured_reasons": []
+              },
+              "surface_self_intersection": {
+                "fail_reasons": [],
+                "measured": {
+                  "aabb_overlap_pairs": 5230791,
+                  "candidate_pairs": 27846294,
+                  "complete": true,
+                  "narrow_phase_pairs": 1161651,
+                  "tolerance_rel_to_extent": 1e-12,
+                  "triangles": 692894
+                },
+                "status": "pass",
+                "thresholds": {},
+                "unmeasured_reasons": []
+              },
+              "topology_change_classification": {
+                "fail_reasons": [],
+                "measured": {
+                  "component_count": 1,
+                  "detected_events": [],
+                  "parent_component_count": 1,
+                  "parent_kind": "distinct",
+                  "scope": "solid components only; cavities and tunnels are not judged"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "allowed_events": [],
+                  "birth_qualified": false
+                },
+                "unmeasured_reasons": []
+              },
+              "volume_semantics": {
+                "fail_reasons": [],
+                "measured": {
+                  "lattice": {
+                    "node_shape": [
+                      121,
+                      65,
+                      49
+                    ],
+                    "origin_m": [
+                      -1.0,
+                      -0.8,
+                      -0.6
+                    ],
+                    "spacing_m": 0.025
+                  },
+                  "sampled_solid_centers": 8272
+                },
+                "status": "pass",
+                "thresholds": {
+                  "lattice": {
+                    "node_shape": [
+                      121,
+                      65,
+                      49
+                    ],
+                    "origin_m": [
+                      -1.0,
+                      -0.8,
+                      -0.6
+                    ],
+                    "spacing_m": 0.025
+                  },
+                  "max_solid_centers": 8272,
+                  "rule": "P22-v2 integer hard count; representation-specific, not a physical volume"
+                },
+                "unmeasured_reasons": []
+              }
+            },
+            "grid": {
+              "origin_m": [
+                -1.0,
+                -0.8,
+                -0.6
+              ],
+              "shape": [
+                121,
+                65,
+                49
+              ],
+              "spacing_m": 0.025
+            },
+            "kind": "sdf_native_geometry_gates",
+            "parent_state_sha256": "c9e12f62460a3694b950c79c2bb064eefbb209e522d6fa5ef78f88e494172e3a",
+            "phi_sha256": "03f2b18f2f1c2be90ef1486fdaa16e731a1113864965c0337239405e1c3cb812",
+            "policy_binding": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41",
+            "profile_id": "geom02_v17_research_gates_v2_crossing_slope_2026_10_15",
+            "schema_version": 2,
+            "state_sha256": "c5d3bf627d7849d9af90004420b22406ad9f2527d6f4afbb6c10940ebecd0dee",
+            "stored_topology_policy_id": {
+              "parent": "sdf_native_topology_policy_v1",
+              "state": "sdf_native_topology_policy_v1"
+            },
+            "verdict": {
+              "failed": [
+                "near_zero_gradient_band"
+              ],
+              "pass": false,
+              "passed": [
+                "sdf_finite_structure",
+                "sdf_distance_property",
+                "sdf_boundary_margin",
+                "mask_preservation",
+                "component_connectivity",
+                "topology_change_classification",
+                "min_feature_width",
+                "inter_component_gap",
+                "export_surface_integrity",
+                "surface_self_intersection",
+                "domain_clearance",
+                "volume_semantics"
+              ],
+              "rule": "AND of all gates; unmeasured blocks like fail",
+              "unmeasured": []
+            }
+          },
+          "p22_v2": {
+            "n_max": 8272,
+            "pass": true,
+            "sampled_solid_centers": 8272
+          },
+          "retained_lowdim": {
+            "all_pass": true,
+            "gates": {
+              "clearance": true,
+              "smoothed_volume_band": true
+            },
+            "margin_gate_m": 0.15,
+            "relative_smoothed_volume_change": -0.015689978115670522,
+            "volume_band": 0.1,
+            "zero_level_margin_m": 0.3491135867312551
+          }
+        },
+        "report_only_failed": [
+          "near_zero_gradient_band"
+        ],
+        "table": {
+          "component_connectivity": "pass",
+          "count_equal_margin_positive": "pass",
+          "domain_clearance": "pass",
+          "export_surface_integrity": "pass",
+          "inter_component_gap": "pass",
+          "mask_preservation": "pass",
+          "min_feature_width": "pass",
+          "near_zero_gradient_band": "fail",
+          "p22_v2": "pass",
+          "retained_clearance": "pass",
+          "retained_smoothed_volume_band": "pass",
+          "sdf_boundary_margin": "pass",
+          "sdf_distance_property": "pass",
+          "sdf_finite_structure": "pass",
+          "surface_self_intersection": "pass",
+          "topology_change_classification": "pass",
+          "volume_semantics": "pass"
+        }
+      },
+      "sign": 1,
+      "state_sha256": "c5d3bf627d7849d9af90004420b22406ad9f2527d6f4afbb6c10940ebecd0dee",
+      "step_mm": 1.25,
+      "volume": {
+        "sharp_volume_m3": 0.12925000000000003,
+        "v_cont_m3": 0.126319374687019,
+        "v_cont_vs_parent": 0.001038781538938549,
+        "v_eps_m3": 0.08757438105987765,
+        "v_eps_vs_parent": 6.783118376096908e-05
+      },
+      "zero_level_margin_m": 0.3491135867312551
+    },
+    {
+      "changed_node_count": 4718,
+      "direction": "P1_upstream_lobe",
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.9998407997190952,
+        "eikonal_median_abs_deviation": 0.023770340718328953,
+        "eikonal_p95_abs_deviation": 0.3445215370624546,
+        "node_components": 1,
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.0865063880458329
+      },
+      "hard_count": {
+        "count_equal_margin_m": 0.0009493732232503329,
+        "count_no_increase_margin_m": 0.002087221933891598,
+        "min_abs_parent_centre_m": 0.002200862392783165,
+        "min_fluid_parent_centre_m": 0.00333871110342443,
+        "residual_vs_n_max": 0,
+        "rounding_allowance_m": 1.4891974725092667e-06,
+        "sampled_solid_centers": 8272,
+        "sup_norm_dphi_m": 0.0012499999720603228
+      },
+      "kind": "perturbation",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0012499999720603228,
+      "name": "opt01a__P1_upstream_lobe__minus1.25mm",
+      "npz_sha256": "1ab8b7b1496e02a21921c4bf43e6b504230923dccc5f3f80d57a00abe182d7c5",
+      "phi_c_order_sha256": "3b2b371bc2ec88e19ba24e609b7c9cb99f79636593fec397b4cfa6c37d036ecd",
+      "phi_fortran_order_sha256": "fbeabb53ba6a5dad635091c0e74aa9f651c851e2337dc8f72eea9cf98af4a53c",
+      "pre_cfd_gates": {
+        "all_pass": true,
+        "failed": [],
+        "geom02_v2_gate_count": 13,
+        "geom02_v2_pass_count": 13,
+        "near_zero_gradient_band": {
+          "baseline_plateau_nodes": 5370,
+          "failing_nodes": 0,
+          "off_plateau": 0,
+          "on_baseline_tie_plateau": 0,
+          "plateau_abs_phi_m": 1e-06
+        },
+        "record": {
+          "all_pass": true,
+          "central_gradient_classification": {
+            "class_counts": {
+              "kink": 149,
+              "other": 4,
+              "tie_plateau": 0
+            },
+            "failing_nodes": 153,
+            "interior_sign_change_nodes": 8038,
+            "kink_nodes_by_axis": {
+              "x": 0,
+              "y": 26,
+              "z": 124
+            },
+            "kink_nodes_including_tie_plateau": 149,
+            "max_one_sided_slope_quantiles": {
+              "0.0": 0.9999999701976847,
+              "0.25": 1.0404586279764771,
+              "0.5": 1.0486032254993916,
+              "0.75": 1.0560101317241788,
+              "0.9": 1.0618499219417572,
+              "1.0": 1.0674941260367632
+            },
+            "solid_fluid": {
+              "fluid_or_zero": 0,
+              "solid": 153
+            }
+          },
+          "geom02_v2": {
+            "contract_id": "sdf_native_geometry_gates_v2",
+            "evidence_class": "contract_and_capability",
+            "gates": {
+              "component_connectivity": {
+                "fail_reasons": [],
+                "measured": {
+                  "connectivity": "26-neighbour, node occupancy phi<0",
+                  "disconnected_components": "allowed",
+                  "node_occupancy_components": 1,
+                  "root_connectivity": "optional"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "max_components": null,
+                  "policy": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41"
+                },
+                "unmeasured_reasons": []
+              },
+              "domain_clearance": {
+                "fail_reasons": [],
+                "measured": {
+                  "clearances_m": {
+                    "lower_x": 1.9,
+                    "lower_y": 0.75,
+                    "lower_z": 0.6500000000000001,
+                    "upper_x": 1.95,
+                    "upper_y": 0.75,
+                    "upper_z": 0.6499999999999999
+                  },
+                  "domain_bounds_m": [
+                    [
+                      -2.5,
+                      -1.2,
+                      -0.9
+                    ],
+                    [
+                      2.5,
+                      1.2,
+                      0.9
+                    ]
+                  ],
+                  "min_clearance_m": 0.6499999999999999
+                },
+                "status": "pass",
+                "thresholds": {
+                  "min_clearance_m": 0.25
+                },
+                "unmeasured_reasons": []
+              },
+              "export_surface_integrity": {
+                "fail_reasons": [],
+                "measured": {
+                  "edge_connected_components": 1,
+                  "extracted_triangles": 680992,
+                  "mesh_area_m2": 3.165875516598929,
+                  "mesh_signed_volume_m3": 0.12440636610255507,
+                  "mesh_volume_relative_to_sharp": 0.9625250762286657,
+                  "orientation_flips": 1,
+                  "orientation_status": "PASS",
+                  "refinement": 8,
+                  "removed_subcell_components": [],
+                  "sharp_cell_count_volume_m3": 0.12925000000000003,
+                  "triangles": 680992,
+                  "volume_comparison": "informational; the sharp count volume is not the zero-level volume"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "rule": "watertight, edge- and vertex-link-manifold, no duplicate/degenerate faces, positive volume, orientation established"
+                },
+                "unmeasured_reasons": []
+              },
+              "inter_component_gap": {
+                "fail_reasons": [],
+                "measured": {
+                  "cell_occupancy_components": 1,
+                  "label": "not_applicable_single_component",
+                  "min_gap_m": null
+                },
+                "status": "pass",
+                "thresholds": {
+                  "label": "lattice representability limit (research), not physical",
+                  "minimum_gap_m": 0.0625,
+                  "sampling_resolution_guard_m": 0.025
+                },
+                "unmeasured_reasons": []
+              },
+              "mask_preservation": {
+                "fail_reasons": [],
+                "measured": {
+                  "design_cells": 107415,
+                  "empty_masks": [
+                    "fixed_solid",
+                    "forbidden",
+                    "root"
+                  ],
+                  "source_problem_spec_bound": false,
+                  "vacuous_empty_masks": true
+                },
+                "status": "pass",
+                "thresholds": {
+                  "rule": "material only in design|fixed|root, none in forbidden, fixed/root retained"
+                },
+                "unmeasured_reasons": []
+              },
+              "min_feature_width": {
+                "fail_reasons": [],
+                "measured": {
+                  "method": "2*EDT ridge minimum, 4x supersampled cell occupancy; void measured inside the solid AABB padded by one cell",
+                  "min_solid_width_m": 0.05,
+                  "min_void_width_m": null,
+                  "void_width_label": "not_applicable_no_enclosed_or_slot_void"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "label": "lattice representability limit (research), not physical",
+                  "minimum_solid_width_m": 0.037500000000000006,
+                  "minimum_void_width_m": 0.037500000000000006,
+                  "sampling_guard_m": 0.00625
+                },
+                "unmeasured_reasons": []
+              },
+              "near_zero_gradient_band": {
+                "fail_reasons": [],
+                "measured": {
+                  "central_nodes_below_floor": 153,
+                  "crossing_slope_median": 1.048104027286172,
+                  "crossing_slope_min": 0.9999999701976847,
+                  "nodes_below_threshold": 0,
+                  "sign_change_nodes_interior": 8038,
+                  "sign_change_nodes_on_array_boundary": 0
+                },
+                "status": "pass",
+                "thresholds": {
+                  "nodes": "interior nodes with a 6-neighbour of the opposite class; exact zero is fluid; crossing slope over opposite-class neighbours only",
+                  "rule": "crossing_slope_v1",
+                  "threshold": 0.5,
+                  "zero_level_gradient_floor_central_reported_only": 0.5
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_boundary_margin": {
+                "fail_reasons": [],
+                "measured": {
+                  "clearances_m": {
+                    "lower_x": 0.4,
+                    "lower_y": 0.35000000000000003,
+                    "lower_z": 0.35000000000000003,
+                    "upper_x": 1.45,
+                    "upper_y": 0.3500000000000001,
+                    "upper_z": 0.3500000000000001
+                  },
+                  "min_clearance_cells": 14.0
+                },
+                "status": "pass",
+                "thresholds": {
+                  "boundary_margin_cells": 1
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_distance_property": {
+                "fail_reasons": [],
+                "measured": {
+                  "eikonal_band_node_count": 11995,
+                  "gradient_norm_median": 0.9999999403953552,
+                  "gradient_norm_min": 0.0,
+                  "gradient_norm_p01": 1.1175870895385742e-07,
+                  "gradient_norm_p99": 1.0507156747525295,
+                  "low_gradient_band_m": 0.05,
+                  "low_gradient_band_node_count": 19701,
+                  "max_abs_gradient_deviation": 0.9998407997190952,
+                  "median_abs_gradient_deviation": 0.023770340718328953,
+                  "p95_abs_gradient_deviation": 0.3445215370624546,
+                  "prior_descriptive_bins": {
+                    "at_or_above_0_25_count": 19014,
+                    "below_1e-6_count": 377,
+                    "meaning": "descriptive only; not a registered acceptance threshold"
+                  }
+                },
+                "status": "pass",
+                "thresholds": {
+                  "eikonal_median_tolerance": 0.1
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_finite_structure": {
+                "fail_reasons": [],
+                "measured": {
+                  "phi_finite": true,
+                  "phi_max": 1.713184118270874,
+                  "phi_min": -0.07500000298023224
+                },
+                "status": "pass",
+                "thresholds": {},
+                "unmeasured_reasons": []
+              },
+              "surface_self_intersection": {
+                "fail_reasons": [],
+                "measured": {
+                  "aabb_overlap_pairs": 5132413,
+                  "candidate_pairs": 26866398,
+                  "complete": true,
+                  "narrow_phase_pairs": 1308188,
+                  "tolerance_rel_to_extent": 1e-12,
+                  "triangles": 680992
+                },
+                "status": "pass",
+                "thresholds": {},
+                "unmeasured_reasons": []
+              },
+              "topology_change_classification": {
+                "fail_reasons": [],
+                "measured": {
+                  "component_count": 1,
+                  "detected_events": [],
+                  "parent_component_count": 1,
+                  "parent_kind": "distinct",
+                  "scope": "solid components only; cavities and tunnels are not judged"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "allowed_events": [],
+                  "birth_qualified": false
+                },
+                "unmeasured_reasons": []
+              },
+              "volume_semantics": {
+                "fail_reasons": [],
+                "measured": {
+                  "lattice": {
+                    "node_shape": [
+                      121,
+                      65,
+                      49
+                    ],
+                    "origin_m": [
+                      -1.0,
+                      -0.8,
+                      -0.6
+                    ],
+                    "spacing_m": 0.025
+                  },
+                  "sampled_solid_centers": 8272
+                },
+                "status": "pass",
+                "thresholds": {
+                  "lattice": {
+                    "node_shape": [
+                      121,
+                      65,
+                      49
+                    ],
+                    "origin_m": [
+                      -1.0,
+                      -0.8,
+                      -0.6
+                    ],
+                    "spacing_m": 0.025
+                  },
+                  "max_solid_centers": 8272,
+                  "rule": "P22-v2 integer hard count; representation-specific, not a physical volume"
+                },
+                "unmeasured_reasons": []
+              }
+            },
+            "grid": {
+              "origin_m": [
+                -1.0,
+                -0.8,
+                -0.6
+              ],
+              "shape": [
+                121,
+                65,
+                49
+              ],
+              "spacing_m": 0.025
+            },
+            "kind": "sdf_native_geometry_gates",
+            "parent_state_sha256": "c9e12f62460a3694b950c79c2bb064eefbb209e522d6fa5ef78f88e494172e3a",
+            "phi_sha256": "3b2b371bc2ec88e19ba24e609b7c9cb99f79636593fec397b4cfa6c37d036ecd",
+            "policy_binding": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41",
+            "profile_id": "geom02_v17_research_gates_v2_crossing_slope_2026_10_15",
+            "schema_version": 2,
+            "state_sha256": "4565771e80e0f622c92bf38e59ce3c8b0e7ed4f4f464fc18dc649638a92ece3a",
+            "stored_topology_policy_id": {
+              "parent": "sdf_native_topology_policy_v1",
+              "state": "sdf_native_topology_policy_v1"
+            },
+            "verdict": {
+              "failed": [],
+              "pass": true,
+              "passed": [
+                "sdf_finite_structure",
+                "sdf_distance_property",
+                "near_zero_gradient_band",
+                "sdf_boundary_margin",
+                "mask_preservation",
+                "component_connectivity",
+                "topology_change_classification",
+                "min_feature_width",
+                "inter_component_gap",
+                "export_surface_integrity",
+                "surface_self_intersection",
+                "domain_clearance",
+                "volume_semantics"
+              ],
+              "rule": "AND of all gates; unmeasured blocks like fail",
+              "unmeasured": []
+            }
+          },
+          "p22_v2": {
+            "n_max": 8272,
+            "pass": true,
+            "sampled_solid_centers": 8272
+          },
+          "retained_lowdim": {
+            "all_pass": true,
+            "gates": {
+              "clearance": true,
+              "smoothed_volume_band": true
+            },
+            "margin_gate_m": 0.15,
+            "relative_smoothed_volume_change": -0.027693902257685754,
+            "volume_band": 0.1,
+            "zero_level_margin_m": 0.34999999925494196
+          }
+        },
+        "report_only_failed": [],
+        "table": {
+          "component_connectivity": "pass",
+          "count_equal_margin_positive": "pass",
+          "domain_clearance": "pass",
+          "export_surface_integrity": "pass",
+          "inter_component_gap": "pass",
+          "mask_preservation": "pass",
+          "min_feature_width": "pass",
+          "near_zero_gradient_band": "pass",
+          "p22_v2": "pass",
+          "retained_clearance": "pass",
+          "retained_smoothed_volume_band": "pass",
+          "sdf_boundary_margin": "pass",
+          "sdf_distance_property": "pass",
+          "sdf_finite_structure": "pass",
+          "surface_self_intersection": "pass",
+          "topology_change_classification": "pass",
+          "volume_semantics": "pass"
+        }
+      },
+      "sign": -1,
+      "state_sha256": "4565771e80e0f622c92bf38e59ce3c8b0e7ed4f4f464fc18dc649638a92ece3a",
+      "step_mm": 1.25,
+      "volume": {
+        "sharp_volume_m3": 0.12925000000000003,
+        "v_cont_m3": 0.12445405348661345,
+        "v_cont_vs_parent": -0.013743264891066698,
+        "v_eps_m3": 0.0865063880458329,
+        "v_eps_vs_parent": -0.012128263659831107
+      },
+      "zero_level_margin_m": 0.34999999925494196
+    },
+    {
+      "changed_node_count": 4718,
+      "direction": "P1_upstream_lobe",
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.9999894143547863,
+        "eikonal_median_abs_deviation": 0.007652121945284307,
+        "eikonal_p95_abs_deviation": 0.3064484940608056,
+        "node_components": 5,
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.08864374137296788
+      },
+      "hard_count": {
+        "count_equal_margin_m": 0.0009493731941465025,
+        "count_no_increase_margin_m": 0.0020872219047877675,
+        "min_abs_parent_centre_m": 0.002200862392783165,
+        "min_fluid_parent_centre_m": 0.00333871110342443,
+        "residual_vs_n_max": 0,
+        "rounding_allowance_m": 1.4891974725092667e-06,
+        "sampled_solid_centers": 8272,
+        "sup_norm_dphi_m": 0.0012500000011641532
+      },
+      "kind": "perturbation",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0012500000011641532,
+      "name": "opt01a__P1_upstream_lobe__plus1.25mm",
+      "npz_sha256": "4940b48d481fe552a80fc3db3e57bfa293a1d4a0c76ec0f5f3946ce1029d00db",
+      "phi_c_order_sha256": "21d8cd8d5a0ff11e1a05255d2591667abc4562c6faedd7955ec90549cf9db878",
+      "phi_fortran_order_sha256": "43d8237c54b8dec477067f7dd857bfab59ca021ed9ebe643bfee8fed6da36bee",
+      "pre_cfd_gates": {
+        "all_pass": true,
+        "failed": [],
+        "geom02_v2_gate_count": 13,
+        "geom02_v2_pass_count": 12,
+        "near_zero_gradient_band": {
+          "baseline_plateau_nodes": 5370,
+          "failing_nodes": 212,
+          "off_plateau": 0,
+          "on_baseline_tie_plateau": 212,
+          "plateau_abs_phi_m": 1e-06
+        },
+        "record": {
+          "all_pass": false,
+          "central_gradient_classification": {
+            "class_counts": {
+              "kink": 136,
+              "other": 20,
+              "tie_plateau": 0
+            },
+            "failing_nodes": 156,
+            "interior_sign_change_nodes": 8408,
+            "kink_nodes_by_axis": {
+              "x": 0,
+              "y": 26,
+              "z": 111
+            },
+            "kink_nodes_including_tie_plateau": 136,
+            "max_one_sided_slope_quantiles": {
+              "0.0": 0.9869352960959077,
+              "0.25": 1.0037679371453123,
+              "0.5": 1.0100421053357422,
+              "0.75": 1.0186239448376,
+              "0.9": 1.0245536617003381,
+              "1.0": 1.0320258419960737
+            },
+            "solid_fluid": {
+              "fluid_or_zero": 15,
+              "solid": 141
+            }
+          },
+          "geom02_v2": {
+            "contract_id": "sdf_native_geometry_gates_v2",
+            "evidence_class": "contract_and_capability",
+            "gates": {
+              "component_connectivity": {
+                "fail_reasons": [],
+                "measured": {
+                  "connectivity": "26-neighbour, node occupancy phi<0",
+                  "disconnected_components": "allowed",
+                  "node_occupancy_components": 1,
+                  "root_connectivity": "optional"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "max_components": null,
+                  "policy": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41"
+                },
+                "unmeasured_reasons": []
+              },
+              "domain_clearance": {
+                "fail_reasons": [],
+                "measured": {
+                  "clearances_m": {
+                    "lower_x": 1.9,
+                    "lower_y": 0.75,
+                    "lower_z": 0.6500000000000001,
+                    "upper_x": 1.95,
+                    "upper_y": 0.75,
+                    "upper_z": 0.6499999999999999
+                  },
+                  "domain_bounds_m": [
+                    [
+                      -2.5,
+                      -1.2,
+                      -0.9
+                    ],
+                    [
+                      2.5,
+                      1.2,
+                      0.9
+                    ]
+                  ],
+                  "min_clearance_m": 0.6499999999999999
+                },
+                "status": "pass",
+                "thresholds": {
+                  "min_clearance_m": 0.25
+                },
+                "unmeasured_reasons": []
+              },
+              "export_surface_integrity": {
+                "fail_reasons": [],
+                "measured": {
+                  "edge_connected_components": 1,
+                  "extracted_triangles": 697586,
+                  "mesh_area_m2": 3.2385040668664336,
+                  "mesh_signed_volume_m3": 0.12813836026334027,
+                  "mesh_volume_relative_to_sharp": 0.991399305712497,
+                  "orientation_flips": 1,
+                  "orientation_status": "PASS",
+                  "refinement": 8,
+                  "removed_subcell_components": [
+                    {
+                      "bbox_diagonal_m": 0.005162086211030242,
+                      "center_m": [
+                        -0.3492665529251098,
+                        -0.19770610332489014,
+                        -0.10087952613830561
+                      ],
+                      "faces": 16,
+                      "signed_volume_m3": -2.265844340154871e-09
+                    }
+                  ],
+                  "sharp_cell_count_volume_m3": 0.12925000000000003,
+                  "triangles": 697570,
+                  "volume_comparison": "informational; the sharp count volume is not the zero-level volume"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "rule": "watertight, edge- and vertex-link-manifold, no duplicate/degenerate faces, positive volume, orientation established"
+                },
+                "unmeasured_reasons": []
+              },
+              "inter_component_gap": {
+                "fail_reasons": [],
+                "measured": {
+                  "cell_occupancy_components": 1,
+                  "label": "not_applicable_single_component",
+                  "min_gap_m": null
+                },
+                "status": "pass",
+                "thresholds": {
+                  "label": "lattice representability limit (research), not physical",
+                  "minimum_gap_m": 0.0625,
+                  "sampling_resolution_guard_m": 0.025
+                },
+                "unmeasured_reasons": []
+              },
+              "mask_preservation": {
+                "fail_reasons": [],
+                "measured": {
+                  "design_cells": 107415,
+                  "empty_masks": [
+                    "fixed_solid",
+                    "forbidden",
+                    "root"
+                  ],
+                  "source_problem_spec_bound": false,
+                  "vacuous_empty_masks": true
+                },
+                "status": "pass",
+                "thresholds": {
+                  "rule": "material only in design|fixed|root, none in forbidden, fixed/root retained"
+                },
+                "unmeasured_reasons": []
+              },
+              "min_feature_width": {
+                "fail_reasons": [],
+                "measured": {
+                  "method": "2*EDT ridge minimum, 4x supersampled cell occupancy; void measured inside the solid AABB padded by one cell",
+                  "min_solid_width_m": 0.05,
+                  "min_void_width_m": null,
+                  "void_width_label": "not_applicable_no_enclosed_or_slot_void"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "label": "lattice representability limit (research), not physical",
+                  "minimum_solid_width_m": 0.037500000000000006,
+                  "minimum_void_width_m": 0.037500000000000006,
+                  "sampling_guard_m": 0.00625
+                },
+                "unmeasured_reasons": []
+              },
+              "near_zero_gradient_band": {
+                "fail_reasons": [
+                  "crossing_slope_below_threshold_at_zero_level"
+                ],
+                "measured": {
+                  "central_nodes_below_floor": 156,
+                  "crossing_slope_median": 1.0077326017199084,
+                  "crossing_slope_min": 0.001039017952280119,
+                  "failing_nodes": {
+                    "abs_phi_min_max_m": [
+                      5.817611281599966e-07,
+                      0.00032661797013133764
+                    ],
+                    "adjacent_to_exact_zero_phi": 0,
+                    "exact_zero_phi": 0,
+                    "other_near_tie": 212
+                  },
+                  "nodes_below_threshold": 212,
+                  "sign_change_nodes_interior": 8408,
+                  "sign_change_nodes_on_array_boundary": 0
+                },
+                "status": "fail",
+                "thresholds": {
+                  "nodes": "interior nodes with a 6-neighbour of the opposite class; exact zero is fluid; crossing slope over opposite-class neighbours only",
+                  "rule": "crossing_slope_v1",
+                  "threshold": 0.5,
+                  "zero_level_gradient_floor_central_reported_only": 0.5
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_boundary_margin": {
+                "fail_reasons": [],
+                "measured": {
+                  "clearances_m": {
+                    "lower_x": 0.4,
+                    "lower_y": 0.35000000000000003,
+                    "lower_z": 0.35000000000000003,
+                    "upper_x": 1.45,
+                    "upper_y": 0.3500000000000001,
+                    "upper_z": 0.3500000000000001
+                  },
+                  "min_clearance_cells": 14.0
+                },
+                "status": "pass",
+                "thresholds": {
+                  "boundary_margin_cells": 1
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_distance_property": {
+                "fail_reasons": [],
+                "measured": {
+                  "eikonal_band_node_count": 11995,
+                  "gradient_norm_median": 0.9999999776482582,
+                  "gradient_norm_min": 0.0,
+                  "gradient_norm_p01": 1.1175870895385742e-07,
+                  "gradient_norm_p99": 1.0420104486653,
+                  "low_gradient_band_m": 0.05,
+                  "low_gradient_band_node_count": 19701,
+                  "max_abs_gradient_deviation": 0.9999894143547863,
+                  "median_abs_gradient_deviation": 0.007652121945284307,
+                  "p95_abs_gradient_deviation": 0.3064484940608056,
+                  "prior_descriptive_bins": {
+                    "at_or_above_0_25_count": 19014,
+                    "below_1e-6_count": 377,
+                    "meaning": "descriptive only; not a registered acceptance threshold"
+                  }
+                },
+                "status": "pass",
+                "thresholds": {
+                  "eikonal_median_tolerance": 0.1
+                },
+                "unmeasured_reasons": []
+              },
+              "sdf_finite_structure": {
+                "fail_reasons": [],
+                "measured": {
+                  "phi_finite": true,
+                  "phi_max": 1.713184118270874,
+                  "phi_min": -0.07500000298023224
+                },
+                "status": "pass",
+                "thresholds": {},
+                "unmeasured_reasons": []
+              },
+              "surface_self_intersection": {
+                "fail_reasons": [],
+                "measured": {
+                  "aabb_overlap_pairs": 5293148,
+                  "candidate_pairs": 27838601,
+                  "complete": true,
+                  "narrow_phase_pairs": 1360547,
+                  "tolerance_rel_to_extent": 1e-12,
+                  "triangles": 697570
+                },
+                "status": "pass",
+                "thresholds": {},
+                "unmeasured_reasons": []
+              },
+              "topology_change_classification": {
+                "fail_reasons": [],
+                "measured": {
+                  "component_count": 1,
+                  "detected_events": [],
+                  "parent_component_count": 1,
+                  "parent_kind": "distinct",
+                  "scope": "solid components only; cavities and tunnels are not judged"
+                },
+                "status": "pass",
+                "thresholds": {
+                  "allowed_events": [],
+                  "birth_qualified": false
+                },
+                "unmeasured_reasons": []
+              },
+              "volume_semantics": {
+                "fail_reasons": [],
+                "measured": {
+                  "lattice": {
+                    "node_shape": [
+                      121,
+                      65,
+                      49
+                    ],
+                    "origin_m": [
+                      -1.0,
+                      -0.8,
+                      -0.6
+                    ],
+                    "spacing_m": 0.025
+                  },
+                  "sampled_solid_centers": 8272
+                },
+                "status": "pass",
+                "thresholds": {
+                  "lattice": {
+                    "node_shape": [
+                      121,
+                      65,
+                      49
+                    ],
+                    "origin_m": [
+                      -1.0,
+                      -0.8,
+                      -0.6
+                    ],
+                    "spacing_m": 0.025
+                  },
+                  "max_solid_centers": 8272,
+                  "rule": "P22-v2 integer hard count; representation-specific, not a physical volume"
+                },
+                "unmeasured_reasons": []
+              }
+            },
+            "grid": {
+              "origin_m": [
+                -1.0,
+                -0.8,
+                -0.6
+              ],
+              "shape": [
+                121,
+                65,
+                49
+              ],
+              "spacing_m": 0.025
+            },
+            "kind": "sdf_native_geometry_gates",
+            "parent_state_sha256": "c9e12f62460a3694b950c79c2bb064eefbb209e522d6fa5ef78f88e494172e3a",
+            "phi_sha256": "21d8cd8d5a0ff11e1a05255d2591667abc4562c6faedd7955ec90549cf9db878",
+            "policy_binding": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41",
+            "profile_id": "geom02_v17_research_gates_v2_crossing_slope_2026_10_15",
+            "schema_version": 2,
+            "state_sha256": "6b13acc6df7ce6483c4b42f5ce5f26d8a53b897eae0e5e5407b67d7e35980cac",
+            "stored_topology_policy_id": {
+              "parent": "sdf_native_topology_policy_v1",
+              "state": "sdf_native_topology_policy_v1"
+            },
+            "verdict": {
+              "failed": [
+                "near_zero_gradient_band"
+              ],
+              "pass": false,
+              "passed": [
+                "sdf_finite_structure",
+                "sdf_distance_property",
+                "sdf_boundary_margin",
+                "mask_preservation",
+                "component_connectivity",
+                "topology_change_classification",
+                "min_feature_width",
+                "inter_component_gap",
+                "export_surface_integrity",
+                "surface_self_intersection",
+                "domain_clearance",
+                "volume_semantics"
+              ],
+              "rule": "AND of all gates; unmeasured blocks like fail",
+              "unmeasured": []
+            }
+          },
+          "p22_v2": {
+            "n_max": 8272,
+            "pass": true,
+            "sampled_solid_centers": 8272
+          },
+          "retained_lowdim": {
+            "all_pass": true,
+            "gates": {
+              "clearance": true,
+              "smoothed_volume_band": true
+            },
+            "margin_gate_m": 0.15,
+            "relative_smoothed_volume_change": -0.003670685938653717,
+            "volume_band": 0.1,
+            "zero_level_margin_m": 0.349872387299547
+          }
+        },
+        "report_only_failed": [
+          "near_zero_gradient_band"
+        ],
+        "table": {
+          "component_connectivity": "pass",
+          "count_equal_margin_positive": "pass",
+          "domain_clearance": "pass",
+          "export_surface_integrity": "pass",
+          "inter_component_gap": "pass",
+          "mask_preservation": "pass",
+          "min_feature_width": "pass",
+          "near_zero_gradient_band": "fail",
+          "p22_v2": "pass",
+          "retained_clearance": "pass",
+          "retained_smoothed_volume_band": "pass",
+          "sdf_boundary_margin": "pass",
+          "sdf_distance_property": "pass",
+          "sdf_finite_structure": "pass",
+          "surface_self_intersection": "pass",
+          "topology_change_classification": "pass",
+          "volume_semantics": "pass"
+        }
+      },
+      "sign": 1,
+      "state_sha256": "6b13acc6df7ce6483c4b42f5ce5f26d8a53b897eae0e5e5407b67d7e35980cac",
+      "step_mm": 1.25,
+      "volume": {
+        "sharp_volume_m3": 0.12925000000000003,
+        "v_cont_m3": 0.1281817096709581,
+        "v_cont_vs_parent": 0.015797163202549536,
+        "v_eps_m3": 0.08864374137296788,
+        "v_eps_vs_parent": 0.012279540089073393
+      },
+      "zero_level_margin_m": 0.349872387299547
+    }
+  ],
+  "step_mm": 1.25,
+  "supersedes": {
+    "commit": "576441ce95a8b209e1a9b16fadbceb55f819ea75",
+    "sha256": "52f4b1d6b513c06e8a6ff29af418226043297b5093453c43267939126a2c53cd",
+    "stage_status": "BLOCKED_PRE_CFD"
+  }
+}

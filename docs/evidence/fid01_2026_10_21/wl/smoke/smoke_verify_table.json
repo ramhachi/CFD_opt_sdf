@@ -1,0 +1,36 @@
+{
+  "campaign_id": "fid01",
+  "campaign_sha256": "7d49b29ef56409e91aba8965667bb57940e9fbf087e218a392e0d09f18ba0f51",
+  "freeze_sha256": null,
+  "harness_tool_sha256": {
+    "scripts/harness.py": "e9d036846ffd33fced8a1507a8fb191e49e0179a517c25a393354c83de4655fa",
+    "src/cfd_harness/campaign_build.py": "7e3ee902bc3ed020edd5e37cbd9060490f9c0f5119e72a60448edbdcf0688a68",
+    "src/cfd_harness/campaign_runner_template.py": "d53e2df74af8becc4e512c19e14381c549006a499c38c2cfab2ba89b6ab9ead1",
+    "src/cfd_harness/campaign_schema.py": "4c3c494ed381930d9d1e51b063efbbdcf1fa4586c1ac7e84d2b999a5c984d1b8",
+    "src/cfd_harness/campaign_verify.py": "8db4714799e258e08ce1a2e8ed9de4b5ff90ba3d9fa56513ec6d6997b0e57a2e"
+  },
+  "harness_version": "harness v1.1",
+  "integrity": {
+    "failures": [],
+    "pass": true
+  },
+  "kernel_manifest_sha256": {
+    "f32k7": "fc5e6b71400fb7cb39ac4c6fb05dc0f5ac9780ac2585cd34b97cbbc02eeb0ffd"
+  },
+  "kind": "harness_state_force_table",
+  "legacy_replay": false,
+  "smoke": true,
+  "source_commit": "4a06f18fbfd54efcc82bcea0a46ad97b50a985e0",
+  "state_forces_n": {
+    "f32k7": {
+      "v18__parent__k7": {
+        "downforce_n": 0.26616007842812245,
+        "drag_n": 0.2812319948917658,
+        "forces_csv_sha256": "8fde44696fdfa0b2fe448e1355b32b2f92a2c4d97a3fdc33d2807c4976615057",
+        "julia_summary_wall_seconds": 329.8710608482361,
+        "solver_process_wall_seconds": 402.24246311187744,
+        "summary_sha256": "7ad662f3b0a38c3c2742f468c66309623a250acdee59e8f9814cced9dd096c8d"
+      }
+    }
+  }
+}

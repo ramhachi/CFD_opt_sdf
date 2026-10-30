@@ -1,0 +1,32 @@
+{
+  "cpu_runtime": {
+    "backend": "Array",
+    "force_csv_sha256": "db18ce449fef9f0bd9901ee04321ec082e16814ea2bd875a7afde6bebb3b6ff2",
+    "force_row_count": 2,
+    "julia_version": "1.12.6",
+    "phi_margin_m": 0.3499999939931499,
+    "solver_steps": 1,
+    "waterlily_version": "1.8.0"
+  },
+  "evidence_class": "cpu_one_step_diagnostic_only",
+  "force_component_audit": {
+    "absolute_tolerance": 1e-08,
+    "relative_tolerance": 1e-06,
+    "row_count": 2,
+    "semantics": "drag=+Fx; downforce=-Fz; total=pressure+viscous",
+    "verified": true
+  },
+  "force_csv_sha256": "db18ce449fef9f0bd9901ee04321ec082e16814ea2bd875a7afde6bebb3b6ff2",
+  "host_recomputed_force_n": {
+    "downforce": 10.321124635810135,
+    "drag": 6.729260213667025
+  },
+  "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+  "role": "baseline",
+  "row_count": 2,
+  "run_id": "cal_baseline_01",
+  "window_t_u_l": [
+    0.0,
+    0.010416666977107525
+  ]
+}

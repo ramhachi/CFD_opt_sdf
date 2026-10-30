@@ -1,0 +1,359 @@
+{
+  "kind": "pq3_3b_preflight_v3",
+  "schema_version": 3,
+  "registered_target": 0.018,
+  "v_max_projected": 0.07632566813424899,
+  "input_checkpoint": {
+    "path": "work/pq3_3_volume_target/checkpoint_chunk02.json",
+    "sha256": "d2868753da3efac6e959a465b964a627c33dc6601e5e4d72ed53b22b15836884",
+    "objective": -2.72646951325,
+    "iteration": 3,
+    "accepted": 3
+  },
+  "levels": [
+    {
+      "level_0_growth_b4_q15": {
+        "phase": "level_0_growth_b4_q15",
+        "phi_design_start": 0.016602975859949236,
+        "phi_final": 0.01800000000000002,
+        "steps_taken": 1,
+        "reached_target": true,
+        "target": 0.018,
+        "v_max_ok_all_steps": true,
+        "monotone_phi_across_accepted": true,
+        "max_mask_drift": 0.0,
+        "max_move_box_violation": 0.0,
+        "steps": [
+          {
+            "step": 1,
+            "kappa": 0.12032700481391446,
+            "bracketed": true,
+            "frontier_step": false,
+            "phi_before": 0.016602975859949236,
+            "phi_after": 0.01800000000000002,
+            "residual": 2.0816681711721685e-17,
+            "objective_downforce": 0.67028822071,
+            "primal_converged": true,
+            "v_max_ok": true,
+            "accepted": true,
+            "monotone_nondecreasing": true,
+            "move_box_violation_max": 0.0,
+            "mask_drift": {
+              "non_active": 0.0,
+              "forbidden": 0.0,
+              "fixed_solid": 0.0
+            },
+            "mask_drift_max": 0.0
+          }
+        ],
+        "accepted_rho_sha256": "7500b932a521b930544a3c23c5c0f46d602b21f51b9a79354de9a6c147be2502"
+      }
+    },
+    {
+      "level_1_b8_q30": {
+        "phase": "level_1_b8_q30",
+        "phi_design_start": 0.008482803096702624,
+        "phi_final": 0.018000000000000013,
+        "steps_taken": 3,
+        "reached_target": true,
+        "target": 0.018,
+        "v_max_ok_all_steps": true,
+        "monotone_phi_across_accepted": true,
+        "max_mask_drift": 0.0,
+        "max_move_box_violation": 0.0,
+        "steps": [
+          {
+            "step": 1,
+            "kappa": 1073741824.0,
+            "bracketed": false,
+            "frontier_step": true,
+            "phi_before": 0.008482803096702624,
+            "phi_after": 0.011126551591810545,
+            "residual": 0.0068734484081894535,
+            "objective_downforce": 0.251018914882,
+            "primal_converged": true,
+            "v_max_ok": true,
+            "accepted": true,
+            "monotone_nondecreasing": true,
+            "move_box_violation_max": 0.0,
+            "mask_drift": {
+              "non_active": 0.0,
+              "forbidden": 0.0,
+              "fixed_solid": 0.0
+            },
+            "mask_drift_max": 0.0
+          },
+          {
+            "step": 2,
+            "kappa": 1073741824.0,
+            "bracketed": false,
+            "frontier_step": true,
+            "phi_before": 0.011126551591810545,
+            "phi_after": 0.014311192564915486,
+            "residual": 0.0036888074350845124,
+            "objective_downforce": 0.314015754117,
+            "primal_converged": true,
+            "v_max_ok": true,
+            "accepted": true,
+            "monotone_nondecreasing": true,
+            "move_box_violation_max": 0.0,
+            "mask_drift": {
+              "non_active": 0.0,
+              "forbidden": 0.0,
+              "fixed_solid": 0.0
+            },
+            "mask_drift_max": 0.0
+          },
+          {
+            "step": 3,
+            "kappa": 0.9724201378058431,
+            "bracketed": true,
+            "frontier_step": false,
+            "phi_before": 0.014311192564915486,
+            "phi_after": 0.018000000000000013,
+            "residual": 1.3877787807814457e-17,
+            "objective_downforce": 0.373794306124,
+            "primal_converged": true,
+            "v_max_ok": true,
+            "accepted": true,
+            "monotone_nondecreasing": true,
+            "move_box_violation_max": 0.0,
+            "mask_drift": {
+              "non_active": 0.0,
+              "forbidden": 0.0,
+              "fixed_solid": 0.0
+            },
+            "mask_drift_max": 0.0
+          }
+        ],
+        "accepted_rho_sha256": "acbff787dc51106db4fdb4fa3c66e7385feefd18c3849d3508f9e3a71279f8b5"
+      }
+    },
+    {
+      "level_2_b16_q100": {
+        "phase": "level_2_b16_q100",
+        "phi_design_start": 0.011511050968260144,
+        "phi_final": 0.018000000000000002,
+        "steps_taken": 7,
+        "reached_target": true,
+        "target": 0.018,
+        "v_max_ok_all_steps": true,
+        "monotone_phi_across_accepted": true,
+        "max_mask_drift": 0.0,
+        "max_move_box_violation": 0.0,
+        "steps": [
+          {
+            "step": 1,
+            "kappa": 1073741824.0,
+            "bracketed": false,
+            "frontier_step": true,
+            "phi_before": 0.011511050968260144,
+            "phi_after": 0.012570625164072403,
+            "residual": 0.005429374835927595,
+            "objective_downforce": 0.144138903268,
+            "primal_converged": true,
+            "v_max_ok": true,
+            "accepted": true,
+            "monotone_nondecreasing": true,
+            "move_box_violation_max": 0.0,
+            "mask_drift": {
+              "non_active": 0.0,
+              "forbidden": 0.0,
+              "fixed_solid": 0.0
+            },
+            "mask_drift_max": 0.0
+          },
+          {
+            "step": 2,
+            "kappa": 1073741824.0,
+            "bracketed": false,
+            "frontier_step": true,
+            "phi_before": 0.012570625164072403,
+            "phi_after": 0.013660792720026188,
+            "residual": 0.004339207279973811,
+            "objective_downforce": 0.170214938666,
+            "primal_converged": true,
+            "v_max_ok": true,
+            "accepted": true,
+            "monotone_nondecreasing": true,
+            "move_box_violation_max": 0.0,
+            "mask_drift": {
+              "non_active": 0.0,
+              "forbidden": 0.0,
+              "fixed_solid": 0.0
+            },
+            "mask_drift_max": 0.0
+          },
+          {
+            "step": 3,
+            "kappa": 1073741824.0,
+            "bracketed": false,
+            "frontier_step": true,
+            "phi_before": 0.013660792720026188,
+            "phi_after": 0.01477967903063723,
+            "residual": 0.0032203209693627693,
+            "objective_downforce": 0.199562144,
+            "primal_converged": true,
+            "v_max_ok": true,
+            "accepted": true,
+            "monotone_nondecreasing": true,
+            "move_box_violation_max": 0.0,
+            "mask_drift": {
+              "non_active": 0.0,
+              "forbidden": 0.0,
+              "fixed_solid": 0.0
+            },
+            "mask_drift_max": 0.0
+          },
+          {
+            "step": 4,
+            "kappa": 1073741824.0,
+            "bracketed": false,
+            "frontier_step": true,
+            "phi_before": 0.01477967903063723,
+            "phi_after": 0.015772131923805544,
+            "residual": 0.0022278680761944544,
+            "objective_downforce": 0.22623789189,
+            "primal_converged": true,
+            "v_max_ok": true,
+            "accepted": true,
+            "monotone_nondecreasing": true,
+            "move_box_violation_max": 0.0,
+            "mask_drift": {
+              "non_active": 0.0,
+              "forbidden": 0.0,
+              "fixed_solid": 0.0
+            },
+            "mask_drift_max": 0.0
+          },
+          {
+            "step": 5,
+            "kappa": 1073741824.0,
+            "bracketed": false,
+            "frontier_step": true,
+            "phi_before": 0.015772131923805544,
+            "phi_after": 0.016656778733883396,
+            "residual": 0.001343221266116603,
+            "objective_downforce": 0.249783307982,
+            "primal_converged": true,
+            "v_max_ok": true,
+            "accepted": true,
+            "monotone_nondecreasing": true,
+            "move_box_violation_max": 0.0,
+            "mask_drift": {
+              "non_active": 0.0,
+              "forbidden": 0.0,
+              "fixed_solid": 0.0
+            },
+            "mask_drift_max": 0.0
+          },
+          {
+            "step": 6,
+            "kappa": 1073741824.0,
+            "bracketed": false,
+            "frontier_step": true,
+            "phi_before": 0.016656778733883396,
+            "phi_after": 0.017582954986732464,
+            "residual": 0.0004170450132675342,
+            "objective_downforce": 0.274137131115,
+            "primal_converged": true,
+            "v_max_ok": true,
+            "accepted": true,
+            "monotone_nondecreasing": true,
+            "move_box_violation_max": 0.0,
+            "mask_drift": {
+              "non_active": 0.0,
+              "forbidden": 0.0,
+              "fixed_solid": 0.0
+            },
+            "mask_drift_max": 0.0
+          },
+          {
+            "step": 7,
+            "kappa": 0.4352117419655521,
+            "bracketed": true,
+            "frontier_step": false,
+            "phi_before": 0.017582954986732464,
+            "phi_after": 0.018000000000000002,
+            "residual": 3.469446951953614e-18,
+            "objective_downforce": 0.284864323835,
+            "primal_converged": true,
+            "v_max_ok": true,
+            "accepted": true,
+            "monotone_nondecreasing": true,
+            "move_box_violation_max": 0.0,
+            "mask_drift": {
+              "non_active": 0.0,
+              "forbidden": 0.0,
+              "fixed_solid": 0.0
+            },
+            "mask_drift_max": 0.0
+          }
+        ],
+        "accepted_rho_sha256": "75c546287868058c87bef8798817e0d15ad55b65da16d681e8f3d5edd1f9e01a"
+      }
+    }
+  ],
+  "phase2_pivots": [
+    {
+      "phase": "level_0_growth_b4_q15",
+      "phi_parent": 0.01800000000000002,
+      "pivotable": true,
+      "kappa_volume": -0.504720985932324,
+      "phi_corrected": 0.018,
+      "volume_residual": 0.0,
+      "volume_residual_within_tolerance": true,
+      "downforce_parent": 0.67028822071,
+      "downforce_corrected_candidate": 0.220547942592,
+      "downforce_delta": -0.44974027811800005,
+      "primal_converged_corrected": true,
+      "design_gradient_sha256": "07b629e53f4bf7aaece05e48d4dca2ac49360a904f81509c0bdd3d930ffd75e1"
+    },
+    {
+      "phase": "level_1_b8_q30",
+      "phi_parent": 0.018000000000000013,
+      "pivotable": true,
+      "kappa_volume": 0.6559019117684189,
+      "phi_corrected": 0.018,
+      "volume_residual": 0.0,
+      "volume_residual_within_tolerance": true,
+      "downforce_parent": 0.373794306124,
+      "downforce_corrected_candidate": 0.311535992367,
+      "downforce_delta": -0.06225831375699997,
+      "primal_converged_corrected": true,
+      "design_gradient_sha256": "57f7a38472fa75c34dd7c27f3063a6f9ccab1ab3785ada9e4a26bb7dd649711e"
+    },
+    {
+      "phase": "level_2_b16_q100",
+      "phi_parent": 0.018000000000000002,
+      "pivotable": true,
+      "kappa_volume": 0.955323501030423,
+      "phi_corrected": 0.018,
+      "volume_residual": 0.0,
+      "volume_residual_within_tolerance": true,
+      "downforce_parent": 0.284864323835,
+      "downforce_corrected_candidate": 0.282911764299,
+      "downforce_delta": -0.001952559535999987,
+      "primal_converged_corrected": true,
+      "design_gradient_sha256": "ce1658a81fe6b318a913965aa05d429014ee005fc5269e0a60c8e3b86cd4fb1a"
+    }
+  ],
+  "summary": {
+    "phase1_all_levels_reached_target": true,
+    "phase1_monotone_phi_all_levels": true,
+    "phase1_mask_drifts_zero": true,
+    "phase1_move_box_ok": true,
+    "phase1_v_max_ok": true,
+    "phase2_volume_residual_within_tolerance_all_levels": true,
+    "preflight_pass": true
+  },
+  "claims_supported": [
+    "contract: mask drift is 0 at every accepted step; move box is respected; V_projection <= V_max is enforced at every step; phi increases monotonically across accepted parents",
+    "contract: the restoration kappa family brackets the registered target 0.018 at all three continuation levels (b=4, b=8, b=16)",
+    "contract: the Phase 2 volume-corrected candidate lands back on the projected target with residual <= 1e-4"
+  ],
+  "claims_not_supported": [
+    "physics: downforce improvement is a per-level datapoint only; the long OpenFOAM campaign and Path B bracket acceptance are NOT run here",
+    "evidence: no claim of grid-independent downforce or benchmark qualification is recorded"
+  ]
+}

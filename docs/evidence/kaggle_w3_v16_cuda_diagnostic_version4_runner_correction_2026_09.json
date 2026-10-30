@@ -1,0 +1,368 @@
+{
+  "base_diagnostic_complete": false,
+  "canonical_phi_c_order_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+  "canonical_phi_fortran_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+  "canonical_state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8",
+  "claim_scope": "CPU/T4 CUDA implementation-layer and owner-lifetime diagnosis only; no primal or physical qualification",
+  "created_utc_date": "2026-09-28",
+  "criteria_path": "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json",
+  "criteria_sha256": "f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2",
+  "diagnostic_complete": false,
+  "diagnostic_id": "w3_v16_cuda_body_force_minimal_diagnostic_2026_09",
+  "diagnostic_job_sha256": "4c080a72f48754c758ee999a38b7d7b83737dd01d2fe7573f4b164d7f0e1ce4e",
+  "diagnostic_source_commit": "885ae7558012da43e6310e2ffb04db4230150f5b",
+  "evidence_type": "diagnostic_only",
+  "exact_kaggle_log_sha256": "cb474ff4890348dd2f15de7d2a7506c5b127030f838b0416e4868642948d8862",
+  "exact_kaggle_status_sha256": "b0fc55f87e13b86a9fb93993640d490630b7ee3606d09b5f4ef2970e757344c7",
+  "failure_classification": {
+    "exact_exception": "Traceback (most recent call last):\n  File \"/kaggle/src/script.py\", line 451, in <module>\n    main()\n  File \"/kaggle/src/script.py\", line 433, in main\n    run_owner_lifetime_arms(julia, project, source, raw_phi_path, env, runner_sha,\n  File \"/kaggle/src/script.py\", line 246, in run_owner_lifetime_arms\n    completed = subprocess.run(args, env=arm_env, stdout=handle,\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/subprocess.py\", line 548, in run\n    with Popen(*popenargs, **kwargs) as process:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/usr/lib/python3.12/subprocess.py\", line 1955, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/w3_cuda_diagnostic_gq0uxtlf/julia-1.12.6/bin/julia'\n",
+    "failed_stage": "owner-lifetime arm Julia process launch before A",
+    "failure_class": "owner_lifetime_runner_workspace_expired",
+    "last_completed_stage": "diagnostic_report_written",
+    "solver_started": true
+  },
+  "force_snapshot_verification": {
+    "v16_one_step_cpu_candidate_force_after_one_step": {
+      "pressure_plus_viscous_componentwise_residual": [
+        0.0,
+        0.0,
+        2.2737367544323206e-13
+      ],
+      "repository_downforce_minus_fz": 4627.170259701308,
+      "repository_drag_plus_fx": 3485.046517138383,
+      "waterlily_total_force_raw": [
+        -3485.046517138383,
+        -22.466101823903678,
+        4627.170259701308
+      ]
+    },
+    "v16_one_step_cuda_candidate_force_after_one_step": {
+      "pressure_plus_viscous_componentwise_residual": [
+        0.0,
+        0.0,
+        -2.2737367544323206e-13
+      ],
+      "repository_downforce_minus_fz": 4627.474694802374,
+      "repository_drag_plus_fx": 3485.132996418866,
+      "waterlily_total_force_raw": [
+        -3485.132996418866,
+        -22.258088226113315,
+        4627.474694802374
+      ]
+    },
+    "v16_solver_free_cpu_candidate_force_before_step": {
+      "pressure_plus_viscous_componentwise_residual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "repository_downforce_minus_fz": 0.0,
+      "repository_drag_plus_fx": -0.0,
+      "waterlily_total_force_raw": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "v16_solver_free_cuda_candidate_force_before_step": {
+      "pressure_plus_viscous_componentwise_residual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "repository_downforce_minus_fz": 0.0,
+      "repository_drag_plus_fx": -0.0,
+      "waterlily_total_force_raw": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "w2b_sphere_cpu_force": {
+      "pressure_plus_viscous_componentwise_residual": [
+        1.4210854715202004e-13,
+        0.0,
+        0.0
+      ],
+      "repository_downforce_minus_fz": -0.0002706325957575473,
+      "repository_drag_plus_fx": 4484.3776739777695,
+      "waterlily_total_force_raw": [
+        -4484.3776739777695,
+        0.0015777276191215606,
+        -0.0002706325957575473
+      ]
+    },
+    "w2b_sphere_cuda_force": {
+      "pressure_plus_viscous_componentwise_residual": [
+        -4.263256414560601e-14,
+        0.0,
+        0.0
+      ],
+      "repository_downforce_minus_fz": 0.0017444059673294987,
+      "repository_drag_plus_fx": 4484.377104123025,
+      "waterlily_total_force_raw": [
+        -4484.377104123025,
+        -0.0005067680752262049,
+        0.0017444059673294987
+      ]
+    }
+  },
+  "host_artifact_verification_passed": true,
+  "host_verifier_sha256": "a46531abcb57364cdb5d1ae695f870dd1648b56810bf6a3f5785a3e82de3eca9",
+  "independent_numeric_diagnostics": {
+    "candidate_sdf_reference": {
+      "host_cpu_max_abs_distance_error_m": 8.837890632662493e-08,
+      "host_cpu_max_normal_vector_error": 4.6359371347873865e-08,
+      "host_cuda_max_abs_distance_error_m": 4.870910643717252e-07,
+      "host_cuda_max_normal_vector_error": 1.3379748247034526,
+      "outside_design_box_count": 126720
+    },
+    "cpu_cuda_mu0_sum_max_error": 4.369999999975782e-06,
+    "cpu_cuda_sigma_max_error": 9.999999999621423e-06,
+    "cpu_ground_distance_max_error": 0.0,
+    "cpu_ground_normal_max_error": 0.0,
+    "cpu_ground_velocity_max_error": 0.0,
+    "cpu_sigma_vs_combined_distance_max_error": 0.0,
+    "cuda_sigma_vs_combined_distance_max_error": 0.0,
+    "expected_ground_support_cells": 4800,
+    "gpu_ground_distance_max_error": 0.0,
+    "gpu_ground_normal_max_error": 0.0,
+    "gpu_ground_velocity_max_error": 0.0,
+    "representative_probes": {
+      "candidate_cpu_cuda_comparison": {
+        "max_abs_distance_error_m": 3.5762788286319847e-08,
+        "max_body_velocity_error_solver_units": 0.0,
+        "max_normal_vector_error": 1.4142131805419922,
+        "sign_comparison_count": 7,
+        "sign_mismatch_count_outside_1e-5_solver_unit_zero_band": 0
+      },
+      "candidate_numpy_reference": {
+        "host_cpu_max_abs_distance_error_m": 0.0,
+        "host_cpu_max_normal_vector_error": 1.0000000121268613,
+        "host_cuda_max_abs_distance_error_m": 3.576278686523438e-08,
+        "host_cuda_max_normal_vector_error": 1.4142131830517806,
+        "outside_design_box_count": 6
+      },
+      "combined_cpu_cuda_comparison": {
+        "max_abs_distance_error_m": 3.5762788286319847e-08,
+        "max_body_velocity_error_solver_units": 0.0,
+        "max_normal_vector_error": 1.4142131805419922,
+        "sign_comparison_count": 7,
+        "sign_mismatch_count_outside_1e-5_solver_unit_zero_band": 0
+      },
+      "ground_cpu_cuda_comparison": {
+        "max_abs_distance_error_m": 0.0,
+        "max_body_velocity_error_solver_units": 0.0,
+        "max_normal_vector_error": 0.0,
+        "sign_comparison_count": 10,
+        "sign_mismatch_count_outside_1e-5_solver_unit_zero_band": 0
+      },
+      "ground_cpu_max_abs_error": 0.0,
+      "ground_gpu_max_abs_error": 0.0,
+      "world_center_probe": {
+        "expected_flow_solver": [
+          50.0,
+          24.0,
+          18.0
+        ],
+        "flow_solver": [
+          50.0,
+          24.0,
+          18.0
+        ],
+        "world_m": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    }
+  },
+  "input_criteria_sidecar_sha256": "dcb5a919575f495d53e67cb950bd4f5a3326e85d9be5131e68c6c892d6a04b05",
+  "input_dataset_id": "ramhachi888/cfd-opt-sdf-v16-genesis-state",
+  "input_dataset_manifest_sha256": "17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b",
+  "input_mount_inventory": {
+    "input_root": "/kaggle/input",
+    "input_root_exists": true,
+    "top_level_entries": [
+      "dir:datasets"
+    ]
+  },
+  "julia_job_sha256": "4c080a72f48754c758ee999a38b7d7b83737dd01d2fe7573f4b164d7f0e1ce4e",
+  "kaggle_status": "KernelWorkerStatus.ERROR",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic",
+  "kernel_runner_sha256": "609a86f40424a83ab4ed870d1fe2c321c9c0994ff5e27077e821c01457f36378",
+  "kernel_runner_source_path": "work/kaggle_w3_v16_cuda_owner_lifetime_version4/kernel_source/runner.py",
+  "kernel_version": 4,
+  "last_completed_stage": "diagnostic_report_written",
+  "lattice_verification": {
+    "csv_sha256": "7ce428a9b0ede9b76abadb8578930acd9e34e1fc3e499c2e5e553aec8eeed02f",
+    "header_sha256": "27af67cd8edf7b2963a1b91e1662c5513e15104a72392c5229fa22aa40ccfc0e",
+    "host_recomputed_stats": {
+      "candidate_cpu": {
+        "bdim_band_abs_d_le_3_count": 6107,
+        "finite_count": 172800,
+        "force_support_abs_d_le_1_count": 2481,
+        "max_sdf_solver_units": 60.0,
+        "min_sdf_solver_units": -1.0,
+        "negative_sdf_count": 1009,
+        "sample_count": 172800,
+        "support_nonzero_normal_count": 2481,
+        "support_normal_magnitude_max": 1.0000000533660636,
+        "support_normal_magnitude_mean": 1.0000000005906133,
+        "support_normal_magnitude_min": 0.999999945830852
+      },
+      "candidate_gpu": {
+        "bdim_band_abs_d_le_3_count": 6107,
+        "finite_count": 172800,
+        "force_support_abs_d_le_1_count": 2476,
+        "max_sdf_solver_units": 60.0,
+        "min_sdf_solver_units": -1.0000001,
+        "negative_sdf_count": 1009,
+        "sample_count": 172800,
+        "support_nonzero_normal_count": 2476,
+        "support_normal_magnitude_max": 1.0000001114593136,
+        "support_normal_magnitude_mean": 0.9999999980688427,
+        "support_normal_magnitude_min": 0.9999998851927234
+      },
+      "combined_cpu": {
+        "bdim_band_abs_d_le_3_count": 20507,
+        "finite_count": 172800,
+        "force_support_abs_d_le_1_count": 7281,
+        "max_sdf_solver_units": 35.5,
+        "min_sdf_solver_units": -1.0,
+        "negative_sdf_count": 1009,
+        "sample_count": 172800,
+        "support_nonzero_normal_count": 7281,
+        "support_normal_magnitude_max": 1.0000000533660636,
+        "support_normal_magnitude_mean": 1.0000000002012515,
+        "support_normal_magnitude_min": 0.999999945830852
+      },
+      "combined_gpu": {
+        "bdim_band_abs_d_le_3_count": 20507,
+        "finite_count": 172800,
+        "force_support_abs_d_le_1_count": 7276,
+        "max_sdf_solver_units": 35.5,
+        "min_sdf_solver_units": -1.0000001,
+        "negative_sdf_count": 1009,
+        "sample_count": 172800,
+        "support_nonzero_normal_count": 7276,
+        "support_normal_magnitude_max": 1.0000001114593136,
+        "support_normal_magnitude_mean": 0.9999999993428332,
+        "support_normal_magnitude_min": 0.9999998851927234
+      },
+      "ground_cpu": {
+        "bdim_band_abs_d_le_3_count": 14400,
+        "finite_count": 172800,
+        "force_support_abs_d_le_1_count": 4800,
+        "max_sdf_solver_units": 35.5,
+        "min_sdf_solver_units": 0.5,
+        "negative_sdf_count": 0,
+        "sample_count": 172800,
+        "support_nonzero_normal_count": 4800,
+        "support_normal_magnitude_max": 1.0,
+        "support_normal_magnitude_mean": 1.0,
+        "support_normal_magnitude_min": 1.0
+      },
+      "ground_gpu": {
+        "bdim_band_abs_d_le_3_count": 14400,
+        "finite_count": 172800,
+        "force_support_abs_d_le_1_count": 4800,
+        "max_sdf_solver_units": 35.5,
+        "min_sdf_solver_units": 0.5,
+        "negative_sdf_count": 0,
+        "sample_count": 172800,
+        "support_nonzero_normal_count": 4800,
+        "support_normal_magnitude_max": 1.0,
+        "support_normal_magnitude_mean": 1.0,
+        "support_normal_magnitude_min": 1.0
+      }
+    },
+    "row_count": 172800
+  },
+  "output_artifacts": {
+    "ERROR.txt": "f3dc9101d5880c49027a197e9d330befb4a5f6cd34f94e67846dfceed2127575",
+    "fingerprint.json": "7efd0bf21a17aff850f40bbbc6b3e0bba82e2ab19f64b59d74f742d5c3c7ebdc",
+    "git_checkout.log": "5e130b51efbcbe13f27832f78f26f7fb7e466a6f1c058a85d18f86a81c8c6bc1",
+    "git_fetch.log": "f787ad9fb708b5f6ad6860e5d5bf36a96a9a74bdc3bb9d7b611ee9feed4ff784",
+    "git_init.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "input_dataset_manifest.json": "17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b",
+    "input_mount_inventory.json": "1af5d82d1d5f0fac9ed47d663013eb392684b9167eb0ada3674d60fcb9a9a441",
+    "input_state_metadata.json": "bff9f425abdda70d2804547aecb8b48d08c847b91fe1e6da876e3f4ee41ee2a9",
+    "instantiate.log": "8cbfaf4d2c405b8cbe25f2cf6e35533b9c4c404806806146336ea7183b9c29eb",
+    "julia_smoke.log": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+    "nvidia_smi.csv": "5915087c4f6d156c135910bc338e480a50338819a2fc474a0105de9dac7b996b",
+    "owner_lifetime_A.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "progress.json": "7629932328385862ed11ed5819ad8d02bef68b684263c441b9820399c46e2507",
+    "runtime_identity.json": "928a60f712f30d1698c41318c2de0b6ea48fd028d9e62200e59fed7fee8d9427",
+    "v16_flow_lattice.csv": "7ce428a9b0ede9b76abadb8578930acd9e34e1fc3e499c2e5e553aec8eeed02f",
+    "w3_cuda_diagnostic.log": "62157e74700f6598fc459995593ef97ed08a6e94018e74249ede6cb6d62d284f",
+    "w3_v16_cuda_diagnostic.json": "8efcc285bf4c471cc80b2dafa5da0dc3b85a2e199d41b3d2e1b9df388f1828f7"
+  },
+  "output_sha256_manifest_sha256": "a2984ba02b056999b1a73bc3ec26ac835d14db91acb7dd9fe1644987cf4f8488",
+  "output_status": "ERROR",
+  "owner_lifetime_diagnostic_complete": false,
+  "owner_lifetime_experiment": {
+    "arms": {},
+    "claim_scope": "implementation-layer owner-lifetime diagnosis only; not W3 primal qualification, target-physics qualification, or a production fix",
+    "criteria_path": "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round2.json",
+    "criteria_sha256": "8530e084ed33807b67b175f2234266cae34f74ccf510ea31130a199f30a0bec9",
+    "criteria_sidecar_sha256": "ef9df9f54f4408783a243f3b92f014722a3131da7bccc86f5b34b24100538b43",
+    "divergence_classes_by_unrooted_replicate": {},
+    "execution_status": "not_reached",
+    "host_controls_A_C_match": null,
+    "host_verification_passed": false,
+    "host_verifier_sha256": "a46531abcb57364cdb5d1ae695f870dd1648b56810bf6a3f5785a3e82de3eca9",
+    "julia_job_sha256": "7fa98a26105f1a2938ab85550931a22cb1020bd27d687d6f4dedb99c1b5572ea",
+    "kernel_runner_sha256": "609a86f40424a83ab4ed870d1fe2c321c9c0994ff5e27077e821c01457f36378",
+    "owner_lifetime_hypothesis": "unresolved",
+    "qualification_flags": {
+      "grid_response_qualified": false,
+      "physical_profile_qualified": false,
+      "sdf_gradient_qualified": false,
+      "shape_update_allowed": false,
+      "topology_birth_qualified": false,
+      "waterlily_reverse_cpu_qualified": false,
+      "waterlily_reverse_cuda_qualified": false,
+      "waterlily_v16_primal_qualified": false
+    },
+    "same_divergence_class_in_both_replicates": [],
+    "source_commit": "885ae7558012da43e6310e2ffb04db4230150f5b"
+  },
+  "owner_lifetime_host_verification_passed": false,
+  "partial_source_checkout_verification": {
+    "diagnostic_job_sha256": "4c080a72f48754c758ee999a38b7d7b83737dd01d2fe7573f4b164d7f0e1ce4e",
+    "diagnostic_source_commit": "885ae7558012da43e6310e2ffb04db4230150f5b"
+  },
+  "qualification_flags": {
+    "grid_response_qualified": false,
+    "physical_profile_qualified": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "waterlily_v16_primal_qualified": false
+  },
+  "solver_steps_v16": 1,
+  "source_commit": "5e985fa3395a01228c18910d96e09ecbc5497628",
+  "source_identity_verification": {
+    "input_identity_verified": true,
+    "qualification_claimed": false,
+    "runtime_identity_verified": true,
+    "source_identity_verified": true
+  },
+  "w2b_sign_convention_audit": {
+    "criteria_path": "docs/evidence/kaggle_w2b_criteria_2026_09_round5.json",
+    "criteria_sha256": "32c1fb8a80658a9ea37713c477c6ededcc0808d5cbb8bbd07d91a2b83ed1eb47",
+    "interpretation": "sign-convention precedent only; no v16 target or force-sign diagnosis",
+    "registered_T4_drag_sign_gate": true,
+    "result_path": "docs/evidence/kaggle_w2b_round5_result_2026_09.json",
+    "result_sha256": "8edf0d36cb706e9f6862faf7ea44845b100c3213433e94ae334251c16c94cccc",
+    "time_weighted_drag_solver_units_by_cells_per_diameter": {
+      "16": 88.23605891136792,
+      "24": 204.44844285577787,
+      "32": 370.3856390591538
+    }
+  }
+}

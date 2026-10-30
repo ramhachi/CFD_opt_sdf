@@ -1,0 +1,65 @@
+{
+  "PYTHONPATH": "work/xfid45_surface_round2_deps:src:scripts",
+  "auxiliary_script_compile": {
+    "command": "python -m py_compile scripts/diagnose_xfid45_round2_representation.py scripts/summarize_xfid45_surface_round2.py",
+    "exit_code": 0
+  },
+  "compileall": {
+    "command": "python -m compileall src tests",
+    "exit_code": 0,
+    "log": "compileall.log"
+  },
+  "evidence_class": "software_validation_not_solver_qualification",
+  "focused_tests": {
+    "command": "python -m pytest -q tests/test_xfid45_surface_round2_candidates.py tests/test_xfid45_round2_metrics.py tests/test_surface_canonicalization.py",
+    "exit_code": 0,
+    "log": "focused_tests.log",
+    "passed": 15
+  },
+  "full_pytest": {
+    "command": "python -m pytest -q",
+    "exit_code": 1,
+    "failed": 36,
+    "log": "full_pytest.log.gz",
+    "lossless_archive": "gzip mtime=0, decompression identity checked; original pytest whitespace retained",
+    "new_failure_ids": [],
+    "passed": 1355,
+    "same_failure_ids_as_predecessor_fixture_restored_run": true,
+    "skipped": 5
+  },
+  "git_diff_check": {
+    "command": "git diff --check",
+    "exit_code": 0,
+    "log": "diff_check.log"
+  },
+  "independent_verifier": {
+    "command": "python scripts/verify_xfid45_surface_round2.py",
+    "completed_cases": 30,
+    "exit_code": 1,
+    "log": "independent_verification.log",
+    "reason": "individual geometry gate discrepancies retained; 24/30 exact gate agreement; 30/30 overall FAIL agreement"
+  },
+  "python_executable": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "solver_qualification": false,
+    "topology": false
+  },
+  "reconciliation": {
+    "command": "python scripts/summarize_xfid45_surface_round2.py",
+    "exit_code": 0
+  },
+  "representation_diagnostic": {
+    "command": "python scripts/diagnose_xfid45_round2_representation.py",
+    "exit_code": 0,
+    "scope": "saved arrays only, no candidate/gate changes"
+  },
+  "ruff": {
+    "exit_code": 0,
+    "log": "ruff.log"
+  }
+}

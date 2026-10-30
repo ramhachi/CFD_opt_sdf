@@ -1,0 +1,72 @@
+{
+  "kind": "pq3_2_volume_ramp_manifest",
+  "created": "2026-09-22",
+  "registered_before_computation": true,
+  "diagnosis_from_pq3_1": [
+    "fixed upper-bound volume budget gave no growth incentive (projected volume hit the limit and stage 3 rejected everything)",
+    "filter radius 0.075 m (1.5 cells) left features below the extraction scale"
+  ],
+  "declared_minimum_solid_width_m": 0.3,
+  "chunks": [
+    {
+      "filter_radius_m": 0.15,
+      "b": 0.0,
+      "q": 0.0,
+      "volume_delta": 0.004,
+      "iterations": 3,
+      "move_limit": 0.05
+    },
+    {
+      "filter_radius_m": 0.15,
+      "b": 0.0,
+      "q": 0.0,
+      "volume_delta": 0.01,
+      "iterations": 3,
+      "move_limit": 0.05
+    },
+    {
+      "filter_radius_m": 0.15,
+      "b": 0.0,
+      "q": 0.0,
+      "volume_delta": 0.02,
+      "iterations": 3,
+      "move_limit": 0.05
+    },
+    {
+      "filter_radius_m": 0.15,
+      "b": 8.0,
+      "q": 30.0,
+      "volume_delta": 0.03,
+      "iterations": 3,
+      "move_limit": 0.03
+    },
+    {
+      "filter_radius_m": 0.15,
+      "b": 16.0,
+      "q": 100.0,
+      "volume_delta": 0.03,
+      "iterations": 3,
+      "move_limit": 0.01
+    }
+  ],
+  "volume_absolute_tolerance": 0.0001,
+  "bracket": {
+    "epsilon": 0.0001,
+    "noise_floor_abs": 1e-06
+  },
+  "acceptance_profile": {
+    "trust_veto": false
+  },
+  "hard_gates": {
+    "beta_mean_nd_max": 0.01,
+    "max_rho_min": 0.9,
+    "volume_violation_max": 0.0001
+  },
+  "stop_conditions": [
+    "no schedule or threshold change after seeing results"
+  ],
+  "budget": {
+    "iterations": 15,
+    "note": "~1 parent + trials/brackets per iteration"
+  }
+}

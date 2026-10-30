@@ -1,0 +1,164 @@
+{
+  "artifact_paths": {
+    "dataset_remote_audit": "work/kaggle_w4_v16_dataset_round2_remote/remote_inventory_audit.json",
+    "exact_kaggle_logs": "work/kaggle_w4_version1/kaggle.log",
+    "output": "work/kaggle_w4_version1/output/w4_v16_sensitivity",
+    "terminal_status": "work/kaggle_w4_version1/status_terminal.txt"
+  },
+  "criteria": {
+    "host_verifier_sha256": "232a1f5d652cf644f6db2c65642e0705ae9350cc71b5cff43b4348526e30825b",
+    "julia_job_sha256": "4f22ad453bee8df2465ec15d96c38f50c2dd24955c2dac28cd7148a707f537ba",
+    "kernel_runner_sha256": "456bd7e711da839d514538377413de111a991730c19ec965ba911f562fdc065e",
+    "path": "docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round2.json",
+    "sha256": "5e41ffd790b64638659136bfba5b0abfda7325c3578f15fe4d16fa610a7123da",
+    "sidecar_sha256": "e102fe62b60b1a5118ecd3374ee85ae58ea006503b0256ff6621b540d2a09cad",
+    "source_commit": "97a5bcaedcc8f171cda3710a763a22e6210cfbb5"
+  },
+  "dataset": {
+    "criteria_sha256": "5e41ffd790b64638659136bfba5b0abfda7325c3578f15fe4d16fa610a7123da",
+    "id": "ramhachi888/cfd-opt-sdf-v16-w4-sensitivity",
+    "manifest_sha256": "3d505dfa1ee55d935f7123aa30cf8e665471e91105a5ce968f5de6aa509d7f42",
+    "private": true,
+    "remote_inventory_audit_sha256": "20503ff4e6492b1acc23ef46813f1999e42a86f082a93aa45b88ea8934c53b9f",
+    "remote_inventory_verified": true,
+    "status": "ready",
+    "version": 1
+  },
+  "diagnostic_id": "w4_v16_round2_kernel_version1_pre_solver_case_inventory_failure",
+  "evidence_class": "diagnostic_only",
+  "execution": {
+    "canonical_sdf_loaded_in_w4_job": false,
+    "case_inventory_guard_reached": true,
+    "criteria_discovery_and_input_binding_passed": true,
+    "cuda_smoke_passed": true,
+    "dataset_manifest_verification_passed": true,
+    "force_csvs": [],
+    "force_integration_reached": false,
+    "gpu_sdf_roundtrip_reached": false,
+    "julia_job_process_started": true,
+    "julia_package_instantiate_passed": true,
+    "long_horizon_reached": false,
+    "runner_stage": "julia_job",
+    "simulation_constructed": false,
+    "solver_started": false,
+    "solver_step_invoked": [],
+    "solver_step_returned": [],
+    "solver_steps": 0,
+    "source_checkout_passed": true,
+    "t_u_l": null,
+    "waterlily_body_constructed": false
+  },
+  "failure": {
+    "class": "source/job pre-solver case-inventory guard failure",
+    "criteria_or_threshold_changed": false,
+    "exact_exception": "ERROR: LoadError: W4 case inventory drift\nStacktrace:\n [1] error(s::String)\n   @ Base ./error.jl:44\n [2] main()\n   @ Main /tmp/cfd_w4_3t4ccgt0/source/scripts/waterlily_w4_v16_sensitivity_job.jl:300\n [3] top-level scope\n   @ /tmp/cfd_w4_3t4ccgt0/source/scripts/waterlily_w4_v16_sensitivity_job.jl:319\n [4] include(mod::Module, _path::String)\n   @ Base ./Base.jl:306\n [5] exec_options(opts::Base.JLOptions)\n   @ Base ./client.jl:317\n [6] _start()\n   @ Base ./client.jl:550\nin expression starting at /tmp/cfd_w4_3t4ccgt0/source/scripts/waterlily_w4_v16_sensitivity_job.jl:319",
+    "minimal_fix": "replace tuple(case.case_id for case in V16W4_CASES) with Tuple(case.case_id for case in V16W4_CASES), add regression coverage, then bind the changed job to a new immutable W4 criteria round.",
+    "physics_semantics_changed": false,
+    "root_cause": "tuple(generator) constructs a one-element tuple containing the generator; it does not materialize the four registered case_id strings. The case module IDs match the registered EXPECTED_CASE_IDS when materialized with Tuple(generator).",
+    "source_location": "scripts/waterlily_w4_v16_sensitivity_job.jl:300",
+    "stage": "julia_job"
+  },
+  "gate_status": {
+    "T0": "not_evaluated_no_primal_measurement",
+    "T1": "not_evaluated_no_primal_measurement",
+    "T10": "not_evaluated_no_primal_measurement",
+    "T2": "not_evaluated_no_primal_measurement",
+    "T3": "not_evaluated_no_primal_measurement",
+    "T4": "not_evaluated_no_primal_measurement",
+    "T5": "not_evaluated_no_primal_measurement",
+    "T6": "not_evaluated_no_primal_measurement",
+    "T7": "not_evaluated_no_primal_measurement",
+    "T8": "not_evaluated_no_primal_measurement",
+    "T9": "not_evaluated_no_primal_measurement"
+  },
+  "host_verification": {
+    "criteria_source_and_case_contract": "PASS",
+    "full_host_verifier_passed": false,
+    "full_host_verifier_rejection": "ValueError: Kaggle W4 completion marker missing",
+    "local_dataset_and_canonical_sdf": "PASS",
+    "reason": "ERROR.txt is present and DONE/outcome/fingerprint/case measurements do not exist; no W4 result can be verified.",
+    "remote_output_manifest_payload_hashes": "PASS"
+  },
+  "kernel": {
+    "downloaded_kernel_log": "work/kaggle_w4_version1/output/cfd-opt-sdf-w4-v16-sensitivity.log",
+    "downloaded_kernel_log_sha256": "1079cb67af44cbc9a545d1c13143ff5404eb9085ba196f3a784574638e5cab73",
+    "id": "ramhachi888/cfd-opt-sdf-w4-v16-sensitivity",
+    "kaggle_logs_file": "work/kaggle_w4_version1/kaggle.log",
+    "kaggle_logs_sha256": "93464d8f48672b3ad98552d87adf9eff400a42bb219842524b7ce74d3e44d329",
+    "terminal_status": "KernelWorkerStatus.ERROR",
+    "terminal_status_file": "work/kaggle_w4_version1/status_terminal.txt",
+    "terminal_status_sha256": "f784304d00893b3509b023e2636407faa6cdcb335eebd6a2563c4504c8fc6b82",
+    "version": 1
+  },
+  "kind": "waterlily_w4_v16_sensitivity_kernel_diagnostic",
+  "observed_runtime": {
+    "cuda_smoke_passed": true,
+    "gpu_inventory_csv_sha256": "1f8467ec5f87e2f82adf8326f60a1caa28f7877a23dadc67ddc9d82786fd740e",
+    "gpu_inventory_lines": [
+      "0, Tesla T4, GPU-ff27cce1-3dc1-359b-6208-6fa449d406aa, 15360 MiB, 580.159.04",
+      "1, Tesla T4, GPU-0287c469-15e4-08d8-a936-c5a7f1229092, 15360 MiB, 580.159.04"
+    ],
+    "julia_cuda_smoke": {
+      "CUARRAY_SMOKE": "true",
+      "CUDA_DRIVER_VERSION": "13.3.0",
+      "CUDA_FUNCTIONAL": "true",
+      "CUDA_JL_VERSION": "6.3.1",
+      "CUDA_RUNTIME_VERSION": "12.8.0",
+      "GPU_COMPUTE_CAPABILITY": "7.5.0",
+      "GPU_NAME": "Tesla T4",
+      "GPU_TOTAL_MEMORY_BYTES": "unknown",
+      "JULIA_VERSION": "1.12.6",
+      "KA_SMOKE": "true",
+      "WATERLILY_CUDA_EXT": "true",
+      "WATERLILY_VERSION": "1.8.0"
+    },
+    "selected_gpu_uuid": "not recorded; solver/job preflight stopped before run fingerprint creation",
+    "waterlily_backend": "not recorded; primal simulation was not constructed"
+  },
+  "prerequisite": {
+    "w3_criteria_path": "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json",
+    "w3_criteria_sha256": "eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb",
+    "w3_host_verified": true,
+    "w3_result_path": "docs/evidence/kaggle_w3_v16_primal_result_round4_2026_09.json",
+    "w3_result_sha256": "d00949d0ea2f2ddcd222f0f376449d9d7aba9b634a650cf75822c640b9e6f4a8"
+  },
+  "qualification_flags": {
+    "absolute_downforce_qualified": false,
+    "gradient_qualified": false,
+    "grid_or_domain_convergence_qualified": false,
+    "optimizer_qualified": false,
+    "physical_profile_equivalence_qualified": false,
+    "reverse_mode_qualified": false,
+    "shape_update_allowed": false,
+    "stationarity_qualified": false,
+    "topology_qualified": false,
+    "w4_sensitivity_matrix_passed": false
+  },
+  "qualification_result": false,
+  "remote_output": {
+    "directory": "work/kaggle_w4_version1/output/w4_v16_sensitivity",
+    "done_marker_present": false,
+    "error_marker_present": true,
+    "error_sha256": "317bba4133f08ecf29ca5fd48ea455f3042cb3ad86ad66e7afd6ccf82f0ba263",
+    "execution_state_sha256": "657c69492bca81114ca86a46971a7aa07de74f2a21986ca88e4843d75e58243c",
+    "manifested_file_count": 14,
+    "manifested_files": {
+      "ERROR.txt": "317bba4133f08ecf29ca5fd48ea455f3042cb3ad86ad66e7afd6ccf82f0ba263",
+      "execution_state.json": "657c69492bca81114ca86a46971a7aa07de74f2a21986ca88e4843d75e58243c",
+      "git_checkout.log": "a355b94c0f618d4afd0714074e45122cb275ffdda6ede736981ac9dedf0c7a25",
+      "git_fetch.log": "f787ad9fb708b5f6ad6860e5d5bf36a96a9a74bdc3bb9d7b611ee9feed4ff784",
+      "git_init.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "input_criteria.json": "5e41ffd790b64638659136bfba5b0abfda7325c3578f15fe4d16fa610a7123da",
+      "input_criteria.json.sha256": "e102fe62b60b1a5118ecd3374ee85ae58ea006503b0256ff6621b540d2a09cad",
+      "input_dataset_manifest.json": "3d505dfa1ee55d935f7123aa30cf8e665471e91105a5ce968f5de6aa509d7f42",
+      "input_state_metadata.json": "bff9f425abdda70d2804547aecb8b48d08c847b91fe1e6da876e3f4ee41ee2a9",
+      "instantiate.log": "39e857e465b414f1b83ead60d24045a8e8cb9eb50565d0b3d1dba40741f5f516",
+      "julia_extract.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "julia_smoke.log": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+      "nvidia_smi.csv": "1f8467ec5f87e2f82adf8326f60a1caa28f7877a23dadc67ddc9d82786fd740e",
+      "w4_v16.log": "8132bbe19e9938ec5fbc52cecf755864ce8534ddd732bfc5ac4c7dfd4b65ef90"
+    },
+    "sha256_manifest_sha256": "108c3b1170afb686804bc7b0884a1e62e2fc05c731e5423889c7b01d27d7f1a9"
+  },
+  "schema_version": 1
+}

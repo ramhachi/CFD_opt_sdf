@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "criteria_id": "kaggle_w1g_gpu_gridsdf_2026_09",
+  "evidence_class": "gpu_geometry_contract_and_numerical_agreement",
+  "registered_before_gpu_measurement": true,
+  "source_commit": "2a0ace4104ae435dbe26160dad85ce038770a862",
+  "inputs": {
+    "k0_result_sha256": "0f9176083c2cb2503101b7f69fd48ef9bc24f15f63d7d187e32bc8eef4cda719",
+    "original_colab_w1g_criteria_sha256": "d12943018d7d68e46d2395430e296692e03a2b4e459b5557b428d2223b184841",
+    "project_sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "manifest_sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "canonical_cpu_phi_sha256": "393d5d7897885d71cda0902129a4aa3db561c59b1a85e8e221d55ce19fca4161"
+  },
+  "fixture": {
+    "script": "scripts/w1g_gpu_geometry_fixture.jl",
+    "mode": "gpu",
+    "cuda_visible_devices": "0",
+    "probe_count": 200012,
+    "bulk_box": 100000,
+    "bulk_band": 100000,
+    "representatives": 12,
+    "outside_probes": 6,
+    "seed": 202606,
+    "note": "The only source change from the Colab fixture selects exactly one GPU UUID with nvidia-smi --id, because Kaggle exposes two T4s. The geometry and CUDA probe code are unchanged."
+  },
+  "gates": {
+    "G1_device_copy": "source and device-roundtrip SHA-256 both equal the registered canonical CPU phi SHA-256",
+    "G2_kernel": "all 200012 probes return from the WaterLily body path inside the CUDA kernel",
+    "G3_finite": "CPU/GPU value and normal outputs are finite",
+    "G4_sign": "zero sign violations for inside-box probes with |phi_cpu_world| > 1e-5 m; gated probe count > 0",
+    "G5_value": "maximum inside-box world-distance error <= 1e-5 m",
+    "G6_normal": "maximum unit-normal L2 error <= 1e-3 on the registered fractional-cell subset; gated count > 0",
+    "G7_outside": "six registered outside probes have exact positive extension and zero normals",
+    "G8_no_scalar_fallback": "scalar_index_blocked is true; no CUDA.allowscalar(true) call",
+    "G9_kaggle_backend_identity": "two distinct Tesla T4s are present; selected GPU UUID is the first inventory UUID, compute capability 7.5.0, driver 580.159.04, CUDA runtime 13.3.0, Julia 1.12.6, CUDA.jl 6.3.1, WaterLily 1.8.0, and Project/Manifest SHA-256 equal the K0 pins"
+  },
+  "uuid_policy": "Record and bind the selected UUID to this run's nvidia-smi inventory. Do not require equality to the Colab W0b UUID or a previous ephemeral Kaggle session's UUID.",
+  "failure_policy": "Any failed gate is a fail-closed W1g diagnostic. Never change the bound after observing its GPU result; register a new round first.",
+  "scope_exclusions": [
+    "no sampled-sphere CFD time step or force (W2-T4b)",
+    "no gradient, reverse-mode, topology, v16 physics or optimizer claim"
+  ],
+  "flags": {
+    "shape_update_allowed": false,
+    "sdf_gradient_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "topology_birth_qualified": false
+  }
+}

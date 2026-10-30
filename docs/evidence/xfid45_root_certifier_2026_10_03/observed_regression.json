@@ -1,0 +1,76 @@
+{
+  "baseline_nearest_root_m": 6.077743819333212e-09,
+  "case": "D0_interface_offset_minus",
+  "evidence_class": "known_regression_fixture_pre_target_qualification",
+  "fixed_sample_file": {
+    "bytes": 57874,
+    "path": "docs/evidence/xfid45_surface_round3_2026_10_03/surfaces/r4/D0_interface_offset_minus/normal_correspondence.npz",
+    "sha256": "4c5580f021e994aed570a3445ace37af019cbae23299ad424e922e04f6271141"
+  },
+  "independent_nearest_root_m": 0.0041666707520111234,
+  "independent_nearest_status": "UNIQUE_NEAREST_ROOT",
+  "independent_roots": [
+    {
+      "bracket_m": [
+        -0.04999995311372914,
+        -0.04999995311354724
+      ],
+      "kind": "crossing",
+      "t_m": -0.04999995311363819
+    },
+    {
+      "bracket_m": [
+        0.0041666707519656485,
+        0.004166670752056598
+      ],
+      "kind": "crossing",
+      "t_m": 0.0041666707520111234
+    }
+  ],
+  "independent_status": "COMPLETE",
+  "mesh_intersection_root_m": 0.004166698455810977,
+  "mesh_minus_corresponding_source_delta_m": 3.378154367350561e-08,
+  "normal": [
+    4.05238144482034e-07,
+    -0.9999999999999178,
+    0.0
+  ],
+  "point_m": [
+    0.22083333333333335,
+    0.40000000000000013,
+    0.1479166666666667
+  ],
+  "previous_diagnostic_discrepancy_m": 0.054166658165599145,
+  "previous_parent_selected_root_m": -0.04999995310790837,
+  "previous_residual_cutoff_m": 2.5000000000000003e-12,
+  "primary_nearest_root_m": 0.0041666707520111234,
+  "primary_nearest_status": "UNIQUE_NEAREST_ROOT",
+  "primary_roots": [
+    {
+      "bracket_m": [
+        -0.049999953113820085,
+        -0.04999995311363819
+      ],
+      "kind": "crossing",
+      "t_m": -0.04999995311372914
+    },
+    {
+      "bracket_m": [
+        0.0041666707519656485,
+        0.004166670752056598
+      ],
+      "kind": "crossing",
+      "t_m": 0.0041666707520111234
+    }
+  ],
+  "primary_status": "COMPLETE",
+  "r": 4,
+  "result": "PASS",
+  "root_position_agreement_tolerance_m": 3.637978807091713e-13,
+  "sample_index": 691,
+  "source_field_file": {
+    "bytes": 198772,
+    "path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D0_interface_offset_minus.npz",
+    "sha256": "e7a83328efc9a7a263e54e59fa349e2d57c6cba5dceffff783291056cbc7fd5f"
+  }
+}

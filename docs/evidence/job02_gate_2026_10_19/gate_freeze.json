@@ -1,0 +1,21 @@
+{
+  "formal_push": [
+    "kaggle kernels push -p infra/kaggle/kernel_job02_gate_f24 --accelerator NvidiaTeslaT4 --timeout 10800",
+    "kaggle kernels push -p infra/kaggle/kernel_job02_gate_f32 --accelerator NvidiaTeslaT4 --timeout 10800"
+  ],
+  "frozen_utc": "2026-10-18T19:33:58.891083+00:00",
+  "issue": 59,
+  "kind": "job02_gate_freeze",
+  "sha256": {
+    "docs/evidence/job02_gate_2026_10_19/gate_spec.json": "19c3b542be79f92f88dd363632ec70d8832cefc484e0a7bdadbcd46a63181711",
+    "docs/evidence/job02_gate_2026_10_19/prerun_note.md": "825e6a54f39412628a3887435781f9c72eddc2d0b70747574c64a728e45a09b0",
+    "docs/evidence/job02_gate_2026_10_19/smoke/smoke_verify_table.json": "d9777358f422a1e9466dc74a2495514bd09b52edc66ba1cc52436920f7003b30",
+    "docs/harness/job02_gate_campaign.json": "c991b92597faee3109e77a69759ffab8882cb7eaa0c73ba3eb2a069e4f8cd319",
+    "docs/harness/job02_gate_campaign.prerun_freeze.json": "b268080af5a0445158122976863c60cd0ac2e9958859ad28118083c996ae89b9",
+    "infra/kaggle/kernel_job02_gate_f24/runner.py": "59b56518debb39fdf29c81864679adba9bbca82999b30cc898d986ff1943a417",
+    "infra/kaggle/kernel_job02_gate_f32/runner.py": "6d0eb8dae79e4f80b2491201168e0dde54707bcfe6b7ce3bd5eda7dd2dd1ea03",
+    "scripts/job02_gate.py": "017a32372755f89c595d4e18a459da13465f7373182083bbe3fb71a8dc2e2a2b"
+  },
+  "smoke_result": "f24 native run: forces CSV e62b6bab... equals the gate reference; verify --smoke passed (smoke tables are not gate evidence)",
+  "source_commit": "ffc9fb9e7b8a27b4bc064e236d9863e22c2cf05b"
+}

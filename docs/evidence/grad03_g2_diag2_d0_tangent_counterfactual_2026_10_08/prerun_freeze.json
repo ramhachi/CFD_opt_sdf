@@ -1,0 +1,275 @@
+{
+  "analysis_constants": {
+    "BASELINE_MIN_SLOPE": 0.05,
+    "END_STEP": 980,
+    "FORK_STEP": 780,
+    "GAIN_WINDOW": 50,
+    "MIN_POINTS": 10,
+    "REDUCE_FACTOR": 0.5,
+    "SLOPE_FROM": 880,
+    "SUPPRESS_SLOPE": 0.01
+  },
+  "candidate_c_identity": {
+    "candidate_c_body_source": "2a4b056a1a4a23dc5699ad340faed8ad35bfab4c103302169a93150feedd04c6",
+    "contract_sha256": "516cfb26b9cc11f920918f08224ec2cfa5ed89d1e7372fa8d8dd7d4807bd5efc",
+    "normal_floor_body_source": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf",
+    "operator_identity": "candidate_c_moment_blend+normal_floor_0.25"
+  },
+  "canonical_state": {
+    "active_node_count": 107415,
+    "narrow_band_width_m": 0.025,
+    "npz_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "shape": [
+      121,
+      65,
+      49
+    ],
+    "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "spacing_m": 0.025,
+    "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb"
+  },
+  "declarations": {
+    "bridge_value": null,
+    "d1_d2_p1_run": false,
+    "float64_run": false,
+    "grad03_verdict": null,
+    "interventions_are_counterfactual_not_fixes": true,
+    "reverse": "untouched",
+    "selected_delta": null
+  },
+  "diag1": {
+    "first_bad": {
+      "component": "tangent",
+      "field": "f",
+      "stage": "correct_conv_diff",
+      "step": 1196
+    },
+    "post_hoc": {
+      "corner_box_1based": "i1:12 j1:8 k49:56",
+      "extrapolated_onset_step": 800,
+      "growth_decade_per_step": 0.0975
+    },
+    "source_commit": "2cd713a588da47416b598a2c26f8c22fbabe2d2c",
+    "verdict": "DIAG_LOCALIZED"
+  },
+  "diag1_evidence_sha256": {
+    "diag1_analysis.json": "d3e2deee97a3e276056e71cd55c560db9d9c9272e33fb5e7c58ade825657b770",
+    "independent_reviews.md": "45b91d75442abcc035dd5b6a3fbef89c00995cbe6e88c8921418a8bbd045b559",
+    "kernel_output/diag_index.json": "e9c27fd60c06e150e940c099686cf51e1de1de32dcc7581a48b6ccef0029155c",
+    "kernel_output/first_bad.json": "a16950684af79bd29262cc3d33933a1a91d9b781e3efa74c82dfc1af6cb6fa2a",
+    "kernel_output/output_manifest.json": "1f46a2a8a91e8b97dfeb9490a074323e951b01e83b0bb0b05e5cfc477e53efef",
+    "note.md": "1a5f7335e41be4363d01496f030b7617982ef7aa0deeff149e21749e797e939d",
+    "posthoc_addendum.json": "c933e8dccce0fd58ad8ec42c277ae2fa3dce82ad8d633c1f3fd87f7fb46655ca",
+    "posthoc_addendum.md": "4171957d49b10e7623f9deff760afc20ee50f844ddbb8ef6d4f84f32b7b410be",
+    "prerun_freeze.json": "215ed319e591788d8791d3bb2034c4bcbaeff8bf59ea807363291d376416e7aa",
+    "prerun_note.md": "9ed0ba0b6c1a747c076c67d819e166655ab1589f0b7d56f19f3cf667e5b8193c"
+  },
+  "directions": {
+    "baseline_phi": {
+      "path": "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw",
+      "sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431"
+    },
+    "fortran_raw_sha256_d0_only": {
+      "D0_interface_offset": "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549"
+    },
+    "inputs_manifest_sha256": "7c01c0ddbc4269bf679361d98c8527e5158797a8d2e5d36d6c040c00f102b711"
+  },
+  "file_hashes": {
+    "analyzer": "b676253431e032a2ec127f0d2dcba86c83452648c03ea229062c2e73a635aec3",
+    "candidate_c_body": "2a4b056a1a4a23dc5699ad340faed8ad35bfab4c103302169a93150feedd04c6",
+    "device_grid_sdf": "2f02c840f4fad5ba5d26d42f4c24bc83f413502b15487427a7dc52f06a80a874",
+    "diag1_job": "33cdbea8425b3815d75b5ea8eb5c4913771397c750d94f62bd630c248e2c163f",
+    "g2_parent_script": "1a458c8bbd26a3992665727cda3db730dd0f78cbb344fa13314e98d1463550b3",
+    "grid_sdf_body": "fa6aecccecbf140158396c9c8e5f3a6c16d3810f792ba45b9c8f4ee481709058",
+    "identity_free_check": "0c91ca220bacf31a028bafbc320b2f31aa16b9e9bf148abe31b7f0d07fcfddcf",
+    "kernel_metadata": "c52dd6970aabf718da6b14df92a79de9a48224bfcc60b0b44e143feb2883b666",
+    "normal_floor_body": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf",
+    "prerun_note": "5048af083dfc3fba2059b416624fa6d191107fb2449e209fa1741189de6831da",
+    "runner": "fee0fa96ebf85fee7091daff681a345e32fffe2cf17c27c084cd23042461efce",
+    "script": "4dc4f2de64a33c839a359b2c9f61d14e5f347de15947391a8d541a37c72eb28a",
+    "stages_diag1": "8c8423946d6ad165a6886ce5dfafd7a3fbb370b8044f75f9809209bc94fb865c",
+    "stages_diag2": "a21e44371afd467a61a379004deb62f4ee0f61a7b02094b8b776ac77d4d8d8c0",
+    "t4_manifest": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "t4_project": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
+  },
+  "frozen_utc": "2026-10-08T13:04:17.095545+00:00",
+  "hypotheses": {
+    "H11": "tangent Poisson solve unconverged because the stop test is primal-only (post-hoc, from DIAG1)",
+    "H12": "dt tangent feedback through the CFL max selection",
+    "H13": "ghost-layer tangent boundary condition",
+    "H7": "exit-side tangent",
+    "H8": "boundary / corner tangent path"
+  },
+  "hypothesis_variants": {
+    "H11": [
+      "V1a_poisson_n4",
+      "V1b_poisson_n16",
+      "V1c_poisson_n32"
+    ],
+    "H12": [
+      "V2_dt_tangent_frozen"
+    ],
+    "H13": [
+      "V5_kill_ghost_layers"
+    ],
+    "H7": [
+      "V6_kill_exit_slab"
+    ],
+    "H8": [
+      "V3_kill_corner_box",
+      "V4d_kill_slabs_all"
+    ]
+  },
+  "kernel_identity": {
+    "id": "ramhachi888/cfd-opt-sdf-grad-g2-d0-tangent-diag2",
+    "machine_shape": "NvidiaTeslaT4",
+    "title": "CFD Opt SDF Grad G2 D0 Tangent Diag2",
+    "type": "script"
+  },
+  "kind": "grad03_g2_diag2_d0_tangent_counterfactual_prerun_freeze",
+  "parent_integration_commit": "2fd1c96164bf6d78cfef781b96bc32988a06ade3",
+  "pins": {
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/waterlily_grad_g2_diag1_stages.jl": "8c8423946d6ad165a6886ce5dfafd7a3fbb370b8044f75f9809209bc94fb865c",
+    "scripts/waterlily_grad_g2_diag2_d0_tangent_counterfactual_2026_10_08.jl": "4dc4f2de64a33c839a359b2c9f61d14e5f347de15947391a8d541a37c72eb28a",
+    "scripts/waterlily_grad_g2_diag2_stages.jl": "a21e44371afd467a61a379004deb62f4ee0f61a7b02094b8b776ac77d4d8d8c0"
+  },
+  "prohibitions": {
+    "bridge_analyzer": true,
+    "candidate_c_change": true,
+    "conv_diff_internal_split": true,
+    "d1_d2_p1": true,
+    "float64_dual": true,
+    "grad03_verdict": true,
+    "production_fix": true,
+    "reverse": true,
+    "selected_delta": true
+  },
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "run": {
+    "end_step": 980,
+    "fork_step": 780,
+    "intervention_stages": [
+      "predict_bc",
+      "predict_exitbc",
+      "project1_bc",
+      "correct_bc",
+      "project2_bc"
+    ],
+    "primary_metric": "log10 of the global max |tangent u| after project2_bc (before that stage's intervention)",
+    "slope_window": [
+      880,
+      980
+    ],
+    "v0_gate": "per-step checksums (u, p, dt bits) equal to the straight replay for steps FORK+1..END",
+    "variants": {
+      "V0_baseline": {
+        "freeze_dt": false,
+        "kill": null,
+        "poisson": null
+      },
+      "V1a_poisson_n4": {
+        "freeze_dt": false,
+        "kill": null,
+        "poisson": {
+          "itmx": 4,
+          "tol": 0.0
+        }
+      },
+      "V1b_poisson_n16": {
+        "freeze_dt": false,
+        "kill": null,
+        "poisson": {
+          "itmx": 16,
+          "tol": 0.0
+        }
+      },
+      "V1c_poisson_n32": {
+        "freeze_dt": false,
+        "kill": null,
+        "poisson": {
+          "itmx": 32,
+          "tol": 0.0
+        }
+      },
+      "V2_dt_tangent_frozen": {
+        "freeze_dt": true,
+        "kill": null,
+        "poisson": null
+      },
+      "V3_kill_corner_box": {
+        "freeze_dt": false,
+        "kill": "i1:12 j1:8 k49:56",
+        "poisson": null
+      },
+      "V4a_kill_slab_xmin": {
+        "freeze_dt": false,
+        "kill": "i1:8",
+        "poisson": null
+      },
+      "V4b_kill_slab_ymin": {
+        "freeze_dt": false,
+        "kill": "j1:8",
+        "poisson": null
+      },
+      "V4c_kill_slab_zmax": {
+        "freeze_dt": false,
+        "kill": "k49:56",
+        "poisson": null
+      },
+      "V4d_kill_slabs_all": {
+        "freeze_dt": false,
+        "kill": "i1:8 + j1:8 + k49:56",
+        "poisson": null
+      },
+      "V5_kill_ghost_layers": {
+        "freeze_dt": false,
+        "kill": "outer 2 cells of every face",
+        "poisson": null
+      },
+      "V6_kill_exit_slab": {
+        "freeze_dt": false,
+        "kill": "i145:152",
+        "poisson": null
+      }
+    }
+  },
+  "runtime_pins": {
+    "cuda_jl": "6.3.1",
+    "forwarddiff": "1.4.5",
+    "julia": "1.12.6",
+    "waterlily": "1.8.0"
+  },
+  "runtime_source_hashes": {
+    "waterlily_flow_jl_sha256": "6138c88f48b04db7ed6861f1f1bec9c450e04214160caef177d85bdad326b7f0",
+    "waterlily_git_tree_sha1": "8e1d973f428df4bae450e1a45f19d0dba3ac6857",
+    "waterlily_multilevelpoisson_jl_sha256": "f6a7b6fb60a27be07133ae3c04a93141defb7a79f70e88a252c3e55399c83009"
+  },
+  "scientific_state": {
+    "alpha_unit": "metre",
+    "case_id": "flow_24",
+    "device": "CuArray (T4)",
+    "dual_width": 1,
+    "float": "Float32",
+    "force_semantics": "candidate only, -(pressure+viscous); drag=Fx, downforce=-Fz",
+    "poisson_itmx": 32,
+    "poisson_tol": 0.0001,
+    "remeasure": true,
+    "sample_every_steps_reference": 8
+  },
+  "source_commit": "6742b68012e23f4b9ffaeb212e845c57eed7f9c6"
+}

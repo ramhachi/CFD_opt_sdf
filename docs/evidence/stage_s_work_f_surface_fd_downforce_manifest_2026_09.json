@@ -1,0 +1,147 @@
+{
+  "manifest": {
+    "campaign_id": "stage_s_work_f_downforce_surface_fd_2026_09",
+    "hypothesis": "the base downforce surface adjoint on the registered V1 body-fitted baseline agrees with centered FD of the same response within the registered profile",
+    "decision": "qualify the downforce surface directional derivative; a failure keeps the shape update unauthorized",
+    "fixture": {
+      "candidate_binding": "docs/evidence/pq4_1_v16_state_stage_s_entry_v2_2026_09.json",
+      "candidate_rho_sha256": "e9a17b676d829d9886819ab026d7ebbc394b877f52df8515ab522a60b7f7117f",
+      "surface_stl_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+      "problem_spec_sha256": "25bc379543c96946e7919a7506c312eaf1845781eb7d7bc6a6414072146c80a8",
+      "grid_family": "body_fitted_V1_0.05m",
+      "refinement_ratio": 1.0,
+      "response_scale": 1.690843254931507,
+      "near_zero_relative": 0.001,
+      "near_zero_absolute_error": 0.0001690843254931507,
+      "response_identity": {
+        "response_id": "downforce",
+        "direction": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "coefficient": "downforce",
+        "objective_sign": -1.0,
+        "bound_kind": "absolute",
+        "sign_convention": "d(downforce)/d(normal displacement); OpenFOAM forceCoeffs liftDir is the negated downforce direction (0,0,1), so downforce = -Cl and the downforce-adjoint objective sign must be applied explicitly"
+      },
+      "surface_basis": {
+        "kind": "volumetricBSplines",
+        "box_m": {
+          "min": [
+            -0.7150000274181366,
+            -0.5399999856948853,
+            -0.3
+          ],
+          "max": [
+            0.6650000154972077,
+            0.5399999856948853,
+            0.3
+          ]
+        },
+        "control_points": [
+          8,
+          8,
+          8
+        ],
+        "normalization": "unit_inf_norm_over_the_free_surface"
+      },
+      "fixed_regions": {
+        "fixed_patches": [
+          "inlet",
+          "outlet",
+          "sideMin",
+          "sideMax",
+          "bottom",
+          "top"
+        ],
+        "free_patch": "design_candidate",
+        "max_normal_displacement_m": 0.001
+      },
+      "epsilon_ladder": {
+        "voxel_size_m": 0.05,
+        "ratios": [
+          0.002,
+          0.005,
+          0.01,
+          0.02
+        ],
+        "epsilons_m": [
+          0.0001,
+          0.00025,
+          0.0005,
+          0.001
+        ]
+      }
+    },
+    "responses": [
+      "downforce"
+    ],
+    "epsilons": [
+      0.0001,
+      0.00025,
+      0.0005,
+      0.001
+    ],
+    "directions": [
+      {
+        "name": "downforce_gradient_aligned",
+        "role": "gradient_aligned",
+        "seed": null,
+        "sign_convention": "d(downforce)/d(normal displacement); OpenFOAM forceCoeffs liftDir is the negated downforce direction (0,0,1), so downforce = -Cl and the downforce-adjoint objective sign must be applied explicitly",
+        "description": "direction = normalized downforce surface gradient from the base adjoint, projected on the free surface"
+      },
+      {
+        "name": "drag_gradient_aligned",
+        "role": "gradient_aligned",
+        "seed": null,
+        "sign_convention": "d(Cd)/d(normal displacement); the drag-adjoint objective is the declared +x drag response, so the analytic derivative is the faceSensNormal<drag> value with the adjoint objective sign applied",
+        "description": "direction = normalized drag surface gradient from the base adjoint, projected on the free surface"
+      },
+      {
+        "name": "random_seed_11",
+        "role": "random",
+        "seed": 11,
+        "sign_convention": "d(response)/d(normal displacement); the direction is a seeded unit normal field on the free surface",
+        "description": "seeded random normal field on the free surface (seed 11)"
+      },
+      {
+        "name": "random_seed_2026",
+        "role": "random",
+        "seed": 2026,
+        "sign_convention": "d(response)/d(normal displacement); the direction is a seeded unit normal field on the free surface",
+        "description": "seeded random normal field on the free surface (seed 2026)"
+      }
+    ],
+    "uncertainty_rule": "centered-difference relative error against the analytic directional derivative; a gradient-aligned analytic below the registered noise floor is unresolved and fails closed; near-zero non-aligned directions use the pre-registered absolute error rule",
+    "gates": {
+      "convergence": "every perturbation primal meets the registered problem-spec residual convergence; no unconverged run enters the FD table",
+      "stationarity": "response stationarity window per the registered Stage V profile",
+      "mesh": "the registered stage_v_qualification_v1 mesh profile on every perturbation case",
+      "geometry": "baseline/spec/hash binding plus watertight, manifold, non-self-intersecting, volume, width/gap and clearance gates on both the +epsilon and -epsilon surfaces",
+      "required_pairs": "both gradient-aligned directions and every registered random seed at every registered epsilon; a pair fails if either side fails",
+      "resolvability": "relative error <= 5% and sign agreement; otherwise the row is resolved as fail, never dropped"
+    },
+    "stop_conditions": [
+      "stop and re-register if any perturbation pair misses a geometry, mesh, residual or stationarity gate",
+      "never change epsilons, seeds, directions or tolerances after the first response value",
+      "do not run a shape update from this campaign"
+    ],
+    "fallback_conditions": [
+      "if the analytic derivative is below the noise floor, record the response as unresolved",
+      "diagnose sign, surface-area weighting, normal convention and morpher one factor at a time"
+    ],
+    "profile_id": "fd_gradient_v1",
+    "random_seeds": [
+      11,
+      2026
+    ],
+    "environment": {
+      "registered_at_utc": "2026-09-24T14:49:27.284251+00:00"
+    },
+    "code_commit": "23e8085fa7381ce0fe801e3329a196bc5e902c91",
+    "created": "2026-09-24",
+    "schema_version": 1
+  },
+  "manifest_hash": "9c19160d078bbc283bc96f9e1a6a7d9a806b3e6bc030348189917602de0c4701"
+}

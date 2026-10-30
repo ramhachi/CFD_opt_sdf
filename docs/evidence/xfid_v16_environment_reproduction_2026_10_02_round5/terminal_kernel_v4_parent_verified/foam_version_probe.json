@@ -1,0 +1,10 @@
+{
+  "command": [
+    "bash",
+    "-lc",
+    "source /usr/lib/openfoam/openfoam2512/etc/bashrc && source \"$WM_PROJECT_DIR/etc/config.sh/aliases\" && foamVersion"
+  ],
+  "returncode": 0,
+  "stderr": "OpenFOAM-v2512\n",
+  "stdout": ""
+}

@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "kind": "sdf_native_w0_julia_env",
+  "environment_id": "julia_env_w0_2026_09",
+  "evidence_class": "capability_and_contract",
+  "immutable": true,
+  "solver_started": false,
+  "existing_evidence_modified": false,
+  "generated_on": {
+    "platform": "colab managed runtime (Linux-6.6.122+-x86_64-with-glibc2.39)",
+    "gpu": "none (no nvidia-smi on this runtime; this is the Colab CPU secondary role)",
+    "julia": "1.12.6",
+    "note": "operator-environment/run-media evidence recorded by the session controller through the colab notebook; not repository-executed"
+  },
+  "pinned_environment": {
+    "project": {
+      "path": "julia/CFDSDFWaterLily/Project.toml",
+      "sha256": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+      "content": "[deps]\nWaterLily = \"ed894a53-35f9-47f1-b17f-85db9237eebd\"\n",
+      "note": "byte-identical to the [deps]-only Project the resolver created; adding a [compat] block would desynchronize the manifest project_hash so it is kept as generated"
+    },
+    "manifest": {
+      "path": "julia/CFDSDFWaterLily/Manifest.toml",
+      "sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+      "generated_on_version": "julia_version = \"1.12.6\"",
+      "project_hash": "b7bb23f0e4120e6d0433f2301d94d29856baf31d",
+      "manifest_format": "2.0",
+      "package_count": 46,
+      "waterlily": "1.8.0",
+      "key_dependency_versions": {
+        "WaterLily": "1.8.0",
+        "ForwardDiff": "1.4.6",
+        "KernelAbstractions": "0.9.42",
+        "StaticArrays": "1.9.22",
+        "Adapt": "4.7.1",
+        "Atomix": "1.2.1",
+        "DiffResults": "1.1.0",
+        "DiffRules": "1.16.0",
+        "Requires": "1.3.1",
+        "SpecialFunctions": "2.9.0"
+      }
+    }
+  },
+  "verification_on_colab_cpu_runtime": {
+    "manifest_sha256_matches_committed": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    "instantiate": {
+      "command": "julia /content/instantiate.jl /content/cfd_sdf_repo/julia/CFDSDFWaterLily (Pkg.activate + Pkg.instantiate)",
+      "exit_code": 0,
+      "status_lines": [
+        "Activating project at `/content/cfd_sdf_repo/julia/CFDSDFWaterLily`",
+        "Status `/content/cfd_sdf_repo/julia/CFDSDFWaterLily/Project.toml`",
+        "[ed894a53] WaterLily v1.8.0"
+      ],
+      "note": "the clone did not print any project-hash de-synchronization warning; the pinned pair is coherent"
+    },
+    "using_smoke": {
+      "command": "julia --project=<env> -e 'using WaterLily; println(WATERLILY_LOADED_OK, pkgversion(WaterLily))'",
+      "exit_code_of_loaded_probe": 0,
+      "stdout_markers": ["WATERLILY_LOADED_OK 1.8.0", "julia 1.12.6"],
+      "caveat": "the same julia process raised an unrelated Main.ModuleLinearAlgebra probe line after the successful load; the load itself succeeded on the CPU-only runtime without a GPU"
+    }
+  },
+  "runtime_fingerprint_policy": "a changed Julia patch, WaterLily version, or CUDA/Enzyme addition is a different backend identity per runtime/fingerprint.py and must re-pin with a new registration",
+  "env_not_yet_registered_as_solver": [
+    "no CUDA; no Enzyme; no CFDSDFWaterLily package source modules (they arrive with W1/GridSDFBody)",
+    "no solver step, no force value, no physics claim of any kind"
+  ],
+  "claims_supported": [
+    "the committed Project.toml/Manifest.toml pair instantiates and loads WaterLily 1.8.0 on a Julia 1.12.6 Colab CPU runtime",
+    "the committed Manifest is the byte-exact resolver output whose sha256 and every resolved uuid/tree-sha/version were cross-checked against the generating runtime"
+  ],
+  "claims_not_supported": [
+    "no GPU/CUDA/Enzyme qualification; T4 runtime identity is not yet measured",
+    "no primal run, no gradient, no topology-birth or optimizer qualification",
+    "no absolute, grid-independent, high-Re or full-vehicle downforce claim"
+  ],
+  "flags": {
+    "shape_update_allowed": false,
+    "sdf_gradient_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "topology_birth_qualified": false
+  }
+}

@@ -1,0 +1,389 @@
+{
+  "design": {
+    "baseline_byte_reference": "032ef1cfae320ada28d05a3ad5785fc1fd770b202d4f0d2e9ed8490c6ab61753",
+    "baseline_count": 1,
+    "basis_order": [
+      "D0_interface_offset",
+      "D1_filtered_seed11",
+      "D2_filtered_seed2026",
+      "P1_upstream_lobe"
+    ],
+    "case": "flow_32",
+    "job": "scripts/waterlily_lowdim02_flow32_job.jl (unchanged)",
+    "reinitialization": "none",
+    "signed_step_mm": [
+      -2.5,
+      2.5
+    ],
+    "state_count": 9,
+    "states": [
+      "step01__baseline",
+      "step01__D0_interface_offset__s2.5mm__plus",
+      "step01__D0_interface_offset__s2.5mm__minus",
+      "step01__D1_filtered_seed11__s2.5mm__plus",
+      "step01__D1_filtered_seed11__s2.5mm__minus",
+      "step01__D2_filtered_seed2026__s2.5mm__plus",
+      "step01__D2_filtered_seed2026__s2.5mm__minus",
+      "step01__P1_upstream_lobe__s2.5mm__plus",
+      "step01__P1_upstream_lobe__s2.5mm__minus"
+    ]
+  },
+  "file_hashes": {
+    "analyzer": "808c6bea08ce69f3bc4296968e8c69271b8989067a30588861609a0bf1e705c1",
+    "baseline_phi": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "canonical_npz": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "cfd_sdf_source_tree": "56b46b11b80d28c0e95339b9e5398f893159814a4bd5497c2b524b16b6fd4b25",
+    "contract": "6d710be48014d66d31881bbfd8e18f8a7cb5af94bda325d99cd86f9bd739d9f0",
+    "direction_D0_interface_offset": "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549",
+    "direction_D1_filtered_seed11": "96fe6e62c5fcb7ad0108dd64d6fac68cc488ee49deb188be742530f828037a87",
+    "direction_D2_filtered_seed2026": "2a22eb09407a14755f495fa07d4df8dee2d4632db41a0b75d1bf744fd3d1d5de",
+    "direction_P1_upstream_lobe": "24cc06aeb18e2a5729e560636f13ce78f8f19746268699783e8498921aec5dcc",
+    "flow32_contract": "1f9e0a8776d8ce31b9f39249111c2bea67e7cafb713ca73bc8bc571b18954304",
+    "flow32_criteria_source": "75d2f408b849289a3c20764ed16a0dd207c0872bf5c10cf13dc1853472f1eac6",
+    "force_io": "dda177cda3c8f02626be7af3f9ae2d2cad984c8eeea6a09c3445e64ac906c3d2",
+    "formal_criteria": "31b29cccc9d3fd6912a910b09694a8230f9ee0aa84e6a418161881ffbcf907be",
+    "freeze_builder": "f45fb80b0d128e70050cf65183ad0cbbabd965cb655121c9d16619fce6e5452c",
+    "geometry_exploration": "a55503c6a2a1ec58af21c9ca4ca0a77afc7b04b0e733143c9dc340edd971048b",
+    "grid01_gpu_policy": "bfaed961f3136d14bdeb7e4fccfab807f5fb8c257b45cd3ebb875963104fff38",
+    "handoff_instruction": "8f8e75773243b9b5763c70fb6aced5997b7d427cc63f9a4a749243c4c2c2dc30",
+    "identity_free_check": "b3fb188bf56c26b110fa8a058563f571684e1c5c49a98b72314a30d993d318b0",
+    "identity_free_check_sha256": "304502983f94583f7513d3031068f2038ae6478da4dcb1fc975dafe0617cd80a",
+    "identity_listing_confirmation": "70a50202b3d3abd020a93e02b40987959a53a89b77f58c105893bbd73722517e",
+    "identity_listing_confirmation_sha256": "6f60b90c54c2fd50f64ab53697bb59a619040ff90199ba15f89a645f376e5a81",
+    "input_builder": "ba10ccbe821250f49256092fea72c63693aa68d6dc0a6ac86baa017b5eaa9e98",
+    "inventory": "3f070ed30f8298983745b3b4ca4be4f222591ebde24ccc5ea5ad6bd32b992766",
+    "inventory_canonical_json": "3f070ed30f8298983745b3b4ca4be4f222591ebde24ccc5ea5ad6bd32b992766",
+    "inventory_sha256": "c551c63a2a96cbdb6fe9e46c470f4f75ff159fd1dfdf5f30eab558285177c8bd",
+    "job": "418796ce258e8f9e9945332d18869104a53f74000a96b609d4f4b42c82a21683",
+    "julia_source_tree": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "kernel_builder": "81cd3a0f2458094175badc09a69c1e502b02b4023bbada09af9609c731cddff2",
+    "kernel_metadata": "92aab4a42a1a34168e378a130ae460550aa386b565520f1ff07caebc4543e0e6",
+    "lowdim01_geometry_helpers": "dcafca336fd9826a35fc9cfe306d5c5186e13e376e656fd529b7dc64d3db5925",
+    "lowdim01_inventory": "684af1c312fa9d896ce328f7e541d942e404e2315bb2f749539fcab9bc10f325",
+    "lowdim01_proposal_direction": "fc239c1169c3336aa283d12734500d882027602e75b619ffffe146ba373c9010",
+    "lowdim01_states_module": "456c0110dafb64c2dc4b82e35ba7830aa4b436364802bb6b437f05aa35e82d32",
+    "prerun_note": "11a54427131b7343d008d73b16e06338ab3585c16151bdafcfc7ba10f9a23bc1",
+    "rendered_runner": "f395b8efc0c18a50d8b06dcee110aac9caf8255aa9e155ae530149056cd84def",
+    "runner_template": "cd49ae8571f257d9802d3d18a879a9fa53b53eba1b22c70a9c74640c85699ecc",
+    "step01_analysis": "6cd3a7b2b678afdbbb794afa83a64295fc8bfcf92bbabbfb8cafc51ed2ab4f0c",
+    "step01_inventory": "34a21fe6c88a8aa951502adcf29bbbd8619a354c7ec7838df5ae8e1df327547a",
+    "step01_states_module": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "t4_manifest": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "t4_project": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "test_grid01_synthetic": "ddc6109e5fde4825746a0664bed8017c3cdf4706dedf9d32a4ea461f11f9a159",
+    "test_test_grid01_analyzer": "ab4456e2b32a15b72c93a1e3c5330bd598212e44b799dcfc5877e1c298ccac65",
+    "test_test_grid01_contract": "799245a909253c1dae08407c5b9300bf793d5e78bfbc378afe6a5d6fd9875206",
+    "test_test_grid01_followup": "0c9a663843fe584fd41a45c20c113a073d2668cbf7d78e2ee42f8cef671146f8",
+    "test_test_grid01_prereg": "c6898fbe03e20095651de72e647480cde5c57908a64dff161e46471d13be3bb3",
+    "w4_flow32_baseline_csv": "032ef1cfae320ada28d05a3ad5785fc1fd770b202d4f0d2e9ed8490c6ab61753"
+  },
+  "flow24_reference": {
+    "recomputed": false,
+    "secants": {
+      "D0_interface_offset": {
+        "downforce": {
+          "eta_even": 1.3735929016358357,
+          "even_part_n": -0.002680947782512988,
+          "g_sec_n_per_m": 0.7807110183287058,
+          "r0_n": 0.3316344583180616,
+          "r_minus_n": 0.32700173298972685,
+          "r_plus_n": 0.3309052880813704,
+          "resolved": true,
+          "source_step01_resolved": true,
+          "step_mm": 2.5
+        },
+        "drag": {
+          "eta_even": 4.790828745617631,
+          "even_part_n": -0.0013472084847528376,
+          "g_sec_n_per_m": -0.11248229116811448,
+          "r0_n": 0.3239039699743226,
+          "r_minus_n": 0.32283796721749003,
+          "r_plus_n": 0.32227555576164946,
+          "resolved": true,
+          "source_step01_resolved": true,
+          "step_mm": 2.5
+        }
+      },
+      "D1_filtered_seed11": {
+        "downforce": {
+          "eta_even": 1.1047595352058484,
+          "even_part_n": -0.00029935566165628646,
+          "g_sec_n_per_m": -0.10838762721355755,
+          "r0_n": 0.3316344583180616,
+          "r_minus_n": 0.33160607172443923,
+          "r_plus_n": 0.33106413358837145,
+          "resolved": true,
+          "source_step01_resolved": false,
+          "step_mm": 2.5
+        },
+        "drag": {
+          "eta_even": 0.4509868512401088,
+          "even_part_n": -7.615838554586585e-05,
+          "g_sec_n_per_m": -0.06754820929829597,
+          "r0_n": 0.3239039699743226,
+          "r_minus_n": 0.3239966821120224,
+          "r_plus_n": 0.32365894106553095,
+          "resolved": true,
+          "source_step01_resolved": true,
+          "step_mm": 2.5
+        }
+      },
+      "D2_filtered_seed2026": {
+        "downforce": {
+          "eta_even": 1.1153642631069627,
+          "even_part_n": -0.00026806664134082503,
+          "g_sec_n_per_m": -0.09613599797221317,
+          "r0_n": 0.3316344583180616,
+          "r_minus_n": 0.33160673167165133,
+          "r_plus_n": 0.33112605168179027,
+          "resolved": true,
+          "source_step01_resolved": false,
+          "step_mm": 2.5
+        },
+        "drag": {
+          "eta_even": 0.2087343475354113,
+          "even_part_n": -8.808525340497919e-05,
+          "g_sec_n_per_m": -0.16879877115583142,
+          "r0_n": 0.3239039699743226,
+          "r_minus_n": 0.3242378816488072,
+          "r_plus_n": 0.323393887793028,
+          "resolved": true,
+          "source_step01_resolved": true,
+          "step_mm": 2.5
+        }
+      },
+      "P1_upstream_lobe": {
+        "downforce": {
+          "eta_even": 0.8042031737416665,
+          "even_part_n": -0.00076863646105374,
+          "g_sec_n_per_m": -0.38230958849742036,
+          "r0_n": 0.3316344583180616,
+          "r_minus_n": 0.33182159582825144,
+          "r_plus_n": 0.32991004788576433,
+          "resolved": true,
+          "source_step01_resolved": true,
+          "step_mm": 2.5
+        },
+        "drag": {
+          "eta_even": 0.5546985045693417,
+          "even_part_n": -0.00029542881634531115,
+          "g_sec_n_per_m": -0.21303739881157746,
+          "r0_n": 0.3239039699743226,
+          "r_minus_n": 0.3241411346550062,
+          "r_plus_n": 0.3230759476609483,
+          "resolved": true,
+          "source_step01_resolved": true,
+          "step_mm": 2.5
+        }
+      }
+    },
+    "source": "docs/evidence/step01_finite_step_secant_2026_10_09/step01_analysis.json; numeric fields copied from series rows[0] at step_mm=2.5, source resolved retained separately, GRID-01 resolved/even part rederived",
+    "step01_analysis_sha256": "6cd3a7b2b678afdbbb794afa83a64295fc8bfcf92bbabbfb8cafc51ed2ab4f0c"
+  },
+  "flow32_baseline_reference": {
+    "force_scale_n_per_solver_force": 0.0006250000000000001,
+    "forces_csv_path": "docs/evidence/kaggle_w4_v17_candidate_c_round2_retained/flow_32.forces.csv",
+    "forces_csv_sha256": "032ef1cfae320ada28d05a3ad5785fc1fd770b202d4f0d2e9ed8490c6ab61753",
+    "host_recomputed_n": {
+      "downforce_n": 0.3612783598966907,
+      "drag_n": 0.35002673442739357
+    },
+    "source": "retained W4 v17 round-2 flow_32 baseline; byte-identity gate only, not a reused measurement record",
+    "w4_result_total_downforce_n": 0.3612783598966907,
+    "w4_result_total_drag_n": 0.35002673442739357
+  },
+  "frozen_utc": "2026-10-09T13:45:22.840223+00:00",
+  "identity_free_check": {
+    "all_free": true,
+    "captured_utc": "2026-10-09T10:38:06.537034+00:00",
+    "cli_version": "Kaggle CLI 2.2.4",
+    "intended_slugs": [
+      "cfd-opt-sdf-grid01-a"
+    ],
+    "kind": "fd08_v2_kaggle_identity_free_check",
+    "listed_slug_clashes": {},
+    "owned_dataset_count": 20,
+    "owned_kernel_count": 39,
+    "owner": "ramhachi888",
+    "status_probes": {
+      "cfd-opt-sdf-grid01-a": {
+        "datasets": {
+          "exit_code": 1,
+          "stderr": "403 Client Error: Forbidden for url: https://api.kaggle.com/v1/datasets.DatasetApiService/GetDatasetStatus",
+          "stdout": ""
+        },
+        "kernels": {
+          "exit_code": 1,
+          "stderr": "Cannot access kernel 'ramhachi888/cfd-opt-sdf-grid01-a' (Permission 'kernels.get' was denied). The most likely cause is a wrong kernel slug. The benchmark_task_slug returned by get_benchmark_leaderboard differs from the actual kernel slug \u2014 use the slug from the notebook URL (kaggle.com/code/owner/K",
+          "stdout": ""
+        }
+      }
+    }
+  },
+  "kind": "grid01_cross_grid_secant_prerun_freeze",
+  "known_before_run": {
+    "direction_and_thresholds_changed_after_exploration": false,
+    "flow32_new_measurement_available_at_registration": false,
+    "flow32_noise_measured": false,
+    "prior_exploratory_flow24_secants_were_visible": true
+  },
+  "measurement": {
+    "flow32_case": {
+      "case_id": "flow_32",
+      "flow_dims": [
+        200,
+        96,
+        72
+      ],
+      "flow_spacing_m": 0.025,
+      "solver_length": 32.0,
+      "solver_time_unit_s": 0.025,
+      "solver_viscosity": 0.4
+    },
+    "flow32_measurement": {
+      "aggregate_solver_time_definition": "sum of registered per-state Julia wall_seconds excluding each state's first compile/warmup step, consistent with the bound W4 job",
+      "candidate_operator": "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))",
+      "case": {
+        "case_id": "flow_32",
+        "density_kg_m3": 1.0,
+        "dynamic_viscosity_pa_s": 0.01,
+        "flow_dims": [
+          200,
+          96,
+          72
+        ],
+        "flow_spacing_m": 0.025,
+        "freestream_mps": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "precedent_criteria_path": "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10_round2.json",
+        "precedent_criteria_sha256": "09e25e88767110312a134de8c10f3c2668a4d7f9a2f29829d163c72a1f5f3ef1",
+        "reference_area_m2": 0.64,
+        "reference_length_m": 0.8,
+        "reynolds": 80.0,
+        "solver_length": 32.0,
+        "solver_time_unit_s": 0.025,
+        "solver_viscosity": 0.4
+      },
+      "case_id": "flow_32",
+      "force_unit": "N",
+      "kernel_execution_allowance_s": 10800,
+      "per_state_timeout_s": 900,
+      "qualification_claim": "bounded GRID-01 flow_32 finite-step diagnostic; no qualification claim",
+      "solver_wall_time_cap_s": 8100,
+      "time_window_t_u_l": [
+        80.0,
+        120.0
+      ]
+    },
+    "force_conversion": "host recomputation with flow_32 spacing 0.025 m; do not pass flow_24 criteria unchanged",
+    "resolution_difference_n_strictly_greater_than": 3e-05,
+    "signed_perturbations": [
+      "plus",
+      "minus"
+    ],
+    "step_mm": 2.5,
+    "time_window_t_u_l": [
+      80.0,
+      120.0
+    ],
+    "unresolved_numeric_secants_preserved": true
+  },
+  "parent_integration_commit": "32e64715dc20a9ac2dd78e3c011bcb48f311b98e",
+  "pins": {
+    "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D0_interface_offset.dir_f4_fortran.raw": "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549",
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D1_filtered_seed11.dir_f4_fortran.raw": "96fe6e62c5fcb7ad0108dd64d6fac68cc488ee49deb188be742530f828037a87",
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D2_filtered_seed2026.dir_f4_fortran.raw": "2a22eb09407a14755f495fa07d4df8dee2d4632db41a0b75d1bf744fd3d1d5de",
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/P1_upstream_lobe.dir_f4_fortran.raw": "24cc06aeb18e2a5729e560636f13ce78f8f19746268699783e8498921aec5dcc",
+    "docs/evidence/grid01_cross_grid_secant_2026_10_09/inventory.json": "3f070ed30f8298983745b3b4ca4be4f222591ebde24ccc5ea5ad6bd32b992766",
+    "docs/evidence/kaggle_w4_v17_candidate_c_round2_retained/flow_32.forces.csv": "032ef1cfae320ada28d05a3ad5785fc1fd770b202d4f0d2e9ed8490c6ab61753",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/grid01_gpu.py": "bfaed961f3136d14bdeb7e4fccfab807f5fb8c257b45cd3ebb875963104fff38",
+    "scripts/step01_states.py": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "scripts/waterlily_lowdim02_flow32_job.jl": "418796ce258e8f9e9945332d18869104a53f74000a96b609d4f4b42c82a21683"
+  },
+  "prohibitions": {
+    "actual_primal_line_search": true,
+    "ad_or_tangent": true,
+    "basis_expansion": true,
+    "fd08_verdict_change": true,
+    "flow_grid_selection_for_first_optimization_step": true,
+    "grad03_verdict": true,
+    "gradient_qualification": true,
+    "grid_convergence_or_gci_claim": true,
+    "opt01_supersession": true,
+    "physical_downforce_claim": true,
+    "posthoc_threshold_or_state_change": true,
+    "prohibit_issue29_edits_in_grid01_branch": true,
+    "prohibit_new_experiment_issue_creation_without_user_decision": true,
+    "qualification_flag_change": true,
+    "reinitialization": true,
+    "selected_delta": true
+  },
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "rules": {
+    "eta_even": "abs(R_plus+R_minus-2*R0)/abs(R_plus-R_minus); null only if denominator is exactly zero",
+    "feasible_cone_rule": "Main and sensitivity cross-grid t* both exceed the frozen numeric positivity threshold; main raw gain and sensitivity L1-robust lower-bound gain at 1.25 mm each meet the same minimum downforce increase on both grids.",
+    "flow24_authority": "STEP-01 step01_analysis.json rows[0] at step_mm=2.5; immutable source numbers copied, GRID-01 resolved flag and even_part_n rederived from copied R values",
+    "minimum_downforce_prediction_at_1p25mm_n": 3e-05,
+    "proposal_positive_t_threshold_n_per_m": 1e-08,
+    "resolution_source": "10 times nominal flow_24 sigma0; flow_32 noise is not measured",
+    "resolved_difference_strictly_greater_than_n": 3e-05,
+    "sign_statuses": [
+      "sign_preserved_resolved",
+      "sign_flipped_resolved",
+      "unresolved"
+    ],
+    "spatial_normalization": "For each coefficient vector independently, use lowdim01_states.coefficient_direction on the four pinned raw arrays and its actual m=max(abs(sum(c_i*d_i))); step coefficients are (s/m)c_i and force predictions are (g.c)s/m.",
+    "unresolved_policy": "retain finite numeric secant, set resolved false, do not infer or emit a component sign, never substitute zero for missing data"
+  },
+  "runtime": {
+    "cuda_device_order": "PCI_BUS_ID",
+    "cuda_visible_devices": "0",
+    "dataset_sources": [],
+    "enable_gpu": true,
+    "gpu_inventory_policy": "nonempty_all_visible_devices_must_be_tesla_t4",
+    "gpu_probe_timeout_s": 300,
+    "identity_absence_authority": "explicit not-found status, or complete authenticated owned listings with positive existing-resource access controls; missing-slug permission errors alone are not absence proof",
+    "instantiate_timeout_s": 2400,
+    "julia_threads": 1,
+    "kernel": "a",
+    "kernel_id": "ramhachi888/cfd-opt-sdf-grid01-a",
+    "machine_shape": "NvidiaTeslaT4",
+    "per_state_timeout_s": 900,
+    "selected_gpu_physical_index": 0,
+    "slug": "cfd-opt-sdf-grid01-a",
+    "solver_wall_time_cap_s": 8100,
+    "summary_uuid_field": "gpu_uuid",
+    "summary_uuid_semantics": "configured UUID echo; independently observed CUDA singleton/default UUID in preflight under the identical environment used for all jobs",
+    "timeout_s": 10800,
+    "title": "cfd-opt-sdf-grid01-a",
+    "used_gpu_count": 1
+  },
+  "solver": {
+    "approximate_cone": false,
+    "description": "Exact finite branch partition (active minimum-lift grid; plus all coefficient sign orthants for L1 sensitivity), exhaustive independent active-set enumeration up to dimension four, float64 KKT primal-dual certificate for every branch, and global maximum over every branch.",
+    "dual_atol": 1e-09,
+    "epsilon_n_per_m": 0.006,
+    "feasibility_atol": 1e-09,
+    "kkt_atol": 1e-08,
+    "nonlinear_optimizer": null,
+    "optimality_certificate": "All branch primal feasibility, dual feasibility, stationarity, complementarity, and primal/dual gaps are independently checked; the maximum branch dual bound proves the global optimum over the exhaustive partition.",
+    "optimum_atol_n_per_m": 1e-08,
+    "rank_atol": 1e-12,
+    "solver_id": "float64-exhaustive-orthant-active-set-cone-projection-v1"
+  },
+  "source_commit": "ea320dc5a95e9b98dc501b62574ea6ee26eaa211"
+}

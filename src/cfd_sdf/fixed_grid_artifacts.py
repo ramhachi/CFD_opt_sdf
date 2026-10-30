@@ -64,6 +64,25 @@ class GradientBinding:
 
 
 @dataclass(frozen=True)
+class TransformLineage:
+    """The design-transform provenance carried by a fixed-grid summary (DF1).
+
+    ``transform_hash`` is the identity of the filter/projection/interpolation
+    stack recorded by ``cfd_sdf.design_transform.DesignTransform``; a summary
+    carrying a lineage whose hash does not match the expected transform must be
+    rejected, never silently reused.
+    """
+
+    schema_version: int
+    kind: str
+    transform_hash: str
+    filter: Mapping[str, Any]
+    projection: Mapping[str, Any]
+    ramp: Mapping[str, Any]
+    intermediates: Mapping[str, Any]
+
+
+@dataclass(frozen=True)
 class CanonicalPrimalSummary:
     path: Path
     schema_version: int
@@ -74,6 +93,7 @@ class CanonicalPrimalSummary:
     objective_values: Mapping[str, QuantityValue]
     constraint_values: Mapping[ConstraintKey, QuantityValue]
     status: str
+    transform: TransformLineage | None = None
 
     @property
     def problem_binding(self) -> ProblemBinding:
@@ -93,6 +113,7 @@ class CanonicalSensitivitySummary:
     flow_case_ids: tuple[str, ...]
     gradient_bindings: tuple[GradientBinding, ...]
     status: str
+    transform: TransformLineage | None = None
 
     @property
     def problem_binding(self) -> ProblemBinding:
@@ -101,6 +122,59 @@ class CanonicalSensitivitySummary:
     @property
     def flow_case_id(self) -> str | None:
         return self.flow_case_ids[0] if len(self.flow_case_ids) == 1 else None
+
+
+def read_transform_lineage(data: Mapping[str, Any]) -> TransformLineage | None:
+    """Read the optional ``transform`` lineage block of a fixed-grid summary."""
+
+    raw = data.get("transform")
+    if raw is None:
+        return None
+    context = "transform"
+    block = _as_mapping(raw, context)
+    version = block.get("schema_version")
+    if not isinstance(version, int) or version != 1:
+        raise ValueError(f"{context}.schema_version must be 1")
+    kind = _required_text(block, "kind", context)
+    if kind != "design_transform":
+        raise ValueError(f"{context}.kind must be 'design_transform'")
+    transform_hash = _required_text(block, "transform_hash", context)
+    if not _SHA256_PATTERN.match(transform_hash):
+        raise ValueError(f"{context}.transform_hash must be a 64-character hex digest")
+    return TransformLineage(
+        schema_version=version,
+        kind=kind,
+        transform_hash=transform_hash,
+        filter=MappingProxyType(dict(_as_mapping(block.get("filter"), f"{context}.filter"))),
+        projection=MappingProxyType(
+            dict(_as_mapping(block.get("projection"), f"{context}.projection"))
+        ),
+        ramp=MappingProxyType(dict(_as_mapping(block.get("ramp"), f"{context}.ramp"))),
+        intermediates=MappingProxyType(
+            dict(_as_mapping(block.get("intermediates", {}), f"{context}.intermediates"))
+        ),
+    )
+
+
+def validate_transform_lineage(
+    lineage: TransformLineage | None,
+    expected: TransformLineage | Mapping[str, Any] | None,
+    *,
+    context: str = "transform lineage",
+) -> None:
+    """Fail-closed hash comparison between a summary lineage and the expected one."""
+
+    if lineage is None or expected is None:
+        return
+    if isinstance(expected, TransformLineage):
+        expected_hash = expected.transform_hash
+    else:
+        expected_hash = str(expected.get("transform_hash", ""))
+    if lineage.transform_hash != expected_hash:
+        raise ValueError(
+            f"{context} mismatch: summary={lineage.transform_hash!r}, "
+            f"expected={expected_hash!r}"
+        )
 
 
 def read_fixed_grid_primal_summary(path: str | Path) -> CanonicalPrimalSummary:
@@ -288,6 +362,7 @@ def _read_v2_primal(path: Path, data: Mapping[str, Any]) -> CanonicalPrimalSumma
         objective_values=objective_values,
         constraint_values=constraint_values,
         status=_required_text(data, "status", "fixed-grid primal summary"),
+        transform=read_transform_lineage(data),
     )
 
 
@@ -383,6 +458,7 @@ def _read_v2_sensitivity(path: Path, data: Mapping[str, Any]) -> CanonicalSensit
         flow_case_ids=flow_case_ids,
         gradient_bindings=tuple(bindings),
         status=_required_text(data, "status", "fixed-grid sensitivity summary"),
+        transform=read_transform_lineage(data),
     )
 
 

@@ -1,0 +1,22 @@
+{
+  "evidence_class": "versioned_CPU_dispatch_attempt_not_solver_evidence",
+  "registered_at_utc": "2026-10-01T19:13:06.892877+00:00",
+  "registration_sha256": "433fa0ab82b330a577cbb71567d3b0c51cba3013a5b45a519b089e662ff9606b",
+  "command": [
+    "kaggle",
+    "kernels",
+    "push",
+    "-p",
+    "/Users/sota/.codex/worktrees/four-track-orchestration/CFD2026_09/work/four_track_2026_10_02/xfid_v16_cpu_submission_r4",
+    "-t",
+    "3600"
+  ],
+  "runner_sha256": "2bf07d2ea3182254ce335b5f69a4689111d90d5ce00dc6a1fb5529092efe0d4f",
+  "metadata_sha256": "28ffa72c980ac0e0b833423a6060c5cc6de5bfec701abf3de71e4d8dfc30d4e8",
+  "enable_gpu": false,
+  "exact_kernel_id": "ramhachi888/cfd-opt-sdf-xfid-v16-openfoam-reproduction/3",
+  "kernel_version": 3,
+  "exit_code": 0,
+  "stdout": "Kernel version 3 successfully pushed.  Please check progress at https://www.kaggle.com/code/ramhachi888/cfd-opt-sdf-xfid-v16-openfoam-reproduction\n",
+  "stdout_sha256": "51372c6d92c867314112ee20f77251ef3cb4f81f74a407125a0f4d7689b45797"
+}

@@ -1,0 +1,46 @@
+FoamFile
+{
+    version 2.0;
+    format ascii;
+    class volScalarField;
+    object ReThetat;
+}
+
+dimensions [0 0 0 0 0 0 0];
+
+internalField uniform 999.1216000000001;
+
+boundaryField
+{
+    inlet
+    {
+        type fixedValue;
+        value uniform 999.1216000000001;
+    }
+    outlet
+    {
+        type inletOutlet;
+        inletValue uniform 999.1216000000001;
+        value uniform 999.1216000000001;
+    }
+    top
+    {
+        type zeroGradient;
+    }
+    ground
+    {
+        type zeroGradient;
+    }
+    airfoil
+    {
+        type zeroGradient;
+    }
+    front
+    {
+        type empty;
+    }
+    back
+    {
+        type empty;
+    }
+}

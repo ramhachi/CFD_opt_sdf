@@ -1,0 +1,81 @@
+{
+  "criteria": {
+    "path": "docs/evidence/kaggle_w2b_criteria_2026_09_round3.json",
+    "sha256": "3573b903c2ff025db62cb184ba328f81c48da70f72d4393e3623bd3bbb58bf1c"
+  },
+  "decision": "Retain Kaggle version 9 as an append-only partial-run diagnostic. T4 CUDA smoke passed and analytic_16 completed the registered t_end with finite fields and forces; host recomputation matches its force CSV. The Julia job stopped before case 2 because top-level case_count mutation raised a soft-scope UndefVarError. The six-case matrix is incomplete and no W2b acceptance result is claimed. The counter-scope implementation fix is recorded as a new source pin in round 4; no fixture parameters or numerical acceptance thresholds changed.",
+  "evidence_class": "partial_w2b_solver_run_julia_soft_scope_failure",
+  "generated_on": "2026-09-27",
+  "immutable": true,
+  "kernel": {
+    "id": "ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder",
+    "version": 9
+  },
+  "observed": {
+    "analytic_16": {
+      "cuda_driver_api_version": "13.3.0",
+      "cuda_runtime_version": "12.8.0",
+      "finite_forces": true,
+      "finite_p": true,
+      "finite_u": true,
+      "force_csv_sha256": "e321b5c568001f9c6ab9774b365d32b5a7aa0b699df25b6003efe306115d9075",
+      "force_samples": 561,
+      "gpu_name": "Tesla T4",
+      "steps": 2246,
+      "summary_sha256": "eca1dcefbe95e8a6269d76ace3107c7553bcd4cc36fdb7a52c4ec26b446292cd",
+      "t_end_reached": 60.000022888183594,
+      "t_end_target": 60.0,
+      "time_weighted_cd": 0.8795874360307699,
+      "time_weighted_mean_drag": 88.42577367117276
+    },
+    "completed_case_ids": [
+      "analytic_16"
+    ],
+    "cuda_smoke_passed": true,
+    "error": "Traceback (most recent call last):\n  File \"/kaggle/src/script.py\", line 387, in <module>\n    main()\n  File \"/kaggle/src/script.py\", line 352, in main\n    command([str(julia), \"--startup-file=no\", f\"--project={project}\",\n  File \"/kaggle/src/script.py\", line 117, in command\n    raise RuntimeError(f\"command exit {result.returncode}: {log_path.name}\")\nRuntimeError: command exit 1: w2b.log",
+    "failure_stage": "W2b job, after first case and before case 2",
+    "gpu_inventory": [
+      "0, Tesla T4, GPU-66832d7a-9a56-7d9c-98fc-3514f868992e, 15360 MiB, 580.159.04",
+      "1, Tesla T4, GPU-573e3cba-8b2b-9a17-1c1c-659b2998e917, 15360 MiB, 580.159.04"
+    ],
+    "job_completion_marker_present": false,
+    "solver_started": true,
+    "status": "KernelWorkerStatus.ERROR",
+    "w2b_log_sha256": "956f6ac11466769036187a999e771db94b6f46cbc4436bb44c45a51b0828a51b"
+  },
+  "retrieval": {
+    "artifact_sha256": {
+      "ERROR.txt": "65acd077e3aee2640d84da51e0079a2d244cfdbe8cda6f9b0c581735dc354231",
+      "analytic_16.forces.csv": "e321b5c568001f9c6ab9774b365d32b5a7aa0b699df25b6003efe306115d9075",
+      "analytic_16.summary.json": "eca1dcefbe95e8a6269d76ace3107c7553bcd4cc36fdb7a52c4ec26b446292cd",
+      "git_checkout.log": "6a4a5278270023f6471fc7bcc2ff3cede891659643590fe31ad7bfd913e3543e",
+      "git_fetch.log": "f787ad9fb708b5f6ad6860e5d5bf36a96a9a74bdc3bb9d7b611ee9feed4ff784",
+      "git_init.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "instantiate.log": "e393b9d8f0d6decd07799a9b852a8abf533e9abef6f4fc6190611ecde19fd4d7",
+      "julia_extract.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "julia_smoke.log": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+      "nvidia_smi.csv": "4b89f3b5e4e43be98a4bc86f3394403f6936e3ed1636c6ff13ca8aa50b7863c5",
+      "params.jl": "ea93813ded0e91f7375030d635bc8c456a994ac8f9e4bb45ae7001ed59360283",
+      "w2b.log": "956f6ac11466769036187a999e771db94b6f46cbc4436bb44c45a51b0828a51b"
+    },
+    "download": "work/kaggle_w2b_version9/w2b",
+    "kernel_log_sha256": "d12a2e07f65bdfe5c7a8811fa8fd5fbd4d29239a5790014abe045b7322a21ee3",
+    "manifest_sha256": "e10f722ca89585b59b36e452af8e31b41d6f734d250c9a1a8fe866f29660cbdd",
+    "verified_files": 12
+  },
+  "scope_exclusions": [
+    "the remaining five registered cases did not run",
+    "no complete W2b matrix or T1-T12 acceptance result",
+    "the analytic_16 partial result is diagnostic only and is not reused as round-4 acceptance evidence",
+    "no fixture parameter or numerical acceptance threshold changed after observing the partial response",
+    "the source job was changed only to remove the observed top-level counter soft-scope error, and round 4 pins its corrected hash before retry",
+    "no Grid Convergence Index, absolute Cd, target-aerodynamics, full-vehicle, high-Re, gradient, topology, or optimizer claim"
+  ],
+  "source": {
+    "failure_line": 235,
+    "job_path": "scripts/waterlily_w2b_grid_ladder_job.jl",
+    "job_sha256": "e907cf1e038ce76556533a59c2f1ce1ebb7de51c7ad134e0b3f6756ad34b9a26",
+    "repository": "https://github.com/ramhachi/CFD_opt_sdf.git",
+    "source_commit": "548231050fc6ca22bc1c0394272564f81571dbbc"
+  }
+}

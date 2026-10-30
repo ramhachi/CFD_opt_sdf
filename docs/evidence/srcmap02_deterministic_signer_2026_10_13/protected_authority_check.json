@@ -1,0 +1,684 @@
+{
+  "frozen_checks": [
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/reference_surface.stl"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/v16_reference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/v17_baseline.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/v17_source_replay_2026_10_12.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/source_replay_recheck_2026_10_12.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/sdf_native_genesis_v16_2026_09.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/sdf_native_genesis_v17_2026_09.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/SHA256SUMS"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/alternative_runtime_inventory.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/backend_path_comparison.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/baseline_validation.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/chunk_dependence.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/classification.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/dependency_sensitivity.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostic_report.md"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/A_v16_1.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/A_v16_1.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/A_v16_2.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/A_v16_2.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/A_v17_1.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/A_v17_1.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/A_v17_1_difference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/A_v17_2.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/A_v17_2.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/A_v17_2_difference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/A_v17_3.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/A_v17_3.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/A_v17_3_difference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/A_v17_4.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/A_v17_4.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/A_v17_4_difference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/A_v17_5.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/A_v17_5.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/A_v17_5_difference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/B_chunk_100000.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/B_chunk_100000.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/B_chunk_100000_difference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/B_chunk_131071.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/B_chunk_131071.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/B_chunk_131071_difference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/B_chunk_200000.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/B_chunk_200000.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/B_chunk_200000_difference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/B_chunk_368640.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/B_chunk_368640.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/B_chunk_368640_difference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/B_chunk_385385.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/B_chunk_385385.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/B_chunk_385385_difference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/B_chunk_50000.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/B_chunk_50000.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/B_chunk_50000_difference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/C_canonical.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/C_canonical.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/C_canonical_difference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/C_permuted.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/C_permuted.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/C_permuted_difference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/C_reverse.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/C_reverse.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/C_reverse_difference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/D_direct.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/D_direct.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/D_direct_difference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/D_fallback.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/D_fallback.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/D_fallback_difference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/D_unsigned.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/D_unsigned.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/D_unsigned_difference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/G_minimum_1.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/G_minimum_1.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/G_minimum_1_difference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/G_minimum_2.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/G_minimum_2.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/G_minimum_2_difference.npz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/difference_map_check.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/execution_started.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/field_difference_summary.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/final_validation.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/final_validation_start.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/historical_runtime_audit.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/independent_numeric_check.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/independent_review_postrun.md"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/independent_review_prerun.md"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/load_semantics_analysis.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/A_v16_1.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/A_v16_2.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/A_v17_1.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/A_v17_2.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/A_v17_3.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/A_v17_4.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/A_v17_5.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/B_chunk_100000.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/B_chunk_131071.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/B_chunk_200000.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/B_chunk_368640.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/B_chunk_385385.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/B_chunk_50000.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/C_canonical.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/C_permuted.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/C_reverse.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/D_direct.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/D_fallback.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/D_unsigned.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/G_minimum_1.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/G_minimum_2.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/campaign.log.gz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/compileall.log.gz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/current_preflight_inventory.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/full_pytest_baseline.log.gz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/full_pytest_baseline.xml.gz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/full_pytest_final.log.gz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/full_pytest_final.xml.gz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/minimum_preflight_inventory.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/logs/problem_nodes.log"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/ordering_dependence.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/prerun_approval.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/prerun_freeze.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/prerun_plan.md"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/problem_nodes.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/protected_authority_check.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/repeatability.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/reviews/independent_numeric_check.py"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/reviews/postrun_raw.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/reviews/prerun_final_raw.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/reviews/prerun_initial.md"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/reviews/prerun_initial_raw.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/reviews/prerun_narrow_static.md"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/runtime_inventory.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/runtime_preflight.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/unsigned_distance_analysis.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/validation.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap02_deterministic_signer_2026_10_13/authority_audit.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap02_deterministic_signer_2026_10_13/authority_saved_nodes.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap02_deterministic_signer_2026_10_13/baseline_validation.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap02_deterministic_signer_2026_10_13/current_runtime_inventory.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap02_deterministic_signer_2026_10_13/libigl_source_provenance.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap02_deterministic_signer_2026_10_13/logs/baseline_junit.xml.gz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap02_deterministic_signer_2026_10_13/logs/baseline_pytest.log.gz"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap02_deterministic_signer_2026_10_13/mesh_prerequisites.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap02_deterministic_signer_2026_10_13/minimum_runtime_inventory.json"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap02_deterministic_signer_2026_10_13/prerun_plan.md"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap02_deterministic_signer_2026_10_13/reviews/independent_numeric_check.py"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "docs/evidence/srcmap02_deterministic_signer_2026_10_13/wheel_identity.json"
+    },
+    {
+      "appended_bytes": 1742,
+      "current_hash_matches_frozen": false,
+      "current_preserves_parent_exact_prefix": true,
+      "current_sha256": "3a33efbc4c8648a0fab9979a40ff7d70fcc31dea8e5b85cee726ce1623fdd133",
+      "frozen_hash_matches_parent": true,
+      "historical_sha256": "51ad4f621a467b4ece913854df4971b03403ae2963c9a079cdc4ab453d9ba014",
+      "path": "docs/phase_plan.md"
+    },
+    {
+      "appended_bytes": 1027,
+      "current_hash_matches_frozen": false,
+      "current_preserves_parent_exact_prefix": true,
+      "current_sha256": "4a0dbab302d13c96be9aacbeb5b3cb117a946de73418a49f1c7e4dd624e66a22",
+      "frozen_hash_matches_parent": true,
+      "historical_sha256": "990a4bf36c8a2fb3850b4b07f84b761313be5d7d54a75827a2f52a9d3de554b8",
+      "path": "docs/problem_register_2026_09.md"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "pyproject.toml"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "scripts/diagnose_srcmap01.py"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "scripts/qualify_srcmap02.py"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "scripts/run_srcmap01.py"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "scripts/run_srcmap02.py"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "scripts/sdf_native_genesis_v17_2026_09.py"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "src/cfd_sdf/config.py"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "src/cfd_sdf/design/sdf_state.py"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "src/cfd_sdf/design/volume_semantics.py"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "src/cfd_sdf/grid.py"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "src/cfd_sdf/runtime/fingerprint.py"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "src/cfd_sdf/sdf.py"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "tests/test_srcmap01_diagnostic.py"
+    },
+    {
+      "current_hash_matches_frozen": true,
+      "path": "tests/test_srcmap02_qualification.py"
+    }
+  ],
+  "frozen_current_matches": 159,
+  "frozen_historical_living_document_exceptions": 2,
+  "integration_parent": "e621b585531f7fe3f44d0a8683cec1923008de56",
+  "old_evidence_directory_files_byte_identical_to_parent": 159,
+  "old_manifests": [
+    {
+      "current_matches": 128,
+      "entries": 130,
+      "historical_living_document_exceptions": 2,
+      "historical_parent": "e621b585531f7fe3f44d0a8683cec1923008de56",
+      "manifest": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/SHA256SUMS"
+    },
+    {
+      "current_matches": 35,
+      "entries": 37,
+      "historical_living_document_exceptions": 2,
+      "historical_parent": "b94eebacf7d1e4425e1b6303a5e34b4fe08b1863",
+      "manifest": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/SHA256SUMS"
+    }
+  ],
+  "only_existing_tracked_changes": [
+    "docs/phase_plan.md",
+    "docs/problem_register_2026_09.md"
+  ],
+  "pass": true,
+  "production_source_dependency_contract_parent_reference_changes": false
+}

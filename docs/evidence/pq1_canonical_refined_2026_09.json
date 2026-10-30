@@ -1,0 +1,86 @@
+{
+  "artifact_id": "pq1_canonical_refined_2026_09",
+  "evidence_class": "numerical_verification_factor_level",
+  "issue": "PQ1.1 canonical parameterization factor",
+  "factor": "canonical grid refined 0.05 -> 0.025 (120x64x48) with the source grid (64x32x32), physical state, solver, residuals, directions and epsilons fixed",
+  "state_equivalence": {
+    "source_grid_base_downforce_coarse_canonical": 0.296719125655,
+    "source_grid_base_downforce_refined_canonical": 0.296719119463,
+    "note": "the 2x block upsample reproduces the injected source field; only the parameterization changed"
+  },
+  "mesh_gate": {
+    "command": "checkMesh -allGeometry -allTopology",
+    "result": "Mesh OK (Cell determinant OK, Concave cell check OK, Face interpolation weight OK, Face volume ratio OK)",
+    "case_dir": "work/pq1_source_grid/primal_base",
+    "status": "measured_pass"
+  },
+  "results_coarse_canonical": {
+    "gradient_aligned": {
+      "ratio_mean": 1.1504490656316189,
+      "ratio_min": 1.150154560993396,
+      "ratio_max": 1.1505873996440676,
+      "spread": 0.00043283865067156313
+    },
+    "random_seed_11": {
+      "ratio_mean": 1.11344745017893,
+      "ratio_min": 1.1134258459671809,
+      "ratio_max": 1.1134592732967892,
+      "spread": 3.3427329608315404e-05
+    },
+    "random_seed_2026": {
+      "ratio_mean": 1.144143961713566,
+      "ratio_min": 1.1419664472295779,
+      "ratio_max": 1.1464662368541065,
+      "spread": 0.004499789624528683
+    }
+  },
+  "results_refined_canonical": {
+    "gradient_aligned": {
+      "mean": 1.1171952026271774,
+      "spread": 0.00030787205721449773
+    },
+    "random_seed_11": {
+      "mean": 2.245385233370084,
+      "spread": 0.021326722688564725
+    },
+    "random_seed_2026": {
+      "mean": 1.8916033137054171,
+      "spread": 0.002899708988016725
+    }
+  },
+  "comparison": {
+    "gradient_aligned": {
+      "coarse_canonical": 1.1504,
+      "refined_canonical": 1.1171952026271774
+    },
+    "random_seed_11": {
+      "coarse_canonical": 1.1134,
+      "refined_canonical": 2.245385233370084
+    },
+    "random_seed_2026": {
+      "coarse_canonical": 1.1441,
+      "refined_canonical": 1.8916033137054171
+    }
+  },
+  "findings": [
+    "the canonical parameterization is a contributing factor: refining it alone worsens the random-direction ratios (1.1134 -> 2.2454 and 1.1441 -> 1.8916) while the aligned ratio improves slightly (1.1504 -> 1.1172)",
+    "plateaus remain tight (spread <= 0.021), so the effect is deterministic, not noise",
+    "no sign flips: not a No-Go condition",
+    "interpretation: the ratio depends on the coupling between design and source discretizations; a finer design grid excites patterns the coarser source grid averages away"
+  ],
+  "decision": {
+    "path_a": false,
+    "no_go": false,
+    "classification": "Path B; source-grid discretization remains dominant but the design/source grid coupling must be refined together in any future configuration",
+    "next_registered": "pq1_third_source_grid_manifest_2026_09.json (registered_not_run): third source-grid level 128x64x64 with the coarse canonical grid, plus the joint-refinement requirement recorded"
+  },
+  "claims_supported": [
+    "the FD/adjoint ratio depends on the canonical parameterization at fixed physical state and source grid"
+  ],
+  "claims_not_supported": [
+    "Path A",
+    "No-Go",
+    "grid independence",
+    "target physics"
+  ]
+}

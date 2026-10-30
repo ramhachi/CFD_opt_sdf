@@ -1,0 +1,65 @@
+{
+  "claims_not_supported": [
+    "no WaterLily time step, Simulation, force value or GridSDF GPU bridge qualification (W1g)",
+    "no CUDA/Enzyme reverse or custom adjoint capability",
+    "no v16 geometry behavior, FD gradient, topology or optimizer claim",
+    "no absolute, grid-independent, high-Re or full-vehicle downforce claim"
+  ],
+  "claims_supported": [
+    "the committed T4 environment pair instantiates on an explicitly selected Colab T4 runtime",
+    "CUDA.jl is functional on the T4 device and the WaterLily CUDA extension activates",
+    "CuArray and KernelAbstractions CUDA smoke operations pass"
+  ],
+  "environment_base": {
+    "cpu_manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    "cpu_project_sha256": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+    "julia_version_pin": "1.12.6",
+    "note": "the W0 CPU environment directory julia/CFDSDFWaterLily is byte-frozen; the T4 environment lives in julia/CFDSDFWaterLilyT4 with the same WaterLily pin plus CUDA.jl, resolved on the T4 runtime, so W0/W1/W2a CPU identities are not disturbed",
+    "waterlily": "1.8.0"
+  },
+  "fail_closed_rule": "any failed gate stops the slice; no W2-T4 or W1g work may start from a failed W0b; a changed GPU identity, Julia/WaterLily/CUDA version or Manifest re-pins with a new registration",
+  "flags": {
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false
+  },
+  "gates_registered_before_measurement": {
+    "G0_targeted_runtime": "the Colab runtime is explicitly GPU-selected and nvidia-smi reports an NVIDIA T4 device",
+    "G1_cuda_functional": "CUDA.functional() == true",
+    "G2_cuarray_smoke": "CuArray allocation, host write, device read, broadcast and reduction match the CPU reference exactly for the registered integer-valued Float32 vectors",
+    "G3_ka_smoke": "a KernelAbstractions @kernel over a CuArray produces the registered exact result after synchronize()",
+    "G4_waterlily_cuda_ext": "Base.get_extension(WaterLily, :WaterLilyCUDAExt) is not nothing after using WaterLily, CUDA",
+    "G5_no_solver_step": "the W0b procedure constructs no WaterLily.Simulation and calls no sim_step!/mom_step!",
+    "G6_identity": "repo commit, Project.toml and Manifest.toml sha256, Julia/WaterLily/CUDA.jl versions, GPU name, UUID if exposed, compute capability, total VRAM, driver version, CUDA runtime/toolkit version are recorded",
+    "threshold_modification_rule": "no gate modification after seeing a measurement; a failure is a fail-closed stop with no evidence written"
+  },
+  "gate_id": "sdf_native_w0b_t4_cuda_env_2026_09",
+  "immutable": true,
+  "kind": "sdf_native_w0b_t4_cuda_env_criteria",
+  "provenance": {
+    "environment_dir": "julia/CFDSDFWaterLilyT4",
+    "evidence_path": "docs/evidence/sdf_native_w0b_t4_cuda_env_2026_09.json",
+    "recorder": "scripts/register_sdf_native_w0b_t4_cuda_env_2026_09.py",
+    "run_media": "Colab notebook session driven through the colab-mcp browser connection; outputs captured into work/sdf_native_w0b_t4_cuda_env_2026_09/"
+  },
+  "registered_before_implementation": true,
+  "registered_before_measurement": true,
+  "schema_version": 1,
+  "scope": {
+    "what_W0b_qualifies": [
+      "the T4 CUDA backend environment identity (versions, driver, GPU, device memory)",
+      "CUDA.jl functional on the T4",
+      "CuArray and KernelAbstractions CUDA round-trip smoke",
+      "the WaterLily CUDA extension activation"
+    ],
+    "what_W0b_does_not_qualify": [
+      "no CFD time step or force value",
+      "no GridSDF GPU-port (that is W1g, registered separately after W2-T4a)",
+      "no GPU reverse-mode/Enzyme work",
+      "no Manifest change for the CPU environments"
+    ]
+  },
+  "solver_started": false
+}

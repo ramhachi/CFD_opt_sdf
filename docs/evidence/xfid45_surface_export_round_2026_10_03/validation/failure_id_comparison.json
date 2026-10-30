@@ -1,0 +1,17 @@
+{
+  "baseline_failure_count": 37,
+  "baseline_path": "docs/evidence/four_track_baseline_2026_10_02/failure_ids.json",
+  "baseline_sha256": "71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a",
+  "comparison": "exact sorted pytest node ID set difference",
+  "current_failure_count": 38,
+  "current_path": "docs/evidence/xfid45_surface_export_round_2026_10_03/validation/failure_ids.json",
+  "current_sha256": "d02abcc546fae7746970ea2664c7fdf6956fa32abaeb2157de8dcbfc5d4ce634",
+  "kind": "xfid45_geometry_export_validation_failure_id_comparison",
+  "new_failure_count": 1,
+  "new_failure_ids": [
+    "tests/test_kaggle_sdf_directional_fd_v16.py::test_v17_flow24_prerequisites_use_registered_w3_w4_backend_identity"
+  ],
+  "resolved_baseline_failure_ids": [],
+  "resolved_failure_count": 0,
+  "schema_version": 1
+}

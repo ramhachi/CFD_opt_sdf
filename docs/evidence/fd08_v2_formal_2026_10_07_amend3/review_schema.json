@@ -1,0 +1,56 @@
+{
+  "amend2_criteria_sha256": "ccbe6abd4f41c0900a3dd69612e31af7013d01040b7554b9e394d2f9eef0cf6e",
+  "baseline_commit": "e3b2ce0853a7e94454c8073902fe88ae046ff00a",
+  "checks": {
+    "kaggle_identity": "PASS: kernel slug cfd-opt-sdf-fd08-v2-formal-run-a3 equals slugify(title); differs from every known dataset slug; dataset_sources==[amend3 dataset]; private T4 script runner.py; runner/verifier only echo kernel_id/dataset_id, no Kaggle lookup",
+    "other_consumers": "PASS: verifier/analyzer need explicit amend3 paths (same convention as AMEND2); output_root derives from criteria",
+    "registrar_logic": "PASS: read_parent() blocker keys exist in actual AMEND2 evidence; 44 source entries; artifact_paths has no doubled suffix; changed keys equal IDENTITY_FIELDS; scientific equality enforced; no stale live AMEND2 identifier",
+    "tests": "PASS: 88 passed / 11 skipped (source-bound skips need env commit); mutation KERNEL_ID=DATASET_ID is rejected by the registrar and tests"
+  },
+  "findings_resolved_before_freeze": [
+    {
+      "finding": "check_kernel_identity globbed non-existent infra dataset-metadata files; claim overstated",
+      "id": "F1",
+      "priority": "P1",
+      "resolution": "hard-coded KNOWN_DATASET_SLUGS plus docs/evidence dataset-metadata; negative tests added"
+    },
+    {
+      "finding": "identity-free script: no pagination guard, no distinct-slug check, overwrite, ordering undocumented",
+      "id": "F2",
+      "priority": "P1",
+      "resolution": "refuse >=100 rows, require distinct slugs, refuse overwrite, documented run-before-dataset-creation"
+    },
+    {
+      "finding": "presolver builder defaults still pointed at AMEND2 rehearsal kernel",
+      "id": "F3",
+      "priority": "P2",
+      "resolution": "--kernel-id/--title required; slug consistency enforced"
+    },
+    {
+      "finding": "identity gate did not assert kernel type/runner/T4/private",
+      "id": "F5",
+      "priority": "P2",
+      "resolution": "asserted in check_kernel_identity"
+    },
+    {
+      "finding": "scientific-field test omitted several fields",
+      "id": "F8",
+      "priority": "P2",
+      "resolution": "fields added"
+    }
+  ],
+  "kind": "fd08_v2_formal_amend3_independent_schema_review",
+  "limitations": [
+    "Source/schema review only; no T4 rehearsal, registration, formal execution or scientific success is claimed",
+    "The registered formal kernel id cannot be rehearsed (stop hook needs a notebook wrapper); identity gates stand in; any server-side SaveKernel rule beyond title uniqueness remains untested until submit",
+    "Budget evidence has a 24 h freshness limit; real review files, budget evidence and commit-bound source_inventory were exercised only by simulation until the committed dry-run"
+  ],
+  "presolver_builder_sha256": "2b779dcfaa3a2bf1838f4579d04ff4e0ba4114f9cb619cac02fa2ea916de313a",
+  "prospective_scientific_content_sha256": "8d76b3b4b5837dda38259d560f163223be92531d83b62236a21f5788a01cdb0f",
+  "recording": "Primary condensed the independent reviewer's reports (initial review plus one delta re-review of the post-review fixes); the primary's conclusion was not supplied to the reviewer. The reviewer's text is a model report, not a user statement.",
+  "registrar_sha256": "a1b2aba5a00449be96d51bd1b2cd5514c76093e10360a8bb7245d546b69f0cb9",
+  "review_role": "Independent Review A \u2014 schema/infrastructure",
+  "runner_sha256": "d7fe9bc013bf8770c0c34a891be982907295b94f52bd62ce46030b2325a8950a",
+  "scientific_contract_changed": false,
+  "verdict": "PASS"
+}

@@ -1,0 +1,74 @@
+{
+  "force_scale_n_per_solver_force": 0.0011111111111111111,
+  "gates": {
+    "baseline_reproduction_rel": 1e-06,
+    "primal_window_mean_rel": 0.001,
+    "summary_agreement_rel": 1e-09
+  },
+  "integrity": {
+    "plain_vs_formal_baseline_v17": {
+      "downforce_n": 0.3316344583180616,
+      "drag_n": 0.3239039699743226,
+      "formal_downforce_n": 0.3316344583180616,
+      "formal_drag_n": 0.3239039699743226,
+      "rel_downforce": 0.0,
+      "rel_drag": 0.0
+    }
+  },
+  "kind": "grad_g2_host_terminal_verification",
+  "output_manifest_sha256": "792fdb02fd295b6b2e9f98cc5e9fc46fca23ec0e1403a53c4f8cf92fac2eb5e2",
+  "problems": [
+    "DONE marker missing",
+    "ERROR artifact present",
+    "runner reports failure: stage=measurement exit=2",
+    "run index status ERROR",
+    "run inventory differs from the registered five runs",
+    "D0_interface_offset: history unreadable: [Errno 2] No such file or directory: '/Users/sota/kg_g2/out1/grad_g2_bridge/D0_interface_offset.history.csv'",
+    "D1_filtered_seed11: history unreadable: [Errno 2] No such file or directory: '/Users/sota/kg_g2/out1/grad_g2_bridge/D1_filtered_seed11.history.csv'",
+    "D2_filtered_seed2026: history unreadable: [Errno 2] No such file or directory: '/Users/sota/kg_g2/out1/grad_g2_bridge/D2_filtered_seed2026.history.csv'",
+    "P1_upstream_lobe: history unreadable: [Errno 2] No such file or directory: '/Users/sota/kg_g2/out1/grad_g2_bridge/P1_upstream_lobe.history.csv'"
+  ],
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "runs": {
+    "plain": {
+      "fx_dual_time": {
+        "tangent": 0.0,
+        "value": 291.5135729768903
+      },
+      "fx_frozen_time": {
+        "tangent": 0.0,
+        "value": 291.5135729768903
+      },
+      "fz_dual_time": {
+        "tangent": 0.0,
+        "value": 298.47101248625546
+      },
+      "fz_frozen_time": {
+        "tangent": 0.0,
+        "value": 298.47101248625546
+      },
+      "peak_vram_bytes": 82885344,
+      "samples": 1093,
+      "steps": 8740,
+      "t_last": 120.0028076171875,
+      "total_seconds": 165.56079196929932
+    }
+  },
+  "runtime": {
+    "backend": "cuda",
+    "cuda_jl": "6.3.1",
+    "forwarddiff": "1.4.5",
+    "gpu_name": "Tesla T4",
+    "julia": "1.12.6",
+    "waterlily": "1.8.0"
+  },
+  "source_commit": "e44d0f08c07bde902017cc49854ef85b6ac6be64",
+  "status": "FAIL_G2_TERMINAL_INTEGRITY"
+}

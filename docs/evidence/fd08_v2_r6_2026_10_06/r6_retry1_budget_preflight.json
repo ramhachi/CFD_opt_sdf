@@ -1,0 +1,28 @@
+{
+  "captured_utc": "2026-10-06T17:21:55.173745Z",
+  "checks": {
+    "cli_timeout_option_available": true,
+    "kernel_allowance_within_current_gpu_quota": true,
+    "kernel_allowance_within_platform_session_limit": true
+  },
+  "cli_version": "Kaggle CLI 2.2.4",
+  "gpu_quota_remaining_hours": 19.77,
+  "gpu_quota_remaining_seconds_floor": 71172,
+  "gpu_quota_used_hours": 10.23,
+  "kind": "fd08_v2_kaggle_budget_preflight",
+  "phase": "r6",
+  "platform_limit_source": "https://www.kaggle.com/docs/notebooks",
+  "platform_max_cpu_gpu_session_seconds": 43200,
+  "quota_command": "kaggle quota",
+  "quota_output": "resource  used    remaining  total   refreshAt            \n--------  ------  ---------  ------  -------------------  \nGPU       10.23h  19.77h     30.00h  2026-10-10T00:00:00  \nTPU       0.00h   20.00h     20.00h  2026-10-10T00:00:00  \n",
+  "requested": {
+    "kernel_execution_allowance_s": 11200,
+    "solver_wall_time_cap_s": 6600
+  },
+  "runtime_guarantee": false,
+  "status": "PASS_CAPABILITY_PREFLIGHT",
+  "timeout_help_sha256": "5811fba8e501ff43abbea61fd1aa4ce006e0a69eef1f494660a08f0afd8b8207",
+  "timeout_option_help_lines": [
+    "-t TIMEOUT, --timeout TIMEOUT"
+  ]
+}

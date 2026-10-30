@@ -1,0 +1,86 @@
+{
+  "canonical_phi_c_order_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+  "canonical_phi_fortran_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+  "canonical_state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8",
+  "claim_scope": "CPU/T4 CUDA implementation-layer diagnosis only; no primal or physical qualification",
+  "created_utc_date": "2026-09-28",
+  "criteria_path": "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json",
+  "criteria_sha256": "f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2",
+  "diagnostic_complete": false,
+  "diagnostic_id": "w3_v16_cuda_body_force_minimal_diagnostic_2026_09",
+  "diagnostic_job_sha256": "57447d6e03a589134e505647fbeb23b4dba033aff11802256d18b04b19684f80",
+  "diagnostic_source_commit": null,
+  "evidence_type": "diagnostic_only",
+  "exact_kaggle_log_sha256": "3b7bb74343f8a68fb090455cb9d8911dc4ae4ddcea30271531906890a64adda2",
+  "exact_kaggle_status_sha256": "3b455e8faa61ed54da8cb20ea218217b9c10ace4b5515d036ed1f8bfab546e00",
+  "failure_classification": {
+    "exact_exception": "ERROR: LoadError: UndefVarError: `f0` not defined in `Main`\nSuggestion: check for spelling errors or missing imports.\nStacktrace:\n  [1] (::var\"#14#15\"{Matrix{Float32}})(i::Int64)\n    @ Main ./none:-1\n  [2] iterate\n    @ ./iterators.jl:538 [inlined]\n  [3] iterate\n    @ ./generator.jl:45 [inlined]\n  [4] grow_to!(dest::Vector{Int64}, itr::Base.Generator{Base.Iterators.Filter{var\"#14#15\"{Matrix{Float32}}, Base.OneTo{Int64}}, typeof(identity)})\n    @ Base ./array.jl:863\n  [5] collect\n    @ ./array.jl:787 [inlined]\n  [6] compare_rows(cpu::Matrix{Float32}, gpu::Matrix{Float32}; world_scale::Float32)\n    @ Main /tmp/w3_cuda_diagnostic_7c2c4tm5/source/scripts/waterlily_w3_v16_cuda_diagnostic_job.jl:159\n  [7] top-level scope\n    @ /tmp/w3_cuda_diagnostic_7c2c4tm5/source/scripts/waterlily_w3_v16_cuda_diagnostic_job.jl:347\n  [8] include(mod::Module, _path::String)\n    @ Base ./Base.jl:306\n  [9] exec_options(opts::Base.JLOptions)\n    @ Base ./client.jl:317\n [10] _start()\n    @ Base ./client.jl:550\nin expression starting at /tmp/w3_cuda_diagnostic_7c2c4tm5/source/scripts/waterlily_w3_v16_cuda_diagnostic_job.jl:339\nW3_DIAGNOSTIC_STAGE input_and_device_identity {\"canonical_sdf_origin_m\":[-1.0,-0.8,-0.6],\"device_kernel_view_type\":\"CuDeviceArray{Float32, 3, 1}\",\"device_owner_type\":\"CuArray{Float32, 3, CUDACore.DeviceMemory}\",\"device_roundtrip_sha256\":\"9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7\",\"flow_dims\":[100,48,36],\"flow_origin_m\":[-2.5,-1.2000000476837158,-0.8999999761581421],\"measured_margin_m\":0.3499999939931499,\"phi_c_order_sha256\":\"45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785\",\"phi_fortran_sha256\":\"9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7\"}\nW3_DIAGNOSTIC_STAGE representative_probe_definitions_started {\"stage\":\"world-space probe construction\"}\nW3_DIAGNOSTIC_STAGE representative_probe_definitions_completed {\"probe_count\":10}\nW3_DIAGNOSTIC_STAGE candidate_representative_probes_started {\"probe_count\":10}\n",
+    "failed_stage": "representative_probe_cpu_cuda_comparison",
+    "failure_class": "julia_diagnostic_float_literal_bug",
+    "last_completed_stage": "candidate_representative_probes_started",
+    "solver_started": false
+  },
+  "force_snapshot_verification": null,
+  "host_artifact_verification_passed": true,
+  "host_verifier_sha256": "eb3ee9b1f3f582f915f1fb58d6fe1bb418c6b2200344ed33c6b35acd6728b6f1",
+  "independent_numeric_diagnostics": null,
+  "input_criteria_sidecar_sha256": "dcb5a919575f495d53e67cb950bd4f5a3326e85d9be5131e68c6c892d6a04b05",
+  "input_dataset_id": "ramhachi888/cfd-opt-sdf-v16-genesis-state",
+  "input_dataset_manifest_sha256": "17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b",
+  "input_mount_inventory": {
+    "input_root": "/kaggle/input",
+    "input_root_exists": true,
+    "top_level_entries": [
+      "dir:datasets"
+    ]
+  },
+  "julia_job_sha256": "57447d6e03a589134e505647fbeb23b4dba033aff11802256d18b04b19684f80",
+  "kaggle_status": "KernelWorkerStatus.ERROR",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic",
+  "kernel_runner_sha256": "af2b62f341a126ed50b62d1e910ec49fd490459b8daf81efa721c7936bd40ef6",
+  "kernel_version": 2,
+  "last_completed_stage": "candidate_representative_probes_started",
+  "lattice_verification": null,
+  "output_artifacts": {
+    "ERROR.txt": "f3523e3694d7da49f8c92817f260737c68665ac5f8697abfb2df7f78a3f78958",
+    "git_checkout.log": "1473bbb92ad7867975d04e18aca0969ddaac4e6945e957edf058eca62a508c1b",
+    "git_fetch.log": "f787ad9fb708b5f6ad6860e5d5bf36a96a9a74bdc3bb9d7b611ee9feed4ff784",
+    "git_init.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "input_dataset_manifest.json": "17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b",
+    "input_mount_inventory.json": "1af5d82d1d5f0fac9ed47d663013eb392684b9167eb0ada3674d60fcb9a9a441",
+    "input_state_metadata.json": "bff9f425abdda70d2804547aecb8b48d08c847b91fe1e6da876e3f4ee41ee2a9",
+    "instantiate.log": "277d1b80fa0837572b7e06e6914a2c86be699cc341312d76d9c3b56b99efbc91",
+    "julia_smoke.log": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+    "nvidia_smi.csv": "3512ebc1b22aa472a74dafd664aa36e5ae9ea3f045c5dd95ff2db540dcc7414f",
+    "progress.json": "7e663667952b3a05c417c2a56a6252f8a53b411e678cd265d6a8c25fc35ff041",
+    "w3_cuda_diagnostic.log": "58681806bfb262f29561918e45a1700b662760dc04e88c561d96919438332ec8"
+  },
+  "output_sha256_manifest_sha256": "c9d29ddd8781e0cbd689899348b1dbbc7a5ad935b8119e8cee21d34b9e57f495",
+  "output_status": "ERROR",
+  "qualification_flags": {
+    "grid_response_qualified": false,
+    "physical_profile_qualified": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "waterlily_v16_primal_qualified": false
+  },
+  "solver_steps_v16": 0,
+  "source_commit": "5e985fa3395a01228c18910d96e09ecbc5497628",
+  "source_identity_verification": null,
+  "w2b_sign_convention_audit": {
+    "criteria_path": "docs/evidence/kaggle_w2b_criteria_2026_09_round5.json",
+    "criteria_sha256": "32c1fb8a80658a9ea37713c477c6ededcc0808d5cbb8bbd07d91a2b83ed1eb47",
+    "interpretation": "sign-convention precedent only; no v16 target or force-sign diagnosis",
+    "registered_T4_drag_sign_gate": true,
+    "result_path": "docs/evidence/kaggle_w2b_round5_result_2026_09.json",
+    "result_sha256": "8edf0d36cb706e9f6862faf7ea44845b100c3213433e94ae334251c16c94cccc",
+    "time_weighted_drag_solver_units_by_cells_per_diameter": {
+      "16": 88.23605891136792,
+      "24": 204.44844285577787,
+      "32": 370.3856390591538
+    }
+  }
+}

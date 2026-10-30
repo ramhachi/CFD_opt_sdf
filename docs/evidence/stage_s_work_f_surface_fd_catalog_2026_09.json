@@ -1,0 +1,88 @@
+{
+  "baseline": {
+    "path": "docs/evidence/stage_s_baseline_v16_v2_2026_09.json",
+    "sha256": "a6d40a5c25d9a4ca44aaf1c4d9a7b667d6d33fcfeed45d4b7e2b3cdb049abed6"
+  },
+  "claims_not_supported": [
+    "registration only; no perturbation, adjoint or FD run has executed"
+  ],
+  "kind": "stage_s_work_f_surface_fd_catalog",
+  "manifests": {
+    "downforce": {
+      "manifest_hash": "9c19160d078bbc283bc96f9e1a6a7d9a806b3e6bc030348189917602de0c4701",
+      "path": "docs/evidence/stage_s_work_f_surface_fd_downforce_manifest_2026_09.json",
+      "sha256": "64115353a2d5b2bb4159b3f2eb8e90fece275d513e6d67f9401779e532f6530a"
+    },
+    "drag": {
+      "manifest_hash": "3f8f8e5973f300dd4b27892024486ced4e064bbd3c2682ed66f1279cd77c7f79",
+      "path": "docs/evidence/stage_s_work_f_surface_fd_drag_manifest_2026_09.json",
+      "sha256": "ab924482b5902b2b6f44cbacd8e6f060ef10cb834d396ae2ad9f59948b4fc8f4"
+    }
+  },
+  "problem_spec": {
+    "path": "work/stage_sv_laminar/project_matched_re_laminar.yaml",
+    "sha256": "dd704b42021334c4e25261c8a2bbc606c4268a5dcbc4e6df0baf8b48d87b7417"
+  },
+  "schema_version": 1,
+  "shared_catalog": {
+    "directions": [
+      "downforce_gradient_aligned",
+      "drag_gradient_aligned",
+      "random_seed_11",
+      "random_seed_2026"
+    ],
+    "epsilon_ratios": [
+      0.002,
+      0.005,
+      0.01,
+      0.02
+    ],
+    "epsilons_m": [
+      0.0001,
+      0.00025,
+      0.0005,
+      0.001
+    ],
+    "fixed_regions": {
+      "fixed_patches": [
+        "inlet",
+        "outlet",
+        "sideMin",
+        "sideMax",
+        "bottom",
+        "top"
+      ],
+      "free_patch": "design_candidate",
+      "max_normal_displacement_m": 0.001
+    },
+    "surface_basis": {
+      "box_m": {
+        "max": [
+          0.6650000154972077,
+          0.5399999856948853,
+          0.3
+        ],
+        "min": [
+          -0.7150000274181366,
+          -0.5399999856948853,
+          -0.3
+        ]
+      },
+      "control_points": [
+        8,
+        8,
+        8
+      ],
+      "kind": "volumetricBSplines",
+      "normalization": "unit_inf_norm_over_the_free_surface"
+    }
+  },
+  "solver_evidence": {
+    "path": "docs/evidence/stage_s_work_f_v1_solver_2026_09.json",
+    "sha256": "3c1e5b437f5a9e425dee8b0e7f0b488365bf5c3ddd971c74fd7aaa2e1657fe4f"
+  },
+  "work_f_manifest": {
+    "path": "docs/evidence/stage_s_work_f_manifest_2026_09.json",
+    "sha256": "03b109f15e79036fe31a6ec76cd58831f8f834926aee2c0eaf654ea80b47dfdd"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "kind": "pq3_3b_noise_calibration",
+  "schema_version": 1,
+  "measurement": "two independent OpenFOAM primals of identical rho via distinct fresh run roots",
+  "rho_sha256": "fc8012e81bab301f9e1aa329981de66032f3bc385e293e2d299c3e4a66e24599",
+  "canonical_objective_values": [
+    -0.685333751683,
+    -0.685333751683
+  ],
+  "canonical_objective_spread": 0.0,
+  "raw_downforce_values": [
+    0.685333751683,
+    0.685333751683
+  ],
+  "raw_downforce_spread": 0.0,
+  "run_a": {
+    "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_preflight_v5/noise_repeat_a/trial_d7cfb3b0d954/case",
+    "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_preflight_v5/noise_repeat_a/trial_d7cfb3b0d954/case/fixed_grid_primal_summary.json",
+    "summary_sha256": "36625278b3b2425726dd60881d9934994a4e74f6313a286636cf8fcb3cd351c8",
+    "source_rho_sha256": "23b70823ae2a42f895469e2c92f329e43d26be8fcdb57d1fcefb78b58926d650",
+    "primal_iterations": 98,
+    "adjoint_iterations": null,
+    "solver_status": "converged",
+    "reused": false,
+    "downforce_coefficient": 0.685333751683
+  },
+  "run_b": {
+    "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_preflight_v5/noise_repeat_b/trial_d7cfb3b0d954/case",
+    "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_preflight_v5/noise_repeat_b/trial_d7cfb3b0d954/case/fixed_grid_primal_summary.json",
+    "summary_sha256": "3e2ca730710ad77068d2d66c77117aa1f2c7dcd761f6218b568aa1a50bc93f23",
+    "source_rho_sha256": "23b70823ae2a42f895469e2c92f329e43d26be8fcdb57d1fcefb78b58926d650",
+    "primal_iterations": 98,
+    "adjoint_iterations": null,
+    "solver_status": "converged",
+    "reused": false,
+    "downforce_coefficient": 0.685333751683
+  },
+  "independent_runs": true,
+  "objective_noise_threshold": 1e-06,
+  "downforce_noise_threshold": 1e-06
+}

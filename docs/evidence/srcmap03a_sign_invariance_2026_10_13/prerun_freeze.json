@@ -1,0 +1,82 @@
+{
+  "classification_precedence": [
+    "integrity assertion or unevaluated predicate=>INCOMPLETE",
+    "any predicate false or control contradiction=>P22_V17_SIGN_INVARIANCE_NOT_CERTIFIED",
+    "all predicates true=>P22_V17_SIGN_INVARIANCE_CERTIFIED"
+  ],
+  "files": [
+    {
+      "path": "scripts/certify_p22_v17_sign_invariance.py",
+      "sha256": "9064bb8c54806ce044cac09ed46e9576b747a2a62e3a3e802ef78d9cd5bc3922"
+    },
+    {
+      "path": "tests/test_srcmap03a_certificate.py",
+      "sha256": "2f29f1aa556926a9a1836f2000f96f432da2b5614c6d3fd1525d4df33cebc4d9"
+    },
+    {
+      "path": "docs/evidence/srcmap03a_sign_invariance_2026_10_13/prerun_plan.md",
+      "sha256": "4c35729721990b0fd47e8f3bd61b697ee39f6edf4b45b64545bc2f1a48fccf6e"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/reference_surface.stl",
+      "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/v17_baseline.npz",
+      "sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/lowdim03_parent.npz",
+      "sha256": "0ce3256b0f3e5c919caeb2ac1b36f1a33838f34c767c091cb89bda0234ac750b"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/v17_source_replay_2026_10_12.npz",
+      "sha256": "e768fb8bb01c9a19931a8a129004080acdf7d7091ab1b3670f57377e860d43b4"
+    },
+    {
+      "path": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/SHA256SUMS",
+      "sha256": "49de3e26ca012eadc9b058296065ab1554ffad9deaee282b8c8938a2d662b8a4"
+    },
+    {
+      "path": "src/cfd_sdf/design/volume_semantics.py",
+      "sha256": "021c2da0916f1417211764c6d6ffc1d7a45785b41b8ce2f206f31cd710625626"
+    },
+    {
+      "path": "src/cfd_sdf/design/geometry_gates.py",
+      "sha256": "7bed1368f3a6e724fdddaeec9e21d8dc1bdb7fb76b637546142d0d083752b784"
+    },
+    {
+      "path": "src/cfd_sdf/design/sdf_state.py",
+      "sha256": "74c675ed658c85fa2d8f306652d0de712698daf36e4e86f1f508b676c4f96faf"
+    },
+    {
+      "path": "src/cfd_sdf/fd08_v2_campaign.py",
+      "sha256": "a7239c1071fae82347f4488cb06d38aabdd58bf25d9ab06ed11daca6a7f0bb91"
+    },
+    {
+      "path": "src/cfd_sdf/gradients/directional_fd.py",
+      "sha256": "ac49c4e3a6f3b14a6c254c6cbdf7dcda26da7e3c62d40d7c735ae473cbc52837"
+    },
+    {
+      "path": "scripts/build_lowdim01_inputs.py",
+      "sha256": "dcafca336fd9826a35fc9cfe306d5c5186e13e376e656fd529b7dc64d3db5925"
+    },
+    {
+      "path": "scripts/lowdim01_states.py",
+      "sha256": "456c0110dafb64c2dc4b82e35ba7830aa4b436364802bb6b437f05aa35e82d32"
+    },
+    {
+      "path": "scripts/step01_states.py",
+      "sha256": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87"
+    }
+  ],
+  "freeze_sha256": "8eabccd3dbe4b67e26852e9581f5b4f8696f4bac2147cc481ff9bdaa463cab1e",
+  "frozen_parameters": {
+    "GWN_TOL": 1e-09,
+    "PLATEAU_MIN_RATIO": 1000.0,
+    "REFERENCE_SOLID_CENTERS": 8272,
+    "SMOOTH_BOUND_MAX_REL": 0.001,
+    "TAU_REP": 1e-06
+  },
+  "integration_parent": "f82a5e037409f7e17e8542dfe05043d3bade03f8"
+}

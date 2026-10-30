@@ -15,7 +15,14 @@ from .fixed_grid_contract import (
     _read_cell_vti,
     _write_cell_vti,
 )
+from .design_transform import DesignTransform
+from .design_transform_declaration import (
+    DesignTransformDeclarationError,
+    load_design_transform_declaration,
+)
 from .fixed_grid_primal import load_fixed_grid_density_state
+from .problem_spec import load_problem_spec
+from .problem_spec_compiler import CompiledProblem, ProblemCompileError, compile_problem
 
 
 FIXED_GRID_OPTIMIZER_SCHEMA_VERSION = 1
@@ -116,6 +123,8 @@ def run_fixed_grid_constrained_density_step(
     sensitivity_summary_json: Path | None = None,
     primal_summary_json: Path | None = None,
     connectivity_summary_json: Path | None = None,
+    problem_spec_json: Path | None = None,
+    transform_declaration_json: Path | None = None,
 ) -> FixedGridConstrainedStepArtifacts:
     controls = controls or FixedGridOptimizerControls()
     _validate_controls(controls)
@@ -134,7 +143,49 @@ def run_fixed_grid_constrained_density_step(
         "fixed_grid_sensitivity.vti",
         "density.vti",
     )
-    _validate_sensitivity_arrays(density_state.arrays, sensitivity_arrays)
+    compiled = None
+    transform: DesignTransform | None = None
+    transform_declaration_hash: str | None = None
+    if problem_spec_json is not None:
+        if transform_declaration_json is None:
+            raise ProblemCompileError(
+                "the production (ProblemSpec) path requires an explicit design-transform "
+                "declaration; legacy identity updates are diagnostic only"
+            )
+        declaration = load_design_transform_declaration(transform_declaration_json)
+        transform_declaration_hash = declaration.declaration_hash
+        compiled = compile_problem(
+            load_problem_spec(problem_spec_json),
+            volume_budget=declaration.volume_budget,
+        )
+        grid_spacing = density_state.grid.spacing
+        if declaration.document["filter"]["kind"] == "cone" and len(
+            set(float(v) for v in grid_spacing)
+        ) != 1:
+            raise DesignTransformDeclarationError(
+                "the cone design transform requires a uniform cell spacing"
+            )
+        design_active = (
+            (np.asarray(density_state.arrays["active_design_mask"], dtype=np.uint8) > 0)
+            & (np.asarray(density_state.arrays["allowed_mask"], dtype=np.uint8) > 0)
+            & ~(np.asarray(density_state.arrays["forbidden_mask"], dtype=np.uint8) > 0)
+            & ~(np.asarray(density_state.arrays["fixed_solid_mask"], dtype=np.uint8) > 0)
+        )
+        transform = declaration.build(
+            shape=tuple(int(v) for v in density_state.grid.cell_shape),
+            spacing_m=float(grid_spacing[0]),
+            active_mask=design_active,
+        )
+        if float(declaration.document["filter"]["spacing_m"]) != float(grid_spacing[0]):
+            raise DesignTransformDeclarationError(
+                "declaration.filter.spacing_m does not match the density grid spacing"
+            )
+        _validate_transform_against_artifact(transform, density_state.arrays, design_active)
+    _validate_sensitivity_arrays(
+        density_state.arrays,
+        sensitivity_arrays,
+        required=_required_sensitivity_arrays(compiled, controls),
+    )
 
     sensitivity_summary = _read_optional_json(
         _resolve_summary_path(sensitivity_vti, sensitivity_summary_json)
@@ -152,11 +203,47 @@ def run_fixed_grid_constrained_density_step(
     root_mask = np.asarray(density_state.arrays["root_mask"], dtype=np.uint8) > 0
     active &= allowed & ~forbidden & ~fixed_solid
 
-    objective_gradient = -np.asarray(
-        sensitivity_arrays["d_downforce_d_rho"],
-        dtype=np.float64,
-    )
-    objective_gradient[~active] = 0.0
+    objective_gradient = _objective_gradient(compiled, sensitivity_arrays, active)
+    primitive_values: dict[tuple[str, str], float] = {}
+    primitive_gradients: dict[tuple[str, str], np.ndarray] = {}
+    problem_metadata: dict[str, object] = {
+        "objective_source": "legacy_hardcoded_downforce",
+        "deprecated_legacy_path": True,
+    }
+    if compiled is not None:
+        primitive_values = _resolve_primitive_values(
+            compiled, primal_summary, sensitivity_summary
+        )
+        primitive_gradients = _resolve_primitive_gradients(compiled, sensitivity_arrays)
+        compiled.enforce_primitives(set(primitive_gradients))
+        problem_metadata = {
+            "objective_source": "problem_spec_compiler",
+            "problem_spec_json": str(Path(problem_spec_json).resolve()),
+            "problem_spec_sha256": compiled.problem_spec_sha256,
+            "objectives": [
+                {
+                    "id": objective.objective_id,
+                    "sense": objective.sense,
+                    "terms": [asdict(term) for term in objective.terms],
+                }
+                for objective in compiled.objectives
+            ],
+            "constraints": [
+                {
+                    "id": constraint.constraint_id,
+                    "relation": constraint.relation,
+                    "limit": constraint.limit,
+                    "terms": [asdict(term) for term in constraint.terms],
+                }
+                for constraint in compiled.constraints
+            ],
+            "response_bindings": compiled.response_bindings,
+            "geometry_requirements": [
+                {"id": item.requirement_id, "kind": item.kind, "declared": item.declared}
+                for item in compiled.geometry_requirements
+            ],
+            "volume_occupation_definition": "projected_field",
+        }
     constraints = _build_constraints(
         density=density,
         active=active,
@@ -165,6 +252,11 @@ def run_fixed_grid_constrained_density_step(
         sensitivity_summary=sensitivity_summary,
         primal_summary=primal_summary,
         connectivity_summary=connectivity_summary,
+        density_arrays=density_state.arrays,
+        compiled=compiled,
+        primitive_values=primitive_values,
+        primitive_gradients=primitive_gradients,
+        transform=transform,
     )
     _check_connectivity_derivative_readiness(
         sensitivity_arrays,
@@ -207,6 +299,7 @@ def run_fixed_grid_constrained_density_step(
     output_arrays = _updated_density_arrays(
         density_state.arrays,
         candidate_density,
+        transform=transform,
     )
     _write_cell_vti(
         density_state.grid,
@@ -255,8 +348,13 @@ def run_fixed_grid_constrained_density_step(
         encoding="utf-8",
     )
 
+    base_objective = (
+        compiled.objective_value(primitive_values)
+        if compiled is not None
+        else _optional_float(primal_summary.get("objective"))
+    )
     objective_prediction = {
-        "base_objective": _optional_float(primal_summary.get("objective")),
+        "base_objective": base_objective,
         "linearized_delta": float(np.dot(objective_gradient, actual_delta)),
     }
     if objective_prediction["base_objective"] is not None:
@@ -296,6 +394,40 @@ def run_fixed_grid_constrained_density_step(
             str(connectivity_summary_json.resolve()) if connectivity_summary_json else None
         ),
         "objective": objective_prediction,
+        "problem": problem_metadata,
+        "declared_equals_solved": bool(compiled is not None),
+        "solved_set": compiled.solved_set() if compiled is not None else None,
+        "transform": (
+            {
+                "declaration_hash": transform_declaration_hash,
+                "transform_hash": transform.transform_hash(),
+                "description": transform.describe(),
+                "volume_definition": "projection_output_recomputed_from_rho_filtered",
+                "artifact_rho_projected_note": (
+                    "the fixed-grid artifact array rho_projected is the RAMP output "
+                    "(OpenFOAM beta); the volume field is the projection output"
+                ),
+            }
+            if transform is not None
+            else None
+        ),
+        "semantic_names": {
+            "rho_design": "design variable (artifact array 'rho')",
+            "rho_filtered": "filter output (artifact array 'rho_filtered')",
+            "rho_projection": (
+                "projection output; volume and geometry occupancy basis; recomputed "
+                "from rho_filtered and the declared projection, not stored as an array"
+            ),
+            "beta_solver": (
+                "artifact array 'rho_projected' = RAMP output = the OpenFOAM beta "
+                "field the solver sees"
+            ),
+            "brinkman_alpha": "artifact array 'alpha' = beta_max * beta_solver",
+        },
+        "ignored_legacy_controls": _ignored_legacy_controls(controls, compiled),
+        "constraint_values_measured": (
+            compiled.constraint_values(primitive_values) if compiled is not None else {}
+        ),
         "linearized_constraints": prediction["constraints"],
         "linearized_constraints_ok": accepted_by_linearization,
         "optimizer_history": backend_result.history,
@@ -342,6 +474,198 @@ def _build_constraints(
     sensitivity_summary: dict[str, object],
     primal_summary: dict[str, object],
     connectivity_summary: dict[str, object],
+    density_arrays: dict[str, np.ndarray] | None = None,
+    compiled: CompiledProblem | None = None,
+    primitive_values: dict[tuple[str, str], float] | None = None,
+    primitive_gradients: dict[tuple[str, str], np.ndarray] | None = None,
+    transform: DesignTransform | None = None,
+) -> list[_LinearConstraint]:
+    if compiled is not None:
+        return _spec_constraints(
+            active=active,
+            sensitivity_arrays=sensitivity_arrays,
+            controls=controls,
+            sensitivity_summary=sensitivity_summary,
+            connectivity_summary=connectivity_summary,
+            density_arrays=density_arrays,
+            compiled=compiled,
+            primitive_values=primitive_values or {},
+            primitive_gradients=primitive_gradients or {},
+            transform=transform,
+            density=density,
+        )
+    return _legacy_constraints(
+        density=density,
+        active=active,
+        sensitivity_arrays=sensitivity_arrays,
+        controls=controls,
+        sensitivity_summary=sensitivity_summary,
+        primal_summary=primal_summary,
+        connectivity_summary=connectivity_summary,
+    )
+
+
+def _spec_constraints(
+    *,
+    active: np.ndarray,
+    sensitivity_arrays: dict[str, np.ndarray],
+    controls: FixedGridOptimizerControls,
+    sensitivity_summary: dict[str, object],
+    connectivity_summary: dict[str, object],
+    density_arrays: dict[str, np.ndarray] | None,
+    compiled: CompiledProblem,
+    primitive_values: dict[tuple[str, str], float],
+    primitive_gradients: dict[tuple[str, str], np.ndarray],
+    transform: DesignTransform | None,
+    density: np.ndarray,
+) -> list[_LinearConstraint]:
+    """The production solved set: compiler declarations only.
+
+    Legacy control switches may not add constraints (the compiler output is the
+    complete solved set) and may not remove declared ones; a switch that asks
+    for an undeclared constraint is a fail-closed conflict.
+    """
+
+    constraints: list[_LinearConstraint] = []
+    for constraint in compiled.constraints:
+        constraints.append(
+            _constraint(
+                constraint.constraint_id,
+                value=constraint.scalar(primitive_values),
+                limit=0.0,
+                gradient=constraint.gradient(primitive_gradients),
+                active=active,
+            )
+        )
+    declared_connectivity = [
+        item for item in compiled.geometry_requirements if item.kind == "connectivity"
+    ]
+    if declared_connectivity:
+        if not controls.enforce_connectivity:
+            raise ProblemCompileError(
+                "ProblemSpec declares connectivity requirements but enforce_connectivity "
+                "is False; declared constraints cannot be switched off in production"
+            )
+        for requirement in declared_connectivity:
+            declared = requirement.declared
+            constraints.append(
+                _constraint(
+                    f"{requirement.requirement_id}_nominal",
+                    value=_resolve_connectivity_objective(
+                        "nominal", sensitivity_summary, connectivity_summary
+                    ),
+                    limit=0.0,
+                    gradient=np.asarray(
+                        sensitivity_arrays["d_connectivity_nominal_d_rho"],
+                        dtype=np.float64,
+                    ),
+                    active=active,
+                )
+            )
+            if bool(declared.get("evaluate_eroded")):
+                constraints.append(
+                    _constraint(
+                        f"{requirement.requirement_id}_eroded",
+                        value=_resolve_connectivity_objective(
+                            "eroded", sensitivity_summary, connectivity_summary
+                        ),
+                        limit=0.0,
+                        gradient=np.asarray(
+                            sensitivity_arrays["d_connectivity_eroded_d_rho"],
+                            dtype=np.float64,
+                        ),
+                        active=active,
+                    )
+                )
+    elif controls.enforce_connectivity:
+        raise ProblemCompileError(
+            "enforce_connectivity is set but the ProblemSpec declares no connectivity "
+            "requirement; production may not add undeclared constraints"
+        )
+    if compiled.volume_constraint is not None:
+        if transform is None:
+            raise ProblemCompileError(
+                "the declared volume constraint requires the design transform"
+            )
+        volume_constraint = compiled.volume_constraint
+        constraints.append(
+            _constraint(
+                volume_constraint.constraint_id,
+                value=volume_constraint.value(transform, density),
+                limit=0.0,
+                gradient=volume_constraint.gradient(transform, density),
+                active=active,
+            )
+        )
+    elif controls.enforce_volume:
+        raise ProblemCompileError(
+            "enforce_volume is set but no volume budget was declared at compile time; "
+            "production may not add undeclared constraints"
+        )
+    return constraints
+
+
+def _legacy_connectivity_constraints(
+    *,
+    active: np.ndarray,
+    sensitivity_arrays: dict[str, np.ndarray],
+    controls: FixedGridOptimizerControls,
+    sensitivity_summary: dict[str, object],
+    connectivity_summary: dict[str, object],
+) -> list[_LinearConstraint]:
+    nominal_value = _resolve_connectivity_objective(
+        "nominal",
+        sensitivity_summary,
+        connectivity_summary,
+    )
+    eroded_value = _resolve_connectivity_objective(
+        "eroded",
+        sensitivity_summary,
+        connectivity_summary,
+    )
+    nominal_limit = (
+        float(controls.connectivity_nominal_limit)
+        if controls.connectivity_nominal_limit is not None
+        else nominal_value
+    )
+    eroded_limit = (
+        float(controls.connectivity_eroded_limit)
+        if controls.connectivity_eroded_limit is not None
+        else eroded_value
+    )
+    return [
+        _constraint(
+            "connectivity_nominal",
+            value=nominal_value,
+            limit=nominal_limit,
+            gradient=np.asarray(
+                sensitivity_arrays["d_connectivity_nominal_d_rho"],
+                dtype=np.float64,
+            ),
+            active=active,
+        ),
+        _constraint(
+            "connectivity_eroded",
+            value=eroded_value,
+            limit=eroded_limit,
+            gradient=np.asarray(
+                sensitivity_arrays["d_connectivity_eroded_d_rho"],
+                dtype=np.float64,
+            ),
+            active=active,
+        ),
+    ]
+
+
+def _legacy_constraints(
+    *,
+    density: np.ndarray,
+    active: np.ndarray,
+    sensitivity_arrays: dict[str, np.ndarray],
+    controls: FixedGridOptimizerControls,
+    sensitivity_summary: dict[str, object],
+    primal_summary: dict[str, object],
+    connectivity_summary: dict[str, object],
 ) -> list[_LinearConstraint]:
     constraints: list[_LinearConstraint] = []
     if controls.enforce_efficiency:
@@ -363,49 +687,14 @@ def _build_constraints(
         )
 
     if controls.enforce_connectivity:
-        nominal_value = _resolve_connectivity_objective(
-            "nominal",
-            sensitivity_summary,
-            connectivity_summary,
-        )
-        eroded_value = _resolve_connectivity_objective(
-            "eroded",
-            sensitivity_summary,
-            connectivity_summary,
-        )
-        nominal_limit = (
-            float(controls.connectivity_nominal_limit)
-            if controls.connectivity_nominal_limit is not None
-            else nominal_value
-        )
-        eroded_limit = (
-            float(controls.connectivity_eroded_limit)
-            if controls.connectivity_eroded_limit is not None
-            else eroded_value
-        )
         constraints.extend(
-            [
-                _constraint(
-                    "connectivity_nominal",
-                    value=nominal_value,
-                    limit=nominal_limit,
-                    gradient=np.asarray(
-                        sensitivity_arrays["d_connectivity_nominal_d_rho"],
-                        dtype=np.float64,
-                    ),
-                    active=active,
-                ),
-                _constraint(
-                    "connectivity_eroded",
-                    value=eroded_value,
-                    limit=eroded_limit,
-                    gradient=np.asarray(
-                        sensitivity_arrays["d_connectivity_eroded_d_rho"],
-                        dtype=np.float64,
-                    ),
-                    active=active,
-                ),
-            ]
+            _legacy_connectivity_constraints(
+                active=active,
+                sensitivity_arrays=sensitivity_arrays,
+                controls=controls,
+                sensitivity_summary=sensitivity_summary,
+                connectivity_summary=connectivity_summary,
+            )
         )
 
     if controls.enforce_volume:
@@ -879,14 +1168,28 @@ def _linearized_prediction(
 def _updated_density_arrays(
     arrays: dict[str, np.ndarray],
     density: np.ndarray,
+    *,
+    transform: DesignTransform | None = None,
 ) -> dict[str, np.ndarray]:
     beta_max = _infer_beta_max(arrays)
     rho = np.asarray(density, dtype=np.float32)
+    if transform is not None:
+        state = transform.forward(np.asarray(density, dtype=np.float64))
+        beta = np.asarray(state.beta, dtype=np.float32)
+        derived = {
+            "rho_filtered": np.asarray(state.rho_filtered, dtype=np.float32),
+            "rho_projected": beta,
+            "alpha": (beta_max * beta).astype(np.float32),
+        }
+    else:
+        derived = {
+            "rho_filtered": rho.copy(),
+            "rho_projected": rho.copy(),
+            "alpha": (beta_max * rho).astype(np.float32),
+        }
     result = {
         "rho": rho,
-        "rho_filtered": rho.copy(),
-        "rho_projected": rho.copy(),
-        "alpha": (beta_max * rho).astype(np.float32),
+        **derived,
         "allowed_mask": np.asarray(arrays["allowed_mask"], dtype=np.uint8),
         "forbidden_mask": np.asarray(arrays["forbidden_mask"], dtype=np.uint8),
         "fixed_solid_mask": np.asarray(arrays["fixed_solid_mask"], dtype=np.uint8),
@@ -938,11 +1241,183 @@ def _apply_hard_masks(
     return np.clip(values, lower, upper)
 
 
+def _required_sensitivity_arrays(
+    compiled: CompiledProblem | None,
+    controls: FixedGridOptimizerControls,
+) -> set[str]:
+    if compiled is None:
+        return {
+            "d_downforce_d_rho",
+            "d_drag_d_rho",
+            "d_efficiency_constraint_d_rho",
+            "d_connectivity_nominal_d_rho",
+            "d_connectivity_eroded_d_rho",
+            "active_design_mask",
+        }
+    required = {"active_design_mask"}
+    for _flow_case, response_id in compiled.required_primitives():
+        required.add(f"d_{response_id}_d_rho")
+    if controls.enforce_connectivity:
+        required.update(
+            {"d_connectivity_nominal_d_rho", "d_connectivity_eroded_d_rho"}
+        )
+    return required
+
+
+def _mask_inactive(values: np.ndarray, active: np.ndarray) -> np.ndarray:
+    masked = np.asarray(values, dtype=np.float64).copy()
+    if masked.shape != active.shape:
+        raise ValueError("gradient shape does not match the active mask")
+    masked[~active] = 0.0
+    return masked
+
+
+def _resolve_primitive_gradients(
+    compiled: CompiledProblem,
+    sensitivity_arrays: dict[str, np.ndarray],
+) -> dict[tuple[str, str], np.ndarray]:
+    gradients: dict[tuple[str, str], np.ndarray] = {}
+    for flow_case, response_id in compiled.required_primitives():
+        name = f"d_{response_id}_d_rho"
+        if name not in sensitivity_arrays:
+            raise ProblemCompileError(
+                f"declared response {response_id!r} has no gradient array {name!r} "
+                "in the sensitivity artifact"
+            )
+        value = np.asarray(sensitivity_arrays[name], dtype=np.float64)
+        if not np.isfinite(value).all():
+            raise ProblemCompileError(f"{name} contains non-finite values")
+        gradients[(flow_case, response_id)] = value
+    return gradients
+
+
+_SUMMARY_VALUE_KEYS = ("{response}_coefficient", "{response}")
+
+
+def _resolve_primitive_values(
+    compiled: CompiledProblem,
+    primal_summary: dict[str, object],
+    sensitivity_summary: dict[str, object],
+) -> dict[tuple[str, str], float]:
+    values: dict[tuple[str, str], float] = {}
+    primal_values = sensitivity_summary.get("primal_values")
+    primal_values = primal_values if isinstance(primal_values, dict) else {}
+    for flow_case, response_id in sorted(compiled.required_primitives()):
+        found = None
+        for source in (primal_summary, primal_values):
+            for template in _SUMMARY_VALUE_KEYS:
+                key = template.format(response=response_id)
+                if source.get(key) is not None:
+                    found = float(source[key])
+                    break
+            if found is not None:
+                break
+        if found is None:
+            raise ProblemCompileError(
+                f"declared response {response_id!r} has no primitive value in the "
+                "primal or sensitivity summary"
+            )
+        values[(flow_case, response_id)] = found
+    return values
+
+
+def _validate_transform_against_artifact(
+    transform: DesignTransform,
+    arrays: dict[str, np.ndarray],
+    design_active: np.ndarray,
+) -> None:
+    """Fail closed when the stored intermediate is not this transform's output."""
+
+    rho = np.asarray(arrays["rho"], dtype=np.float64)
+    expected = transform.filter.H(rho)
+    stored = arrays.get("rho_filtered")
+    if stored is None:
+        raise ProblemCompileError(
+            "the density artifact must carry rho_filtered for the declared transform"
+        )
+    difference = float(np.max(np.abs(np.asarray(stored, dtype=np.float64) - expected)))
+    scale = max(float(np.max(np.abs(expected))), 1.0)
+    if difference > 1.0e-5 * scale:
+        raise ProblemCompileError(
+            "stored rho_filtered does not match the declared design transform "
+            f"(max abs difference {difference:g}); the transform declaration and the "
+            "artifact are not the same generation"
+        )
+    if not np.array_equal(design_active, np.asarray(transform.active, dtype=bool)):
+        raise ProblemCompileError(
+            "the declared transform active mask does not match the density artifact"
+        )
+
+
+def _ignored_legacy_controls(
+    controls: FixedGridOptimizerControls,
+    compiled: CompiledProblem | None,
+) -> list[str]:
+    """Legacy switches that the production solved set deliberately ignores."""
+
+    if compiled is None:
+        return []
+    ignored: list[str] = []
+    if not controls.enforce_volume and compiled.volume_constraint is not None:
+        ignored.append(
+            "enforce_volume=False: the declared compile-time volume constraint is still solved"
+        )
+    if controls.enforce_volume and compiled.volume_constraint is not None:
+        declared = compiled.volume_constraint.limit
+        if abs(float(controls.volume_fraction_max) - declared) > 1e-12:
+            ignored.append(
+                "volume_fraction_max: the declared budget "
+                f"{declared:g} overrides the legacy control "
+                f"{float(controls.volume_fraction_max):g}"
+            )
+        if float(controls.volume_fraction_min) > 0.0:
+            ignored.append(
+                "volume_fraction_min: no lower volume bound is declared; the legacy "
+                "control is not solved"
+            )
+    if controls.enforce_efficiency:
+        ignored.append(
+            "enforce_efficiency: efficiency constraints come from the ProblemSpec "
+            "declaration, not from this switch"
+        )
+    return ignored
+
+
+def _projected_volume_fraction(
+    density_arrays: dict[str, np.ndarray], active: np.ndarray
+) -> float:
+    projected = density_arrays.get("rho_projected")
+    if projected is None:
+        raise ProblemCompileError(
+            "the projected-volume definition requires rho_projected in the "
+            "density artifact"
+        )
+    values = np.asarray(projected, dtype=np.float64)[active]
+    return float(np.mean(values)) if values.size else 0.0
+
+
+def _objective_gradient(
+    compiled: CompiledProblem | None,
+    sensitivity_arrays: dict[str, np.ndarray],
+    active: np.ndarray,
+) -> np.ndarray:
+    if compiled is None:
+        return _mask_inactive(
+            -np.asarray(sensitivity_arrays["d_downforce_d_rho"], dtype=np.float64),
+            active,
+        )
+    gradients = _resolve_primitive_gradients(compiled, sensitivity_arrays)
+    compiled.enforce_primitives(set(gradients))
+    return _mask_inactive(compiled.objective_gradient(gradients), active)
+
+
 def _validate_sensitivity_arrays(
     density_arrays: dict[str, np.ndarray],
     sensitivity_arrays: dict[str, np.ndarray],
+    *,
+    required: set[str] | None = None,
 ) -> None:
-    required = {
+    required = required or {
         "d_downforce_d_rho",
         "d_drag_d_rho",
         "d_efficiency_constraint_d_rho",

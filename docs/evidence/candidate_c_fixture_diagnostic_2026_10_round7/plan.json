@@ -1,0 +1,268 @@
+{
+  "plan_id": "C-OP-01-CPU-GRID-SDF-LONG-DIAGNOSTIC-7",
+  "issue": 44,
+  "created_at": "2026-10-02",
+  "status": "immutable_preregistered_pending_parent_source_review_no_solver_steps_authorized",
+  "evidence_class": "bounded_cpu_candidate_operator_implementation_diagnostic",
+  "immutable": true,
+  "registered_before_measurement": true,
+  "solver_steps_authorized": false,
+  "solver_started": false,
+  "qualification": false,
+  "repository": "ramhachi/CFD_opt_sdf",
+  "prepared_from_commit": "bac4bcb4758efe4bcfecac974daa50b89d96b057",
+  "predecessor": {
+    "plan_path": "docs/evidence/candidate_c_fixture_diagnostic_2026_10_round5/plan.json",
+    "plan_sha256": "40e81772763eacbcb5943a8e79abccd0931e6573fdeb489ba4f575ad674dcdd2",
+    "disposition": "preserved immutable short diagnostic; not reused as long-window measurement or criteria"
+  },
+  "runner": "scripts/verify_candidate_c_grid_sdf_long_cpu_diagnostic_round7.py",
+  "runner_sha256": "fbd20f28735b1bfa16d1c923db32357c7b1ed6cb16210674050dda71aba8cccd",
+  "job": "scripts/candidate_c_grid_sdf_long_cpu_diagnostic_round7.jl",
+  "job_sha256": "f615aa42ac34158d66e733fefbcadbe79011e1d4de1e451cda9fbdc108f4e448",
+  "source_manifest": "docs/evidence/candidate_c_fixture_diagnostic_2026_10_round7/runner_sources.sha256",
+  "source_manifest_sha256": "1726fde054f8fd559c562d957db7d95a927015e2698c51b87f13ee19c2b2d1f7",
+  "runtime": {
+    "platform_class": "macOS CPU",
+    "architecture": "record exact machine architecture",
+    "backend": "Array CPU, no GPU",
+    "julia_version": "1.12.6",
+    "waterlily_version": "1.8.0",
+    "threads": "auto; record observed Julia thread count",
+    "project_manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    "precision": "Float32",
+    "observed_line": "CANDIDATE_C_LONG_CPU_RUNTIME julia=<VERSION> waterlily=<pkgversion> threads=<positive observed count> backend=Array precision=Float32 source_sha256=<job_sha256> manifest_sha256=<source_manifest_sha256>",
+    "version_gate": "before any Simulation construction, require Julia 1.12.6 and WaterLily 1.8.0 exactly",
+    "thread_count": "record Threads.nthreads() observed for geometry/preflight/formal process; do not gate exact count"
+  },
+  "operator": {
+    "identity": "Candidate C moment blend + NormalFloorWaterLilyBody(normal_floor=0.25)",
+    "normal_floor": 0.25,
+    "transition_width_solver_cells": 0.00011444091796875,
+    "mu1": "raw WaterLily mu1 and wrapped body normal; unchanged",
+    "solver_body_composition": "CandidateCWaterLilyBody(normal_floor_candidate, moving_ground) is the outer simulation.body so Candidate C measure! dispatch is reached",
+    "candidate_force_body": "Candidate C normal-floor candidate only; moving ground is excluded to match W3/W4 force integration"
+  },
+  "flow": {
+    "dimensions_cells": [
+      100,
+      48,
+      36
+    ],
+    "origin_m": [
+      -2.5,
+      -1.2,
+      -0.9
+    ],
+    "spacing_m": 0.05,
+    "solver_length_cells": 16.0,
+    "freestream_mps": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "kinematic_viscosity_solver": 0.2,
+    "density_kg_m3": 1.0,
+    "target_time_t_u_over_l": 10.0,
+    "force_window_t_u_over_l": [
+      5.0,
+      10.0
+    ],
+    "stationarity_split_t_u_over_l": 7.5,
+    "sample_every_solver_steps": 4,
+    "moving_ground": {
+      "plane_z_solver": 8.0,
+      "plane_z_world_m": -0.5,
+      "velocity_solver_units": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "velocity_mps": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "candidate_min_z_world_m": -0.45,
+      "minimum_gap_m": 0.05
+    }
+  },
+  "canonical_grid_sdf": {
+    "origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "spacing_m": [
+      0.05,
+      0.05,
+      0.05
+    ],
+    "point_shape": [
+      61,
+      33,
+      25
+    ],
+    "outside_value_m": 3.0,
+    "minimum_margin_m": 0.15,
+    "storage": "Float32",
+    "construction": "sample exact analytic SDF at every grid node; negative inside",
+    "constructor_absolute_tolerance_m": 1e-06
+  },
+  "fixtures": [
+    {
+      "id": "sphere",
+      "shape": "sphere",
+      "center_m": [
+        0.0,
+        0.0,
+        -0.2
+      ],
+      "half_extents_m": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    {
+      "id": "plate_1cell",
+      "shape": "box",
+      "center_m": [
+        0.0,
+        0.0,
+        -0.2
+      ],
+      "half_extents_m": [
+        0.25,
+        0.025,
+        0.25
+      ],
+      "description": "long rectangular solid, 0.5 m streamwise by 0.05 m transverse thickness by 0.5 m height; one flow-cell thickness"
+    },
+    {
+      "id": "plate_2cell",
+      "shape": "box",
+      "center_m": [
+        0.0,
+        0.0,
+        -0.2
+      ],
+      "half_extents_m": [
+        0.25,
+        0.05,
+        0.25
+      ],
+      "description": "same long solid with 0.10 m transverse thickness; two flow-cell thickness"
+    },
+    {
+      "id": "moving_ground_only",
+      "shape": "none",
+      "center_m": [
+        0.0,
+        0.0,
+        -0.2
+      ],
+      "half_extents_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidate_force_scope": "NoBody; exact zero candidate-force reference, report-only"
+    }
+  ],
+  "arms": {
+    "native": "native analytic AutoBody or NoBody with the same registered moving ground",
+    "grid_upstream": "same sampled Float32 GridSDF through NormalFloorWaterLilyBody(normal_floor=0.25), upstream WaterLily moment path, and same moving ground",
+    "candidate_c": "same sampled Float32 GridSDF through NormalFloorWaterLilyBody(normal_floor=0.25) and outer CandidateCWaterLilyBody around candidate-plus-moving-ground union",
+    "force_attribution": "for every arm, report candidate-only, ground-only, and actual combined solver-body pressure/viscous/total forces separately in N; candidate-only is the W3/W4 target metric",
+    "comparisons": "native versus GridSDF-upstream includes sampling/normal-floor differences; GridSDF-upstream versus Candidate C isolates the moment blend; all comparisons descriptive, no accuracy threshold",
+    "replicates": 1,
+    "randomness": "none"
+  },
+  "measurement": {
+    "force_units": "body-on-fluid reaction negated once; physical forces in N",
+    "force_scale_n_per_solver_unit": 0.0025,
+    "force_directions": {
+      "drag": "+Fx along registered freestream",
+      "downforce": "-Fz"
+    },
+    "mass_flow_units": "kg/s",
+    "mass_flow_scale_kg_s_per_solver_velocity_unit": 0.0025,
+    "external_face_indices": "normal faces x=2/nx,y=2/ny,z=2/nz; transverse indices 2:n-1 exclude ghost layers",
+    "domain_divergence": "sum Float64(u_high)-Float64(u_low) over WaterLily inside(p), then multiply rho*U*h^2; cast operands before subtraction",
+    "window_statistic": "endpoint-interpolated trapezoid from raw flushed samples on [5,7.5], [7.5,10], and [5,10]",
+    "force_groups": [
+      "candidate-only",
+      "ground-only",
+      "combined solver body"
+    ],
+    "force_closure": "candidate-only pressure + viscous = total in N; identical arithmetic integrity checks are recorded for ground and combined groups",
+    "mass_interpretation": "whole-domain external flux and divergence are integrity diagnostics, not immersed-body mass conservation",
+    "wall_velocity": "record declared moving-ground velocity and z-face normal flow; the nearby differently staggered streamwise velocity is report-only and is not a wall-slip measurement; no numeric no-penetration threshold",
+    "stationarity": "report-only; no acceptance threshold",
+    "native_vs_gridsdf": "report force differences only; no numerical accuracy threshold",
+    "empty_grid": "moving_ground_only is an all-positive field with no zero level; phi_margin_m=NA and phi_has_zero_level=false",
+    "raw_force": "persist raw WaterLily pressure/viscous body-on-fluid solver vectors separately from physical body-force SI columns; verify physical_N = -raw_solver*0.0025 exactly once"
+  },
+  "registered_diagnostic_integrity_checks": {
+    "D1_source_identity": "criteria, host runner, Julia job, package files, Candidate C body, NormalFloor body, and pinned historical body match exact SHA-256 inventory before simulation setup",
+    "D2_fixture_identity": "all four registered analytic fixtures sampled on exact Float32 grid; moving_ground_only records empty-interface status and NA margin; active fixtures use inherited GridSDF constructor 1e-6 m arithmetic slack at the unchanged nominal 0.15 m margin; every grid hash recorded",
+    "D3_completion": "all twelve fixture/arm integrations reach at least 10 tU/L and preserve raw flushed histories",
+    "D4_field_finiteness": "velocity, pressure, force, external-face flux and divergence diagnostic values are finite at every raw sample",
+    "D5_exact_windows": "host independently recomputes endpoint-interpolated trapezoid means from the raw CSV; missing brackets fail closed",
+    "D6_force_arithmetic": "persist raw WaterLily body-on-fluid pressure/viscous vectors and physical SI body-force components separately; independently verify one sign flip and scale, then pressure plus viscous equals total for candidate-only, ground-only and combined-body groups",
+    "D7_domain_flux_arithmetic": "six signed external-face fluxes sum to net outward flow and Float64-before-subtraction integrated divergence minus net flow reproduces the recorded domain residual",
+    "D8_moving_ground_identity": "body velocity is (+1,0,0), equals registered freestream, and has zero normal component; normal flow at z face and differently staggered nearby streamwise component are separately described as raw diagnostics, with no slip acceptance",
+    "D9_grid_margin": "active sampled GridSDFs use the existing constructor margin check at nominal 0.15 m with its existing 1e-6 m absolute arithmetic tolerance; no-interface all-positive fixture has explicit NA margin",
+    "D10_runtime_identity": "record exactly one parsed Julia runtime line in geometry/init preflight and formal result; exact Julia/WaterLily versions, Array CPU backend, Float32 precision, positive observed thread count, and exact job/source-manifest SHA bindings required before proceeding"
+  },
+  "unresolved_physical_contracts": {
+    "mass_acceptance": "UNRESOLVED: no accepted fluid control-volume definition including immersed-boundary contribution, uncertainty model, or justified mass-balance acceptance threshold exists. Whole-domain flux-divergence telescoping is not mass-conservation qualification.",
+    "no_penetration_acceptance": "UNRESOLVED: record wall-normal flow at the registered moving boundary face, but no physics-based tolerance is preregistered.",
+    "native_accuracy": "UNRESOLVED: report native-versus-sampled force differences; no accuracy threshold is justified from Round 5 or this data.",
+    "stationarity": "UNRESOLVED: [5,7.5] and [7.5,10] means/drift are descriptive only; no stationarity threshold or PASS is registered."
+  },
+  "claims_not_supported": [
+    "immersed-body or domain mass-conservation qualification",
+    "no-penetration or no-slip qualification",
+    "native analytic physical accuracy or GridSDF accuracy",
+    "stationarity qualification",
+    "W2a inherited sphere qualification",
+    "Candidate C production-operator qualification or W3-C/W4-C qualification",
+    "gradient, reverse, optimizer, topology, or shape-update qualification"
+  ],
+  "qualification_flags": {
+    "shape_update_allowed": false,
+    "fd_oracle": false,
+    "field_gradient": false,
+    "reverse": false,
+    "optimizer": false,
+    "topology": false
+  },
+  "flags": {
+    "shape_update_allowed": false,
+    "fd_oracle": false,
+    "field_gradient": false,
+    "reverse": false,
+    "optimizer": false,
+    "topology": false
+  },
+  "execution": {
+    "run_id": "run-001",
+    "command": "python3 scripts/verify_candidate_c_grid_sdf_long_cpu_diagnostic_round7.py --plan docs/evidence/candidate_c_fixture_diagnostic_2026_10_round7/plan.json --parent-reviewed",
+    "preflight_command": "python3 scripts/verify_candidate_c_grid_sdf_long_cpu_diagnostic_round7.py --plan docs/evidence/candidate_c_fixture_diagnostic_2026_10_round7/plan.json --geometry-only",
+    "timeout_seconds": 3600,
+    "output": "work/candidate_c_fixture_diagnostic_2026_10_round7/run-001/{raw_history.csv,solver.transcript.txt,result.json,output.sha256.json,DONE}; pure geometry and CPU initialization preflights use separate geometry-preflight-001 and init-preflight-001 identities",
+    "error_policy": "never overwrite; preserve raw CSV and transcript; append terminal-ERROR.json with stage, criteria/runner/job hashes and hashes of all available partial outputs; write DONE only after host verification; preflight runtime.json and runtime.sha256 bind observed runtime line to criteria",
+    "preflight": "geometry-only samples and hashes analytic SDFs without constructing Simulation; initialization-only uses a distinct init-preflight-001 claim/run dir and no sim_step!; parent source review required before initialization or solver steps",
+    "preflight_run_id": "init-preflight-001",
+    "geometry_run_id": "geometry-preflight-002",
+    "initialization_command": "python3 scripts/verify_candidate_c_grid_sdf_long_cpu_diagnostic_round7.py --plan docs/evidence/candidate_c_fixture_diagnostic_2026_10_round7/plan.json --preflight-only"
+  },
+  "replaces_draft": "docs/evidence/candidate_c_fixture_diagnostic_2026_10_round6_rejected_preexecution/plan.json"
+}

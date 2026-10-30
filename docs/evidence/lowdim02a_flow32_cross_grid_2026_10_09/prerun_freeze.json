@@ -1,0 +1,145 @@
+{
+  "declarations": {
+    "grad03_verdict": null,
+    "not_grid01": true,
+    "not_opt01": true,
+    "reverse": "untouched",
+    "selected_delta": null,
+    "stage_b_requires_separate_preregistration": true
+  },
+  "design": {
+    "accepted_step": "LOWDIM-01 +1.25 mm along the proposal direction (flow_24: +4.05e-4 N)",
+    "case": "flow_32",
+    "control": "-1.25 mm (reverse proposal)",
+    "descriptive_only_state": "lowdim02a__prop__s2.5mm",
+    "kernel_id": "ramhachi888/cfd-opt-sdf-lowdim02a-a",
+    "kernel_timeout_s": 10800,
+    "reinitialization": "none",
+    "states": [
+      "lowdim02a__baseline",
+      "lowdim02a__baseline_repeat",
+      "lowdim02a__prop__s1.25mm",
+      "lowdim02a__ctrl_reverse__s1.25mm",
+      "lowdim02a__prop__s2.5mm"
+    ]
+  },
+  "file_hashes": {
+    "analyzer": "75d2f408b849289a3c20764ed16a0dd207c0872bf5c10cf13dc1853472f1eac6",
+    "contract": "1f9e0a8776d8ce31b9f39249111c2bea67e7cafb713ca73bc8bc571b18954304",
+    "force_io": "dda177cda3c8f02626be7af3f9ae2d2cad984c8eeea6a09c3445e64ac906c3d2",
+    "formal_criteria": "31b29cccc9d3fd6912a910b09694a8230f9ee0aa84e6a418161881ffbcf907be",
+    "identity_free_check": "3ab012db10193b45f554580fa90a9a30e95013037450a6752f4326fedc7517be",
+    "inputs_builder": "94eb8b9fd8d8fd703da3773520cd5318fb7626ecf306ac5b2f83ee43dfb4ffc1",
+    "inventory": "6b7f2f1786fcc7fee8fa79d26167ad28c4c672d91960d0f3db3477aa7c715145",
+    "inventory_canonical_json": "6b7f2f1786fcc7fee8fa79d26167ad28c4c672d91960d0f3db3477aa7c715145",
+    "job": "418796ce258e8f9e9945332d18869104a53f74000a96b609d4f4b42c82a21683",
+    "kernel_builder": "89fca8ec5c0b1a4a1812c0451e6e68714293c89b11c748d6cbe7780d8730db27",
+    "kernel_metadata": "161bae2a632e11db2178be34495d6ad7697b293ebfaefd7f24bfe032232a5bf1",
+    "lowdim01_analysis": "54bf971d178c4c3452cf55b5fb34d308394d8b7e62d7f12ed6bf1192a528a816",
+    "prerun_note": "0a31cf1a6f498196b41d670d3432218f2ecfa7b23d1bc53fe4b04b0aff1ae86c",
+    "proposal_raw": "fc239c1169c3336aa283d12734500d882027602e75b619ffffe146ba373c9010",
+    "runner": "e920d3ecb04bbb0a3f0e675e399234fe6181bbcc825a12c69162f9a233b0a1b7",
+    "runner_template": "5c43695dd086f204de9ffa75a6fda08c37e6025d0f7da292072bf894de3ee500",
+    "step01_states_module": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "t4_manifest": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "t4_project": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "w4_flow32_baseline_csv": "032ef1cfae320ada28d05a3ad5785fc1fd770b202d4f0d2e9ed8490c6ab61753"
+  },
+  "flow32_baseline": {
+    "forces_csv_sha256": "032ef1cfae320ada28d05a3ad5785fc1fd770b202d4f0d2e9ed8490c6ab61753",
+    "host_recomputed_n": {
+      "downforce_n": 0.3612783598966907,
+      "drag_n": 0.35002673442739357
+    }
+  },
+  "frozen_utc": "2026-10-09T08:05:04.676131+00:00",
+  "kind": "lowdim02a_flow32_cross_grid_prerun_freeze",
+  "known_before_the_run": {
+    "expectation": "no prediction is registered for flow_32: the grid sensitivity of the force is large (flow_24 -> flow_32 baseline downforce +8.9%) and the accepted flow_24 gain is only +0.12%, so STAGE_A_SIGN_FLIP and STAGE_A_UNRESOLVED are both plausible outcomes",
+    "flow24_downforce_change_n": {
+      "+1.25": 0.00040517653513449936,
+      "+2.5": -5.009925233540047e-05,
+      "-1.25": -0.001213992020523691
+    }
+  },
+  "parent_integration_commit": "cb66a064d08782c2fa1f0354d13118147248dee3",
+  "pins": {
+    "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "docs/evidence/lowdim01_four_direction_capability_2026_10_09/inputs/proposal_downforce.dir_f4_fortran.raw": "fc239c1169c3336aa283d12734500d882027602e75b619ffffe146ba373c9010",
+    "docs/evidence/lowdim02a_flow32_cross_grid_2026_10_09/inventory.json": "6b7f2f1786fcc7fee8fa79d26167ad28c4c672d91960d0f3db3477aa7c715145",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/step01_states.py": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "scripts/waterlily_lowdim02_flow32_job.jl": "418796ce258e8f9e9945332d18869104a53f74000a96b609d4f4b42c82a21683"
+  },
+  "prohibitions": {
+    "ad_or_tangent": true,
+    "fd08_verdict_change": true,
+    "flag_change": true,
+    "grad03_verdict": true,
+    "gradient_claim": true,
+    "grid01_completion_claim": true,
+    "opt01_claim": true,
+    "post_hoc_states_or_thresholds": true,
+    "reinitialization": true,
+    "selected_delta": true,
+    "stage_b_before_stage_a_result": true
+  },
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "rules": {
+    "authority": "actual primal responses (host-recomputed with the flow_32 force scale); the geometry gates are those of the same LOWDIM-01 states",
+    "baseline_rel": 1e-12,
+    "flow32_case": {
+      "case_id": "flow_32",
+      "flow_dims": [
+        200,
+        96,
+        72
+      ],
+      "flow_spacing_m": 0.025,
+      "solver_length": 32.0,
+      "solver_time_unit_s": 0.025,
+      "solver_viscosity": 0.4
+    },
+    "min_resolved_n": 3e-05,
+    "min_t_end": 120.0,
+    "noise_factor": 10.0,
+    "nominal_sigma0_n": 3e-06,
+    "summary_rel": 1e-09
+  },
+  "runtime": {
+    "accelerator": "NvidiaTeslaT4",
+    "compute_capability": "7.5.0",
+    "cuda_driver_api_version": "13.3.0",
+    "cuda_jl_version": "6.3.1",
+    "cuda_runtime_version": "12.8.0",
+    "cuda_visible_devices": "0",
+    "driver_minor_version_policy": "recorded_not_gated",
+    "gpu_count": 2,
+    "gpu_name": "Tesla T4",
+    "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+    "julia_threads": 1,
+    "julia_version": "1.12.6",
+    "machine_shape": "NvidiaTeslaT4",
+    "memory": "CuArray",
+    "precision": "Float32",
+    "waterlily_backend": "KernelAbstractions",
+    "waterlily_version": "1.8.0"
+  },
+  "source_commit": "972fcce990d1660a22ca8964d1e224e06395e38b",
+  "verdicts": [
+    "STAGE_A_PASS",
+    "STAGE_A_SIGN_FLIP",
+    "STAGE_A_UNRESOLVED",
+    "STAGE_A_CONSTRAINT_FAIL",
+    "STAGE_A_INCOMPLETE"
+  ]
+}

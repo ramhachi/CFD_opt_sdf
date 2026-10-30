@@ -15,6 +15,8 @@ from .adjoint_calibration import (
     run_paired_adjoint_direction_check,
 )
 from .adjoint_topology import run_adjoint_topology_optimization
+from .analytic_candidate_shapes import reachable_set_definitions, shape_definitions
+from .canonical_grid_snapshot import load_and_verify_canonical_grid_snapshot
 from .config import load_project
 from .constraints import check_constraints
 from .convergence_qualification import (
@@ -23,9 +25,20 @@ from .convergence_qualification import (
 )
 from .cfd import write_cfd_summary
 from .density_optimizer import DensityOptimizerControls, run_density_optimization
-from .execution import run_openfoam_case
+from .execution import DEFAULT_OPENFOAM_DOCKER_IMAGE, run_openfoam_case
+from .evidence_audit import build_evidence_audit
+from .extraction_qualification import EXTRACTION_QUALIFICATION_PROFILES
+from .extraction_sweep import run_extraction_threshold_sweep
 from .export_vtk import export_vti, export_zero_surface
+from .fd_preregistration import (
+    FdDirection,
+    build_fd_campaign_manifest,
+    write_fd_campaign_manifest,
+)
 from .fixed_grid_backend import probe_openfoam_fixed_grid_backend
+from .fixed_grid_canonical_state_injection import (
+    inject_canonical_state_into_fixed_grid_contract,
+)
 from .fixed_grid_contract import (
     build_fixed_grid_contract_from_density_design_state,
     build_openfoam_fixed_grid_contract,
@@ -56,10 +69,20 @@ from .fixed_grid_sensitivity import (
 )
 from .gradient_check import run_finite_difference_gradient_check
 from .handoff import build_density_to_sdf_handoff
-from .openfoam import generate_openfoam_case
+from .independent_verification import (
+    CandidateMeasurement,
+    RequiredPair,
+    verify_required_pairs,
+)
+from .openfoam import generate_openfoam_case, problem_spec_to_project_config
+from .openfoam_canonical_field_transfer import (
+    reconstruct_and_write_canonical_gradient_transfer,
+)
 from .openfoam_canonical_state_transfer import (
     transfer_and_write_openfoam_source_state,
 )
+from .openfoam_cell_order_derivation import derive_and_write_openfoam_cell_order_mapping
+from .openfoam_grid_transfer import ExactCartesianOverlapTransfer
 from .optimization import run_parametric_optimization
 from .openfoam_evidence import extract_openfoam_flow_case_evidence
 from .openfoam_mass_imbalance import produce_openfoam_normalized_mass_imbalance
@@ -80,6 +103,11 @@ from .runner import run_practical_optimization
 from .sample_geometry import write_front_wing_demo_geometry
 from .sensitivity import write_density_update_preview, write_mock_sensitivity_artifacts
 from .sdf import build_fields, cache_path, load_cache
+from .shape_feature_metrics import (
+    measure_shape_definitions,
+    measure_shape_registry,
+    policy_exclusion_report,
+)
 from .solver_case_compiler import (
     DEFAULT_FIXED_GRID_PATCH_IDS,
     compile_openfoam_solver_case_bundle,
@@ -90,6 +118,7 @@ from .stage_t_candidate_binding import (
     write_stage_t_candidate_binding,
 )
 from .topology import run_topology_exploration
+from .transfer_diagnostic import diagnose_transfer, load_grid_json
 from .validation import validate_outputs
 from .research_cli import app as research_app
 
@@ -559,6 +588,124 @@ def transfer_stage_t_candidate_to_openfoam(
     console.print(f"Wrote {artifacts.provenance_json}")
 
 
+@app.command("derive-openfoam-cell-order")
+def derive_openfoam_cell_order(
+    case_dir: Path = typer.Argument(..., help="Reconstructed (serial) OpenFOAM case directory."),
+    block_mesh_dict: Path = typer.Argument(..., help="Uniform Cartesian OpenFOAM blockMeshDict."),
+    output_directory: Path = typer.Argument(..., help="New cell-order mapping artifact directory."),
+    time_name: str = typer.Option("0", help="writeCellCentres time directory to write or read."),
+    execute: bool = typer.Option(
+        True,
+        help="Run postProcess writeCellCentres. Disable to reuse an existing Cx/Cy/Cz time directory.",
+    ),
+    backend: str = typer.Option("auto", help="OpenFOAM backend: auto, local, wsl, or docker."),
+    docker_image: str = typer.Option(DEFAULT_OPENFOAM_DOCKER_IMAGE, help="Docker image when backend=docker."),
+    timeout_seconds: int | None = typer.Option(None, help="Optional writeCellCentres timeout."),
+    tolerance_cells: float = typer.Option(
+        1.0e-6,
+        help="Fractional-of-spacing tolerance for matching measured cell centres.",
+    ),
+) -> None:
+    """Measure OpenFOAM cell centres and derive the x-fastest global-label mapping."""
+
+    try:
+        artifacts = derive_and_write_openfoam_cell_order_mapping(
+            case_dir,
+            block_mesh_dict=block_mesh_dict,
+            output_directory=output_directory,
+            time_name=time_name,
+            execute=execute,
+            backend=backend,
+            docker_image=docker_image,
+            timeout_seconds=timeout_seconds,
+            tolerance_cells=tolerance_cells,
+        )
+    except (OSError, ValueError, RuntimeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    console.print(f"Wrote {artifacts.mapping_npy}")
+    console.print(f"Wrote {artifacts.provenance_json}")
+
+
+@app.command("inject-canonical-state-into-fixed-grid-contract")
+def inject_canonical_state_into_fixed_grid_contract_command(
+    openfoam_source_state_npz: Path = typer.Argument(
+        ..., help="openfoam_source_state.npz from transfer-stage-t-candidate-to-openfoam."
+    ),
+    source_state_provenance_json: Path = typer.Argument(
+        ..., help="provenance.json sidecar of openfoam_source_state.npz."
+    ),
+    topology_state_json: Path = typer.Argument(..., help="Existing verified T1 topology_state.json."),
+    output_directory: Path = typer.Argument(..., help="New T1 contract directory."),
+) -> None:
+    """Overwrite a T1 contract's rho on active_design_mask cells only."""
+
+    try:
+        artifacts = inject_canonical_state_into_fixed_grid_contract(
+            openfoam_source_state_npz=openfoam_source_state_npz,
+            source_state_provenance_json=source_state_provenance_json,
+            topology_state_json=topology_state_json,
+            output_directory=output_directory,
+        )
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    console.print(f"Wrote {artifacts.topology_state_json}")
+    console.print(f"Wrote {artifacts.density_vti}")
+    console.print(f"Wrote {artifacts.provenance_json}")
+
+
+@app.command("transfer-openfoam-gradient-to-canonical")
+def transfer_openfoam_gradient_to_canonical(
+    case_dir: Path = typer.Argument(..., help="Decomposed OpenFOAM case directory."),
+    adjoint_solver_id: str = typer.Argument(..., help="Adjoint solver id, e.g. downforce."),
+    block_mesh_dict: Path = typer.Argument(..., help="Uniform Cartesian OpenFOAM blockMeshDict."),
+    canonical_grid_snapshot: Path = typer.Argument(..., help="Verified canonical grid snapshot JSON."),
+    problem_yaml: Path = typer.Argument(..., help="Native ProblemSpec YAML bound to the canonical grid snapshot."),
+    source_global_cell_labels_by_xfastest: Path = typer.Argument(
+        ...,
+        help="NPY permutation from each x-fastest index to its OpenFOAM global label.",
+    ),
+    output_directory: Path = typer.Argument(..., help="New canonical gradient artifact directory."),
+    response_id: str = typer.Option(
+        ...,
+        help="ProblemSpec response this adjoint solver differentiates. Solver ids are "
+        "not spec ids, so the correspondence must be declared, not inferred.",
+    ),
+    final_time: str | None = typer.Option(None, help="Optional explicit OpenFOAM time directory."),
+    allow_identity_profile: bool = typer.Option(
+        False,
+        "--allow-identity-profile/--require-alpha-tilda",
+        help="Explicit identity-profile exception: beta substitutes the missing alphaTilda "
+        "when the case declares no filter/projection (regularise false).",
+    ),
+) -> None:
+    """Write topOSens on the canonical grid using the qualified dual P.T @ g_source."""
+
+    try:
+        spec = load_problem_spec(problem_yaml)
+        if response_id not in {response.id for response in spec.responses}:
+            raise ValueError(
+                f"response_id {response_id!r} is not declared by {problem_yaml}; "
+                "the canonical gradient cannot be bound to an undeclared response"
+            )
+        verified_snapshot = load_and_verify_canonical_grid_snapshot(canonical_grid_snapshot, spec)
+        artifacts = reconstruct_and_write_canonical_gradient_transfer(
+            case_dir=case_dir,
+            adjoint_solver_id=adjoint_solver_id,
+            block_mesh_dict=block_mesh_dict,
+            verified_snapshot=verified_snapshot,
+            source_global_cell_labels_by_xfastest=source_global_cell_labels_by_xfastest,
+            output_directory=output_directory,
+            final_time=final_time,
+            response_id=response_id,
+            problem_spec=spec,
+            allow_identity_profile=allow_identity_profile,
+        )
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    console.print(f"Wrote {artifacts.fields_npz}")
+    console.print(f"Wrote {artifacts.provenance_json}")
+
+
 @app.command("check-constraints")
 def check(project_yaml: Path) -> None:
     """Check rule, forbidden-region, root-connectivity, and thickness constraints."""
@@ -622,6 +769,56 @@ def prepare_openfoam(
     summary_path.write_text(json.dumps(summary.to_dict(), indent=2), encoding="utf-8")
     console.print(json.dumps(summary.to_dict(), indent=2))
     console.print(f"Wrote {summary_path}")
+
+
+@app.command("prepare-openfoam-from-problem-spec")
+def prepare_openfoam_from_problem_spec(
+    problem_yaml: Path = typer.Argument(..., help="Native v2 ProblemSpec YAML (schema_version: 2)."),
+    case_dir: Path = typer.Option(..., help="Output OpenFOAM case directory."),
+    candidate_stl: Path | None = typer.Option(
+        None,
+        help="Candidate STL overriding the spec's initial_design geometry, e.g. a Stage T iso-surface.",
+    ),
+    flow_case_id: str | None = typer.Option(
+        None,
+        help="Explicit flow_cases[].id to honor. Required when the spec declares more than one.",
+    ),
+    voxel_size_m: float | None = typer.Option(
+        None,
+        help="Override grid.voxel_size_m for this mesh (background blockMesh resolution; "
+        "snappyHexMesh surface refinement is relative to it, so this alone yields distinct grids).",
+    ),
+    backend: str = typer.Option("auto", help="OpenFOAM backend: auto, local, wsl, or docker."),
+    execute: bool = typer.Option(False, help="Actually execute OpenFOAM. Default only writes the run plan."),
+    timeout_seconds: int | None = typer.Option(None, help="Optional timeout for actual execution."),
+) -> None:
+    """Prepare, and optionally run, a body-fitted OpenFOAM case directly from a native v2 ProblemSpec.
+
+    Unlike ``prepare-openfoam`` (which reads a legacy front-wing ``ProjectConfig``), this drives Stage
+    V straight from the same ``ProblemSpec`` Stage T optimized against, so the generated case records
+    the identical ``problem_spec_sha256``.
+    """
+    try:
+        spec = load_problem_spec(problem_yaml)
+        config = problem_spec_to_project_config(
+            spec,
+            candidate_stl=candidate_stl,
+            flow_case_id=flow_case_id,
+            voxel_size_m=voxel_size_m,
+        )
+        bundle = build_fields(config)
+        summary = generate_openfoam_case(config, bundle, case_dir)
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    summary_path = case_dir / "openfoam_case_summary.json"
+    summary_path.write_text(json.dumps(summary.to_dict(), indent=2), encoding="utf-8")
+    console.print(json.dumps(summary.to_dict(), indent=2))
+    console.print(f"Wrote {summary_path}")
+
+    result = run_openfoam_case(case_dir, backend=backend, dry_run=not execute, timeout_seconds=timeout_seconds)
+    console.print(json.dumps(result.to_dict(), indent=2))
+    if execute and not result.ok:
+        raise typer.Exit(code=result.returncode or 1)
 
 
 @app.command("postprocess-openfoam")
@@ -817,7 +1014,10 @@ def prepare_fixed_grid_primal(
     perturbation_amplitude: float = typer.Option(0.05, help="Filtered perturbation amplitude."),
     smoothing_radius_cells: float = typer.Option(1.0, help="Gaussian smoothing radius in cells."),
     solid_threshold: float = typer.Option(0.5, help="Threshold used by threshold-solid."),
-    adjoint_iterations: int = typer.Option(1, help="Adjoint iterations kept minimal for primal-only T2 checks."),
+    adjoint_iterations: int | None = typer.Option(
+        None,
+        help="Override the adjoint solvers nIters cap (as1 and downforce). Omit to keep the templates qualified default; any override marks the case audit_only.",
+    ),
     docker_image: str = typer.Option(
         "opencfd/openfoam-default:2512",
         help="Docker image recorded in source-solver metadata.",
@@ -865,7 +1065,10 @@ def run_fixed_grid_primal(
     perturbation_amplitude: float = typer.Option(0.05, help="Filtered perturbation amplitude."),
     smoothing_radius_cells: float = typer.Option(1.0, help="Gaussian smoothing radius in cells."),
     solid_threshold: float = typer.Option(0.5, help="Threshold used by threshold-solid."),
-    adjoint_iterations: int = typer.Option(1, help="Adjoint iterations kept minimal for primal-only T2 checks."),
+    adjoint_iterations: int | None = typer.Option(
+        None,
+        help="Override the adjoint solvers nIters cap (as1 and downforce). Omit to keep the templates qualified default; any override marks the case audit_only.",
+    ),
     docker_image: str = typer.Option(
         "opencfd/openfoam-default:2512",
         help="OpenFOAM Docker image.",
@@ -916,7 +1119,10 @@ def run_fixed_grid_primal_suite(
     perturbation_amplitude: float = typer.Option(0.05, help="Filtered perturbation amplitude."),
     smoothing_radius_cells: float = typer.Option(1.0, help="Gaussian smoothing radius in cells."),
     solid_threshold: float = typer.Option(0.5, help="Threshold used by threshold-solid."),
-    adjoint_iterations: int = typer.Option(1, help="Adjoint iterations kept minimal for primal-only T2 checks."),
+    adjoint_iterations: int | None = typer.Option(
+        None,
+        help="Override the adjoint solvers nIters cap (as1 and downforce). Omit to keep the templates qualified default; any override marks the case audit_only.",
+    ),
     docker_image: str = typer.Option(
         "opencfd/openfoam-default:2512",
         help="OpenFOAM Docker image.",
@@ -1114,6 +1320,21 @@ def run_fixed_grid_constrained_step(
         None,
         help="Optional fixed_grid_connectivity_summary.json for current connectivity values.",
     ),
+    problem_spec_json: Path | None = typer.Option(
+        None,
+        "--problem-spec",
+        help="ProblemSpec YAML; the objective and constraints are compiled from it.",
+    ),
+    transform_declaration_json: Path | None = typer.Option(
+        None,
+        "--transform-declaration",
+        help="Declared design-transform JSON (required with --problem-spec).",
+    ),
+    allow_legacy_objective: bool = typer.Option(
+        False,
+        "--allow-legacy-objective/--require-problem-spec",
+        help="Diagnostic only: run the historical hard-coded downforce objective when no ProblemSpec is given.",
+    ),
     move_limit: float = typer.Option(
         0.03,
         help="Maximum absolute density change per active cell.",
@@ -1176,6 +1397,16 @@ def run_fixed_grid_constrained_step(
     ),
 ) -> None:
     """Run one T5 fixed-grid constrained density-update step."""
+    if problem_spec_json is None and not allow_legacy_objective:
+        raise typer.BadParameter(
+            "a ProblemSpec is required for the production constrained step; pass "
+            "--allow-legacy-objective for the historical diagnostic path"
+        )
+    if problem_spec_json is not None and transform_declaration_json is None:
+        raise typer.BadParameter(
+            "--transform-declaration is required with --problem-spec; production runs "
+            "declare the design transform explicitly"
+        )
     controls = FixedGridOptimizerControls(
         optimizer_backend=optimizer_backend,
         move_limit=move_limit,
@@ -1200,6 +1431,8 @@ def run_fixed_grid_constrained_step(
         sensitivity_summary_json=sensitivity_summary_json,
         primal_summary_json=primal_summary_json,
         connectivity_summary_json=connectivity_summary_json,
+        problem_spec_json=problem_spec_json,
+        transform_declaration_json=transform_declaration_json,
     )
     console.print(json.dumps(artifacts.to_dict(), indent=2))
     console.print(f"Wrote {artifacts.update_vti}")
@@ -1956,6 +2189,388 @@ def clean(project_yaml: Path) -> None:
     if config.resolved_output_dir.exists():
         shutil.rmtree(config.resolved_output_dir)
         console.print(f"Removed {config.resolved_output_dir}")
+
+
+@app.command("verify-required-pairs")
+def verify_required_pairs_command(
+    input_json: Path = typer.Argument(
+        ...,
+        help="Verification input JSON with measurements, required_pairs, and optional responses.",
+    ),
+    output: Path = typer.Option(..., help="Output verdict JSON path."),
+) -> None:
+    """Verdict Stage V required pairs against candidate-specific uncertainty (DF5)."""
+    document = json.loads(input_json.read_text(encoding="utf-8"))
+    measurements = [
+        CandidateMeasurement(
+            candidate_id=str(item["candidate_id"]),
+            role=str(item["role"]),
+            responses={str(k): float(v) for k, v in item["responses"].items()},
+            improvement_direction={
+                str(k): str(v) for k, v in item.get("improvement_direction", {}).items()
+            },
+            numerical_uncertainty={
+                str(k): float(v) for k, v in item.get("numerical_uncertainty", {}).items()
+            },
+            extraction_uncertainty={
+                str(k): float(v) for k, v in item.get("extraction_uncertainty", {}).items()
+            },
+            gates={str(k): bool(v) for k, v in item.get("gates", {}).items()},
+            grid_levels=tuple(str(v) for v in item["grid_levels"]),
+            extraction_status=str(item["extraction_status"]),
+            used_in_optimization=bool(item.get("used_in_optimization", False)),
+        )
+        for item in document["measurements"]
+    ]
+    required = [
+        RequiredPair(
+            from_role=str(item["from_role"]),
+            to_role=str(item["to_role"]),
+            label=str(item.get("label", f"{item['from_role']}->{item['to_role']}")),
+        )
+        for item in document["required_pairs"]
+    ]
+    verdict = verify_required_pairs(
+        measurements,
+        required,
+        responses=[str(value) for value in document.get("responses", [])] or None,
+    )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(verdict, indent=2), encoding="utf-8")
+    console.print(
+        json.dumps(
+            {
+                "output": str(output),
+                "passed": verdict["passed"],
+                "unresolved_or_failed": verdict["unresolved_or_failed"],
+            },
+            indent=2,
+        )
+    )
+    if not verdict["passed"]:
+        raise typer.Exit(code=1)
+
+
+@app.command("sweep-density-extraction")
+def sweep_density_extraction(
+    topology_state_json: Path = typer.Argument(
+        ..., help="Fixed-grid topology state of the candidate to extract."
+    ),
+    output_dir: Path = typer.Option(..., help="Sweep output directory."),
+    threshold: list[float] = typer.Option(
+        ..., help="Registered iso-surface thresholds; repeat the option."
+    ),
+    rule: str = typer.Option(
+        "registered_range_min_abs_volume_error",
+        help="Registered selection rule.",
+    ),
+    range_low: float = typer.Option(..., help="Registered range lower bound."),
+    range_high: float = typer.Option(..., help="Registered range upper bound."),
+    rho_variant: str | None = typer.Option(
+        None, help="Optional rho variant: rho, rho_filtered, rho_projected."
+    ),
+    qualification_profile: str = typer.Option(
+        "none",
+        "--qualification-profile",
+        help="Quantitative extraction gates: none, v1, or v2 (v2 is calibrated on "
+        "analytic ground truth).",
+    ),
+    stage_s_entry_problem_spec: Path | None = typer.Option(
+        None,
+        "--stage-s-entry-problem-spec",
+        help="ProblemSpec YAML; enables the composite Stage S entry gate and makes "
+        "ready_for_stage_s the conjunction of all sub-gates.",
+    ),
+    stage_s_volume_projected: float | None = typer.Option(
+        None, help="Candidate projected volume for the optimizer volume sub-gate."
+    ),
+    stage_s_volume_limit: float | None = typer.Option(
+        None, help="Declared projected-volume limit for the volume sub-gate."
+    ),
+    stage_s_volume_tolerance: float = typer.Option(
+        0.0, help="Absolute feasibility tolerance for the projected-volume sub-gate."
+    ),
+) -> None:
+    """Run the preregistered density-to-SDF threshold sweep (DF4)."""
+    if qualification_profile not in {"none", *EXTRACTION_QUALIFICATION_PROFILES}:
+        raise typer.BadParameter(
+            f"unknown qualification profile {qualification_profile!r}; "
+            f"expected none or one of {sorted(EXTRACTION_QUALIFICATION_PROFILES)}"
+        )
+    summary = run_extraction_threshold_sweep(
+        topology_state_json,
+        thresholds=threshold,
+        output_dir=output_dir,
+        selection_rule={
+            "kind": rule,
+            "range": [range_low, range_high],
+            "require_ready_for_stage_s": True,
+        },
+        rho_variant=rho_variant,
+        qualification_profile=(
+            None
+            if qualification_profile == "none"
+            else EXTRACTION_QUALIFICATION_PROFILES.get(qualification_profile)
+        ),
+        stage_s_entry=(
+            {
+                "problem_spec_yaml": stage_s_entry_problem_spec,
+                "volume_constraint": (
+                    {
+                        "projected_volume": stage_s_volume_projected,
+                        "limit": stage_s_volume_limit,
+                        "absolute_tolerance": stage_s_volume_tolerance,
+                    }
+                    if stage_s_volume_projected is not None
+                    and stage_s_volume_limit is not None
+                    else None
+                ),
+            }
+            if stage_s_entry_problem_spec is not None
+            else None
+        ),
+    )
+    console.print(
+        json.dumps(
+            {
+                "selected_threshold": summary["selected_threshold"],
+                "selection_reason": summary["selection_reason"],
+                "rows": [
+                    {
+                        "threshold": row["threshold"],
+                        "status": row["status"],
+                        "ready_for_stage_s": row["ready_for_stage_s"],
+                        "volume_relative_difference": row["volume_relative_difference"],
+                    }
+                    for row in summary["rows"]
+                ],
+            },
+            indent=2,
+        )
+    )
+
+
+@app.command("preregister-fd-campaign")
+def preregister_fd_campaign(
+    campaign_id: str = typer.Argument(..., help="Stable campaign id."),
+    output: Path = typer.Option(..., help="Output manifest JSON path."),
+    candidate_binding: Path = typer.Option(
+        ..., help="Candidate binding JSON (candidate identity/hash)."
+    ),
+    problem_spec_sha256: str = typer.Option(..., help="ProblemSpec SHA-256 under test."),
+    grid_family: str = typer.Option(..., help="Declared grid family."),
+    refinement_ratio: float = typer.Option(..., help="Declared refinement ratio."),
+    response_scale: float = typer.Option(
+        ..., help="Pre-registered response scale for near-zero absolute-error rows."
+    ),
+    response: list[str] = typer.Option(..., help="Response ids; repeat the option."),
+    epsilon: list[float] = typer.Option(..., help="FD epsilons; at least four."),
+    random_seed: list[int] = typer.Option(
+        ..., help="Random direction seeds; at least two."
+    ),
+    sign_convention: str = typer.Option(
+        ..., help="Declared gradient sign convention (e.g. dJ/drho = -g_downforce)."
+    ),
+    hypothesis: str = typer.Option(..., help="Pre-registered hypothesis."),
+    decision: str = typer.Option(..., help="Pre-registered decision rule."),
+    code_commit: str | None = typer.Option(None, help="Code commit under test."),
+) -> None:
+    """Write the immutable FD-campaign pre-registration manifest (DF2)."""
+    directions = [
+        FdDirection(
+            name="gradient_aligned",
+            role="gradient_aligned",
+            seed=None,
+            sign_convention=sign_convention,
+            description="direction = -normalized declared objective gradient",
+        )
+    ]
+    directions += [
+        FdDirection(
+            name=f"random_seed_{seed}",
+            role="random",
+            seed=seed,
+            sign_convention=sign_convention,
+            description=f"seeded random direction on the feasible support (seed {seed})",
+        )
+        for seed in random_seed
+    ]
+    manifest = build_fd_campaign_manifest(
+        campaign_id=campaign_id,
+        hypothesis=hypothesis,
+        decision=decision,
+        fixture={
+            "candidate_binding": str(candidate_binding.resolve()),
+            "problem_spec_sha256": problem_spec_sha256,
+            "grid_family": grid_family,
+            "refinement_ratio": float(refinement_ratio),
+            "response_scale": float(response_scale),
+        },
+        responses=response,
+        epsilons=epsilon,
+        directions=directions,
+        uncertainty_rule="central-difference relative error against the analytic "
+        "directional derivative; near-zero references judged by a pre-registered "
+        "absolute error from the response scale",
+        gates={
+            "convergence": "primal and adjoint residual gates from the registered "
+            "problem-spec convergence criteria; no unconverged run enters the FD table",
+            "stationarity": "response stationarity window per registered profile",
+            "mesh": "mesh qualification profile of the run case",
+            "geometry": "candidate binding and geometry hash must match the manifest",
+            "required_pairs": "gradient-aligned direction plus every registered "
+            "random seed, at every registered epsilon",
+            "resolvability": "relative error <= 5% and sign agreement; otherwise "
+            "the row is resolved as fail, never dropped",
+        },
+        stop_conditions=(
+            "stop and re-register if any required run misses a convergence gate",
+            "do not change epsilons, seeds, or directions after the first result",
+        ),
+        fallback_conditions=(
+            "if the mapped chain is exact but ratios stay biased, register a "
+            "solver-side experiment (perturbed-state adjoint or residual/step study)",
+        ),
+        code_commit=code_commit,
+    )
+    path = write_fd_campaign_manifest(manifest, output)
+    console.print(
+        json.dumps(
+            {
+                "output": str(path),
+                "campaign_id": manifest.campaign_id,
+                "manifest_hash": manifest.manifest_hash(),
+                "profile_id": manifest.profile_id,
+                "n_epsilons": len(manifest.epsilons),
+                "n_directions": len(manifest.directions),
+            },
+            indent=2,
+        )
+    )
+
+
+@app.command("diagnose-fixed-grid-transfer")
+def diagnose_fixed_grid_transfer(
+    source_grid_json: Path = typer.Argument(
+        ..., help="Source (solver) grid JSON: topology_state.json or grid snapshot."
+    ),
+    target_grid_json: Path = typer.Argument(
+        ..., help="Target (canonical) grid JSON."
+    ),
+    output: Path = typer.Option(..., help="Output diagnostic JSON path."),
+    expect_source_sha256: str | None = typer.Option(
+        None, help="Expected source grid SHA-256 (fail-closed when given)."
+    ),
+    expect_target_sha256: str | None = typer.Option(
+        None, help="Expected target grid SHA-256 (fail-closed when given)."
+    ),
+) -> None:
+    """Measure consistency, conservation and adjoint identity of the fixed-grid transfer."""
+    source = load_grid_json(source_grid_json)
+    target = load_grid_json(target_grid_json)
+    transfer = ExactCartesianOverlapTransfer.build(
+        source_grid=source,
+        target_grid=target,
+        expected_source_grid_sha256=expect_source_sha256,
+        expected_target_grid_sha256=expect_target_sha256,
+    )
+    diagnostic = diagnose_transfer(transfer)
+    artifact = {
+        "kind": "fixed_grid_transfer_diagnostic",
+        "issue": "P6",
+        "source_grid_json": str(source_grid_json.resolve()),
+        "target_grid_json": str(target_grid_json.resolve()),
+        "source_grid_sha256": source.sha256,
+        "target_grid_sha256": target.sha256,
+        "transfer": diagnostic.to_dict(),
+    }
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(artifact, indent=2), encoding="utf-8")
+    console.print(json.dumps(artifact["transfer"], indent=2))
+    if diagnostic.verdict != "exact":
+        raise typer.Exit(code=1)
+
+
+@app.command("measure-shape-feature-sizes")
+def measure_shape_feature_sizes(
+    output: Path = typer.Option(..., help="Output JSON path for the measurement table."),
+    registry_dir: Path | None = typer.Option(
+        None,
+        help="Registry directory holding shape_registry_manifest.json; measures the as-run occupancy too.",
+    ),
+    policy_width: list[float] = typer.Option(
+        [0.10, 0.15],
+        help="Declared minimum-solid-width policy values compared against the measurements.",
+    ),
+) -> None:
+    """Measure per-part local thickness, components, gaps and overlaps of the registered shapes."""
+    definitions = {**shape_definitions(), **reachable_set_definitions()}
+    threshold_m = min(policy_width)
+    table = measure_shape_definitions(definitions, threshold_m=threshold_m)
+    artifact: dict = {
+        "kind": "registered_shape_feature_sizes",
+        "measurements": table,
+        "policy_exclusions": policy_exclusion_report(table, policy_width),
+    }
+    if registry_dir is not None:
+        artifact["as_run_registry"] = measure_shape_registry(
+            registry_dir, threshold_m=threshold_m
+        )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(artifact, indent=2), encoding="utf-8")
+    console.print(
+        json.dumps(
+            {
+                "output": str(output),
+                "n_shapes": table["n_shapes"],
+                "policy_exclusions": artifact["policy_exclusions"]["excluded_shape_ids"],
+            },
+            indent=2,
+        )
+    )
+
+
+@app.command("audit-wp6-reports")
+def audit_wp6_reports(
+    manifest: Path = typer.Argument(..., help="WP6-2 ranking manifest JSON."),
+    reachable_evidence: Path = typer.Argument(..., help="WP6-2 ranking evidence JSON."),
+    output: Path = typer.Option(..., help="Output audit evidence JSON path."),
+    first_program_evidence: Path | None = typer.Option(
+        None, help="Optional first-program ranking evidence JSON."
+    ),
+    registry_dir: Path | None = typer.Option(
+        None, help="Optional shape registry directory for as-run occupancy measurement."
+    ),
+    repair_manifest: Path | None = typer.Option(
+        None, help="Optional path for the narrowed scope-repair manifest JSON."
+    ),
+) -> None:
+    """Fail-closed audit of the WP6-2 manifest, verdicts, drift and feature sizes (P18/DF0)."""
+    result = build_evidence_audit(
+        manifest_path=manifest,
+        reachable_evidence_path=reachable_evidence,
+        first_program_evidence_path=first_program_evidence,
+        registry_dir=registry_dir,
+        output_path=output,
+    )
+    if repair_manifest is not None:
+        repair_manifest.parent.mkdir(parents=True, exist_ok=True)
+        repair_manifest.write_text(
+            json.dumps(result["scope_repair_manifest"], indent=2), encoding="utf-8"
+        )
+    console.print(
+        json.dumps(
+            {
+                "ok": result["ok"],
+                "output": str(output),
+                "blocking_findings": result["conclusions"]["blocking_findings"],
+                "action_findings": result["conclusions"]["action_findings"],
+            },
+            indent=2,
+        )
+    )
+    if not result["ok"]:
+        raise typer.Exit(code=1)
 
 
 def _load_compiled_openfoam_bundle_flow_case_dirs(

@@ -1,0 +1,143 @@
+{
+  "descriptive_comparison_with_flow_24": {
+    "baseline_downforce_n": {
+      "flow_24": 0.3316344583180616,
+      "flow_32": 0.3612783598966907,
+      "relative_difference": 0.08938727817661962
+    },
+    "baseline_repeat_forces_csv_byte_identical": true,
+    "downforce_change_n": {
+      "flow_24_lowdim01": {
+        "+1.25": 0.00040517653513449936,
+        "+2.5": -5.009925233540047e-05,
+        "-1.25": -0.001213992020523691
+      },
+      "flow_32": {
+        "+1.25": 0.000731359929487807,
+        "+2.5": 0.0012035621932095508,
+        "-1.25": -0.0010929606929518942
+      }
+    },
+    "downforce_change_relative_to_own_baseline": {
+      "flow_24_lowdim01": {
+        "+1.25": 0.0012217564398748504,
+        "+2.5": -0.00015106769239085413,
+        "-1.25": -0.0036606329350714942
+      },
+      "flow_32": {
+        "+1.25": 0.0020243668336430197,
+        "+2.5": 0.003331398519285006,
+        "-1.25": -0.0030252592302080633
+      }
+    },
+    "drag_change_n": {
+      "flow_24_lowdim01": {
+        "+1.25": -0.00016764795823859258,
+        "+2.5": -0.0007423741489236413,
+        "-1.25": -0.00022082322396527188
+      },
+      "flow_32": {
+        "+1.25": 5.402576346680288e-05,
+        "+2.5": -8.324802835973921e-05,
+        "-1.25": -0.00031702483404905113
+      }
+    },
+    "even_part_n": {
+      "flow32_over_flow24": 0.44707448113470477,
+      "flow_24_lowdim01": -0.0004044077426945958,
+      "flow_32": -0.0001808003817320436
+    },
+    "flow32_over_flow24_downforce_change": {
+      "+1.25": 1.8050401888278902,
+      "-1.25": 0.9003030287467736
+    },
+    "note": "descriptive only; the +2.5 mm state is not part of the verdict and its flow_24 value is barely resolved, so no ratio or sign comparison is made for it",
+    "odd_part_n": {
+      "flow32_over_flow24": 1.126702106500652,
+      "flow_24_lowdim01": 0.0008095842778290951,
+      "flow_32": 0.0009121603112198506
+    },
+    "plus_2p5_mm_flow_24_n_barely_resolved_on_flow_24": -5.009925233540047e-05,
+    "plus_2p5_mm_flow_32_n": 0.0012035621932095508,
+    "resolved_sign_positive_on_flow24": {
+      "+1.25": true,
+      "-1.25": false
+    },
+    "resolved_sign_positive_on_flow32": {
+      "+1.25": true,
+      "-1.25": false
+    }
+  },
+  "fd08_verdict_unchanged": true,
+  "flow_32": {
+    "base": {
+      "downforce_n": 0.3612783598966907,
+      "drag_n": 0.35002673442739357
+    },
+    "minus": {
+      "downforce_n": 0.3601853992037388,
+      "drag_n": 0.3497097095933445
+    },
+    "plus": {
+      "downforce_n": 0.3620097198261785,
+      "drag_n": 0.3500807601908604
+    },
+    "plus25": {
+      "downforce_n": 0.36248192208990027,
+      "drag_n": 0.34994348639903383
+    },
+    "repeat": {
+      "downforce_n": 0.3612783598966907,
+      "drag_n": 0.35002673442739357
+    }
+  },
+  "grad03_verdict": null,
+  "integrity": {
+    "failures": [],
+    "pass": true
+  },
+  "interpretation": "Stage A compares the sign of the LOWDIM-01 accepted +1.25 mm step on flow_32 with flow_24 (one direction, one step, the [80,120] tU/L time-weighted force, Float32 T4 runs, no reinitialization). The downforce change of a step is odd + even (curvature) part; a PASS only means the sign survived at this one step and grid with the reverse control losing, and a SIGN_FLIP only means the step lost downforce (the cause is read from the reported odd/even parts, not asserted). It is a bounded cross-grid sign check, not GRID-01 (#26), not a grid-converged or physical downforce, not a gradient qualification and not OPT-01 (#30); a PASS only permits pre-registering Stage B, it does not authorise it. The baseline repeat was byte-identical, so it gives no flow_32 noise evidence and the resolution stays at the nominal floor (10 x the flow_24 nominal sigma0 = 3e-5 N), against a flow_32 half-window drift of about 1e-5 N.",
+  "kind": "lowdim02a_flow32_cross_grid_analysis",
+  "no_gradient_claim": true,
+  "not_grid01": true,
+  "not_opt01": true,
+  "provenance": {
+    "analyzer_sha256": "75d2f408b849289a3c20764ed16a0dd207c0872bf5c10cf13dc1853472f1eac6",
+    "freeze_sha256": "a30109662e0e300ce2c37c0d28d26b5bc444b9ad8c16610800979bbad0a725e7",
+    "kernel_manifest_sha256": "9e70b61db8df737f20227772c6ebf5419e744a7afc3efe437473f0fdcef7fc4e",
+    "source_commit": "972fcce990d1660a22ca8964d1e224e06395e38b"
+  },
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "reinitialization": "none",
+  "rules": {
+    "authority": "actual primal responses (host-recomputed, flow_32 scale); the geometry gates are those of the same LOWDIM-01 state",
+    "min_resolved_n": 3e-05,
+    "noise_factor": 10.0
+  },
+  "selected_delta": null,
+  "stage_a": {
+    "baseline_repeat_downforce_diff_n": 0.0,
+    "baseline_repeat_drag_diff_n": 0.0,
+    "control_downforce_change_n": -0.0010929606929518942,
+    "control_resolvably_loses_downforce": true,
+    "downforce_gain_n": 0.000731359929487807,
+    "downforce_resolution_n": 3e-05,
+    "drag_change_n": 5.402576346680288e-05,
+    "drag_constraint_ok": false,
+    "drag_resolution_n": 3e-05,
+    "even_part_n": -0.0001808003817320436,
+    "hard_geometry_gates_pass": true,
+    "marginal": false,
+    "odd_part_n": 0.0009121603112198506,
+    "odd_part_resolved_positive": true,
+    "resolution_source": "nominal_floor"
+  },
+  "verdict": "STAGE_A_CONSTRAINT_FAIL"
+}

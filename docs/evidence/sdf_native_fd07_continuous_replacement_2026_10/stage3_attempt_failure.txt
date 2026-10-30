@@ -1,0 +1,11 @@
+evidence_class=failed_diagnostic_attempt_preserved
+registered_plan_sha256=c3959a55122c87386d0eb061f22f1dea3538697923bf1c1198dc9b5a6b8bb366
+command=julia -t 4 --project=julia/CFDSDFWaterLily scripts/sdf_native_fd07_continuous_replacement_probe.jl --solve C_MOMENT_BLEND docs/evidence/sdf_native_fd07_continuous_replacement_2026_10
+completed_runs=UPSTREAM/baseline
+completed_t_u_l=3.013518
+completed_force_history=solved/upstream/baseline.csv
+completed_force_history_sha256=30b813e7336d14f42c11674182e2479c24ba296307ee1662e7911c399b283467
+failure=UndefVarError: steps not defined in Main at solve_modes
+cause=Julia try-block local binding was read after the block without an outer local declaration
+status=first_run_force_history_preserved_no_overwrite
+recovery=new_source_hash_and_new_preregistered_attempt_required

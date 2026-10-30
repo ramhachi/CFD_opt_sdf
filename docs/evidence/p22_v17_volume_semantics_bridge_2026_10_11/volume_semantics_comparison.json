@@ -1,0 +1,223 @@
+{
+  "cfd_runs": 0,
+  "d_omission_reason": "A-C plus the traced direct #51 evaluator resolve the bridge; eight retained D records remain unchanged.",
+  "d_states_replayed": false,
+  "evidence_class": "solver_free_contract_arithmetic_and_lineage",
+  "integration_parent_sha": "0973f9efc7c7f469978d67c77a95fcfd365d58d5",
+  "lattice_identity": {
+    "parent_masks_equal_baseline": true,
+    "same_origin": true,
+    "same_physical_bounds": true,
+    "same_source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "v16_v17_center_sets": "origin+(i+0.5)*h; h16=0.05, h17=0.025; disjoint center sets, 8x as many samples",
+    "v16_v17_identical_trilinear_zero_sets_claimed": false,
+    "v17_common_nodes_bitwise_equal_v16": true,
+    "v17_spacing_is_v16_half": true
+  },
+  "lowdim_geometry_sharp_callable_is_p22_callable": true,
+  "parent_minus_v17_baseline_hard_m3": 0.0,
+  "parent_minus_v17_baseline_smooth_m3": -0.0010524033077183859,
+  "parent_reconstruction": {
+    "audit": {
+      "changed_node_count": 4718,
+      "margin_gate_m": 0.15,
+      "masks_equal": true,
+      "maximum_pointwise_change_m": 0.001250000018626518,
+      "support_outside_active_exactly_unchanged": true,
+      "zero_level_margin_m": 0.3499684884460294
+    },
+    "function": "cfd_sdf.fd08_v2_campaign.construct_state",
+    "proposal_recomputed": false,
+    "saved_direction_path": "docs/evidence/lowdim03_dual_grid_primal_2026_10_10/inputs/robust_cross_grid.dir_f4_fortran.raw",
+    "saved_direction_sha256": "c0f69676929c3eb17b1b623c599bfd97ea286d09810c63848e0d7499437e0bf5",
+    "sign": 1,
+    "step_mm": 1.25
+  },
+  "q1_exact_original_reference_reproduction": true,
+  "schema_version": 1,
+  "shape_update_allowed": false,
+  "states": [
+    {
+      "cell_shape": [
+        60,
+        32,
+        24
+      ],
+      "center_dtype": "float32",
+      "exact_zero_centers_fluid": 0,
+      "input_npz_sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe",
+      "input_path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/v16_reference.npz",
+      "label": "v16_reference",
+      "lowdim_geometry": {
+        "sharp_volume_m3": 0.12612500000000004,
+        "smoothed_volume_m3": 0.04763768084408358
+      },
+      "node_occupancy_diagnostic": {
+        "constraint_authority": false,
+        "solid_nodes": 1420,
+        "volume_m3": 0.17750000000000005
+      },
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.6
+      ],
+      "p22_hard_sharp_m3": 0.12612500000000004,
+      "p22_smooth": {
+        "constraint_gradient_sha256": "b9be5506865bf728d81c4414d0f918c0a043882d9cccd3fc27835e14b71896a9",
+        "constraint_gradient_units": "m^-1",
+        "constraint_residual": -0.6222978723957695,
+        "contract_sha256": "56825cd50c0916c5659badd21c84bab517ddb370085a92056d40a9028e8a7969",
+        "gradient_sha256": "0318291991e069d6ada6604806ce6b1d5d302187d03c194e4882fb2d61ca774f",
+        "gradient_units": "m^2",
+        "grid_sha256": "242d499b462eb76bb72bc0e5dc87f6731e95e417298f915ac33f19097a1de4c0",
+        "kind": "sdf_native_smoothed_volume_v1",
+        "legacy_stage_t_vmax_carried": false,
+        "schema_version": 1,
+        "sharp_reference_feasible": true,
+        "sharp_reference_volume_m3": 0.12612500000000004,
+        "sharp_reference_volume_residual_m3": 0.0,
+        "sharp_reference_volume_violation_m3": 0.0,
+        "smoothed_volume_m3": 0.04763768084408358,
+        "state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8",
+        "transition_width_m": 0.05,
+        "volume_limit_m3": 0.12612500000000004
+      },
+      "phi_c_order_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+      "phi_dtype": "float32",
+      "phi_fortran_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+      "point_shape": [
+        61,
+        33,
+        25
+      ],
+      "solid_sampled_centers": 1009,
+      "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+      "spacing_m": 0.05,
+      "state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8",
+      "total_sampled_centers": 46080
+    },
+    {
+      "cell_shape": [
+        120,
+        64,
+        48
+      ],
+      "center_dtype": "float32",
+      "exact_zero_centers_fluid": 0,
+      "input_npz_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+      "input_path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/v17_baseline.npz",
+      "label": "v17_baseline",
+      "lowdim_geometry": {
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.08897032348835406
+      },
+      "node_occupancy_diagnostic": {
+        "constraint_authority": false,
+        "solid_nodes": 9764,
+        "volume_m3": 0.15256250000000005
+      },
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.6
+      ],
+      "p22_hard_sharp_m3": 0.12925000000000003,
+      "p22_smooth": {
+        "constraint_gradient_sha256": "e7e97c7a3f019ac14b43ab9fc926601e367a53c914a9eb0cb5a67dc473eab8dc",
+        "constraint_gradient_units": "m^-1",
+        "constraint_residual": -0.2945861368614151,
+        "contract_sha256": "56825cd50c0916c5659badd21c84bab517ddb370085a92056d40a9028e8a7969",
+        "gradient_sha256": "bd4e05dbcc6350a0e34d92fc0b1c9af5b0517d615b1bc3ab11b97493088c250d",
+        "gradient_units": "m^2",
+        "grid_sha256": "645bc1c756ce833fd4c741b82b3932e36adc1c2f4fa762bb3c59317ed809b9b5",
+        "kind": "sdf_native_smoothed_volume_v1",
+        "legacy_stage_t_vmax_carried": false,
+        "schema_version": 1,
+        "sharp_reference_feasible": false,
+        "sharp_reference_volume_m3": 0.12925000000000003,
+        "sharp_reference_volume_residual_m3": 0.003124999999999989,
+        "sharp_reference_volume_violation_m3": 0.003124999999999989,
+        "smoothed_volume_m3": 0.08897032348835406,
+        "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb",
+        "transition_width_m": 0.025,
+        "volume_limit_m3": 0.12612500000000004
+      },
+      "phi_c_order_sha256": "f6419547c7b58991462a19f8116b819e7bbe60074fa524c01a51ef41cc0e3b1f",
+      "phi_dtype": "float32",
+      "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+      "point_shape": [
+        121,
+        65,
+        49
+      ],
+      "solid_sampled_centers": 8272,
+      "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+      "spacing_m": 0.025,
+      "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb",
+      "total_sampled_centers": 368640
+    },
+    {
+      "cell_shape": [
+        120,
+        64,
+        48
+      ],
+      "center_dtype": "float32",
+      "exact_zero_centers_fluid": 0,
+      "input_npz_sha256": "0ce3256b0f3e5c919caeb2ac1b36f1a33838f34c767c091cb89bda0234ac750b",
+      "input_path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/lowdim03_parent.npz",
+      "label": "lowdim03_parent",
+      "lowdim_geometry": {
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.08791792018063567
+      },
+      "node_occupancy_diagnostic": {
+        "constraint_authority": false,
+        "solid_nodes": 5698,
+        "volume_m3": 0.08903125000000002
+      },
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.6
+      ],
+      "p22_hard_sharp_m3": 0.12925000000000003,
+      "p22_smooth": {
+        "constraint_gradient_sha256": "d4838b695c4bad9eaa48acdb36735a5745ab17e119bfffb57ac5428cfc8249c7",
+        "constraint_gradient_units": "m^-1",
+        "constraint_residual": -0.3029302661594796,
+        "contract_sha256": "56825cd50c0916c5659badd21c84bab517ddb370085a92056d40a9028e8a7969",
+        "gradient_sha256": "ee030a0d1d9ae1d23fc9730217e5619df3837fbc097f5d5b22699408f86d767d",
+        "gradient_units": "m^2",
+        "grid_sha256": "645bc1c756ce833fd4c741b82b3932e36adc1c2f4fa762bb3c59317ed809b9b5",
+        "kind": "sdf_native_smoothed_volume_v1",
+        "legacy_stage_t_vmax_carried": false,
+        "schema_version": 1,
+        "sharp_reference_feasible": false,
+        "sharp_reference_volume_m3": 0.12925000000000003,
+        "sharp_reference_volume_residual_m3": 0.003124999999999989,
+        "sharp_reference_volume_violation_m3": 0.003124999999999989,
+        "smoothed_volume_m3": 0.08791792018063567,
+        "state_sha256": "81d24fe4a66704ed469f560b7396b4c0cbf6810ef8082e710f002145ca6e3a65",
+        "transition_width_m": 0.025,
+        "volume_limit_m3": 0.12612500000000004
+      },
+      "phi_c_order_sha256": "b5f75bca81ad6f625b417bd81f4c022f4bc895479e549abae685c10f329f7efe",
+      "phi_dtype": "float32",
+      "phi_fortran_sha256": "b02dc49c39c3e8895befd5a95ae007ccf04fb2582064e8d79bd0f4c57c55286e",
+      "point_shape": [
+        121,
+        65,
+        49
+      ],
+      "solid_sampled_centers": 8272,
+      "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+      "spacing_m": 0.025,
+      "state_sha256": "81d24fe4a66704ed469f560b7396b4c0cbf6810ef8082e710f002145ca6e3a65",
+      "total_sampled_centers": 368640
+    }
+  ],
+  "threshold_changed": false,
+  "v17_baseline_minus_v16_reference_hard_m3": 0.003124999999999989
+}

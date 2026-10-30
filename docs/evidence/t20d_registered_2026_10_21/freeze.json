@@ -1,0 +1,124 @@
+{
+ "status": "REGISTERED_FROZEN (freeze 2)",
+ "date": "2026-10-21",
+ "source_commit": "7a57fcc995de3e443fd85265d710b786e4c804d9",
+ "freeze1": {
+  "registration_sha256": "3f1b0ec1c16788db8b9d6d2422da5635728a0246957847b368622eebb71579bb",
+  "commit": "29fb46c1",
+  "issue_comment": "https://github.com/ramhachi/CFD_opt_sdf/issues/57#issuecomment-6312247796"
+ },
+ "registration_unchanged_since_freeze1": true,
+ "file_sha256": {
+  "docs/t20d_registration_2026_10_21.md": "3f1b0ec1c16788db8b9d6d2422da5635728a0246957847b368622eebb71579bb",
+  "scripts/t20d_case.py": "9b8b4aaf17a34443a84dad5b083bda69e8ec9b8cc9ca4bfd1f9ca00910df3f0f",
+  "scripts/build_t20d_kernel.py": "c07a5dbcffc1af3f13c33dda0e39cdb5d773399b954006df08fc1a997fbf620c",
+  "scripts/analyze_t20d.py": "123bb71a367c1150a2964e1ea4d1861d6326a65ecfb2b814f33e422a0efc7424",
+  "tests/test_t20d.py": "32ea69b2907bbca9cda42d7a2777aab54640780fa28f0f8bbc878c65b42b43b7",
+  "infra/kaggle/kernel_t20d_cpu/runner.py": "c99508b5edb30eda7d2e8a7471e55a1fcbc959ffb275d357372b73191c876a4c",
+  "infra/kaggle/kernel_t20d_cpu/kernel-metadata.json": "1b7470c9df14a72467f39e6024a9b0d0406584353d42dd616285a3ba14370424",
+  "scripts/t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+  "scripts/t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+  "scripts/t20c_case.py": "156cd8416d3291a42704dc712f78ee62fef5ff9c60b5f552b3800d22a78bc5ad",
+  "scripts/analyze_t20b.py": "0ae4cd46919228e18ba8104a7bc120ac3382610f47c19522faf5f53b93433e88",
+  "scripts/analyze_t20c.py": "c01020d490bab5a72836633acc9b49e09bc70de7c848419f6c72d1921dedc10b",
+  "scripts/build_t20a_kernel.py": "73df7a83d94328eed4ab28d4faddf67032b9eae7d66fde5922daf52608cf6b4e",
+  "data/t20/tyrrell026s_genua2009.dat": "ae5fa889e3090ff35e819f195f90111b9b16e990e51d99d8aa3999bcb2d10f83",
+  "data/t20/zerihan_zhang_cl_genua2009_fig6.json": "dd6ca2af10318f3b0603f94c60ea0e6f4753e4053fb614ee7efee3273a6ff90b"
+ },
+ "pinned_unchanged_since_t20c": [
+  "scripts/t20_case.py",
+  "scripts/t20_foam.py",
+  "scripts/t20c_case.py",
+  "scripts/analyze_t20b.py",
+  "scripts/analyze_t20c.py",
+  "scripts/build_t20a_kernel.py",
+  "data/t20/tyrrell026s_genua2009.dat",
+  "data/t20/zerihan_zhang_cl_genua2009_fig6.json"
+ ],
+ "rendered_kernels": {
+  "xp1": {
+   "slug": "ramhachi888/cfd-opt-sdf-t20d-xp1",
+   "geometries": 7,
+   "stage2_runs": 15,
+   "runner_sha256": "4b3ae26c1a716f2cb3b27c027f1f15a4ba8d3869a85dde35adb07939d8806abb"
+  },
+  "xp2": {
+   "slug": "ramhachi888/cfd-opt-sdf-t20d-xp2",
+   "geometries": 8,
+   "stage2_runs": 8,
+   "runner_sha256": "a799b11582a63e76be9690e26545bc04f446f3965e8008750b06b9ab98144a04"
+  },
+  "xo1": {
+   "slug": "ramhachi888/cfd-opt-sdf-t20d-xo1",
+   "geometries": 6,
+   "stage2_runs": 16,
+   "runner_sha256": "2960272f85a8ce911d016764e3a1ff29047947bed4c766eed2d891c09ecb56f5"
+  },
+  "xo2": {
+   "slug": "ramhachi888/cfd-opt-sdf-t20d-xo2",
+   "geometries": 12,
+   "stage2_runs": 6,
+   "runner_sha256": "f40a966bb4c6b9a53b90c32f042e1864823157b1d67b159932d69bcda9729e8e"
+  },
+  "f1": {
+   "slug": "ramhachi888/cfd-opt-sdf-t20d-f1",
+   "geometries": 19,
+   "stage2_runs": 16,
+   "runner_sha256": "e037a785bd2d052096d45e4523a7c05ba358dcb5bbf9a150a633cbee94646217"
+  },
+  "f2": {
+   "slug": "ramhachi888/cfd-opt-sdf-t20d-f2",
+   "geometries": 11,
+   "stage2_runs": 11,
+   "runner_sha256": "c4753e3f5ee91d15ae592dc1245792f0f9f9c1fb853320b9d0dd8ad03a3c351b"
+  }
+ },
+ "development_smoke": {
+  "attempt1": {
+   "source_commit": "db5f65f3e6fd498566b0a3511b729dd8ea28fb5f",
+   "kernel_version": 1,
+   "cpu": "Intel(R) Xeon(R) CPU @ 2.20GHz",
+   "result": "FINISHED_SMOKE: 62 MESH_OK (every registered geometry of the six kernels, morphs passing the topology check), 15 solver paths COMPLETED; 0.66 h",
+   "measurements": "xfine30 U 0.61-0.64 s/step (plan 0.71 Intel; cost-model check passes, 1.3x limit 0.92), Udt2 0.72 s/step stable at max Courant 8.2 over 1500 steps, Udt05 0.70 s/step (Co 2.0), US1 0.73, S0 0.18-0.26 s/it, S1 0.25 s/it, fine30 U 0.32 s/step",
+   "scrub": "no coefficient file, no force line in kept logs, no forces block (checked over the 924 extracted files)",
+   "defects": "none in the solver paths; the source review (below) and a local functional check led to the changes between db5f65f3 and 7a57fcc9"
+  },
+  "attempt2": {
+   "source_commit": "7a57fcc995de3e443fd85265d710b786e4c804d9",
+   "kernel_version": 2,
+   "cpu": "Intel(R) Xeon(R) CPU @ 2.20GHz",
+   "result": "FINISHED_SMOKE: 62 MESH_OK, 15 solver paths COMPLETED; 0.65 h; US1 starts from S1's final state (time 1200 = S0 1000 + S1 200); Courant maxima identical to attempt 1",
+   "scrub": "no force-bearing file among the 924 extracted files",
+   "defects": "none"
+  }
+ },
+ "local_functional_check": "before attempt 1, a local Docker run (2 CPU, coa30 h/c 0.224, 60 S0 iterations, 15-30 steps) of run_s0/run_stage2 found that S1 did not write its final state (no uniform/time in the copy: the time index restarts at 0); fixed in db5f65f3 (S1 write interval = number of S1 iterations) and confirmed on Kaggle in attempt 2",
+ "plan_review": "one, three angles (numerical 14, controls 12, strategy 14 findings) on draft bc9dc3d2; registration section 10",
+ "source_review": {
+  "reviewer": "one independent sonnet subagent on 9be42da3",
+  "findings": 13,
+  "blockers": [
+   "R1 sigma_real80 dropped lost/invalid pairs (now G2u inputs, fail-closed)",
+   "R2 unextracted case files gave a silent NO_GO (now refused before any output)"
+  ],
+  "fixed": "R1-R13 in 7a57fcc9 (R5 applied to the text: START_DEPENDENT on differing classes; R10 and the S0-vs-T2-0c comparison recorded as interpretations below; R13 tests added: 30 tests)"
+ },
+ "interpretations_recorded_at_freeze2": [
+  "G2u: the +-1 deg runs at 0.09 are optional inputs (the SHIFT_UNVERIFIED rule of 6.3 implies it); the 11 others and every realisation-pair run (both levels) are required inputs",
+  "sigma_real80: a pair is excluded only when its two mesh files are identical; fewer than 2 pairs is an undefined quantity (FAIL_VALUE)",
+  "Q1 at x134 0 and x09 0: a lost U or US1 leaves the start dependence unchecked (INDETERMINATE); different classes of two non-lost runs are START_DEPENDENT",
+  "Controls without a registered Udt2 (f09 0) have no time-step check; CONTROL_OK does not need one",
+  "A stage-2 run whose source run (S0, or S1 for US1) is SOLVER_FAIL, MECHANICAL_FAIL or INFRA_LOSS takes that class (6.1 'the source run failed')",
+  "Cost: a copied base adds its base's generation time; with DATA and DIFF PASS an undetermined cost gives T20D_INCOMPLETE (unreachable: all 15 cost runs are DIFF inputs)",
+  "The S0 class against the T2-0c class (6.2 'also reported') is not computed by the analyzer, because section 2 forbids reading T2-0a/b/c output there; it goes into the dated note after the analysis",
+  "KeyError/TypeError inside a gate are analyzer defects (the analyzer stops without writing; section 8's crash rule), not FAIL_VALUE",
+  "The analyzer refuses (no output) when a COMPLETED run has no extracted case files (cases.tar not extracted)"
+ ],
+ "analysis_rule": "scripts/analyze_t20d.py at the source commit, run once on the six downloaded and extracted outputs; --completeness only before that",
+ "output_packaging": "cases.tar per kernel (Kaggle output API 429 after ~2400 per-file downloads); extracted with tarfile's data filter and checked against artifact_manifest.json",
+ "execution_backend": "Kaggle CPU only (registration section 5); not the local Docker environment (LOCAL-OF-01 LOCAL_ENV_FAIL for this pipeline)",
+ "regression": {
+  "full_pytest_fresh_worktree": "9be42da3: 3058 passed, 73 skipped, 0 failed (1 h 21 min on the loaded local host)",
+  "tests/test_t20d.py": "7a57fcc9: 30 passed (the only files changed after 9be42da3 are the T2-0d analyzer, runner and tests)"
+ }
+}

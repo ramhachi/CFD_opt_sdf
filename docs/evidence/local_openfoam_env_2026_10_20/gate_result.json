@@ -1,0 +1,1944 @@
+{
+ "T": {
+  "T1_mesh_replay": {
+   "agree": 174,
+   "bases": 15,
+   "bases_json_differing_keys": [
+    "[9].cells_3d",
+    "[9].log_tail",
+    "[10].cells_3d",
+    "[10].log_tail",
+    "[11].cells_3d",
+    "[11].log_tail",
+    "[12].cells_3d",
+    "[12].log_tail",
+    "[13].cells_3d",
+    "[13].log_tail",
+    "[14].cells_3d",
+    "[14].log_tail"
+   ],
+   "bases_mesh_sha_identical": 9,
+   "compared": 262,
+   "extra_local_ids": [],
+   "mesh_sha_identical": 62,
+   "mismatches": [
+    {
+     "id": "sa-wf_h0.09_fine30_camber-0.5mm_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_skewness",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_fine30_da+0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_determinant",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_fine30_da+0.5_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_fine30_da+1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_fine30_da-0.25_mesh",
+     "keys": [
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_fine30_da-0.5_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_fine30_da-1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_fine30_flap+0.5mm_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_fine30_flap-0.5mm_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_fine30_morphB2-da+0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_fine30_morphB2-da+1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_fine30_morphB2-da-0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_fine30_morphB2-da-1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_med30_da+0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_med30_da+0.5_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_med30_da+1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_med30_da-0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_med30_da-0.5_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_med30_da-1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_med30_morphB2-da+0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_med30_morphB2-da+1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_med30_morphB2-da-0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_med30_morphB2-da-1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_xfine30_da+0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_determinant",
+      ".check_mesh.min_face_weight",
+      ".check_mesh.min_volume_ratio",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_xfine30_da+0.5_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_xfine30_da+1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.min_determinant",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_xfine30_da+1_smoke",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.min_determinant",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_xfine30_da-0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_xfine30_da-0.5_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.min_determinant",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.09_xfine30_da-1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_determinant",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_fine30_camber-0.5mm_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_fine30_da+0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_fine30_da+0.5_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_fine30_da+1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_fine30_da-0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_determinant",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_fine30_da-0.5_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_fine30_da-1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_fine30_flap+0.5mm_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_fine30_flap-0.5mm_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_fine30_morphB2-da+0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_fine30_morphB2-da+1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_fine30_morphB2-da-0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_fine30_morphB2-da-1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_fine30_morphB2-da-1_smoke",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_med30_da+0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_med30_da+0.5_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_med30_da+1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_med30_da-0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_med30_da-0.5_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_med30_da-1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_med30_morphB2-da+0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_med30_morphB2-da+1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_med30_morphB2-da-0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_med30_morphB2-da-1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_xfine30_da+0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".check_mesh.min_volume_ratio",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_xfine30_da+0.5_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.min_face_weight",
+      ".check_mesh.min_volume_ratio",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_xfine30_da+1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_xfine30_da-0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_xfine30_da-0.5_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.min_determinant",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.134_xfine30_da-1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.min_determinant",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_fine30_camber+0.5mm_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_fine30_camber-0.5mm_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_fine30_da+0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_fine30_da+0.5_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_determinant",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_fine30_da+1_mesh",
+     "keys": [
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_fine30_da-0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_fine30_da-0.5_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_fine30_da-1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_fine30_morphB2-da+0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_determinant",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_fine30_morphB2-da+1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_determinant",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_fine30_morphB2-da-0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_determinant",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_fine30_morphB2-da-1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_determinant",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_med30_da+0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_med30_da+0.5_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_med30_da+1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_med30_da-0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_med30_da-0.5_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_med30_da-1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_med30_morphB2-da+0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_med30_morphB2-da+1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_med30_morphB2-da-0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_med30_morphB2-da-1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".mesh_cells_3d",
+      ".morph.area_ratio_max",
+      ".morph.area_ratio_min",
+      ".morph.max_node_displacement_m"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_xfine30_da+0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.max_skewness",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_xfine30_da+0.5_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_xfine30_da+1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_xfine30_da-0.25_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.min_determinant",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_xfine30_da-0.5_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.min_face_weight",
+      ".mesh_cells_3d"
+     ]
+    },
+    {
+     "id": "sa-wf_h0.224_xfine30_da-1_mesh",
+     "keys": [
+      ".check_mesh.cells",
+      ".check_mesh.max_aspect_ratio",
+      ".check_mesh.max_non_orthogonality",
+      ".check_mesh.min_determinant",
+      ".check_mesh.min_face_weight",
+      ".check_mesh.min_volume_ratio",
+      ".mesh_cells_3d"
+     ]
+    }
+   ],
+   "pass": false,
+   "solver_paths_descriptive": {
+    "differing": [
+     {
+      "id": "sa-wf_h0.09_fine30_camber+0.5mm_smoke",
+      "keys": [
+       "deadline_limited"
+      ],
+      "same_mesh_file": true
+     },
+     {
+      "id": "sa-wf_h0.09_xfine30_da+1_smoke",
+      "keys": [
+       "deadline_limited",
+       "solver",
+       "solver_cont",
+       "yplus"
+      ],
+      "same_mesh_file": false
+     },
+     {
+      "id": "sa-wf_h0.09_xfine30_morph-da+1_smoke",
+      "keys": [
+       "deadline_limited"
+      ],
+      "same_mesh_file": false
+     },
+     {
+      "id": "sa-wf_h0.134_fine30_morph-flap+0.5mm_smoke",
+      "keys": [
+       "deadline_limited"
+      ],
+      "same_mesh_file": false
+     },
+     {
+      "id": "sa-wf_h0.134_fine30_morphB2-da-1_smoke",
+      "keys": [
+       "deadline_limited",
+       "solver",
+       "solver_cont",
+       "yplus"
+      ],
+      "same_mesh_file": false
+     },
+     {
+      "id": "sa-wf_h0.224_fine30_morphLin-da+1_smoke",
+      "keys": [
+       "deadline_limited"
+      ],
+      "same_mesh_file": false
+     },
+     {
+      "id": "sa-wf_h0.224_med30_da0_smoke",
+      "keys": [
+       "deadline_limited"
+      ],
+      "same_mesh_file": true
+     }
+    ],
+    "same_mesh": 2,
+    "same_mesh_solver_fields_identical": 0,
+    "solver_paths": 7
+   },
+   "status_counts": {
+    "kaggle": {
+     "COMPLETED": 7,
+     "MESH_OK": 256
+    },
+    "local": {
+     "COMPLETED": 7,
+     "MESH_OK": 256
+    }
+   }
+  },
+  "T2_determinism": {
+   "enough_pairs": true,
+   "pairs": [
+    {
+     "case": "sa-wf_h0.224_fine30_da-1",
+     "coefficient_dat_identical": true,
+     "d_cl_tail_mean": 0.0,
+     "runs": [
+      "t20b_a",
+      "t20b_b"
+     ]
+    },
+    {
+     "case": "sa-wf_h0.224_fine30_da+1",
+     "coefficient_dat_identical": true,
+     "d_cl_tail_mean": 0.0,
+     "runs": [
+      "t20b_a",
+      "t20b_b"
+     ]
+    },
+    {
+     "case": "sa-wf_h0.134_med30_da-0.25",
+     "coefficient_dat_identical": true,
+     "d_cl_tail_mean": 0.0,
+     "runs": [
+      "t20b_a",
+      "t20b_b"
+     ]
+    },
+    {
+     "case": "sa-wf_h0.134_med30_da+0.25",
+     "coefficient_dat_identical": true,
+     "d_cl_tail_mean": 0.0,
+     "runs": [
+      "t20b_a",
+      "t20b_b"
+     ]
+    },
+    {
+     "case": "sa-wf_h0.09_fine30_da+1",
+     "coefficient_dat_identical": true,
+     "d_cl_tail_mean": 0.0,
+     "runs": [
+      "t20b_a",
+      "t20b_b"
+     ]
+    }
+   ],
+   "pass": true,
+   "runs": [
+    "t20b_a",
+    "t20b_b"
+   ],
+   "smoke_replays": {
+    "pass": true,
+    "same_mesh_solver_paths": [
+     {
+      "id": "sa-wf_h0.09_fine30_camber+0.5mm_smoke",
+      "identical": true
+     },
+     {
+      "id": "sa-wf_h0.09_xfine30_da+1_smoke",
+      "identical": true
+     },
+     {
+      "id": "sa-wf_h0.09_xfine30_morph-da+1_smoke",
+      "identical": true
+     },
+     {
+      "id": "sa-wf_h0.134_fine30_morph-flap+0.5mm_smoke",
+      "identical": true
+     },
+     {
+      "id": "sa-wf_h0.134_fine30_morphB2-da-1_smoke",
+      "identical": true
+     },
+     {
+      "id": "sa-wf_h0.224_fine30_morphLin-da+1_smoke",
+      "identical": true
+     },
+     {
+      "id": "sa-wf_h0.224_med30_da0_smoke",
+      "identical": true
+     }
+    ]
+   }
+  },
+  "T3_environment_identity": {
+   "bitwise": false,
+   "cases_with_same_mesh_pair": [],
+   "enough_pairs": false,
+   "max_abs_d_cl_same_mesh": null,
+   "pairs_same_mesh_as_kaggle": [],
+   "pass": false,
+   "rows": {
+    "t20b_a:sa-wf_h0.09_fine30_da+1": {
+     "cells": 25584,
+     "cells_and_check_mesh_agree": false,
+     "completed_consistent": true,
+     "mesh_identical_to_kaggle": false,
+     "peak_rss_mb": 119.545856,
+     "status": "COMPLETED",
+     "wall_s_kaggle": 616.8248559909998,
+     "wall_s_local": 499.4863956859999
+    },
+    "t20b_a:sa-wf_h0.134_med30_da+0.25": {
+     "cells": 14145,
+     "cells_and_check_mesh_agree": false,
+     "completed_consistent": true,
+     "mesh_identical_to_kaggle": false,
+     "peak_rss_mb": 102.637568,
+     "status": "COMPLETED",
+     "wall_s_kaggle": 328.27040783099983,
+     "wall_s_local": 525.3221776129999
+    },
+    "t20b_a:sa-wf_h0.134_med30_da-0.25": {
+     "cells": 14174,
+     "cells_and_check_mesh_agree": false,
+     "completed_consistent": true,
+     "mesh_identical_to_kaggle": false,
+     "peak_rss_mb": 100.450304,
+     "status": "COMPLETED",
+     "wall_s_kaggle": 328.21709622399976,
+     "wall_s_local": 523.6890996540001
+    },
+    "t20b_a:sa-wf_h0.224_fine30_da+1": {
+     "cells": 26863,
+     "cells_and_check_mesh_agree": false,
+     "completed_consistent": true,
+     "mesh_identical_to_kaggle": false,
+     "peak_rss_mb": 121.294848,
+     "status": "COMPLETED",
+     "wall_s_kaggle": 635.7385047589999,
+     "wall_s_local": 674.1649217230001
+    },
+    "t20b_a:sa-wf_h0.224_fine30_da-1": {
+     "cells": 26688,
+     "cells_and_check_mesh_agree": false,
+     "completed_consistent": true,
+     "mesh_identical_to_kaggle": false,
+     "peak_rss_mb": 119.918592,
+     "status": "COMPLETED",
+     "wall_s_kaggle": 684.2068325099999,
+     "wall_s_local": 670.6490565539998
+    },
+    "t20b_b:sa-wf_h0.09_fine30_da+1": {
+     "cells": 25584,
+     "cells_and_check_mesh_agree": false,
+     "completed_consistent": true,
+     "mesh_identical_to_kaggle": false,
+     "peak_rss_mb": 119.549952,
+     "status": "COMPLETED",
+     "wall_s_kaggle": 616.8248559909998,
+     "wall_s_local": 452.0320504559995
+    },
+    "t20b_b:sa-wf_h0.134_med30_da+0.25": {
+     "cells": 14145,
+     "cells_and_check_mesh_agree": false,
+     "completed_consistent": true,
+     "mesh_identical_to_kaggle": false,
+     "peak_rss_mb": 102.760448,
+     "status": "COMPLETED",
+     "wall_s_kaggle": 328.27040783099983,
+     "wall_s_local": 531.8649487000002
+    },
+    "t20b_b:sa-wf_h0.134_med30_da-0.25": {
+     "cells": 14174,
+     "cells_and_check_mesh_agree": false,
+     "completed_consistent": true,
+     "mesh_identical_to_kaggle": false,
+     "peak_rss_mb": 100.483072,
+     "status": "COMPLETED",
+     "wall_s_kaggle": 328.21709622399976,
+     "wall_s_local": 530.6099589089999
+    },
+    "t20b_b:sa-wf_h0.224_fine30_da+1": {
+     "cells": 26863,
+     "cells_and_check_mesh_agree": false,
+     "completed_consistent": true,
+     "mesh_identical_to_kaggle": false,
+     "peak_rss_mb": 121.401344,
+     "status": "COMPLETED",
+     "wall_s_kaggle": 635.7385047589999,
+     "wall_s_local": 659.1145397600003
+    },
+    "t20b_b:sa-wf_h0.224_fine30_da-1": {
+     "cells": 26688,
+     "cells_and_check_mesh_agree": false,
+     "completed_consistent": true,
+     "mesh_identical_to_kaggle": false,
+     "peak_rss_mb": 122.904576,
+     "status": "COMPLETED",
+     "wall_s_kaggle": 684.2068325099999,
+     "wall_s_local": 655.6104379660001
+    }
+   }
+  },
+  "generator_variant_spread_descriptive": {
+   "label": "VARIANT_SPREAD_ABOVE_SCALE",
+   "max_abs_d_cl_steady_cases": 0.01028242273000024,
+   "pairs": [
+    {
+     "case": "sa-wf_h0.224_fine30_da-1",
+     "cl_tail_std": {
+      "kaggle": 7.255999999999928e-05,
+      "local": 7.78199999998952e-05
+     },
+     "d_cd_tail_mean": -0.00018580080569998922,
+     "d_cl_tail_mean": 0.002813409999999683,
+     "pair": "local-kaggle",
+     "run": "t20b_a",
+     "unsteady_class": {
+      "kaggle": false,
+      "local": false
+     }
+    },
+    {
+     "case": "sa-wf_h0.224_fine30_da-1",
+     "cl_tail_std": {
+      "kaggle": 7.255999999999928e-05,
+      "local": 7.78199999998952e-05
+     },
+     "d_cd_tail_mean": -0.00018580080569998922,
+     "d_cl_tail_mean": 0.002813409999999683,
+     "pair": "local-kaggle",
+     "run": "t20b_b",
+     "unsteady_class": {
+      "kaggle": false,
+      "local": false
+     }
+    },
+    {
+     "case": "sa-wf_h0.224_fine30_da+1",
+     "cl_tail_std": {
+      "kaggle": 0.00011592130811133998,
+      "local": 0.00011534999999995854
+     },
+     "d_cd_tail_mean": -0.0002616833097000004,
+     "d_cl_tail_mean": 0.006034840810000386,
+     "pair": "local-kaggle",
+     "run": "t20b_a",
+     "unsteady_class": {
+      "kaggle": false,
+      "local": false
+     }
+    },
+    {
+     "case": "sa-wf_h0.224_fine30_da+1",
+     "cl_tail_std": {
+      "kaggle": 0.00011592130811133998,
+      "local": 0.00011534999999995854
+     },
+     "d_cd_tail_mean": -0.0002616833097000004,
+     "d_cl_tail_mean": 0.006034840810000386,
+     "pair": "local-kaggle",
+     "run": "t20b_b",
+     "unsteady_class": {
+      "kaggle": false,
+      "local": false
+     }
+    },
+    {
+     "case": "sa-wf_h0.134_med30_da-0.25",
+     "cl_tail_std": {
+      "kaggle": 0.00020065226064533553,
+      "local": 0.000197510363277847
+     },
+     "d_cd_tail_mean": 3.696201069999794e-05,
+     "d_cl_tail_mean": 0.00890141416000012,
+     "pair": "local-kaggle",
+     "run": "t20b_a",
+     "unsteady_class": {
+      "kaggle": false,
+      "local": false
+     }
+    },
+    {
+     "case": "sa-wf_h0.134_med30_da-0.25",
+     "cl_tail_std": {
+      "kaggle": 0.00020065226064533553,
+      "local": 0.000197510363277847
+     },
+     "d_cd_tail_mean": 3.696201069999794e-05,
+     "d_cl_tail_mean": 0.00890141416000012,
+     "pair": "local-kaggle",
+     "run": "t20b_b",
+     "unsteady_class": {
+      "kaggle": false,
+      "local": false
+     }
+    },
+    {
+     "case": "sa-wf_h0.134_med30_da+0.25",
+     "cl_tail_std": {
+      "kaggle": 0.00021608750002894076,
+      "local": 0.0001659933907242604
+     },
+     "d_cd_tail_mean": 0.0005902062456000015,
+     "d_cl_tail_mean": -0.01028242273000024,
+     "pair": "local-kaggle",
+     "run": "t20b_a",
+     "unsteady_class": {
+      "kaggle": false,
+      "local": false
+     }
+    },
+    {
+     "case": "sa-wf_h0.134_med30_da+0.25",
+     "cl_tail_std": {
+      "kaggle": 0.00021608750002894076,
+      "local": 0.0001659933907242604
+     },
+     "d_cd_tail_mean": 0.0005902062456000015,
+     "d_cl_tail_mean": -0.01028242273000024,
+     "pair": "local-kaggle",
+     "run": "t20b_b",
+     "unsteady_class": {
+      "kaggle": false,
+      "local": false
+     }
+    },
+    {
+     "case": "sa-wf_h0.09_fine30_da+1",
+     "cl_tail_std": {
+      "kaggle": 0.02627553302178009,
+      "local": 0.02709774364506229
+     },
+     "d_cd_tail_mean": -3.6144184699993254e-05,
+     "d_cl_tail_mean": -0.020642279529999863,
+     "pair": "local-kaggle",
+     "run": "t20b_a",
+     "unsteady_class": {
+      "kaggle": true,
+      "local": true
+     }
+    },
+    {
+     "case": "sa-wf_h0.09_fine30_da+1",
+     "cl_tail_std": {
+      "kaggle": 0.02627553302178009,
+      "local": 0.02709774364506229
+     },
+     "d_cd_tail_mean": -3.6144184699993254e-05,
+     "d_cl_tail_mean": -0.020642279529999863,
+     "pair": "local-kaggle",
+     "run": "t20b_b",
+     "unsteady_class": {
+      "kaggle": true,
+      "local": true
+     }
+    }
+   ],
+   "scale": 0.00022821764566427559
+  },
+  "kaggle_self_consistency_descriptive": {
+   "differing": [
+    "sa-wf_h0.09_coa30_da0",
+    "sa-wf_h0.09_med30_da0",
+    "sa-wf_h0.134_coa30_da0",
+    "sa-wf_h0.134_fine30_da+1",
+    "sa-wf_h0.134_fine30_da0",
+    "sa-wf_h0.179_coa30_da0",
+    "sa-wf_h0.224_med30_da-1"
+   ],
+   "geometries": 41,
+   "identical": 34
+  },
+  "verdict": "LOCAL_ENV_FAIL"
+ },
+ "U": {
+  "U1_determinism": {
+   "cases": {
+    "frm_D0_interface_offset_minus_17m": {
+     "coefficient_dat_identical": true,
+     "completed_both": true
+    },
+    "frm_D0_interface_offset_minus_17p": {
+     "coefficient_dat_identical": true,
+     "completed_both": true
+    },
+    "frm_D0_interface_offset_plus_17m": {
+     "coefficient_dat_identical": true,
+     "completed_both": true
+    },
+    "frm_D0_interface_offset_plus_17p": {
+     "coefficient_dat_identical": true,
+     "completed_both": true
+    },
+    "frm_D1_filtered_seed11_minus_17m": {
+     "coefficient_dat_identical": true,
+     "completed_both": true
+    },
+    "frm_D1_filtered_seed11_minus_17p": {
+     "coefficient_dat_identical": true,
+     "completed_both": true
+    },
+    "frm_D1_filtered_seed11_plus_17m": {
+     "coefficient_dat_identical": true,
+     "completed_both": true
+    },
+    "frm_D1_filtered_seed11_plus_17p": {
+     "coefficient_dat_identical": true,
+     "completed_both": true
+    },
+    "frm_D2_filtered_seed2026_minus_17m": {
+     "coefficient_dat_identical": true,
+     "completed_both": true
+    },
+    "frm_D2_filtered_seed2026_minus_17p": {
+     "coefficient_dat_identical": true,
+     "completed_both": true
+    },
+    "frm_D2_filtered_seed2026_plus_17m": {
+     "coefficient_dat_identical": true,
+     "completed_both": true
+    },
+    "frm_D2_filtered_seed2026_plus_17p": {
+     "coefficient_dat_identical": true,
+     "completed_both": true
+    },
+    "frm_baseline_17m": {
+     "coefficient_dat_identical": true,
+     "completed_both": true
+    },
+    "frm_baseline_17p": {
+     "coefficient_dat_identical": true,
+     "completed_both": true
+    }
+   },
+   "pass": true,
+   "v18_local_runs_identical": true
+  },
+  "U2_x3_forces": {
+   "bias_within": {
+    "downforce_n": true,
+    "drag_n": true
+   },
+   "bitwise": true,
+   "cases": {
+    "frm_D0_interface_offset_minus_17m": {
+     "coefficient_dat_bitwise": true,
+     "difference": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "mesh_fields_differing": [],
+     "pass": true,
+     "peak_rss_mb": 353.718272,
+     "solver_identical": true,
+     "wall_s_kaggle": 41.20044295399998,
+     "wall_s_local": 81.18119178800043,
+     "within_tol": {
+      "downforce_n": true,
+      "drag_n": true
+     }
+    },
+    "frm_D0_interface_offset_minus_17p": {
+     "coefficient_dat_bitwise": true,
+     "difference": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "mesh_fields_differing": [],
+     "pass": true,
+     "peak_rss_mb": 353.734656,
+     "solver_identical": true,
+     "wall_s_kaggle": 39.74520440600003,
+     "wall_s_local": 115.64731630200004,
+     "within_tol": {
+      "downforce_n": true,
+      "drag_n": true
+     }
+    },
+    "frm_D0_interface_offset_plus_17m": {
+     "coefficient_dat_bitwise": true,
+     "difference": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "mesh_fields_differing": [],
+     "pass": true,
+     "peak_rss_mb": 339.300352,
+     "solver_identical": true,
+     "wall_s_kaggle": 39.74616357000002,
+     "wall_s_local": 77.69141724399924,
+     "within_tol": {
+      "downforce_n": true,
+      "drag_n": true
+     }
+    },
+    "frm_D0_interface_offset_plus_17p": {
+     "coefficient_dat_bitwise": true,
+     "difference": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "mesh_fields_differing": [],
+     "pass": true,
+     "peak_rss_mb": 339.267584,
+     "solver_identical": true,
+     "wall_s_kaggle": 40.84814784499997,
+     "wall_s_local": 114.36089817700031,
+     "within_tol": {
+      "downforce_n": true,
+      "drag_n": true
+     }
+    },
+    "frm_D1_filtered_seed11_minus_17m": {
+     "coefficient_dat_bitwise": true,
+     "difference": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "mesh_fields_differing": [],
+     "pass": true,
+     "peak_rss_mb": 361.971712,
+     "solver_identical": true,
+     "wall_s_kaggle": 40.096190544000024,
+     "wall_s_local": 77.63625016100013,
+     "within_tol": {
+      "downforce_n": true,
+      "drag_n": true
+     }
+    },
+    "frm_D1_filtered_seed11_minus_17p": {
+     "coefficient_dat_bitwise": true,
+     "difference": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "mesh_fields_differing": [],
+     "pass": true,
+     "peak_rss_mb": 361.967616,
+     "solver_identical": true,
+     "wall_s_kaggle": 41.30229154,
+     "wall_s_local": 117.94449638599963,
+     "within_tol": {
+      "downforce_n": true,
+      "drag_n": true
+     }
+    },
+    "frm_D1_filtered_seed11_plus_17m": {
+     "coefficient_dat_bitwise": true,
+     "difference": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "mesh_fields_differing": [],
+     "pass": true,
+     "peak_rss_mb": 360.415232,
+     "solver_identical": true,
+     "wall_s_kaggle": 40.84631952699999,
+     "wall_s_local": 78.48513174300024,
+     "within_tol": {
+      "downforce_n": true,
+      "drag_n": true
+     }
+    },
+    "frm_D1_filtered_seed11_plus_17p": {
+     "coefficient_dat_bitwise": true,
+     "difference": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "mesh_fields_differing": [],
+     "pass": true,
+     "peak_rss_mb": 360.419328,
+     "solver_identical": true,
+     "wall_s_kaggle": 43.209915292000005,
+     "wall_s_local": 110.67513117500039,
+     "within_tol": {
+      "downforce_n": true,
+      "drag_n": true
+     }
+    },
+    "frm_D2_filtered_seed2026_minus_17m": {
+     "coefficient_dat_bitwise": true,
+     "difference": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "mesh_fields_differing": [],
+     "pass": true,
+     "peak_rss_mb": 362.901504,
+     "solver_identical": true,
+     "wall_s_kaggle": 41.854715043000056,
+     "wall_s_local": 74.55072786599976,
+     "within_tol": {
+      "downforce_n": true,
+      "drag_n": true
+     }
+    },
+    "frm_D2_filtered_seed2026_minus_17p": {
+     "coefficient_dat_bitwise": true,
+     "difference": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "mesh_fields_differing": [],
+     "pass": true,
+     "peak_rss_mb": 362.913792,
+     "solver_identical": true,
+     "wall_s_kaggle": 39.94751735700004,
+     "wall_s_local": 106.99539329799973,
+     "within_tol": {
+      "downforce_n": true,
+      "drag_n": true
+     }
+    },
+    "frm_D2_filtered_seed2026_plus_17m": {
+     "coefficient_dat_bitwise": true,
+     "difference": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "mesh_fields_differing": [],
+     "pass": true,
+     "peak_rss_mb": 362.94656,
+     "solver_identical": true,
+     "wall_s_kaggle": 41.144902753999986,
+     "wall_s_local": 64.17435415399996,
+     "within_tol": {
+      "downforce_n": true,
+      "drag_n": true
+     }
+    },
+    "frm_D2_filtered_seed2026_plus_17p": {
+     "coefficient_dat_bitwise": true,
+     "difference": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "mesh_fields_differing": [],
+     "pass": true,
+     "peak_rss_mb": 362.94656,
+     "solver_identical": true,
+     "wall_s_kaggle": 41.04763788499997,
+     "wall_s_local": 106.25794354899972,
+     "within_tol": {
+      "downforce_n": true,
+      "drag_n": true
+     }
+    },
+    "frm_baseline_17m": {
+     "coefficient_dat_bitwise": true,
+     "difference": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "mesh_fields_differing": [],
+     "pass": true,
+     "peak_rss_mb": 353.538048,
+     "solver_identical": true,
+     "wall_s_kaggle": 39.28943465100008,
+     "wall_s_local": 97.56800679499975,
+     "within_tol": {
+      "downforce_n": true,
+      "drag_n": true
+     }
+    },
+    "frm_baseline_17p": {
+     "coefficient_dat_bitwise": true,
+     "difference": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "mesh_fields_differing": [],
+     "pass": true,
+     "peak_rss_mb": 355.643392,
+     "solver_identical": true,
+     "wall_s_kaggle": 40.498487356,
+     "wall_s_local": 130.8770851019999,
+     "within_tol": {
+      "downforce_n": true,
+      "drag_n": true
+     }
+    }
+   },
+   "difference_discrepancy": {
+    "downforce_n:D0_interface_offset(plus-minus)/2:17m": 0.0,
+    "downforce_n:D0_interface_offset(plus-minus)/2:17p": 0.0,
+    "downforce_n:D0_interface_offset_minus-baseline:17m": 0.0,
+    "downforce_n:D0_interface_offset_minus-baseline:17p": 0.0,
+    "downforce_n:D0_interface_offset_plus-baseline:17m": 0.0,
+    "downforce_n:D0_interface_offset_plus-baseline:17p": 0.0,
+    "downforce_n:D1_filtered_seed11(plus-minus)/2:17m": 0.0,
+    "downforce_n:D1_filtered_seed11(plus-minus)/2:17p": 0.0,
+    "downforce_n:D1_filtered_seed11_minus-baseline:17m": 0.0,
+    "downforce_n:D1_filtered_seed11_minus-baseline:17p": 0.0,
+    "downforce_n:D1_filtered_seed11_plus-baseline:17m": 0.0,
+    "downforce_n:D1_filtered_seed11_plus-baseline:17p": 0.0,
+    "downforce_n:D2_filtered_seed2026(plus-minus)/2:17m": 0.0,
+    "downforce_n:D2_filtered_seed2026(plus-minus)/2:17p": 0.0,
+    "downforce_n:D2_filtered_seed2026_minus-baseline:17m": 0.0,
+    "downforce_n:D2_filtered_seed2026_minus-baseline:17p": 0.0,
+    "downforce_n:D2_filtered_seed2026_plus-baseline:17m": 0.0,
+    "downforce_n:D2_filtered_seed2026_plus-baseline:17p": 0.0,
+    "drag_n:D0_interface_offset(plus-minus)/2:17m": 0.0,
+    "drag_n:D0_interface_offset(plus-minus)/2:17p": 0.0,
+    "drag_n:D0_interface_offset_minus-baseline:17m": 0.0,
+    "drag_n:D0_interface_offset_minus-baseline:17p": 0.0,
+    "drag_n:D0_interface_offset_plus-baseline:17m": 0.0,
+    "drag_n:D0_interface_offset_plus-baseline:17p": 0.0,
+    "drag_n:D1_filtered_seed11(plus-minus)/2:17m": 0.0,
+    "drag_n:D1_filtered_seed11(plus-minus)/2:17p": 0.0,
+    "drag_n:D1_filtered_seed11_minus-baseline:17m": 0.0,
+    "drag_n:D1_filtered_seed11_minus-baseline:17p": 0.0,
+    "drag_n:D1_filtered_seed11_plus-baseline:17m": 0.0,
+    "drag_n:D1_filtered_seed11_plus-baseline:17p": 0.0,
+    "drag_n:D2_filtered_seed2026(plus-minus)/2:17m": 0.0,
+    "drag_n:D2_filtered_seed2026(plus-minus)/2:17p": 0.0,
+    "drag_n:D2_filtered_seed2026_minus-baseline:17m": 0.0,
+    "drag_n:D2_filtered_seed2026_minus-baseline:17p": 0.0,
+    "drag_n:D2_filtered_seed2026_plus-baseline:17m": 0.0,
+    "drag_n:D2_filtered_seed2026_plus-baseline:17p": 0.0
+   },
+   "differences_within": true,
+   "mean_bias": {
+    "downforce_n": 0.0,
+    "drag_n": 0.0
+   },
+   "pair_mean_contrasts": {
+    "downforce_n:D0_interface_offset": {
+     "discrepancy": 0.0,
+     "kaggle": 0.0037185068089272133,
+     "local": 0.0037185068089272133,
+     "se_32_phase": 7.203241709215734e-05
+    },
+    "downforce_n:D1_filtered_seed11": {
+     "discrepancy": 0.0,
+     "kaggle": 0.00011587612258689983,
+     "local": 0.00011587612258689983,
+     "se_32_phase": 7.203241709215734e-05
+    },
+    "downforce_n:D2_filtered_seed2026": {
+     "discrepancy": 0.0,
+     "kaggle": -0.00035845938272293515,
+     "local": -0.00035845938272293515,
+     "se_32_phase": 7.203241709215734e-05
+    },
+    "drag_n:D0_interface_offset": {
+     "discrepancy": 0.0,
+     "kaggle": -0.0045432022751343,
+     "local": -0.0045432022751343,
+     "se_32_phase": 2.5119794437809924e-05
+    },
+    "drag_n:D1_filtered_seed11": {
+     "discrepancy": 0.0,
+     "kaggle": -1.3587885229718322e-05,
+     "local": -1.3587885229718322e-05,
+     "se_32_phase": 2.5119794437809924e-05
+    },
+    "drag_n:D2_filtered_seed2026": {
+     "discrepancy": 0.0,
+     "kaggle": -0.0003879141167086181,
+     "local": -0.0003879141167086181,
+     "se_32_phase": 2.5119794437809924e-05
+    }
+   },
+   "pass": true,
+   "tolerance_bias": {
+    "downforce_n": 2.2275000000000003e-05,
+    "drag_n": 3.9375e-06
+   },
+   "tolerance_case": {
+    "downforce_n": 5.7625933673725876e-05,
+    "drag_n": 2.009583555024794e-05
+   },
+   "tolerance_contrast": {
+    "downforce_n": 2.2275000000000003e-05,
+    "drag_n": 7.535938331342977e-06
+   }
+  },
+  "U3_v18_mesh_replay": {
+   "cases": {
+    "u3_v18__D0_p3_33p": {
+     "agrees": true,
+     "differing": [],
+     "solver_identical": true
+    },
+    "u3_v18__parent_33p": {
+     "agrees": true,
+     "differing": [],
+     "solver_identical": true
+    },
+    "u3_v18__pitch_m3.1_33p": {
+     "agrees": true,
+     "differing": [],
+     "solver_identical": true
+    },
+    "u3_v18__pitch_p1.3_33p": {
+     "agrees": true,
+     "differing": [],
+     "solver_identical": true
+    },
+    "u3_v18__pitch_p3.1_33p": {
+     "agrees": true,
+     "differing": [],
+     "solver_identical": true
+    },
+    "u3_v18__reflex_p29.3_33p": {
+     "agrees": true,
+     "differing": [],
+     "solver_identical": true
+    },
+    "u3_v18__roll_p25_33p": {
+     "agrees": true,
+     "differing": [],
+     "solver_identical": true
+    },
+    "u3_v18__s050_m5_33p": {
+     "agrees": true,
+     "differing": [],
+     "solver_identical": true
+    }
+   },
+   "compared": 8,
+   "extra_local_ids": [],
+   "kaggle_os_codename": "noble",
+   "pass": true
+  },
+  "U4_v18_forces_blinded": {
+   "bias_within": {
+    "downforce_n": true,
+    "drag_n": true
+   },
+   "bitwise": true,
+   "cases": {
+    "u3_v18__D0_p3_33p": {
+     "abs_discrepancy": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "coefficient_dat_bitwise": true,
+     "completed": true,
+     "local_runs_identical": true,
+     "within_tol": true
+    },
+    "u3_v18__parent_33p": {
+     "abs_discrepancy": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "coefficient_dat_bitwise": true,
+     "completed": true,
+     "local_runs_identical": true,
+     "within_tol": true
+    },
+    "u3_v18__pitch_m3.1_33p": {
+     "abs_discrepancy": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "coefficient_dat_bitwise": true,
+     "completed": true,
+     "local_runs_identical": true,
+     "within_tol": true
+    },
+    "u3_v18__pitch_p1.3_33p": {
+     "abs_discrepancy": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "coefficient_dat_bitwise": true,
+     "completed": true,
+     "local_runs_identical": true,
+     "within_tol": true
+    },
+    "u3_v18__pitch_p3.1_33p": {
+     "abs_discrepancy": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "coefficient_dat_bitwise": true,
+     "completed": true,
+     "local_runs_identical": true,
+     "within_tol": true
+    },
+    "u3_v18__reflex_p29.3_33p": {
+     "abs_discrepancy": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "coefficient_dat_bitwise": true,
+     "completed": true,
+     "local_runs_identical": true,
+     "within_tol": true
+    },
+    "u3_v18__roll_p25_33p": {
+     "abs_discrepancy": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "coefficient_dat_bitwise": true,
+     "completed": true,
+     "local_runs_identical": true,
+     "within_tol": true
+    },
+    "u3_v18__s050_m5_33p": {
+     "abs_discrepancy": {
+      "downforce_n": 0.0,
+      "drag_n": 0.0
+     },
+     "coefficient_dat_bitwise": true,
+     "completed": true,
+     "local_runs_identical": true,
+     "within_tol": true
+    }
+   },
+   "determinism_pass": true,
+   "differences_within": true,
+   "max_abs_difference_discrepancy": {
+    "downforce_n": 0.0,
+    "drag_n": 0.0
+   },
+   "mean_bias_abs": {
+    "downforce_n": 0.0,
+    "drag_n": 0.0
+   },
+   "pass": true
+  },
+  "verdict": "LOCAL_ENV_PASS_BITWISE"
+ },
+ "comparator_sha256": "41c6ff987e6d369761b5089dd34ce5d4fae2796688709a6d066d2541845f6715",
+ "freeze_sha256": "29429f6d28c684df8a07eb7be937857be9cffd1a2d8ae57776f35c65e6fd606e",
+ "qualification_flags": "unchanged (all false); environment evidence only",
+ "registration": "docs/local_openfoam_env_gate_2026_10_20.md"
+}

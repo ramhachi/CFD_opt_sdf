@@ -1,0 +1,199 @@
+{
+  "evidence_class": "verbatim_registered_rows_for_two_terminal_counterexamples",
+  "rows": {
+    "W40_th1_q0": {
+      "candidate": {
+        "composite": "pass",
+        "p1": {
+          "candidate_margin_m": 0.1772899478673935,
+          "parent_margin_m": 0.1772899478673935,
+          "status": "pass"
+        },
+        "p2": {
+          "candidate_components": 1,
+          "empty_masks": [
+            "fixed_solid",
+            "forbidden",
+            "root"
+          ],
+          "events": [],
+          "parent_components": 1,
+          "statuses": {
+            "component_connectivity": "pass",
+            "mask_preservation": "pass",
+            "topology_change_classification": "pass"
+          }
+        },
+        "r0": {
+          "solid": 0.025,
+          "status": "fail",
+          "void": null
+        },
+        "r3": {
+          "solid": 0.023385358667337135,
+          "status": "pass",
+          "void": 0.00625
+        }
+      },
+      "coarse_components": 1,
+      "expectation": "non_pass",
+      "family": "k2_k3_controls",
+      "feature_observables": {
+        "negative_node_in_thin_tip": 12
+      },
+      "field_identity": {
+        "dtype": "<f4",
+        "grid_sha256": "29b7e2e9cdd698421532d20f426f9fb02492519cc07b02af3bbed9899f3fc55f",
+        "mask_fortran_sha256": {
+          "design_mask": "e73afed98a8e322e7ec0c8bd390f0ad7c31fe67d87aba4ef18250a2c2e26a5d9",
+          "fixed_solid_mask": "a71dd7e3b04121a1cc2db72ffa9fbd02aba69171ffa464cdfc0cabce9a359b0f",
+          "forbidden_mask": "a71dd7e3b04121a1cc2db72ffa9fbd02aba69171ffa464cdfc0cabce9a359b0f",
+          "root_mask": "a71dd7e3b04121a1cc2db72ffa9fbd02aba69171ffa464cdfc0cabce9a359b0f"
+        },
+        "origin_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "parent_fortran_sha256": "30ceb72e92532485bfc13b107a73875d7c6c832551fb54801751181809672934",
+        "phi_fortran_sha256": "30ceb72e92532485bfc13b107a73875d7c6c832551fb54801751181809672934",
+        "shape": [
+          27,
+          27,
+          27
+        ],
+        "spacing_m": 0.025,
+        "spec_sha256": "8dfbfab316aeda27b4b9162f5ef87ac3b41a30bb73bda0e24a11cb15041053d3"
+      },
+      "halo": {
+        "candidate": true,
+        "parent": true
+      },
+      "id": "W40_th1_q0",
+      "input_npz": "inputs/W40_th1_q0.npz",
+      "input_npz_sha256": "dd47bdb74af59a33b418caefde82bc9696e8512da09d50ee2e66696bb435fc7e",
+      "kind": "base",
+      "origin_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parent_kind": "identity",
+      "refined_components": 1,
+      "sign_body_hashes": {
+        "solid": "19be6a331f370bfb5369d33559a0bf534d87ffa0b97ada6f32e2c778c59826f7",
+        "void": "97d69ecebeadf71b0801faba504b65eb996164545d8aea5f68c1a68e30cc7fce"
+      },
+      "spacing_m": 0.025,
+      "spec": {
+        "build": "analytic",
+        "family": "k2_k3_controls",
+        "field": "W40",
+        "id": "W40_th1_q0",
+        "parent_field": "identity",
+        "phase": [
+          0.125,
+          0.1875,
+          0.3125
+        ],
+        "theta_deg": 45.0
+      }
+    },
+    "T1_th0_q0": {
+      "candidate": {
+        "composite": "fail",
+        "p1": {
+          "candidate_margin_m": 0.18437500298023224,
+          "parent_margin_m": 0.18437500298023224,
+          "status": "pass"
+        },
+        "p2": {
+          "candidate_components": 1,
+          "empty_masks": [
+            "fixed_solid",
+            "forbidden",
+            "root"
+          ],
+          "events": [],
+          "parent_components": 1,
+          "statuses": {
+            "component_connectivity": "pass",
+            "mask_preservation": "pass",
+            "topology_change_classification": "pass"
+          }
+        },
+        "r0": {
+          "solid": 0.025,
+          "status": "fail",
+          "void": null
+        },
+        "r3": {
+          "solid": "inf",
+          "status": "fail",
+          "void": 0.0
+        }
+      },
+      "coarse_components": 1,
+      "expectation": "pass_or_unmeasured",
+      "family": "k2_k3_controls",
+      "feature_observables": null,
+      "field_identity": {
+        "dtype": "<f4",
+        "grid_sha256": "29b7e2e9cdd698421532d20f426f9fb02492519cc07b02af3bbed9899f3fc55f",
+        "mask_fortran_sha256": {
+          "design_mask": "e73afed98a8e322e7ec0c8bd390f0ad7c31fe67d87aba4ef18250a2c2e26a5d9",
+          "fixed_solid_mask": "a71dd7e3b04121a1cc2db72ffa9fbd02aba69171ffa464cdfc0cabce9a359b0f",
+          "forbidden_mask": "a71dd7e3b04121a1cc2db72ffa9fbd02aba69171ffa464cdfc0cabce9a359b0f",
+          "root_mask": "a71dd7e3b04121a1cc2db72ffa9fbd02aba69171ffa464cdfc0cabce9a359b0f"
+        },
+        "origin_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "parent_fortran_sha256": "ceee6c9a4e45d28a77050301ba197a53300c1d639f0bae821f3c46efc8a0cac2",
+        "phi_fortran_sha256": "ceee6c9a4e45d28a77050301ba197a53300c1d639f0bae821f3c46efc8a0cac2",
+        "shape": [
+          27,
+          27,
+          27
+        ],
+        "spacing_m": 0.025,
+        "spec_sha256": "3be46325d1f29141073fc826e7fdb10ae66632e62a462d6efa9debd47398c029"
+      },
+      "halo": {
+        "candidate": true,
+        "parent": true
+      },
+      "id": "T1_th0_q0",
+      "input_npz": "inputs/T1_th0_q0.npz",
+      "input_npz_sha256": "0e632f0253b445c5ebac4e6c478d8a53104ad661a544b784eb4e8728576d52e6",
+      "kind": "base",
+      "origin_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parent_kind": "identity",
+      "refined_components": 1,
+      "sign_body_hashes": {
+        "solid": "2a30ae25e465659c2905d82c68370eee1654763328c7d03817ce3d11a5d5d187",
+        "void": "6a4c1cbc6a36e67bbbc4fb685cf0b26745706f09595e2ad11f20b658eb2a2d86"
+      },
+      "spacing_m": 0.025,
+      "spec": {
+        "build": "analytic",
+        "family": "k2_k3_controls",
+        "field": "T1",
+        "id": "T1_th0_q0",
+        "parent_field": "identity",
+        "phase": [
+          0.125,
+          0.1875,
+          0.3125
+        ],
+        "theta_deg": 0.0
+      }
+    }
+  }
+}

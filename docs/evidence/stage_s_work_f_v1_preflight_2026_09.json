@@ -1,0 +1,114 @@
+{
+  "baseline": {
+    "path": "docs/evidence/stage_s_baseline_v16_v2_2026_09.json",
+    "sha256": "a6d40a5c25d9a4ca44aaf1c4d9a7b667d6d33fcfeed45d4b7e2b3cdb049abed6"
+  },
+  "candidate_stl": {
+    "path": "work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl",
+    "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+  },
+  "case": {
+    "case_dir": "work/stage_s_work_f_v1/baseline/V1",
+    "checks": {
+      "candidate_stl": true,
+      "domain_bounds": true,
+      "flow_case_id": true,
+      "force_patch": true,
+      "force_reference": true,
+      "operating_point": true,
+      "problem_spec_sha256": true,
+      "turbulence_model": true,
+      "voxel_size_m": true
+    },
+    "failed_checks": [],
+    "metadata_sha256": "ade1343d88ed48824126b5b7ccee5efbc9746dbaa18cdf7656a69fd4a9efdff1",
+    "pass": true
+  },
+  "claims_not_supported": [
+    "the mesh has not been generated and checkMesh has not run",
+    "simpleFoam is not started and no force or stationarity claim is made"
+  ],
+  "claims_supported": [
+    "the registered v16 iso-0.5 surface renders a body-fitted V1 case whose metadata matches the registered matched-Re laminar operating point and force identities",
+    "the fixed-domain clearance preflight passes for the exact registered STL and voxel size"
+  ],
+  "clearance": {
+    "candidate_bounds_m": {
+      "lower": [
+        -0.6000000238418579,
+        -0.44999998807907104,
+        -0.25
+      ],
+      "upper": [
+        0.550000011920929,
+        0.44999998807907104,
+        0.25
+      ]
+    },
+    "candidate_inside_fixed_box": true,
+    "candidate_stl": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl",
+    "candidate_stl_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "clearances_m": {
+      "bottom (lower_z)": 0.35,
+      "inlet (lower_x)": 0.3999999761581421,
+      "outlet (upper_x)": 1.449999988079071,
+      "sideMax (upper_y)": 0.350000011920929,
+      "sideMin (lower_y)": 0.350000011920929,
+      "top (upper_z)": 0.35
+    },
+    "fixed_domain_binding": {
+      "domain_bounds_m": {
+        "lower": [
+          -1.0,
+          -0.8,
+          -0.6
+        ],
+        "upper": [
+          2.0,
+          0.8,
+          0.6
+        ]
+      },
+      "from_problem_spec_grid_domain_bounds_m": true
+    },
+    "flow_case_id": "matched_re_laminar",
+    "limiting_patch": "bottom (lower_z)",
+    "measured_before_any_mesh_command": true,
+    "minimum_clearance_m": 0.35,
+    "problem_spec_sha256": "25bc379543c96946e7919a7506c312eaf1845781eb7d7bc6a6414072146c80a8",
+    "qualification_profile": {
+      "minimum_clearance_m": 0.25,
+      "profile_id": "stage_v_clearance_v1"
+    },
+    "qualified": true,
+    "reasons": [],
+    "schema_version": 1,
+    "status": "pass",
+    "voxel_size_m": 0.05
+  },
+  "commands": [
+    "#!/usr/bin/env bash",
+    "set -euo pipefail",
+    "blockMesh",
+    "surfaceFeatureExtract || true",
+    "snappyHexMesh -overwrite",
+    "checkMesh -allGeometry -allTopology | tee log.checkMesh"
+  ],
+  "kind": "stage_s_work_f_v1_preflight",
+  "manifest": {
+    "path": "docs/evidence/stage_s_work_f_manifest_2026_09.json",
+    "sha256": "03b109f15e79036fe31a6ec76cd58831f8f834926aee2c0eaf654ea80b47dfdd"
+  },
+  "problem_spec": {
+    "path": "work/stage_sv_laminar/project_matched_re_laminar.yaml",
+    "sha256": "dd704b42021334c4e25261c8a2bbc606c4268a5dcbc4e6df0baf8b48d87b7417"
+  },
+  "schema_version": 1,
+  "source_tree_python_sha256": "a759a4fc4f70894f4e1b3a28bdc2d3f1b87af803c2512b8a8acb41677e94bfd8",
+  "summary": {
+    "mesh_allowed": true,
+    "preflight_pass": true,
+    "solver_allowed": false,
+    "solver_started": false
+  }
+}

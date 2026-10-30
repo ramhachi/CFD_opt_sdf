@@ -1,0 +1,14 @@
+{
+ "round_id": "xfid45_gridphase_x2_r1",
+ "kernel": "ramhachi888/cfd-opt-sdf-xfid-gridphase-x2 version 1",
+ "source_commit": "01a5a46",
+ "terminal_status": "KernelWorkerStatus.ERROR",
+ "solver_started": false,
+ "cause": "runner's OS gate (Ubuntu Jammy only) failed at about 2 s: the Kaggle host image no longer matched the Round 5 environment (the log shows a Python 3.13 image). The observed os-release was not recorded by this runner, so the actual OS is unknown from this run.",
+ "not_a_result": "harness/environment terminal failure; no case ran; not a measurement and not an XFID result",
+ "retained": [
+  "x2_criteria_r1.json (+.sha256)",
+  "ERROR.json",
+  "kernel_log.json"
+ ]
+}

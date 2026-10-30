@@ -1,0 +1,107 @@
+{
+  "all_scheduled_state_artifacts_hash_verified": true,
+  "audit_captured_at_utc": "2026-10-05T05:11:19+00:00",
+  "audit_kind": "fd08_calibration_kernel_terminal_host_audit",
+  "backend_runtime_observed": {
+    "driver_version_recorded_not_gated": "580.178.04",
+    "gpu_inventory_path": "nvidia_smi.csv",
+    "gpu_inventory_sha256": "27cb0034ff218a45a5f23c5c82151c9ab06507305619c4c6513fe3c52a6c5df0",
+    "gpu_rows": [
+      [
+        "0",
+        "Tesla T4",
+        "GPU-ffff0359-1bbd-dd11-8137-90ffc357c4b3",
+        "15360 MiB",
+        "580.178.04"
+      ],
+      [
+        "1",
+        "Tesla T4",
+        "GPU-b9659914-895a-eec0-76b9-2aaba823c249",
+        "15360 MiB",
+        "580.178.04"
+      ]
+    ],
+    "gpu_uuid_policy": "recorded_for_each_kernel; physical T4 UUID is not a cross-kernel equality gate",
+    "julia_smoke_path": "julia_smoke.log",
+    "julia_smoke_sha256": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+    "pinned_smoke_markers": [
+      "W0B_SMOKE_DONE",
+      "CUDA_FUNCTIONAL true",
+      "GPU_COMPUTE_CAPABILITY 7.5.0",
+      "CUDA_DRIVER_VERSION 13.3.0",
+      "CUDA_RUNTIME_VERSION 12.8.0",
+      "JULIA_VERSION 1.12.6",
+      "CUDA_JL_VERSION 6.3.1",
+      "WATERLILY_VERSION 1.8.0",
+      "GPU_NAME Tesla T4",
+      "NO_SOLVER_STEP"
+    ],
+    "selected_gpu_uuid": "GPU-ffff0359-1bbd-dd11-8137-90ffc357c4b3"
+  },
+  "calibration_analyzer_run": false,
+  "calibration_verdict": "NOT_ISSUED",
+  "criteria_sha256_expected": "81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5",
+  "criteria_sha256_in_result": "81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5",
+  "dataset_audit": {
+    "criteria_sha256": "81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5",
+    "dataset_root": "/Users/sota/.codex/worktrees/issue45-root-certifier-integration/work/fd08_candidate_c_calibration_dataset_r4",
+    "inventory_sha256": "593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954",
+    "verified_file_count": 89
+  },
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-calibration",
+  "dataset_version": 4,
+  "expected_state_count": 47,
+  "formal_criteria_registered": false,
+  "interpretation": "Complete T4 calibration artifact terminal. This audit establishes input/output integrity and full inventory only; it does not issue the scientific calibration verdict.",
+  "kaggle_status": "ramhachi888/cfd-opt-sdf-fd08-calibration-kernel has status \"KernelWorkerStatus.COMPLETE\"",
+  "kaggle_status_sha256": "10a2bb7e50a58ec37b0f444439b89b8c8280077148fcd36f00ef9683d18fe4fa",
+  "kernel_execution_elapsed_s": 9297.60132158,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-calibration-kernel",
+  "kernel_version": 3,
+  "last_kaggle_log_event": {
+    "data": "[NbConvertApp] Writing 299150 bytes to __results__.html\n",
+    "stream_name": "stderr",
+    "time": 9306.58993086
+  },
+  "observed_state_count": 47,
+  "observed_state_status_counts": {
+    "COMPLETED": 47
+  },
+  "output_download_capture": "docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/kernel_v3_retry/kaggle_output_download_capture.json",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "registered_source_commit": "b098d1a60992e217fd131e0b02c383bb39b0a8f5",
+  "requested_kernel_timeout_seconds": null,
+  "result_root": "docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/result/fd08_calibration",
+  "runner_all_states_completed": true,
+  "runner_manifest_audit": {
+    "inventory_sha256": "a6ecfc7c658a96242a9cd37b37370612ce5f80ef838ab32fe917e6926f9939bb",
+    "manifest_path": "/Users/sota/.codex/worktrees/issue45-root-certifier-integration/docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/result/fd08_calibration/sha256.json",
+    "manifest_sha256": "348867206996a78ba2763b1c7b784f590b54d86c3808ce9f7ae9ddb321fb35ae",
+    "terminal_marker_path": "/Users/sota/.codex/worktrees/issue45-root-certifier-integration/docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/result/fd08_calibration/DONE",
+    "terminal_marker_sha256": "90ce87131acaaace1a61b8864ec031afc88ebef5132c77907961f1996ebb0f35",
+    "terminal_status_counts": {
+      "COMPLETED": 47
+    },
+    "verified_file_count": 244
+  },
+  "runner_partial": false,
+  "runner_result_sha256": "73cf5bc6b10909bc2d057dadad84541827463a43f93e0bf73697b3d9bab1ca26",
+  "runner_sha256_expected": "508f818d638691f421961103aabd3c6c183b72fab9d128d343f3091ab4d13dd8",
+  "runner_sha256_in_result": "508f818d638691f421961103aabd3c6c183b72fab9d128d343f3091ab4d13dd8",
+  "source_commit_in_result": "b098d1a60992e217fd131e0b02c383bb39b0a8f5",
+  "source_input_inventory_sha256": "bf8b243d8d952e2f0372fceec9c0363573ed696ec7081772c0ba10708ef9b980",
+  "source_inputs_match_registered_commit": true,
+  "state_inventory_exact": true,
+  "submission_record_sha256": "9d5381339fbd5deba922d1a96e881f996d406ca71765619acb3e6f41457cb2db",
+  "terminal_log_events": 59,
+  "terminal_logs_sha256": "759adcd0ad721db513c915e229dbb98f1cb34702527160b6cd6d502e690dffee",
+  "verified_source_input_count": 29
+}

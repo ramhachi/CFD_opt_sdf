@@ -1,0 +1,36 @@
+{
+  "cd_analytic": 0.8795874957661115,
+  "cd_candidate_c": 0.8776753568341346,
+  "cd_relative_difference": 0.0021739041780164175,
+  "evidence": "docs/evidence/candidate_c_w2a_sphere_cpu_result_2026_10_round4.json",
+  "evidence_class": "inherited_W2a_capability_and_numerical",
+  "evidence_sha256": "7de79ab8f7d3daf0633fb0d038f775a4dd457a79c316024deeadd72297ff41a7",
+  "gate_id": "sdf_native_w2a_candidate_c_sphere_cpu_2026_10_round4",
+  "gates_passed": 11,
+  "qualification_scope": "registered CPU sphere fixture only; no production, mass-conservation, target-physics, W3-C, or W4-C claim",
+  "repeat_difference": 0.0,
+  "stationarity": {
+    "analytic": 5.955405001453889e-08,
+    "analytic_repeat": 5.955405001453889e-08,
+    "candidate_c": 1.9315632653352295e-07
+  },
+  "status": "registered",
+  "steps": {
+    "analytic": 2246,
+    "analytic_repeat": 2246,
+    "candidate_c": 2242,
+    "grid_upstream": 2242
+  },
+  "wall_seconds": {
+    "analytic": 253.9950659275055,
+    "analytic_repeat": 257.8469820022583,
+    "candidate_c": 441.6617331504822,
+    "grid_upstream": 398.5589461326599
+  },
+  "window_mean_drag": {
+    "analytic": 88.4257796764243,
+    "analytic_repeat": 88.4257796764243,
+    "candidate_c": 88.23355050454136,
+    "grid_upstream": 88.23353781418075
+  }
+}

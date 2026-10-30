@@ -1,0 +1,95 @@
+{
+  "artifact_id": "pq4_profile_calibration_2026_09",
+  "evidence_class": "numerical_metric_calibration",
+  "issue": "PQ4 extraction profile v1 calibration on analytic ground truth",
+  "profile_registered_before_this_measurement": {
+    "profile_id": "extraction_qualification_v1",
+    "surface_distance_max_m": 0.05,
+    "surface_distance_rms_max_m": 0.025
+  },
+  "method": "binary analytic occupancy -> handoff at 0.5 -> qualification surface distance",
+  "rows": [
+    {
+      "shape_id": "box_bluff03",
+      "surface_distance_max_m": 0.07071067811865477,
+      "surface_distance_rms_m": 0.04762896722078403,
+      "surface_distance_cells": 1.4142135623730951,
+      "feature_shrink_voxels": 0.0,
+      "ready_for_stage_s_v1": false,
+      "reasons": [
+        "surface_distance_exceeds_profile",
+        "surface_distance_rms_exceeds_profile"
+      ],
+      "watertight": true
+    },
+    {
+      "shape_id": "plate_a20_nd",
+      "surface_distance_max_m": 0.07071067811865477,
+      "surface_distance_rms_m": 0.04116934847963092,
+      "surface_distance_cells": 1.4142135623730951,
+      "feature_shrink_voxels": 0.0,
+      "ready_for_stage_s_v1": false,
+      "reasons": [
+        "surface_distance_exceeds_profile",
+        "surface_distance_rms_exceeds_profile"
+      ],
+      "watertight": true
+    },
+    {
+      "shape_id": "wing_camber_bent",
+      "surface_distance_max_m": 0.08660254037844388,
+      "surface_distance_rms_m": 0.04453181679167063,
+      "surface_distance_cells": 1.7320508075688774,
+      "feature_shrink_voxels": 0.0,
+      "ready_for_stage_s_v1": false,
+      "reasons": [
+        "surface_distance_exceeds_profile",
+        "surface_distance_rms_exceeds_profile"
+      ],
+      "watertight": true
+    },
+    {
+      "shape_id": "wing_two_element",
+      "surface_distance_max_m": 0.07071067811865477,
+      "surface_distance_rms_m": 0.047016923899856816,
+      "surface_distance_cells": 1.4142135623730951,
+      "feature_shrink_voxels": 0.0,
+      "ready_for_stage_s_v1": false,
+      "reasons": [
+        "surface_distance_exceeds_profile",
+        "surface_distance_rms_exceeds_profile"
+      ],
+      "watertight": true
+    }
+  ],
+  "metric_floor": {
+    "max_of_max_m": 0.08660254037844388,
+    "max_of_rms_m": 0.04762896722078403,
+    "voxel_m": 0.05
+  },
+  "findings": [
+    "the metric reports the marching-cubes-vs-voxel-material deviation for a perfect binary field",
+    "the v1 max threshold equals one voxel; shapes whose contour deviates by more than one voxel fail"
+  ],
+  "decision": {
+    "v1_below_metric_floor": true,
+    "v1_thresholds_voxels": {
+      "max": 1.0,
+      "rms": 0.5
+    },
+    "measured_floor_voxels": {
+      "max": 1.73,
+      "rms": 0.96
+    },
+    "registered_profile_v2": {
+      "profile_id": "extraction_qualification_v2",
+      "surface_distance_max_m": 0.1,
+      "surface_distance_rms_max_m": 0.0625,
+      "justification": "v2 sits above the analytic ground-truth floor (max 2.0 voxels, RMS 1.25 voxels)"
+    },
+    "registered_before_candidate_rejudgment": true
+  },
+  "claims_not_supported": [
+    "no candidate verdict is changed by this calibration"
+  ]
+}

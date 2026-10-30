@@ -1,0 +1,130 @@
+{
+  "environment": {
+    "architecture": "amd64",
+    "foam_version": "OpenFOAM-v2512",
+    "observed_reference_os_version": "22.04.5",
+    "openfoam_family": "OpenCFD v2512",
+    "os_id": "ubuntu",
+    "package_version": "2512.0-2",
+    "version_codename": "jammy"
+  },
+  "evidence_class": "environment_reproduction_contract",
+  "fixture": {
+    "candidate_stl_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "control_dict_end_time": 3000,
+    "design_domain_stl_sha256": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446",
+    "force_reference": {
+      "area_m2": 0.64,
+      "force_n_per_coefficient": 0.32,
+      "length_m": 0.8,
+      "rho_kg_m3": 1.0,
+      "speed_mps": 1.0
+    },
+    "grid": {
+      "origin_m": [
+        -2.5,
+        -1.2,
+        -0.9
+      ],
+      "shape": [
+        101,
+        49,
+        37
+      ],
+      "spacing_m": 0.05
+    },
+    "historical_reference": {
+      "archive_commit": "aa2e9d5f702044419c2a63a1eeea52fb421ab5af",
+      "archive_ref": "archive/pre-openfoam-removal-2026-09-29",
+      "case_metadata_sha256": "68b572a86bb7e400421665702c791dea2c86d9bd161f7b69f9058077932e2766",
+      "case_qualification_sha256": "a6a051bc23536f8ac0123ffc49d939d007502f956586519355fa41fe34515a6a",
+      "domain_comparison_result_sha256": "13374c722b4993f941ca6487a305fe2f371551d2eed152f744ef016f5b18b5bf",
+      "physical_profile_sha256": "a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca",
+      "problem_id": "stage_sv_v2_expanded_domain_v2",
+      "result_manifest_sha256": "6fe9168be5b40295c303a26ade0c13bc23ca23eedc4ffebabfc0f4d0a80cae6f",
+      "result_run_manifest_sha256": "1e419a37c3c0ec51cfdcf8d2ca497faffe4cc0179560d54f927a29b06c76d4b0",
+      "result_sha256": "8871255838b9666683581a3cb50d949764f6a4b27fb3dab24d6f6f52b4a75e66"
+    },
+    "input_file_sha256": {
+      "case_template/0/U": "ac791673b04d347f0a8c3b93d04eed5e6cc47321f2c9c48c5cfd4e767bf116c1",
+      "case_template/0/p": "8372855fe3a2144838e945c723d3f6ce0b277730ab7868e35cba047bc937c987",
+      "case_template/Allrun": "3d4b4d1b6429c77b44dfa888d8a810b495eeea94a3bfd766645c3eced7280d59",
+      "case_template/constant/transportProperties": "e44501f41494cdb653120ea5f8c6a64baa52bd26ca2f625427bf71ff827ee390",
+      "case_template/constant/triSurface/allowed_design_domain.stl": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446",
+      "case_template/constant/triSurface/design_candidate.stl": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+      "case_template/constant/turbulenceProperties": "f9a5d6d76de0f28e1112f690f27d221361181f8bd7979de823914eefe0e0f927",
+      "case_template/system/blockMeshDict": "903395068edc527f3cb44af6165b1ac20f759b7876e5f59145ac3b932c450330",
+      "case_template/system/controlDict": "640e101f1c292f1e3a84d848ecf24f602b637de970fb284f15cb50ff44cb7a9b",
+      "case_template/system/fvSchemes": "aaf8a02b7e65dae5e7a009509546cebd472caeebf65aff4f69e3b6cef96f3a2e",
+      "case_template/system/fvSolution": "007ddea730c1268410e406ecc83a82300d3840c353f0a6ce1ae2fbe9a4dfb643",
+      "case_template/system/snappyHexMeshDict": "e8fdf720a2af997828c9d73d1f860ac3389b17011123f28427a8cc6e0eeb0a43",
+      "case_template/system/surfaceFeatureExtractDict": "0f7c017a9edc5dd0819368089e35b59f8da84587432ab53facdb46e48fe0c4f8",
+      "fixtures/physical_profile.yaml": "6e41d2bbe9ac6a272f122f7e2556fe2ae9904b0572415eb548f438406885278e"
+    },
+    "physical_profile_sha256": "a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca",
+    "problem_id": "stage_sv_v2_expanded_domain_v2"
+  },
+  "gates": {
+    "force_stationarity": {
+      "absolute_drift_max": 0.001,
+      "absolute_std_max": 0.001,
+      "minimum_rows": 20,
+      "relative_drift_max": 0.01,
+      "relative_std_max": 0.01,
+      "tail_fraction": 0.25
+    },
+    "mesh": {
+      "allowed_failed_check_marker": "Concave cells",
+      "maximum_concave_cell_fraction": 0.08
+    },
+    "normalized_mass_imbalance_max": 0.0001,
+    "reproduction": {
+      "downforce_coefficient_absolute_tolerance": 0.005,
+      "downforce_coefficient_reference": 0.7565514657808219,
+      "drag_coefficient_reference": 1.1693991415068494,
+      "drag_coefficient_relative_tolerance": 0.02,
+      "tolerance_source": "explicit conservative reproduction acceptance envelope adopted before measurement from the registered v16 domain-comparison limits (Cd relative delta <= 0.02; downforce-coefficient absolute delta <= 0.005); this ceiling is not a measured environment uncertainty or a same-environment repeatability estimate"
+    },
+    "residual_final_max": {
+      "Ux": 1e-06,
+      "Uy": 1e-06,
+      "Uz": 1e-06,
+      "p": 1e-05
+    }
+  },
+  "immutable": true,
+  "kernel_metadata_contract": {
+    "code_file": "runner.py",
+    "competition_sources": [],
+    "dataset_sources": [],
+    "enable_gpu": false,
+    "enable_internet": true,
+    "id": "ramhachi888/cfd-opt-sdf-xfid-v16-openfoam-reproduction",
+    "is_private": true,
+    "kernel_sources": [],
+    "kernel_type": "script",
+    "language": "python",
+    "model_sources": [],
+    "title": "CFD Opt SDF XFID v16 OpenFOAM Reproduction"
+  },
+  "kind": "xfid_openfoam_v16_environment_reproduction",
+  "predecessor": {
+    "criteria_sha256": "5718d0c3013a826504e4f8389d35958a67e3b10c3093954ac8958d9a2ef1ac56",
+    "error_json_sha256": "6b7f3bf4c04c728d49fff69a995881530459b0c5e45190d714c38d4ffb6ecc77",
+    "kernel": "ramhachi888/cfd-opt-sdf-xfid-v16-openfoam-reproduction/1",
+    "package_lock_sha256": "8bcf141db29d18800a55a70bca93175a37465ac18494e473efd32985317c7340",
+    "round_id": "v16_environment_reproduction_r2_preexecution",
+    "solver_started": false,
+    "terminal_status": "KernelWorkerStatus.ERROR"
+  },
+  "prohibited_claims": [
+    "WaterLily/OpenFOAM response agreement",
+    "formal XFID verdict",
+    "grid-independent downforce",
+    "high-Re or full-vehicle FSAE qualification"
+  ],
+  "registered_before_run": true,
+  "registration_note": "Round 2 on exact Kaggle kernel version 1 failed before apt/meshing/solver because observed Ubuntu 22.04.5 Jammy amd64 did not match the Noble package lock. Round 3 binds official Jammy packages in the same OpenCFD v2512 2512.0-2 family. Numerical reproduction criteria, archive fixtures, meshing and solver settings are unchanged.",
+  "round_id": "v16_environment_reproduction_r3_jammy",
+  "schema_version": 2
+}

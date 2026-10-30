@@ -1,0 +1,378 @@
+{
+  "canonical_policy_status": "unresolved; no source ProblemSpec/mask binding or successor topology policy registered",
+  "claims_not_supported": [
+    "canonical topology policy qualification or disconnected-component permission",
+    "physical minimum feature width, void width, gap, or domain-clearance qualification",
+    "flow/force, solver, optimization, manufacturing, or shape-update qualification"
+  ],
+  "claims_supported": [
+    "the exact hash-verified canonical v16 SDF state was evaluated by every registered solver-free GEOM-01 gate",
+    "unresolved policy-dependent gates block the aggregate verdict",
+    "component count, gradient-band distribution, export-surface checks, and inherited volume semantics are reported as measurements"
+  ],
+  "contract_id": "sdf_native_geometry_gates_v1",
+  "evidence_class": "solver_free_geometry_contract_and_capability",
+  "flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "geometry_report": {
+    "contract_id": "sdf_native_geometry_gates_v1",
+    "evidence_class": "contract_and_capability",
+    "gates": {
+      "component_connectivity": {
+        "fail_reasons": [],
+        "measured": {
+          "component_root_owners": [],
+          "connectivity": "26-neighbour, node occupancy phi<0",
+          "node_occupancy_components": 1
+        },
+        "status": "unmeasured",
+        "thresholds": {
+          "policy": "sdf_topology_policy_v1@sha256:f2884ecb4b1445dd2e690fa11f497f8293bed474736a06cb31902490f24041b5",
+          "source": "SDFTopologyPolicy/ProblemSpec v2"
+        },
+        "unmeasured_reasons": [
+          "current_state_policy_hash_mismatch",
+          "problem_spec_v2_source",
+          "proposed_state_policy_hash_mismatch",
+          "required_root_groups",
+          "required_root_groups_unresolved",
+          "research_disconnected_component_and_optional_root_policy_not_content_bound"
+        ]
+      },
+      "domain_clearance": {
+        "fail_reasons": [],
+        "measured": {
+          "clearances_m": {
+            "lower_x": 0.4,
+            "lower_y": 0.35000000000000003,
+            "lower_z": 0.35000000000000003,
+            "upper_x": 1.5,
+            "upper_y": 0.3500000000000001,
+            "upper_z": 0.3500000000000001
+          },
+          "domain": "sdf_grid_extent",
+          "min_clearance_m": 0.35000000000000003
+        },
+        "status": "unmeasured",
+        "thresholds": {
+          "min_clearance_m": null
+        },
+        "unmeasured_reasons": [
+          "min_clearance_m_unregistered"
+        ]
+      },
+      "export_surface_integrity": {
+        "fail_reasons": [],
+        "measured": {
+          "voxel_cell_union_proxy": {
+            "fail_reasons": [],
+            "measured": {
+              "cell_occupancy_components": 1,
+              "duplicate_face_count": 0,
+              "expected_volume_m3": 0.12612500000000004,
+              "mesh_volume_m3": 0.12612499964050936,
+              "node_occupancy_components": 1,
+              "non_manifold_edge_count": 0,
+              "triangle_count": 2588,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "status": "pass",
+            "thresholds": {
+              "volume_relative_tolerance": 1e-06
+            },
+            "unmeasured_reasons": []
+          }
+        },
+        "status": "unmeasured",
+        "thresholds": {},
+        "unmeasured_reasons": [
+          "canonical_gridsdf_zero_level_export_mesh_not_supplied"
+        ]
+      },
+      "inter_component_gap": {
+        "fail_reasons": [],
+        "measured": {
+          "cell_occupancy_components": 1,
+          "method": "cell-union cube face distance estimate, 26-neighbour components",
+          "min_gap_m": null
+        },
+        "status": "unmeasured",
+        "thresholds": {
+          "minimum_gap_m": null,
+          "sampling_resolution_guard_m": 0.05,
+          "source": "SDFTopologyPolicy/ProblemSpec v2"
+        },
+        "unmeasured_reasons": [
+          "minimum_gap_m_unregistered"
+        ]
+      },
+      "mask_preservation": {
+        "fail_reasons": [],
+        "measured": {
+          "cells": {
+            "design": 12495,
+            "fixed_solid": 0,
+            "forbidden": 0,
+            "root": 0
+          },
+          "vacuous_masks": [
+            "fixed_solid",
+            "forbidden",
+            "root"
+          ]
+        },
+        "status": "unmeasured",
+        "thresholds": {},
+        "unmeasured_reasons": [
+          "source_problem_spec_and_root_mask_binding_unregistered"
+        ]
+      },
+      "min_feature_width": {
+        "fail_reasons": [],
+        "measured": {
+          "method": "2*EDT ridge minimum, 4x supersampled cell occupancy",
+          "min_solid_width_m": 0.05,
+          "min_void_width_m": 0.05
+        },
+        "status": "unmeasured",
+        "thresholds": {
+          "minimum_solid_width_m": null,
+          "minimum_void_width_m": null,
+          "sampling_guard_m": 0.0125,
+          "source": "SDFTopologyPolicy/ProblemSpec v2"
+        },
+        "unmeasured_reasons": [
+          "minimum_solid_width_unregistered",
+          "minimum_void_width_unregistered"
+        ]
+      },
+      "near_zero_gradient_band": {
+        "fail_reasons": [],
+        "measured": {
+          "eikonal_band_node_count": 2659,
+          "gradient_norm_median": 0.8660253935578212,
+          "gradient_norm_min": 1.1102230246251565e-15,
+          "gradient_norm_p01": 2.0493193586546012e-08,
+          "gradient_norm_p99": 1.0420107981152562,
+          "low_gradient_band_m": 0.05,
+          "low_gradient_band_node_count": 2659,
+          "max_abs_gradient_deviation": 0.9999999999999989,
+          "median_abs_gradient_deviation": 0.13397460790654125,
+          "p95_abs_gradient_deviation": 0.5000001862645108,
+          "prior_descriptive_bins": {
+            "at_or_above_0_25_count": 2546,
+            "below_1e-6_count": 113,
+            "meaning": "descriptive only; not a registered acceptance threshold"
+          }
+        },
+        "status": "unmeasured",
+        "thresholds": {
+          "band_abs_phi_m": 0.05,
+          "low_gradient_norm_floor": null
+        },
+        "unmeasured_reasons": [
+          "low_gradient_norm_floor_unregistered"
+        ]
+      },
+      "sdf_boundary_margin": {
+        "fail_reasons": [],
+        "measured": {
+          "clearances_m": {
+            "lower_x": 0.4,
+            "lower_y": 0.35000000000000003,
+            "lower_z": 0.35000000000000003,
+            "upper_x": 1.5,
+            "upper_y": 0.3500000000000001,
+            "upper_z": 0.3500000000000001
+          },
+          "min_clearance_cells": 7.0
+        },
+        "status": "pass",
+        "thresholds": {
+          "boundary_margin_cells": 1,
+          "source": "contract_structural"
+        },
+        "unmeasured_reasons": []
+      },
+      "sdf_distance_property": {
+        "fail_reasons": [],
+        "measured": {
+          "eikonal_band_node_count": 2659,
+          "gradient_norm_median": 0.8660253935578212,
+          "gradient_norm_min": 1.1102230246251565e-15,
+          "gradient_norm_p01": 2.0493193586546012e-08,
+          "gradient_norm_p99": 1.0420107981152562,
+          "low_gradient_band_m": 0.05,
+          "low_gradient_band_node_count": 2659,
+          "max_abs_gradient_deviation": 0.9999999999999989,
+          "median_abs_gradient_deviation": 0.13397460790654125,
+          "p95_abs_gradient_deviation": 0.5000001862645108,
+          "prior_descriptive_bins": {
+            "at_or_above_0_25_count": 2546,
+            "below_1e-6_count": 113,
+            "meaning": "descriptive only; not a registered acceptance threshold"
+          }
+        },
+        "status": "unmeasured",
+        "thresholds": {
+          "eikonal_median_tolerance": null
+        },
+        "unmeasured_reasons": [
+          "eikonal_median_tolerance_unregistered"
+        ]
+      },
+      "sdf_finite_structure": {
+        "fail_reasons": [],
+        "measured": {
+          "phi_finite": true,
+          "phi_max": 1.713184118270874,
+          "phi_min": -0.05000000447034836
+        },
+        "status": "pass",
+        "thresholds": {},
+        "unmeasured_reasons": []
+      },
+      "surface_self_intersection": {
+        "fail_reasons": [],
+        "measured": {
+          "voxel_cell_union_proxy": {
+            "fail_reasons": [],
+            "measured": {
+              "detector_verdict": "none"
+            },
+            "status": "pass",
+            "thresholds": {},
+            "unmeasured_reasons": []
+          }
+        },
+        "status": "unmeasured",
+        "thresholds": {},
+        "unmeasured_reasons": [
+          "canonical_gridsdf_zero_level_export_mesh_not_supplied"
+        ]
+      },
+      "topology_change_classification": {
+        "fail_reasons": [],
+        "measured": {
+          "component_count": 1,
+          "detected_events": [],
+          "parent_component_count": 1,
+          "parent_kind": "identity"
+        },
+        "status": "unmeasured",
+        "thresholds": {
+          "event_permissions": "unresolved",
+          "source": "successor SDFTopologyPolicy unregistered"
+        },
+        "unmeasured_reasons": [
+          "birth_split_merge_deletion_permissions_unanswered"
+        ]
+      },
+      "volume_semantics": {
+        "fail_reasons": [],
+        "measured": {
+          "node_occupancy_diagnostic_m3": 0.17750000000000005,
+          "sampled_solid_centers": 1009,
+          "sharp_volume_m3": 0.12612500000000004,
+          "sharp_volume_violation_m3": 0.0,
+          "smoothed_constraint_residual": -0.6222978723957695,
+          "smoothed_volume_m3": 0.04763768084408358,
+          "smoothed_volume_role": "diagnostic; not a conservative sharp bound, never gates acceptance"
+        },
+        "status": "pass",
+        "thresholds": {
+          "rule": "V_phi <= limit (registered sharp rule)",
+          "volume_limit_m3": 0.12612500000000004
+        },
+        "unmeasured_reasons": []
+      }
+    },
+    "grid": {
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.6
+      ],
+      "shape": [
+        61,
+        33,
+        25
+      ],
+      "spacing_m": 0.05
+    },
+    "kind": "sdf_native_geometry_gates",
+    "parent_kind": "identity",
+    "parent_state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8",
+    "policy_binding": "sdf_topology_policy_v1@sha256:f2884ecb4b1445dd2e690fa11f497f8293bed474736a06cb31902490f24041b5",
+    "policy_scope": "canonical_unresolved",
+    "policy_source_problem_spec_sha256": null,
+    "schema_version": 1,
+    "state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8",
+    "verdict": {
+      "failed": [],
+      "pass": false,
+      "passed": [
+        "sdf_finite_structure",
+        "sdf_boundary_margin",
+        "volume_semantics"
+      ],
+      "rule": "AND of all gates; unmeasured blocks like fail",
+      "unmeasured": [
+        "sdf_distance_property",
+        "near_zero_gradient_band",
+        "mask_preservation",
+        "component_connectivity",
+        "topology_change_classification",
+        "min_feature_width",
+        "inter_component_gap",
+        "export_surface_integrity",
+        "surface_self_intersection",
+        "domain_clearance"
+      ]
+    }
+  },
+  "input_manifest": {
+    "canonical_gridsdf_zero_level_export_mesh": {
+      "path": null,
+      "sha256": null,
+      "status": "not supplied; downstream Stage V/STL mesh integrity is unresolved"
+    },
+    "canonical_state_archive": {
+      "path": "work/issue_29/canonical_v16/sdf_design_state.npz",
+      "sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe",
+      "state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8"
+    },
+    "contract": {
+      "path": "docs/sdf_native_geometry_gates_contract_v1_2026_10.md",
+      "sha256": "60ec42669c66868715e12cf7c2b359281ec57722b897763986a30c0f559290d1"
+    },
+    "genesis_report": {
+      "path": "docs/evidence/sdf_native_genesis_v16_2026_09.json",
+      "sha256": "3c8e241681c80962a7fd62f1926e382d473ec8e9f3e6b9140bea9600d41cf670"
+    },
+    "preregistration": {
+      "path": "docs/evidence/sdf_native_geometry_gates_v16_prereg_2026_10.json",
+      "sha256": "3f0d3d87f495495a6e236152032f8e75c56d5dec528902b89dfc79eaa7b6b76b"
+    },
+    "runner": {
+      "path": "scripts/sdf_native_geometry_gates_v16_2026_10.py",
+      "sha256": "401be040d02cd889c95dc03528bd19fc4aef49d749f90688bd8db58d6602002d"
+    },
+    "voxel_cell_union_surface": {
+      "sha256": null,
+      "status": "proxy checks are nested in geometry_report and do not qualify canonical export",
+      "type": "in-memory diagnostic surface nets mesh derived from V_phi cell occupancy"
+    }
+  },
+  "kind": "sdf_native_geometry_gates_v16",
+  "physical_feature_limits_status": "unregistered; no limits inferred from grid spacing",
+  "schema_version": 1,
+  "solver_started": false
+}

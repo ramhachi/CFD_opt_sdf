@@ -1,0 +1,703 @@
+{
+  "all_seven_cases_pass": false,
+  "canonicalizer_imported": false,
+  "cases": {
+    "D0_interface_offset_minus": {
+      "candidate_minimum_normal_gradient_dot": 0.17777819203005196,
+      "candidate_orientation_dot_counts": {
+        "negative_or_ambiguous": 0,
+        "positive": 11056
+      },
+      "candidate_ply_sha256": "818f1a31dc45be25b8d5fb6f7265922c925a93be778c909c6bb3beff6170bd79",
+      "candidate_stage_v_stl_metrics": {
+        "area_m2_including_duplicate_faces": 3.125013316515438,
+        "area_m2_unique_positive_area_triangles": 3.125013316515386,
+        "bounds_m": [
+          [
+            -0.6041666865348816,
+            -0.44999998807907104,
+            -0.2541666626930237
+          ],
+          [
+            0.5541666746139526,
+            0.44999998807907104,
+            0.2541666626930237
+          ]
+        ],
+        "connected_component_count_edge_adjacency": 1,
+        "duplicate_face_count": 0,
+        "euler_characteristic_referenced_mesh": 2,
+        "minimum_stage_v_clearance_m": 0.6458333373069763,
+        "non_manifold_edge_count_incidence_not_two": 0,
+        "signed_volume_m3": 0.14538381498932013,
+        "stage_v_clearance_by_axis_m": [
+          1.8958333134651184,
+          0.7500000119209289,
+          0.6458333373069763
+        ],
+        "triangle_count": 11056,
+        "unique_vertex_coordinate_count": 5530,
+        "unsigned_enclosed_volume_m3": 0.14538381498932013,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "candidate_stage_v_stl_sha256": "40604e586ad9a657eeaaa46b3913ddb40061a84e79b929463bfec7d5fea74b5b",
+      "case_id": "D0_interface_offset_minus",
+      "checks": {
+        "all_candidate_faces_follow_positive_sdf_gradient": true,
+        "candidate_ply_and_stage_v_stl_support_match": true,
+        "candidate_positive_area_triangle_support_matches_raw": true,
+        "candidate_vertex_coordinate_set_matches_raw_exactly": true,
+        "duplicate_face_count_zero": true,
+        "non_manifold_edge_count_zero": true,
+        "positive_signed_volume": true,
+        "raw_ply_is_reproduced_by_independent_zero_contour": true,
+        "raw_ply_raw_stl_positive_area_support_matches": true,
+        "result_manifest_candidate_stl_hash_matches": true,
+        "stage_v_clearance_at_least_0p25_m": true,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "exact_zero_grid_node_count": 0,
+      "input_state_sha256": "e7a83328efc9a7a263e54e59fa349e2d57c6cba5dceffff783291056cbc7fd5f",
+      "raw_ply_sha256": "4420631618832eea629e94da2d13a422cd957b376ac105745505d751e188fb02",
+      "raw_stage_v_stl_metrics": {
+        "area_m2_including_duplicate_faces": 3.125013316515438,
+        "area_m2_unique_positive_area_triangles": 3.125013316515386,
+        "bounds_m": [
+          [
+            -0.6041666865348816,
+            -0.44999998807907104,
+            -0.2541666626930237
+          ],
+          [
+            0.5541666746139526,
+            0.44999998807907104,
+            0.2541666626930237
+          ]
+        ],
+        "connected_component_count_edge_adjacency": 1,
+        "duplicate_face_count": 0,
+        "euler_characteristic_referenced_mesh": 2,
+        "minimum_stage_v_clearance_m": 0.6458333373069763,
+        "non_manifold_edge_count_incidence_not_two": 0,
+        "signed_volume_m3": -0.14538381498932013,
+        "stage_v_clearance_by_axis_m": [
+          1.8958333134651184,
+          0.7500000119209289,
+          0.6458333373069763
+        ],
+        "triangle_count": 11056,
+        "unique_vertex_coordinate_count": 5530,
+        "unsigned_enclosed_volume_m3": 0.14538381498932013,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "raw_stl_sha256": "88ab3aed96d97ab188b37368f13ab50e89758ec9ea3ca42556151e131fc6e11d",
+      "stage_v_serialized_vertex_coordinate_hausdorff_distance_m": 0.0,
+      "status": "PASS",
+      "surface_hausdorff_distance_m": 0.0,
+      "vertex_coordinate_hausdorff_distance_m": 0.0
+    },
+    "D0_interface_offset_plus": {
+      "candidate_minimum_normal_gradient_dot": 0.570850324577954,
+      "candidate_orientation_dot_counts": {
+        "negative_or_ambiguous": 0,
+        "positive": 9928
+      },
+      "candidate_ply_sha256": "96ffaaf59644c685675227d5c587faeb2e2fee202b34822384a627356c4f6f32",
+      "candidate_stage_v_stl_metrics": {
+        "area_m2_including_duplicate_faces": 2.8996220498809047,
+        "area_m2_unique_positive_area_triangles": 2.8996220498809118,
+        "bounds_m": [
+          [
+            -0.5958333611488342,
+            -0.44999998807907104,
+            -0.24583333730697632
+          ],
+          [
+            0.5458333492279053,
+            0.44999998807907104,
+            0.24583333730697632
+          ]
+        ],
+        "connected_component_count_edge_adjacency": 1,
+        "duplicate_face_count": 0,
+        "euler_characteristic_referenced_mesh": 2,
+        "minimum_stage_v_clearance_m": 0.6541666626930237,
+        "non_manifold_edge_count_incidence_not_two": 0,
+        "signed_volume_m3": 0.11083000988206769,
+        "stage_v_clearance_by_axis_m": [
+          1.9041666388511658,
+          0.7500000119209289,
+          0.6541666626930237
+        ],
+        "triangle_count": 9928,
+        "unique_vertex_coordinate_count": 4966,
+        "unsigned_enclosed_volume_m3": 0.11083000988206769,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "candidate_stage_v_stl_sha256": "a0d386d516764be35fb1462c85dcfd534ab17ff6cd24b6dfa9d0d67527bf338d",
+      "case_id": "D0_interface_offset_plus",
+      "checks": {
+        "all_candidate_faces_follow_positive_sdf_gradient": true,
+        "candidate_ply_and_stage_v_stl_support_match": true,
+        "candidate_positive_area_triangle_support_matches_raw": true,
+        "candidate_vertex_coordinate_set_matches_raw_exactly": true,
+        "duplicate_face_count_zero": true,
+        "non_manifold_edge_count_zero": true,
+        "positive_signed_volume": true,
+        "raw_ply_is_reproduced_by_independent_zero_contour": true,
+        "raw_ply_raw_stl_positive_area_support_matches": true,
+        "result_manifest_candidate_stl_hash_matches": true,
+        "stage_v_clearance_at_least_0p25_m": true,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "exact_zero_grid_node_count": 0,
+      "input_state_sha256": "de56ae5b73572ac6fecabb81760c83f9b7a65d3894779ed4bfb2a1b732e55683",
+      "raw_ply_sha256": "6cd05f19ade86ca90f25693d6571e7ef0976184b8d38fdf18dd01f56a36d03b0",
+      "raw_stage_v_stl_metrics": {
+        "area_m2_including_duplicate_faces": 2.8996220498809047,
+        "area_m2_unique_positive_area_triangles": 2.8996220498809118,
+        "bounds_m": [
+          [
+            -0.5958333611488342,
+            -0.44999998807907104,
+            -0.24583333730697632
+          ],
+          [
+            0.5458333492279053,
+            0.44999998807907104,
+            0.24583333730697632
+          ]
+        ],
+        "connected_component_count_edge_adjacency": 1,
+        "duplicate_face_count": 0,
+        "euler_characteristic_referenced_mesh": 2,
+        "minimum_stage_v_clearance_m": 0.6541666626930237,
+        "non_manifold_edge_count_incidence_not_two": 0,
+        "signed_volume_m3": -0.11083000988206769,
+        "stage_v_clearance_by_axis_m": [
+          1.9041666388511658,
+          0.7500000119209289,
+          0.6541666626930237
+        ],
+        "triangle_count": 9928,
+        "unique_vertex_coordinate_count": 4966,
+        "unsigned_enclosed_volume_m3": 0.11083000988206769,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "raw_stl_sha256": "a2698a28049ce1532e03297155cffb387674e0cd2f0e513e248e878b7dbefaa1",
+      "stage_v_serialized_vertex_coordinate_hausdorff_distance_m": 0.0,
+      "status": "PASS",
+      "surface_hausdorff_distance_m": 0.0,
+      "vertex_coordinate_hausdorff_distance_m": 0.0
+    },
+    "D1_filtered_seed11_minus": {
+      "candidate_minimum_normal_gradient_dot": 0.0008946784957831189,
+      "candidate_orientation_dot_counts": {
+        "negative_or_ambiguous": 0,
+        "positive": 13276
+      },
+      "candidate_ply_sha256": "d569915f562dc593587846c99cc53fcd08b8b6e90f6eaf5e51cf02daa1fbd58c",
+      "candidate_stage_v_stl_metrics": {
+        "area_m2_including_duplicate_faces": 3.1012483760432192,
+        "area_m2_unique_positive_area_triangles": 3.1012483760432232,
+        "bounds_m": [
+          [
+            -0.6041666865348816,
+            -0.44999998807907104,
+            -0.2541666626930237
+          ],
+          [
+            0.549419641494751,
+            0.44999998807907104,
+            0.25351372361183167
+          ]
+        ],
+        "connected_component_count_edge_adjacency": 2,
+        "duplicate_face_count": 0,
+        "euler_characteristic_referenced_mesh": 2,
+        "minimum_stage_v_clearance_m": 0.6458333373069763,
+        "non_manifold_edge_count_incidence_not_two": 0,
+        "signed_volume_m3": null,
+        "stage_v_clearance_by_axis_m": [
+          1.8958333134651184,
+          0.7500000119209289,
+          0.6458333373069763
+        ],
+        "triangle_count": 13276,
+        "unique_vertex_coordinate_count": 6640,
+        "unsigned_enclosed_volume_m3": null,
+        "watertight": true,
+        "winding_consistent": false
+      },
+      "candidate_stage_v_stl_sha256": "2008850757740f81df27594362bc4e2e65b34b0b7d1ee89e6e6e3bdac114d997",
+      "case_id": "D1_filtered_seed11_minus",
+      "checks": {
+        "all_candidate_faces_follow_positive_sdf_gradient": true,
+        "candidate_ply_and_stage_v_stl_support_match": true,
+        "candidate_positive_area_triangle_support_matches_raw": true,
+        "candidate_vertex_coordinate_set_matches_raw_exactly": true,
+        "duplicate_face_count_zero": true,
+        "non_manifold_edge_count_zero": true,
+        "positive_signed_volume": false,
+        "raw_ply_is_reproduced_by_independent_zero_contour": true,
+        "raw_ply_raw_stl_positive_area_support_matches": true,
+        "result_manifest_candidate_stl_hash_matches": true,
+        "stage_v_clearance_at_least_0p25_m": true,
+        "watertight": true,
+        "winding_consistent": false
+      },
+      "exact_zero_grid_node_count": 0,
+      "input_state_sha256": "b2109466ae483d631ed476a62fd5ae32d5a40ebf325edbfecbfedec76ec454c8",
+      "raw_ply_sha256": "9ce73f7d7ee0b7ce0437d9a8fd66f65c8af87cfc12597d219a27b979e34a3d95",
+      "raw_stage_v_stl_metrics": {
+        "area_m2_including_duplicate_faces": 3.1012483760432192,
+        "area_m2_unique_positive_area_triangles": 3.1012483760432232,
+        "bounds_m": [
+          [
+            -0.6041666865348816,
+            -0.44999998807907104,
+            -0.2541666626930237
+          ],
+          [
+            0.549419641494751,
+            0.44999998807907104,
+            0.25351372361183167
+          ]
+        ],
+        "connected_component_count_edge_adjacency": 2,
+        "duplicate_face_count": 0,
+        "euler_characteristic_referenced_mesh": 2,
+        "minimum_stage_v_clearance_m": 0.6458333373069763,
+        "non_manifold_edge_count_incidence_not_two": 0,
+        "signed_volume_m3": -0.1277648455492176,
+        "stage_v_clearance_by_axis_m": [
+          1.8958333134651184,
+          0.7500000119209289,
+          0.6458333373069763
+        ],
+        "triangle_count": 13276,
+        "unique_vertex_coordinate_count": 6640,
+        "unsigned_enclosed_volume_m3": 0.1277648455492176,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "raw_stl_sha256": "86d2a09ac6deec08b0aa6f656531a93c510f0bfe1a4f45093a7978c0e2da8f26",
+      "stage_v_serialized_vertex_coordinate_hausdorff_distance_m": 0.0,
+      "status": "FAIL",
+      "surface_hausdorff_distance_m": 0.0,
+      "vertex_coordinate_hausdorff_distance_m": 0.0
+    },
+    "D1_filtered_seed11_plus": {
+      "candidate_minimum_normal_gradient_dot": 0.00033084711895076113,
+      "candidate_orientation_dot_counts": {
+        "negative_or_ambiguous": 0,
+        "positive": 13432
+      },
+      "candidate_ply_sha256": "9b5214ccfb7c264329450183b8a3de9919771dba05b0ba9c10d59d5b29b50822",
+      "candidate_stage_v_stl_metrics": {
+        "area_m2_including_duplicate_faces": 3.1304595851890498,
+        "area_m2_unique_positive_area_triangles": 3.1304595851890844,
+        "bounds_m": [
+          [
+            -0.6021321415901184,
+            -0.44999998807907104,
+            -0.2535845935344696
+          ],
+          [
+            0.5509486198425293,
+            0.44999998807907104,
+            0.2536030113697052
+          ]
+        ],
+        "connected_component_count_edge_adjacency": 2,
+        "duplicate_face_count": 0,
+        "euler_characteristic_referenced_mesh": -4,
+        "minimum_stage_v_clearance_m": 0.6463969886302948,
+        "non_manifold_edge_count_incidence_not_two": 0,
+        "signed_volume_m3": null,
+        "stage_v_clearance_by_axis_m": [
+          1.8978678584098816,
+          0.7500000119209289,
+          0.6463969886302948
+        ],
+        "triangle_count": 13432,
+        "unique_vertex_coordinate_count": 6712,
+        "unsigned_enclosed_volume_m3": null,
+        "watertight": true,
+        "winding_consistent": false
+      },
+      "candidate_stage_v_stl_sha256": "fcbb76a59a52ad75895e38879a41969f9298f6d4fcda737b26ba8ac97fff9391",
+      "case_id": "D1_filtered_seed11_plus",
+      "checks": {
+        "all_candidate_faces_follow_positive_sdf_gradient": true,
+        "candidate_ply_and_stage_v_stl_support_match": true,
+        "candidate_positive_area_triangle_support_matches_raw": true,
+        "candidate_vertex_coordinate_set_matches_raw_exactly": true,
+        "duplicate_face_count_zero": true,
+        "non_manifold_edge_count_zero": true,
+        "positive_signed_volume": false,
+        "raw_ply_is_reproduced_by_independent_zero_contour": true,
+        "raw_ply_raw_stl_positive_area_support_matches": true,
+        "result_manifest_candidate_stl_hash_matches": true,
+        "stage_v_clearance_at_least_0p25_m": true,
+        "watertight": true,
+        "winding_consistent": false
+      },
+      "exact_zero_grid_node_count": 0,
+      "input_state_sha256": "43d033b0143549369bf8da718019d276abd1ac65d479a23c7c707629bfdb44dc",
+      "raw_ply_sha256": "854ee63a8860e2db76a1375de8a0d562317750a5f9136a6f7849ac72a35c2191",
+      "raw_stage_v_stl_metrics": {
+        "area_m2_including_duplicate_faces": 3.1304595851890498,
+        "area_m2_unique_positive_area_triangles": 3.1304595851890844,
+        "bounds_m": [
+          [
+            -0.6021321415901184,
+            -0.44999998807907104,
+            -0.2535845935344696
+          ],
+          [
+            0.5509486198425293,
+            0.44999998807907104,
+            0.2536030113697052
+          ]
+        ],
+        "connected_component_count_edge_adjacency": 2,
+        "duplicate_face_count": 0,
+        "euler_characteristic_referenced_mesh": -4,
+        "minimum_stage_v_clearance_m": 0.6463969886302948,
+        "non_manifold_edge_count_incidence_not_two": 0,
+        "signed_volume_m3": -0.12847583764507203,
+        "stage_v_clearance_by_axis_m": [
+          1.8978678584098816,
+          0.7500000119209289,
+          0.6463969886302948
+        ],
+        "triangle_count": 13432,
+        "unique_vertex_coordinate_count": 6712,
+        "unsigned_enclosed_volume_m3": 0.12847583764507203,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "raw_stl_sha256": "d0a7911785d7bc8177e9f8a944d0cb65d688c6f448ba4af285af49ebc87c5eeb",
+      "stage_v_serialized_vertex_coordinate_hausdorff_distance_m": 0.0,
+      "status": "FAIL",
+      "surface_hausdorff_distance_m": 0.0,
+      "vertex_coordinate_hausdorff_distance_m": 0.0
+    },
+    "D2_filtered_seed2026_minus": {
+      "candidate_minimum_normal_gradient_dot": 0.0027069945261617295,
+      "candidate_orientation_dot_counts": {
+        "negative_or_ambiguous": 0,
+        "positive": 13448
+      },
+      "candidate_ply_sha256": "bb4438322f52613d6ace8d891643e341b5a30508eef98c9656655ae6dc55a1a4",
+      "candidate_stage_v_stl_metrics": {
+        "area_m2_including_duplicate_faces": 3.117576974227437,
+        "area_m2_unique_positive_area_triangles": 3.1175769742274504,
+        "bounds_m": [
+          [
+            -0.6020901799201965,
+            -0.44999998807907104,
+            -0.2534004747867584
+          ],
+          [
+            0.5517304539680481,
+            0.44999998807907104,
+            0.2530612051486969
+          ]
+        ],
+        "connected_component_count_edge_adjacency": 4,
+        "duplicate_face_count": 0,
+        "euler_characteristic_referenced_mesh": 0,
+        "minimum_stage_v_clearance_m": 0.6465995252132416,
+        "non_manifold_edge_count_incidence_not_two": 0,
+        "signed_volume_m3": null,
+        "stage_v_clearance_by_axis_m": [
+          1.8979098200798035,
+          0.7500000119209289,
+          0.6465995252132416
+        ],
+        "triangle_count": 13448,
+        "unique_vertex_coordinate_count": 6724,
+        "unsigned_enclosed_volume_m3": null,
+        "watertight": true,
+        "winding_consistent": false
+      },
+      "candidate_stage_v_stl_sha256": "57a2a16883ed980463c3fd73ce664245699693686a39e5dc1eebd35cd612429d",
+      "case_id": "D2_filtered_seed2026_minus",
+      "checks": {
+        "all_candidate_faces_follow_positive_sdf_gradient": true,
+        "candidate_ply_and_stage_v_stl_support_match": true,
+        "candidate_positive_area_triangle_support_matches_raw": true,
+        "candidate_vertex_coordinate_set_matches_raw_exactly": true,
+        "duplicate_face_count_zero": true,
+        "non_manifold_edge_count_zero": true,
+        "positive_signed_volume": false,
+        "raw_ply_is_reproduced_by_independent_zero_contour": true,
+        "raw_ply_raw_stl_positive_area_support_matches": true,
+        "result_manifest_candidate_stl_hash_matches": true,
+        "stage_v_clearance_at_least_0p25_m": true,
+        "watertight": true,
+        "winding_consistent": false
+      },
+      "exact_zero_grid_node_count": 0,
+      "input_state_sha256": "b6ef1bc458e936a0eb286a3f402acab9392fcd198851abc4689b0e7ce8fede9a",
+      "raw_ply_sha256": "6f135498c772c61b0b49ac160eb416fd87c2a72293f8f138f6ee0ecdfeecac01",
+      "raw_stage_v_stl_metrics": {
+        "area_m2_including_duplicate_faces": 3.117576974227437,
+        "area_m2_unique_positive_area_triangles": 3.1175769742274504,
+        "bounds_m": [
+          [
+            -0.6020901799201965,
+            -0.44999998807907104,
+            -0.2534004747867584
+          ],
+          [
+            0.5517304539680481,
+            0.44999998807907104,
+            0.2530612051486969
+          ]
+        ],
+        "connected_component_count_edge_adjacency": 4,
+        "duplicate_face_count": 0,
+        "euler_characteristic_referenced_mesh": 0,
+        "minimum_stage_v_clearance_m": 0.6465995252132416,
+        "non_manifold_edge_count_incidence_not_two": 0,
+        "signed_volume_m3": -0.1282466443865735,
+        "stage_v_clearance_by_axis_m": [
+          1.8979098200798035,
+          0.7500000119209289,
+          0.6465995252132416
+        ],
+        "triangle_count": 13448,
+        "unique_vertex_coordinate_count": 6724,
+        "unsigned_enclosed_volume_m3": 0.1282466443865735,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "raw_stl_sha256": "ed0d2eab234a02f3d38c0e6fb7488f960b367a089d9171367955400f6f7cd91f",
+      "stage_v_serialized_vertex_coordinate_hausdorff_distance_m": 0.0,
+      "status": "FAIL",
+      "surface_hausdorff_distance_m": 0.0,
+      "vertex_coordinate_hausdorff_distance_m": 0.0
+    },
+    "D2_filtered_seed2026_plus": {
+      "candidate_minimum_normal_gradient_dot": 0.000224189105861897,
+      "candidate_orientation_dot_counts": {
+        "negative_or_ambiguous": 0,
+        "positive": 13500
+      },
+      "candidate_ply_sha256": "1766394f08f0bf58234ea4e4b66c6ef6636c9f991dc0c8ec7e457b8491748162",
+      "candidate_stage_v_stl_metrics": {
+        "area_m2_including_duplicate_faces": 3.1285860517628636,
+        "area_m2_unique_positive_area_triangles": 3.1285860517628614,
+        "bounds_m": [
+          [
+            -0.6040420532226562,
+            -0.44999998807907104,
+            -0.253579705953598
+          ],
+          [
+            0.5501288175582886,
+            0.44999998807907104,
+            0.25178399682044983
+          ]
+        ],
+        "connected_component_count_edge_adjacency": 6,
+        "duplicate_face_count": 0,
+        "euler_characteristic_referenced_mesh": 6,
+        "minimum_stage_v_clearance_m": 0.646420294046402,
+        "non_manifold_edge_count_incidence_not_two": 0,
+        "signed_volume_m3": null,
+        "stage_v_clearance_by_axis_m": [
+          1.8959579467773438,
+          0.7500000119209289,
+          0.646420294046402
+        ],
+        "triangle_count": 13500,
+        "unique_vertex_coordinate_count": 6756,
+        "unsigned_enclosed_volume_m3": null,
+        "watertight": true,
+        "winding_consistent": false
+      },
+      "candidate_stage_v_stl_sha256": "434ab4cd8840d3965bd6707da0eb525b45b56338a0b5e970cc84a973f9922727",
+      "case_id": "D2_filtered_seed2026_plus",
+      "checks": {
+        "all_candidate_faces_follow_positive_sdf_gradient": true,
+        "candidate_ply_and_stage_v_stl_support_match": true,
+        "candidate_positive_area_triangle_support_matches_raw": true,
+        "candidate_vertex_coordinate_set_matches_raw_exactly": true,
+        "duplicate_face_count_zero": true,
+        "non_manifold_edge_count_zero": true,
+        "positive_signed_volume": false,
+        "raw_ply_is_reproduced_by_independent_zero_contour": true,
+        "raw_ply_raw_stl_positive_area_support_matches": true,
+        "result_manifest_candidate_stl_hash_matches": true,
+        "stage_v_clearance_at_least_0p25_m": true,
+        "watertight": true,
+        "winding_consistent": false
+      },
+      "exact_zero_grid_node_count": 0,
+      "input_state_sha256": "14ddbeac636268854048d8c3c5734cbdce36aa1922841d79a8acd058d1e09999",
+      "raw_ply_sha256": "b014e8dbac48127bfd2e2a3c0256d462e7a1e36b121a9d80dcc90969f98c0ee2",
+      "raw_stage_v_stl_metrics": {
+        "area_m2_including_duplicate_faces": 3.1285860517628636,
+        "area_m2_unique_positive_area_triangles": 3.1285860517628614,
+        "bounds_m": [
+          [
+            -0.6040420532226562,
+            -0.44999998807907104,
+            -0.253579705953598
+          ],
+          [
+            0.5501288175582886,
+            0.44999998807907104,
+            0.25178399682044983
+          ]
+        ],
+        "connected_component_count_edge_adjacency": 6,
+        "duplicate_face_count": 0,
+        "euler_characteristic_referenced_mesh": 6,
+        "minimum_stage_v_clearance_m": 0.646420294046402,
+        "non_manifold_edge_count_incidence_not_two": 0,
+        "signed_volume_m3": -0.12809517260515207,
+        "stage_v_clearance_by_axis_m": [
+          1.8959579467773438,
+          0.7500000119209289,
+          0.646420294046402
+        ],
+        "triangle_count": 13500,
+        "unique_vertex_coordinate_count": 6756,
+        "unsigned_enclosed_volume_m3": 0.12809517260515207,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "raw_stl_sha256": "debe4be598dc3a303e7e9d8f9523aa2dd8cb06d9e4da2187966e72ba1c0e95ea",
+      "stage_v_serialized_vertex_coordinate_hausdorff_distance_m": 0.0,
+      "status": "FAIL",
+      "surface_hausdorff_distance_m": 0.0,
+      "vertex_coordinate_hausdorff_distance_m": 0.0
+    },
+    "baseline": {
+      "candidate_minimum_normal_gradient_dot": 0.0,
+      "candidate_orientation_dot_counts": {
+        "negative_or_ambiguous": 1,
+        "positive": 9859
+      },
+      "candidate_ply_sha256": "f5e3595cf0146068012d1a0feefc7bd753f1893b35f37f85a0665d0bddb6c778",
+      "candidate_stage_v_stl_metrics": {
+        "area_m2_including_duplicate_faces": 3.0435334027460637,
+        "area_m2_unique_positive_area_triangles": 3.043533402746088,
+        "bounds_m": [
+          [
+            -0.6000000238418579,
+            -0.44999998807907104,
+            -0.25
+          ],
+          [
+            0.550000011920929,
+            0.44999998807907104,
+            0.25
+          ]
+        ],
+        "connected_component_count_edge_adjacency": 4,
+        "duplicate_face_count": 0,
+        "euler_characteristic_referenced_mesh": 6,
+        "minimum_stage_v_clearance_m": 0.65,
+        "non_manifold_edge_count_incidence_not_two": 12,
+        "signed_volume_m3": null,
+        "stage_v_clearance_by_axis_m": [
+          1.899999976158142,
+          0.7500000119209289,
+          0.65
+        ],
+        "triangle_count": 9860,
+        "unique_vertex_coordinate_count": 4937,
+        "unsigned_enclosed_volume_m3": null,
+        "watertight": false,
+        "winding_consistent": false
+      },
+      "candidate_stage_v_stl_sha256": "d36873c4f0f2776fc24dce5fa0a0f81e2c912aef5eff87e770d5f82ba99dba08",
+      "case_id": "baseline",
+      "checks": {
+        "all_candidate_faces_follow_positive_sdf_gradient": false,
+        "candidate_ply_and_stage_v_stl_support_match": true,
+        "candidate_positive_area_triangle_support_matches_raw": true,
+        "candidate_vertex_coordinate_set_matches_raw_exactly": true,
+        "duplicate_face_count_zero": true,
+        "non_manifold_edge_count_zero": false,
+        "positive_signed_volume": false,
+        "raw_ply_is_reproduced_by_independent_zero_contour": true,
+        "raw_ply_raw_stl_positive_area_support_matches": true,
+        "result_manifest_candidate_stl_hash_matches": true,
+        "stage_v_clearance_at_least_0p25_m": true,
+        "watertight": false,
+        "winding_consistent": false
+      },
+      "exact_zero_grid_node_count": 498,
+      "input_state_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+      "raw_ply_sha256": "ce78d1d4448e54c72d0ff0f6022cf5c3be8c0b438640e10bcc8cdeec91cfdd96",
+      "raw_stage_v_stl_metrics": {
+        "area_m2_including_duplicate_faces": 3.0447834028997325,
+        "area_m2_unique_positive_area_triangles": 3.043533402746088,
+        "bounds_m": [
+          [
+            -0.6000000238418579,
+            -0.44999998807907104,
+            -0.25
+          ],
+          [
+            0.550000011920929,
+            0.44999998807907104,
+            0.25
+          ]
+        ],
+        "connected_component_count_edge_adjacency": 4,
+        "duplicate_face_count": 4,
+        "euler_characteristic_referenced_mesh": 611,
+        "minimum_stage_v_clearance_m": 0.65,
+        "non_manifold_edge_count_incidence_not_two": 666,
+        "signed_volume_m3": null,
+        "stage_v_clearance_by_axis_m": [
+          1.899999976158142,
+          0.7500000119209289,
+          0.65
+        ],
+        "triangle_count": 10990,
+        "unique_vertex_coordinate_count": 4937,
+        "unsigned_enclosed_volume_m3": null,
+        "watertight": false,
+        "winding_consistent": false
+      },
+      "raw_stl_sha256": "0c8f78c1befbf3612fe7cb5a1e42b89c4c836850069688d5ea4c883f80bcc32b",
+      "stage_v_serialized_vertex_coordinate_hausdorff_distance_m": 0.025000000372528974,
+      "status": "FAIL",
+      "surface_hausdorff_distance_m": 0.0,
+      "vertex_coordinate_hausdorff_distance_m": 0.0
+    }
+  },
+  "criteria_sha256": "96cece05ee24a2c63f46c27cbbff8b493b71c9340a8e9d21d0a04ac55393a6cd",
+  "formal_xfid_resumption_eligible": false,
+  "formal_xfid_started": false,
+  "independent_recomputation": true,
+  "kind": "xfid45_surface_export_independent_recomputation",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "solver_qualification": false,
+    "topology": false
+  },
+  "result_sha256": "732a6ac03cbf341cec35d58937ce3bee2cfe84df3413766d6c6f51ad8ea9b4ab",
+  "schema_version": 1,
+  "solver_started": false,
+  "verifier_source_sha256": "10bde4144f19930e40c576f174f2444b550ad35774c76b4313e86475c6f9b25b"
+}

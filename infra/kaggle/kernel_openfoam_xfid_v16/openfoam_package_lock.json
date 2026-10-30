@@ -1,0 +1,28 @@
+{
+  "architecture": "amd64",
+  "indexes": {
+    "InRelease": {
+      "sha256": "50cb05b774c0038b0cea099e68c8ba69544881aa79ce8fef2dfc4a719c2b0887",
+      "url": "https://dl.openfoam.com/repos/deb/dists/noble/InRelease"
+    },
+    "Packages.gz": {
+      "sha256": "235cee0e6311c836ac13b7fc11092345f06cd06524772f62b9cd55a630402cd2",
+      "url": "https://dl.openfoam.com/repos/deb/dists/noble/main/binary-amd64/Packages.gz"
+    }
+  },
+  "official_installer_sha256": "f7fa288327e936b5a85e3e4a0b29bf039c06d214916f39400b830b63a3310b5b",
+  "package_architectures": {
+    "openfoam2512": "amd64",
+    "openfoam2512-common": "all",
+    "openfoam2512-tools": "amd64"
+  },
+  "packages": {
+    "openfoam2512": "c59e65ffd99c9143fd7c2594dc9776e9d7190124965efdb667e28677d93f3fed",
+    "openfoam2512-common": "f438ecbfaff0248b9273502f3b43a6cb1b4f81c07224dbda811f1b48d989026f",
+    "openfoam2512-tools": "fc0d19c1152819cc7d2a6165eec911c0f1ea3ab7d88cc04ee4a8070d11aa2e62"
+  },
+  "schema_version": 1,
+  "source": "https://dl.openfoam.com/repos/deb/dists/noble/main",
+  "suite": "noble",
+  "version": "2512.0-2"
+}

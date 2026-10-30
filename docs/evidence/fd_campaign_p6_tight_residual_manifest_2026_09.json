@@ -1,0 +1,74 @@
+{
+  "manifest": {
+    "campaign_id": "p6_tight_residual_probe_2026_09",
+    "hypothesis": "the FD/adjoint ratio mismatch (1.22-1.57) is dominated by the primal convergence tolerance rather than adjoint-model inconsistency",
+    "decision": "if tightening the primal residualControl to 5e-9 moves the ratios toward 1, P6 is convergence-limited and the gate can be met by residual policy; otherwise the mismatch is continuous-adjoint inconsistency at this state and must be bounded in the contract",
+    "fixture": {
+      "candidate_binding": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/p0_closed_loop/stage_t_candidate_binding.json",
+      "problem_spec_sha256": "2b0291c0557a6b32d0f8628a0e6ccc4fc40e6466affbc9831c9000ffc9fe17a6",
+      "grid_family": "canonical_60x32x24_to_source_32x16x16",
+      "refinement_ratio": 2.0,
+      "response_scale": 0.3007
+    },
+    "responses": [
+      "downforce"
+    ],
+    "epsilons": [
+      3e-05,
+      0.0001,
+      0.0003,
+      0.001
+    ],
+    "directions": [
+      {
+        "name": "gradient_aligned",
+        "role": "gradient_aligned",
+        "seed": null,
+        "sign_convention": "dJ/drho = -d(downforce_coefficient)/drho",
+        "description": "direction = -normalized declared objective gradient"
+      },
+      {
+        "name": "random_seed_11",
+        "role": "random",
+        "seed": 11,
+        "sign_convention": "dJ/drho = -d(downforce_coefficient)/drho",
+        "description": "seeded random direction on the feasible support (seed 11)"
+      },
+      {
+        "name": "random_seed_2026",
+        "role": "random",
+        "seed": 2026,
+        "sign_convention": "dJ/drho = -d(downforce_coefficient)/drho",
+        "description": "seeded random direction on the feasible support (seed 2026)"
+      }
+    ],
+    "uncertainty_rule": "central-difference relative error against the analytic directional derivative; near-zero references judged by a pre-registered absolute error from the response scale",
+    "gates": {
+      "convergence": "primal and adjoint residual gates from the registered problem-spec convergence criteria; no unconverged run enters the FD table",
+      "stationarity": "response stationarity window per registered profile",
+      "mesh": "mesh qualification profile of the run case",
+      "geometry": "candidate binding and geometry hash must match the manifest",
+      "required_pairs": "gradient-aligned direction plus every registered random seed, at every registered epsilon",
+      "resolvability": "relative error <= 5% and sign agreement; otherwise the row is resolved as fail, never dropped"
+    },
+    "stop_conditions": [
+      "stop and re-register if any required run misses a convergence gate",
+      "do not change epsilons, seeds, or directions after the first result"
+    ],
+    "fallback_conditions": [
+      "if the mapped chain is exact but ratios stay biased, register a solver-side experiment (perturbed-state adjoint or residual/step study)"
+    ],
+    "profile_id": "fd_gradient_v1",
+    "random_seeds": [
+      11,
+      2026
+    ],
+    "environment": {
+      "registered_at_utc": "2026-09-21T08:47:40.883340+00:00"
+    },
+    "code_commit": "1af0d7ce9e6629d313406e981687adc5d5ff4d48",
+    "created": "2026-09-21",
+    "schema_version": 1
+  },
+  "manifest_hash": "9e9f9aee706751ed4ce4bbb291fed4d3ff22ec9a2e16d7a918f73fb981bb19c8"
+}

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+blockMesh
+surfaceFeatureExtract || true
+snappyHexMesh -overwrite
+checkMesh -allGeometry -allTopology 2>&1 | tee log.checkMesh
+simpleFoam 2>&1 | tee log.simpleFoam

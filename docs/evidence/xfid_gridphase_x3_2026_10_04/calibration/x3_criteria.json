@@ -1,0 +1,382 @@
+{
+  "analysis": {
+    "averaging_check": "over all balanced splits of the 16 mirror pairs into two sets of 8 pairs, the RMS difference of the two set means is compared with the prediction sigma_e*sqrt(2/16); the 1/sqrt(M) model is accepted for that response only if the ratio observed/predicted lies in [0.5, 2.0] (fixed before the run); otherwise the formal design must not assume 1/sqrt(M)",
+    "model": "per response, R_k = a + b.v_k + e_k over the 32 members (linear translation term), sigma_e = residual std with 28 degrees of freedom; sigma_S_single = sigma_e (one state of a contrast pair has this phase noise)",
+    "reported_not_adopted": [
+      "sigma_e",
+      "standard error of the 32-member mean",
+      "linear translation coefficients",
+      "baseline (unshifted, X2) force versus the ensemble mean"
+    ],
+    "script": "scripts/analyze_xfid_gridphase_x3_calibration.py"
+  },
+  "authority": "docs/issues/45_x3_design_2026_10_04.md (user-approved defaults) and docs/issues/45_xfid_gridphase_x2_result_2026_10_04.md",
+  "case_order": [
+    {
+      "id": "cal_baseline_01p",
+      "shift_m": [
+        0.00225,
+        0.001666667,
+        0.0012
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_01m",
+      "shift_m": [
+        -0.00225,
+        -0.001666667,
+        -0.0012
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_02p",
+      "shift_m": [
+        0.001375,
+        0.002833333,
+        0.0019
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_02m",
+      "shift_m": [
+        -0.001375,
+        -0.002833333,
+        -0.0019
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_03p",
+      "shift_m": [
+        0.003125,
+        0.000888889,
+        0.0026
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_03m",
+      "shift_m": [
+        -0.003125,
+        -0.000888889,
+        -0.0026
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_04p",
+      "shift_m": [
+        -0.0009375,
+        0.002055556,
+        0.0033
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_04m",
+      "shift_m": [
+        0.0009375,
+        -0.002055556,
+        -0.0033
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_05p",
+      "shift_m": [
+        -0.0026875,
+        0.003222222,
+        0.00064
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_05m",
+      "shift_m": [
+        0.0026875,
+        -0.003222222,
+        -0.00064
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_06p",
+      "shift_m": [
+        -0.0018125,
+        -0.001277778,
+        0.00134
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_06m",
+      "shift_m": [
+        0.0018125,
+        0.001277778,
+        -0.00134
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_07p",
+      "shift_m": [
+        0.0035625,
+        -0.002444444,
+        -0.00204
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_07m",
+      "shift_m": [
+        -0.0035625,
+        0.002444444,
+        0.00204
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_08p",
+      "shift_m": [
+        0.00071875,
+        -0.003611111,
+        -0.0027400000000000002
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_08m",
+      "shift_m": [
+        -0.00071875,
+        0.003611111,
+        0.0027400000000000002
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_09p",
+      "shift_m": [
+        0.00246875,
+        -0.0006296300000000001,
+        -0.00344
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_09m",
+      "shift_m": [
+        -0.00246875,
+        0.0006296300000000001,
+        0.00344
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_10p",
+      "shift_m": [
+        0.00159375,
+        -0.001796296,
+        -0.00078
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_10m",
+      "shift_m": [
+        -0.00159375,
+        0.001796296,
+        0.00078
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_11p",
+      "shift_m": [
+        -0.00334375,
+        0.002962963,
+        -0.00148
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_11m",
+      "shift_m": [
+        0.00334375,
+        -0.002962963,
+        0.00148
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_12p",
+      "shift_m": [
+        -0.00115625,
+        0.0010185189999999998,
+        -0.00218
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_12m",
+      "shift_m": [
+        0.00115625,
+        -0.0010185189999999998,
+        0.00218
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_13p",
+      "shift_m": [
+        -0.00290625,
+        0.002185185,
+        0.0028799999999999997
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_13m",
+      "shift_m": [
+        0.00290625,
+        -0.002185185,
+        -0.0028799999999999997
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_14p",
+      "shift_m": [
+        0.00203125,
+        0.003351852,
+        0.0035800000000000003
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_14m",
+      "shift_m": [
+        -0.00203125,
+        -0.003351852,
+        -0.0035800000000000003
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_15p",
+      "shift_m": [
+        0.00378125,
+        0.001407407,
+        0.00092
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_15m",
+      "shift_m": [
+        -0.00378125,
+        -0.001407407,
+        -0.00092
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_16p",
+      "shift_m": [
+        0.000609375,
+        0.002574074,
+        0.0016200000000000001
+      ],
+      "state": "baseline"
+    },
+    {
+      "id": "cal_baseline_16m",
+      "shift_m": [
+        -0.000609375,
+        -0.002574074,
+        -0.0016200000000000001
+      ],
+      "state": "baseline"
+    }
+  ],
+  "case_template_origin": "infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/case_template (hash-identical, minus the v16 candidate STL)",
+  "date": "2026-10-04",
+  "environment": {
+    "architecture": "amd64",
+    "foam_version": "OpenFOAM-v2512",
+    "note": "lock chosen by the observed Ubuntu codename (X2: Jammy and Noble are bit-identical for the v16 fixture); host recorded in environment.json; any other OS fails closed with diagnostics",
+    "observed_reference_os_version": "22.04.5",
+    "openfoam_family": "OpenCFD v2512",
+    "os_id": "ubuntu",
+    "package_version": "2512.0-2",
+    "registered_lock_suites": [
+      "jammy",
+      "noble"
+    ],
+    "version_codename": "jammy"
+  },
+  "evidence_class": "openfoam_stage_v_gridphase_calibration_uncertified_geometry",
+  "force_window": {
+    "force_n_per_coefficient": 0.32,
+    "minimum_rows": 20,
+    "rule": "last-25% iteration-tail window as in Round 5 and X2; forces in N from forceCoeffs Cd and -Cl",
+    "tail_fraction": 0.25
+  },
+  "immutable": true,
+  "inputs": {
+    "case_template/0/U": "ac791673b04d347f0a8c3b93d04eed5e6cc47321f2c9c48c5cfd4e767bf116c1",
+    "case_template/0/p": "8372855fe3a2144838e945c723d3f6ce0b277730ab7868e35cba047bc937c987",
+    "case_template/Allrun": "3d4b4d1b6429c77b44dfa888d8a810b495eeea94a3bfd766645c3eced7280d59",
+    "case_template/constant/transportProperties": "e44501f41494cdb653120ea5f8c6a64baa52bd26ca2f625427bf71ff827ee390",
+    "case_template/constant/triSurface/allowed_design_domain.stl": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446",
+    "case_template/constant/turbulenceProperties": "f9a5d6d76de0f28e1112f690f27d221361181f8bd7979de823914eefe0e0f927",
+    "case_template/system/blockMeshDict": "903395068edc527f3cb44af6165b1ac20f759b7876e5f59145ac3b932c450330",
+    "case_template/system/controlDict": "640e101f1c292f1e3a84d848ecf24f602b637de970fb284f15cb50ff44cb7a9b",
+    "case_template/system/fvSchemes": "aaf8a02b7e65dae5e7a009509546cebd472caeebf65aff4f69e3b6cef96f3a2e",
+    "case_template/system/fvSolution": "007ddea730c1268410e406ecc83a82300d3840c353f0a6ce1ae2fbe9a4dfb643",
+    "case_template/system/snappyHexMeshDict": "e8fdf720a2af997828c9d73d1f860ac3389b17011123f28427a8cc6e0eeb0a43",
+    "case_template/system/surfaceFeatureExtractDict": "0f7c017a9edc5dd0819368089e35b59f8da84587432ab53facdb46e48fe0c4f8",
+    "openfoam_package_lock_jammy.json": "b5e59f8a7da34820fc3c6bda93b3524204dcaf4fa6e4f7f11d6c46ddddb66746",
+    "openfoam_package_lock_noble.json": "8bcf141db29d18800a55a70bca93175a37465ac18494e473efd32985317c7340",
+    "states/baseline.stl": "1d0f25786aebf771a73e884e3e52f92073ddff82e80ba501104b18e775f7fc2a"
+  },
+  "launch_deadline_hours": 3.0,
+  "not_claimed": [
+    "XFID response, sign or ranking",
+    "an adopted response floor (the formal registration adopts floors)",
+    "certified geometry",
+    "physical accuracy or grid independence",
+    "any qualification flag change"
+  ],
+  "per_case_failure_policy": "record the failing stage and continue; checkMesh exit 1 with exactly one concave-cell failure and fraction <= 0.08 is allowed; no retries; result.json rewritten after every case",
+  "purpose": "calibration (disjoint from every formal XFID case): phase noise of a single OpenFOAM state under 32 registered rigid sub-cell shifts of the unperturbed baseline, and a test that ensemble means average as 1/sqrt(M); calibration cases cannot satisfy formal evidence",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "registered_before_run": true,
+  "round_id": "xfid45_x3_calibration_r1",
+  "shift_design": {
+    "generator": "Halton bases (2,3,5) for magnitudes and (7,11,13) for signs, indices 1..16, rounded to 1e-6 mm; every vector is paired with its exact mirror (-v); all three components non-zero so no member sits on a symmetric grid phase (X2)",
+    "n_pairs": 16,
+    "range_mm_per_axis_magnitude": [
+      0.5,
+      4.0
+    ]
+  },
+  "stage_timeout_s": 1800,
+  "states": {
+    "baseline": {
+      "file": "states/baseline.stl",
+      "sha256": "1d0f25786aebf771a73e884e3e52f92073ddff82e80ba501104b18e775f7fc2a",
+      "triangles": 681504
+    }
+  },
+  "stop_after_consecutive_failures": 3
+}

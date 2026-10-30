@@ -1,0 +1,195 @@
+{
+  "adjoint": {
+    "converged": true,
+    "derivative_files": {
+      "downforce": {
+        "name": "volumetricBSplinesadjDownforceadjDownforceESI622",
+        "sha256": "a7976b1307630c11ddd81a32625047e972fef7b7055d3fd875cc751d538d91a4"
+      },
+      "drag": {
+        "name": "volumetricBSplinesadjDragadjDragESI485",
+        "sha256": "806cc7c60bff8158c6910ca9feffcf653f06cebefe5aabb50d5e87b10a63bc05"
+      }
+    },
+    "returncode": 0
+  },
+  "base_primal": {
+    "qualified": true,
+    "reasons": [],
+    "responses": {
+      "Cd": {
+        "mean": 2.2333323089285715,
+        "status": "pass"
+      },
+      "downforce": {
+        "mean": 1.6658752813095237,
+        "status": "pass"
+      }
+    },
+    "returncode": 0
+  },
+  "claims_not_supported": [
+    "this bounded diagnostic does not qualify the derivative or authorize a shape update"
+  ],
+  "claims_supported": [
+    "the registered linearUpwind factor was run on an independent base/adjoint lineage with all gates recorded"
+  ],
+  "diagnostic": {
+    "downforce__downforce_gradient_aligned": {
+      "analytic_linearUpwind": 4.173502101613606,
+      "distance_to_one_linearUpwind": 0.041818007273979996,
+      "distance_to_one_upwind": 0.048948302556985235,
+      "fd_linearUpwind": 4.348029642856854,
+      "ratio_linearUpwind": 1.04181800727398,
+      "ratio_upwind": 1.0489483025569852,
+      "status": "ok"
+    },
+    "downforce__random_seed_11": {
+      "analytic_linearUpwind": -0.16539370321499425,
+      "distance_to_one_linearUpwind": 0.04316028665795146,
+      "distance_to_one_upwind": 0.0025012684117817763,
+      "fd_linearUpwind": -0.17253214285717355,
+      "ratio_linearUpwind": 1.0431602866579515,
+      "ratio_upwind": 1.0025012684117818,
+      "status": "ok"
+    },
+    "downforce__random_seed_2026": {
+      "analytic_linearUpwind": -0.3668321250460025,
+      "distance_to_one_linearUpwind": 0.03362253873901677,
+      "distance_to_one_upwind": 0.07926604171290397,
+      "fd_linearUpwind": -0.37916595238107753,
+      "ratio_linearUpwind": 1.0336225387390168,
+      "ratio_upwind": 0.920733958287096,
+      "status": "ok"
+    },
+    "drag__downforce_gradient_aligned": {
+      "analytic_linearUpwind": 3.082421457443527,
+      "distance_to_one_linearUpwind": 0.00695359151744368,
+      "distance_to_one_upwind": 0.04028696950872512,
+      "fd_linearUpwind": 3.1038553571431926,
+      "ratio_linearUpwind": 1.0069535915174437,
+      "ratio_upwind": 1.0402869695087251,
+      "status": "ok"
+    },
+    "drag__random_seed_11": {
+      "analytic_linearUpwind": -0.16081986800306222,
+      "distance_to_one_linearUpwind": 0.1479493897822295,
+      "distance_to_one_upwind": 0.08332471074405134,
+      "fd_linearUpwind": -0.13702666666715047,
+      "ratio_linearUpwind": 0.8520506102177705,
+      "ratio_upwind": 1.0833247107440513,
+      "status": "ok"
+    },
+    "drag__random_seed_2026": {
+      "analytic_linearUpwind": -0.13760297666547966,
+      "distance_to_one_linearUpwind": 0.26084447143116707,
+      "distance_to_one_upwind": 0.42363318825251683,
+      "fd_linearUpwind": -0.1734959523811419,
+      "ratio_linearUpwind": 1.260844471431167,
+      "ratio_upwind": 1.4236331882525168,
+      "status": "ok"
+    }
+  },
+  "interpretation": {
+    "diagnostic_pass": true,
+    "n_improved_across_the_gate": 1,
+    "n_rows": 6,
+    "supports_discretization_cause": true
+  },
+  "kind": "stage_s_work_f_discretization_diagnostic",
+  "manifest": {
+    "path": "docs/evidence/stage_s_work_f_discretization_diagnostic_manifest_2026_09.json",
+    "sha256": "5bd182f37080d44be77f7347b33a17d5f94922d26afc65b7497538437fa15d2e"
+  },
+  "preflight": {
+    "path": "docs/evidence/stage_s_work_f_discretization_diagnostic_preflight_2026_09.json",
+    "sha256": "d07ffc655d2adb3f8895b8bb794a597a317a8b255d98f8ee37d0cbccb71f3687"
+  },
+  "schema_version": 1,
+  "sides": {
+    "downforce_gradient_aligned__minus": {
+      "Cd": 2.2317813048809523,
+      "case_dir": "work/stage_s_work_f_v1/discretization_linearUpwind/perturbations/downforce_gradient_aligned__minus",
+      "check_mesh_qualified": true,
+      "direction": "downforce_gradient_aligned",
+      "downforce": 1.6637020973809524,
+      "geometry_pass": true,
+      "immobility_pass": true,
+      "morpher_returncode": 0,
+      "pass": true,
+      "primal_returncode": 0,
+      "sign": "minus"
+    },
+    "downforce_gradient_aligned__plus": {
+      "Cd": 2.2348851602380955,
+      "case_dir": "work/stage_s_work_f_v1/discretization_linearUpwind/perturbations/downforce_gradient_aligned__plus",
+      "check_mesh_qualified": true,
+      "direction": "downforce_gradient_aligned",
+      "downforce": 1.6680501270238093,
+      "geometry_pass": true,
+      "immobility_pass": true,
+      "morpher_returncode": 0,
+      "pass": true,
+      "primal_returncode": 0,
+      "sign": "plus"
+    },
+    "random_seed_11__minus": {
+      "Cd": 2.2334009625,
+      "case_dir": "work/stage_s_work_f_v1/discretization_linearUpwind/perturbations/random_seed_11__minus",
+      "check_mesh_qualified": true,
+      "direction": "random_seed_11",
+      "downforce": 1.665961552261905,
+      "geometry_pass": true,
+      "immobility_pass": true,
+      "morpher_returncode": 0,
+      "pass": true,
+      "primal_returncode": 0,
+      "sign": "minus"
+    },
+    "random_seed_11__plus": {
+      "Cd": 2.233263935833333,
+      "case_dir": "work/stage_s_work_f_v1/discretization_linearUpwind/perturbations/random_seed_11__plus",
+      "check_mesh_qualified": true,
+      "direction": "random_seed_11",
+      "downforce": 1.6657890201190477,
+      "geometry_pass": true,
+      "immobility_pass": true,
+      "morpher_returncode": 0,
+      "pass": true,
+      "primal_returncode": 0,
+      "sign": "plus"
+    },
+    "random_seed_2026__minus": {
+      "Cd": 2.233419138809524,
+      "case_dir": "work/stage_s_work_f_v1/discretization_linearUpwind/perturbations/random_seed_2026__minus",
+      "check_mesh_qualified": true,
+      "direction": "random_seed_2026",
+      "downforce": 1.6660647873809524,
+      "geometry_pass": true,
+      "immobility_pass": true,
+      "morpher_returncode": 0,
+      "pass": true,
+      "primal_returncode": 0,
+      "sign": "minus"
+    },
+    "random_seed_2026__plus": {
+      "Cd": 2.2332456428571428,
+      "case_dir": "work/stage_s_work_f_v1/discretization_linearUpwind/perturbations/random_seed_2026__plus",
+      "check_mesh_qualified": true,
+      "direction": "random_seed_2026",
+      "downforce": 1.6656856214285714,
+      "geometry_pass": true,
+      "immobility_pass": true,
+      "morpher_returncode": 0,
+      "pass": true,
+      "primal_returncode": 0,
+      "sign": "plus"
+    }
+  },
+  "summary": {
+    "derivative_qualified": false,
+    "diagnostic_pass": true,
+    "original_verdict_unchanged": true,
+    "shape_update_allowed": false
+  }
+}

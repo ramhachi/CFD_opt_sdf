@@ -1,0 +1,47 @@
+{
+  "case_id": "flow_40",
+  "cuda_device_order": "PCI_BUS_ID",
+  "cuda_visible_devices": "0",
+  "direction_files": {
+    "robust_opt01a": "32bb85a00370bcabcb8ecebed3b95482d329a8c56771e6085a2334d8049a4478"
+  },
+  "failure_stage": null,
+  "kernel": "flow_40",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-gridres01-f40",
+  "numpy_version": "2.1.3",
+  "pins": {
+    "docs/evidence/gridres01_2026_10_20/inventory.json": "241c0c6f9d499f9006c0ad120bcea47804abd724a1dcc4dec40316eb2b311b7b",
+    "docs/evidence/opt01b_stage_b_2026_10_15/inputs/parent.phi_f4_fortran.raw": "2f23be7824d31d6c270ada9b3ff2b815601b3435da78e4e7e9089908608bf3d7",
+    "docs/evidence/opt01b_stage_b_2026_10_15/inputs/robust_opt01a.dir_f4_fortran.raw": "32bb85a00370bcabcb8ecebed3b95482d329a8c56771e6085a2334d8049a4478",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/grid01_gpu.py": "bfaed961f3136d14bdeb7e4fccfab807f5fb8c257b45cd3ebb875963104fff38",
+    "scripts/gridres01_poisson_probe.jl": "38d34f55bdce2c7c2b14c00fb5b3304026c6d53f1964540a82ab7ed74a182dd1",
+    "scripts/gridres01_states.py": "50442cb3866041b2dcb9fefcd03580e690b20fc0f95e6a4f6278199b87c7fc88",
+    "scripts/step01_states.py": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "scripts/waterlily_gridres01_job.jl": "b1706adb5206ec52d50f27eece13b1ab23a8d3621cc4162172f273f6f7e405a9"
+  },
+  "platform": "Linux 9482c2e3161a 6.18.48+ #1 SMP Sun Sep 27 17:32:16 UTC 2026 x86_64",
+  "python_version": "3.13.15 (main, Aug  6 2026, 11:06:22) [GCC 13.3.0]",
+  "runner_sha256": "2b1a8f32d556f35e0b7befe3201a530ccc142141b2377e190d329e3383a2051d",
+  "selected_gpu": {
+    "index": 0,
+    "name": "Tesla T4",
+    "uuid": "GPU-10d4f7b9-f364-ba3e-0012-c409eb602f48"
+  },
+  "source_commit": "9299f32f7f6a9a630c70359fa4c280d499f7dd72",
+  "verified": {
+    "docs/evidence/gridres01_2026_10_20/inventory.json": "241c0c6f9d499f9006c0ad120bcea47804abd724a1dcc4dec40316eb2b311b7b",
+    "docs/evidence/opt01b_stage_b_2026_10_15/inputs/parent.phi_f4_fortran.raw": "2f23be7824d31d6c270ada9b3ff2b815601b3435da78e4e7e9089908608bf3d7",
+    "docs/evidence/opt01b_stage_b_2026_10_15/inputs/robust_opt01a.dir_f4_fortran.raw": "32bb85a00370bcabcb8ecebed3b95482d329a8c56771e6085a2334d8049a4478",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/grid01_gpu.py": "bfaed961f3136d14bdeb7e4fccfab807f5fb8c257b45cd3ebb875963104fff38",
+    "scripts/gridres01_poisson_probe.jl": "38d34f55bdce2c7c2b14c00fb5b3304026c6d53f1964540a82ab7ed74a182dd1",
+    "scripts/gridres01_states.py": "50442cb3866041b2dcb9fefcd03580e690b20fc0f95e6a4f6278199b87c7fc88",
+    "scripts/step01_states.py": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "scripts/waterlily_gridres01_job.jl": "b1706adb5206ec52d50f27eece13b1ab23a8d3621cc4162172f273f6f7e405a9"
+  }
+}

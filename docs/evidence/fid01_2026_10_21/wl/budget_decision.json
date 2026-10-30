@@ -1,0 +1,21 @@
+{
+ "T_s": 47293.301387859,
+ "cap_s": 64800,
+ "f48_estimate_s": 16640,
+ "f48_runs": 7,
+ "finished_session_wall_s": {
+  "f32k10": 7965.252811238,
+  "f32k7": 7573.779229192,
+  "f32k8": 7425.103110626,
+  "f32k9": 7689.166236803
+ },
+ "kind": "fid01_budget_decision",
+ "logs_sha256": {
+  "f32k10": "b384a56043edc59562847eb03ad868f0a7f03064d3d8e873fa51af34cf05da9c",
+  "f32k7": "0f2908d54af8a2c108c16e26264d1a5a7069cc0e66902b9bbeddf12f9326cc57",
+  "f32k8": "24ce06bd5b70dd1639d39f14708978b85660b80ebbd0504d56abb2c06afc184c",
+  "f32k9": "b5061956f3ca04aff13459a7478e8e5649333120f6ccf2635f3d7d1163980c09"
+ },
+ "push_f48": true,
+ "rule": "registration \u00a74.3"
+}

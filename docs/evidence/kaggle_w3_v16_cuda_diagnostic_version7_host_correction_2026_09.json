@@ -1,0 +1,66 @@
+{
+  "created_utc_date": "2026-09-28",
+  "evidence_type": "diagnostic_host_verification_correction",
+  "diagnostic_id": "w3_v16_cuda_body_force_minimal_diagnostic_2026_09",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic",
+  "kernel_version": 7,
+  "claim_scope": "diagnostic-only CUDA owner-lifetime observation; not W3 primal qualification, target-physics qualification, or a production fix",
+  "related_result_path": "docs/evidence/kaggle_w3_v16_cuda_diagnostic_version7_2026_09.json",
+  "related_result_sha256": "66dd9396967f95ef92cb682b24ed14ac4a56345b12cfb2d38f67d4e5bbbb63c3",
+  "exact_kaggle_log_sha256": "a8e9b9481de43bcdfd246e33885fa3aea9ce1d02c396fba1d35c07540e4eab88",
+  "exact_kaggle_terminal_status_sha256": "15530f04c1915580ac9ef78acb78a48b4c5dff418243add0aa9cd2620920f27a",
+  "output_sha256_manifest_sha256": "5a44a351600f56226cf07234a4ce6eb9ac8ccf426c3b2ebd98f22f2603d16adb",
+  "criteria_sha256": "58867bf2e68e989200edb39b401f8db2f52df340db2d84534853dad01679530e",
+  "source_commit": "ffb5cc7edc4d3a598d420ef6c065d10c5c8bbc07",
+  "diagnostic_job_sha256": "3676babc3b7516690a813acb84fa324a46a75e8b98b39c447b755394a80c6212",
+  "kernel_runner_sha256": "5e004a1e32529271b1b45a7f65086e173ca8246b5df57e8ea127b40f834ea710",
+  "host_verifier_sha256": "20484ef7d1c885d3f163ae721292181264085f13889dca94a722f2178f97ad68",
+  "initial_host_verification_attempt": {
+    "status": "failed_before_evidence_write",
+    "failure_class": "host_verifier_observation_handling",
+    "failure": "ValueError: owner-lifetime force components are non-finite",
+    "stage": "B arm step2 after the registered forced-GC collection cleared the weakly referenced backing CuArray",
+    "interpretation": "The first host verifier incorrectly treated JSON null markers for the measured post-GC B-step2 non-finite viscous/total force values as a verification error. The Kaggle run itself completed; no official evidence was written by that failed host attempt."
+  },
+  "correction": {
+    "status": "implemented_and_reverified",
+    "allowed_observation_scope": "Only B-arm step2 when owner.grid.phi was observed collected during the registered forced-GC bracket and the registered lifetime contract passed.",
+    "checks_preserved": [
+      "Reject null or non-finite force values in every other arm/phase.",
+      "Verify finite raw/body force entries and matching null masks.",
+      "Verify pressure plus viscous closure only on axes where all three raw components are finite.",
+      "Preserve null projections and do not infer NaN versus Inf from JSON null.",
+      "Compare B1/B2 null masks and finite force entries so repeatable invalid observations remain a measured divergence."
+    ],
+    "criteria_or_measurement_changed": false,
+    "kaggle_output_changed": false,
+    "official_host_verification": "passed_with_invalid_B_step2_force_values_preserved_as_diagnostic_observations",
+    "focused_tests": "42 passed",
+    "compileall": "passed",
+    "git_diff_check": "passed"
+  },
+  "registered_runtime_type_label_observation": {
+    "criteria_label": "CuArray{Float32, 3, CUDA.DeviceMemory}",
+    "observed_exact_type_in_all_arms": "CuArray{Float32, 3, CUDACore.DeviceMemory}",
+    "exact_string_match": false,
+    "alias_equivalence_assumed": false,
+    "interpretation": "The discrepancy is exposed in the primary result and is not normalized away. All arms report the same actual runtime type string, but this run does not establish that the two display paths are Julia type aliases."
+  },
+  "diagnostic_observation": {
+    "A_and_C_controls": "The owner remained alive after both full GCs; A and C produced byte-identical fields and finite force components through step2.",
+    "B1_and_B2": "The backing CuArray WeakRef was alive immediately before forced GC and cleared after both full GCs in each replicate. Both replicates matched through step1, then had the same simulation-field and force-history divergence classes at step2. Viscous and total raw force components were serialized as null on all axes; pressure remained finite.",
+    "geometry": "All arm geometry artifact SHA-256 values were identical (b75cc1e98ecd50f2666980f44d4bfda1a09dd9299756da725b299abceacc3650); host CPU/CUDA distance difference was at most 4.76837158203125e-7 m.",
+    "inference_limit": "The controlled two-step result strongly supports owner-lifetime sensitivity in this fixture. It does not prove that owner lifetime caused W3 v4's complete 3,841-step all-zero force history."
+  },
+  "qualification_flags": {
+    "waterlily_v16_primal_qualified": false,
+    "physical_profile_qualified": false,
+    "grid_response_qualified": false,
+    "sdf_gradient_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "topology_birth_qualified": false,
+    "shape_update_allowed": false
+  },
+  "production_owner_fix_authorized_by_this_evidence": false
+}

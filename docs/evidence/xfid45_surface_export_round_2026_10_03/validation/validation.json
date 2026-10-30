@@ -1,0 +1,300 @@
+{
+  "all_validation_checks_passed": true,
+  "authoritative_integration_branch": "codex/kaggle-batch-migration",
+  "authoritative_start_head": "8959f7dcc9427d2234b8faf6313a5050735bade3",
+  "checks": {
+    "all_frozen_input_hashes_match": true,
+    "all_frozen_source_hashes_match": true,
+    "all_qualification_flags_false": true,
+    "compileall_passed": true,
+    "fixture_sha256_verified": true,
+    "focused_canonicalization_tests_3_passed": true,
+    "independent_result_bound_to_registered_result": true,
+    "independent_verifier_does_not_import_canonicalizer": true,
+    "no_new_full_suite_failure_ids": true,
+    "preregistration_hash_valid": true,
+    "production_exporter_unchanged": true,
+    "result_bound_to_preregistration": true,
+    "solver_and_formal_xfid_not_started": true
+  },
+  "compileall": {
+    "command": "python -m compileall src tests",
+    "completed": true,
+    "log_path": "docs/evidence/xfid45_surface_export_round_2026_10_03/validation/compileall.log"
+  },
+  "diagnostics": {
+    "docs/evidence/xfid45_surface_export_round_2026_10_03/diagnostics/baseline_candidate_residual_edges.jsonl.gz": "3a494d1d330ec6e0f635afea62c4aeaa6aeb1075566871d1354647bbca79cf98",
+    "docs/evidence/xfid45_surface_export_round_2026_10_03/diagnostics/baseline_defect_metric_reconciliation.json": "8c4b2c4420e040bcb3ff1d9864897d2f7264cc6f687efff53a8420241a7ce0bd",
+    "docs/evidence/xfid45_surface_export_round_2026_10_03/diagnostics/baseline_exact_merge_degenerate_triangles_to_grid.jsonl.gz": "772eaa425bf726b5f970b09fbd7c7728baa60d6866aff3b35aab1e022575a6bb",
+    "docs/evidence/xfid45_surface_export_round_2026_10_03/diagnostics/baseline_original_712_defects_to_grid.jsonl.gz": "baaf9ae3a482326bbe13636f804c85623e0ac706f2150d18309c5e7c3acd83e9",
+    "docs/evidence/xfid45_surface_export_round_2026_10_03/diagnostics/orientation_source_cell_semantics.json": "bae83db0daea1604fe7dd3cab2b1e9c5a9cf2a34bbe39dcd33eb2d4b52570e1c",
+    "docs/evidence/xfid45_surface_export_round_2026_10_03/diagnostics/perturbation_orientation_winding_conflicts.jsonl.gz": "1d70a0e0c04a3101b6b2f6960adbf8d45ac4a03694334fa9971832b31f4e95f6"
+  },
+  "evidence_class": "solver_free_geometry_only",
+  "evidence_inventory": {
+    "manifest_covers": "every file in this round evidence directory except SHA256SUMS and SHA256SUMS.sha256",
+    "manifest_format": "sha256sum lines with repository-relative paths",
+    "manifest_path": "docs/evidence/xfid45_surface_export_round_2026_10_03/SHA256SUMS",
+    "manifest_sidecar_path": "docs/evidence/xfid45_surface_export_round_2026_10_03/SHA256SUMS.sha256"
+  },
+  "focused_tests": {
+    "command": "python -m pytest -q tests/test_surface_canonicalization.py",
+    "log_path": "docs/evidence/xfid45_surface_export_round_2026_10_03/validation/focused_pytest.log",
+    "summary": "...                                                                      [100%]\n3 passed in 0.61s"
+  },
+  "formal_xfid_started": false,
+  "full_pytest": {
+    "baseline_failure_count": 37,
+    "command": "python -m pytest -q",
+    "failure_id_comparison_path": "docs/evidence/xfid45_surface_export_round_2026_10_03/validation/failure_id_comparison_after_fixture_restore.json",
+    "failure_id_comparison_sha256": "0cd452194a9ac942e4952aaa3b2474dbcbc2fae37b5a46e712486ed2991f7212",
+    "log_path": "docs/evidence/xfid45_surface_export_round_2026_10_03/validation/full_pytest_after_fixture_restore.log",
+    "log_sha256": "81f3dd1ef61b441d473e3e5c9dec87722f7cfd398f9c2828cf565c1ac936d448",
+    "new_failure_count": 0,
+    "observed_failure_count": 36,
+    "resolved_baseline_failure_ids": [
+      "tests/test_canonical_objective.py::test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign"
+    ],
+    "result": "no_new_failures",
+    "summary": "36 failed, 1343 passed, 5 skipped, 7221 warnings in 234.87s (0:03:54)"
+  },
+  "geometry_gate_summary": {
+    "all_seven_pass": false,
+    "case_statuses": {
+      "D0_interface_offset_minus": "PASS",
+      "D0_interface_offset_plus": "PASS",
+      "D1_filtered_seed11_minus": "FAIL",
+      "D1_filtered_seed11_plus": "FAIL",
+      "D2_filtered_seed2026_minus": "FAIL",
+      "D2_filtered_seed2026_plus": "FAIL",
+      "baseline": "FAIL"
+    },
+    "failed_cases": 5,
+    "formal_xfid_resumption_eligible": false,
+    "passed_cases": 2
+  },
+  "independent_recomputation_path": "docs/evidence/xfid45_surface_export_round_2026_10_03/validation/independent_recomputation.json",
+  "independent_recomputation_sha256": "b33d14335c15940d760000db417f1c63eb0f9a0d311c123eeaed7119c7bea5df",
+  "kind": "xfid45_surface_export_round_validation",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "solver_qualification": false,
+    "topology": false
+  },
+  "registered_input_hashes": {
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/SHA256SUMS": {
+      "matches": true,
+      "observed_sha256": "3cc2be3f11742ce2720e1983aa3060c42e99148590f9ac5b0e44f44bd39f5123",
+      "registered_sha256": "3cc2be3f11742ce2720e1983aa3060c42e99148590f9ac5b0e44f44bd39f5123"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/canonical_state.npz": {
+      "matches": true,
+      "observed_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+      "registered_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/geometry_audit.json": {
+      "matches": true,
+      "observed_sha256": "a5fef9732e03b15f87931f70841b26453b6c96ccc5f7402c132b95491da6cb83",
+      "registered_sha256": "a5fef9732e03b15f87931f70841b26453b6c96ccc5f7402c132b95491da6cb83"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D0_interface_offset_minus.npz": {
+      "matches": true,
+      "observed_sha256": "e7a83328efc9a7a263e54e59fa349e2d57c6cba5dceffff783291056cbc7fd5f",
+      "registered_sha256": "e7a83328efc9a7a263e54e59fa349e2d57c6cba5dceffff783291056cbc7fd5f"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D0_interface_offset_plus.npz": {
+      "matches": true,
+      "observed_sha256": "de56ae5b73572ac6fecabb81760c83f9b7a65d3894779ed4bfb2a1b732e55683",
+      "registered_sha256": "de56ae5b73572ac6fecabb81760c83f9b7a65d3894779ed4bfb2a1b732e55683"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D1_filtered_seed11_minus.npz": {
+      "matches": true,
+      "observed_sha256": "b2109466ae483d631ed476a62fd5ae32d5a40ebf325edbfecbfedec76ec454c8",
+      "registered_sha256": "b2109466ae483d631ed476a62fd5ae32d5a40ebf325edbfecbfedec76ec454c8"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D1_filtered_seed11_plus.npz": {
+      "matches": true,
+      "observed_sha256": "43d033b0143549369bf8da718019d276abd1ac65d479a23c7c707629bfdb44dc",
+      "registered_sha256": "43d033b0143549369bf8da718019d276abd1ac65d479a23c7c707629bfdb44dc"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D2_filtered_seed2026_minus.npz": {
+      "matches": true,
+      "observed_sha256": "b6ef1bc458e936a0eb286a3f402acab9392fcd198851abc4689b0e7ce8fede9a",
+      "registered_sha256": "b6ef1bc458e936a0eb286a3f402acab9392fcd198851abc4689b0e7ce8fede9a"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D2_filtered_seed2026_plus.npz": {
+      "matches": true,
+      "observed_sha256": "14ddbeac636268854048d8c3c5734cbdce36aa1922841d79a8acd058d1e09999",
+      "registered_sha256": "14ddbeac636268854048d8c3c5734cbdce36aa1922841d79a8acd058d1e09999"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/SHA256SUMS": {
+      "matches": true,
+      "observed_sha256": "9108b8cc96acd0c4a1b2565420f798d8c59a4881354467e6ccb915ec81774550",
+      "registered_sha256": "9108b8cc96acd0c4a1b2565420f798d8c59a4881354467e6ccb915ec81774550"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/snapshot_manifest.json": {
+      "matches": true,
+      "observed_sha256": "3e82a6672934d2863d10aafa319a39c728e58b36011fb7003957d5e0825e4955",
+      "registered_sha256": "3e82a6672934d2863d10aafa319a39c728e58b36011fb7003957d5e0825e4955"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_minus/canonical_export/zero_surface.ply": {
+      "matches": true,
+      "observed_sha256": "4420631618832eea629e94da2d13a422cd957b376ac105745505d751e188fb02",
+      "registered_sha256": "4420631618832eea629e94da2d13a422cd957b376ac105745505d751e188fb02"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_minus/design_candidate.stl": {
+      "matches": true,
+      "observed_sha256": "88ab3aed96d97ab188b37368f13ab50e89758ec9ea3ca42556151e131fc6e11d",
+      "registered_sha256": "88ab3aed96d97ab188b37368f13ab50e89758ec9ea3ca42556151e131fc6e11d"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_plus/canonical_export/zero_surface.ply": {
+      "matches": true,
+      "observed_sha256": "6cd05f19ade86ca90f25693d6571e7ef0976184b8d38fdf18dd01f56a36d03b0",
+      "registered_sha256": "6cd05f19ade86ca90f25693d6571e7ef0976184b8d38fdf18dd01f56a36d03b0"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_plus/design_candidate.stl": {
+      "matches": true,
+      "observed_sha256": "a2698a28049ce1532e03297155cffb387674e0cd2f0e513e248e878b7dbefaa1",
+      "registered_sha256": "a2698a28049ce1532e03297155cffb387674e0cd2f0e513e248e878b7dbefaa1"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_minus/canonical_export/zero_surface.ply": {
+      "matches": true,
+      "observed_sha256": "9ce73f7d7ee0b7ce0437d9a8fd66f65c8af87cfc12597d219a27b979e34a3d95",
+      "registered_sha256": "9ce73f7d7ee0b7ce0437d9a8fd66f65c8af87cfc12597d219a27b979e34a3d95"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_minus/design_candidate.stl": {
+      "matches": true,
+      "observed_sha256": "86d2a09ac6deec08b0aa6f656531a93c510f0bfe1a4f45093a7978c0e2da8f26",
+      "registered_sha256": "86d2a09ac6deec08b0aa6f656531a93c510f0bfe1a4f45093a7978c0e2da8f26"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_plus/canonical_export/zero_surface.ply": {
+      "matches": true,
+      "observed_sha256": "854ee63a8860e2db76a1375de8a0d562317750a5f9136a6f7849ac72a35c2191",
+      "registered_sha256": "854ee63a8860e2db76a1375de8a0d562317750a5f9136a6f7849ac72a35c2191"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_plus/design_candidate.stl": {
+      "matches": true,
+      "observed_sha256": "d0a7911785d7bc8177e9f8a944d0cb65d688c6f448ba4af285af49ebc87c5eeb",
+      "registered_sha256": "d0a7911785d7bc8177e9f8a944d0cb65d688c6f448ba4af285af49ebc87c5eeb"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_minus/canonical_export/zero_surface.ply": {
+      "matches": true,
+      "observed_sha256": "6f135498c772c61b0b49ac160eb416fd87c2a72293f8f138f6ee0ecdfeecac01",
+      "registered_sha256": "6f135498c772c61b0b49ac160eb416fd87c2a72293f8f138f6ee0ecdfeecac01"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_minus/design_candidate.stl": {
+      "matches": true,
+      "observed_sha256": "ed0d2eab234a02f3d38c0e6fb7488f960b367a089d9171367955400f6f7cd91f",
+      "registered_sha256": "ed0d2eab234a02f3d38c0e6fb7488f960b367a089d9171367955400f6f7cd91f"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_plus/canonical_export/zero_surface.ply": {
+      "matches": true,
+      "observed_sha256": "b014e8dbac48127bfd2e2a3c0256d462e7a1e36b121a9d80dcc90969f98c0ee2",
+      "registered_sha256": "b014e8dbac48127bfd2e2a3c0256d462e7a1e36b121a9d80dcc90969f98c0ee2"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_plus/design_candidate.stl": {
+      "matches": true,
+      "observed_sha256": "debe4be598dc3a303e7e9d8f9523aa2dd8cb06d9e4da2187966e72ba1c0e95ea",
+      "registered_sha256": "debe4be598dc3a303e7e9d8f9523aa2dd8cb06d9e4da2187966e72ba1c0e95ea"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/baseline/canonical_export/zero_surface.ply": {
+      "matches": true,
+      "observed_sha256": "ce78d1d4448e54c72d0ff0f6022cf5c3be8c0b438640e10bcc8cdeec91cfdd96",
+      "registered_sha256": "ce78d1d4448e54c72d0ff0f6022cf5c3be8c0b438640e10bcc8cdeec91cfdd96"
+    },
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/baseline/design_candidate.stl": {
+      "matches": true,
+      "observed_sha256": "0c8f78c1befbf3612fe7cb5a1e42b89c4c836850069688d5ea4c883f80bcc32b",
+      "registered_sha256": "0c8f78c1befbf3612fe7cb5a1e42b89c4c836850069688d5ea4c883f80bcc32b"
+    }
+  },
+  "registered_source_hashes": {
+    "scripts/audit_xfid45_geometry_preflight_2026_10_03.py": {
+      "matches": true,
+      "observed_sha256": "7865f6be1ede7d919ee77117f7d5c6a120b14475930a7c93535e7671323d5b00",
+      "registered_sha256": "7865f6be1ede7d919ee77117f7d5c6a120b14475930a7c93535e7671323d5b00"
+    },
+    "scripts/audit_xfid45_surface_export_round_2026_10_03.py": {
+      "matches": true,
+      "observed_sha256": "46f9b50d1ab2373bf5dae1af9155e7333a8da5668659166670ed0c06d1ad6028",
+      "registered_sha256": "46f9b50d1ab2373bf5dae1af9155e7333a8da5668659166670ed0c06d1ad6028"
+    },
+    "scripts/export_xfid45_perturbed_state_snapshots_2026_10_03.py": {
+      "matches": true,
+      "observed_sha256": "5fac5aa3becea361aff859027d8ff1c629e3a9c5a53918acc6f8a90aa236fb49",
+      "registered_sha256": "5fac5aa3becea361aff859027d8ff1c629e3a9c5a53918acc6f8a90aa236fb49"
+    },
+    "scripts/verify_xfid45_surface_export_round_2026_10_03.py": {
+      "matches": true,
+      "observed_sha256": "10bde4144f19930e40c576f174f2444b550ad35774c76b4313e86475c6f9b25b",
+      "registered_sha256": "10bde4144f19930e40c576f174f2444b550ad35774c76b4313e86475c6f9b25b"
+    },
+    "src/cfd_sdf/design/sdf_state.py": {
+      "matches": true,
+      "observed_sha256": "74c675ed658c85fa2d8f306652d0de712698daf36e4e86f1f508b676c4f96faf",
+      "registered_sha256": "74c675ed658c85fa2d8f306652d0de712698daf36e4e86f1f508b676c4f96faf"
+    },
+    "src/cfd_sdf/export_vtk.py": {
+      "matches": true,
+      "observed_sha256": "44c152b421415fbc49d047e9a178f7702d40451bb53107ded6d7302872353a72",
+      "registered_sha256": "44c152b421415fbc49d047e9a178f7702d40451bb53107ded6d7302872353a72"
+    },
+    "src/cfd_sdf/gradients/directional_fd.py": {
+      "matches": true,
+      "observed_sha256": "ac49c4e3a6f3b14a6c254c6cbdf7dcda26da7e3c62d40d7c735ae473cbc52837",
+      "registered_sha256": "ac49c4e3a6f3b14a6c254c6cbdf7dcda26da7e3c62d40d7c735ae473cbc52837"
+    },
+    "src/cfd_sdf/grid.py": {
+      "matches": true,
+      "observed_sha256": "b8dcec2f1539feb5b1a2e3a69d0c9d50b2f75a21c2518d8ded19e3e270ff1f4d",
+      "registered_sha256": "b8dcec2f1539feb5b1a2e3a69d0c9d50b2f75a21c2518d8ded19e3e270ff1f4d"
+    },
+    "src/cfd_sdf/surface_canonicalization.py": {
+      "matches": true,
+      "observed_sha256": "3384f2daec3db9a36d3c17e1494670c368a83917627f5372ab1150666301241e",
+      "registered_sha256": "3384f2daec3db9a36d3c17e1494670c368a83917627f5372ab1150666301241e"
+    },
+    "tests/test_surface_canonicalization.py": {
+      "matches": true,
+      "observed_sha256": "6340510a28e2523812085b7063faa2d342f82bb8f81c8491e408d3ab0ef4cacc",
+      "registered_sha256": "6340510a28e2523812085b7063faa2d342f82bb8f81c8491e408d3ab0ef4cacc"
+    }
+  },
+  "registration_commit": "b2d170df744fb7a20f089f920f23996924389e7a",
+  "registration_sha256": "96cece05ee24a2c63f46c27cbbff8b493b71c9340a8e9d21d0a04ac55393a6cd",
+  "restored_ignored_fixtures": {
+    "work/pq0_2_smoke/project_downforce_volume.yaml": {
+      "expected_sha256": "90314ab78073330a784939b3fe03c24319d217f564d3ebad4dea9a29c82d75fe",
+      "matches": true,
+      "observed_sha256": "90314ab78073330a784939b3fe03c24319d217f564d3ebad4dea9a29c82d75fe"
+    },
+    "work/sdf_native_genesis_v17/sdf_design_state.npz": {
+      "expected_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+      "matches": true,
+      "observed_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31"
+    }
+  },
+  "runtime": {
+    "numpy": "2.5.2",
+    "python": "3.12.13",
+    "pyvista": "0.48.4",
+    "scipy": "1.18.1",
+    "trimesh": "5.1.0",
+    "vtk": "9.6.2"
+  },
+  "runtime_matches_registration": false,
+  "schema_version": 1,
+  "solver_started": false,
+  "supplemental_validation": {
+    "git_diff_check": "passed",
+    "py_compile_diagnostic_scripts": "passed",
+    "ruff_check": "passed",
+    "ruff_format_check": "passed"
+  },
+  "surface_round_result_sha256": "732a6ac03cbf341cec35d58937ce3bee2cfe84df3413766d6c6f51ad8ea9b4ab",
+  "working_branch": "exp/issue-45-export-qualification-2026-10-03"
+}

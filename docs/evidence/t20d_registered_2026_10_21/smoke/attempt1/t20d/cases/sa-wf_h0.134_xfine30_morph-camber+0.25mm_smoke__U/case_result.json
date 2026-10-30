@@ -1,0 +1,62 @@
+{
+  "amp": 0.25,
+  "courant": {
+    "last_max": 4.1260654,
+    "last_mean": 0.025583544,
+    "max": 4.1260654
+  },
+  "deadline_limited": true,
+  "delta_alpha_deg": 0.0,
+  "geometry": "sa-wf_h0.134_xfine30_morph-camber+0.25mm_smoke",
+  "h_over_c": 0.134,
+  "id": "sa-wf_h0.134_xfine30_morph-camber+0.25mm_smoke__U",
+  "kind": "U",
+  "mesh": "xfine30",
+  "mesh_cells_3d": 50303,
+  "mesh_msh_sha256": "afdc316b8032ff733e88d423f74fdd9483571e7b88f828f39347bce8c0cfc28e",
+  "method": "morph",
+  "mode": "smoke",
+  "pre_solver_wall_s": 19.254038718000174,
+  "s0_wall_s": 25.733281218000002,
+  "shape_mode": "camber",
+  "solver": {
+    "converged_in": null,
+    "foam_fatal": false,
+    "iterations": 200,
+    "last_initial_residuals": {
+      "ReThetat": null,
+      "Ux": 1.0684467e-07,
+      "Uy": 8.614401e-08,
+      "gammaInt": null,
+      "k": null,
+      "nuTilda": 1.7261436e-05,
+      "omega": null,
+      "p": 2.2815729e-06
+    },
+    "last_time": 0.002,
+    "nan_in_log": false,
+    "sigfpe": false
+  },
+  "source_run": "sa-wf_h0.134_xfine30_morph-camber+0.25mm_smoke__S0",
+  "source_status": "COMPLETED",
+  "stage2": {
+    "dt_s": 1e-05,
+    "end_iteration": null,
+    "end_time_s": 0.002,
+    "kind": "U",
+    "source_time": "100",
+    "transient_s": 0.0447
+  },
+  "stage2_wall_s": 127.97804529199993,
+  "stages": [
+    {
+      "peak_rss_mb_sampled": 159.023104,
+      "returncode": 0,
+      "stage": "pimpleFoam",
+      "timed_out": false,
+      "wall_s": 127.8946014300002
+    }
+  ],
+  "status": "COMPLETED",
+  "variant": ""
+}

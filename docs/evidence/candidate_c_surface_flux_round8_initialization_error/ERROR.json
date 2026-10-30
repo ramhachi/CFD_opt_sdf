@@ -1,0 +1,17 @@
+{
+  "criteria_sha256": "5f246f4a069fefc3cdf324952fe09fcd6759ba990e580d9637ddb131459e936b",
+  "detail": "ValueError('Julia exit 1: ERROR: LoadError: ArgumentError: Package StaticArrays not found in current path.\\n- Run `import Pkg; Pkg.add(\"StaticArrays\")` to install the StaticArrays package.\\nStacktrace:\\n [1] macro expansion\\n   @ ./loading.jl:2405 [inlined]\\n [2] macro expansion\\n   @ ./lock.jl:376 [inlined]\\n [3] __require(into::Module, mod::Symbol)\\n   @ Base ./loading.jl:2388\\n [4] require(into::Module, mod::Symbol)\\n   @ Base ./loading.jl:2364\\n [5] include(mod::Module, _path::String)\\n   @ Base ./Base.jl:306\\n [6] exec_options(opts::Base.JLOptions)\\n   @ Base ./client.jl:317\\n [7] _start()\\n   @ Base ./client.jl:550\\nin expression starting at /Users/sota/.codex/worktrees/four-track-orchestration/CFD2026_09/scripts/candidate_c_surface_flux_round8.jl:3\\n')",
+  "partial_artifacts": {
+    "solver.stderr.txt": "23889ef3fb2f8cf222b124fe216d1251444937168528f0e991e559985e86a78e",
+    "solver.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "status": "ERROR"
+}

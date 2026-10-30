@@ -1,0 +1,115 @@
+{
+  "kind": "pq3_3b_campaign_manifest_v2",
+  "schema_version": 3,
+  "status": "registered_preflight_pass_awaiting_campaign_start",
+  "immutable": true,
+  "created": "2026-09-23",
+  "purpose": "PQ3.3b OpenFOAM campaign configured as a two-phase restoration policy: Phase 1 restores mean(rho_projection[active]) to the registered target 0.018 through uniform design-space ascent with per-iteration parent re-evaluation; Phase 2 maintains that projected volume while optimizing downforce with a volume-corrected objective backend.",
+  "evidence_retained_unmodified": {
+    "diagnostic_preflight_v1": "docs/evidence/pq3_3b_preflight_2026_09.json",
+    "diagnostic_preflight_v2": "docs/evidence/pq3_3b_preflight_v2_2026_09.json",
+    "blocked_manifest": "docs/evidence/pq3_3b_campaign_manifest_2026_09.json",
+    "reason": "all three are kept unmodified as diagnostic evidence for the measured reachability history"
+  },
+  "evidence_interpretation_rule": "the measured local infeasibility is 'the registered multiplicative OC family cannot bracket the registered target 0.018 inside a single step's move box for the recorded parent and gradient'. Multi-iteration monotone decay and permanent unreachability of the target across any backend family are NOT recorded claims; the multi-step risk is a risk, not a measured impossibility.",
+  "input_checkpoint": {
+    "path": "work/pq3_3_volume_target/checkpoint_chunk02.json",
+    "iteration": 3,
+    "accepted": 3,
+    "objective": -2.72646951325
+  },
+  "fixed_configuration": {
+    "shape": [60, 32, 24],
+    "spacing_m": 0.05,
+    "filter": "cone_density_filter",
+    "filter_radius_m": 0.15,
+    "volume_basis": "mean(rho_projection[active])",
+    "v_max_projected": 0.07632566813424899,
+    "registered_target": 0.018,
+    "target_comparison_basis": "projected basis only; raw design mean is not an infeasibility basis",
+    "phase_1_backend": {
+      "id": "projected-volume-restoration-oc",
+      "tolerance": 0.0001,
+      "B_direction": "uniform design-space ascent on the joint active mask",
+      "bracket": "kappa bisected so that phi(candidate) = 0.018 through DesignTransform.forward; monotonicity of sampled phi(kappa) asserted fail-closed at every evaluation",
+      "unreachable_policy": "single-step frontier advance; acceptance requires the real primal, the projected-volume upper bound and the geometry gate",
+      "parent_refresh": "per accepted step: parent primal (and gradient at Phase 2) from the accepted state, via OpenFoamOracle, with transform.pullback_from_beta before Phase 2 consumes the gradient"
+    },
+    "phase_2_backend": {
+      "id": "volume-corrected-objective-oc",
+      "tolerance": 0.0001,
+      "recipe": [
+        "1. downforce gradient produces the design proposal (descent-sign, full move step)",
+        "2. the candidate's projected volume is measured through DesignTransform.forward",
+        "3. a signed uniform offset (scalar kappa_volume) is applied and bisected to restore V_projection = 0.018 with residual <= 1e-4",
+        "4. the corrected candidate is judged only by the campaign loop (real primal + Path B bracket); Phase 2 acceptance requires measured downforce improvement, not volume repair alone"
+      ],
+      "objective_ignored": "Phase 1 only; Phase 2 always works from a freshly recomputed downforce gradient"
+    },
+    "topology_state": "work/df2_fd_refresh/topology_state.json (unchanged)",
+    "template_parent": "work/df2_fd_refresh/template_frozen (unchanged)"
+  },
+  "levels": [
+    {
+      "name": "level_0_growth_b4_q15",
+      "b": 4.0,
+      "q": 15.0,
+      "move_limit": 0.05,
+      "max_iterations": 40
+    },
+    {
+      "name": "level_1_b8_q30",
+      "b": 8.0,
+      "q": 30.0,
+      "move_limit": 0.03,
+      "max_iterations": 40
+    },
+    {
+      "name": "level_2_b16_q100",
+      "b": 16.0,
+      "q": 100.0,
+      "move_limit": 0.01,
+      "max_iterations": 30
+    }
+  ],
+  "preflight_v3_reference": {
+    "path": "docs/evidence/pq3_3b_preflight_v3_2026_09.json",
+    "summary_pass": true,
+    "measured": {
+      "phase1_steps_to_target": {
+        "level_0_growth_b4_q15": 1,
+        "level_1_b8_q30": 3,
+        "level_2_b16_q100": 7
+      },
+      "mask_drift_max": 0.0,
+      "max_move_box_violation": 0.0,
+      "v_projection_max_excess": 0.0,
+      "phase2_volume_residual": 0.0,
+      "phase2_downforce_delta_measured": {
+        "level_0_growth_b4_q15": -0.44974,
+        "level_1_b8_q30": -0.062258,
+        "level_2_b16_q100": -0.001953
+      }
+    }
+  },
+  "campaign_start_conditions": [
+    "preflight v3 passes (summary.preflight_pass == true) -- recorded as satisfied in preflight_v3_reference",
+    "mask drift is 0 at every accepted step (recorded)",
+    "the Phase 2 volume-corrected proposal lands on the target with residual <= 1e-4 at every level (recorded)",
+    "restoration brackets exist at b=4, b=8 and b=16 (recorded)",
+    "scripts/pq3_3b_campaign_2026_09.py does NOT silently fall back to the registered multiplicative OC backend (backend id asserted in the runner; the runner itself is not yet written)",
+    "the full test suite passes (recorded at commit time)"
+  ],
+  "still_missing_before_campaign": [
+    "scripts/pq3_3b_campaign_2026_09.py runner with explicit backend-id assertion against project-volume-restoration-oc and volume-corrected-objective-oc",
+    "explicit user go/no-go on campaign start"
+  ],
+  "acceptance_gates_during_campaign": [
+    "per-level Exit: |mean(rho_projection[active]) - 0.018| <= 1e-4",
+    "mean(rho_projection[active]) <= 0.07632566813424899 at every accepted state",
+    "Phase 2 acceptance requires measured downforce improvement of the corrected candidate over the fresh parent state",
+    "final state: discreteness in rho_projection (mean_nd <= 0.01, max_rho >= 0.9) plus the stage_s_entry composite ready_for_stage_s verdict, both recorded as artifacts",
+    "no raw-design-mean argument may be used to declare the campaign infeasible"
+  ],
+  "next_step_owner": "user go/no-go on starting the campaign after this manifest is committed"
+}

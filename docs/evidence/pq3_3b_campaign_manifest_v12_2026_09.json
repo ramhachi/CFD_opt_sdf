@@ -1,0 +1,225 @@
+{
+  "accepted_count_carryover": {
+    "level_3_b128_margin": 5
+  },
+  "cap_stationarity_exit": {
+    "all_candidates_rejected_as": [
+      "machine_scale_update_rejected",
+      "volume_cap_unreachable"
+    ],
+    "does_not_claim_convergence": true,
+    "enabled": true,
+    "independent_repeat": true,
+    "last_accepted_objective_delta_max": 0.0001,
+    "min_accepted_iterations": "cumulative accepted count for the level including the registered carryover",
+    "reproducibility_tolerance": 1e-06
+  },
+  "carryover_last_metric": {
+    "objective_delta_abs": 0.2147434455599999,
+    "projected_field_mean_abs_delta": 0.0027509861019183093,
+    "projected_volume_delta_abs": 0.0023507268129856623
+  },
+  "carryover_metrics": [
+    {
+      "objective_delta_abs": 0.016157009389999866,
+      "projected_field_mean_abs_delta": 0.00134275782267423,
+      "projected_volume_delta_abs": 0.0008415392630348323
+    },
+    {
+      "objective_delta_abs": 0.051581967870000245,
+      "projected_field_mean_abs_delta": 0.0016950027649147376,
+      "projected_volume_delta_abs": 0.0010969762936440114
+    },
+    {
+      "objective_delta_abs": 0.2147434455599999,
+      "projected_field_mean_abs_delta": 0.0027509861019183093,
+      "projected_volume_delta_abs": 0.0023507268129856623
+    }
+  ],
+  "change": {
+    "description": "replay b=128 from v10 checkpoint 5 and reject every Phase 2 candidate whose rho_projection over active cells has mean(4*rho*(1-rho)) > 0.01",
+    "does_not_relax": [
+      "the projected-volume cap, response thresholds, extraction guard, convergence window, or clearance mask",
+      "the Stage S discreteness limit of 0.01"
+    ],
+    "evidence": {
+      "checkpoint_0005_mean_nd_b128": 0.008562322527443773,
+      "pq4_1_v3_ready_for_stage_s": false,
+      "v11_registered_window_met": true,
+      "v11_terminal_mean_nd_b128": 0.05553531941937787
+    },
+    "id": "projected-discreteness-acceptance-gate"
+  },
+  "claims_not_supported": [
+    "registration does not show that a feasible improving candidate exists under the new gate",
+    "registration does not start the long campaign or qualify Stage S",
+    "registration is not grid-independent or target-physics evidence"
+  ],
+  "convergence": {
+    "note": "the equality volume residual criterion is replaced by volume stability under the inequality policy",
+    "objective_delta_abs_max": 0.0001,
+    "projected_field_mean_abs_delta_max": 0.001,
+    "projected_volume_delta_abs_max": 0.001,
+    "window_accepted": 3
+  },
+  "entry_preflight": {
+    "artifact_path": "docs/evidence/pq3_3b_v12_entry_preflight_2026_09.json",
+    "requirement": "one fresh b=128 step must pass every v12 gate before the long campaign",
+    "script_path": "scripts/pq3_3b_v12_entry_preflight_2026_09.py",
+    "script_sha256": "4a5cd01618d667db39aa50fabc829641d6dc4995de5558ee5912ea5ae50e322e"
+  },
+  "filter_radius_m": 0.15,
+  "immutable": true,
+  "input_stop_state": {
+    "level": "level_3_b128_margin",
+    "rho_file_sha256": "339efabbdcfe14f62c908995de92a6d829b1af53947d13b7c33543628bfe4865",
+    "rho_path": "work/pq3_3b_campaign_v10/checkpoints/rho_0005.npy",
+    "rho_sha256": "2347aff4d1d84a2463b974491836e19db910e72a98a302ec87173ab08c6c0630",
+    "source": "v10 accepted checkpoint 5, the last checkpoint measured within mean_nd <= 0.01",
+    "state_path": "work/pq3_3b_campaign_v10/checkpoints/state_0005.json",
+    "state_sha256": "2b65fbcf8a7e34e40f4b009f587c2f30f333ec1655dd4aadca564620d9b6e0e3"
+  },
+  "kind": "pq3_3b_campaign_manifest_v12",
+  "levels": [
+    {
+      "b": 128.0,
+      "max_attempts": 300,
+      "min_accepted_iterations": 10,
+      "move_limit": 0.01,
+      "name": "level_3_b128_margin",
+      "q": 100.0
+    }
+  ],
+  "margin_mask": {
+    "density_vti": "work/pq3_3b_margin_masks/density.vti",
+    "density_vti_sha256": "8ec38505a742a136c992f145b38fdfae1a83bb90f745c7dde8843a687160a589",
+    "profile_margin_m": 0.25,
+    "rule": "allowed_mask = original allowed_mask AND |y_center| <= 0.475",
+    "state": "work/pq3_3b_margin_masks/topology_state.json",
+    "state_sha256": "146bc2f77178456784f2806fb7807be21a7886cea7962639bd768ac37fd01444",
+    "surface_reach_bound_m": 0.5
+  },
+  "noise_thresholds": {
+    "downforce": 1e-06,
+    "objective": 1e-06
+  },
+  "objective": {
+    "canonical": "J = -downforce",
+    "sense": "maximize",
+    "sense_sign": -1
+  },
+  "openfoam_image": "opencfd/openfoam-default:2512",
+  "openfoam_image_id": "sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319",
+  "output_directory": "work/pq3_3b_campaign_v12",
+  "path_b": {
+    "epsilon": 0.0008,
+    "noise_floor_abs": 1e-06,
+    "requires_centered_pair": true
+  },
+  "phase1_policy": {
+    "ascent_only": true,
+    "formation_target": 0.018,
+    "id": "projected-volume-restoration-oc",
+    "unchanged_from_v5": true
+  },
+  "phase2_policy": {
+    "alpha_ladder": [
+      1.0,
+      0.5,
+      0.25,
+      0.125,
+      0.0625
+    ],
+    "discreteness_field": "rho_projection",
+    "discreteness_mean_nd_max": 0.01,
+    "discreteness_metric": "mean(4*rho*(1-rho))",
+    "discreteness_scope": "active",
+    "extractability_fraction": 0.5,
+    "extractability_thresholds": [
+      0.4,
+      0.5
+    ],
+    "freeze_exact_box_faces": true,
+    "id": "objective-oc-inequality-v2",
+    "min_corrected_update_inf_norm": 1e-08,
+    "module": "src/cfd_sdf/phase2_inequality_policy.py",
+    "volume_cap_correction": true
+  },
+  "pinned_evidence": {
+    "campaign_v10_outcome": {
+      "path": "docs/evidence/pq3_3b_campaign_v10_outcome_2026_09.json",
+      "sha256": "cd61d11286ef2b9c6d67127b6df3aa62a04c2c285d6877508471c18d2133cdd4"
+    },
+    "campaign_v11_outcome": {
+      "path": "docs/evidence/pq3_3b_campaign_v11_outcome_2026_09.json",
+      "sha256": "e2cb35e188570ae4f3564369864d56f4f31fcad2dd194b9e00dd35b072ef0240"
+    },
+    "manifest_v10": {
+      "path": "docs/evidence/pq3_3b_campaign_manifest_v10_2026_09.json",
+      "sha256": "c32e1a6d7cd7495789c2cba97eb4cfa6a197d2ac5aeb82efeb9a5e95b7c1300b"
+    },
+    "manifest_v11": {
+      "path": "docs/evidence/pq3_3b_campaign_manifest_v11_2026_09.json",
+      "sha256": "74e3f426564adef8d3cd59d22950a6bceb741b590eaad6ac60f36a5ccc9b0b95"
+    },
+    "pq4_1_verdict_v3": {
+      "path": "docs/evidence/pq4_1_terminal_stage_s_entry_v3_2026_09.json",
+      "sha256": "ec8a3316d668237c788f45ccd40f4c1f94a24abb9020beb79d287111c8be4010"
+    }
+  },
+  "plan": {
+    "path": "docs/pq3_3b_post_v5_plan_2026_09.md",
+    "sha256": "7b6c1948f205098baab8225c3cdd0a38ca5bbed0f189a889e7b0bc7b9a5ce6ba"
+  },
+  "previous_registrations": {
+    "manifest_v10": {
+      "path": "docs/evidence/pq3_3b_campaign_manifest_v10_2026_09.json",
+      "sha256": "c32e1a6d7cd7495789c2cba97eb4cfa6a197d2ac5aeb82efeb9a5e95b7c1300b"
+    },
+    "manifest_v11": {
+      "path": "docs/evidence/pq3_3b_campaign_manifest_v11_2026_09.json",
+      "sha256": "74e3f426564adef8d3cd59d22950a6bceb741b590eaad6ac60f36a5ccc9b0b95"
+    }
+  },
+  "projection_eta": 0.5,
+  "registered_inputs": {
+    "canonical_grid": {
+      "path": "work/pq3_3b_margin_masks/topology_state.json",
+      "sha256": "146bc2f77178456784f2806fb7807be21a7886cea7962639bd768ac37fd01444"
+    },
+    "noise_calibration": {
+      "path": "docs/evidence/pq3_3b_noise_calibration_v3_2026_09.json",
+      "sha256": "3439b291a261ca0086fc259fe9703bd52c8525d032aa53b7cbffc9441374ab3b"
+    },
+    "problem_spec": {
+      "path": "work/pq0_2_smoke/project_downforce_volume.yaml",
+      "sha256": "90314ab78073330a784939b3fe03c24319d217f564d3ebad4dea9a29c82d75fe"
+    },
+    "solver_controls": {
+      "path": "work/df2_fd_refresh/template_frozen/system",
+      "sha256": "ab9a1979361ac26058c9da190e94aa85500f8ff8b48770dd67aad26e3ae63b9b"
+    },
+    "source_grid": {
+      "path": "work/df2_fd_refresh/source_state/provenance.json",
+      "sha256": "04ab53dbce816fbac6794285c09a70dced56a137a5e695315fb2018ec565a9e4"
+    },
+    "template_parent": {
+      "path": "work/df2_fd_refresh/template_frozen",
+      "sha256": "4cd0431d38f985ddc79a3afd45c60f379ff89fc8f30977e6c8b86b53d0448f46"
+    },
+    "template_trial": {
+      "path": "work/pq0_2_smoke/template_trial",
+      "sha256": "87a501c077ed33d9d23bc2b7a1c05314a6b99297b5d47c929a924334d8e45cdf"
+    }
+  },
+  "registered_target": 0.018,
+  "reject_stop_count": 1,
+  "restoration_step_cap": 60,
+  "resume_rule": "resume only from the verified objective_accepted rho chain; incomplete solver cases block automatic resume",
+  "schema_version": 11,
+  "source_tree_python_sha256": "f1172bf4bb7d17278fcf2cab942f9535c60aa0d11bd468d6c567032d991034a4",
+  "status": "registered_preflight_pending",
+  "terminal_rule": "the b=128 level must preserve mean_nd <= 0.01 on every accepted candidate and exit by the registered convergence window or the unchanged cap-stationarity rule; an independent terminal evaluation still does not establish Stage S readiness",
+  "v_max_projected": 0.07632566813424899,
+  "volume_tolerance": 0.0001
+}

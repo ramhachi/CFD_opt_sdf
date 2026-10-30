@@ -1,0 +1,116 @@
+{
+  "schema": "github_and_worktree_catchup_v1",
+  "captured_utc": "2026-10-22T13:48:19Z",
+  "reason": "User confirmed concurrent Claude progress; refreshed before continuing publication.",
+  "commands": [
+    "git fetch origin",
+    "git ls-remote --heads origin",
+    "gh pr list --state all",
+    "gh issue list --state all",
+    "git worktree list --porcelain",
+    "git status --porcelain for each existing worktree",
+    "ps comm metadata and lsof cwd for active Claude processes"
+  ],
+  "remote_heads": {
+    "integration": "1467af145250043c5faf3762052da110577190de",
+    "fid01": "78e1e76f564bd5e6c9a6c619280820ff83d7129f",
+    "review": "e2f7b5f984fa32ca9fe3a173d02a2cc21ea1dff8",
+    "main": "bdf65333f78948068cf0038ed7f099c2f034edbb"
+  },
+  "pull_request": {
+    "number": 71,
+    "state": "open",
+    "merged": false,
+    "head_sha": "e2f7b5f984fa32ca9fe3a173d02a2cc21ea1dff8",
+    "base_sha": "1467af145250043c5faf3762052da110577190de",
+    "url": "https://github.com/ramhachi/CFD_opt_sdf/pull/71"
+  },
+  "issues": [
+    {
+      "number": 62,
+      "state": "open",
+      "updated_at": "2026-10-21T19:15:27Z",
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/62",
+      "unchanged_from_previous_read": null
+    },
+    {
+      "number": 63,
+      "state": "open",
+      "updated_at": "2026-10-22T08:28:23Z",
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/63",
+      "unchanged_from_previous_read": true
+    },
+    {
+      "number": 64,
+      "state": "open",
+      "updated_at": "2026-10-22T08:28:27Z",
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/64",
+      "unchanged_from_previous_read": true
+    },
+    {
+      "number": 65,
+      "state": "open",
+      "updated_at": "2026-10-22T08:28:29Z",
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/65",
+      "unchanged_from_previous_read": true
+    },
+    {
+      "number": 66,
+      "state": "open",
+      "updated_at": "2026-10-22T08:28:25Z",
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/66",
+      "unchanged_from_previous_read": true
+    },
+    {
+      "number": 68,
+      "state": "open",
+      "updated_at": "2026-10-22T08:24:01Z",
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/68",
+      "unchanged_from_previous_read": true
+    },
+    {
+      "number": 69,
+      "state": "open",
+      "updated_at": "2026-10-22T08:24:03Z",
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/69",
+      "unchanged_from_previous_read": true
+    },
+    {
+      "number": 70,
+      "state": "open",
+      "updated_at": "2026-10-22T08:24:04Z",
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/70",
+      "unchanged_from_previous_read": true
+    }
+  ],
+  "claude_cfd_worktrees": [
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/dreamy-wu-de3512",
+      "head": "78e1e76f564bd5e6c9a6c619280820ff83d7129f",
+      "tracked_and_nonignored_untracked_changes": [],
+      "pid": 6955
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/status-review-parallel-work-67587c",
+      "head": "bdf65333f78948068cf0038ed7f099c2f034edbb",
+      "tracked_and_nonignored_untracked_changes": [],
+      "pid": 97423
+    }
+  ],
+  "active_fid_v3_container_count": 4,
+  "ignored_runtime_artifacts_excluded_from_clean_status": true,
+  "no_conversation_logs_read": true,
+  "conclusion": "No additional remote update or related issue-body change since the previous read. Local status is a timestamped observation, not a claim that no agent can edit later. Refresh again before push and preserve active FID ownership.",
+  "prepublication_refresh": {
+    "checked_utc": "2026-10-22T14:04:49Z",
+    "remote_heads": {
+      "origin/chore/roadmap-evidence-review-2026-10-22": "e2f7b5f984fa32ca9fe3a173d02a2cc21ea1dff8",
+      "origin/codex/kaggle-batch-migration": "1467af145250043c5faf3762052da110577190de",
+      "origin/claude/m3a-fid01": "78e1e76f564bd5e6c9a6c619280820ff83d7129f"
+    },
+    "pr71_open_head_matches_review_branch": true,
+    "fid_worktree_tracked_and_nonignored_changes": [],
+    "active_fid_v3_containers": 4,
+    "fid_ownership_and_processes_preserved": true
+  }
+}

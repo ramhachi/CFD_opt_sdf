@@ -1,0 +1,21 @@
+ERROR: LoadError: MethodError: no method matching GridSDF(::Array{Float32, 3}, ::Tuple{Float64, Float64, Float64}, ::Tuple{Float64, Float64, Float64}, ::Tuple{Int64, Int64, Int64}, ::Float64, ::Float32)
+The type `GridSDF` exists, but no method is defined for this combination of argument types when trying to construct it.
+
+Closest candidates are:
+  GridSDF(::A, ::Tuple{T, T, T}, ::Tuple{T, T, T}, ::Tuple{Int64, Int64, Int64}, ::T, !Matched::T) where {A, T}
+   @ Main.CFDSDFWaterLily ~/.codex/worktrees/issue45-root-certifier-integration/julia/CFDSDFWaterLily/src/GridSDFBody.jl:49
+  GridSDF(::AbstractArray{<:Real, 3}; origin, h, outside_value, margin_m)
+   @ Main.CFDSDFWaterLily ~/.codex/worktrees/issue45-root-certifier-integration/julia/CFDSDFWaterLily/src/GridSDFBody.jl:68
+
+Stacktrace:
+ [1] GridSDF(phi::Array{Float32, 3}; origin::Tuple{Float64, Float64, Float64}, h::Tuple{Float64, Float64, Float64}, outside_value::Float64, margin_m::Float32)
+   @ Main.CFDSDFWaterLily.GridSDFBody ~/.codex/worktrees/issue45-root-certifier-integration/julia/CFDSDFWaterLily/src/GridSDFBody.jl:99
+ [2] top-level scope
+   @ ~/.codex/worktrees/issue45-root-certifier-integration/scripts/waterlily_fd08_cpu_rehearsal.jl:40
+ [3] include(mod::Module, _path::String)
+   @ Base ./Base.jl:306
+ [4] exec_options(opts::Base.JLOptions)
+   @ Base ./client.jl:317
+ [5] _start()
+   @ Base ./client.jl:550
+in expression starting at /Users/sota/.codex/worktrees/issue45-root-certifier-integration/scripts/waterlily_fd08_cpu_rehearsal.jl:40

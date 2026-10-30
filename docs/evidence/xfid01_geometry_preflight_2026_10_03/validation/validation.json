@@ -1,0 +1,18 @@
+{
+  "baseline_failure_ids_path": "docs/evidence/four_track_baseline_2026_10_02/failure_ids.json",
+  "baseline_failure_ids_sha256": "71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a",
+  "baseline_ids_absent_in_current_run": [],
+  "command": "PYTHONPATH=src /Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/.venv/bin/python -m pytest -q --tb=short",
+  "comparison": "exact match",
+  "counts": {
+    "failed": 37,
+    "passed": 1339,
+    "skipped": 5
+  },
+  "current_failure_ids_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/validation/failure_ids.json",
+  "current_failure_ids_sha256": "71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a",
+  "full_log_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/validation/full_pytest.log",
+  "full_log_sha256": "d1020d6a3552176650c8df146bfa71d75c888bb25b6587f1e6bf0b6ede063086",
+  "kind": "xfid45_geometry_preflight_software_validation",
+  "new_failure_ids": []
+}

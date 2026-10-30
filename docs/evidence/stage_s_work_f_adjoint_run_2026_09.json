@@ -1,0 +1,61 @@
+{
+  "analytic": {
+    "control_points_csv": {
+      "path": "work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv",
+      "sha256": "29ddf189dcbca972734c4303d568d5290e1417e53e5fa485dba6fa4317c60f47"
+    },
+    "design_variable_derivative_files": {
+      "volumetricBSplinesadjDownforceadjDownforceESI425": "322158918cb57ca3b419eeac170bdb01070a173e55fd65671eade58eebae0889",
+      "volumetricBSplinesadjDragadjDragESI562": "67760e8098afe5df51352e2fbc362b78ff8f4b8f368c269af2abea2dfbaf2ffb"
+    },
+    "expected_solvers": [
+      "adjDownforce",
+      "adjDrag"
+    ],
+    "face_sens_normal_files": {
+      "562/faceSensNormaladjDragESI": "77ef69bc2c26fb434923abf495bc1a3ea21bbdef5f790467965a6d46f8ce8659"
+    },
+    "found_solvers": [
+      "adjDownforce",
+      "adjDrag"
+    ]
+  },
+  "case_dir": "work/stage_s_work_f_v1/adjoint/base",
+  "claims_not_supported": [
+    "no perturbation primal, FD value or shape update exists yet",
+    "the analytic-vs-FD agreement is not established by this artifact"
+  ],
+  "claims_supported": [
+    "the base adjoint case ran, both registered adjoint solvers converged, and each wrote its design-variable derivative file"
+  ],
+  "commands": [
+    "#!/usr/bin/env bash",
+    "set -euo pipefail",
+    "adjointOptimisationFoam | tee log.adjointOptimisationFoam"
+  ],
+  "kind": "stage_s_work_f_adjoint_run",
+  "log": {
+    "converged_markers": 3,
+    "path": "work/stage_s_work_f_v1/adjoint/base/log.adjointOptimisationFoam",
+    "sha256": "305e2358285a8692680f22b690e9f5ac903f5f6460677cb6257c277751bb8e8e"
+  },
+  "manifest": {
+    "path": "docs/evidence/stage_s_work_f_manifest_2026_09.json",
+    "sha256": "03b109f15e79036fe31a6ec76cd58831f8f834926aee2c0eaf654ea80b47dfdd"
+  },
+  "openfoam_run": {
+    "returncode": 0,
+    "timed_out": false
+  },
+  "preflight": {
+    "path": "docs/evidence/stage_s_work_f_adjoint_preflight_2026_09.json",
+    "sha256": "0f5f94fb50ac566952d384311bd6da91f91d008c0465b8bbfe05a264239e45b4"
+  },
+  "schema_version": 1,
+  "summary": {
+    "adjoint_converged": true,
+    "analytic_derivatives_ready": true,
+    "perturbation_allowed": false,
+    "shape_update_allowed": false
+  }
+}

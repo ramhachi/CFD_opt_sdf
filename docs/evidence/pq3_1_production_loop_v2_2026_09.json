@@ -1,0 +1,98 @@
+{
+  "artifact_id": "pq3_1_production_loop_2026_09",
+  "evidence_class": "bounded_closed_loop_production_regime",
+  "issue": "PQ3.1 discrete Stage T candidate",
+  "manifest": {
+    "path": "docs/evidence/pq3_1_production_loop_manifest_v2_2026_09.json",
+    "registered_before_computation": true
+  },
+  "stages": [
+    {
+      "stage": "stage1_grow",
+      "b": 0.0,
+      "q": 0.0,
+      "accepted": 5,
+      "rejected": 0,
+      "counts": {
+        "value_evaluations": 15,
+        "gradient_evaluations": 0,
+        "parent_evaluations": 6,
+        "bracket_evaluations": 5
+      },
+      "final_objective": -0.94858963612,
+      "constraints": {
+        "volume_fraction_max": -0.0018085073513522051
+      },
+      "mean_nd_design": 0.03354817058172704,
+      "max_rho_design": 0.5010724962272143,
+      "projected_volume": 0.016516805148647798,
+      "rho_sha256": "f8378bb942eb3bde1f7c414a3e6782c4608225ffb43e8e1e28df668fc4b78186",
+      "transform_hash": "d0eb8d5f57ea7f26576041c524e30aca15b89f42d76c80d76db0d27f1dec0047"
+    },
+    {
+      "stage": "stage2_sharpen",
+      "b": 8.0,
+      "q": 30.0,
+      "accepted": 11,
+      "rejected": 2,
+      "counts": {
+        "value_evaluations": 42,
+        "gradient_evaluations": 0,
+        "parent_evaluations": 12,
+        "bracket_evaluations": 11
+      },
+      "final_objective": -0.615226898565,
+      "constraints": {
+        "volume_fraction_max": 4.130181960326773e-11
+      },
+      "mean_nd_design": 0.032549375293454336,
+      "max_rho_design": 1.0,
+      "projected_volume": 0.018325312541301823,
+      "rho_sha256": "0f9480ac7e408911d7dd656d08a48d2a48eaf6b57b6b87f91a33ab923296c1d3",
+      "transform_hash": "f67f7fb5e1e6f10bde317198d0f1ed9c6b4df91ba6b44308f69bf39c9c068936"
+    },
+    {
+      "stage": "stage3_binarize",
+      "b": 16.0,
+      "q": 100.0,
+      "accepted": 0,
+      "rejected": 12,
+      "counts": {
+        "value_evaluations": 96,
+        "gradient_evaluations": 0,
+        "parent_evaluations": 1,
+        "bracket_evaluations": 0
+      },
+      "final_objective": -0.628146222813,
+      "constraints": {
+        "volume_fraction_max": 7.672955240805787e-05
+      },
+      "mean_nd_design": 0.032549375293454336,
+      "max_rho_design": 1.0,
+      "projected_volume": 0.01840204205240806,
+      "rho_sha256": "0f9480ac7e408911d7dd656d08a48d2a48eaf6b57b6b87f91a33ab923296c1d3",
+      "transform_hash": "297bf3794d1140d6774128e29a1ee14f5a2276c27308a5637c1999808eb8a750"
+    }
+  ],
+  "hard_gates": {
+    "mean_nd": 0.032549375293454336,
+    "mean_nd_limit": 0.01,
+    "mean_nd_pass": false,
+    "max_rho": 1.0,
+    "max_rho_min": 0.9,
+    "max_rho_pass": true,
+    "volume_limit": 0.018325312500000003,
+    "volume_feasible": false,
+    "accepted_steps": 16,
+    "discrete_candidate": false
+  },
+  "final_rho_sha256": "0f9480ac7e408911d7dd656d08a48d2a48eaf6b57b6b87f91a33ab923296c1d3",
+  "claims_supported": [
+    "the continuation loop runs with the real oracle, Path B brackets and per-trial primal"
+  ],
+  "claims_not_supported": [
+    "no Stage S claim",
+    "no target-physics claim",
+    "no grid-independent claim"
+  ]
+}

@@ -136,7 +136,7 @@ def prepare_fixed_grid_primal_case(
     perturbation_amplitude: float = 0.05,
     smoothing_radius_cells: float = 1.0,
     solid_threshold: float = 0.5,
-    adjoint_iterations: int = 1,
+    adjoint_iterations: int | None = None,
     docker_image: str = DEFAULT_OPENFOAM_DOCKER_IMAGE,
     problem_binding: dict[str, object] | None = None,
 ) -> FixedGridPrimalCaseArtifacts:
@@ -151,8 +151,15 @@ def prepare_fixed_grid_primal_case(
         raise ValueError("smoothing_radius_cells must be non-negative")
     if not (0.0 <= solid_threshold <= 1.0):
         raise ValueError("solid_threshold must be within [0, 1]")
-    if adjoint_iterations < 0:
-        raise ValueError("adjoint_iterations must be non-negative")
+    if adjoint_iterations is not None and (
+        isinstance(adjoint_iterations, bool)
+        or not isinstance(adjoint_iterations, int)
+        or adjoint_iterations <= 0
+    ):
+        raise ValueError(
+            "adjoint_iterations must be a positive integer, or None to keep the "
+            "template's own adjoint solutionControls.nIters (its qualified default)"
+        )
 
     density_state = load_fixed_grid_density_state(topology_state_json)
     template = _resolve_template_case(density_state, template_case_dir)
@@ -269,7 +276,7 @@ def run_fixed_grid_primal_case(
     perturbation_amplitude: float = 0.05,
     smoothing_radius_cells: float = 1.0,
     solid_threshold: float = 0.5,
-    adjoint_iterations: int = 1,
+    adjoint_iterations: int | None = None,
     docker_image: str = DEFAULT_OPENFOAM_DOCKER_IMAGE,
     problem_binding: dict[str, object] | None = None,
 ) -> FixedGridPrimalCaseArtifacts:
@@ -326,7 +333,7 @@ def run_fixed_grid_primal_suite(
     perturbation_amplitude: float = 0.05,
     smoothing_radius_cells: float = 1.0,
     solid_threshold: float = 0.5,
-    adjoint_iterations: int = 1,
+    adjoint_iterations: int | None = None,
     docker_image: str = DEFAULT_OPENFOAM_DOCKER_IMAGE,
     reproducibility_tolerance: float = 1.0e-10,
 ) -> FixedGridPrimalSuiteArtifacts:
@@ -506,6 +513,15 @@ def summarize_fixed_grid_primal_case(
         "density_input": metadata.get("density_input"),
         "mask_counts": metadata.get("mask_counts"),
         "openfoam_run": run_result,
+        "qualification_inputs": _summary_qualification_inputs(
+            case_dir,
+            metadata_path=metadata_path,
+        ),
+        "fixed_grid_convergence_qualification": _fixed_grid_convergence_qualification(
+            case_dir,
+            log_text=log_text,
+            run_result=run_result,
+        ),
         "objective_files": {
             "drag": drag["path"] if drag else None,
             "downforce": downforce["path"] if downforce else None,
@@ -514,6 +530,216 @@ def summarize_fixed_grid_primal_case(
     summary_path = case_dir / "fixed_grid_primal_summary.json"
     summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     return summary
+
+
+def _summary_qualification_inputs(
+    case_dir: Path,
+    *,
+    metadata_path: Path,
+) -> dict[str, object]:
+    inputs: dict[str, object] = {}
+    for key, path in (
+        ("case_metadata", metadata_path),
+        ("optimisation_dict", case_dir / "system" / "optimisationDict"),
+        ("solver_log", case_dir / "log.adjointOptimisationFoam"),
+    ):
+        inputs[key] = (
+            {
+                "path": str(path.resolve()),
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            }
+            if path.is_file()
+            else None
+        )
+    return inputs
+
+
+def _fixed_grid_convergence_qualification(
+    case_dir: Path,
+    *,
+    log_text: str,
+    run_result: dict[str, object] | None,
+) -> dict[str, object]:
+    """Bind runtime completion and residualControl evidence for Gate 0/C0."""
+
+    optimisation_path = case_dir / "system" / "optimisationDict"
+    optimisation_text = _read_text_if_exists(optimisation_path)
+    solver_results = {
+        solver_id: _solver_residual_qualification(
+            log_text,
+            optimisation_text=optimisation_text,
+            solver_id=solver_id,
+            primal=solver_id == "op1",
+        )
+        for solver_id in ("op1", *_ADJOINT_SOLVER_IDS)
+    }
+    run_ok = (
+        isinstance(run_result, dict)
+        and run_result.get("ok") is True
+        and run_result.get("returncode") == 0
+        and run_result.get("dry_run") is False
+        and run_result.get("timed_out") is False
+    )
+    completed = _solver_completed(log_text)
+    qualified = bool(
+        run_ok
+        and completed
+        and solver_results["op1"]["qualified"]
+        and any(solver_results[item]["qualified"] for item in _ADJOINT_SOLVER_IDS)
+    )
+    reasons: list[str] = []
+    if not run_ok:
+        reasons.append("openfoam_run_not_successful")
+    if not completed:
+        reasons.append("solver_log_not_cleanly_completed")
+    for solver_id, result in solver_results.items():
+        if not result["qualified"]:
+            reasons.append(f"solver_not_residual_qualified:{solver_id}")
+    return {
+        "qualified": qualified,
+        "run_ok": run_ok,
+        "solver_completed": completed,
+        "solvers": solver_results,
+        "reasons": reasons,
+    }
+
+
+_RESIDUAL_ROW_PATTERN = re.compile(
+    r"Solving for ([A-Za-z0-9_.*+-]+), Initial residual = ([-+0-9.eE]+), "
+    r"Final residual = ([-+0-9.eE]+), No Iterations (\d+)"
+)
+_SCALAR_PATTERN = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?"
+
+
+def _solver_residual_qualification(
+    log_text: str,
+    *,
+    optimisation_text: str,
+    solver_id: str,
+    primal: bool,
+) -> dict[str, object]:
+    markers = list(
+        re.finditer(
+            rf"\b{re.escape(solver_id)}\s+solution\s+converged\s+in\s+(\d+)\s+iterations\b",
+            log_text,
+        )
+    )
+    criteria = _residual_control_criteria(optimisation_text, solver_id)
+    if not markers or not criteria:
+        return {
+            "qualified": False,
+            "converged_marker": bool(markers),
+            "iterations": int(markers[-1].group(1)) if markers else None,
+            "criteria": criteria,
+            "latest_by_field": {},
+            "reasons": [
+                *([] if markers else ["missing_convergence_marker"]),
+                *([] if criteria else ["missing_residual_control_criteria"]),
+            ],
+        }
+
+    marker = markers[-1]
+    if primal:
+        earlier = [item.end() for item in re.finditer(r"\b\w+\s+solution\s+converged\s+in\s+\d+\s+iterations\b", log_text[: marker.start()])]
+        start = earlier[-1] if earlier else 0
+    else:
+        starts = list(
+            re.finditer(
+                rf"(?m)^\s*Adjoint\s+solver\s+{re.escape(solver_id)}\s*$",
+                log_text[: marker.start()],
+            )
+        )
+        if not starts:
+            return {
+                "qualified": False,
+                "converged_marker": True,
+                "iterations": int(marker.group(1)),
+                "criteria": criteria,
+                "latest_by_field": {},
+                "reasons": ["missing_adjoint_solver_start_marker"],
+            }
+        start = starts[-1].end()
+
+    latest: dict[str, float] = {}
+    for residual in _RESIDUAL_ROW_PATTERN.finditer(log_text[start : marker.start()]):
+        value = float(residual.group(3))
+        if np.isfinite(value) and value >= 0.0:
+            latest[residual.group(1)] = value
+
+    checks: list[dict[str, object]] = []
+    for field_pattern, threshold in criteria:
+        try:
+            matcher = re.compile(field_pattern)
+        except re.error:
+            checks.append(
+                {
+                    "field_pattern": field_pattern,
+                    "threshold": threshold,
+                    "status": "fail",
+                    "reason": "invalid_field_pattern",
+                }
+            )
+            continue
+        matched = {field: value for field, value in latest.items() if matcher.fullmatch(field)}
+        observed = max(matched.values()) if matched else None
+        checks.append(
+            {
+                "field_pattern": field_pattern,
+                "threshold": threshold,
+                "observed_max": observed,
+                "matched_fields": sorted(matched),
+                "status": "pass"
+                if observed is not None and observed <= threshold
+                else "fail",
+            }
+        )
+    qualified = bool(checks) and all(item["status"] == "pass" for item in checks)
+    return {
+        "qualified": qualified,
+        "converged_marker": True,
+        "iterations": int(marker.group(1)),
+        "criteria": [
+            {"field_pattern": pattern, "threshold": threshold}
+            for pattern, threshold in criteria
+        ],
+        "latest_by_field": latest,
+        "checks": checks,
+        "reasons": [] if qualified else ["final_residual_exceeds_or_misses_criterion"],
+    }
+
+
+def _residual_control_criteria(
+    optimisation_text: str,
+    solver_id: str,
+) -> list[tuple[str, float]]:
+    try:
+        solver_block = _named_dictionary_block(optimisation_text, solver_id)
+        controls = _named_dictionary_block(solver_block, "solutionControls")
+        residuals = _named_dictionary_block(controls, "residualControl")
+    except ValueError:
+        return []
+    criteria: list[tuple[str, float]] = []
+    pattern = re.compile(
+        rf'(?m)^\s*"?(?P<field>[A-Za-z_][A-Za-z0-9_.*+-]*)"?\s+'
+        rf'(?P<value>{_SCALAR_PATTERN})\s*;'
+    )
+    for match in pattern.finditer(residuals):
+        value = float(match.group("value"))
+        if np.isfinite(value) and value >= 0.0:
+            criteria.append((match.group("field"), value))
+    return criteria
+
+
+def _named_dictionary_block(text: str, name: str) -> str:
+    header = re.search(
+        rf"(?m)^[ \t]*{re.escape(name)}[ \t]*\n[ \t]*\{{",
+        text,
+    )
+    if header is None:
+        raise ValueError(f"dictionary block {name!r} is missing")
+    open_brace = text.index("{", header.end() - 1)
+    close_brace = _matching_brace_index(text, open_brace)
+    return text[open_brace : close_brace + 1]
 
 
 def _resolve_manifest_path(directory: Path, value: object) -> Path:
@@ -921,12 +1147,25 @@ rm -rf 0 [1-9]* processor* VTK postProcessing optimisation log.* openfoam_run_su
     )
 
 
+_ADJOINT_SOLVER_IDS = ("as1", "downforce")
+
+
 def _patch_optimisation_dict(
     path: Path,
     *,
     fixed_zero_zone_name: str,
-    adjoint_iterations: int,
+    adjoint_iterations: int | None,
 ) -> None:
+    """Patch the fixed-zero cell zone and, optionally, adjoint nIters caps.
+
+    ``adjoint_iterations`` is applied only inside the named
+    ``adjointSolvers.<id>.solutionControls`` block for each id in
+    :data:`_ADJOINT_SOLVER_IDS`, located by brace matching rather than a blind
+    value substitution.  ``None`` leaves the template's own adjoint
+    ``nIters`` untouched (its qualified default); the primal solver's
+    ``nIters`` is never touched by this function.
+    """
+
     text = path.read_text(encoding="utf-8", errors="replace")
     text = re.sub(
         r"fixedZeroPorousZones\s*\([^;]*?\)\s*;",
@@ -934,12 +1173,53 @@ def _patch_optimisation_dict(
         text,
         flags=re.DOTALL,
     )
-    text = re.sub(
-        r"\bnIters\s+4000\s*;",
-        f"nIters {adjoint_iterations};",
+    if adjoint_iterations is not None:
+        for solver_id in _ADJOINT_SOLVER_IDS:
+            text = _patch_named_block_niters(text, solver_id, adjoint_iterations)
+    path.write_text(text, encoding="utf-8", newline="\n")
+
+
+def _patch_named_block_niters(text: str, solver_id: str, niters: int) -> str:
+    """Replace the single ``nIters`` entry inside the named dict block only.
+
+    Templates that do not declare this solver at all (e.g. a primal-only
+    diagnostic template with no ``downforce`` adjoint) are left untouched:
+    absence of the block is not itself ambiguous.  Once the block is found,
+    it must contain exactly one ``nIters`` entry, or this refuses rather than
+    guessing which one to patch.
+    """
+
+    header = re.search(
+        rf"(?m)^(?P<indent>[ \t]*){re.escape(solver_id)}[ \t]*\n(?P=indent)\{{",
         text,
     )
-    path.write_text(text, encoding="utf-8", newline="\n")
+    if header is None:
+        return text
+    open_brace = text.index("{", header.end() - 1)
+    close_brace = _matching_brace_index(text, open_brace)
+    block = text[open_brace : close_brace + 1]
+    matches = list(re.finditer(r"\bnIters\s+\d+\s*;", block))
+    if len(matches) != 1:
+        raise ValueError(
+            f"optimisationDict {solver_id!r} solutionControls must declare exactly "
+            f"one nIters entry; found {len(matches)}"
+        )
+    match = matches[0]
+    patched_block = block[: match.start()] + f"nIters {niters};" + block[match.end() :]
+    return text[:open_brace] + patched_block + text[close_brace + 1 :]
+
+
+def _matching_brace_index(text: str, open_index: int) -> int:
+    depth = 0
+    for index in range(open_index, len(text)):
+        char = text[index]
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return index
+    raise ValueError("optimisationDict has unbalanced braces")
 
 
 def _patch_control_dict_libraries(path: Path, *, library_path: str | None) -> None:
@@ -1045,7 +1325,22 @@ def _case_metadata(
             "mesh_policy": "fixed",
             "remeshing_per_iteration": False,
             "adjoint_iterations": adjoint_iterations,
+            "audit_only": adjoint_iterations is not None,
+            "audit_only_reason": (
+                None
+                if adjoint_iterations is None
+                else "adjoint_iterations overrides the template's qualified nIters; "
+                "gradients from this case are diagnostic only and must not be exported"
+            ),
             "custom_objective_library": library_path,
+        },
+        "qualification_inputs": {
+            "optimisation_dict": {
+                "path": str(case_dir / "system" / "optimisationDict"),
+                "sha256": hashlib.sha256(
+                    (case_dir / "system" / "optimisationDict").read_bytes()
+                ).hexdigest(),
+            },
         },
         "run_policy": {
             "uses_stl_extraction": False,

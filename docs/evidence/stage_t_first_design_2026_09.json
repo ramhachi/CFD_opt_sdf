@@ -1,0 +1,224 @@
+{
+  "artifact_locations": {
+    "candidate_a_density_vti": "work/stage_t_python_loop_export/candidate_a_seed_reshape/density.vti",
+    "candidate_a_final_report_json": "work/stage_t_python_loop/final_report.json",
+    "candidate_a_history_json": "work/stage_t_python_loop/history.json",
+    "candidate_a_iso_surface_stl": "work/stage_t_python_loop_export/candidate_a_seed_reshape/iso_surface.stl",
+    "candidate_a_manifest_json": "work/stage_t_python_loop_export/candidate_a_seed_reshape/candidate_manifest.json",
+    "candidate_a_topology_state_json": "work/stage_t_python_loop_export/candidate_a_seed_reshape/topology_state.json",
+    "candidate_b_density_vti": "work/stage_t_python_loop_export/candidate_b_zero_floor/density.vti",
+    "candidate_b_final_report_json": "work/stage_t_python_loop_v2_floor/final_report.json",
+    "candidate_b_history_json": "work/stage_t_python_loop_v2_floor/history.json",
+    "candidate_b_iso_surface_stl": "work/stage_t_python_loop_export/candidate_b_zero_floor/iso_surface.stl",
+    "candidate_b_manifest_json": "work/stage_t_python_loop_export/candidate_b_zero_floor/candidate_manifest.json",
+    "candidate_b_topology_state_json": "work/stage_t_python_loop_export/candidate_b_zero_floor/topology_state.json",
+    "empty_design_primal_summary_json": "work/stage_t_python_loop_diagnostics/empty_design/case/fixed_grid_primal_summary.json",
+    "loop_script": "scripts/stage_t_python_loop.py",
+    "note": "work/ is intentionally Git-ignored (.gitignore); hashes preserve the observed local evidence identity.",
+    "optimizer_diagnosis_doc": "docs/stage_t_optimizer_diagnosis_2026_09.md",
+    "p0_baseline_primal_summary_json": "work/p0_closed_loop/primal_base/fixed_grid_primal_summary.json",
+    "problem_spec_snapshot_json": "work/p0_closed_loop/problem_spec_snapshot.json",
+    "project_yaml": "work/p0_closed_loop/project.yaml"
+  },
+  "artifact_sha256": {
+    "candidate_a_density_vti": "950ba704915065bae7e861bbfdf043cc28f6ff8da4a7b5f22d19115caa53980c",
+    "candidate_a_final_report_json": "d8304b0cf5105934fb3bbdaea07c8bf658198c30cc383d6108596448a6fbef17",
+    "candidate_a_history_json": "3b5210042ab4c011977b822220c8b317a0558f7ed4841768f3e3c1b74d672fbc",
+    "candidate_a_iso_surface_stl": "bd9b06b465d7c2288da09721f9f1c0335e5fc4b65847e3dc802e979eeb05f80d",
+    "candidate_a_manifest_json": "fc1e0d8dd5e7369d844bcdbd525454866fe53ccb5ee802366d1a7f65c9f61dc2",
+    "candidate_a_topology_state_json": "3cfc1711ee712bf446191cb17df472b966b57fe9d89636f17925a1a3a76c28e2",
+    "candidate_b_density_vti": "19c8967d0917f9717b84a871d7618a4c5232ddbb9877c4d3baf5872e5536788f",
+    "candidate_b_final_report_json": "7884b8919f74d27815597b1cf27b815ea63c0308eacebd2fc783f5ffa71e1001",
+    "candidate_b_history_json": "573b800f7e6caf9bf44dc6d55b25a1df1bff7fab8d1090bd7102b92bf1a29d2e",
+    "candidate_b_iso_surface_stl": "105c9940098720ff84e3f35921f6ceec5ccaa4de5fe31cc4b1b1b1ea27bb0172",
+    "candidate_b_manifest_json": "ed35287775fefcbefd6bd1550f653c93ee838f501b584da8619c51cfd1582688",
+    "candidate_b_topology_state_json": "b42189cd7f134cb8069aec2ae4c50e073ef32fb485020e71f5ef63b2f270392b",
+    "empty_design_primal_summary_json": "cfa856bf70c1e725d99ba06bf204ad936621353aa040ba0f2304c26191eac768",
+    "loop_script": "85cdb7fb25f871485a387c968d08d519284ae7c6ffe4f6b07ef8d609b5e8f9bb",
+    "optimizer_diagnosis_doc": "71bef25618ccc5b66aff081c6e509ebc32c06425afbd68e43690285a2c8eb648",
+    "p0_baseline_primal_summary_json": "ba23c2ba4f959a4472cb30e46d52711a96c8a56d8e6e0e61c5dec35ab46aead4",
+    "problem_spec_snapshot_json": "484f1a56106783fd17f752fbeaeafc213c86d1972b0ba857afb3e120bf8a755c",
+    "project_yaml": "554eb6f57f3adea0f5bba4773b9aa8bdc1d416b939034c3ce3223b075e354c51"
+  },
+  "branch": "feat/p0-openfoam-closed-loop",
+  "case": {
+    "active_design_cell_count": 19200,
+    "canonical_grid_cell_count": 46080,
+    "note_on_active_design_cell_count": "19200 is the active-cell count reported by this loop's own density histogram (work/stage_t_python_loop/final_report.json and work/stage_t_python_loop_v2_floor/final_report.json: density_histogram.active_cell_count), distinct from the 2909-cell active_design_mask_true_count recorded against the OpenFOAM source grid in docs/evidence/p0_openfoam_closed_loop_2026_09.json. Both figures are taken as reported by their respective artifacts; this file does not reconcile the difference.",
+    "openfoam_source_grid_cell_count": 8192,
+    "problem_id": "p0_closed_loop_fixture",
+    "problem_spec_sha256": "f8dfb8f5795eb44dc916bf42c13c4e83440c87970e627cf48ddc0b7b89d55e4c",
+    "reference_quantities": {
+      "Aref_m2": 0.64,
+      "UInf": 1.0,
+      "note": "Aref/UInf are baked into the fixed-grid case template used by the P0 baseline and every iteration of both candidate loops, so downforce_coefficient and drag_coefficient are mutually comparable across baseline, candidate A, and candidate B. This differs from the top-level project.yaml reference_values (area_m2=1.2), which is not what these coefficients are normalized by."
+    },
+    "reynolds_number_scope_limit": {
+      "declared_problem_spec_density_kg_m3": 1.225,
+      "declared_problem_spec_dynamic_viscosity_pa_s": 1.8e-05,
+      "declared_problem_spec_freestream_velocity_mps": 30.0,
+      "declared_problem_spec_kinematic_viscosity_m2_s": 1.4694e-05,
+      "note": "U/nu for the simulated fixture is about 4.9e-05 times U/nu for the ProblemSpec's own declared operating point -- roughly four orders of magnitude apart, independent of which characteristic length is used to form Re (the length cancels in this ratio). Using the canonical grid's own streamwise extent (3.0 m) as a characteristic length gives Re = U*L/nu ~= 300 (laminar) for the simulated fixture, versus Re ~= 6.1e6 for the declared operating point. These results are about the simulated fixture, not about the declared problem.",
+      "simulated_freestream_velocity_mps": 1.0,
+      "simulated_kinematic_viscosity_m2_s": 0.01,
+      "source_declared": "work/p0_closed_loop/problem_spec_snapshot.json flow_cases[0]",
+      "source_simulated": "work/stage_t_python_loop_diagnostics/empty_design/case/0.orig/U (internalField uniform (1 0 0)) and constant/transportProperties (nu 1e-02)",
+      "velocity_over_nu_ratio_simulated_to_declared": 4.898e-05
+    }
+  },
+  "decision": "Stage T produced its first two real designs. The native OpenFOAM ISQP optimizer path was diagnosed as unfixable-in-place (three independent defects: an unsatisfiable volume constraint, a fixed elastic-variable signature confirming that infeasibility, and a linear interpolation function that disables the 0.5 projection; see docs/stage_t_optimizer_diagnosis_2026_09.md, not restated here) and optimization was moved permanently to Python, keeping OpenFOAM as a primal/adjoint evaluator only. A Python optimality-criteria loop (volume by bisection, per-cell move limit, reject-on-worse with re-evaluation by a converged primal run) driven by the FD-verified canonical gradient from work/p0_closed_loop produced two watertight, two-component, non-degenerate iso-surfaces -- the first Stage T has ever produced. This is capability and numerical evidence for one 8192-cell laminar fixture, one objective, one seed, one machine. It does not constitute target-physics or benchmark evidence, and it does not qualify any solver backend. P0 qualification remains No-Go: these are Brinkman surrogate forces from a volumetric momentum-penalty integral, not yet cross-checked against body-fitted RANS on the same geometry, and a real defect in the loop's move-limit ratchet (recorded below) must be fixed before iteration counts from this loop can be trusted at face value.",
+  "defects": {
+    "move_limit_ratchet_never_resets": {
+      "iteration_26_attempt_3": {
+        "accepted": true,
+        "actual_delta_J": 0.0,
+        "downforce_coefficient": 3.18804795087,
+        "move_limit": 6.462348535570529e-29
+      },
+      "run": "work/stage_t_python_loop_v2_floor",
+      "statement": "The loop's move_limit is a ratchet that halves on every rejection and never resets or floors. After iteration 4 it halved through iterations 5-26, underflowing toward zero. history.json records iteration 26 attempt 3 as accepted with move_limit = 6.462348535570529e-29 and actual_delta_J = 0.0 -- max|rho_026 - rho_004| is on the order of 1e-29, a floating-point no-op, not a real step. This is recorded as a defect in the accept/reject loop to fix (move_limit needs a floor or a reset-on-plateau rule), not as evidence that the physical optimum lies beyond volume fraction 0.031."
+    }
+  },
+  "degenerate_signature_comparison": {
+    "statement": "Every prior Stage T iso-surface (native ISQP path, before the optimizer decision) was a fixed degenerate signature: 5120 faces, 6 connected components, bounds exactly equal to the domain bounding box (source: work/stage_t_python_loop/final_report.json and work/stage_t_python_loop_v2_floor/final_report.json, degenerate_signature_for_comparison; both runs' files record the identical face_count=5120, component_count=6, and box bounds [-1,-0.8,-0.6] to [2,0.8,0.6]; further detail on per-component sizes and vertex count is narrated in docs/phase_plan.md and is not independently re-verified in this file). Both new candidates are 968-972 faces, 2 connected components, watertight, with bounds well inside the domain -- a checkable, non-degenerate contrast."
+  },
+  "empty_design_check": {
+    "downforce_coefficient": 0.0,
+    "drag_coefficient": 0.0,
+    "primal_converged": false,
+    "source": "work/stage_t_python_loop_diagnostics/empty_design/case/fixed_grid_primal_summary.json",
+    "statement": "An all-rho=0 design returns drag_coefficient = downforce_coefficient = 0.0 exactly, confirming porousDirectionalForce carries no geometry-independent offset. This is a Brinkman volumetric-force integral over the porous region, not a surface force on a wall -- which is why a body-fitted cross-fidelity check is needed before these numbers mean anything physical. The run's own primal_converged flag is false; the zero is structural (alpha=0 makes the integral vanish identically) and does not rest on that flag."
+  },
+  "environment": {
+    "docker_image": "opencfd/openfoam-default:2512",
+    "execution": "Docker",
+    "host": "Apple M4",
+    "host_memory_gib": 32,
+    "openfoam_version": "2512",
+    "solver": "adjointOptimisationFoam"
+  },
+  "evidence_classes": [
+    "capability",
+    "numerical"
+  ],
+  "implementation_commit": "23504b4",
+  "kind": "stage_t_first_design_evidence",
+  "overall_status": "incomplete",
+  "p0_gate_status": "no_go",
+  "recorded_date": "2026-09-12",
+  "references": {
+    "canonical_transfer_evidence": "docs/evidence/p0_canonical_transfer_2026_09.json",
+    "closed_loop_gradient_evidence": "docs/evidence/p0_openfoam_closed_loop_2026_09.json",
+    "evidence_class_definitions": "docs/phase_plan.md section 3",
+    "loop_script": "scripts/stage_t_python_loop.py",
+    "optimizer_diagnosis": "docs/stage_t_optimizer_diagnosis_2026_09.md"
+  },
+  "results": {
+    "baseline": {
+      "cells_above_0_5": null,
+      "downforce_coefficient": 0.775975568032,
+      "drag_coefficient": null,
+      "iso_surface": "n/a (no body: a 0.5 iso-surface of a field that never exceeds 0.5 is empty)",
+      "source": "work/p0_closed_loop/primal_base/fixed_grid_primal_summary.json",
+      "volume_fraction": 0.01625
+    },
+    "candidate_a_seed_reshape": {
+      "candidate_id": "stage_t_python_loop/iter_011_attempt_00",
+      "density_histogram": {
+        "active_cell_count": 19200,
+        "cells_above_0_5": 530,
+        "volume_fraction": 0.018745833719149233
+      },
+      "iso_surface_metrics": {
+        "component_count": 2,
+        "face_count": 968,
+        "iso_value": 0.5,
+        "vertex_count": 488,
+        "volume_m3": 0.024898043350899634,
+        "watertight": true
+      },
+      "iterations_accepted": 12,
+      "iterations_accepted_note": "every iteration (0-11) accepted on its first attempt; final_report.json n_iterations_recorded == n_accepted == 12.",
+      "iterations_recorded": 12,
+      "run_directory": "work/stage_t_python_loop",
+      "stage_t_predicted_forces": {
+        "downforce_coefficient": 0.821317856508,
+        "drag_coefficient": 3.79689159129,
+        "primal_converged": true
+      }
+    },
+    "candidate_b_zero_floor": {
+      "accepted_steps": {
+        "count": 5,
+        "iterations": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "note": "iterations 0-4, attempt 0, all accepted=true, each re-evaluated by a converged primal run before acceptance (work/stage_t_python_loop_v2_floor/history.json)."
+      },
+      "candidate_id": "stage_t_python_loop_v2_floor/iter_004_attempt_00",
+      "density_histogram": {
+        "active_cell_count": 19200,
+        "cells_above_0_5": 602,
+        "volume_fraction": 0.030892707946768495
+      },
+      "description": "Zero-floor OC variant (initial density floor 0.001) so cells starting at exact rho=0 can be reached by a multiplicative update. Iteration 4 attempt 0 is the last meaningful accepted step; see defects.move_limit_ratchet_never_resets below for why the run's nominal final iteration (26) is not a sixth real improving step.",
+      "iso_surface_metrics": {
+        "component_count": 2,
+        "face_count": 972,
+        "iso_value": 0.5,
+        "vertex_count": 490,
+        "volume_m3": 0.019186900763560864,
+        "watertight": true
+      },
+      "linearization_breakdown": {
+        "actual_delta_J": -1.6096719812379998,
+        "iteration": 0,
+        "predicted_delta_J": -7.521356456774241,
+        "ratio_actual_over_predicted": 0.214,
+        "statement": "The accepted steps in this run are well outside the small-perturbation regime the finite-difference suite validated (eps <= 1e-3 on 624 cells; see docs/evidence/p0_openfoam_closed_loop_2026_09.json fd_verification.support_cell_count). At iteration 0 the linear step model predicted delta_J = -7.5214 against an actual -1.6097, a ratio of about 0.21. The direction was correct in sign on every accepted step, and every step was re-evaluated by a converged primal run before acceptance, so the improvement is real -- but the linear step model itself is not quantitatively trustworthy at this move-limit scale."
+      },
+      "rejections_from_iteration_5_onward": {
+        "status": "iterations 5 through 27 (except the no-op at iteration 26 attempt 3, see defect below) were all rejected: 'objective got worse than the current accepted state'."
+      },
+      "run_directory": "work/stage_t_python_loop_v2_floor",
+      "stage_t_predicted_forces": {
+        "downforce_coefficient": 3.18804795087,
+        "drag_coefficient": 9.80527923209,
+        "primal_converged": true
+      },
+      "volume_plateau": {
+        "achieved_volume_fraction": 0.030892707946768495,
+        "statement": "v_target ramped to 0.2 while the achieved volume fraction stalled near 0.0309 because every attempt to add material past that point measurably reduced downforce and was rejected. This is a converged local optimum for this seed/Reynolds combination given the reject-on-worse rule, not a truncated run: the 0.2 target was an arbitrary forcing choice, not a requirement of the problem.",
+        "v_target_final": 0.2
+      }
+    }
+  },
+  "schema_version": 1,
+  "scope": {
+    "evidence_class_definitions_source": "docs/phase_plan.md section 3",
+    "excludes": [
+      "target-aerodynamics evidence",
+      "benchmark acceptance evidence",
+      "body-fitted or Stage S/Stage V cross-fidelity verification of these forces",
+      "qualification of any solver backend",
+      "evidence about the ProblemSpec's declared Reynolds number or operating point",
+      "any other grid, seed, or objective",
+      "a fixed accept/reject loop (the move-limit ratchet defect above is unresolved)"
+    ],
+    "model": "steady incompressible laminar fixed-grid Brinkman fixture, Python optimality-criteria driver, real OpenFOAM v2512 primal/adjoint evaluation per step"
+  },
+  "scope_limits": [
+    "One 8192-cell laminar fixture.",
+    "Simulated at U=1 m/s, nu=1e-2 m^2/s (Re on the order of 1e2-1e3 depending on length scale), about four orders of magnitude below the ProblemSpec's own declared operating point (U=30 m/s, nu~=1.47e-5 m^2/s).",
+    "One objective (downforce), one seed, one machine (Apple M4, 32 GiB, Docker).",
+    "Forces are Brinkman volumetric surrogate values (porousDirectionalForce), not yet verified against body-fitted RANS on the same geometry.",
+    "Not target-physics evidence.",
+    "Not benchmark evidence.",
+    "Does not qualify any solver backend.",
+    "The move-limit ratchet defect in scripts/stage_t_python_loop.py is unresolved; candidate B's nominal iteration count (26) overstates its real number of improving steps (5)."
+  ]
+}

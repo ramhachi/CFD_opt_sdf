@@ -1,0 +1,116 @@
+{
+  "claims_not_supported": [
+    "a physically justified minimum gap threshold",
+    "a physically justified minimum solid or void feature threshold",
+    "flow-aware topology proposals or SDF shape updates",
+    "v16 root connectivity or topology birth qualification"
+  ],
+  "evidence_class": "contract_and_capability",
+  "kind": "sdf_topology_policy_registration",
+  "nonqualifying_v16_stage_v_problem_spec": {
+    "file_sha256": "5a9360f9f0d5f40318ff88ee675bb64ee9dc897ca611cf817aa1fd90ebe1f7c3",
+    "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/project_matched_re_laminar_moving_ground_far_field_v2.yaml",
+    "problem_id": "stage_sv_laminar_matched_re_moving_ground_far_field_v2",
+    "reason_not_used_as_birth_source": "solid connectivity is disabled, root groups are empty, and minimum feature widths are null",
+    "topology_policy": {
+      "erosion_radius_m": null,
+      "minimum_gap_m": null,
+      "minimum_solid_width_m": null,
+      "minimum_void_width_m": null,
+      "root_groups": [],
+      "solid_connectivity": {
+        "evaluate_eroded": false,
+        "max_components": null,
+        "mode": "disabled",
+        "required_root_group_ids": []
+      },
+      "void_connectivity": {
+        "evaluate_eroded": false,
+        "max_components": null,
+        "mode": "disabled",
+        "required_root_group_ids": []
+      }
+    }
+  },
+  "policy": {
+    "birth_enabled": false,
+    "birth_unresolved_inputs": [
+      "problem_spec_v2_source",
+      "required_root_groups",
+      "minimum_solid_width_m",
+      "minimum_void_width_m"
+    ],
+    "connectivity": {
+      "component_ownership": "each_component_intersects_at_least_one_required_root_group",
+      "disconnected_components": "allowed_only_when_each_component_has_a_root_owner",
+      "solid_neighborhood": 26
+    },
+    "hard_masks": {
+      "forbid_material_in": "forbidden_mask",
+      "material_allowed_where": [
+        "design_mask",
+        "fixed_solid_mask",
+        "root_mask"
+      ],
+      "retain_all_solid_cells_in": [
+        "fixed_solid_mask",
+        "root_mask"
+      ],
+      "root_group_masks_union_must_equal": "root_mask"
+    },
+    "kind": "sdf_topology_policy",
+    "minimum_features": {
+      "measurements_must_bind_to_candidate_state_sha256": true,
+      "minimum_gap_m": null,
+      "minimum_solid_width_m": null,
+      "minimum_void_width_m": null,
+      "require_both_registered_values_for_birth": true,
+      "require_gap_measurement_if_declared": true,
+      "source": "ProblemSpec_v2.topology_policy"
+    },
+    "policy_id": "sdf_topology_policy_v1",
+    "policy_sha256": "f2884ecb4b1445dd2e690fa11f497f8293bed474736a06cb31902490f24041b5",
+    "schema_version": 1,
+    "source_problem_spec_v2": null,
+    "topology_events": {
+      "birth": "disabled",
+      "deletion": "disabled",
+      "merge": "allowed_if_all_other_rules_pass",
+      "split": "allowed_if_each_resulting_component_has_a_root_owner"
+    }
+  },
+  "schema_version": 1,
+  "status": "registered_contract_only_v16_birth_gate_unresolved",
+  "v16_binding": {
+    "genesis_evidence": {
+      "genesis_id": "sdf_native_genesis_v16_2026_09",
+      "path": "docs/evidence/sdf_native_genesis_v16_2026_09.json",
+      "sha256": "3c8e241681c80962a7fd62f1926e382d473ec8e9f3e6b9140bea9600d41cf670"
+    },
+    "mask_cell_counts": {
+      "fixed_solid": 0,
+      "forbidden": 0,
+      "root": 0
+    },
+    "mask_point_counts": {
+      "fixed_solid": 0,
+      "forbidden": 0,
+      "root": 0
+    },
+    "qualification": "not_qualified",
+    "root_connectivity": "not_applicable",
+    "source_problem_spec_v2": null,
+    "state_policy_content_hash_bound": false,
+    "state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8",
+    "state_topology_policy_id": "sdf_native_topology_policy_v1",
+    "topology_birth_qualified": false,
+    "unresolved_inputs": [
+      "native ProblemSpec v2 digest and topology_policy payload bound to this genesis state",
+      "nonempty required root groups and per-group SDF masks with verified geometry-mask manifest provenance",
+      "registered minimum_solid_width_m from ProblemSpec v2",
+      "registered minimum_void_width_m from ProblemSpec v2",
+      "candidate-bound feature measurement report for both minimum widths",
+      "registered minimum_gap_m if declared by the lineage ProblemSpec v2, and a candidate-bound gap measurement when that limit is declared"
+    ]
+  }
+}

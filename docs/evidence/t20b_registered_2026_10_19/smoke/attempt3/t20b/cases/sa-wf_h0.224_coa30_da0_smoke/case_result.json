@@ -1,0 +1,215 @@
+{
+  "adjoint": {
+    "adjoint_iterations_logged": 30,
+    "adjoint_iters": 30,
+    "binary": "/usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/bin/adjointOptimisationFoam",
+    "box": [
+      [
+        -0.03351,
+        0.0250208,
+        -0.001
+      ],
+      [
+        0.25690999999999997,
+        0.1394016,
+        0.003
+      ]
+    ],
+    "box_contains_section": true,
+    "control_point_files": [
+      "boxcpsBsplines0.csv"
+    ],
+    "converged_in": {},
+    "derivative_files": [
+      "volumetricBSplinesadjDownforceadjDownforceESI50"
+    ],
+    "foam_fatal": false,
+    "log_tail": [
+      "DICPCG:  Solving for max, Initial residual = 0.011464351, Final residual = 9.7029747e-05, No Iterations 19",
+      "DICPCG:  Solving for may, Initial residual = 0.0090120384, Final residual = 8.1804101e-05, No Iterations 25",
+      "Max ma 10848.99",
+      "",
+      "adjoint Mesh Movement Iteration: 2",
+      "DICPCG:  Solving for max, Initial residual = 0.0011925459, Final residual = 1.0612232e-05, No Iterations 19",
+      "DICPCG:  Solving for may, Initial residual = 0.00081405984, Final residual = 7.0490661e-06, No Iterations 17",
+      "Max ma 10850.279",
+      "",
+      "adjoint Mesh Movement Iteration: 3",
+      "DICPCG:  Solving for max, Initial residual = 0.00010957348, Final residual = 9.348749e-07, No Iterations 22",
+      "DICPCG:  Solving for may, Initial residual = 6.8294e-05, Final residual = 6.6531613e-07, No Iterations 20",
+      "Max ma 10850.246",
+      "",
+      "adjoint Mesh Movement Iteration: 4",
+      "DICPCG:  Solving for max, Initial residual = 1.5083407e-05, Final residual = 1.3831906e-07, No Iterations 14",
+      "DICPCG:  Solving for may, Initial residual = 8.6578871e-06, Final residual = 7.4247386e-08, No Iterations 16",
+      "Max ma 10850.25",
+      "",
+      "adjoint Mesh Movement Iteration: 5",
+      "DICPCG:  Solving for max, Initial residual = 2.3788704e-06, Final residual = 2.2302002e-08, No Iterations 20",
+      "DICPCG:  Solving for may, Initial residual = 1.4611213e-06, Final residual = 1.3358699e-08, No Iterations 20",
+      "Max ma 10850.25",
+      "",
+      "adjoint Mesh Movement Iteration: 6",
+      "DICPCG:  Solving for max, Initial residual = 4.5116146e-07, Final residual = 3.9076613e-09, No Iterations 14",
+      "DICPCG:  Solving for may, Initial residual = 2.6574466e-07, Final residual = 2.316312e-09, No Iterations 14",
+      "Max ma 10850.25",
+      "",
+      "",
+      "***Reached adjoint mesh movement convergence limit, iteration 6***",
+      "",
+      "End"
+    ],
+    "primal": {
+      "converged_in": null,
+      "foam_fatal": false,
+      "iterations": 21,
+      "last_initial_residuals": {
+        "ReThetat": null,
+        "Ux": 0.00015854163,
+        "Uy": 0.00038524754,
+        "gammaInt": null,
+        "k": null,
+        "nuTilda": 7.7968102e-05,
+        "omega": null,
+        "p": 0.0025194253
+      },
+      "last_time": 21.0,
+      "nan_in_log": false,
+      "sigfpe": false
+    },
+    "primal_iters": 20,
+    "projection": {
+      "box_contains_section": true,
+      "n_cps": 180,
+      "n_vars": 540,
+      "varids_complete": true
+    },
+    "sigfpe": false,
+    "stage": {
+      "peak_rss_mb_sampled": 82.264064,
+      "returncode": 0,
+      "stage": "adjointOptimisationFoam",
+      "timed_out": false,
+      "wall_s": 2.2947950159999664
+    },
+    "status": "ADJ_RUNS",
+    "x_low_m": 0.04542920183486107,
+    "y_le_m": 0.06727143216447977
+  },
+  "check_mesh": {
+    "cells": 8660,
+    "diagnostic_lines": [],
+    "failed_check_counts": [],
+    "max_aspect_ratio": "13.365813",
+    "max_non_orthogonality": "43.186814",
+    "max_skewness": "0.75320634",
+    "mesh_ok": true,
+    "min_determinant": "0.0083888028",
+    "min_face_weight": "0.11566945",
+    "min_volume_ratio": "0.13054399",
+    "severe_non_orthogonal_faces": 0,
+    "unused_points": 0
+  },
+  "check_mesh_returncode": 0,
+  "continued_to": 200,
+  "deadline_limited": false,
+  "delta_alpha_deg": 0.0,
+  "forces": {
+    "rows": 100,
+    "values": "suppressed (smoke), including the force-derived plateau flag"
+  },
+  "generator_wall_s": 3.455257068999913,
+  "h_m": 0.0500416,
+  "h_over_c": 0.224,
+  "id": "sa-wf_h0.224_coa30_da0_smoke",
+  "iterations_requested": 100,
+  "mesh": "coa30",
+  "mesh_cells_3d": 8660,
+  "mesh_proxy_failures": [],
+  "mode": "smoke",
+  "model": "sa-wf",
+  "pre_solver_wall_s": 5.250552299999981,
+  "residual_converged": false,
+  "solver": {
+    "converged_in": null,
+    "foam_fatal": false,
+    "iterations": 100,
+    "last_initial_residuals": {
+      "ReThetat": null,
+      "Ux": 0.0010722116,
+      "Uy": 0.0020781102,
+      "gammaInt": null,
+      "k": null,
+      "nuTilda": 0.0064144435,
+      "omega": null,
+      "p": 4.0000079e-05
+    },
+    "last_time": 100.0,
+    "nan_in_log": false,
+    "sigfpe": false
+  },
+  "solver_cont": {
+    "converged_in": null,
+    "foam_fatal": false,
+    "iterations": 100,
+    "last_initial_residuals": {
+      "ReThetat": null,
+      "Ux": 0.00047108462,
+      "Uy": 0.00085101121,
+      "gammaInt": null,
+      "k": null,
+      "nuTilda": 0.0058952176,
+      "omega": null,
+      "p": 2.3342479e-05
+    },
+    "last_time": 200.0,
+    "nan_in_log": false,
+    "sigfpe": false
+  },
+  "stages": [
+    {
+      "peak_rss_mb_sampled": 2.8672,
+      "returncode": 0,
+      "stage": "gmshToFoam",
+      "timed_out": false,
+      "wall_s": 0.8210350309999512
+    },
+    {
+      "peak_rss_mb_sampled": 2.207744,
+      "returncode": 0,
+      "stage": "checkMesh",
+      "timed_out": false,
+      "wall_s": 0.973072565999928
+    },
+    {
+      "peak_rss_mb_sampled": 67.158016,
+      "returncode": 0,
+      "stage": "simpleFoam",
+      "timed_out": false,
+      "wall_s": 5.143553929999939
+    },
+    {
+      "peak_rss_mb_sampled": 65.077248,
+      "returncode": 0,
+      "stage": "simpleFoam_cont",
+      "timed_out": false,
+      "wall_s": 5.439112340999941
+    }
+  ],
+  "status": "COMPLETED",
+  "total_wall_s": 16.610325562999947,
+  "x_lowest_m": 0.04542920183486107,
+  "yplus": {
+    "airfoil": {
+      "average": 30.264878,
+      "max": 59.931289,
+      "min": 1.0258188
+    },
+    "ground": {
+      "average": 6.9324546,
+      "max": 24.372619,
+      "min": 0.034945899
+    }
+  },
+  "yplus_returncode": 0
+}

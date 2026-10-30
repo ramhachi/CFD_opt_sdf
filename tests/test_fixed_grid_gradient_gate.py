@@ -349,6 +349,24 @@ def test_gradient_gate_records_noise_floor_and_rejects_numeric_failure(tmp_path:
     assert report["rows"][0]["noise_floor"]["threshold"] == 0.1
 
 
+def test_gradient_gate_rejects_explicit_primal_failure_even_if_status_says_converged(
+    tmp_path: Path,
+) -> None:
+    suite = _suite(tmp_path, mode="sensitivity", epsilon=1.0e-4, name="false-primal")
+    suite["plus_case"]["summary"]["convergence"]["primal_converged"] = False
+
+    report = aggregate_fixed_grid_gradient_gate(
+        [suite],
+        required_directions=("sensitivity",),
+        required_epsilons=(1.0e-4,),
+        problem_binding=_binding(),
+    )
+
+    assert report["status"] == "fail"
+    assert report["rows"][0]["convergence"]["plus"]["passed"] is False
+    assert "plus_primal_not_converged" in report["rows"][0]["failures"]
+
+
 def test_gradient_gate_hash_is_sha256_of_artifact_bytes(tmp_path: Path) -> None:
     suite = _suite(tmp_path, mode="sensitivity", epsilon=1.0e-4, name="hash")
     report = aggregate_fixed_grid_gradient_gate(

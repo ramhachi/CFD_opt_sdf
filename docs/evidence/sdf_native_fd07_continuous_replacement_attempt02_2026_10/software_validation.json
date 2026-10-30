@@ -1,0 +1,59 @@
+{
+  "evidence_class": "software_validation",
+  "registered_plan_sha256": "5da4f0f9f82fd59215e0c642f0c14644ba47335e542007b482e0b6d19a0a87c9",
+  "checks": [
+    {
+      "command": ".venv/bin/python -m compileall -q src tests scripts",
+      "exit_code": 0,
+      "result": "passed"
+    },
+    {
+      "command": ".venv/bin/python -m pytest -q tests/test_sdf_native_fd07_continuous_replacement.py",
+      "exit_code": 0,
+      "result": "1 passed in 1.49s"
+    },
+    {
+      "command": "julia --project=julia/CFDSDFWaterLily -e 'for f in ARGS; Meta.parseall(read(f, String)); println(\"parsed: \", f); end' scripts/sdf_native_fd07_continuous_sign_operators.jl scripts/sdf_native_fd07_continuous_replacement_fixtures.jl scripts/sdf_native_fd07_continuous_replacement_probe.jl",
+      "exit_code": 0,
+      "result": "all three diagnostic Julia scripts parsed"
+    },
+    {
+      "command": "julia --project=julia/CFDSDFWaterLily scripts/sdf_native_fd07_continuous_replacement_fixtures.jl --selftest",
+      "exit_code": 0,
+      "result": "analytic_sign_operator_selftest=passed"
+    },
+    {
+      "command": ".venv/bin/python -m pytest -q",
+      "exit_code": 1,
+      "result": "1226 passed, 37 failed, 4 skipped, 7121 warnings in 211.88s",
+      "failure_id_baseline": "docs/evidence/sdf_native_fd07_sign_consistency_causal_2026_10/software_logs/full_pytest_failure_ids.txt",
+      "baseline_failure_count": 37,
+      "observed_failure_count": 37,
+      "failure_ids_identical": true,
+      "new_failures": 0,
+      "resolved_baseline_failures": 0,
+      "full_output": "full_pytest_raw.txt.gz",
+      "full_output_sha256": "7d3a0b84eebae350ef5ff38da0147df3cbf64cf911c55f78d06863166a92f94c",
+      "failure_ids_output": "full_pytest_failure_ids.txt",
+      "failure_ids_sha256": "39031c5893dd0cb0f7759d889abd345315fc7b1c69b06c43557cdda6007497bf",
+      "full_output_gzip_sha256": "199099b908cc44cfa3dada14e9a1786251b505d828b3a488848ca76d6aef4fac",
+      "normalized_output": "full_pytest.txt",
+      "normalized_output_sha256": "c133761f92d692aa1cba4612b104c0cb83bd89d5714623db495fb60a60db0373"
+    },
+    {
+      "command": "git diff --cached --check",
+      "exit_code": 0,
+      "result": "passed after staging the intended task files; CSV line endings normalized and raw pytest output preserved byte-for-byte in deterministic gzip"
+    }
+  ],
+  "notes": [
+    "The nonzero full-suite exit is the unchanged registered 37-failure baseline, not a clean full-suite pass.",
+    "Stage 1 completed with solver_steps=0; Stage 3 completed all 39 registered short CPU runs.",
+    "Independent force integration closure remained below 6.32e-17 N per sample and 5.56e-17 N per window."
+  ],
+  "full_output": "full_pytest_raw.txt.gz",
+  "normalized_output": "full_pytest.txt",
+  "full_output_sha256": "7d3a0b84eebae350ef5ff38da0147df3cbf64cf911c55f78d06863166a92f94c",
+  "full_output_gzip_sha256": "199099b908cc44cfa3dada14e9a1786251b505d828b3a488848ca76d6aef4fac",
+  "normalized_output_sha256": "c133761f92d692aa1cba4612b104c0cb83bd89d5714623db495fb60a60db0373"
+}

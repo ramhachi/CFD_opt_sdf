@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -31,6 +32,9 @@ class GridSpec:
     padding_m: float = 0.15
     band_width_m: float = 0.20
     max_points: int = 8_000_000
+    # Fixed far-field box (P17 / WP1): when declared, Stage V field generation
+    # and blockMesh use exactly this box instead of the candidate union bounds.
+    domain_bounds_m: tuple[tuple[float, float, float], tuple[float, float, float]] | None = None
 
 
 @dataclass(frozen=True)
@@ -89,6 +93,18 @@ class ProjectConfig:
     operating_point: OperatingPointSpec = field(default_factory=OperatingPointSpec)
     output_dir: Path = Path("runs/front_wing_demo")
     problem_spec: ProblemSpec | None = None
+    flow_case_id: str | None = None
+    turbulence_model: str = "kOmegaSST"
+    # Gauge free-stream pressure used by explicit Stage V far-field profiles.
+    # ProblemSpec v2 currently fixes this benchmark value at zero; keeping it
+    # on ProjectConfig makes the rendered profile and its hash explicit for
+    # direct ProjectConfig callers as well.
+    freestream_pressure_pa: float = 0.0
+    # Stage V body-fitted cases may opt into an explicit physical boundary
+    # contract.  ``None`` preserves the historical renderer defaults for
+    # legacy ProjectConfig callers.
+    boundary_conditions: Mapping[str, str] | None = None
+    motion_profiles: Mapping[str, Any] = field(default_factory=dict)
 
     @property
     def base_dir(self) -> Path:

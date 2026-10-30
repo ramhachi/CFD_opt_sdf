@@ -1,0 +1,192 @@
+{
+  "arms": [
+    {
+      "id": "analytic",
+      "role": "inherited native analytic reference; formal control"
+    },
+    {
+      "id": "grid_upstream",
+      "role": "diagnostic only; same sampled GridSDF and normal_floor=0.25, upstream moment path"
+    },
+    {
+      "id": "candidate_c",
+      "role": "primary formal candidate operator"
+    },
+    {
+      "id": "analytic_repeat",
+      "role": "inherited reproducibility control"
+    }
+  ],
+  "claims_not_supported": [
+    "mass conservation qualification; mass-flow values are physically weighted boundary diagnostics without an acceptance threshold",
+    "absolute/literature Cd accuracy, flow-grid convergence, target physics, full-vehicle/high-Re FSAE behavior",
+    "Candidate C production acceptance, W3-C/W4-C qualification, FD/reverse/gradient/optimizer/topology/shape-update qualification"
+  ],
+  "claims_supported_if_all_gates_pass": [
+    "the exact registered W2a sphere fixture can be time-integrated with Candidate C composite operator on the inherited CPU backend",
+    "the canonical GridSDF Candidate C force response meets unchanged inherited W2a stationary-force and native-sphere comparison bounds"
+  ],
+  "criteria_id": "sdf_native_w2a_candidate_c_sphere_cpu_2026_10_round3",
+  "evidence_class": "candidate_operator_capability_and_numerical",
+  "execution": {
+    "backend": "Julia CLI CPU Array, threads=auto, Float32; no GPU required for this inherited CPU capability fixture",
+    "evaluator_integrity": "raw history windows are independently recomputed from the flushed CSV; missing brackets or mismatch with Julia summary produces fail-closed G11 and terminal FAIL",
+    "failure_retention": "Do not discard or overwrite partial raw CSV/transcript. Every execution or registered-gate failure writes terminal-FAIL.json with source and criteria identity and hashes of available partial artifacts.",
+    "output": "exclusive atomic claim directory work/candidate_c_w2a_sphere_cpu_2026_10_round2/run-001.claim plus unique run-001; refuse overwrite; flush each raw sample; retain transcripts on success, failure, and timeout; append-only terminal-FAIL.json includes stage, criteria/source hashes, scope, and partial artifact hashes",
+    "parent_source_review_required_before_measurement": true,
+    "qualification_gate": "only the eight inherited numerical gates above can produce the scoped W2a-C verdict; mass-flow fields are reported separately",
+    "runtime_gate": "Julia, WaterLily, Manifest, implementation, runner, and source hashes checked before run directory creation or any solver step"
+  },
+  "fixture": {
+    "affine_map": {
+      "map": "x_world_m = world_origin_m + world_per_solver .* x_solver",
+      "provenance": "registers the W1-measured map for the sphere fixture with D = 1.0 m over 16 solver units",
+      "world_origin_m": [
+        -1.75,
+        -2.0,
+        -2.0
+      ],
+      "world_per_solver": 0.0625
+    },
+    "canonical_phi": {
+      "center_m": [
+        0.25,
+        0.0,
+        0.0
+      ],
+      "construction": "exact float64 sphere SDF on the lattice, cast to Float32 exactly as genesis stores phi; built through the W1 gate constructor",
+      "expected_measured_margin_m": 0.2,
+      "margin_gate_m": 0.15,
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.7
+      ],
+      "outside_value_m": 3.0,
+      "radius_m": 0.5,
+      "shape": [
+        61,
+        33,
+        29
+      ],
+      "spacing_m": [
+        0.05,
+        0.05,
+        0.05
+      ]
+    },
+    "flow": {
+      "boundary_conditions": "uBC = (U,0,0) Dirichlet normal / Neumann tangential, no periodic direction, exitBC disabled",
+      "dims": [
+        96,
+        64,
+        64
+      ],
+      "initial_condition": "uniform u = uBC",
+      "kinematic_viscosity_solver": 0.16,
+      "length_scale_solver": 16.0,
+      "memory": "Array",
+      "note": "solver length unit = one flow cell; 16 cells per diameter; sim_time is in tU/D units",
+      "precision": "Float32",
+      "reynolds_diameter": 100.0,
+      "solver_center": [
+        32.0,
+        32.0,
+        32.0
+      ],
+      "solver_radius": 8.0,
+      "threads": "auto (recorded per run)",
+      "u_inf": 1.0
+    },
+    "geometries": {
+      "analytic": "WaterLily AutoBody with the exact sphere SDF in solver coordinates",
+      "sampled": "GridSDFWaterLilyBody over the canonical_phi fixture and the registered affine map"
+    },
+    "time": {
+      "burn_in_tu_d": 40.0,
+      "force_sampling": "every 4 solver steps; columns step,t_ud,drag,lift,side,pressure_drag,viscous_drag",
+      "measurement_window_tu_d": [
+        40.0,
+        60.0
+      ],
+      "stationarity_split_tu_d": 50.0,
+      "t_end_tu_d": 60.0
+    }
+  },
+  "flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false
+  },
+  "gate_id": "sdf_native_w2a_candidate_c_sphere_cpu_2026_10_round3",
+  "gates_registered_before_measurement": {
+    "G11_raw_summary_consistency": "independent Python endpoint interpolation and trapezoid recomputation from raw force CSV must reproduce reported drag/lift/side means over [40,60], [40,50], and [50,60] within 1e-10*max(1,abs(raw mean)); mismatch or missing brackets is FAIL",
+    "G1_completion": "all four arms reach t_end=60 tU/D with steps>0 and no exception",
+    "G2_finiteness": "all(isfinite,u) and all(isfinite,p) at end of all four arms",
+    "G3_force_finite": "every recorded force component finite for every arm",
+    "G4_drag_sign": "window-mean drag >0 for analytic, Candidate C, and analytic repeat",
+    "G5_stationarity": "|exact-window trapezoid mean drag(40–50)-mean drag(50–60)|/abs(mean drag(40–60)) <= 0.02 for analytic, Candidate C, and analytic repeat; each half-window is 10 tU/D and endpoints 40, 50, 60 are linearly interpolated from raw brackets",
+    "G6_candidate_c_vs_native": "|Cd_C-Cd_analytic|/Cd_analytic <= 0.10; Cd=exact-window trapezoid mean drag/(0.5*pi*R_solver^2), with endpoint interpolation",
+    "G7_lift_bound": "|window-mean lift|/window-mean drag <=0.10 for analytic, Candidate C, and analytic repeat",
+    "G8_reproducibility": "identical analytic-repeat exact-window trapezoid mean drag relative difference to analytic <=1e-6",
+    "G9_boundary_flow_integrity": "all six external-face mass-flow and domain-integrated-divergence fields finite in every raw sample; this is a diagnostic integrity check without conservation threshold",
+    "evaluator_semantics": "Numeric limits are unchanged from W2a. This round uses endpoint-interpolated trapezoid means and criteria-text reference denominators; the legacy W2a runner used arithmetic sample means and a symmetric max denominator for comparison gates. This explicitly changes evaluation semantics for this new W2a-C round; no historical evidence is rewritten.",
+    "inherited_thresholds": "all numeric limits are inherited unchanged from sdf_native_w2a_sphere_cpu_2026_09; the upstream diagnostic arm is excluded from formal sign/stationarity/lift thresholds",
+    "threshold_modification_rule": "fail closed; do not relax or select thresholds after observing data; failures require a new immutable criteria round"
+  },
+  "immutable": true,
+  "inherited_w2a_criteria_path": "docs/evidence/sdf_native_w2a_sphere_cpu_criteria_2026_09.json",
+  "inherited_w2a_criteria_sha256": "aea91e6cc8de65ef072b3fbb19a3ca50a01b5e75198e62c128fda3fe8849602f",
+  "inputs": {
+    "inherited_w2a_criteria_sha256": "aea91e6cc8de65ef072b3fbb19a3ca50a01b5e75198e62c128fda3fe8849602f",
+    "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    "source_manifest_path": "docs/evidence/candidate_c_w2a_sphere_cpu_sources_2026_10_round3.sha256",
+    "source_manifest_sha256": "14d0d4da783a07ee8fc7c3d640e6f1097c25fde13ebc4db2b93e3f3839f008ce",
+    "w1_criteria_sha256": "6da068fad8c79ba39197377157d4a5172dedf04511b2acbd8f69146aefea70ef",
+    "w1_result_sha256": "d618b556ec71c638f8d10f201c4ae4c62a2b163f824dd9466dd928e89c725567"
+  },
+  "issue": 44,
+  "measurement_started": false,
+  "operator": {
+    "candidate_c_changes": "mu0 only; mu1 uses raw face distance and wrapped body normal",
+    "candidate_c_transition_width_solver_cells": 0.00011444091796875,
+    "diagnostic_control": "same GridSDF and same normal_floor=0.25 through upstream WaterLily measure! without Candidate C blend",
+    "native_control": "exact analytic sphere AutoBody on the inherited flow grid",
+    "normal_floor": 0.25,
+    "primary": "GridSDFWaterLily geometry sampled from the exact W2a analytic sphere, NormalFloorWaterLilyBody normal_floor=0.25, and CandidateCWaterLilyBody moment blend"
+  },
+  "provenance": {
+    "job": "scripts/waterlily_w2a_candidate_c_job.jl",
+    "preexecution_round": "rounds 1 and 2 were rejected before measurement; see their immutable snapshots under docs/evidence/candidate_c_w2a_sphere_cpu_2026_10_round*_rejected/",
+    "runner": "scripts/run_waterlily_w2a_candidate_c_cpu_2026_10.py",
+    "source_manifest": "docs/evidence/candidate_c_w2a_sphere_cpu_sources_2026_10_round2.sha256"
+  },
+  "recording": {
+    "boundary_planes": "first/last physical normal-velocity face index per axis with transverse ghost layers excluded; report each signed outward face flow and net outward flow",
+    "continuity_diagnostic": "record signed normal mass flow on all six external faces, net outward mass flow, integrated discrete divergence, and their difference; diagnostic only, no mass-conservation pass threshold",
+    "exact_window_brackets": "require raw samples bracketing each of 40, 50, and 60 tU/D; endpoint values are linearly interpolated between adjacent raw samples",
+    "force_samples": "persist and flush every four solver steps and the final sample; retain exact raw per-step sampled times/forces/fluxes including samples bracketing t=40,50,60",
+    "force_scale": "rho*U_ref^2*h^2 = 1 kg/m3 * (1 m/s)^2 * (0.0625 m)^2 = 0.00390625 N per solver-force unit",
+    "force_units": "record solver-unit force for inherited Cd gates and SI force components N at every sample",
+    "mass_flow_samples": "every same sample: signed normal mass flow kg/s across all six external boundary planes using face-area weights",
+    "mass_flow_scale": "rho*U_ref*h^2 = 0.00390625 kg/s per solver velocity unit; rho=1 kg/m3 and U_ref=1 m/s",
+    "raw_history_crosscheck": "the runner recomputes exact-window statistics independently from persisted raw CSV and uses those raw-derived values for G4-G8; reported Julia summary values are crosschecked before any PASS",
+    "window_statistics": "linear interpolation at exact endpoints 40, 50, 60 tU/D followed by trapezoidal time integration over [40,60], [40,50], and [50,60]; raw cadence samples retained. This differs from the legacy W2a arithmetic sample mean and is specific to this new round."
+  },
+  "registered_before_measurement": true,
+  "round": 3,
+  "status": "preregistered_pending_parent_source_review; no solver steps authorized by this registration",
+  "supersedes_preexecution_draft": {
+    "criteria_sha256": "1185b98aa69d1765b6fe6829305e5842a2e81a5fd2c22c76ddfd4a478c8b51ec",
+    "reason": "G5 runner implementation used abs(first_half-full_mean) instead of the registered abs(first_half-second_half); no measurements occurred.",
+    "round": 2,
+    "source_manifest_sha256": "d7f935eb56da31c5d0e50711c344f924fe3122e6ab26794e24d4414458502d4d"
+  }
+}

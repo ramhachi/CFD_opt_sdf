@@ -1,0 +1,22 @@
+{
+  "criteria_round": 1,
+  "criteria_sha256": "cff792c51fbb24218bd7f21d336a3d4b704aeb20498d18a9e16976e6a295597e",
+  "evidence_class": "environment_terminal_failure_no_solver_verdict",
+  "expected_driver_version": "580.159.04",
+  "failure": "RuntimeError: W3 NVIDIA driver drift (before any solver work)",
+  "files": {
+    "ERROR.txt": "cfd2d7b39eba612934aff63aba10dc0f78767847c6c457310077569c4a6b968e",
+    "cfd-opt-sdf-w3-v17-candidate-c.log": "e7c8655410325af448432bb8e2ee0de0c74e893a3b044c65646238adb7f78c1d",
+    "input_mount_inventory.json": "1af5d82d1d5f0fac9ed47d663013eb392684b9167eb0ada3674d60fcb9a9a441",
+    "nvidia_smi.csv": "10f0d28b27999cc52f1e9142064aa5e0459470f8854de00f68010f38447874f4",
+    "sha256.json": "3c16b3ff17e63a994f5796d23ded4ec20a39f742ac28734676a8dd73e3f0f404"
+  },
+  "gpu_count": 2,
+  "gpu_name": "Tesla T4",
+  "immutable": true,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w3-v17-candidate-c",
+  "kernel_run_utc": "2026-10-02T02:55:47Z",
+  "observed_driver_version": "580.178.04",
+  "scope": "No solver ran; not physics, not a W3-C verdict. Round 1 criteria remain immutable and unconsumed numerically.",
+  "terminal_status": "KernelWorkerStatus.ERROR"
+}

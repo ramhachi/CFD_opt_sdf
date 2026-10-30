@@ -1,0 +1,398 @@
+{
+  "base_case": {
+    "dynamicMeshDict": "work/stage_s_work_f_v1/adjoint/base/constant/dynamicMeshDict",
+    "dynamicMeshDict_reconstructs_from_catalog_basis": true,
+    "dynamicMeshDict_sha256": "14d273302f568b9a9f2db308378c6ba3a2296fd5b3a33fda1feb410ec772c815",
+    "mesh": {
+      "boundary": "4cc31b550470a1c6b1189fe99799496b3f764918e25268b03b2489d61e0d569a",
+      "faces": "e117305102c2c422855a1a4b8faf1eeab98b590ea33b67f0bb3364209fa236fe",
+      "points": "744ddcdc4e25a938aa6140d9fbcc9ff9d9a00ee9f8603aea67450419d084c68f"
+    },
+    "path": "work/stage_s_work_f_v1/baseline/V1"
+  },
+  "claims_not_supported": [
+    "this audit is not a derivative qualification and produces no CFD evidence"
+  ],
+  "component_audit": {
+    "path": "docs/evidence/stage_s_work_f_derivative_component_audit_2026_09.json",
+    "sha256": "2cd3f9f102fe49ff80b5d8499416ff61450d245a2c16468850693d8c5b32476c"
+  },
+  "component_diagnosis_manifest": {
+    "path": "docs/evidence/stage_s_work_f_component_diagnosis_manifest_2026_09.json",
+    "sha256": "21dd18d6084258b4dc1f5cf02bc9d91049fb6e8f8aef82ae438bf0cd484a8e52"
+  },
+  "directions": {
+    "downforce_gradient_aligned": {
+      "sha256": "d8eb88f03618e285806be679a7cf5cad38ea89ddda6989f67fdc0ed13e0326fe",
+      "weights_note": "control-point weight field = registered unit-inf-norm direction"
+    },
+    "drag_gradient_aligned": {
+      "sha256": "d21f0426a447a41e23436108ac0e52f02f330794aabd03a02b9930f07c4b081d",
+      "weights_note": "control-point weight field = registered unit-inf-norm direction"
+    },
+    "random_seed_11": {
+      "sha256": "fd8ba8bc85aaefde5a6eac26316af1bcc9dad81982a6011c0ab5875899da1040",
+      "weights_note": "control-point weight field = registered unit-inf-norm direction"
+    },
+    "random_seed_2026": {
+      "sha256": "0611bfb535ea008d9f2ec6dfc7c4389e4cd6bb5a9e978dd5e1df4fd3c087b69a",
+      "weights_note": "control-point weight field = registered unit-inf-norm direction"
+    }
+  },
+  "gate_tolerances": {
+    "Cf": {
+      "absolute": 1e-05,
+      "cosine_min": 0.999999,
+      "l2_tolerance": 0.001,
+      "relative": 0.0001
+    },
+    "Sf": {
+      "absolute": 1e-06,
+      "cosine_min": 0.999999,
+      "l2_tolerance": 0.001,
+      "relative": 1e-05
+    },
+    "n": {
+      "absolute": 1e-06,
+      "cosine_min": 0.999999,
+      "l2_tolerance": 0.005,
+      "relative": 0.005
+    }
+  },
+  "gates": [
+    "plus/minus face topology and ordering match the base mesh",
+    "analytic and FD sign and magnitude agree per face and patch-integrated",
+    "an epsilon plateau exists for every direction and quantity",
+    "non-design patches have no points inside the control-point box and no movement",
+    "the design patch is the only patch with a non-zero analytic derivative"
+  ],
+  "kind": "stage_s_work_f_geometry_jacobian_manifest",
+  "perturbation_sides": {
+    "path": "docs/evidence/stage_s_work_f_perturbation_sides_2026_09.json",
+    "sha256": "01aeda492f43e76e9dad173599f339ba48f9adb8dc5744de062de7ce47cbc9db",
+    "sides": {
+      "downforce_gradient_aligned__0.0001__minus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/downforce_gradient_aligned__eps0_0001__minus",
+        "immobility_pass": true,
+        "moved_points_sha256": "524a55e7cbad1922caa2b08139f0d5f694d43cc36c22d4f579c660e95628a7a8",
+        "movement_sha256": "90caa4b55f548161f659444bb3836f9c9150e4134bf7a367754f9ef8bd80eae4",
+        "pass": true,
+        "side_key": "downforce_gradient_aligned__eps0.0001__minus"
+      },
+      "downforce_gradient_aligned__0.0001__plus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/downforce_gradient_aligned__eps0_0001__plus",
+        "immobility_pass": true,
+        "moved_points_sha256": "83052b5faaec1eb3a2068d3061eba05e2071b81f973d743d0fe018fa51627997",
+        "movement_sha256": "f52061f37fff411647ffbedd51557e40be1fa19a2cb4f6e03a18ef687f4a4fac",
+        "pass": true,
+        "side_key": "downforce_gradient_aligned__eps0.0001__plus"
+      },
+      "downforce_gradient_aligned__0.00025__minus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/downforce_gradient_aligned__eps0_00025__minus",
+        "immobility_pass": true,
+        "moved_points_sha256": "a41fd3f628dca22f4a9d2d473fac01ac1f14a4dd656beb01b9180c13e76646da",
+        "movement_sha256": "d9b5860929baa3f4b57ab2615d0774a7286fcb4c7f8695a63436f9bd23a97bff",
+        "pass": true,
+        "side_key": "downforce_gradient_aligned__eps0.00025__minus"
+      },
+      "downforce_gradient_aligned__0.00025__plus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/downforce_gradient_aligned__eps0_00025__plus",
+        "immobility_pass": true,
+        "moved_points_sha256": "bb64b9223d04e43b1e724f53aabf16463fb7c4dad5c36f0f99754194f63e3a64",
+        "movement_sha256": "2982640413c8dabe44b88f556a86cbc6088ee946fdb86f18159cdd2cdd0c8f45",
+        "pass": true,
+        "side_key": "downforce_gradient_aligned__eps0.00025__plus"
+      },
+      "downforce_gradient_aligned__0.0005__minus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/downforce_gradient_aligned__eps0_0005__minus",
+        "immobility_pass": true,
+        "moved_points_sha256": "0f8edbc798318bfb55c500cbb047950f26d75c4219544ecc43dbc3c9b704af3c",
+        "movement_sha256": "249a7523d4e62c3966e1e7ef2002033dbbbb7293ba9a1482d9e81822fdfff2d9",
+        "pass": true,
+        "side_key": "downforce_gradient_aligned__eps0.0005__minus"
+      },
+      "downforce_gradient_aligned__0.0005__plus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/downforce_gradient_aligned__eps0_0005__plus",
+        "immobility_pass": true,
+        "moved_points_sha256": "8df87eb7654c93fabbdccdb1c50047ffbfb6aad015a86f6d3983cc644bac82db",
+        "movement_sha256": "3ddaaad042a59947b3be59417fbfe92cd7401eb9e7b4019d77e94898bec54c7f",
+        "pass": true,
+        "side_key": "downforce_gradient_aligned__eps0.0005__plus"
+      },
+      "downforce_gradient_aligned__0.001__minus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/downforce_gradient_aligned__eps0_001__minus",
+        "immobility_pass": true,
+        "moved_points_sha256": "bf1e6b230bfab25a24317add9828e8104c7214448eacb8ea618583b33db98901",
+        "movement_sha256": "97b9ee355b1bdb24d6163f823d759094caa635eade32eb180082c34fc536fe36",
+        "pass": true,
+        "side_key": "downforce_gradient_aligned__eps0.001__minus"
+      },
+      "downforce_gradient_aligned__0.001__plus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/downforce_gradient_aligned__eps0_001__plus",
+        "immobility_pass": true,
+        "moved_points_sha256": "67f29764505dbcad2334a8e2f9e0497b108cb56dbc9f3228c36b301129b33358",
+        "movement_sha256": "db9233010f82b599f858d47c18af45824b3c05ddc926a659453daccf797190ff",
+        "pass": true,
+        "side_key": "downforce_gradient_aligned__eps0.001__plus"
+      },
+      "drag_gradient_aligned__0.0001__minus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/drag_gradient_aligned__eps0_0001__minus",
+        "immobility_pass": true,
+        "moved_points_sha256": "114d3b1cce2aefddfe5a8fda6c42fcc41d522a555c72fadc387af85ec25e8292",
+        "movement_sha256": "e0db43b72b7c432ee507fbca910c680057e8a29945bf692030d513f65db21126",
+        "pass": true,
+        "side_key": "drag_gradient_aligned__eps0.0001__minus"
+      },
+      "drag_gradient_aligned__0.0001__plus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/drag_gradient_aligned__eps0_0001__plus",
+        "immobility_pass": true,
+        "moved_points_sha256": "b98f4e8b6b4c0a320e4b064d1abfbdcf6579cfcd75bd9a4c90c462899ce1f013",
+        "movement_sha256": "acc75563e78643f3c35f43320d34d63913fef16953101b1c06cb69d5579c28d9",
+        "pass": true,
+        "side_key": "drag_gradient_aligned__eps0.0001__plus"
+      },
+      "drag_gradient_aligned__0.00025__minus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/drag_gradient_aligned__eps0_00025__minus",
+        "immobility_pass": true,
+        "moved_points_sha256": "8a66d839c608ac36eaf00bfa2c15380f8d1c995410df6dd0e351dc4246f0038a",
+        "movement_sha256": "9ec6615e4e29e6e81d2127f14eaba68a266855de3a5d6e5d77cf014677f71c8b",
+        "pass": true,
+        "side_key": "drag_gradient_aligned__eps0.00025__minus"
+      },
+      "drag_gradient_aligned__0.00025__plus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/drag_gradient_aligned__eps0_00025__plus",
+        "immobility_pass": true,
+        "moved_points_sha256": "8be8db5de77e492cdaf1d55c23ce2c110eb2e11bbf704f540e04e1a82a945cf0",
+        "movement_sha256": "7afd266c0b39932c8a503635a436dcd6f693953cde1759aee9940acb805870cb",
+        "pass": true,
+        "side_key": "drag_gradient_aligned__eps0.00025__plus"
+      },
+      "drag_gradient_aligned__0.0005__minus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/drag_gradient_aligned__eps0_0005__minus",
+        "immobility_pass": true,
+        "moved_points_sha256": "437c82f05530484c98bbe835486b1684abe08611ce0b2272931856f89e832016",
+        "movement_sha256": "1c3ce78089ad7e849964f84828e301538ba632486007d155423143997bf4b7e8",
+        "pass": true,
+        "side_key": "drag_gradient_aligned__eps0.0005__minus"
+      },
+      "drag_gradient_aligned__0.0005__plus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/drag_gradient_aligned__eps0_0005__plus",
+        "immobility_pass": true,
+        "moved_points_sha256": "c62069d5278222d20735e2bdb7ca090d00443a2e3007874b275b144a0c8facfe",
+        "movement_sha256": "5a8bfdcdc466639367884735aa1861aecd5af5efc0439d5f0af9a4256e8eedd1",
+        "pass": true,
+        "side_key": "drag_gradient_aligned__eps0.0005__plus"
+      },
+      "drag_gradient_aligned__0.001__minus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/drag_gradient_aligned__eps0_001__minus",
+        "immobility_pass": true,
+        "moved_points_sha256": "bb4cf101ea2500305258a870b9c77fd66d5765b14f060f4fbc12839a1239352a",
+        "movement_sha256": "cde16adcf06fc197b2f58ce2c21a15defaaa0390ff8d890b2120df9978052f00",
+        "pass": true,
+        "side_key": "drag_gradient_aligned__eps0.001__minus"
+      },
+      "drag_gradient_aligned__0.001__plus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/drag_gradient_aligned__eps0_001__plus",
+        "immobility_pass": true,
+        "moved_points_sha256": "77a9d469b97fe8827fdbca93101f4c63425e04959e622d520f822e22d5096b7a",
+        "movement_sha256": "844179466b35b5d9a3f08d72cf03bcaa5d15b93f27ef5766945b28f52621f799",
+        "pass": true,
+        "side_key": "drag_gradient_aligned__eps0.001__plus"
+      },
+      "random_seed_11__0.0001__minus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/random_seed_11__eps0_0001__minus",
+        "immobility_pass": true,
+        "moved_points_sha256": "0d84c34d05d79b49d0cbe9aa6ef4190369135d75912e13bf675b69bc4d64eb69",
+        "movement_sha256": "88d6567b01a10819774983e40b8177ce38e640c582df56d0e81d0ac5ab02090e",
+        "pass": true,
+        "side_key": "random_seed_11__eps0.0001__minus"
+      },
+      "random_seed_11__0.0001__plus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/random_seed_11__eps0_0001__plus",
+        "immobility_pass": true,
+        "moved_points_sha256": "fe01fd7c1bf1f9216e328e1539bd93bfa7b158927130ab2c00a07c1011f36db0",
+        "movement_sha256": "b1c112c9b1dfcb1c98eb4a4b742c9456f67b392593916629caa151b4a48b6a0e",
+        "pass": true,
+        "side_key": "random_seed_11__eps0.0001__plus"
+      },
+      "random_seed_11__0.00025__minus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/random_seed_11__eps0_00025__minus",
+        "immobility_pass": true,
+        "moved_points_sha256": "d1970652464a04b5916cc1dab97bdd6407690d8cfb307d9688f23356d67b96c1",
+        "movement_sha256": "4b875896f444fe3593320367ec2fc64cc779eff95fe586c3560c5da069d5a873",
+        "pass": true,
+        "side_key": "random_seed_11__eps0.00025__minus"
+      },
+      "random_seed_11__0.00025__plus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/random_seed_11__eps0_00025__plus",
+        "immobility_pass": true,
+        "moved_points_sha256": "77de29c1df4f495b63831538513a6b164832713e2ea456901307ae772c0b45f7",
+        "movement_sha256": "23cb1b8438eb8771123d5e3c8cc685eca81d6233e8c76540482a98653626bc48",
+        "pass": true,
+        "side_key": "random_seed_11__eps0.00025__plus"
+      },
+      "random_seed_11__0.0005__minus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/random_seed_11__eps0_0005__minus",
+        "immobility_pass": true,
+        "moved_points_sha256": "784b43ff42d5018123b1427d05108e03ddcfca924632ed938f12ee46c211f63d",
+        "movement_sha256": "ce9a32d769236cf4998dde303858e7c3d19ed71b5b688c5d5ddfb1cb954d059c",
+        "pass": true,
+        "side_key": "random_seed_11__eps0.0005__minus"
+      },
+      "random_seed_11__0.0005__plus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/random_seed_11__eps0_0005__plus",
+        "immobility_pass": true,
+        "moved_points_sha256": "89a44aae7612dfcd554086c5a00038b3ff1fc8fc54a3b319d56c4d070e617458",
+        "movement_sha256": "ff08ff63ed9a6280a87261889d17b5afbaeedfbdc1203a3bd49a9ab0cd5ab551",
+        "pass": true,
+        "side_key": "random_seed_11__eps0.0005__plus"
+      },
+      "random_seed_11__0.001__minus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/random_seed_11__eps0_001__minus",
+        "immobility_pass": true,
+        "moved_points_sha256": "257b0d657820991747d6bb75285e147f178d5a683478a4ecdb4673e40c855d1a",
+        "movement_sha256": "80ed2c994e18d60427f78e2f4442513b4a42dc8198c797c274068fd22b6c8847",
+        "pass": true,
+        "side_key": "random_seed_11__eps0.001__minus"
+      },
+      "random_seed_11__0.001__plus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/random_seed_11__eps0_001__plus",
+        "immobility_pass": true,
+        "moved_points_sha256": "0d469fdf7e2ab5406dc9416b2e9adcd66d6d087c73dcf910079be3729472649c",
+        "movement_sha256": "597c6e8d1983f5e9c16fe6ad8a51b72ba04fca651e461daa33d7cdf610a5ff25",
+        "pass": true,
+        "side_key": "random_seed_11__eps0.001__plus"
+      },
+      "random_seed_2026__0.0001__minus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/random_seed_2026__eps0_0001__minus",
+        "immobility_pass": true,
+        "moved_points_sha256": "af865da63081a6f5ea2c8c65e446d1ad0106455c08ce0595aff7eac2d8c3386e",
+        "movement_sha256": "4ade0eb0e23b0e106ce711759b9933f25cec5a246d7e223827e97843a5b6a6e9",
+        "pass": true,
+        "side_key": "random_seed_2026__eps0.0001__minus"
+      },
+      "random_seed_2026__0.0001__plus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/random_seed_2026__eps0_0001__plus",
+        "immobility_pass": true,
+        "moved_points_sha256": "13d3ba3204b9ed0600223571b75a73aafa0cace0f1cd4a827330c8743a0b8140",
+        "movement_sha256": "d4c60755d7badf37dabc198ddd033fb2a3271628f385a09982bea9e841f2388a",
+        "pass": true,
+        "side_key": "random_seed_2026__eps0.0001__plus"
+      },
+      "random_seed_2026__0.00025__minus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/random_seed_2026__eps0_00025__minus",
+        "immobility_pass": true,
+        "moved_points_sha256": "ea658ff1f3479a6e63dbda608987ea1786ebb2bdd37249be0caf27efddb360de",
+        "movement_sha256": "6c145e9dfa0e63a08b0401c25e464fd060e65b75d1b063fdd6e1f766d506df33",
+        "pass": true,
+        "side_key": "random_seed_2026__eps0.00025__minus"
+      },
+      "random_seed_2026__0.00025__plus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/random_seed_2026__eps0_00025__plus",
+        "immobility_pass": true,
+        "moved_points_sha256": "e3f3d9aae8c1c54dbab2b9c8b9c34d4db17335daa248b52b1f561ff00f9d66d4",
+        "movement_sha256": "7f131f33a2ce69ba45f9acf0f63b27d99309a2c341215c149c5b0f2bff37ac8f",
+        "pass": true,
+        "side_key": "random_seed_2026__eps0.00025__plus"
+      },
+      "random_seed_2026__0.0005__minus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/random_seed_2026__eps0_0005__minus",
+        "immobility_pass": true,
+        "moved_points_sha256": "3b43824747a30309c141f52144062e15fb5a6d2475b4a59e75a0a192987c23da",
+        "movement_sha256": "e0955184ac614e303ffa9bd9fb155564a07b82b147d3c2cf86a65a2719397c43",
+        "pass": true,
+        "side_key": "random_seed_2026__eps0.0005__minus"
+      },
+      "random_seed_2026__0.0005__plus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/random_seed_2026__eps0_0005__plus",
+        "immobility_pass": true,
+        "moved_points_sha256": "8f9411564744a303b6364e58a5f1ae0033ff5969ba8e31d9257f981ca922f171",
+        "movement_sha256": "153f65748386500eab2f21eac4d944c18af13e524ca8bec380aa3b62b18017e2",
+        "pass": true,
+        "side_key": "random_seed_2026__eps0.0005__plus"
+      },
+      "random_seed_2026__0.001__minus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/random_seed_2026__eps0_001__minus",
+        "immobility_pass": true,
+        "moved_points_sha256": "a896af180dad1bc23362f333a5260a790247660f21d8e840e216b0be0b3fdfef",
+        "movement_sha256": "58ba945cfd0655f9f180de705b393bee3db82a063146e25ccc2c07c6fa95d710",
+        "pass": true,
+        "side_key": "random_seed_2026__eps0.001__minus"
+      },
+      "random_seed_2026__0.001__plus": {
+        "boundary_max_displacement_m": 0.0,
+        "case_dir": "work/stage_s_work_f_v1/perturbations/random_seed_2026__eps0_001__plus",
+        "immobility_pass": true,
+        "moved_points_sha256": "ac3cb966d4df406c97c32e0f2a85a4a21954f8dade44108a52469c27fab32477",
+        "movement_sha256": "1a80c9d65c79b81be4598973b69bdbc4ffc961a72e3fcebd37adc82dac97fb07",
+        "pass": true,
+        "side_key": "random_seed_2026__eps0.001__plus"
+      }
+    }
+  },
+  "plateau_tolerance": {
+    "Cf": 0.001,
+    "Sf": 0.001,
+    "n": 0.005
+  },
+  "registered_before_computation": true,
+  "schema_version": 1,
+  "scope": {
+    "comparison_epsilon_m": 0.001,
+    "design_patch": "design_candidate",
+    "epsilons_m": [
+      0.0001,
+      0.00025,
+      0.0005,
+      0.001
+    ],
+    "quantities": [
+      "Cf",
+      "Sf",
+      "n"
+    ]
+  },
+  "stop_conditions": [
+    "if the analytic dump cannot be obtained authoritatively, stop without guessing",
+    "a geometry-Jacobian failure stops D4.3 and restarts from the side preflight after a one-factor fix",
+    "no registered direction, epsilon or threshold is changed"
+  ],
+  "tolerance_rationale": "moved mesh points are written in ASCII with about 8 significant digits, so the write/read roundoff is about 1e-8 m and the centered-difference noise at the largest registered epsilon (1e-3) is about 5e-6; the face-centre and area-vector maps are linear/quadratic in the control points and therefore exact, while the unit-normal difference carries an O((epsilon/L_face)^2) truncation of about 4e-4",
+  "utility": {
+    "options_sha256": "5d490fbba0bf5634e34c6676550bec5de396dc458f559210e0ce972372858fdb",
+    "read_only": true,
+    "source_dir": "openfoam_utils/geometryDerivativeDump",
+    "source_sha256": "127249df41e2071003a9153f136bc4c7b367e9ea9ff9da9f56f1196a73989905"
+  }
+}

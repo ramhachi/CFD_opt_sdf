@@ -1,0 +1,71 @@
+{
+ "status": "REGISTERED_FROZEN (freeze 2)",
+ "date": "2026-10-19",
+ "source_commit": "941e8a766376cb8c87cda9a344ee1f6350f9bb95",
+ "freeze1": {
+  "registration_sha256": "fa06aa4ec7a1142463feb8fd6957d041a5210cfba3dd01d3ec52a25480039595",
+  "commit": "8ae25aad38d67f5457af9946184200b7000bbfd0",
+  "issue_comment": "https://github.com/ramhachi/CFD_opt_sdf/issues/57#issuecomment-6251904755"
+ },
+ "file_sha256": {
+  "docs/t20b_registration_2026_10_19.md": "fa06aa4ec7a1142463feb8fd6957d041a5210cfba3dd01d3ec52a25480039595",
+  "infra/kaggle/kernel_t20b_cpu/runner.py": "e53a0c8c5f8dffbdff3a19954f5488e2da84b39ce7d2ec0cce8ba7e234027739",
+  "infra/kaggle/kernel_t20b_cpu/kernel-metadata.json": "e13439088d8a5fd2ae733f5ce1844411aab907520091b36fd8edec70f7feaa9b",
+  "scripts/build_t20b_kernel.py": "482b0fa4a46e0b0e893f76b590af8e4e7196ce3c1e411f23be834fef87ccda57",
+  "scripts/build_t20a_kernel.py": "73df7a83d94328eed4ab28d4faddf67032b9eae7d66fde5922daf52608cf6b4e",
+  "scripts/analyze_t20b.py": "0ae4cd46919228e18ba8104a7bc120ac3382610f47c19522faf5f53b93433e88",
+  "scripts/t20b_adjoint.py": "bfe5729945973c4410f2d251560ca42d8015538b92a2aec49d78e653fa11d7e0",
+  "scripts/t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+  "scripts/t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+  "scripts/t20b_digitize_genua_fig6.py": "b1ffe1fb468e33542a9c6318c131fa5820358072ef51439900cfa76f569e37ea",
+  "tests/test_t20b.py": "47b61cf44182c09b047e00acb877fcb62f4358a2d675dde1bd1d941fef013b71",
+  "data/t20/tyrrell026s_genua2009.dat": "ae5fa889e3090ff35e819f195f90111b9b16e990e51d99d8aa3999bcb2d10f83",
+  "data/t20/zerihan_zhang_cl_genua2009_fig6.json": "dd6ca2af10318f3b0603f94c60ea0e6f4753e4053fb614ee7efee3273a6ff90b",
+  "data/t20/genua2009_green_criterion.json": "e5a1ae021ff135af6dd1b278e7b59ffca06a5afbb2ebed36dc3763bf1f761ab6",
+  "data/t20/reference_genua2009.json": "a5aec6b8db8706a4c56decd6225f18d45a4eb5c105001de8018dedc24d8b96f5"
+ },
+ "rendered_kernels": {
+  "wf": {
+   "slug": "ramhachi888/cfd-opt-sdf-t20b-wf",
+   "runner_sha256": "b10aea0d1095e335a3810ff7aca4c3f115d6dfbf46fb0f46ab3df42fe8202602"
+  },
+  "lm": {
+   "slug": "ramhachi888/cfd-opt-sdf-t20b-lm",
+   "runner_sha256": "01889630a23c87131ce60a503479573755405a25907d517d3ef05d21e48703b4"
+  }
+ },
+ "development_smoke": {
+  "attempt1": {
+   "source_commit": "1f10feb4c514adb1e2fa220ce85a25517a5c2919",
+   "result": "50 MESH_OK, 4 solver paths COMPLETED",
+   "defects": [
+    "adjointOptimisationFoam's primal diverged from the first iteration under the T2-0a SIMPLEC setting (consistent yes, U 0.9, p unrelaxed): fixed with consistent no, p 0.3, U/nuTilda 0.7, pa 0.3, Ua 0.7 for the adjoint case",
+    "the smoke log filter missed forces 'Total/Pressure/Viscous' lines: the solver logs (*.gz) kept force values of the 100-200-iteration coa30 smoke cases and of the diverged adjoint primal (|F| about 1e12); the only lines read were the adjoint log tail of the diverged primal while diagnosing it. The *.gz logs are not archived; their SHA-256 are listed in smoke/attempt1/EXCLUDED_GZ_SHA256.txt"
+   ]
+  },
+  "attempt2": {
+   "source_commit": "8b967d01718ea5e9962b90da2d675b8571da472e",
+   "result": "50 MESH_OK, 4 solver paths COMPLETED, adjoint primal stable (initial residuals about 1e-4)",
+   "defects": [
+    "the filter still missed the adjoint objective lines ('downforce : value'), found by the source review on the attempt-1 log; *.gz logs not archived (hashes in smoke/attempt2/EXCLUDED_GZ_SHA256.txt), none of them read for values"
+   ]
+  },
+  "attempt3": {
+   "source_commit": "941e8a766376cb8c87cda9a344ee1f6350f9bb95",
+   "result": "50 MESH_OK, 4 solver paths COMPLETED, ADJ_RUNS with complete varIDs and the box containing the section; no force, coefficient or objective value in any output (checked by pattern); archived in full"
+  }
+ },
+ "plan_review": "one, three angles (numerical 14, controls 15, strategy 12 findings), registration section 10",
+ "source_review": {
+  "count": 1,
+  "reviewed_commit": "8b967d01718ea5e9962b90da2d675b8571da472e",
+  "findings": "1 blocking, 4 major, 8 minor; all fixed in 941e8a76 (tests/test_t20b.py regressions added)"
+ },
+ "interpretations_recorded_at_freeze2": [
+  "delta = max(0.01, 3 sigma_d) needs sigma_mesh, so the 14 sa-wf med30 scan cases are inputs of G3b, G4 and G6 (failures in any input decide first, then infrastructure losses)",
+  "a solver stage cut by the kernel deadline (not by the per-case cap) is DEADLINE_LIMITED = INFRA_LOSS",
+  "the adjoint case runs plain SIMPLE relaxation (smoke attempt 1); its primal starts from the converged kernel-L primal fields",
+  "ADJ_NOT_RUN is also reported (with the reason) when the kernel-L primal case itself is not valid"
+ ],
+ "analysis_rule": "scripts/analyze_t20b.py at this commit is run once on the downloaded outputs; analysis.md and verdict.json are committed unchanged"
+}

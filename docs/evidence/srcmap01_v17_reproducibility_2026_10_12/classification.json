@@ -1,0 +1,1419 @@
+{
+  "all_frozen_input_hashes_verified_after_measurements": true,
+  "all_repeated_groups_float32_and_float64_exact": false,
+  "all_runs_structural_runtime_source_and_loaded_mesh_identity_verified": true,
+  "cfd_runs": 0,
+  "chunk_order_all_registered_exact": false,
+  "complete": true,
+  "current_all_v16_v17_registered_exact": false,
+  "dependency_localization": "UNKNOWN; several dependency versions change together; only exact frozen bundle dependence eligible",
+  "environment_bundle_dependence_demonstrated": false,
+  "environment_bundle_differences": [
+    {
+      "current": {
+        "rtree.index": {
+          "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/rtree/index.py",
+          "sha256": "07d430583ad162f993bd69254d5526de24026fc71e85a846bc01fdce6bda1f92"
+        },
+        "trimesh.proximity": {
+          "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/proximity.py",
+          "sha256": "e9c2dcc768d69d226f944ee9eb12d1b20351f46e0806e7efb8b47c2af7fb7b7a"
+        },
+        "trimesh.ray.ray_triangle": {
+          "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/ray/ray_triangle.py",
+          "sha256": "0f3e6a387ec55c62ac9942e8199dcba470d0f743fecbe335faeacd0b85232101"
+        },
+        "trimesh.ray.ray_util": {
+          "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/ray/ray_util.py",
+          "sha256": "bc02600d223bab6e582bb19eaab875509c00c0ffd1547e803786c408c7607bb4"
+        },
+        "trimesh.triangles": {
+          "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/triangles.py",
+          "sha256": "caf162eb23884061e313398a47d617569a43f85fe180d06d1b67601663a71067"
+        },
+        "trimesh.util": {
+          "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/util.py",
+          "sha256": "251f2cb47c5e3547d34141aa5839b02638d4b4921f857108a5ed685af6213f76"
+        }
+      },
+      "key": "backend_sources",
+      "minimum": {
+        "rtree.index": {
+          "path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/rtree/index.py",
+          "sha256": "8446b0fdc288fe6981b9c9b3f6c76d5dc66434a97a115bfb1bb7d828a1fc1157"
+        },
+        "trimesh.proximity": {
+          "path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/trimesh/proximity.py",
+          "sha256": "c38ab0679047a0a170525ae289a70d8076bcd575055cb7f553ad452a4c7ffc84"
+        },
+        "trimesh.ray.ray_triangle": {
+          "path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/trimesh/ray/ray_triangle.py",
+          "sha256": "0f3e6a387ec55c62ac9942e8199dcba470d0f743fecbe335faeacd0b85232101"
+        },
+        "trimesh.ray.ray_util": {
+          "path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/trimesh/ray/ray_util.py",
+          "sha256": "06fce8cda67a8a7f1ecf4bf816876cc3e6e406c67050f31e2e2df39dfcf49a66"
+        },
+        "trimesh.triangles": {
+          "path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/trimesh/triangles.py",
+          "sha256": "28e190eeb7d03a76d49f908f634b0f370dc0e31b9586001377c269216dd58105"
+        },
+        "trimesh.util": {
+          "path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/trimesh/util.py",
+          "sha256": "503fcec0153d937295e3320efb242c1b4d14cd3f34d18c7ea12c2f1f589a9ce9"
+        }
+      }
+    },
+    {
+      "current": [
+        "PyYAML==6.0.3",
+        "Pygments==2.21.0",
+        "annotated-doc==0.0.5",
+        "attrs==26.1.0",
+        "certifi==2026.7.22",
+        "cfd-sdf==0.1.0",
+        "cfd-sdf==0.1.0",
+        "charset-normalizer==3.5.1",
+        "contourpy==1.3.3",
+        "cycler==0.12.1",
+        "cyclopts==4.24.0",
+        "docstring_parser==0.18.0",
+        "fonttools==4.64.0",
+        "idna==3.19",
+        "iniconfig==2.3.0",
+        "kiwisolver==1.5.1",
+        "markdown-it-py==4.2.0",
+        "matplotlib==3.11.1",
+        "mdurl==0.1.2",
+        "mlx-metal==0.32.2",
+        "mlx==0.32.2",
+        "numpy==2.5.2",
+        "packaging==26.3",
+        "pillow==12.3.0",
+        "platformdirs==4.11.7",
+        "pluggy==1.6.0",
+        "pooch==1.9.0",
+        "pyparsing==3.3.2",
+        "pytest==9.1.1",
+        "python-dateutil==2.9.0.post0",
+        "pyvista==0.48.4",
+        "requests==2.34.2",
+        "rich-rst==2.1.0",
+        "rich==15.0.0",
+        "rtree==1.4.1",
+        "scipy==1.18.1",
+        "scooby==0.11.2",
+        "shellingham==1.5.4",
+        "six==1.17.0",
+        "trimesh==5.1.0",
+        "typer==0.27.2",
+        "typing_extensions==4.16.0",
+        "urllib3==2.7.0",
+        "vtk==9.6.2"
+      ],
+      "key": "installed_distribution_lock",
+      "minimum": [
+        "PyYAML==6.0.3",
+        "Rtree==1.2.0",
+        "numpy==1.26.4",
+        "pip==26.0",
+        "scipy==1.11.4",
+        "trimesh==4.4.0"
+      ]
+    },
+    {
+      "current": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/rtree/lib/libspatialindex_c.dylib",
+      "key": "libspatialindex_path",
+      "minimum": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/rtree/lib/libspatialindex_c.dylib"
+    },
+    {
+      "current": "a4c2282d8ba7f63562b0631370f4e6fbd2b078e3841b5081d77b535b11af7676",
+      "key": "libspatialindex_sha256",
+      "minimum": "9337c574489ca0c474fb37f0eaa3ad7206e223369874306d2e60ceecad0d92e6"
+    },
+    {
+      "current": "2.1.0",
+      "key": "libspatialindex_version",
+      "minimum": "1.9.3"
+    },
+    {
+      "current": {
+        "embreex": {
+          "available": false,
+          "exception_class": "ModuleNotFoundError",
+          "exception_message": "No module named 'embreex'"
+        },
+        "numpy": {
+          "distribution_record_sha256": "55f0c4d15fd46da441f7ab84f12defc3e065ee5954beb69fcef1493b0b8fa56a",
+          "module_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/numpy/__init__.py",
+          "module_sha256": "09295a80660f17925ae23765ce8cbd7ff7ceae968d5f2f89349f1cb74c0b9e11",
+          "version": "2.5.2"
+        },
+        "pyembree": {
+          "available": false,
+          "exception_class": "ModuleNotFoundError",
+          "exception_message": "No module named 'pyembree'"
+        },
+        "rtree": {
+          "distribution_record_sha256": "876de31d99b32f21f4da899c3b46cb05b0b25031f4c1cd8d80bcc561bc178aaf",
+          "module_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/rtree/__init__.py",
+          "module_sha256": "f6bd13e0ca9605dfebb3e513a0119f3369b964e2f6658c1ad33aeeef11d7acb3",
+          "version": "1.4.1"
+        },
+        "scipy": {
+          "distribution_record_sha256": "d95b7aa2c03940de0bec301021a5753ff3577b5b7ce28e6342d59f9d8556258a",
+          "module_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/scipy/__init__.py",
+          "module_sha256": "39ccae300a4739cc53719bd3b39ce3f8f66e736c6eb672006e338a4c5cc3dc76",
+          "version": "1.18.1"
+        },
+        "shapely": {
+          "available": false,
+          "exception_class": "ModuleNotFoundError",
+          "exception_message": "No module named 'shapely'"
+        },
+        "trimesh": {
+          "distribution_record_sha256": "c06f9983210f50835fc0a9267e0a835cb68d922cf4b0724ad9ba430c8a87062c",
+          "module_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/__init__.py",
+          "module_sha256": "a50d8a9c4346fa0c5f6ca0c234effd12c548b1bee58197abb8106cb5e79d3360",
+          "version": "5.1.0"
+        }
+      },
+      "key": "modules",
+      "minimum": {
+        "embreex": {
+          "available": false,
+          "exception_class": "ModuleNotFoundError",
+          "exception_message": "No module named 'embreex'"
+        },
+        "numpy": {
+          "distribution_record_sha256": "473c8a81818e459958be706ab1e691f7790829a5800ff6bde82cf043aa58044f",
+          "module_path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/numpy/__init__.py",
+          "module_sha256": "22cd1535fa14d74ef6f457cca149ffdc80875f460be313b8f895273f78bc402e",
+          "version": "1.26.4"
+        },
+        "pyembree": {
+          "available": false,
+          "exception_class": "ModuleNotFoundError",
+          "exception_message": "No module named 'pyembree'"
+        },
+        "rtree": {
+          "distribution_record_sha256": "2424fe15a22c1b670e5cadca3392f4a880676207bce457953d952a1d923baea0",
+          "module_path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/rtree/__init__.py",
+          "module_sha256": "b3a6e3519c5996e943de7297dc1d2c7799f367fe2c2c333b70b201f38eef29fb",
+          "version": "1.2.0"
+        },
+        "scipy": {
+          "distribution_record_sha256": "451f973d2acb0776b194bbb9f7375a80f885249d281e2e194f6e200a4ecf2e31",
+          "module_path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/scipy/__init__.py",
+          "module_sha256": "5df3106bce68233cec43e84208135d8f18fb6e07d2770fbc157fce32bab28c50",
+          "version": "1.11.4"
+        },
+        "shapely": {
+          "available": false,
+          "exception_class": "ModuleNotFoundError",
+          "exception_message": "No module named 'shapely'"
+        },
+        "trimesh": {
+          "distribution_record_sha256": "139eb908c6f6b8b3bc132cc04cd3b45ba437494bdaf138b28f0006cbcbee0bdb",
+          "module_path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/trimesh/__init__.py",
+          "module_sha256": "b1528f24220556783ebe488c499276a1d616dcee2a2bc620122d1e8b910a2738",
+          "version": "4.4.0"
+        }
+      }
+    },
+    {
+      "current": "Build Dependencies:\n  blas:\n    detection method: system\n    found: true\n    include directory: unknown\n    lib directory: unknown\n    name: accelerate\n    openblas configuration: unknown\n    pc file directory: unknown\n    version: unknown\n  lapack:\n    detection method: system\n    found: true\n    include directory: unknown\n    lib directory: unknown\n    name: accelerate\n    openblas configuration: unknown\n    pc file directory: unknown\n    version: unknown\nCompilers:\n  c:\n    commands: cc\n    linker: ld64\n    name: clang\n    version: 15.0.0\n  c++:\n    commands: c++\n    linker: ld64\n    name: clang\n    version: 15.0.0\n  cython:\n    commands: cython\n    linker: cython\n    name: cython\n    version: 3.2.9\nMachine Information:\n  build:\n    cpu: aarch64\n    endian: little\n    family: aarch64\n    system: darwin\n  host:\n    cpu: aarch64\n    endian: little\n    family: aarch64\n    system: darwin\nPython Information:\n  path: /private/var/folders/g3/pffjr_y96bq06blnkf72x_hw0000gn/T/build-env-re3_temx/bin/python\n  version: '3.12'\nSIMD Extensions:\n  baseline:\n  - NEON\n  - NEON_FP16\n  - NEON_VFPV4\n  - ASIMD\n  found:\n  - ASIMDHP\n  - ASIMDDP\n  not found:\n  - ASIMDFHM\n\n",
+      "key": "numpy_build_blas_lapack_config",
+      "minimum": "Build Dependencies:\n  blas:\n    detection method: pkgconfig\n    found: true\n    include directory: /opt/arm64-builds/include\n    lib directory: /opt/arm64-builds/lib\n    name: openblas64\n    openblas configuration: USE_64BITINT=1 DYNAMIC_ARCH=1 DYNAMIC_OLDER= NO_CBLAS=\n      NO_LAPACK= NO_LAPACKE= NO_AFFINITY=1 USE_OPENMP= SANDYBRIDGE MAX_THREADS=3\n    pc file directory: /usr/local/lib/pkgconfig\n    version: 0.3.23.dev\n  lapack:\n    detection method: internal\n    found: true\n    include directory: unknown\n    lib directory: unknown\n    name: dep4335021056\n    openblas configuration: unknown\n    pc file directory: unknown\n    version: 1.26.4\nCompilers:\n  c:\n    args: -fno-strict-aliasing, -DBLAS_SYMBOL_SUFFIX=64_, -DHAVE_BLAS_ILP64\n    commands: cc\n    linker: ld64\n    linker args: -fno-strict-aliasing, -DBLAS_SYMBOL_SUFFIX=64_, -DHAVE_BLAS_ILP64\n    name: clang\n    version: 14.0.0\n  c++:\n    args: -DBLAS_SYMBOL_SUFFIX=64_, -DHAVE_BLAS_ILP64\n    commands: c++\n    linker: ld64\n    linker args: -DBLAS_SYMBOL_SUFFIX=64_, -DHAVE_BLAS_ILP64\n    name: clang\n    version: 14.0.0\n  cython:\n    commands: cython\n    linker: cython\n    name: cython\n    version: 3.0.8\nMachine Information:\n  build:\n    cpu: aarch64\n    endian: little\n    family: aarch64\n    system: darwin\n  host:\n    cpu: aarch64\n    endian: little\n    family: aarch64\n    system: darwin\nPython Information:\n  path: /private/var/folders/76/zy5ktkns50v6gt5g8r0sf6sc0000gn/T/cibw-run-q69bfk1p/cp312-macosx_arm64/build/venv/bin/python\n  version: '3.12'\nSIMD Extensions:\n  baseline:\n  - NEON\n  - NEON_FP16\n  - NEON_VFPV4\n  - ASIMD\n  found:\n  - ASIMDHP\n  not found:\n  - ASIMDFHM\n\n"
+    },
+    {
+      "current": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "key": "python_executable",
+      "minimum": "/private/tmp/srcmap01-minimum-env/bin/python"
+    }
+  ],
+  "evidence_scope": "frozen source-mapping diagnostic only; no volume/physical qualification",
+  "finite_run_limit": "invariance only over the fixed observed runs; finite repetitions do not prove universal determinism",
+  "frozen_precedence": [
+    "incomplete/unexpected structural or instrumentation error=>UNRESOLVED",
+    "any identity group repeated Float32 OR Float64 differing=>ALGORITHM_NONDETERMINISTIC",
+    "proven historical path divergence=>IMPLEMENTATION_PATH_DIVERGENCE",
+    "stable A registered B different=>ENVIRONMENT_DEPENDENT scoped only to frozen bundle; individualdependency/historical localization UNKNOWN",
+    "all current v16/v17 repeats and perturbations registered exact AND no local fixed-retry-vector sensitivity=>REPRODUCIBLE scoped finite observed runs",
+    "otherwise=>UNRESOLVED"
+  ],
+  "historical_cause_resolved": false,
+  "historical_path_divergence_proven": false,
+  "historical_paths": "UNKNOWN; direct/fallback disagreement alone cannot prove historical divergence",
+  "kaggle_submissions": 0,
+  "loaded_mesh_environment_differences": [],
+  "local_fixed_direction_sensitive": true,
+  "lowdim04a_restarted": false,
+  "p22_v1_changed": false,
+  "p22_v2_registered": false,
+  "path_signatures": [
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "A_v17_1",
+      "random_retry_draw_count": 1,
+      "ray_recursive_query_count": 1,
+      "try_successes": 2
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "A_v17_2",
+      "random_retry_draw_count": 1,
+      "ray_recursive_query_count": 1,
+      "try_successes": 2
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "A_v17_3",
+      "random_retry_draw_count": 1,
+      "ray_recursive_query_count": 1,
+      "try_successes": 2
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "A_v17_4",
+      "random_retry_draw_count": 1,
+      "ray_recursive_query_count": 1,
+      "try_successes": 2
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "A_v17_5",
+      "random_retry_draw_count": 1,
+      "ray_recursive_query_count": 1,
+      "try_successes": 2
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "A_v16_1",
+      "random_retry_draw_count": 1,
+      "ray_recursive_query_count": 1,
+      "try_successes": 1
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "A_v16_2",
+      "random_retry_draw_count": 1,
+      "ray_recursive_query_count": 1,
+      "try_successes": 1
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "B_chunk_385385",
+      "random_retry_draw_count": 1,
+      "ray_recursive_query_count": 1,
+      "try_successes": 1
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "B_chunk_50000",
+      "random_retry_draw_count": 3,
+      "ray_recursive_query_count": 3,
+      "try_successes": 8
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "B_chunk_100000",
+      "random_retry_draw_count": 2,
+      "ray_recursive_query_count": 2,
+      "try_successes": 4
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "B_chunk_200000",
+      "random_retry_draw_count": 1,
+      "ray_recursive_query_count": 1,
+      "try_successes": 2
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "B_chunk_368640",
+      "random_retry_draw_count": 1,
+      "ray_recursive_query_count": 1,
+      "try_successes": 2
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "B_chunk_131071",
+      "random_retry_draw_count": 2,
+      "ray_recursive_query_count": 2,
+      "try_successes": 3
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "C_canonical",
+      "random_retry_draw_count": 1,
+      "ray_recursive_query_count": 1,
+      "try_successes": 2
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "C_reverse",
+      "random_retry_draw_count": 1,
+      "ray_recursive_query_count": 1,
+      "try_successes": 2
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "C_permuted",
+      "random_retry_draw_count": 2,
+      "ray_recursive_query_count": 2,
+      "try_successes": 2
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "D_direct",
+      "random_retry_draw_count": 1,
+      "ray_recursive_query_count": 1,
+      "try_successes": 2
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "D_fallback",
+      "random_retry_draw_count": 1,
+      "ray_recursive_query_count": 1,
+      "try_successes": 0
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "D_unsigned",
+      "random_retry_draw_count": 0,
+      "ray_recursive_query_count": 0,
+      "try_successes": 0
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "G_minimum_1",
+      "random_retry_draw_count": 1,
+      "ray_recursive_query_count": 1,
+      "try_successes": 2
+    },
+    {
+      "exceptions": [],
+      "fallback_invoked": false,
+      "id": "G_minimum_2",
+      "random_retry_draw_count": 1,
+      "ray_recursive_query_count": 1,
+      "try_successes": 2
+    }
+  ],
+  "qualification_flags_changed": false,
+  "same_condition_pairwise": [
+    {
+      "a": "A_v17_1",
+      "b": "A_v17_2",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.665600717932648e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.6656007299897494e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v17_1",
+      "b": "A_v17_3",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v17_1",
+      "b": "A_v17_4",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.665600717932648e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.6656007299897494e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v17_1",
+      "b": "A_v17_5",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.665600717932648e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.6656007299897494e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v17_1",
+      "b": "B_chunk_200000",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.665600717932648e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.6656007299897494e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v17_1",
+      "b": "C_canonical",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.665600717932648e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.6656007299897494e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v17_2",
+      "b": "A_v17_3",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.665600717932648e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.6656007299897494e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v17_2",
+      "b": "A_v17_4",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v17_2",
+      "b": "A_v17_5",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v17_2",
+      "b": "B_chunk_200000",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v17_2",
+      "b": "C_canonical",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v17_3",
+      "b": "A_v17_4",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.665600717932648e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.6656007299897494e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v17_3",
+      "b": "A_v17_5",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.665600717932648e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.6656007299897494e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v17_3",
+      "b": "B_chunk_200000",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.665600717932648e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.6656007299897494e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v17_3",
+      "b": "C_canonical",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.665600717932648e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 4,
+          "1e-08": 4,
+          "1e-09": 4,
+          "1e-10": 4
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 4,
+        "different_sign_count": 4,
+        "different_values_count": 4,
+        "max_absolute_difference_m": 2.6656007299897494e-08,
+        "nonzero_sign_difference_count": 4,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v17_4",
+      "b": "A_v17_5",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v17_4",
+      "b": "B_chunk_200000",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v17_4",
+      "b": "C_canonical",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v17_5",
+      "b": "B_chunk_200000",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v17_5",
+      "b": "C_canonical",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "B_chunk_200000",
+      "b": "C_canonical",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "A_v16_1",
+      "b": "A_v16_2",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "current",
+        "v16",
+        200000,
+        "canonical",
+        "production"
+      ]
+    },
+    {
+      "a": "G_minimum_1",
+      "b": "G_minimum_2",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "group": [
+        "minimum",
+        "v17",
+        200000,
+        "canonical",
+        "production"
+      ]
+    }
+  ],
+  "selected_delta": null,
+  "shape_update_allowed": false,
+  "terminal_classification": "SOURCE_MAPPING_ALGORITHM_NONDETERMINISTIC"
+}

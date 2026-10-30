@@ -1,0 +1,45 @@
+{
+  "kind": "stage_v_domain_boundary_factor_manifest",
+  "created": "2026-09-21",
+  "registered_before_computation": true,
+  "status": "registered_not_run",
+  "question": "is the residual non-monotone downforce drift (0.0104 with linearUpwind) dominated by the declared far-field domain or by the far-field boundary treatment?",
+  "prerequisites": {
+    "scheme_factor_v23": "docs/evidence/stage_v_scheme_factor_v23_2026_09.json",
+    "baseline_family": "docs/evidence/stage_v_fixed_domain_grid_study_2026_09.json",
+    "steady_reference_validated": "docs/evidence/stage_v_transient_check_2026_09.json"
+  },
+  "fixed_conditions": {
+    "candidate": "opt_q100_b0_step0_try0_block (same STL hash as the fixed-domain study)",
+    "flow_case": "matched_re_laminar (U=(1,0,0) m/s, nu=1e-2 m^2/s, laminar)",
+    "scheme": "bounded Gauss linearUpwind grad(U)",
+    "reference_values": {"area_m2": 0.64, "length_m": 0.8},
+    "profiles": ["stage_v_clearance_v1 (0.25 m)", "stage_v_qualification_v1 (unrelaxed)"]
+  },
+  "factors": [
+    {
+      "name": "far-field domain size",
+      "baseline": "declared fixed domain lower=(-1.0,-0.8,-0.6), upper=(2.0,0.8,0.6)",
+      "treatment": "extend every far-field face by one body length (0.8 m) while keeping the body, operating point, and mesh resolution at V2",
+      "levels": ["V2"]
+    },
+    {
+      "name": "far-field boundary treatment",
+      "baseline": "declared inlet/outlet/symmetry set of the fixed-domain family",
+      "treatment": "single documented variant (e.g. pressure-outlet on the top face) chosen and recorded before the run",
+      "levels": ["V2"]
+    }
+  ],
+  "metric": {
+    "primary": "downforce change between the baseline V2 and each treatment V2",
+    "secondary": "Cd relative change and force stationarity",
+    "bounds": {"downforce_absolute": 0.005, "drag_relative": 0.02}
+  },
+  "decision": "if a factor moves the V2 downforce by more than the registered bound, register that factor, rerun the family, and repeat the V2->V3 drift measurement; otherwise the residual drift is accepted as a measured candidate-specific band and no further factor is registered",
+  "stop_conditions": [
+    "no V3 runs in this campaign",
+    "a treatment that fails mesh/stationarity gates is reported as failed, never dropped",
+    "changing the treatment definition after seeing results closes the campaign and requires a new manifest"
+  ],
+  "budget": {"max_runs": 2, "note": "V2-level meshes only"}
+}

@@ -1,0 +1,108 @@
+{
+  "amp": -0.5,
+  "base_topology": {
+    "boundary": "6344879b5cef524a413328ca58d30b1c7b635c2a34096fbf9a477fda867520f4",
+    "faces": "632adc30fcdadff9cddc5cc38ad25059dba38b252d0c6b430cffc7b9b38e8796",
+    "neighbour": "036f28275825021098e32e96c184ec61132aadee319bf9b6d22f8432a16b10dd",
+    "owner": "d63173122fa80632f457b656bb870ade51eda7e697c814da017cef986181e987"
+  },
+  "bl_thickness_m": 0.007749542399999998,
+  "check_mesh": {
+    "cells": 13722,
+    "diagnostic_lines": [],
+    "failed_check_counts": [],
+    "max_aspect_ratio": "6.7406421",
+    "max_non_orthogonality": "41.637632",
+    "max_skewness": "0.64883745",
+    "mesh_ok": true,
+    "min_determinant": "0.025733761",
+    "min_face_weight": "0.14767122",
+    "min_volume_ratio": "0.12994212",
+    "severe_non_orthogonal_faces": 0,
+    "unused_points": 0
+  },
+  "check_mesh_returncode": 0,
+  "delta_alpha_deg": -0.5,
+  "generator_wall_s": 4.605108381000036,
+  "h_m": 0.020106,
+  "h_over_c": 0.09,
+  "id": "sa-wf_h0.09_med30_morph-da-0.5_mesh",
+  "iterations_requested": 5000,
+  "mesh": "med30",
+  "mesh_cells_3d": 13722,
+  "mesh_msh_sha256": "d0beb879c654ad3fdd9283d5534b4d1a8390c4cef238a6c88833e451b1a81e4b",
+  "mesh_proxy_failures": [],
+  "method": "morph",
+  "mode": "smoke",
+  "model": "sa-wf",
+  "morph": {
+    "airfoil_min_weight": 1.0,
+    "airfoil_nodes": 272,
+    "amp": -0.5,
+    "amp_unit": "deg",
+    "area_ratio_max": 1.0362385772966318,
+    "area_ratio_min": 0.9210795746440595,
+    "base_delta_alpha_deg": 0.0,
+    "base_mesh_msh_sha256": "9f9c32a17228d842d2a4907a3a49566b0a637c58ac7aa26b9281940ec8ac14ea",
+    "blend": "smoothstep",
+    "contour_err_m": 1.8041124150158794e-16,
+    "fixed_nodes": 6498,
+    "fixed_nodes_moved": 0,
+    "inverted_cells": 0,
+    "max_node_displacement_m": 0.003525323233970377,
+    "mode": "incidence",
+    "module_sha256": "156cd8416d3291a42704dc712f78ee62fef5ff9c60b5f552b3800d22a78bc5ad",
+    "te_displacement_m": [
+      0.00010904894676516674,
+      -0.0015496922574506009
+    ],
+    "x_lowest_m": 0.046277346787474236
+  },
+  "n_layers": 7,
+  "residual_converged": false,
+  "shape_mode": "incidence",
+  "solver": {
+    "converged_in": null,
+    "foam_fatal": false,
+    "iterations": 0,
+    "last_initial_residuals": {
+      "ReThetat": null,
+      "Ux": null,
+      "Uy": null,
+      "gammaInt": null,
+      "k": null,
+      "nuTilda": null,
+      "omega": null,
+      "p": null
+    },
+    "last_time": null,
+    "nan_in_log": false,
+    "sigfpe": false
+  },
+  "stages": [
+    {
+      "peak_rss_mb_sampled": 3.25632,
+      "returncode": 0,
+      "stage": "gmshToFoam",
+      "timed_out": false,
+      "wall_s": 0.9703142700000171
+    },
+    {
+      "peak_rss_mb_sampled": 57.901056,
+      "returncode": 0,
+      "stage": "checkMesh",
+      "timed_out": false,
+      "wall_s": 1.1717883139999685
+    }
+  ],
+  "status": "MESH_OK",
+  "topology": {
+    "boundary": "6344879b5cef524a413328ca58d30b1c7b635c2a34096fbf9a477fda867520f4",
+    "faces": "632adc30fcdadff9cddc5cc38ad25059dba38b252d0c6b430cffc7b9b38e8796",
+    "neighbour": "036f28275825021098e32e96c184ec61132aadee319bf9b6d22f8432a16b10dd",
+    "owner": "d63173122fa80632f457b656bb870ade51eda7e697c814da017cef986181e987"
+  },
+  "total_wall_s": 6.760301439000045,
+  "variant": "",
+  "x_lowest_m": 0.046277346787474236
+}

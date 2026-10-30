@@ -1,0 +1,62 @@
+{
+  "amp": 0.25,
+  "courant": {
+    "last_max": 4.2875103,
+    "last_mean": 0.025837932,
+    "max": 4.3253841
+  },
+  "deadline_limited": false,
+  "delta_alpha_deg": 0.0,
+  "geometry": "sa-wf_h0.134_xfine30_morph-flap+0.25mm",
+  "h_over_c": 0.134,
+  "id": "sa-wf_h0.134_xfine30_morph-flap+0.25mm__U",
+  "kind": "U",
+  "mesh": "xfine30",
+  "mesh_cells_3d": 50303,
+  "mesh_msh_sha256": "d1d4915cf5ec3ac30ab23c21b65bb49e604afdeb0990d89dde0ce56b4102ab39",
+  "method": "morph",
+  "mode": "xp2",
+  "pre_solver_wall_s": 12.990572394999845,
+  "s0_wall_s": 1003.3349314429997,
+  "shape_mode": "flap",
+  "solver": {
+    "converged_in": null,
+    "foam_fatal": false,
+    "iterations": 11920,
+    "last_initial_residuals": {
+      "ReThetat": null,
+      "Ux": 2.2655751e-11,
+      "Uy": 4.9810692e-11,
+      "gammaInt": null,
+      "k": null,
+      "nuTilda": 9.4205853e-09,
+      "omega": null,
+      "p": 5.9811022e-08
+    },
+    "last_time": 0.1192,
+    "nan_in_log": false,
+    "sigfpe": false
+  },
+  "source_run": "sa-wf_h0.134_xfine30_morph-flap+0.25mm__S0",
+  "source_status": "COMPLETED",
+  "stage2": {
+    "dt_s": 1e-05,
+    "end_iteration": null,
+    "end_time_s": 0.1192,
+    "kind": "U",
+    "source_time": "5000",
+    "transient_s": 0.0447
+  },
+  "stage2_wall_s": 4382.507057245001,
+  "stages": [
+    {
+      "peak_rss_mb_sampled": 162.193408,
+      "returncode": 0,
+      "stage": "pimpleFoam",
+      "timed_out": false,
+      "wall_s": 4380.857910527001
+    }
+  ],
+  "status": "COMPLETED",
+  "variant": ""
+}

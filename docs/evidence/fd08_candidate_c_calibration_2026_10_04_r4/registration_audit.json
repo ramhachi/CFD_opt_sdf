@@ -1,0 +1,93 @@
+{
+  "baseline_repeat_count": 5,
+  "calibration_epsilon_ladder_m": [
+    5e-05,
+    0.00015,
+    0.0005,
+    0.0015,
+    0.005,
+    0.015,
+    0.05
+  ],
+  "candidate_c_identity": {
+    "body_source_sha256": {
+      "candidate_c_body_source": "2a4b056a1a4a23dc5699ad340faed8ad35bfab4c103302169a93150feedd04c6",
+      "normal_floor_body_source": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf"
+    },
+    "contract_path": "docs/evidence/candidate_c_composite_operator_identity_v1_2026_10.json",
+    "contract_sha256": "516cfb26b9cc11f920918f08224ec2cfa5ed89d1e7372fa8d8dd7d4807bd5efc",
+    "operator_identity": "candidate_c_moment_blend+normal_floor_0.25",
+    "physical_qualification": false,
+    "qualification_flags": {
+      "fd_oracle": false,
+      "field_gradient": false,
+      "optimizer": false,
+      "reverse": false,
+      "shape_update_allowed": false,
+      "topology": false
+    }
+  },
+  "cpu_rehearsal_evidence": {
+    "evidence_class": "cpu_setup_operator_rehearsal_only",
+    "input_state_bindings": [
+      {
+        "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+        "raw_phi_evidence_path": "inputs/cal_baseline_01.phi_f4_fortran.raw",
+        "raw_phi_evidence_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+        "role": "baseline",
+        "run_id": "cal_baseline_01"
+      },
+      {
+        "phi_fortran_sha256": "355fdaaf4edba8b96fa33d676271bc931fbca987446f6366a423cf167d710e63",
+        "raw_phi_evidence_path": "inputs/D0_interface_offset__eps_5_0000000000e_05__plus.phi_f4_fortran.raw",
+        "raw_phi_evidence_sha256": "355fdaaf4edba8b96fa33d676271bc931fbca987446f6366a423cf167d710e63",
+        "role": "perturbation",
+        "run_id": "D0_interface_offset__eps_5_0000000000e_05__plus"
+      }
+    ],
+    "observed_cpu_runtime": {
+      "backend": "Array",
+      "julia_version": "1.12.6",
+      "waterlily_version": "1.8.0"
+    },
+    "preview_path": "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry5/cpu_rehearsal_preview.json",
+    "preview_sha256": "5ac384c3d034f79acb3c5f2e724eaa0dc9f5c74206899ea16c9f7ee0cc8a521b",
+    "result_path": "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry5/rehearsal_result.json",
+    "result_sha256": "b7265211f71206ec7f377f556d758ae097e6bb7e477cc3076507d9dbf9c11cfd",
+    "runner_output_inventory_sha256": "04ca27c1785976b079c68746bfcb95b0756c75e0bcd6a7e06e35ba2ced63a2ac",
+    "runner_output_manifest_sha256": "04f2534b5b0307ba2d42ceeb372e29bc8fdb2d469d4f5cc4ad82d65546dd1108",
+    "source_commit": "91bb6f4175435cc0259f3ff7d83c7dd260352ec2"
+  },
+  "criteria_and_sidecar_verified": true,
+  "criteria_path": "docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/xfidc_criteria.json",
+  "criteria_sha256": "81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5",
+  "dataset_file_count": 89,
+  "dataset_files_verified": true,
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-calibration",
+  "dataset_inventory_sha256": "593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954",
+  "dataset_local_root": "work/fd08_candidate_c_calibration_dataset_r4",
+  "evidence_class": "host_side_registration_and_inventory_integrity_not_calibration_measurement",
+  "formal_epsilon_ladder_registered": false,
+  "formal_measurement_started": false,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-calibration-kernel",
+  "kind": "fd08_candidate_c_calibration_preregistration_audit",
+  "measurement_window_t_u_l": [
+    80.0,
+    120.0
+  ],
+  "perturbation_state_count": 42,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "round_id": "fd08_candidate_c_calibration_2026_10_04_r4",
+  "run_count": 47,
+  "source_commit": "b098d1a60992e217fd131e0b02c383bb39b0a8f5",
+  "source_input_count": 29,
+  "source_inputs_verified_in_worktree_and_git_commit": true,
+  "source_inventory_sha256": "e2ea45bb8eb509b36e2b0b06827645dde1aeab0f9fd39b5e5d2c9a9f98a3bedf"
+}

@@ -1,0 +1,44 @@
+{
+  "archive_path": "work/pq3_3b_campaign_v15_failed_lineage_2026_09_24",
+  "claims_not_supported": [
+    "this failed runner invocation is not a completed or resumed v15 campaign",
+    "the successful trial is not counted as an accepted campaign step until a corrected clean run checkpoints it"
+  ],
+  "claims_supported": [
+    "the first v15 physics attempt passed its registered transform, Path B and response gates at alpha 1.0",
+    "the campaign stopped before writing an accepted checkpoint because the runner selected the final ledger row instead of the accepted row"
+  ],
+  "diagnosis": {
+    "accepted_alpha": 1.0,
+    "accepted_candidate_index": 0,
+    "accepted_rho_sha256": "2dc165bd84f45aadf3f3086fa2e9b14814e65146a0978366792c945d606bd163",
+    "last_candidate_alpha": 0.0625,
+    "last_candidate_index": 4,
+    "last_candidate_reason": "transform_feasible_response_pending",
+    "payload_corrected_rho_sha256": "2dc165bd84f45aadf3f3086fa2e9b14814e65146a0978366792c945d606bd163",
+    "root_cause": "runner selected candidates[-1], but response-level backtracking may accept an earlier alpha and retain smaller transform-feasible entries as unevaluated ledger rows"
+  },
+  "error": "ValueError: inequality acceptance or rho lineage mismatch",
+  "execution_git_head": "69d167e",
+  "kind": "pq3_3b_v15_runner_lineage_failure",
+  "manifest": {
+    "path": "docs/evidence/pq3_3b_campaign_manifest_v15_2026_09.json",
+    "sha256": "4a46c740dd4fd2f350326b82bab90a67c64e8bb2de1334bc3bb563b2d2e5ceda"
+  },
+  "output_hashes_before_archive": {
+    "campaign_meta_json": "894aa0627b5ecf3898709f8a9e4a52c089120c40ff8f3e5d2419c0462a157625",
+    "events_jsonl": "602292ac752e09b9f47b1d8c245653d52dba8258fc9c01cbe17e1563cb2883b6",
+    "latest_json": "45e633c385f71b0a3344012278363f8f6b0440dc5121352cbe8b258a5694e8f0",
+    "rho_0000_npy": "4eb906855f14e1298bd6d062e0540891bd0b8a3223153b633ed1fc993d35af52",
+    "state_0000_json": "9828cfc037c4e51e1bbcb0633a2748a793fc1b59cb2181c93e58e8aa256e5d7b"
+  },
+  "schema_version": 1,
+  "solver_evidence": {
+    "accepted_trial_downforce": 2.01655864594,
+    "all_recorded_fresh": true,
+    "parent_adjoint_requests": 1,
+    "path_b_primal_requests": 2,
+    "trial_primal_requests": 1
+  },
+  "status": "implementation_error_before_first_checkpoint_acceptance"
+}

@@ -1,0 +1,336 @@
+{
+  "alpha_records": [
+    {
+      "active_cells_at_one": 232,
+      "active_cells_at_zero": 9263,
+      "alpha": 1.0,
+      "corrected_mask_drift_max": 0.0,
+      "corrected_move_box_violation_max": 0.0,
+      "corrected_norms": {
+        "inf_norm": 2.6710116959205443e-05,
+        "inf_norm_active": 2.6710116959205443e-05,
+        "l2_norm": 4.705825216675788e-05,
+        "l2_norm_active": 4.705825216675788e-05
+      },
+      "corrected_projected_field_mean_abs_delta": 1.6460232049315953e-08,
+      "corrected_rho_sha256": "75c110eb1750f55a4f1eade61f6da1055261587d2653c37bf056d54d2bddf4e1",
+      "direction_dot_proposed_vs_corrected": 0.16573618554350536,
+      "frozen_box_face_cells": 9495,
+      "gradJ_dot_corrected": -3.101046841989718e-07,
+      "gradJ_dot_proposal": -0.12111112618645692,
+      "gradV_dot_corrected": 2.0229278790898662e-15,
+      "gradV_dot_proposal": 0.0030799237638320224,
+      "mechanism": "corrected_step_effective",
+      "phi_corrected": 0.018000000000000002,
+      "phi_parent": 0.018,
+      "phi_proposal": 0.021344143527187814,
+      "proposal_mask_drift_max": 0.0,
+      "proposal_move_box_violation_max": 0.0,
+      "proposal_norms": {
+        "inf_norm": 0.030000000000000027,
+        "inf_norm_active": 0.030000000000000027,
+        "l2_norm": 2.955417936365875,
+        "l2_norm_active": 2.955417936365875
+      },
+      "proposal_projected_field_mean_abs_delta": 0.0033441435271878163,
+      "volume_correction": {
+        "bracketed": true,
+        "kappa_volume": -0.9999970851574737,
+        "phi_corrected": 0.018000000000000002,
+        "volume_residual": 3.469446951953614e-18
+      }
+    },
+    {
+      "active_cells_at_one": 232,
+      "active_cells_at_zero": 9263,
+      "alpha": 0.5,
+      "corrected_mask_drift_max": 0.0,
+      "corrected_move_box_violation_max": 0.0,
+      "corrected_norms": {
+        "inf_norm": 2.7755575615628914e-17,
+        "inf_norm_active": 2.7755575615628914e-17,
+        "l2_norm": 3.6248664865870465e-16,
+        "l2_norm_active": 3.6248664865870465e-16
+      },
+      "corrected_projected_field_mean_abs_delta": 2.457546100124158e-19,
+      "corrected_rho_sha256": "ea03c24b5b7b81977142bc9d0e968e17e6036ba02575df93d67990fdc1119351",
+      "direction_dot_proposed_vs_corrected": 0.22715116757514156,
+      "frozen_box_face_cells": 9495,
+      "gradJ_dot_corrected": -3.2713441743198033e-18,
+      "gradJ_dot_proposal": -0.0605555845508794,
+      "gradV_dot_corrected": 2.3572123379118875e-19,
+      "gradV_dot_proposal": 0.0015399663706744662,
+      "mechanism": "volume_correction_cancels_objective_step",
+      "phi_corrected": 0.018,
+      "phi_parent": 0.018,
+      "phi_proposal": 0.01960371263159986,
+      "proposal_mask_drift_max": 0.0,
+      "proposal_move_box_violation_max": 0.0,
+      "proposal_norms": {
+        "inf_norm": 0.015000000000000013,
+        "inf_norm_active": 0.015000000000000013,
+        "l2_norm": 1.4777093760276399,
+        "l2_norm_active": 1.4777093760276399
+      },
+      "proposal_projected_field_mean_abs_delta": 0.0016037126315998648,
+      "volume_correction": {
+        "bracketed": true,
+        "kappa_volume": -0.4999999999999998,
+        "phi_corrected": 0.018,
+        "volume_residual": 0.0
+      }
+    },
+    {
+      "active_cells_at_one": 232,
+      "active_cells_at_zero": 9263,
+      "alpha": 0.25,
+      "corrected_mask_drift_max": 0.0,
+      "corrected_move_box_violation_max": 0.0,
+      "corrected_norms": {
+        "inf_norm": 1.734723475976807e-18,
+        "inf_norm_active": 1.734723475976807e-18,
+        "l2_norm": 2.999617302079403e-17,
+        "l2_norm_active": 2.999617302079403e-17
+      },
+      "corrected_projected_field_mean_abs_delta": 0.0,
+      "corrected_rho_sha256": "e451954dcd8f2db7c1652332e8285e8d52dea6a56e03a564ce1fb1720adf836a",
+      "direction_dot_proposed_vs_corrected": -0.17552453222169104,
+      "frozen_box_face_cells": 9495,
+      "gradJ_dot_corrected": 9.412732051852851e-21,
+      "gradJ_dot_proposal": -0.030277792275439672,
+      "gradV_dot_corrected": -5.212020914454431e-21,
+      "gradV_dot_proposal": 0.0007699831853372316,
+      "mechanism": "volume_correction_cancels_objective_step",
+      "phi_corrected": 0.018,
+      "phi_parent": 0.018,
+      "phi_proposal": 0.018785650073354886,
+      "proposal_mask_drift_max": 0.0,
+      "proposal_move_box_violation_max": 0.0,
+      "proposal_norms": {
+        "inf_norm": 0.007500000000000007,
+        "inf_norm_active": 0.007500000000000007,
+        "l2_norm": 0.7388546880138208,
+        "l2_norm_active": 0.7388546880138208
+      },
+      "proposal_projected_field_mean_abs_delta": 0.0007856500733548914,
+      "volume_correction": {
+        "bracketed": true,
+        "kappa_volume": -0.25000000000000006,
+        "phi_corrected": 0.018,
+        "volume_residual": 0.0
+      }
+    },
+    {
+      "active_cells_at_one": 232,
+      "active_cells_at_zero": 9263,
+      "alpha": 0.125,
+      "corrected_mask_drift_max": 0.0,
+      "corrected_move_box_violation_max": 0.0,
+      "corrected_norms": {
+        "inf_norm": 0.0,
+        "inf_norm_active": 0.0,
+        "l2_norm": 0.0,
+        "l2_norm_active": 0.0
+      },
+      "corrected_projected_field_mean_abs_delta": 0.0,
+      "corrected_rho_sha256": "ffb594427f56670068aeacc6742b0075c1fbd418f834f83033d079b014cecfcd",
+      "direction_dot_proposed_vs_corrected": null,
+      "frozen_box_face_cells": 9495,
+      "gradJ_dot_corrected": 0.0,
+      "gradJ_dot_proposal": -0.01513889613771989,
+      "gradV_dot_corrected": 0.0,
+      "gradV_dot_proposal": 0.00038499159266861763,
+      "mechanism": "volume_correction_cancels_objective_step",
+      "phi_corrected": 0.018,
+      "phi_parent": 0.018,
+      "phi_proposal": 0.01838887569765474,
+      "proposal_mask_drift_max": 0.0,
+      "proposal_move_box_violation_max": 0.0,
+      "proposal_norms": {
+        "inf_norm": 0.003750000000000031,
+        "inf_norm_active": 0.003750000000000031,
+        "l2_norm": 0.36942734400691063,
+        "l2_norm_active": 0.36942734400691063
+      },
+      "proposal_projected_field_mean_abs_delta": 0.0003888756976547412,
+      "volume_correction": {
+        "bracketed": true,
+        "kappa_volume": -0.12499999999999999,
+        "phi_corrected": 0.018,
+        "volume_residual": 0.0
+      }
+    },
+    {
+      "active_cells_at_one": 232,
+      "active_cells_at_zero": 9263,
+      "alpha": 0.0625,
+      "corrected_mask_drift_max": 0.0,
+      "corrected_move_box_violation_max": 0.0,
+      "corrected_norms": {
+        "inf_norm": 2.7755575615628914e-17,
+        "inf_norm_active": 2.7755575615628914e-17,
+        "l2_norm": 2.8374795060405417e-16,
+        "l2_norm_active": 2.8374795060405417e-16
+      },
+      "corrected_projected_field_mean_abs_delta": 1.358866722848499e-19,
+      "corrected_rho_sha256": "08dbb9becffcceab4c50d2307c76c43d4556a9b9a7dd3f00f7a846815bac8e66",
+      "direction_dot_proposed_vs_corrected": -0.1490019364290497,
+      "frozen_box_face_cells": 9495,
+      "gradJ_dot_corrected": 3.2210347857820893e-18,
+      "gradJ_dot_proposal": -0.00756944806885989,
+      "gradV_dot_corrected": -2.2734535023480276e-19,
+      "gradV_dot_proposal": 0.00019249579633430692,
+      "mechanism": "volume_correction_cancels_objective_step",
+      "phi_corrected": 0.018,
+      "phi_parent": 0.018,
+      "phi_proposal": 0.018193462811198515,
+      "proposal_mask_drift_max": 0.0,
+      "proposal_move_box_violation_max": 0.0,
+      "proposal_norms": {
+        "inf_norm": 0.0018750000000000155,
+        "inf_norm_active": 0.0018750000000000155,
+        "l2_norm": 0.1847136720034551,
+        "l2_norm_active": 0.1847136720034551
+      },
+      "proposal_projected_field_mean_abs_delta": 0.00019346281119851698,
+      "volume_correction": {
+        "bracketed": true,
+        "kappa_volume": -0.06250000000000017,
+        "phi_corrected": 0.018,
+        "volume_residual": 0.0
+      }
+    }
+  ],
+  "claims_not_supported": [
+    "small corrected updates or small objective changes are not convergence or KKT evidence",
+    "no new physics evaluation is included in this diagnosis"
+  ],
+  "claims_supported": [
+    "the stopped parent gradient and all registered alpha candidates were reconstructed from verified saved artifacts without a new solver run",
+    "the per-alpha pre/post-correction norms, direction dots, grad J / grad V directional derivatives and mask/box verdicts are measured"
+  ],
+  "events_cross_check": {
+    "attempt": 12,
+    "candidates": [
+      {
+        "alpha": 1.0,
+        "campaign_direction_inf_norm": 2.6710116959205443e-05,
+        "campaign_kappa_volume": -0.9999970851574737,
+        "kappa_match": true,
+        "recomputed_direction_inf_norm": 2.6710116959205443e-05,
+        "recomputed_kappa_volume": -0.9999970851574737
+      },
+      {
+        "alpha": 0.5,
+        "campaign_direction_inf_norm": 2.7755575615628914e-17,
+        "campaign_kappa_volume": -0.4999999999999998,
+        "kappa_match": true,
+        "recomputed_direction_inf_norm": 2.7755575615628914e-17,
+        "recomputed_kappa_volume": -0.4999999999999998
+      },
+      {
+        "alpha": 0.25,
+        "campaign_direction_inf_norm": 1.734723475976807e-18,
+        "campaign_kappa_volume": -0.25000000000000006,
+        "kappa_match": true,
+        "recomputed_direction_inf_norm": 1.734723475976807e-18,
+        "recomputed_kappa_volume": -0.25000000000000006
+      },
+      {
+        "alpha": 0.125,
+        "campaign_direction_inf_norm": 0.0,
+        "campaign_kappa_volume": -0.12499999999999999,
+        "kappa_match": true,
+        "recomputed_direction_inf_norm": 0.0,
+        "recomputed_kappa_volume": -0.12499999999999999
+      },
+      {
+        "alpha": 0.0625,
+        "campaign_direction_inf_norm": 2.7755575615628914e-17,
+        "campaign_kappa_volume": -0.06250000000000017,
+        "kappa_match": true,
+        "recomputed_direction_inf_norm": 2.7755575615628914e-17,
+        "recomputed_kappa_volume": -0.06250000000000017
+      }
+    ],
+    "level": "level_1_b8_q30"
+  },
+  "gradV_fd_check": {
+    "all_cells": {
+      "analytic_directional": 0.07538568755069339,
+      "clipped_probe_cells": 9495,
+      "epsilon": 1e-05,
+      "finite_difference": 0.061427353522519594,
+      "name": "all_cells",
+      "phi_center": 0.018,
+      "phi_minus": 0.017999283169889194,
+      "phi_plus": 0.018000511716959645,
+      "relative_error": 0.18515894039949504
+    },
+    "applicable": true,
+    "interior_cells": 9705,
+    "interior_only": {
+      "analytic_directional": 0.0474689389383149,
+      "clipped_probe_cells": 0,
+      "epsilon": 1e-05,
+      "finite_difference": 0.04746893893271819,
+      "name": "interior_only",
+      "phi_center": 0.018,
+      "phi_minus": 0.01799952531269118,
+      "phi_plus": 0.018000474691469835,
+      "relative_error": 1.179025847247437e-10
+    }
+  },
+  "input_verification": {
+    "all_hashes_verified": true,
+    "campaign_meta_v5": "af77307dc4ed0196ac5c13f00682456fb0ad0fffd5e2ae3b3233d9480aaeac14",
+    "events_jsonl": "2fb08315486abecbe1f5696c6420fd8251c9cb82cb3855e7ecca2228c03a8953",
+    "latest_json": "f5d150914f225ad9c31a4f8135431bea3cad5ed50545fdd7981b23eef87196b5",
+    "manifest_v5": "38dbd9a476ebe72de1f49b51928b6b4c9bb6570d135df4db47c00107eb7a786d",
+    "outcome_v5": {
+      "path": "docs/evidence/pq3_3b_campaign_v5_outcome_2026_09.json",
+      "sha256": "a33762ff4e32510cad869bb7b7a6220467763a1507e81263912dbebd0c7685d5"
+    },
+    "rho_0003_file": "149eee70325d332996f134648404ae7eede2894140ad1bd9be09c8e719374455",
+    "rho_array_sha256": "ffb594427f56670068aeacc6742b0075c1fbd418f834f83033d079b014cecfcd",
+    "state_0003_json": "9e7ad93885b34d22ec3f625246cfd4ca676652c1b18e229a32179b511252ed73"
+  },
+  "kind": "pq3_3b_stopped_state_diagnosis",
+  "parent": {
+    "adjoint_iterations": 597,
+    "canonical_gradient_sha256": "3be46937414eaeaa93754e72a16e6df3e5da89a5465215d1505f30a490b43a1b",
+    "canonical_objective": -0.579818003757,
+    "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_campaign_v5/runs/parent_64292d87c501/case",
+    "downforce_coefficient": 0.579818003757,
+    "level": "level_1_b8_q30",
+    "primal_iterations": 88,
+    "projected_volume_gradient_inf_peak": 0.0001410485208696314,
+    "projected_volume_gradient_sha256": "1724762b96c4abc8c7b99dbc39619b96ea48d663328f0463c39a29878b2dd1d9",
+    "reused": true,
+    "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_campaign_v5/runs/parent_64292d87c501/case/fixed_grid_primal_summary.json",
+    "summary_sha256": "b0ff9faa3e0460b641b3fbcc8fab3d2da64c90bab32816a9e45b2c210b98e466"
+  },
+  "plan": {
+    "path": "docs/pq3_3b_post_v5_plan_2026_09.md",
+    "sha256": "7b6c1948f205098baab8225c3cdd0a38ca5bbed0f189a889e7b0bc7b9a5ce6ba"
+  },
+  "schema_version": 1,
+  "summary": {
+    "active_cells_at_one": 232,
+    "active_cells_at_zero": 9263,
+    "frozen_box_face_cells": 9495,
+    "mechanism_counts": {
+      "corrected_step_effective": 1,
+      "volume_correction_cancels_objective_step": 4
+    },
+    "no_new_openfoam_evaluations": true,
+    "recomputed_matches_campaign_kappa_all_alphas": true,
+    "registered_alphas": [
+      1.0,
+      0.5,
+      0.25,
+      0.125,
+      0.0625
+    ]
+  }
+}

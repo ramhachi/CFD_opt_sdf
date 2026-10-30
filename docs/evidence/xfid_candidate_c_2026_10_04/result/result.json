@@ -1,0 +1,260 @@
+{
+  "all_states_completed": true,
+  "criteria_sha256": "39974802c43a55bde53da2afc6e04149ef7fec148d8b678e1f8b92a4523d775b",
+  "elapsed_s": 1679.033679999,
+  "gpu_inventory": [
+    "0, Tesla T4, GPU-8509abb0-20b9-250e-3bf2-ae723be320d5, 15360 MiB, 580.178.04",
+    "1, Tesla T4, GPU-28c1e7f4-3fbf-0529-a7ee-96e7849cd115, 15360 MiB, 580.178.04"
+  ],
+  "host_driver_version_recorded_not_gated": "580.178.04",
+  "platform": "Linux-6.18.48+-x86_64-with-glibc2.39",
+  "python": "3.13.15",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "round_id": "xfid45_part_b_candidate_c_r1",
+  "runner_sha256": "508f818d638691f421961103aabd3c6c183b72fab9d128d343f3091ab4d13dd8",
+  "source_commit": "1d1745790efe9de6ece7e5b570dd1dcb8327ac15",
+  "states": {
+    "D0_interface_offset_minus": {
+      "cd_time_weighted": 0.997424470514019,
+      "force_csv_sha256": "c1e51ad916bf8d24513ff9f681db3d8e3c50c73f85aa3284790f422542042cb4",
+      "forces_n": {
+        "downforce_time_weighted_n": 0.3170500233031098,
+        "drag_time_weighted_n": 0.31917583056448606,
+        "pressure_downforce_time_weighted_n": 0.3241640530962627,
+        "pressure_drag_time_weighted_n": 0.22291940226223142,
+        "viscous_downforce_time_weighted_n": -0.007114029793153194,
+        "viscous_drag_time_weighted_n": 0.09625642830225441
+      },
+      "gates": {
+        "body_and_backend": true,
+        "finite": true,
+        "force_components_consistent": true,
+        "host_metrics_match_summary": true,
+        "solver_step_markers": true,
+        "state_identity": true,
+        "t_end_reached": true,
+        "vram": true
+      },
+      "peak_vram_bytes": 82905616,
+      "phi_margin_m": 0.344999994058162,
+      "stationarity_drift_max": 5.615158487650735e-06,
+      "stationarity_within_registered_limit": true,
+      "status": "COMPLETED",
+      "steps": 8743,
+      "wall_seconds": 105.17829203605652
+    },
+    "D0_interface_offset_plus": {
+      "cd_time_weighted": 0.9933791435301704,
+      "force_csv_sha256": "02b1e06442246dc02ab98017324f7f2a04dcffff205e1128c550c7aaae06426c",
+      "forces_n": {
+        "downforce_time_weighted_n": 0.324676794157625,
+        "drag_time_weighted_n": 0.3178813259296545,
+        "pressure_downforce_time_weighted_n": 0.33381827280355253,
+        "pressure_drag_time_weighted_n": 0.21826020011185718,
+        "viscous_downforce_time_weighted_n": -0.00914147864592773,
+        "viscous_drag_time_weighted_n": 0.09962112581779747
+      },
+      "gates": {
+        "body_and_backend": true,
+        "finite": true,
+        "force_components_consistent": true,
+        "host_metrics_match_summary": true,
+        "solver_step_markers": true,
+        "state_identity": true,
+        "t_end_reached": true,
+        "vram": true
+      },
+      "peak_vram_bytes": 82925676,
+      "phi_margin_m": 0.34999999925494196,
+      "stationarity_drift_max": 2.1579141577794055e-06,
+      "stationarity_within_registered_limit": true,
+      "status": "COMPLETED",
+      "steps": 8730,
+      "wall_seconds": 105.05827522277832
+    },
+    "D1_filtered_seed11_minus": {
+      "cd_time_weighted": 1.012335511850859,
+      "force_csv_sha256": "78f50940a74d7c0644f6a30556a3bf4c2ce6a91cfe7b7ae03eb88905216a7ab3",
+      "forces_n": {
+        "downforce_time_weighted_n": 0.3309777078931747,
+        "drag_time_weighted_n": 0.3239473637922749,
+        "pressure_downforce_time_weighted_n": 0.3392534856361958,
+        "pressure_drag_time_weighted_n": 0.22445627820395278,
+        "viscous_downforce_time_weighted_n": -0.008275777743021366,
+        "viscous_drag_time_weighted_n": 0.09949108558832194
+      },
+      "gates": {
+        "body_and_backend": true,
+        "finite": true,
+        "force_components_consistent": true,
+        "host_metrics_match_summary": true,
+        "solver_step_markers": true,
+        "state_identity": true,
+        "t_end_reached": true,
+        "vram": true
+      },
+      "peak_vram_bytes": 82905616,
+      "phi_margin_m": 0.34500000011175874,
+      "stationarity_drift_max": 7.411724024217439e-06,
+      "stationarity_within_registered_limit": true,
+      "status": "COMPLETED",
+      "steps": 8739,
+      "wall_seconds": 105.17420291900635
+    },
+    "D1_filtered_seed11_plus": {
+      "cd_time_weighted": 1.0102148462997367,
+      "force_csv_sha256": "bb8e88662cbf73cab95ea564b2f6bb46dcc443b5a04e105db139f86991be7465",
+      "forces_n": {
+        "downforce_time_weighted_n": 0.3299918500302804,
+        "drag_time_weighted_n": 0.3232687508159158,
+        "pressure_downforce_time_weighted_n": 0.33809402453641396,
+        "pressure_drag_time_weighted_n": 0.2241096753520833,
+        "viscous_downforce_time_weighted_n": -0.008102174506133266,
+        "viscous_drag_time_weighted_n": 0.09915907546383249
+      },
+      "gates": {
+        "body_and_backend": true,
+        "finite": true,
+        "force_components_consistent": true,
+        "host_metrics_match_summary": true,
+        "solver_step_markers": true,
+        "state_identity": true,
+        "t_end_reached": true,
+        "vram": true
+      },
+      "peak_vram_bytes": 82920860,
+      "phi_margin_m": 0.34579027621075514,
+      "stationarity_drift_max": 8.552035905320826e-06,
+      "stationarity_within_registered_limit": true,
+      "status": "COMPLETED",
+      "steps": 8742,
+      "wall_seconds": 104.87263798713684
+    },
+    "D2_filtered_seed2026_minus": {
+      "cd_time_weighted": 1.013722158520367,
+      "force_csv_sha256": "509d0f1a1faccc6010c2de7aca83e0b07d697a521e2a6c52ecffa58d1f9adf9c",
+      "forces_n": {
+        "downforce_time_weighted_n": 0.3310695252689085,
+        "drag_time_weighted_n": 0.32439109072651745,
+        "pressure_downforce_time_weighted_n": 0.3392471254136299,
+        "pressure_drag_time_weighted_n": 0.22515744028605297,
+        "viscous_downforce_time_weighted_n": -0.008177600144721154,
+        "viscous_drag_time_weighted_n": 0.09923365044046417
+      },
+      "gates": {
+        "body_and_backend": true,
+        "finite": true,
+        "force_components_consistent": true,
+        "host_metrics_match_summary": true,
+        "solver_step_markers": true,
+        "state_identity": true,
+        "t_end_reached": true,
+        "vram": true
+      },
+      "peak_vram_bytes": 82911652,
+      "phi_margin_m": 0.3460641940124333,
+      "stationarity_drift_max": 2.2000370269425066e-06,
+      "stationarity_within_registered_limit": true,
+      "status": "COMPLETED",
+      "steps": 8742,
+      "wall_seconds": 105.07370615005493
+    },
+    "D2_filtered_seed2026_plus": {
+      "cd_time_weighted": 1.0084140137496267,
+      "force_csv_sha256": "6540a86323057de12c0e355d2155e5260cad836329b079cdf550aec9a6d093f8",
+      "forces_n": {
+        "downforce_time_weighted_n": 0.3300961617048878,
+        "drag_time_weighted_n": 0.3226924843998806,
+        "pressure_downforce_time_weighted_n": 0.33826217022332367,
+        "pressure_drag_time_weighted_n": 0.22331302697300345,
+        "viscous_downforce_time_weighted_n": -0.00816600851843647,
+        "viscous_drag_time_weighted_n": 0.09937945742687715
+      },
+      "gates": {
+        "body_and_backend": true,
+        "finite": true,
+        "force_components_consistent": true,
+        "host_metrics_match_summary": true,
+        "solver_step_markers": true,
+        "state_identity": true,
+        "t_end_reached": true,
+        "vram": true
+      },
+      "peak_vram_bytes": 82912960,
+      "phi_margin_m": 0.34582204502075914,
+      "stationarity_drift_max": 3.1731657566786076e-07,
+      "stationarity_within_registered_limit": true,
+      "status": "COMPLETED",
+      "steps": 8738,
+      "wall_seconds": 104.88171792030334
+    },
+    "baseline": {
+      "cd_time_weighted": 1.012199906169758,
+      "force_csv_sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3",
+      "forces_n": {
+        "downforce_time_weighted_n": 0.3316344583180616,
+        "drag_time_weighted_n": 0.3239039699743226,
+        "pressure_downforce_time_weighted_n": 0.33983089003222205,
+        "pressure_drag_time_weighted_n": 0.2244745622684953,
+        "viscous_downforce_time_weighted_n": -0.008196431714160643,
+        "viscous_drag_time_weighted_n": 0.09942940770582698
+      },
+      "gates": {
+        "body_and_backend": true,
+        "finite": true,
+        "force_components_consistent": true,
+        "host_metrics_match_summary": true,
+        "solver_step_markers": true,
+        "state_identity": true,
+        "t_end_reached": true,
+        "vram": true
+      },
+      "peak_vram_bytes": 82894764,
+      "phi_margin_m": 0.3499999939931499,
+      "stationarity_drift_max": 5.320587388689751e-06,
+      "stationarity_within_registered_limit": true,
+      "status": "COMPLETED",
+      "steps": 8740,
+      "wall_seconds": 103.67180800437927
+    },
+    "baseline_repeat": {
+      "cd_time_weighted": 1.012199906169758,
+      "force_csv_sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3",
+      "forces_n": {
+        "downforce_time_weighted_n": 0.3316344583180616,
+        "drag_time_weighted_n": 0.3239039699743226,
+        "pressure_downforce_time_weighted_n": 0.33983089003222205,
+        "pressure_drag_time_weighted_n": 0.2244745622684953,
+        "viscous_downforce_time_weighted_n": -0.008196431714160643,
+        "viscous_drag_time_weighted_n": 0.09942940770582698
+      },
+      "gates": {
+        "body_and_backend": true,
+        "finite": true,
+        "force_components_consistent": true,
+        "host_metrics_match_summary": true,
+        "solver_step_markers": true,
+        "state_identity": true,
+        "t_end_reached": true,
+        "vram": true
+      },
+      "peak_vram_bytes": 82921240,
+      "phi_margin_m": 0.3499999939931499,
+      "stationarity_drift_max": 5.320587388689751e-06,
+      "stationarity_within_registered_limit": true,
+      "status": "COMPLETED",
+      "steps": 8740,
+      "wall_seconds": 104.92214894294739
+    }
+  },
+  "status_counts": {
+    "COMPLETED": 8
+  }
+}

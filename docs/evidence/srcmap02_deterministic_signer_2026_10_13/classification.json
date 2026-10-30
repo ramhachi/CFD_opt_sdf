@@ -1,0 +1,12 @@
+{
+  "cfd_runs": 0,
+  "complete": false,
+  "completed_job_ids": [],
+  "exception_class": "CalledProcessError",
+  "exception_message": "Command '['/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python', '/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/scripts/qualify_srcmap02.py', 'worker', '--output', '/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/docs/evidence/srcmap02_deterministic_signer_2026_10_13/diagnostics/B_A_repeat_1.json', '--grid', 'v17', '--candidate', 'A', '--chunk', '200000', '--order', 'canonical']' returned non-zero exit status 1.",
+  "kaggle_submissions": 0,
+  "rerun_allowed": false,
+  "selected_delta": null,
+  "shape_update_allowed": false,
+  "terminal_classification": "SRCMAP02_INCONCLUSIVE"
+}

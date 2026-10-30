@@ -1,0 +1,321 @@
+{
+  "audit_date": "2026-10-03",
+  "audit_id": "C-OP-01-final-audit-2026-10-03",
+  "candidate_operator": {
+    "contract_path": "docs/evidence/candidate_c_composite_operator_identity_v1_2026_10.json",
+    "contract_sha256": "516cfb26b9cc11f920918f08224ec2cfa5ed89d1e7372fa8d8dd7d4807bd5efc",
+    "identity": "candidate_c_moment_blend+normal_floor_0.25",
+    "normal_floor": 0.25
+  },
+  "dataset_remote_rechecks": {
+    "W3-C": {
+      "all_hashes_match": true,
+      "file_inventory": {
+        "canonical_v17_phi_f4_fortran.raw": {
+          "sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+          "size": 1541540
+        },
+        "sdf_design_state.npz": {
+          "sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+          "size": 200028
+        },
+        "w3_v17_candidate_c_criteria.json": {
+          "sha256": "0db63d6a3424e650c4953be3253692ca37acde6f0c60b7ae5ca2cc0169aa325a",
+          "size": 24290
+        },
+        "w3_v17_candidate_c_criteria.json.sha256": {
+          "sha256": "f66e56fd9f6abff51558a2757335a5284ebe47bea8c53f2090fad288a05008a3",
+          "size": 65
+        },
+        "w3_v17_candidate_c_dataset_manifest.json": {
+          "sha256": "7edf1d780e1b7c6c8969b9ceff88af913d22bf73ac32a83b5868e06dd8b041db",
+          "size": 1039
+        }
+      },
+      "registered_inventory_sha256": "1385e79634f952168c7d903c3ec28394f66b0a2fd4d04804987a8951b7cec943",
+      "zip_sha256": "5fd66ecb2fa414a9970c6311b34fdbe2354b90f053aa8665bb443670a1bf5add"
+    },
+    "W4-C": {
+      "all_hashes_match": true,
+      "file_inventory": {
+        "canonical_v17_phi_f4_fortran.raw": {
+          "sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+          "size": 1541540
+        },
+        "sdf_design_state.npz": {
+          "sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+          "size": 200028
+        },
+        "w4_v17_candidate_c_criteria.json": {
+          "sha256": "09e25e88767110312a134de8c10f3c2668a4d7f9a2f29829d163c72a1f5f3ef1",
+          "size": 23166
+        },
+        "w4_v17_candidate_c_criteria.json.sha256": {
+          "sha256": "a390bdb9452d2b7f9063adce2d8230d7d57a28403bf405476011283eccaab918",
+          "size": 65
+        },
+        "w4_v17_candidate_c_dataset_manifest.json": {
+          "sha256": "5f7676d1a3b5a2996e495dcf3a1b813f04f48dced7393e46f932289f684212a6",
+          "size": 1232
+        }
+      },
+      "registered_inventory_sha256": "5d6ac7d52082070eafdcf84e62424f7221a05fe36dab3ac856942727a82c8142",
+      "zip_sha256": "b3b50e1b49fd8cfa540016819e1fe1204bb74658f2b48fba07ab8fe9b6c25b42"
+    }
+  },
+  "historical_w3_v17": {
+    "criteria_sha256": "00af9ed92111b48a69d0eebebfa143db7e23c7caee322bb88cdb6ac36ff2e608",
+    "kernel_id": "ramhachi888/cfd-opt-sdf-w3-v17-primal",
+    "kernel_version": 1,
+    "raw_csv_path": "historical_w3_v17/v17.forces.csv",
+    "raw_csv_sha256": "246fa0d5aeeb0a27e968ea251d53f7765c5bf51980c20af9e250b3a1993269b6",
+    "remote_output_manifest_check": {
+      "entries": 18,
+      "manifest_sha256": "25dc084b53b229dd41e0f41bbca37545aa2750bddbb6709ef896aaf417cd2e31",
+      "verified": 18
+    },
+    "remote_status": "KernelWorkerStatus.COMPLETE"
+  },
+  "historical_w4_v17": {
+    "criteria_sha256": "5eceb62c17e347679cdadc88c68266e7fe00b392da40a8029ed3544a002e0f01",
+    "fresh_remote_download_matches_prior_full_manifest": true,
+    "kernel_id": "ramhachi888/cfd-opt-sdf-w4-v17-sensitivity",
+    "kernel_version": 1,
+    "prior_full_manifest_check": {
+      "entries": 24,
+      "manifest_sha256": "c19eef6a90c7a99408ce8639a42dd1138ee7d00666697dc4b6b491ef19c8ebbb",
+      "verified": 24
+    },
+    "raw_csv_directory": "historical_w4_v17/",
+    "remote_status": "KernelWorkerStatus.COMPLETE"
+  },
+  "immutable_failures": [
+    {
+      "classification": "environment_before_solver",
+      "meaning": "NVIDIA host driver drift; not a numerical result",
+      "path": "docs/evidence/kaggle_w3_v17_candidate_c_round1_terminal_failure/ERROR.txt",
+      "sha256": "cfd2d7b39eba612934aff63aba10dc0f78767847c6c457310077569c4a6b968e"
+    },
+    {
+      "classification": "runner_before_solver",
+      "meaning": "missing import sys; not a numerical result",
+      "path": "docs/evidence/kaggle_w3_v17_candidate_c_round2_terminal_failure/ERROR.txt",
+      "sha256": "ddd6ee94617764533472f04cfe796b3939ead01da3695320cba3c2b20277cde9"
+    },
+    {
+      "classification": "registered_identity_report_mismatch",
+      "meaning": "T4 force_integration_body string mismatch after four completed cases; Round1 remains FAIL and its forces are not reused",
+      "path": "docs/evidence/kaggle_w4_v17_candidate_c_round1_terminal_failure/ERROR.txt",
+      "sha256": "b4c8f85244964751064c836e3ef7e2b65e154a7c66a5e080e4b4fbff8c3c384e"
+    }
+  ],
+  "issue_44_close_gate": "SATISFIED: frozen composite identity, independent W3-C Round3 PASS, and independent W4-C Round2 PASS; no qualification flag changes.",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "raw_recalculation": {
+    "case_matrix_equal": true,
+    "historical_w3_v17_vs_candidate_c": {
+      "candidate_c_n": {
+        "downforce_n": 0.25448554165817655,
+        "drag_n": 0.22340460327197237
+      },
+      "candidate_c_raw_sha256": "416867c36fa0b0f8387283029621f45407f1f24f3aa544ee362068886d020a35",
+      "historical_raw_sha256": "246fa0d5aeeb0a27e968ea251d53f7765c5bf51980c20af9e250b3a1993269b6",
+      "historical_v17_n": {
+        "downforce_n": 0.25348179281038835,
+        "drag_n": 0.22317747488932263
+      },
+      "relative_change_percent": {
+        "downforce_n": 0.39598459386747054,
+        "drag_n": 0.10177029862103021
+      }
+    },
+    "historical_w4_v17_vs_candidate_c": {
+      "domain_xplus1m_16": {
+        "candidate_c": {
+          "downforce_n": 0.25524507910687155,
+          "drag_n": 0.22298980978806351
+        },
+        "candidate_c_raw_sha256": "4833e272cacd16d1b13a3832044ecd9781efd0831c45d105cdb8f1348264b5d6",
+        "historical_raw_sha256": "dade637cf0afc673acb28a83858bb162a554be7eea8aa5142d7595f0a0188209",
+        "historical_v17": {
+          "downforce_n": 0.2541322971618747,
+          "drag_n": 0.2229766673894692
+        },
+        "relative_change_percent": {
+          "downforce_n": 0.4378750585519072,
+          "drag_n": 0.005894068984071055
+        },
+        "scale_n_per_solver_unit": 0.0025000000000000005
+      },
+      "flow_16": {
+        "candidate_c": {
+          "downforce_n": 0.25448554165817655,
+          "drag_n": 0.22340460327197237
+        },
+        "candidate_c_raw_sha256": "416867c36fa0b0f8387283029621f45407f1f24f3aa544ee362068886d020a35",
+        "historical_raw_sha256": "246fa0d5aeeb0a27e968ea251d53f7765c5bf51980c20af9e250b3a1993269b6",
+        "historical_v17": {
+          "downforce_n": 0.25348179281038835,
+          "drag_n": 0.22317747488932263
+        },
+        "relative_change_percent": {
+          "downforce_n": 0.39598459386747054,
+          "drag_n": 0.10177029862103021
+        },
+        "scale_n_per_solver_unit": 0.0025000000000000005
+      },
+      "flow_24": {
+        "candidate_c": {
+          "downforce_n": 0.3316344583180616,
+          "drag_n": 0.3239039699743226
+        },
+        "candidate_c_raw_sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3",
+        "historical_raw_sha256": "a2dc24d0500ed4cdbadd35c229bf37086388e8efde0cfa53b6faa86adf481e9f",
+        "historical_v17": {
+          "downforce_n": 0.33102903147696705,
+          "drag_n": 0.32631743972608007
+        },
+        "relative_change_percent": {
+          "downforce_n": 0.18289237001156283,
+          "drag_n": -0.7396079577553147
+        },
+        "scale_n_per_solver_unit": 0.0011111111111111111
+      },
+      "flow_32": {
+        "candidate_c": {
+          "downforce_n": 0.3612783598966907,
+          "drag_n": 0.35002673442739357
+        },
+        "candidate_c_raw_sha256": "032ef1cfae320ada28d05a3ad5785fc1fd770b202d4f0d2e9ed8490c6ab61753",
+        "historical_raw_sha256": "d9ffb11d8c60f74707dd871defd65ef86a802798867fba4dfe41d5c98fb96fa6",
+        "historical_v17": {
+          "downforce_n": 0.3612606925010376,
+          "drag_n": 0.3500017745255492
+        },
+        "relative_change_percent": {
+          "downforce_n": 0.0048904838029312095,
+          "drag_n": 0.007131364370424362
+        },
+        "scale_n_per_solver_unit": 0.0006250000000000001
+      }
+    },
+    "method": "endpoint-clipped trapezoidal time-weighted mean from raw histories over [80,120] tU/L; linearly interpolate both endpoints; multiply solver force by rho*U^2*flow_spacing_m^2 to obtain N",
+    "w3_flow16_equals_w4_flow16_byte_for_byte_for_both_operator_lineages": true
+  },
+  "remote_candidate_runs": {
+    "W3-C": {
+      "all_T0_T10_pass": true,
+      "backend_identity": {
+        "accelerator": "NvidiaTeslaT4",
+        "compute_capability": "7.5.0",
+        "cuda_driver_api_version": "13.3.0",
+        "cuda_jl_version": "6.3.1",
+        "cuda_runtime_version": "12.8.0",
+        "cuda_visible_devices": "0",
+        "driver_version": "580.178.04",
+        "gpu_count": 2,
+        "gpu_name": "Tesla T4",
+        "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+        "julia_threads": 1,
+        "julia_version": "1.12.6",
+        "machine_shape": "NvidiaTeslaT4",
+        "waterlily_backend": "KernelAbstractions",
+        "waterlily_version": "1.8.0"
+      },
+      "candidate_force_n": {
+        "downforce_n": 0.25448554165817655,
+        "drag_n": 0.22340460327197237
+      },
+      "criteria_path": "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round3.json",
+      "criteria_sha256": "0db63d6a3424e650c4953be3253692ca37acde6f0c60b7ae5ca2cc0169aa325a",
+      "dataset_version": 3,
+      "host_record_sha256": "2b1dde058266acdaec4ecb8781d19a23eadbd11bfceb77a582bfd6aaab9883b1",
+      "host_verification": "PASS",
+      "host_verifier_sha256": "b963e81fd7bb5f408ed4190f3b34ba62e518741483edb716fee86de2cc43d61b",
+      "kaggle_execution_log_sha256": "5a2d953595f75a99e613190341db4b6c683d650a48181cf21cc564ce034c0b96",
+      "kernel_id": "ramhachi888/cfd-opt-sdf-w3-v17-candidate-c",
+      "kernel_version": 3,
+      "output_manifest_sha256": "4ae19de96b1ec47176fc3f451ff6eff97620acd71f25ca7877651afe13ccbce4",
+      "qualification_flags": {
+        "fd_oracle": false,
+        "field_gradient": false,
+        "optimizer": false,
+        "reverse": false,
+        "shape_update_allowed": false,
+        "topology": false
+      },
+      "raw_force_history_sha256": "416867c36fa0b0f8387283029621f45407f1f24f3aa544ee362068886d020a35",
+      "remote_status": "KernelWorkerStatus.COMPLETE",
+      "source_commit": "0fc2e0d669d091d83a31dd94d5fbfeb1ac8e7819",
+      "verified_files": 18
+    },
+    "W4-C": {
+      "all_T0_T10_pass": true,
+      "case_ids": [
+        "flow_16",
+        "flow_24",
+        "flow_32",
+        "domain_xplus1m_16"
+      ],
+      "criteria_path": "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10_round2.json",
+      "criteria_sha256": "09e25e88767110312a134de8c10f3c2668a4d7f9a2f29829d163c72a1f5f3ef1",
+      "dataset_version": 2,
+      "host_record_sha256": "2b59666428f31d3f67132a0099a18840e6107a0a9a4b9079d967ce123ceb5dd7",
+      "host_verification": "PASS",
+      "host_verifier_sha256": "d5b42d2e389d4be12983a92d313a8d710af5794af68a6c770a2c8a9b8bb960ef",
+      "kaggle_execution_log_sha256": "0b398b5e93266ffcd72e37c7d631c78e8aed36ac338234861265eb02c81ec7b5",
+      "kernel_id": "ramhachi888/cfd-opt-sdf-w4-v17-candidate-c",
+      "kernel_version": 2,
+      "output_manifest_sha256": "420bbfb48b956dfb5def992cc5dabcb84206b1ee760b29f2992914ea04cbca15",
+      "qualification_flags": {
+        "fd_oracle": false,
+        "field_gradient": false,
+        "optimizer": false,
+        "reverse": false,
+        "shape_update_allowed": false,
+        "topology": false
+      },
+      "remote_status": "KernelWorkerStatus.COMPLETE",
+      "source_commit": "51808f7751ec9fad0b296f685bd561bd48192743",
+      "verified_files": 24,
+      "w3_flow16_raw_matches": true
+    }
+  },
+  "schema_version": 1,
+  "source_integration_commit": "bd1cc7dbc1b9f180da6a624a790b2bb43ea525aa",
+  "supported_claim": "The frozen Candidate C moment blend plus normal_floor=0.25 passes the registered W3-C and W4-C integrity, force, and stationarity contracts on the limited finite-box WaterLily profile; W4 flow_16 reproduces W3-C exactly. Historical differences are independently recomputed from raw force histories.",
+  "unsupported_claims": [
+    "target-physics qualification",
+    "absolute-force accuracy",
+    "grid/domain convergence",
+    "WaterLily/OpenFOAM response transfer",
+    "finite-difference qualification",
+    "gradient or reverse qualification",
+    "optimizer permission",
+    "topology qualification",
+    "shape updates"
+  ],
+  "xfid_v16_environment_reproduction_prerequisite": {
+    "criteria_sha256": "7d5215fd3ba681230ffe183952a8e2a91cca1cbb6fc06eecaa85ff6cd67c2867",
+    "host_verifier_status": "PASS",
+    "kernel": "ramhachi888/cfd-opt-sdf-xfid-v16-openfoam-reproduction/4",
+    "observed_os_release": "PRETTY_NAME=\"Ubuntu 22.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\nVERSION=\"22.04.5 LTS (Jammy Jellyfish)\"\nVERSION_CODENAME=jammy\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=jammy\n",
+    "openfoam_probe": "OpenFOAM-v2512",
+    "package_sha256": {
+      "openfoam2512": "52377a07c3ef8129c89d89a108c5421d709cf5a0f291f4977274b04a02df2181",
+      "openfoam2512-common": "55588cb7231fb27eb6dbf53448a2e3d00fa30d516b42120b8eacf07abdfbe2d9",
+      "openfoam2512-tools": "77742307d3285f1cefeb286313b28fda15ed1d3b316e57e3353866fc326f3546"
+    },
+    "package_version": "2512.0-2",
+    "parent_audit_sha256": "80d2e34b155479976d126332c51767bcf176952f5839c375d388b56f3c53c702",
+    "rerun_for_this_audit": false,
+    "status": "PASS"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "kind": "kaggle_k0_background_t4_reproduction",
+  "evidence_class": "execution_capability_and_cross_backend_numerical_reproduction",
+  "criteria": {
+    "path": "docs/evidence/kaggle_k0_criteria_2026_09.json",
+    "sha256": "5978460903fa193ec667c36ff86603d3cb7b067714d124c72094c94f2e3d30ac"
+  },
+  "kernel": {
+    "ref": "ramhachi888/cfd-opt-sdf-k0",
+    "private": true,
+    "type": "python_script",
+    "accelerator": "NvidiaTeslaT4",
+    "cli_version": "2.2.4",
+    "smoke_version": 1,
+    "campaign_version": 2,
+    "campaign_runner_commit": "9ebc5de",
+    "campaign_runner_sha256": "3fab3d9e3695e82d6e8c29fdebd7a6e996322fcf6b05dd2a781b0bfc9dea1876"
+  },
+  "source": {
+    "solver_commit": "d81d0ccd13379fc86de48d52a797e6e7612658bd",
+    "project_sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "manifest_sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia_version": "1.12.6",
+    "cuda_jl_version": "6.3.1",
+    "waterlily_version": "1.8.0"
+  },
+  "smoke": {
+    "status": "COMPLETE",
+    "gpu_count": 2,
+    "gpu_names": ["Tesla T4", "Tesla T4"],
+    "fingerprint_sha256": "69e84ff2eb67e0fd2dac8c870a07355f0f43d3ebd95c771789107750ebd8f96d",
+    "manifest_sha256": "5e628f5db616f1aa8255c3f33a239f284e35cba9819babbfd3304cbd8d821888"
+  },
+  "campaign": {
+    "status": "COMPLETE",
+    "gpu_count": 2,
+    "gpu_names": ["Tesla T4", "Tesla T4"],
+    "gpu_uuids": [
+      "GPU-09c4b446-827c-a7ee-b7b4-e6be287cd9b4",
+      "GPU-d0099633-cc39-6b3f-2245-38974f60989d"
+    ],
+    "driver_version": "580.159.04",
+    "single": {
+      "steps": 2246,
+      "window_mean_drag": 88.42577373189188,
+      "wall_seconds_excluding_warmup": 25.317033052444458,
+      "peak_vram_bytes": 53838964
+    },
+    "dual": {
+      "gpu0_window_mean_drag": 88.42577373189188,
+      "gpu1_window_mean_drag": 88.42577373189188,
+      "gpu0_wall_seconds_excluding_warmup": 26.21349596977234,
+      "gpu1_wall_seconds_excluding_warmup": 26.373796939849854,
+      "process_intervals_overlap": true
+    },
+    "colab_reference_window_mean_drag": 88.42577373189188,
+    "cross_backend_relative_difference": 0.0,
+    "downloaded_files_sha256_verified": 19,
+    "outcome_sha256": "31d6ec001ba62a3b7f5542618f9600b088700516089acbd7e018885974aab924",
+    "manifest_sha256": "2fa928dd4415063b94c2b4288a19c51505a9f3e5283343958b73eb74a50f1ffe",
+    "fingerprint_sha256": "9b7a2ce7d030dcad1b5b136ee21bee7fe867868cd7b5e0fd4252fd5cf6bfa843"
+  },
+  "gates": {
+    "K0_A_private_background": true,
+    "K0_B_two_T4_and_pinned_Julia_CUDA_WaterLily": true,
+    "K0_C_analytic_completion_and_finiteness": true,
+    "K0_D_colab_agreement_registered_1e_minus_4": true,
+    "K0_E_two_independent_overlapping_T4_processes": true,
+    "K0_F_version_specific_cli_download_and_sha256": true
+  },
+  "verdict": {
+    "k0_qualified": true,
+    "next_gpu_execution_backend": "kaggle_background",
+    "w1g_qualified": false,
+    "shape_update_allowed": false,
+    "sdf_gradient_qualified": false
+  },
+  "scope": "Analytic sphere WaterLily primal and Kaggle batch transport only; no GPU GridSDF, sampled sphere, grid-independent force, v16 or optimizer claim.",
+  "host_local_downloads": [
+    "work/kaggle_k0_version1",
+    "work/kaggle_k0_version2"
+  ]
+}

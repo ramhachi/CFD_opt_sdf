@@ -1,0 +1,95 @@
+{
+  "completed_states": [
+    "D0_interface_offset__eps_5_0000000000e_05__plus",
+    "cal_baseline_01"
+  ],
+  "criteria_registered": false,
+  "evidence_class": "preserved_cpu_harness_reporting_failure_not_scientific_verdict",
+  "files": [
+    {
+      "bytes": 70945,
+      "path": "cpu_rehearsal_preview.json",
+      "sha256": "a2b84fb59160ddc5d096956bcf6da5f8e58bf104afccce5fc3fd49ea183acb61"
+    },
+    {
+      "bytes": 65,
+      "path": "cpu_rehearsal_preview.json.sha256",
+      "sha256": "d049f7003eae9617c1e4f2619a4dbf3398df36d59111dfa7691c5a05f073333f"
+    },
+    {
+      "bytes": 1125,
+      "path": "host_error.txt",
+      "sha256": "e49fe053a83650caee443f051697364430a0ea0622d17f03da26d78bbea832f8"
+    },
+    {
+      "bytes": 1541540,
+      "path": "inputs/D0_interface_offset__eps_5_0000000000e_05__plus.phi_f4_fortran.raw",
+      "sha256": "355fdaaf4edba8b96fa33d676271bc931fbca987446f6366a423cf167d710e63"
+    },
+    {
+      "bytes": 1541540,
+      "path": "inputs/cal_baseline_01.phi_f4_fortran.raw",
+      "sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431"
+    },
+    {
+      "bytes": 1249,
+      "path": "rehearsal_failure.json",
+      "sha256": "91fc9ad135889db6a4faa4463c32170632387677f568878faebf85a215f4704b"
+    },
+    {
+      "bytes": 65,
+      "path": "rehearsal_failure.json.sha256",
+      "sha256": "42d127b5d24221cb285966b457ab00579ca5c003e0b85744784a799011fd44a6"
+    },
+    {
+      "bytes": 469,
+      "path": "runner_output/D0_interface_offset__eps_5_0000000000e_05__plus.forces.csv",
+      "sha256": "6236e8b099b4d0fb892e68b3bae1a75a9ae5364ff50930e82c0b9ebb918fb8c1"
+    },
+    {
+      "bytes": 439,
+      "path": "runner_output/D0_interface_offset__eps_5_0000000000e_05__plus.log",
+      "sha256": "30a5b96e87e0d9a13ae60f97110fb5cdd56ec3a4147329d4e05fc73e7967ea47"
+    },
+    {
+      "bytes": 1009,
+      "path": "runner_output/D0_interface_offset__eps_5_0000000000e_05__plus.summary.json",
+      "sha256": "18cca20442d0db81733f33d0e572e8e64910579dd01734a19b66c86ab9d9a142"
+    },
+    {
+      "bytes": 83,
+      "path": "runner_output/DONE",
+      "sha256": "66e92da75144c4c2ffd71a51a6825b4880ea1a60b340ec446062a5cdfc020778"
+    },
+    {
+      "bytes": 471,
+      "path": "runner_output/cal_baseline_01.forces.csv",
+      "sha256": "db18ce449fef9f0bd9901ee04321ec082e16814ea2bd875a7afde6bebb3b6ff2"
+    },
+    {
+      "bytes": 374,
+      "path": "runner_output/cal_baseline_01.log",
+      "sha256": "7b5d1f0e2021ededfc59dd71c3333e21359cc76799fa2636855431193ef8b4cd"
+    },
+    {
+      "bytes": 972,
+      "path": "runner_output/cal_baseline_01.summary.json",
+      "sha256": "dfc0ad447dd6af323514891ccfd9ac4c07e7c5b3ab394f0534da0713a6a5a696"
+    },
+    {
+      "bytes": 298,
+      "path": "runner_output/cpu_runner_result.json",
+      "sha256": "08b35d04aa3ad60f327bcf673c81fd40da37289a56c473ccf80c0f5b996c4821"
+    },
+    {
+      "bytes": 785,
+      "path": "runner_output/sha256.json",
+      "sha256": "04f2534b5b0307ba2d42ceeb372e29bc8fdb2d469d4f5cc4ad82d65546dd1108"
+    }
+  ],
+  "formal_measurement_started": false,
+  "kind": "fd08_cpu_rehearsal_attempt_manifest",
+  "preview_sha256": "a2b84fb59160ddc5d096956bcf6da5f8e58bf104afccce5fc3fd49ea183acb61",
+  "raw_force_histories_host_parsed": true,
+  "source_commit": "3fabdcac99d67f34a1704d8bc7bbc77efd75b809"
+}

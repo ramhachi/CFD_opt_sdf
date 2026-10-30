@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "kind": "kaggle_w3_v16_primal_execution_diagnostic",
+  "diagnostic_id": "kaggle_w3_v16_primal_version2_2026_09",
+  "status": "pre_solver_input_path_lookup_failure",
+  "generated_on": "2026-09-28",
+  "evidence_class": "execution_diagnostic",
+  "existing_evidence_modified": false,
+  "solver_started": false,
+  "solver_steps": 0,
+  "gpu_inventory_captured": false,
+  "criteria": {
+    "path": "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09.json",
+    "sha256": "3c54f3867d9eb9a5960b4c153bd1bffbfc4ca3a547456ecd51b340f808476de3",
+    "sidecar_sha256": "9268906c5c5aadab69be30ef579fdc6bdee51a2b7e1078302633202d51042c2f",
+    "registered_source_commit": "b46ef4270df0c76d91922b8f1b2455fabad62418",
+    "kernel_runner_sha256": "d0bf26c6fef0dc29074206186848c49dc0a849901ab028cd8caa3df0c823e1c1"
+  },
+  "kaggle": {
+    "kernel_id": "ramhachi888/cfd-opt-sdf-w3-v16-primal",
+    "kernel_version": 2,
+    "reported_status": "KernelWorkerStatus.ERROR",
+    "requested_machine_shape": "NvidiaTeslaT4",
+    "dataset_id": "ramhachi888/cfd-opt-sdf-v16-genesis-state",
+    "dataset_status_at_collection": "ready",
+    "dataset_files_include_criteria": true,
+    "criteria_present_at_runner_expected_path": false,
+    "input_mount_inventory_recorded": false
+  },
+  "failure": {
+    "stage": "read_criteria before dataset-manifest verification, GPU inventory, source fetch, Julia setup, CUDA smoke, and primal job",
+    "expected_path": "/kaggle/input/cfd-opt-sdf-v16-genesis-state/w3_v16_criteria.json",
+    "error": "RuntimeError: registered W3 criteria missing from the attached private dataset",
+    "diagnostic_interpretation": "The exact-version traceback shows that the registered criteria file was absent at the runner's fixed input path. Kaggle reports the attached private dataset ready and its file listing includes the criteria, but this runner recorded no /kaggle/input mount inventory; the available evidence cannot distinguish a different mount directory from a missing runtime attachment.",
+    "solver_start_evidence": "The failure occurs in read_criteria() before gpu_inventory() and before the Julia job; the downloaded output contains only ERROR.txt and sha256.json, with no solver output or step marker."
+  },
+  "artifacts": {
+    "output_directory": "work/kaggle_w3_version2",
+    "error_file": {
+      "path": "work/kaggle_w3_version2/w3_v16/ERROR.txt",
+      "sha256": "adb716bff1b5b48becb415440290c4be917d27e8509d35f68f42ad3644f821fb"
+    },
+    "output_sha256_manifest": {
+      "path": "work/kaggle_w3_version2/w3_v16/sha256.json",
+      "sha256": "b42d39774c19a43c31d381c371956c944bc2b73b5d060d4d4a6070bed74c978e",
+      "contents": {
+        "ERROR.txt": "adb716bff1b5b48becb415440290c4be917d27e8509d35f68f42ad3644f821fb"
+      }
+    },
+    "kernel_log": {
+      "path": "work/kaggle_w3_version2/cfd-opt-sdf-w3-v16-primal.log",
+      "sha256": "2c669c91e88c0fbf1f53639c8270b0b4cbfaaa8823230edc0ab87a2f6c91e89a"
+    },
+    "private_dataset_manifest": {
+      "path": "work/kaggle_w3_v16_dataset_registered_3c54f386/w3_v16_dataset_manifest.json",
+      "sha256": "f01176977c3c15cb93d5a164e0b7d166adbb750143ee49ac62114968575c868f"
+    }
+  },
+  "flags": {
+    "waterlily_v16_primal_qualified": false,
+    "physical_profile_qualified": false,
+    "grid_response_qualified": false,
+    "shape_update_allowed": false,
+    "sdf_gradient_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "topology_birth_qualified": false
+  },
+  "claims_not_supported": [
+    "the Kaggle input mount was present at the runner's fixed path",
+    "a T4 runtime identity was observed",
+    "any WaterLily time step or force measurement ran",
+    "physical-profile equivalence or qualification",
+    "grid response, gradient, reverse-mode, topology, optimization, or shape update"
+  ],
+  "next_action": "Preserve version 2 as a diagnostic; change only W3 criteria-file discovery to resolve the attached dataset mount by registered filename, then bind the changed runner in a new immutable criteria round before another W3 measurement."
+}

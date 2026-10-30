@@ -1,0 +1,120 @@
+{
+  "artifacts": [
+    {
+      "decompressed_sha256": "15aec264a1c7ef5813c0bc3fd3d48cd7bd5d8bdb08025a26a245738ba4789660",
+      "path": "validation/baseline.log.gz",
+      "sha256": "cec5dc0d8f9f62f1ef1022c976083b6278af3429eb4ce6e962a7445386b8c93e"
+    },
+    {
+      "decompressed_sha256": "e684a37f870e5a7dcbbe0457bce799027a4167dc4e62111f054cfe3305c7c765",
+      "path": "validation/baseline.xml.gz",
+      "sha256": "26e9158eb39a2a5ee6870e98e25d72ef16c27bf80968b43323181f7bde1f3bcb"
+    },
+    {
+      "decompressed_sha256": "489f5464f9899d6d443ca3dfd780679719d79bebf0194d92716e0639183a773d",
+      "path": "validation/final.log.gz",
+      "sha256": "cd02f76fdcdaeda3f11f34de7f2650d5808f2ca1d6747c702cf5bc6c7e8fe9d9"
+    },
+    {
+      "decompressed_sha256": "9c7c3246b9062b8d2ddb972d92f05b7e9c5abff185241abb7ffbbcbceed8289a",
+      "path": "validation/final.xml.gz",
+      "sha256": "62aa3607f6f66d117021f8f8872871bdcda537190439fc2bf39ec2a181817ab4"
+    },
+    {
+      "decompressed_sha256": "34336a0c1ada0634a3d906c7ad5bfee7c47693e7b8e9d8f778b0d4d9e3f2b597",
+      "path": "validation/focused.log.gz",
+      "sha256": "80c73f2df66281b5773b6451fd2c97114c1a6abab49f9d004c3132191c693b1e"
+    },
+    {
+      "decompressed_sha256": "ead6ab4751dc1d94a195686ce9e37332f971514ac0128c5df3b41260655445df",
+      "path": "validation/focused_review_final.log.gz",
+      "sha256": "f92e9da20fbf6a8616f81873c639f57821e59a716d972dc3665e4523ed85fdac"
+    }
+  ],
+  "cfd_runs": 0,
+  "code_snapshots": [
+    {
+      "path": "scripts/audit_p22_v17_volume_semantics.py",
+      "sha256": "bcee9d9984bbe00f89a49dc7e44b945113c46b8e1624e6549f10985ce42266d9"
+    },
+    {
+      "path": "tests/test_p22_v17_volume_semantics_audit.py",
+      "sha256": "e509ea592fdfc1161931ba422f389fdb2d6bdb6ff57fd5e45911ac023818a252"
+    }
+  ],
+  "commands": [
+    {
+      "command": ".venv/bin/python -m pytest -q --junitxml=work/p22_volume_audit/baseline.xml > work/p22_volume_audit/baseline.log 2>&1",
+      "exit_code": 1,
+      "provenance": {
+        "scope": "same integration source and runtime; collection before new audit test creation at line129 timestamp2026-10-10T15:49:16.907Z; baseline XML contains zero tests from new module. Ignored v17 fixture copied from exact registered file before baseline; same fixture used for final suite.",
+        "session_id": "01a1267c-a8bb-7fb2-9bee-6567d8498552",
+        "source_jsonl_line": 83,
+        "timestamp_utc": "2026-10-10T15:46:19.609Z"
+      },
+      "summary": {
+        "failed": 48,
+        "passed": 2166,
+        "skipped": 23
+      }
+    },
+    {
+      "command": ".venv/bin/python -m pytest -q --junitxml=work/p22_volume_audit/final.xml > work/p22_volume_audit/final.log 2>&1",
+      "exit_code": 1,
+      "scope": "10 new audit tests; existing failure IDs unchanged. Final audit script received additional source/hash/history checks during suite execution; focused replay and all31 focused tests rerun after final script edits.",
+      "summary": {
+        "failed": 48,
+        "passed": 2176,
+        "skipped": 23
+      }
+    },
+    {
+      "command": ".venv/bin/python scripts/audit_p22_v17_volume_semantics.py --check --check-history",
+      "exit_code": 0,
+      "result": "Retained-state comparison exact byte replay PASS; original hard function AST identity PASS"
+    },
+    {
+      "command": ".venv/bin/python -m pytest -q tests/test_p22_v17_volume_semantics_audit.py tests/test_sdf_native_volume_semantics.py tests/test_sdf_native_smoothed_volume.py",
+      "exit_code": 0,
+      "result": "31 passed in3.55s; rerun by root after primary completion"
+    },
+    {
+      "command": ".venv/bin/python -m compileall src scripts tests",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": ".venv/bin/python scripts/audit_p22_v17_volume_semantics.py --check --check-source",
+      "exit_code": 1,
+      "result": "INCONCLUSIVE: source replay differs for v17_baseline; retained-state assertions passed first. Preserved failure, no tolerance relaxation or rerun-until-pass."
+    }
+  ],
+  "date": "2026-10-12",
+  "evidence_class": "software_tests_and_solver_free_assertions",
+  "failure_set_comparison": {
+    "all_pass_claimed": false,
+    "baseline_existing_failures": 48,
+    "file": "pytest_failure_comparison.json",
+    "new_failures": 0,
+    "resolved_failures": 0
+  },
+  "initial_focused_failure": {
+    "file": "validation/focused.log.gz",
+    "result": "2failed29passed; new synthetic fixtures omitted required narrow_band_width_m; fixed fixtures only; superseded by31passed after correction"
+  },
+  "integration_parent_sha": "0973f9efc7c7f469978d67c77a95fcfd365d58d5",
+  "kaggle_submissions": 0,
+  "python_executable": "/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+  "raw_test_artifact_packaging": "Deterministic gzip (mtime0), original output bytes preserved. Decompress before parsing JUnit or reading logs.",
+  "root_independent_assertions": {
+    "result": "PASS",
+    "scope": "direct Float32 ordered eight-corner NPZ count:1009,8272,8272; saved diagnostic NPZ SHA and3nonzero bit/value differences, exact indices/values/max difference match source_replay_recheck JSON. No fresh resampling in this check."
+  },
+  "runtime": {
+    "platform": "macOS-26.3.1-arm64-arm-64bit",
+    "python": "3.9.6 (default, Jan  9 2026, 11:03:41) \n[Clang 17.0.0 (clang-1700.6.4.2)]"
+  }
+}

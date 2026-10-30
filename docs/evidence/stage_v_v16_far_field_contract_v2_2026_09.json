@@ -1,0 +1,48 @@
+{
+  "baseline": {
+    "Cd": 1.0260445793714286,
+    "case_dir": "work/stage_v_v16_domain_continuation_3p2_2026_09/far_field_domain_extension_3p2/V1",
+    "cells": 82907,
+    "downforce": 0.42796766878857145,
+    "iterations": 700,
+    "qualified": true,
+    "raw_check_mesh_mesh_ok": false,
+    "reasons": []
+  },
+  "candidate_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+  "claims_not_supported": [
+    "grid-independent or absolute Stage V downforce",
+    "Stage S S2 qualification",
+    "shape update or optimization authorization"
+  ],
+  "claims_supported": [
+    "one same-candidate v16 +3.2 m far-field boundary treatment was compared with its symmetry/patch baseline"
+  ],
+  "decision": "mixed far-field response remains outside the registered band; keep S2 blocked and perform a case-construction/boundary audit before any further solver run",
+  "delta": {
+    "downforce": -0.07796526682031751,
+    "downforce_beyond_bound": true,
+    "drag_beyond_bound": true,
+    "relative_Cd_change": -0.1035743566185732
+  },
+  "kind": "stage_v_v16_far_field_contract",
+  "run_manifest": {
+    "path": "docs/evidence/stage_v_v16_far_field_contract_run_manifest_v2_2026_09.json",
+    "sha256": "2bbfc5b0ad4bee7959ac099c92424397d8431c7c99fa58203bbdca4450bb4665"
+  },
+  "schema_version": 1,
+  "summary": {
+    "qualified": true,
+    "stage_s_s2_allowed": false,
+    "within_registered_band": false
+  },
+  "treatment": {
+    "Cd": 0.9197726722010583,
+    "cells": 82907,
+    "downforce": 0.35000240196825394,
+    "iterations": 757,
+    "qualified": true,
+    "raw_check_mesh_mesh_ok": false,
+    "reasons": []
+  }
+}

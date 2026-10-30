@@ -1,0 +1,124 @@
+{
+  "plan_id": "C-OP-01-CPU-GRID-SDF-DIAGNOSTIC-3",
+  "issue": 44,
+  "created_at": "2026-10-02",
+  "status": "preregistered_exploratory_diagnostic_pending_local_integrity_preflight; supersedes_round_2_before_any_solver_step",
+  "evidence_class": "bounded_CPU_primal_diagnostic",
+  "qualification": false,
+  "repository": "ramhachi/CFD_opt_sdf",
+  "branch": "feat/issue-44-candidate-c-qualification",
+  "source_head": "2fd7f6abc5d21d74cadf7e207f75785c582bc7cb",
+  "runner": "scripts/candidate_c_grid_sdf_fixture_probe.jl",
+  "runner_sha256": "92e99a078f97fb7f0134ecdbe3c5d9fbded1e2c96e8f109edce95f0a90ab5b35",
+  "source_manifest": "runner_sources.sha256",
+  "source_manifest_sha256": "ea6057f9fabe832035cf9df22ae1a12d66dfd845f2720dcd65f93e0f40ae9c6b",
+  "predecessor_plan_sha256": "0f92c011577d064de1f2b18227c1540e64126da3601d8ecdbeffc9cbb394e58b",
+  "predecessor_zero_solver_preflight_sha256": "2b007040f413729918804f6785a4c13e460c3ad64ac9b82bcad288653337c545",
+  "runtime": {
+    "os": "macOS 26.3.1 build 25D2128",
+    "architecture": "arm64",
+    "julia": "1.12.6",
+    "waterlily": "1.8.0",
+    "waterlily_body_jl_sha256": "aed03bb57053731c7d2098950d92df9b59fda3bd4f7aaaca51bb076bd5edcaee",
+    "backend": "CPU Array"
+  },
+  "operator": {
+    "identity": "Candidate C one-sided smoothstep blend of raw and sign-corrected mu0, composed with the existing GridSDF normal-floor body and normal_floor=0.25",
+    "transition_width_solver_cells": 0.00011444091796875,
+    "face_activation": "smoothstep((abs(d_face)-0.5)/delta)",
+    "center_sign_disagreement_activation": "smoothstep((-sign(d_face)*d_center)/delta)",
+    "mu0": "mu0_raw + alpha*(mu0_corrected-mu0_raw), alpha=face_activation*center_sign_disagreement_activation",
+    "mu1": "WaterLily mu1(d_face,epsilon) times the wrapped body's normal; unchanged by Candidate C",
+    "normal_floor": 0.25,
+    "epsilon_bdim_cells": 1.0
+  },
+  "flow": {
+    "profile_reference": "v16 finite-box native WaterLily profile settings",
+    "dimensions_cells": [100, 48, 36],
+    "flow_origin_m": [-2.5, -1.2, -0.9],
+    "flow_spacing_m": 0.05,
+    "solver_length_cells": 16.0,
+    "freestream_solver_units": [1.0, 0.0, 0.0],
+    "viscosity_solver_units": 0.2,
+    "moving_ground": {
+      "plane_z_solver_cells": 8.0,
+      "velocity_solver_units": [1.0, 0.0, 0.0]
+    },
+    "density_kg_per_m3": 1.0,
+    "target_time_tU_over_L": 0.25,
+    "force_window_tU_over_L": [0.1, 0.25],
+    "force_sampling": "every solver step from start through the bracketing sample after the end of the window; linearly interpolate exact endpoints and trapezoid-integrate over the window",
+    "force_conversion_to_newtons": "rho*U^2*flow_spacing^2=0.0025 N per solver-force unit"
+  },
+  "canonical_grid_sdf": {
+    "phi_convention": "negative solid, positive fluid",
+    "origin_m": [-1.0, -0.8, -0.6],
+    "spacing_m": [0.05, 0.05, 0.05],
+    "shape": [61, 33, 25],
+    "storage": "Float32",
+    "outside_value_m": 3.0,
+    "minimum_margin_m": 0.15,
+    "sampling": "evaluate each analytic SDF at every registered canonical grid node"
+  },
+  "fixtures": [
+    {
+      "id": "sphere",
+      "analytic_sdf": "distance to center (0,0,-0.2)m minus radius 0.25m",
+      "control": "native WaterLily AutoBody with the exact analytic sphere SDF"
+    },
+    {
+      "id": "plate_1cell",
+      "analytic_sdf": "exact axis-aligned box SDF centered at (0,0,-0.2)m with half extents (0.25,0.025,0.25)m",
+      "control": "native WaterLily AutoBody with the exact analytic box SDF"
+    },
+    {
+      "id": "plate_2cell",
+      "analytic_sdf": "exact axis-aligned box SDF centered at (0,0,-0.2)m with half extents (0.25,0.05,0.25)m",
+      "control": "native WaterLily AutoBody with the exact analytic box SDF"
+    },
+    {
+      "id": "moving_ground_only",
+      "analytic_sdf": "no design body; registered moving ground only",
+      "control": "WaterLily NoBody union the registered moving ground"
+    }
+  ],
+  "arms": {
+    "native_control": "analytic AutoBody (or NoBody for ground-only) unioned with the same moving ground",
+    "sampled_upstream_control": "same Float32 GridSDF through NormalFloorWaterLilyBody(normal_floor=0.25), using the upstream WaterLily measure! moment path, plus the same moving ground",
+    "candidate_c": "same sampled Float32 GridSDF through NormalFloorWaterLilyBody(normal_floor=0.25), CandidateCWaterLilyBody wrapper, and the same moving ground",
+    "primary_isolated_comparison": "sampled_upstream_control versus candidate_c; these share GridSDF and normal floor, isolating Candidate C moment blending",
+    "native_reference_comparison": "native_control versus sampled_upstream_control reports combined analytic-sampling/normal-floor differences",
+    "replicates": 1,
+    "randomness": "none"
+  },
+  "recorded_metrics": [
+    "steps, achieved tU/L, and number of sampled steps",
+    "exact trapezoidal time-window mean of pressure, viscous and total force vectors in N, with maximum per-sample closure error in N",
+    "finite velocity and pressure field indicators",
+    "inlet and outlet x-velocity plane sums and their difference in solver units (diagnostic flux proxy, not kg/s)",
+    "SHA-256 of each generated Float32 phi array",
+    "every adaptive solver-step time, pressure/viscous/total force vector in N, force closure, raw inlet/outlet flux proxy, and finite-field flag in a separate raw history CSV",
+    "output manifest containing the frozen plan, runner, source manifest, aggregate CSV, and complete raw-history CSV hashes; exact-window means independently recomputable from endpoint brackets"
+  ],
+  "decision_rules": {
+    "formal_pass_fail_thresholds": null,
+    "interpretation": "report raw paired diagnostics only; do not claim solver equivalence, conservation qualification, physical accuracy, W3-C/W4-C passage, or production acceptance",
+    "stop_on": [
+      "any non-finite pressure or velocity field",
+      "failure of the registered GridSDF margin constructor",
+      "force component closure error above 1e-12 N",
+      "source, plan, or input identity mismatch"
+    ],
+    "no_threshold_tuning": true
+  },
+  "output": "unique work/candidate_c_fixture_diagnostic_2026_10_round3/<run-id>.csv, <run-id>.history.csv, and <run-id>.sha256; create exclusively and retain partial outputs on error",
+  "execution_gate": "this recorder-only round is pending successful local no-solver parser and source/plan/input hash preflight; no formal qualification verdict is permitted",
+  "explicit_non_goals": [
+    "W2a registered sphere revalidation: this is a short startup screen on a different sphere and flow grid; use the existing W2a criteria and full registered case separately before using sphere evidence to freeze the operator",
+    "W3-C or W4-C qualification",
+    "Kaggle submission",
+    "FD, gradient, reverse, optimizer, topology, or shape-update qualification",
+    "individual force attribution to the exceptional FD-07 face",
+    "the previous round 2 preflight attempt, which failed before the first solver step and produced no measurement"
+  ]
+}

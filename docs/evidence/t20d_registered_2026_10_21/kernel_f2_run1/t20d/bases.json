@@ -1,0 +1,40 @@
+[
+  {
+    "base": "fine30_h0.134_da0",
+    "bl_thickness_m": 0.0032208,
+    "cells_3d": 26074,
+    "delta_alpha_deg": 0.0,
+    "h_over_c": 0.134,
+    "log_tail": "/kaggle/working/t20d/work/base/fine30_h0.134_da0: fine30 cells=26074 layers=4\n",
+    "mesh": "fine30",
+    "mesh_msh_sha256": "5f85b8061365442d37f1e81e4bed97e8ea0e9425c9038198bae1980a8c4291c9",
+    "mesh_quality_failures": [],
+    "returncode": 0,
+    "topology": {
+      "boundary": "0f670f2622d75a4abd7384d6565b4cc7517362603c0cc1ac0fc61aa88bf70bf3",
+      "faces": "3e3502f8f529fda43b59c30931aca39be450851967d6409dd1479d251fb12c9f",
+      "neighbour": "2e40d9b5fe88ace3ececb97d375897201949e1c9cbef5f8147c7771e11e45712",
+      "owner": "43564170ed8aa9fc4a36be295a3626087d60ba8cd7cab2792af07ab583d029fc"
+    },
+    "wall_s": 4.364252751000095
+  },
+  {
+    "base": "fine30_h0.134_da+0.5",
+    "bl_thickness_m": 0.0032208,
+    "cells_3d": 26059,
+    "delta_alpha_deg": 0.5,
+    "h_over_c": 0.134,
+    "log_tail": "/kaggle/working/t20d/work/base/fine30_h0.134_da+0.5: fine30 cells=26059 layers=4\n",
+    "mesh": "fine30",
+    "mesh_msh_sha256": "0e85b569b8bcc644ea3848fb33e7bf20a1e0ecb53117ba50dd872a2360b5d7b9",
+    "mesh_quality_failures": [],
+    "returncode": 0,
+    "topology": {
+      "boundary": "63e4751085a4fdf6cb56d7ab9ed9f137c4eb3e84527f04d571b4c49dec8a709b",
+      "faces": "ee4c0b0d6a53f98ae3b562bda5c43ef33cf7b91f6880222d184cd5fcc236fba0",
+      "neighbour": "5fe93380a41b564599b2888082fef597f423f0c7f1d8f9ef58067a662e9486b9",
+      "owner": "6706a914b22bc373a628c7e8ff40072426689a854aeadaf44ce0817798e4f66d"
+    },
+    "wall_s": 4.3586566000000175
+  }
+]

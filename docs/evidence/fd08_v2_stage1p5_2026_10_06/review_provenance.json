@@ -1,0 +1,32 @@
+{
+  "high_precision_reference": {
+    "author_had_primary_access": true,
+    "independent": false
+  },
+  "numerical": {
+    "agent": "stage1p5_numerical_review",
+    "fixture_executed": false,
+    "inputs": [
+      "stage1p5_instruction.md",
+      "review_input_numeric_candidate_spec.md",
+      "numeric_contract.md"
+    ],
+    "primary_code_seen": false,
+    "primary_output_seen": false,
+    "review_before_freeze": true
+  },
+  "scientific": {
+    "agent": "stage1p5_scientific_review",
+    "fixture_executed": false,
+    "inputs": [
+      "stage1p5_instruction.md"
+    ],
+    "primary_code_seen": false,
+    "primary_conclusions_seen": false
+  },
+  "spec_sha256": {
+    "numeric_contract.md": "8da56a9f8f092fc217dbce8955fbbfee92340851674ef7a8a083bed68e5fb94c",
+    "review_input_numeric_candidate_spec.md": "1c327caf8fa5e20a5a4d41d67fa5592dba75a273de5318480b6a7b8c0e9f5691",
+    "stage1p5_instruction.md": "2280042c5b5e571d693c88fc86153c8a790afcc916989c13e9eacaf480a9b888"
+  }
+}

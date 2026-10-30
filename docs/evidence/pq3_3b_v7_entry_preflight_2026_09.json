@@ -1,0 +1,140 @@
+{
+  "claims_not_supported": [
+    "the long v7 campaign is not started and no convergence conclusion is included"
+  ],
+  "claims_supported": [
+    "one cap-corrected inequality step was qualified at the v6 final checkpoint with fresh real primals"
+  ],
+  "input_stop_state": {
+    "checkpoint_index": 9,
+    "level": "level_1_b8_q30",
+    "rho_file_sha256": "762c61e1d904c05e6952ce29dcc782ed6c81bacb458c7a0914a87b6102b694ea",
+    "rho_path": "work/pq3_3b_campaign_v6/checkpoints/rho_0009.npy",
+    "rho_sha256": "727cb13d51e7ecc9168262c53ac190ff039fc55cbb160addd0ad1112c0b208df",
+    "source": "v6 final accepted checkpoint"
+  },
+  "kind": "pq3_3b_v7_entry_preflight",
+  "manifest": {
+    "path": "docs/evidence/pq3_3b_campaign_manifest_v7_2026_09.json",
+    "sha256": "80d2a4e783bbf80d75ca555303d8e47e76065b78decc829bb0fb034b0fb48024"
+  },
+  "schema_version": 1,
+  "stage": {
+    "accepted_rho_sha256": "f1a22901c4aa4a6d1b1ffbc271d2f2a0630f36912498fb0a5ac390d7cd745eef",
+    "level": "level_1_b8_q30",
+    "parent_run": {
+      "adjoint_iterations": 733,
+      "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v7_entry_preflight/runs/parent_d468cfafe508/case",
+      "downforce_coefficient": 3.52812272098,
+      "primal_iterations": 88,
+      "reused": false,
+      "solver_status": "converged",
+      "source_rho_sha256": "1b72ec23b385bfc0a1b489393f7dc16fcf1de2d35a7b0ba6610031e50cd57f82",
+      "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v7_entry_preflight/runs/parent_d468cfafe508/case/fixed_grid_primal_summary.json",
+      "summary_sha256": "50f22ca1606c2bab9675bcd9235d73f88578cb49910934be8f39e9ee909ad151"
+    },
+    "pass": true,
+    "phase2": {
+      "accepted_alpha": 1.0,
+      "all_failed": false,
+      "candidates": [
+        {
+          "accepted": true,
+          "alpha": 1.0,
+          "bracket": {
+            "d_adj": -6.012393717049184,
+            "d_fd": -2.901565556250041,
+            "details": {
+              "difference": 0.004642504890000065,
+              "noise_floor_abs": 1e-06
+            },
+            "direction_inf_norm": 0.030000000000000027,
+            "epsilon": 0.0008,
+            "minus_objective": -3.52579985674,
+            "minus_rho_sha256": "0fd5980dafb2fefb8c302a5c6bc20f65b9cb3f6c42bdbb6d6977b3244a242fb0",
+            "ok": true,
+            "plus_objective": -3.53044236163,
+            "plus_rho_sha256": "7ec894d5bb47497ac2013008b48d9f26328cb43dec26b316cc77f498e0a705de",
+            "reason": "descent_sign_match"
+          },
+          "bracket_ok": true,
+          "corrected_rho_sha256": "f1a22901c4aa4a6d1b1ffbc271d2f2a0630f36912498fb0a5ac390d7cd745eef",
+          "corrected_update_inf_norm": 0.030000000000000027,
+          "frozen_box_face_cells": 9797,
+          "gates": {
+            "canonical_objective_improved": true,
+            "corrected_update_above_machine_scale": true,
+            "d_adj_negative": true,
+            "d_fd_below_negative_noise_floor": true,
+            "extractability_guard": true,
+            "mask_invariance": true,
+            "move_box_respected": true,
+            "projected_volume_within_v_max": true,
+            "raw_downforce_improved": true,
+            "sign_match": true,
+            "trial_primal_converged": true
+          },
+          "mask_drift_max": 0.0,
+          "move_box_violation_max": 0.0,
+          "occupancy": {
+            "cells_gt_0.3": 1179,
+            "cells_gt_0.4": 1041,
+            "cells_gt_0.5": 902,
+            "cells_gt_0.6": 767,
+            "fraction_gt_0.3": 0.06140625,
+            "fraction_gt_0.4": 0.05421875,
+            "fraction_gt_0.5": 0.04697916666666667,
+            "fraction_gt_0.6": 0.039947916666666666,
+            "total_active": 19200
+          },
+          "occupancy_parent": {
+            "cells_gt_0.3": 1164,
+            "cells_gt_0.4": 1026,
+            "cells_gt_0.5": 897,
+            "cells_gt_0.6": 761,
+            "fraction_gt_0.3": 0.060625,
+            "fraction_gt_0.4": 0.0534375,
+            "fraction_gt_0.5": 0.04671875,
+            "fraction_gt_0.6": 0.039635416666666666,
+            "total_active": 19200
+          },
+          "phi_after": 0.07632566813424897,
+          "projected_volume_delta": 0.0007034529099052139,
+          "reason": "accepted",
+          "trial_downforce": 3.61396550943,
+          "trial_objective": -3.61396550943,
+          "trial_primal_converged": true,
+          "trial_run": {
+            "adjoint_iterations": null,
+            "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v7_entry_preflight/runs/trial_9a4af8da2ec6/case",
+            "downforce_coefficient": 3.61396550943,
+            "primal_iterations": 86,
+            "reused": false,
+            "solver_status": "converged",
+            "source_rho_sha256": "10f32b2130604a24b6b6af49fe1ba90f8abbbbf068eb21e4a4a22edb283b79f7",
+            "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v7_entry_preflight/runs/trial_9a4af8da2ec6/case/fixed_grid_primal_summary.json",
+            "summary_sha256": "bb175a26843a213c671003853fc8ee1287967a98c50ba434181e637e99eefdb5"
+          },
+          "volume_cap_correction_applied": true,
+          "volume_cap_kappa": -0.8882301911590146
+        }
+      ],
+      "corrected_rho_sha256": "f1a22901c4aa4a6d1b1ffbc271d2f2a0630f36912498fb0a5ac390d7cd745eef",
+      "ladder": [
+        1.0,
+        0.5,
+        0.25,
+        0.125,
+        0.0625
+      ],
+      "policy_id": "objective-oc-inequality-v1",
+      "successful": true
+    }
+  },
+  "summary": {
+    "entry_preflight_pass": true,
+    "long_campaign_started": false,
+    "volume_cap_correction_applied": true,
+    "volume_cap_kappa": -0.8882301911590146
+  }
+}

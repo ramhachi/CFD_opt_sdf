@@ -1,0 +1,16 @@
+{
+  "analysis_result_written": false,
+  "analyzer_source_sha256": "09639a997370824a14bcbb21784727783410fb9490c161f3821698309e000881",
+  "attempt": 1,
+  "captured_utc": "2026-10-06T17:20:12.960963+00:00",
+  "command": "python3 scripts/analyze_fd08_v2_r6.py work/kaggle_fd08_v2_r6_v3/download --criteria docs/evidence/fd08_v2_r6_2026_10_06/r6_criteria.json --host-verification docs/evidence/fd08_v2_r6_2026_10_06/r6_kernel_v3_terminal_verification.json --output docs/evidence/fd08_v2_r6_2026_10_06/r6_kernel_v3_analysis.json",
+  "criteria_sha256": "80d2526c6ef4f41b5f3772a54960968a6a58685e41c5968fb42304bf0f6d049b",
+  "exception": "TypeError: Object of type Decimal is not JSON serializable",
+  "exit_code": 1,
+  "failure_location": "scripts/analyze_fd08_v2_r6.py:279 while json.dumps(result, sort_keys=True, indent=2, allow_nan=False)",
+  "kernel_version": 3,
+  "kind": "fd08_v2_r6_analyzer_infrastructure_failure",
+  "retry_classification": "source repair required after immutable criteria registration; preserve this failed attempt and use a new source commit and new preregistration identity",
+  "scientific_verdict_emitted": false,
+  "terminal_verification_sha256": "010ffd87273d8b16d75212c016223aaa8fa7ac10dd95b7841b3ee473eeb6a054"
+}

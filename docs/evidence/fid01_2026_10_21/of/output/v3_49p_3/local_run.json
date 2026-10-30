@@ -1,0 +1,74 @@
+{
+  "dataset": "work/fid01_of/v3_49p_3",
+  "docker_args": [
+    "run",
+    "--rm",
+    "--platform",
+    "linux/amd64",
+    "--cpus",
+    "1",
+    "--memory",
+    "8g",
+    "--memory-swap",
+    "8g",
+    "-v",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/dreamy-wu-de3512/infra/fid01/v3_49p_3/runner.py:/kaggle/src/runner.py:ro",
+    "-v",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/dreamy-wu-de3512/work/fid01_of_out/v3_49p_3:/kaggle/working",
+    "-v",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/dreamy-wu-de3512/work/fid01_of/v3_49p_3:/kaggle/input/fid01-of-v3-49p-3-inputs:ro",
+    "-w",
+    "/kaggle/working",
+    "sha256:e9ceb8a79fd8ceb928983000fffa5a4f2056c354c2e599d098fbcabbce8a25eb",
+    "bash",
+    "-c",
+    "\"$@\"; rc=$?; dpkg-query -W -f='${Package}=${Version} ${Architecture}\\n' | LC_ALL=C sort | sha256sum | cut -c1-64 > /kaggle/working/dpkg_after.sha256; exit $rc",
+    "_",
+    "python",
+    "/kaggle/src/runner.py"
+  ],
+  "dpkg_after_matches_lock": true,
+  "dpkg_after_sha256": "1d22ec7dd4dec845f22d1a186972e999cf4df04b1163cc34f9e734388440389c",
+  "host_after": {
+    "loadavg": [
+      10.52783203125,
+      14.521484375,
+      20.45556640625
+    ],
+    "swap": "total = 22528.00M  used = 21574.88M  free = 953.12M  (encrypted)",
+    "utc": "2026-10-22T17:12:39+00:00"
+  },
+  "host_before": {
+    "loadavg": [
+      2.00927734375,
+      1.6845703125,
+      1.83984375
+    ],
+    "swap": "total = 16384.00M  used = 14999.62M  free = 1384.38M  (encrypted)",
+    "utc": "2026-10-21T19:14:44+00:00"
+  },
+  "image_id": "sha256:e9ceb8a79fd8ceb928983000fffa5a4f2056c354c2e599d098fbcabbce8a25eb",
+  "kernel_metadata": {
+    "code_file": "runner.py",
+    "competition_sources": [],
+    "dataset_sources": [
+      "ramhachi888/fid01-of-v3-49p-3-inputs"
+    ],
+    "enable_gpu": false,
+    "enable_internet": true,
+    "id": "ramhachi888/fid01-of-v3-49p-3",
+    "is_private": true,
+    "kernel_sources": [],
+    "kernel_type": "script",
+    "language": "python",
+    "model_sources": [],
+    "title": "fid01-of-v3-49p-3"
+  },
+  "lock_sha256": "c105b7df7faa310561c0fb607f8dcc8a82be3b21789520489677c7326be11fcd",
+  "returncode": 0,
+  "runner": "infra/fid01/v3_49p_3/runner.py",
+  "runner_sha256": "eb36df1ef905ac83e1e659c63b81a9a5961bb0ae4f8da220d4a0b893dbefc24d",
+  "script_sha256": "10fee253e6611141644b1c90a4e0854dbce99894a7038cfba801ad433d4be13d",
+  "subset": null,
+  "wall_s": 65995.830168708
+}

@@ -1,0 +1,87 @@
+{
+  "case_id": "flow_48",
+  "kernel": "f48",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-fid01-f48-f48",
+  "parent_forces_csv_sha256": "91ec25e8e7924bfc7f3432a13cc2b186f9ec60dfe4e7d1358e36a8cb45204e6b",
+  "solver_process_wall_seconds_total": 15499.836189746857,
+  "states": [
+    {
+      "complete": true,
+      "direction": null,
+      "exit_code": 0,
+      "forces_csv_sha256": "91ec25e8e7924bfc7f3432a13cc2b186f9ec60dfe4e7d1358e36a8cb45204e6b",
+      "kind": "parent",
+      "name": "v18__parent__k7",
+      "seconds": 2187.740617990494,
+      "sign": 0,
+      "step_mm": 0.0
+    },
+    {
+      "complete": true,
+      "direction": "v18__heave_m31.1",
+      "exit_code": 0,
+      "forces_csv_sha256": "b2f378bf4eeaf2c9aa63c6a17297658e005ce64100927994a565152913d5b7bf",
+      "kind": "candidate",
+      "name": "v18__heave_m31.1__k7",
+      "seconds": 2189.4979486465454,
+      "sign": 1,
+      "step_mm": 31.07672929763794
+    },
+    {
+      "complete": true,
+      "direction": "v18__heave_m31.1_pitch_p0.7",
+      "exit_code": 0,
+      "forces_csv_sha256": "7e6dcd422761b9ce3df887944815b480c28bbf5364a773eb6d51378d40baad6b",
+      "kind": "candidate",
+      "name": "v18__heave_m31.1_pitch_p0.7__k7",
+      "seconds": 2177.580845594406,
+      "sign": 1,
+      "step_mm": 37.45974600315094
+    },
+    {
+      "complete": true,
+      "direction": "v18__heave_p31.1",
+      "exit_code": 0,
+      "forces_csv_sha256": "586f4c221ff4cf8e0148a6b2b7704b7f4758bc4850ff6e17999bd106b84768b3",
+      "kind": "candidate",
+      "name": "v18__heave_p31.1__k7",
+      "seconds": 2188.9462761878967,
+      "sign": 1,
+      "step_mm": 31.07672929763794
+    },
+    {
+      "complete": true,
+      "direction": "v18__twist_p2.3",
+      "exit_code": 0,
+      "forces_csv_sha256": "36998eaa0720502c2abb8fd8f412d14517bfade77fe0bc0922138bbaf75bd691",
+      "kind": "candidate",
+      "name": "v18__twist_p2.3__k7",
+      "seconds": 2229.858549594879,
+      "sign": 1,
+      "step_mm": 13.52161169052124
+    },
+    {
+      "complete": true,
+      "direction": "v18__reflex_m29.3",
+      "exit_code": 0,
+      "forces_csv_sha256": "484eae177089ce5007d25277bcd34909b1a22e9c479894c58c4d156dfa84b6f6",
+      "kind": "candidate",
+      "name": "v18__reflex_m29.3__k7",
+      "seconds": 2243.363333463669,
+      "sign": 1,
+      "step_mm": 11.719956994056702
+    },
+    {
+      "complete": true,
+      "direction": "v18__pitch_m1.3_reflex_p29.3_sweep_p11.3",
+      "exit_code": 0,
+      "forces_csv_sha256": "b009f0d25a826b9823a6bc6eac7bb6749a8a557194dbe24977c39401ed90f8b3",
+      "kind": "candidate",
+      "name": "v18__pitch_m1.3_reflex_p29.3_sweep_p11.3__k7",
+      "seconds": 2282.8486182689667,
+      "sign": 1,
+      "step_mm": 27.322471141815186
+    }
+  ],
+  "status": "COMPLETE"
+}

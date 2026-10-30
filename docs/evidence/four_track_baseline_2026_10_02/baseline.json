@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "evidence_class": "python_regression_baseline_not_solver_qualification",
+  "source_commit": "2fd7f6abc5d21d74cadf7e207f75785c582bc7cb",
+  "command": ".venv/bin/python -m pytest -q --tb=short",
+  "exit_code": 1,
+  "passed": 1226,
+  "failed": 37,
+  "skipped": 4,
+  "duration_seconds": 204.85,
+  "raw_log_sha256": "46afeaaf2b1cbc6c1f50acb2c053b289f9d194c750cbf5db5f99690d9a8a3589",
+  "raw_log_gzip_path": "docs/evidence/four_track_baseline_2026_10_02/full_pytest.log.gz",
+  "gzip_sha256": "59fbe8e839ef82dd7e63dffdaa6d52f6a788cf71859b8642d06bba1e40d27756",
+  "failure_ids_sha256": "71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a",
+  "scope": "Ignored historical work/ artifacts are absent; new-worktree v17 inputs must be matched before comparing IDs. No physics/FD/gradient or shape-update qualification."
+}

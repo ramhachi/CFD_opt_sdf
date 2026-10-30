@@ -1,0 +1,30 @@
+{
+  "baseline_phi": {
+    "path": "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw",
+    "sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431"
+  },
+  "directions": {
+    "D0_interface_offset": {
+      "file": "D0_interface_offset.dir_f4_fortran.raw",
+      "registered_sha256_c_order": "8b5773b7d404cc21819078085eddeae437cad619472910fcac17430b2b6be3b5",
+      "sha256_fortran_raw": "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549"
+    },
+    "D1_filtered_seed11": {
+      "file": "D1_filtered_seed11.dir_f4_fortran.raw",
+      "registered_sha256_c_order": "4da3513780c3ba9b2ab91837911d46a2cab362e9a561eedb18468b424f81d4f5",
+      "sha256_fortran_raw": "96fe6e62c5fcb7ad0108dd64d6fac68cc488ee49deb188be742530f828037a87"
+    },
+    "D2_filtered_seed2026": {
+      "file": "D2_filtered_seed2026.dir_f4_fortran.raw",
+      "registered_sha256_c_order": "bb1eeaf0cdd43bc71085499c853f24eae6335e030851dfc0f9b581f4f5aa8fe8",
+      "sha256_fortran_raw": "2a22eb09407a14755f495fa07d4df8dee2d4632db41a0b75d1bf744fd3d1d5de"
+    },
+    "P1_upstream_lobe": {
+      "file": "P1_upstream_lobe.dir_f4_fortran.raw",
+      "registered_sha256_c_order": "93631cba7024fc5592bb2a0999ed33b580142fbf7a50f1542b41692bc26c0fd7",
+      "sha256_fortran_raw": "24cc06aeb18e2a5729e560636f13ce78f8f19746268699783e8498921aec5dcc"
+    }
+  },
+  "formal_criteria_sha256": "31b29cccc9d3fd6912a910b09694a8230f9ee0aa84e6a418161881ffbcf907be",
+  "kind": "grad_dual_gpu_spike_inputs"
+}

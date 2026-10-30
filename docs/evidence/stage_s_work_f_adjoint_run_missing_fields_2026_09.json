@@ -1,0 +1,48 @@
+{
+  "case_dir": "work/stage_s_work_f_v1/adjoint/base",
+  "claims_not_supported": [
+    "no perturbation primal, FD value or shape update exists yet",
+    "the analytic-vs-FD agreement is not established by this artifact"
+  ],
+  "claims_supported": [
+    "the base adjoint case ran and both registered adjoint solvers wrote a faceSensNormal field"
+  ],
+  "commands": [
+    "#!/usr/bin/env bash",
+    "set -euo pipefail",
+    "adjointOptimisationFoam | tee log.adjointOptimisationFoam"
+  ],
+  "face_sens_normal": {
+    "expected_solvers": [
+      "adjDownforce",
+      "adjDrag"
+    ],
+    "files": {},
+    "found_solvers": []
+  },
+  "kind": "stage_s_work_f_adjoint_run",
+  "log": {
+    "converged_markers": 0,
+    "path": "work/stage_s_work_f_v1/adjoint/base/log.adjointOptimisationFoam",
+    "sha256": "9fcec4a48f66b6bd07a2364f0b8158aa412f5633f4fba06166c9605b5696d1f6"
+  },
+  "manifest": {
+    "path": "docs/evidence/stage_s_work_f_manifest_2026_09.json",
+    "sha256": "03b109f15e79036fe31a6ec76cd58831f8f834926aee2c0eaf654ea80b47dfdd"
+  },
+  "openfoam_run": {
+    "returncode": 1,
+    "timed_out": false
+  },
+  "preflight": {
+    "path": "docs/evidence/stage_s_work_f_adjoint_preflight_2026_09.json",
+    "sha256": "12fb698568441aaf288265df80ec06afe81b04acc1b586cf011a1a58564132b7"
+  },
+  "schema_version": 1,
+  "summary": {
+    "adjoint_converged": false,
+    "analytic_derivatives_ready": false,
+    "perturbation_allowed": false,
+    "shape_update_allowed": false
+  }
+}

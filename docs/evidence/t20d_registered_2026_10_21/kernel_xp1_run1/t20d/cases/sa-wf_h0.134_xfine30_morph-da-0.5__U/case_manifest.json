@@ -1,0 +1,150 @@
+{
+ "Aref_m2": 0.00044679999999999996,
+ "L_int_m": 0.01,
+ "Re_c": 460000.0,
+ "Tu": 0.003,
+ "U_inf": 30.0,
+ "alpha_listing_deg": 3.6,
+ "chord_m": 0.2234,
+ "coords_file": "data/t20/tyrrell026s_genua2009.dat",
+ "coords_sha256": "ae5fa889e3090ff35e819f195f90111b9b16e990e51d99d8aa3999bcb2d10f83",
+ "delta_alpha_deg": -0.5,
+ "domain_chords": {
+  "down": 5.0,
+  "top": 6.8,
+  "up": 2.0
+ },
+ "foam_model": "SpalartAllmaras",
+ "force_convention": "Cl = downforce coefficient (liftDir -y), Cd drag, per unit span, reference chord and Aref = chord*z",
+ "generator_sha256": {
+  "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+  "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+  "t20c_case.py": "156cd8416d3291a42704dc712f78ee62fef5ff9c60b5f552b3800d22a78bc5ad"
+ },
+ "gmsh_version": "4.15.2",
+ "h_m": 0.0299356,
+ "h_over_c": 0.134,
+ "inlet": {
+  "ReThetat": 999.1216000000001,
+  "gammaInt": 1,
+  "k": 0.01215,
+  "nuTilda": 7.284782608695652e-05,
+  "omega": 20.12461179749811
+ },
+ "iterations": 5000,
+ "iterations_stage1_sst": null,
+ "iterations_stage2_lm": null,
+ "mesh": "xfine30",
+ "mesh_msh_sha256": "9f14213902b2cd0333b8719359f6976400dbc748785413b1ee8073251c3e0487",
+ "mesh_quality_failures": [],
+ "mesh_spec": {
+  "ds": 0.001,
+  "fan": 4,
+  "g": 1.2,
+  "last": 0.65,
+  "te": 2,
+  "wall": "wf",
+  "y1": 0.0006
+ },
+ "mesh_stats": {
+  "airfoil_node_min_y_m": 0.0299356,
+  "airfoil_nodes": 495,
+  "bl_thickness_m": 0.0013200000000000002,
+  "cells_2d": 50303,
+  "cells_3d": 50303,
+  "first_cell_airfoil_m": {
+   "median": 0.0006002341832294485,
+   "p05": 0.000599008632292054,
+   "p95": 0.0006261100680285535
+  },
+  "first_cell_ground_m": {
+   "median": 0.0006000000001475238,
+   "p05": 0.0006000000001474595,
+   "p95": 0.0006000000001475974
+  },
+  "gap_cells_at_lowest_point": 31,
+  "gmsh_min_sicn_quad": 0.7447675459232246,
+  "gmsh_min_sicn_tri": 0.5238587208344827,
+  "n_layers": 2,
+  "n_layers_spec": 2,
+  "quad_cells": 4123,
+  "quality": {
+   "aspect_ratio_max": 3.6919577924261597,
+   "cells": 50303,
+   "det_lt1e-3_cells": 0,
+   "det_min": 0.06926287717959685,
+   "nonorth_gt70_faces": 0,
+   "nonorth_max": 40.71112093196711,
+   "skew_boundary_max": 0.15955483759134756,
+   "skew_gt4_faces": 0,
+   "skew_max": 0.583466328377959,
+   "unused_nodes": 0,
+   "vol_ratio_lt0.01_faces": 0,
+   "vol_ratio_min": 0.1441975272875706,
+   "weight_lt0.05_faces": 0,
+   "weight_min": 0.157323223975578,
+   "worst_xy_m": {
+    "aspect_ratio": [
+     -0.005991,
+     0.035948
+    ],
+    "det": [
+     -0.428359,
+     1.297058
+    ],
+    "nonorth": [
+     -0.005381,
+     0.058482
+    ],
+    "vol_ratio": [
+     0.005909,
+     0.05587
+    ],
+    "weight": [
+     -0.006437,
+     0.037003
+    ]
+   }
+  },
+  "ride_height_m": 0.0299356,
+  "tri_cells": 46180,
+  "x_lowest_m": 0.046277346787474236
+ },
+ "model": "sa-wf",
+ "morph": {
+  "airfoil_min_weight": 1.0,
+  "airfoil_nodes": 990,
+  "amp": -0.5,
+  "amp_unit": "deg",
+  "area_ratio_max": 1.014297343319793,
+  "area_ratio_min": 0.9603323062971847,
+  "base_delta_alpha_deg": 0.0,
+  "base_mesh_msh_sha256": "fbe66a22bacee92904657a72725b33dfc5bd0fc5113a18faeab28d30986adf25",
+  "blend": "smoothstep",
+  "contour_err_m": 1.8041124150158794e-16,
+  "fixed_nodes": 9654,
+  "fixed_nodes_moved": 0,
+  "inverted_cells": 0,
+  "max_node_displacement_m": 0.0034774657430290106,
+  "mode": "incidence",
+  "module_sha256": "156cd8416d3291a42704dc712f78ee62fef5ff9c60b5f552b3800d22a78bc5ad",
+  "te_displacement_m": [
+   0.00010904894676516674,
+   -0.0015496922574506078
+  ],
+  "x_lowest_m": 0.046277346787474236
+ },
+ "nu": 1.4569565217391304e-05,
+ "python": "3.13.15",
+ "size_far_m": 0.05,
+ "size_growth": 0.25,
+ "stage2": {
+  "dt_s": 1e-05,
+  "end_iteration": null,
+  "end_time_s": 0.1192,
+  "kind": "U",
+  "source_time": "5000",
+  "transient_s": 0.0447
+ },
+ "z_m": 0.002
+}

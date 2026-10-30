@@ -1,0 +1,115 @@
+{
+ "status": "REGISTERED_FROZEN (freeze 2)",
+ "date": "2026-10-20",
+ "source_commit": "6d11badfabfda86a4c4934ecbbb6537884195449",
+ "freeze1": {
+  "registration_sha256": "3e41e05fa11c3798a8c7381618ef9c0b2ba65c8c1be1fea25a713bc94ed34582",
+  "commit": "c0f18e92389ea4f864d62401bddcd2c8335679a5",
+  "issue_comment": "https://github.com/ramhachi/CFD_opt_sdf/issues/57#issuecomment-6286730717"
+ },
+ "file_sha256": {
+  "docs/t20c_registration_2026_10_20.md": "3e41e05fa11c3798a8c7381618ef9c0b2ba65c8c1be1fea25a713bc94ed34582",
+  "infra/kaggle/kernel_t20c_cpu/runner.py": "9918efcff945ee9bbb76d5a27dfe47831d8b9e41054e4e1b9dcf5fef5ff7e56c",
+  "infra/kaggle/kernel_t20c_cpu/kernel-metadata.json": "15243b9db8fe3e989595427584379a0a69bf8c0fe971501709c4f97ce448b182",
+  "scripts/build_t20c_kernel.py": "dc2087193552530729220ae7f394f7a21841a2bc618d69cf225b0cea41c32c51",
+  "scripts/build_t20a_kernel.py": "73df7a83d94328eed4ab28d4faddf67032b9eae7d66fde5922daf52608cf6b4e",
+  "scripts/analyze_t20c.py": "c01020d490bab5a72836633acc9b49e09bc70de7c848419f6c72d1921dedc10b",
+  "scripts/analyze_t20b.py": "0ae4cd46919228e18ba8104a7bc120ac3382610f47c19522faf5f53b93433e88",
+  "scripts/t20c_case.py": "156cd8416d3291a42704dc712f78ee62fef5ff9c60b5f552b3800d22a78bc5ad",
+  "scripts/t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+  "scripts/t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+  "tests/test_t20c.py": "ddfe0c565c68c31c1c9a3ebea27711f73ba47dcba86aaea5037d17d8424e43be",
+  "data/t20/tyrrell026s_genua2009.dat": "ae5fa889e3090ff35e819f195f90111b9b16e990e51d99d8aa3999bcb2d10f83",
+  "data/t20/zerihan_zhang_cl_genua2009_fig6.json": "dd6ca2af10318f3b0603f94c60ea0e6f4753e4053fb614ee7efee3273a6ff90b"
+ },
+ "pinned_unchanged_since_t20b": [
+  "scripts/t20_case.py",
+  "scripts/t20_foam.py",
+  "scripts/analyze_t20b.py",
+  "scripts/build_t20a_kernel.py",
+  "data/t20/tyrrell026s_genua2009.dat",
+  "data/t20/zerihan_zhang_cl_genua2009_fig6.json"
+ ],
+ "rendered_kernels": {
+  "remesh": {
+   "slug": "ramhachi888/cfd-opt-sdf-t20c-remesh",
+   "cases": 82,
+   "runner_sha256": "3984c1c2ce792d539581f20e6a604a5561d22315334db5eb214e2f5374f581b0"
+  },
+  "morph": {
+   "slug": "ramhachi888/cfd-opt-sdf-t20c-morph",
+   "cases": 93,
+   "runner_sha256": "3a3992f7cff46a2ec951b1972c686f73598296cf117d6f0e110affefd7c2daee"
+  },
+  "shape": {
+   "slug": "ramhachi888/cfd-opt-sdf-t20c-shape",
+   "cases": 96,
+   "runner_sha256": "dfc5efc686a886f6e55f987f08d7e30b84acebaf746ba02fc06c0a7d642410b7"
+  }
+ },
+ "development_smoke": {
+  "attempt1": {
+   "source_commit": "919c56ad691e071aed25a7f8970b41a4fd38f222",
+   "kernel_version": 1,
+   "result": "FINISHED_SMOKE: 256 MESH_OK (every unique registered geometry of the three kernels, every morph passing the topology-hash check), 7 solver paths COMPLETED at 100 + 100 (forced continuation) iterations, 15 RUNNER_EXCEPTION",
+   "defects": [
+    "the mesh-only list concatenated the three kernels' case lists, so 15 ids (the 0-deg baselines present in R, M and S) repeated and the later copies raised FileExistsError (RUNNER_EXCEPTION): fixed by one case per id, the base copy kept (source review R1)"
+   ],
+   "archive": "partial: the CLI download of version 1 was cut when attempt 2 was pushed under the same slug; 2418 of the 3970 manifest files were downloaded (all hash-verified, 0 mismatch), DONE and artifact_manifest.json complete; no force value in any downloaded file (checked by pattern)"
+  },
+  "attempt2": {
+   "source_commit": "993623917a53a6c4e01973ed039755dd676760b6",
+   "kernel_version": 2,
+   "result": "FINISHED_SMOKE: 256 MESH_OK (one case per id, the 9 base copies included; every morph passing the topology-hash check), 7 solver paths COMPLETED (remeshed xfine30, morphed xfine30, B' morph, linear-blend morph, flap morph, remeshed camber, base copy) at 100 + 100 iterations, no exception",
+   "artifact_manifest_sha256": "191c131a4bf37aaee73556066fba74033c349c85e3721269e095a67ee9312226",
+   "archive": "partial: 2704 of the 3970 manifest files downloaded (plus DONE, artifact_manifest.json and the kernel log), every one hash-verified; present: DONE, artifact_manifest.json, bases.json, environment.json, install.json, result.json, all 263 case_result.json (the 7 solver paths included); missing: 1266 case_dict, case_manifest.json.gz and log files of about 90 cases. Not completed because the Kaggle output API returned HTTP 429 from about 2400 per-file downloads on (Kaggle-side storage was complete: a pattern re-download retrieved later files), the API quota is per account and shared with the M2 UNC-01 GPU kernels, and OpenFOAM moves to local execution (2026-10-21 user decision), so no later output needs the Kaggle API; no force value in any downloaded file (checked by pattern)"
+  },
+  "attempt3": {
+   "source_commit": "6d11badfabfda86a4c4934ecbbb6537884195449",
+   "kernel_version": 3,
+   "result": "FINISHED_SMOKE: 256 MESH_OK, 7 solver paths COMPLETED (gmshToFoam, checkMesh, simpleFoam and the forced continuation returncode 0 on each; morph topology hashes equal to the bases'), no exception",
+   "artifact_manifest_sha256": "aca2dbcee906e347d6a0d7b4d65459d0d9f39faaec8d56a84fd82b2a06e4e8ff",
+   "cases_tar_sha256": "4eb0219e3c13d885e86004e4e20dbe7b2d02d977d376ca8a1fa7910545da8cee",
+   "archive": "complete: 8 downloaded files (cases.tar, the top-level JSON files, DONE, the kernel log); cases.tar matched DONE, extracted with the 'data' filter, all 3970 manifest files present with matching SHA-256, no extra file; no force value in any file (checked by pattern); archived extracted (smoke/attempt3/t20c), not as the tar"
+  }
+ },
+ "plan_review": "one, three angles (numerical 12, controls 14, strategy 12 findings), registration section 10",
+ "source_review": {
+  "count": 1,
+  "reviewed_commit": "919c56ad691e071aed25a7f8970b41a4fd38f222",
+  "findings": "3 major (R1 smoke duplicate ids, R2 an infrastructure loss hid a failed input in the same gate, R3 a missing base became an infrastructure loss), 6 minor (R4 mechanical failures outside gate inputs, R5 checkMesh failure still solved, R6 test coverage, R7 labels, R8 shape label reading and G3bR sign, R9 analyze_t20b hash), 2 cosmetic; R10 (import side effect on t20_case.MESHES) fixed in 5bb78f08; all fixed in 99362391 with regression tests (tests/test_t20c.py, 24 passed)"
+ },
+ "interpretations_recorded_at_freeze2": [
+  "next-action rows 5-9: a per-height gate that fails only through noise (every failing comparison UNRESOLVED by the power requirement, or G6m's resolution test) is a noise failure and takes row 8 whichever gate it is; rows 6, 7 and 9 need a resolved disagreement (a sign failure counts as resolved). Reason: row 8 names the noise diagnosis, and the power requirement of G8m at s = 0.25 is stricter than G6m's, so the literal gate order would route every noise failure to row 7 (baseline realisation), which an UNRESOLVED comparison cannot show. Recorded before any registered output exists.",
+  "the row is the smallest row over the failing per-height gates in scope (all heights for NO_GO, h/c 0.09 for GO_FINE30_ATTACHED)",
+  "every per-height gate checks all its listed inputs before computing, so a failed input fails the gate even when another input is lost (registration section 6 input rule)",
+  "a MECHANICAL_FAIL among cases that are not gate inputs (shape, linear blend, coa30 sweep) is reported with the next action as mechanical_fail_outside_gate_inputs (section 8: a result, never an amendment) and does not change the row",
+  "a case whose checkMesh fails is not solved (status checkMesh_FAILED, MECHANICAL_FAIL either way); a missing base copy is GENERATOR_FAILED and a missing base topology BASE_TOPOLOGY_MISSING (both mechanical)",
+  "SHAPE_RESOLVED_CONSISTENT's four conditions are resolution, linearity, med30 vs fine30 agreement and morph vs remesh agreement; the expected sign is reported, not part of the label",
+  "G6R and G3bR apply the G6/G3b rules with this registration's sigma_eff, delta and power requirement; G3bR includes the sign at h/c 0.224",
+  "the remeshed 0-deg sweep case is the 0-deg point of every remeshed scan; the kernel-M baseline is the 0-deg point of every morphed scan and of the shape scans' med30/fine30 sigma; the kernel-S baselines are the shape scans' 0 mm points"
+ ],
+ "regression": {
+  "full_pytest_fresh_worktree": {
+   "commit": "993623917a53a6c4e01973ed039755dd676760b6",
+   "work_dir": "absent",
+   "command": ".venv/bin/python -m pytest -q -p no:cacheprovider",
+   "result": "0 failed, 2957 passed, 73 skipped, 7294 warnings in 4052 s",
+   "baseline": "b4940864 (fresh worktree): 0 failed, 2873 passed, 73 skipped; the 84 additional passes are tests added since b4940864 on the integration branch (T2-0b, JOB-02) and on this branch (T2-0c: 24 at 99362391)"
+  },
+  "delta_after": {
+   "commit": "6d11badf",
+   "changed_files": [
+    "infra/kaggle/kernel_t20c_cpu/runner.py",
+    "tests/test_t20c.py"
+   ],
+   "note": "the kernel template is imported by tests/test_t20c.py only",
+   "result": "tests/test_t20c.py in a fresh worktree: 25 passed"
+  },
+  "superseded": "a full run at 5bb78f08 (the t20_case.MESHES side-effect fix) was stopped at about 54 % (all passing so far) because 99362391 contains it and the machine was overloaded; one full run at a time"
+ },
+ "analysis_rule": "scripts/analyze_t20c.py at this commit is run once on the downloaded outputs of the three kernels; analysis.md and verdict.json are committed unchanged",
+ "output_packaging": "the kernel writes artifact_manifest.json (SHA-256 of every output file) and then packs cases/ into one uncompressed tar, cases.tar, whose SHA-256 is in DONE (source commit 6d11badf; a kernel killed before packing leaves cases/ as files). Reason: in smoke 2 the Kaggle output API returned HTTP 429 after about 2400 per-file downloads (the API quota is per account and shared with the M2 UNC-01 GPU kernels); the registered kernels write 2400-2900 files each and are submitted once, so their outputs leave as a few files. Kaggle-side storage was complete in smoke 2 (the 429 is a download-rate limit). Locally the tar is checked against DONE, extracted with tarfile's 'data' filter and every manifest entry is checked; the evidence holds the extracted files, not the tar. Judged on smoke 3 (development_smoke.attempt3).",
+ "execution_backend": "Kaggle CPU, as registered. The 2026-10-21 move of OpenFOAM to local Docker (user decision) was gated by the local-OpenFOAM session (LOCAL-OF-01, docs/evidence/local_openfoam_env_2026_10_20/, merged at f5b8458a): LOCAL_ENV_FAIL for the T2-0c pipeline (86 of 262 geometries get other cell counts locally: the generator's floating-point contour differs in the last bits between the local and the Kaggle Python stacks and gmsh triangulates differently), so T2-0c stays on Kaggle CPU and no backend amendment is recorded.",
+ "predictions_note": "the registration-time predictions (registration section 2, verdict.json `predicted`) are unchanged. Force-free information learned since freeze 1: gmsh writes renumbered mesh variants of one geometry run to run (7 of 41 geometries shared by T2-0b and smoke 2 differ in mesh.msh SHA-256 with identical cell counts and checkMesh statistics; local-OpenFOAM session note), and the mesh depends on the platform's floating point (LOCAL-OF-01). REPLICATED_BITWISE and CROSS_KERNEL_IDENTICAL can therefore fail without any defect; both stay descriptive labels."
+}

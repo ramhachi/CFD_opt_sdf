@@ -1,0 +1,15 @@
+{
+  "all_hard_call_chain_functions_identical": true,
+  "comparison": "ast.dump(function, include_attributes=False), excluding only function docstrings",
+  "current_file_sha256": "021c2da0916f1417211764c6d6ffc1d7a45785b41b8ce2f206f31cd710625626",
+  "functions": {
+    "_corner_mean": "8a83a2a99a4496762a8ae0e9f78a7defad3edbbe353b9b9f1a2846caf309b231",
+    "_validate_state": "e64989cf60859fff7a976ccbb231a81db077f261536f602d8be1d2c594d63c72",
+    "sampled_solid_centers_count": "b1840fc532314b803d4f41994e82f4f8e636cfd75cb86fd5fde7bc5086412ed7",
+    "sharp_volume_m3": "092185872520e6cd0ae2d91561993729b1c3943a62c1567f9980003e79be2877"
+  },
+  "original_file_sha256": "b255a98fac71fc88409a1b001e8a3c99460191d56d8ea19af4c7c39c90d4c41a",
+  "registration_commit": "a260a40c2fb578bc07b4abc474534c155974a297",
+  "scope": "Executable hard call chain only. sharp_volume_m3 docstring clarified epsilon vs h limits; later smooth additions change the whole file.",
+  "source_path": "src/cfd_sdf/design/volume_semantics.py"
+}

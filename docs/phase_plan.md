@@ -1,73 +1,65 @@
 # Authoritative Roadmap: Generic Aerodynamic Topology Optimization
 
-Date: 2026-09-09
+Date: 2026-10-22 (latest order correction; dated records below retain their original scope)
 Status: authoritative
-Scope: generic rigid-object external aerodynamics with topology change
-Architecture decision: adopted on 2026-09-09
+Scope: generic rigid-object aerodynamic topology and shape optimization
+Architecture decision: SDF-native production research direction adopted on 2026-09-26
+
+Latest execution order: [2026-10-22 parallel preparation and primary-reference audit](#2026-10-22-parallel-preparation-and-primary-reference-audit), retaining the [evidence-based branch rules](#2026-10-22-evidence-based-roadmap-correction-and-issue-plan).
+The [current position](STATE.md) projects that order; the [review and primary-source comparison](roadmap_review_2026_10_22.md)
+records its rationale. Older "current" checkpoints below are dated history where superseded.
 
 This is the only implementation roadmap for the project. Historical
-body-fitted, parametric, and front-wing-specific work is capability evidence,
-not a second development plan. The front wing remains the final complex
-benchmark; it does not define the product architecture.
+density/Brinkman, B-spline, body-fitted, and front-wing-specific work is
+retained capability and evidence context, not a second development plan. The
+front wing remains a later complex benchmark; it does not define the product
+architecture.
 
-## September 2026 cross-platform implementation
+## Current SDF-native production research direction
 
-The accepted [32 GB development design](development_plan_2026_09.md) and
-[critical architecture review](architecture_review_2026_09.md) specify the
-Mac/Windows extension. This page remains the authoritative progress record.
-The existing G1–G4 gates below remain mandatory; the P0–P5 milestones in the
-design are work packages, not substitutes for those gates.
+The current design state is a bounded Cartesian signed-distance field `phi`.
+The WaterLily immersed-boundary fixed-grid solver is being qualified as a
+candidate low-cost primal and optimization oracle. Body-fitted OpenFOAM remains
+the independent Stage V verifier. The old Stage T/S/V work and its evidence are
+preserved, but the density-to-iso-surface-to-B-spline sequence is no longer the
+production optimization route.
 
-The project adopts this architecture as its production direction: one shared
-ProblemSpec and evidence contract, density/Brinkman topology exploration, SDF
-sharp-interface refinement, and independent body-fitted verification. Backend
-promotion remains conditional on the numerical and physical gates below. In
-particular, adopting the architecture does not promote the current periodic
-LBM probe to a target-aerodynamics solver.
+The earlier [32 GB development design](development_plan_2026_09.md) and
+[cross-platform architecture review](architecture_review_2026_09.md) remain
+supporting history. Their CPU/Metal D2Q9 Taylor–Green probe has no aerodynamic
+walls, force integration, SDF coupling, adjoint, or 3D support, and is not part
+of the current production solver path.
 
-The `main` snapshot immediately before this decision is preserved as
-`artifact/pre-cross-platform-architecture-2026-09-09` at commit `fdc1053`.
+Kaggle is an execution substrate for reproducible T4 batch runs, exact
+source/runtime binding, and evidence capture. Colab-to-Kaggle migration is an
+infrastructure decision; Kaggle is not a solver or optimizer component in the
+architecture below. Operational details are in
+[`kaggle_batch_runbook_2026_09.md`](kaggle_batch_runbook_2026_09.md).
 
-The first implementation adds bounded `research` commands for runtime
-inspection, STL/declared-feature preflight, and a periodic D2Q9 Taylor–Green
-reference with an optional Apple Silicon Metal backend. These are P0/P1
-foundations. CPU execution is portable; Metal acceleration requires Apple
-Silicon. Windows CUDA acceleration is still pending. A working RTX 4070 Ti
-must be qualified against its separate VRAM budget, not 32 GB host RAM.
-
-The geometry preflight checks only its explicitly listed subset. Periodic
-LBM has no wall treatment, force integration, SDF coupling, adjoint, or 3D
-support. Neither its passing benchmark nor a successful OpenFOAM process
-qualifies target aerodynamics or a complete optimization pipeline.
-
-Next execution order:
-
-1. Establish reproducible runtime and numerical evidence on Mac and Windows.
-2. Validate wall treatment, force integration and spatial convergence on
-   bounded laminar cases before coupling an SDF interface.
-3. Add CUDA only behind the same reference tests and report memory/precision
-   separately for each device.
-4. Validate stationary residuals and directional derivatives before adjoints
-   and constrained shape optimization; retain the existing density/Brinkman
-   route for topology work and independent body-fitted verification.
-
-See [cross-platform commands and evidence](cross_platform_research.md).
+The current gate order is maintained only in
+[section 11](#11-current-sdf-native-execution-order). Older plans linked from
+this page are subordinate historical context and do not replace that order.
 
 ## 1. Product objective
 
-Build a configuration-driven optimizer that can add, remove, join, and split
-material inside a bounded design domain for an arbitrary STL-defined rigid
-object, subject to aerodynamic, geometric, connectivity, and manufacturing
-constraints.
+Build a configuration-driven optimizer for an arbitrary rigid object whose
+canonical design state is a bounded Cartesian SDF `phi`. It must support
+material addition and removal, merging and splitting components, and shape
+refinement under aerodynamic, geometric, connectivity, and manufacturing
+constraints. Continuous SDF deformation does not by itself create a detached
+new solid; topology birth therefore requires an explicit nucleation or other
+birth mechanism, which remains a separate unqualified research slot.
 
 The first supported product profile is deliberately bounded:
 
 - incompressible low-Mach external flow;
 - steady or quasi-steady analysis;
 - one rigid material;
-- STL-only geometry roles;
-- uniform Cartesian fixed-grid topology optimization;
-- SDF extraction/refinement followed by body-fitted verification.
+- STL geometry roles for exchange and verification;
+- bounded Cartesian SDF design state;
+- immersed-boundary fixed-grid primal and qualified gradient path;
+- geometry, connectivity, and manufacturing hard gates;
+- independent body-fitted verification.
 
 Compressible flow, fully unsteady flow, fluid-structure interaction, free
 surfaces, and production AMR are future capability profiles.
@@ -79,27 +71,53 @@ ProblemSpec v2
   geometry roles + flow cases + responses + constraints + topology policy
         |
         v
-Geometry and resolution preflight
+Geometry / domain / resolution preflight
         |
         v
-OpenFOAM case compilation + requested/generated manifest
+Canonical Cartesian SDF phi
         |
         v
-Stage T: fixed-grid density/Brinkman topology optimization
+WaterLily immersed-boundary fixed-grid primal (candidate)
         |
         v
-Density iso-surface -> SDF rebuild
+Primal and grid/domain numerical qualification
         |
         v
-Stage S: sharp-interface SDF refinement
+Centered finite-difference gradient oracle
         |
         v
-Stage V: body-fitted RANS verification
+Qualified production gradient backend
+  (reverse AD / discrete adjoint / other method; decision pending)
+        |
+        v
+Constrained SDF update
+        |
+        v
+Explicit topology birth / nucleation when required
+        |
+        v
+SDF reinitialization + geometry / connectivity / manufacturing hard gates
+        |
+        v
+Independent body-fitted OpenFOAM Stage V verification
 ```
 
-The Stage T design variable is the cell density field `rho`. STL is an input
-surface or a derived exchange/verification artifact; it is not the main
-topology design variable.
+The canonical optimization variable is SDF `phi` (`phi < 0` is solid,
+`phi > 0` is fluid). STL and body-fitted meshes are derived artifacts for
+exchange, geometry checks, or independent verification. The SDF volume
+contract is registered; optimizer-side enforcement is still pending.
+
+The explicit topology-birth slot may use a topological derivative, nucleation
+operator, a retained density/Brinkman proposer, or another explicit birth
+operator. No candidate has been selected or qualified. A topology policy that
+defines disconnected-component and root-connectivity rules is required before
+Birth-0.
+
+WaterLily remains in qualification. Centered FD is the permanent independent
+numerical gradient oracle; it is not the production gradient backend. Reverse
+AD, discrete adjoint, and other gradient methods remain candidates until
+qualified against that oracle. A WaterLily scratch reverse experiment is not
+an adoption decision.
 
 ## 3. Evidence rules
 
@@ -119,23 +137,344 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 
 ## 4. Current position
 
+| Workstream | Current status | Evidence scope / next gate |
+| --- | --- | --- |
+| Canonical design state | SDF `phi` | Bounded Cartesian SDF is the canonical optimization variable. The genesis and sampled-volume contract are registered; optimizer-side volume enforcement is still pending. |
+| WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
+| W3 primal | v16 round 4 and v17 round 1 registered finite-box primal contracts PASS; broader physical qualification remains false | v16 exact kernel `/5` and v17 exact kernel `/1` passed their own host-verified T0-T10 contracts. The v17 result is bound to its own state and criteria; neither result qualifies physical aerodynamics. The unresolved W3 v4 all-zero root cause is not retroactively closed. |
+| W4 grid/domain sensitivity | v16 round 4 and canonical v17 round 1 sensitivity matrices passed exact-version host verification | v17 criteria SHA `5eceb62c…`, result SHA `25297c46…`, source `4c20787c`. Private dataset v1 inventory and exact kernel `/1` were verified; all four cases passed T0-T10. Resolution changes are large (flow16→24: drag 31.61%, downforce 23.43%; flow24→32: 6.77%, 8.37%), while the x+1 m domain change is below 0.26%. This remains finite-box sensitivity evidence, not grid/domain convergence or target-physics qualification. |
+| Centered-FD SDF directional oracle | v16 round 5, v17 FD-05 and FD-06 round 1 terminal FAIL | FD-06 / flow_24 with normal floor 0.25 completed 33 fresh primals; D2 drag and D0 downforce passed the unchanged 5% plateau gate, while the four other combinations deviated by 6.40–8.72%. Strict host verification failed closed on missing `DONE`; raw host recomputation is diagnostic only. FD-07 design-lattice phase shift did not remove short-horizon irregular response. A separate 26-solve CPU A/B intervention supports the half-cell sign-consistency correction as the dominant cause of the registered fixture's short-horizon solved-force irregularity: large initial `μ₀` jumps fell below `1e-5`, and force responses were strongly suppressed, with residual response remaining. This is bounded causal evidence, not formal FD or a production remedy. See [`37_fd06_result.md`](issues/37_fd06_result.md), [`37_fd06_remaining_deviation_diagnosis.md`](issues/37_fd06_remaining_deviation_diagnosis.md), [FD-07 diagnosis](issues/37_fd07_lattice_shift_diagnosis.md), and [FD-07 causal diagnosis](issues/37_fd07_sign_consistency_causal_diagnosis.md). FD/gradient/reverse/optimizer/topology/shape-update flags remain false. |
+| Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
+| Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
+| Topology birth | Unqualified; P23 policy is a prerequisite | SDF shape deformation alone does not create detached material. Register the topology policy and qualify an explicit birth mechanism before Birth-0. |
+| Geometry / connectivity / manufacturing gates | Required at every update | Genesis and adapter checks are bounded contract evidence; the complete evolving-shape gate set is not qualified. |
+| Stage V body-fitted OpenFOAM | Retained as independent verifier | The registered v16 physical profile and same-profile two-domain comparison passed for that candidate/profile. This is not grid-independent, high-Re, or full-vehicle qualification. |
+| Historical Stage T density/Brinkman | Retained capability and evidence | Not the current production optimization path. Its optimizer, artifacts, and candidate-generation research may inform a future topology-birth proposer, which is not selected. |
+| Historical Stage S / Work F | Retained derivative and geometry evidence | The B-spline/Work F route is not the current SDF production update path. |
+| Kaggle / Colab | Execution infrastructure | Used for exact-source GPU batches and evidence capture; neither is a solver or optimizer architecture component. |
+
+### Historical density/Brinkman Stage T and B-spline Stage S status snapshot (through 2026-09-25)
+
+The following table preserves the earlier Stage T/S/V status and evidence
+record. Its architecture and execution-order language is superseded by
+sections 1, 2, and 11 and the current SDF-native addenda below; its historical
+measurements and verdicts remain scoped to their original artifacts.
+
 | Workstream | Status | Current evidence and gap |
 | --- | --- | --- |
 | G0 scope/evidence model | Complete | Generic rigid-object scope and evidence classes are established. |
 | G1 ProblemSpec/artifact contract | Complete | v2 parsing, canonical hash, multipoint responses, topology policy, v1 read-only migration, and semantic readers exist. |
 | G2 case compiler | Current-spec numerical convergence passed; physical/native-artifact qualification pending | On 2026-09-07 both freshly compiled flows passed the declared primal, response, adjoint and normalized-mass convergence gates under the current specification hash. See `evidence/openfoam_convergence_2026_09.json`. Response-unit, gradient and grid-transfer semantics plus porous/body-fitted comparisons remain unqualified. |
-| G3 geometry/resolution gates | Partial — bounded STL/declared-resolution preflight | `research preflight` checks STL metadata and declared feature/grid ratios. Self-intersection, actual shape thickness/clearance, complete mask/connectivity and density-to-SDF fidelity qualification remain. |
+| G3 geometry/resolution gates | Partial — bounded STL/declared-resolution preflight; fixed far-field domain + clearance preflight implemented | `research preflight` checks STL metadata and declared feature/grid ratios. The 2026-09-19 V3 diagnosis localized all 220 under-determined cells of one rejected candidate to its wall/outer-boundary contact, so clearance is a measured hard-gate requirement. On 2026-09-20 WP1 implemented it: the Stage V far-field box is bound to the ProblemSpec's `grid.domain_bounds_m`, and a declared-margin pre-mesh clearance preflight (profile `stage_v_clearance_v1`, 0.25 m) refuses candidates before `blockMesh`/`snappyHexMesh` — the recorded wrong candidate is rejected with a no-launch artifact (`evidence/stage_v_domain_clearance_2026_09.json`). Self-intersection, actual shape thickness, complete mask/connectivity and density-to-SDF fidelity qualification remain. |
 | G4 benchmark ladder | Missing — implementation required | No complete three-family, three-grid generic acceptance set exists. |
-| Stage T canonical backend | Narrow numerical gate passed | Fixed-grid Brinkman primal/adjoints converged on the 8192-cell laminar fixture. At move/epsilon `1e-4`, directional derivatives agreed with finite differences within 2.23–4.35%, and an objective-only update agreed with primal re-evaluation within 4.51%. Move `0.03` was outside the useful local regime. See `architecture_effectiveness_2026_09.md`. |
-| Stage T production optimizer | P0 candidate and state-transfer capability added; numerical qualification remains missing | Stage T candidate lineage can be bound fail-closed to a native ProblemSpec, canonical grid, STL-derived masks, and exact topology/density hashes. Canonical rho can be conservatively transferred to a uniform Cartesian OpenFOAM source grid with `source = P @ target`; the artifact remains `qualified=false`. Direction suites carry the verified candidate identity into plus/minus topology states, and the gradient gate rejects mixed objectives, binding mismatches, and incomplete direction-by-epsilon coverage. The real G2 run still awaits solver-field consumption of the state artifact, candidate-bound `P.T` gradient return, semantic response-unit and topology-value bindings, fresh multi-direction FD evidence, production connectivity derivatives, nonlinear acceptance/rollback, checkpoint/resume, and a GCMMA-equivalent iteration. |
-| Stage S | Cell-density handoff capability added; not qualified | Stage T cell-data `rho` can now be converted to a hash-bound iso-surface and SDF with explicit interpolation, threshold, grid, mask, component and root-availability diagnostics. The 2026-09-10 T5 candidate remains `diagnostic_only`: its threshold/surface volume mismatch is approximately 100% and root connectivity is unavailable. Quantitative acceptance gates and a qualified sharp-interface solver remain missing. |
-| Stage V | Prototype | Body-fitted OpenFOAM execution exists; target-profile grid convergence and cross-fidelity acceptance remain. |
+| Stage T canonical backend | Path B bounded exception on the refined source grid | The 64x32x32 source-grid campaign with perturbation residual `5e-9` gives FD/adjoint ratios `1.1504 / 1.1134 / 1.1441`; all registered directions are epsilon-stable and keep their sign, but all fail the 5% production gate. The refined-source `checkMesh` gate is measured pass. Canonical-only refinement gives `1.1172 / 2.2454 / 1.8916`, showing design/source-grid coupling; the registered third source-grid level is unrun, so there is no grid-convergence claim. |
+| Stage T canonical closed loop | Bounded real-OpenFOAM path implemented | PQ0.1 connected the compiled projected-volume value/gradient, separated parent adjoint from trial primal, reused accepted primal artifacts and integrated the Path B centered-FD bracket. PQ0.2 exercised the real parent/trial/bracket/rollback/resume path. PQ3 then accepted three real OpenFOAM improvement steps. This is capability and bounded Path B evidence, not production-gradient or target-physics qualification. |
+| Stage T production optimizer | Bounded 97-step candidate reached; not converged and not qualified | The early PQ3.1–PQ3.3 history is retained in the register: solver-field discreteness without extraction coherence, and an upper volume bound that did not fill the material budget. The later v12–v16 line runs the b=128 margin-mask level with the Phase 2 discreteness gate: v15 accepted 10/10 at its budget and v16 accepted 87 further steps (cumulative 97), reaching raw downforce `2.65056`, projected volume `0.0719735` (94.30% of Vmax) and `mean_nd=0.0025089`, then stopped fail-closed at attempt 88 when the alpha-1.0 Path B bracket was not a descent direction. The registered convergence window was not met and no independent terminal repeat ran, so this is not a converged terminal. Projected-gradient and volume-target OC remain proposal rules; MMA/GCMMA is deferred. |
+| Stage S | Superseded reference (SDF-native fork, 2026-09-26): entry gate passes on the v16 candidate, the Work F adjoint derivative qualification failed, and the K=16 reduced-basis FD v2 contract registered with a solver-free S0R/S1R pass; S2 is intentionally not started | PQ4.1 v2 on the v16 checkpoint 87 selects `rho_projection` iso 0.5 and returns `ready_for_stage_s=true` with the topology-aware self-intersection detector and the surface-nets extraction (`evidence/pq4_1_v16_state_stage_s_entry_v2_2026_09.json`). Baseline v2 is registered (`evidence/stage_s_baseline_v16_v2_2026_09.json`), and the Work F V1 body-fitted baseline passed the registered mesh and primal `stage_v_qualification_v1` gates (`evidence/stage_s_work_f_v1_solver_2026_09.json`), which closes P17 for this candidate and level only. The Work F centered-FD campaign then ran all 32 perturbation primals: the gradient-aligned directional derivatives pass within the 5% profile (downforce response `1.0408`/`1.0279`; drag response `1.0266`/`0.9595`) with tight epsilon plateaus, but the registered random-seed directions exceed the relative rule (downforce: `1.0858`/`0.8796`; drag: `1.0376` passes, `1.4593` fails), so the complete derivative qualification is **false** and one accepted body-fitted update remains unauthorized (`evidence/stage_s_work_f_surface_fd_result_2026_09.json`; `shape_update_allowed=false`). The fail branch diagnosis D0-D3 has run: D1 (realized directions) and D2 (sensitivity semantics) passed, and the D3 bounded `linearUpwind` diagnostic was mixed with `supports_discretization_cause=false`. The post-D3 plan ([`stage_s_work_f_post_d3_plan_2026_09_25.md`](stage_s_work_f_post_d3_plan_2026_09_25.md)) is registered through its D4.0 manifest ([`evidence/stage_s_work_f_component_diagnosis_manifest_2026_09.json`](evidence/stage_s_work_f_component_diagnosis_manifest_2026_09.json), SHA-256 `21dd18d6084258b4dc1f5cf02bc9d91049fb6e8f8aef82ae438bf0cd484a8e52`) and the solver-free D4.1 component audit ([`evidence/stage_s_work_f_derivative_component_audit_2026_09.json`](evidence/stage_s_work_f_derivative_component_audit_2026_09.json), SHA-256 `2cd3f9f102fe49ff80b5d8499416ff61450d245a2c16468850693d8c5b32476c`): component closure is exact and no single term drop or common scale explains the residual. The D4.2 B-spline geometry-Jacobian audit then **passes** ([`evidence/stage_s_work_f_geometry_jacobian_audit_2026_09.json`](evidence/stage_s_work_f_geometry_jacobian_audit_2026_09.json), SHA-256 `5e3619a8686a96f325f877555b67546e1518977ef4a8f85fccd421fe176b0954`; as-run all-epsilon application preserved at [`evidence/stage_s_work_f_geometry_jacobian_audit_all_epsilon_2026_09.json`](evidence/stage_s_work_f_geometry_jacobian_audit_all_epsilon_2026_09.json), SHA-256 `e184b18aac1f5ec43df086f73dc885feb8494be759c03ac6d3a25569aa15ee72`): the read-only analytic `dxdbFace`/`dSdb`/`dndb` contraction matches the centered differences of the registered moved meshes with L2 ratios `1 +/- 2e-5`, cosines `~1`, an epsilon plateau, zero derivative on every non-design patch, and a per-face residual that scales exactly as `1/epsilon` at the ASCII write precision (`max_error * 2*epsilon` constant at `~1.1e-8`/`~7e-10`/`~1.3e-6` for `Cf`/`Sf`/`n`). The geometry chain rule is therefore not the cause, so the D4.3 adjoint-option ablations were run ([`evidence/stage_s_work_f_adjoint_option_diagnostic_surface_area_2026_09.json`](evidence/stage_s_work_f_adjoint_option_diagnostic_surface_area_2026_09.json), SHA-256 `110ff2a6ae0a82d48da2a8e37ba88ea2d2832d790731d893a1325e6bd49cc14f`; [`evidence/stage_s_work_f_adjoint_option_diagnostic_mesh_movement_2026_09.json`](evidence/stage_s_work_f_adjoint_option_diagnostic_mesh_movement_2026_09.json), SHA-256 `53ba943d03123361561aea96a674f1c7cedd9120b3021b1b57bfffa2e9c7a427`): `includeSurfaceArea false` leaves the design-variable derivative files bit-identical (the option only changes the `faceSensNormal*` output), and `includeMeshMovement false` changes the derivatives but breaks passing controls (drag `random_seed_2026` ratio `1.4592 -> 3.8317`, drag `random_seed_11` `1.0376 -> 1.2299`). No single option satisfies the pre-registered sole-cause rule, so per the post-D3 plan's D4.4 table the OpenFOAM continuous-adjoint route is **fail-closed and unqualified for this Work F profile**: no D5 holdout and no D6/D7 requalification ran, and `derivative_qualified=false` with `shape_update_allowed=false` stand pending an architecture decision. The post-D4.4 plan's §21 then ran the A0 registration ([`evidence/stage_s_work_f_fi_formulation_diagnostic_manifest_2026_09.json`](evidence/stage_s_work_f_fi_formulation_diagnostic_manifest_2026_09.json), SHA-256 `e78d2fb8f40044910b9a80e672c5b0111c22a4741f7f319327a8a52c5ca357ce`) and the bounded A1 native-FI discriminant ([`evidence/stage_s_work_f_fi_formulation_diagnostic_2026_09.json`](evidence/stage_s_work_f_fi_formulation_diagnostic_2026_09.json), SHA-256 `de814a57de1a55f8cc1e4cee7039874d80af0f58e24d76692cd76bf914f0ed92`): `sensitivityType surface -> shapeFI` converges with identical primal lineage and derivative schema, but it does not satisfy the registered conditions either (pass controls worsen: downforce gradient-aligned `1.0409 -> 1.1333`, drag downforce-gradient-aligned `1.0266 -> 1.0861`; failing rows remain: downforce seed2026 `0.9094`, drag seed2026 `1.5798`), so `candidate_formulation_supported=false`. Per §21.5/§21.6 the formulation branch is stopped and the 0-run architecture memo ([`stage_s_work_f_architecture_decision_2026_09_25.md`](stage_s_work_f_architecture_decision_2026_09_25.md)) registers exactly two options for a new contract: an alternative sensitivity path, or a reduced-parameterization centered-FD path. Option 2 was then selected: the solver-free S0 contract ([`evidence/stage_s_reduced_basis_fd_manifest_2026_09.json`](evidence/stage_s_reduced_basis_fd_manifest_2026_09.json), SHA-256 `261a20f1ad97c0feddc9641765d8ad3171dfd68d4051317a1b1f69b80e24a0d1`) fixes the versioned reduced-basis ProblemSpec (`maximize downforce / J = -downforce`, drag report-only, no constraints) and the K=16 mode-space design map over the registered `volumetricBSplines` morpher, and the S1 geometry-only preflight ([`evidence/stage_s_reduced_basis_mode_preflight_2026_09.json`](evidence/stage_s_reduced_basis_mode_preflight_2026_09.json), SHA-256 `1942993fbaf306f14932361ec85c71e48230aee8270af10b936c7d92ee1226f9`) selects 16 frequency-ordered y-symmetry-preserving modes (frequencies 3--11) with all plus/minus max-epsilon geometry/mesh/realized-motion gates passing; two invalid preflight attempts were preserved and corrected. No flow solver has run: `original_adjoint_derivative_qualified=false`, `reduced_basis_fd_qualified=pending`, `shape_update_allowed=false`. The old-candidate PQ2 Stage V domain/boundary factor and continuation returned No-Go, and the v16-specific domain-only ladder and mixed far-field treatment also remained outside the registered bounds. That path was superseded by the v2 moving-ground/freestream physical profile, which passed every registered gate on the `[-2.5,-1.2,-0.9] -> [2.5,1.2,0.9]` m domain and then passed the same-profile `+3.5 m` outlet domain-convergence pair (`|Δdownforce|=0.0008034 <= 0.005`, relative Cd `0.0008242 <= 0.02`; [`evidence/stage_v_v16_physical_profile_domain_convergence_result_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_domain_convergence_result_v1_2026_09.json), SHA-256 `13374c722b4993f941ca6487a305fe2f371551d2eed152f744ef016f5b18b5bf`). The frozen profile is rebound to the exact historical K=16 modes in the reduced-basis FD v2 contract ([`evidence/stage_s_reduced_basis_fd_v2_manifest_2026_09.json`](evidence/stage_s_reduced_basis_fd_v2_manifest_2026_09.json), SHA-256 `b96df520e6a359c206b9ded3c4cb1872220344ba9a46c7a7492d0e1ba47860dd`), and the solver-free S0R/S1R requalification ([`evidence/stage_s_reduced_basis_fd_v2_preflight_2026_09.json`](evidence/stage_s_reduced_basis_fd_v2_preflight_2026_09.json), SHA-256 `3f6cb15eae5b7770640466c89f9c296a383dd152f9f1dc0fedbc95d69acdaf50`) passes 16/16 modes with `flow_campaign_allowed=true`. `reduced_basis_fd_qualified` stays `pending` until S2-S4 pass; `shape_update_allowed=false`. |
+| Stage V | v16 physical profile qualified; same-profile two-domain convergence passes; no grid-independent reference | The PQ2 old-candidate factor and continuation line is retained as No-Go only for that candidate (`613637…`) and is superseded for the v16 candidate (`5e6d…`). The v2 moving-ground/freestream physical profile passed all registered gates on the 42,619-cell `[-2.5,-1.2,-0.9] -> [2.5,1.2,0.9]` m domain, and the same-profile daughter with outlet at `+3.5 m` passed the convergence pair (`|Δdownforce|=0.0008034 <= 0.005`, relative Cd `0.0008242 <= 0.02`; [`evidence/stage_v_v16_physical_profile_domain_convergence_result_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_domain_convergence_result_v1_2026_09.json)). v2 is the frozen Stage S working domain and v3 is the domain-convergence witness. This is not an absolute, grid-independent, high-Re, or full-vehicle downforce qualification, and the raw `checkMesh` concave-cell marker remains visible under the allowed profile. |
+
+
+### PQ2 domain and boundary factor result (2026-09-25)
+
+The registered V2 factor campaign ran both treatments against the qualified fixed-domain V2 baseline. The run manifest was registered before computation and is unchanged (SHA-256 c492c2016014fb3b360ddd4b0ebd7db4f140d0226ca229e9c73fe11c4f6a957b). Both treatments passed the registered mesh, residual, and force-stationarity qualification profile, so the comparison is a qualified treatment result at V2, not a failed-solver artifact.
+
+The fixed-domain baseline is 187,942 cells with Cd 1.6800880804 and downforce 0.5092669766. The far-field extension uses the declared extended box and has 214,900 cells, Cd 1.1671678778, and downforce 0.2146501052. The top pressure-outlet treatment retains 187,942 cells and has Cd 1.1247330053 and downforce 0.0307615051. The corresponding downforce changes are -0.2946168715 and -0.4785054715; both exceed the registered absolute bound 0.005. The relative Cd changes are -0.3052936382 and -0.3305511667; both exceed the registered 0.02 bound.
+
+The immutable judgment is No-Go for the current Stage S bridge: both factors move the measured response, so the fixed-domain V2 result cannot be used as a stable downforce reference for S2. The evidence supports factor sensitivity at this candidate and V2 level. It does not support a grid-independent downforce value, a Stage V reference qualification, or a full-vehicle/high-Re claim. The next work must register a factor-resolved Stage V contract, explain the large boundary/domain response, and rerun only the minimum required family before any reduced-basis flow campaign.
+
+
+### PQ2 domain continuation result (2026-09-25)
+
+The first result-driven continuation kept the registered candidate, V2 voxel size, laminar operating point, symmetry side/top boundaries, ground wall, inlet/outlet treatment, and qualification profile unchanged. It extended the inlet, outlet, sideMin, sideMax, and top faces by 1.6 m from the original fixed box. The treatment qualified with 279,993 cells, Cd 1.0254060542, and downforce 0.1741694770.
+
+The adjacent +0.8 m treatment was qualified at Cd 1.1671678778 and downforce 0.2146501052. The +1.6 m transition therefore changes downforce by -0.0404806281 and Cd by -12.1458%, both outside the registered bounds (0.005 absolute downforce and 0.02 relative Cd). The continuation is a numerical No-Go, not a solver failure. Register the next domain continuation or a physically justified far-field boundary contract before S2; do not treat the present value as grid-independent.
 
 The 2026-09-10 effectiveness spike proves only local numerical control inside
 the fixed-grid Brinkman model. It does not prove constrained optimization or
 the Stage T -> Stage S -> Stage V architecture end to end. The canonical start
 is infeasible for the recorded efficiency and active-cell mean-`rho` limits,
 and the current T5 output cannot be passed as the same candidate to Stage S/V.
+
+### v16 lineage correction and immediate execution order (2026-09-25)
+
+The registered Stage S v16 candidate and the registered PQ2 continuation candidate
+are different objects. The v16 surface is SHA-256
+`5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11`; the PQ2
+continuation surface is `613637cf0fac8bce8a124a479eb3f18417c06995bdbfbe1c99b792fe1db3686e`.
+The PQ2 factor and +1.6 m continuation therefore remain candidate-specific
+diagnostic evidence and are not a Stage S v16 absolute-reference judgment.
+
+The authoritative next slice is the solver-free, immutable v16 contract audit
+described in [`stage_s_v16_contract_and_execution_plan_2026_09_25.md`](stage_s_v16_contract_and_execution_plan_2026_09_25.md)
+and registered at
+[`evidence/stage_s_v16_contract_audit_manifest_2026_09.json`](evidence/stage_s_v16_contract_audit_manifest_2026_09.json).
+It binds the v16 STL, Work F V1 case, reduced-basis ProblemSpec, six-patch
+realized boundary/field contract, domain/mesh inputs, and raw checkMesh semantics;
+it starts no solver. A v16-specific factor-resolved Stage V domain/boundary
+contract must be registered after this audit. Until that contract passes, keep
+`reduced_basis_fd_qualified=pending`, `shape_update_allowed=false`, and do not
+start S2, a full optimization campaign, or a shape update. The local reduced-basis
+FD path and the absolute Stage V reference path are separate: the former can only
+be considered as local Work F evidence, while the latter requires a same-candidate
+domain/grid/boundary family. No PQ2 result may be transferred across the candidate
+hash mismatch.
+
+### Stage T has never produced a design — 2026-09-12
+
+This invalidates every prior Stage T optimization result and every Stage S
+handoff attempt. Three separate defects were measured, not inferred.
+
+1. **The declared problem was degenerate.** The repository template
+   `examples/fixed_grid_backend_spike/openfoam/porous_force_3d_fd_base/system/optimisationDict`
+   declares `downforce` with `isConstraint true; target 0;` and `drag` as the
+   only weighted objective. The problem actually solved was "minimize drag
+   subject to downforce == 0 and volume fraction == 0.462". Any material
+   creates vertical force and violates the equality, so the optimizer stays at
+   zero material. This is the repository's own template, not a stray work
+   artifact.
+2. **The volume constraint does not engage.** Reformulating `downforce` as a
+   `weight -1` maximization objective did not help. Across a 40-cycle run and a
+   20-cycle run the design converged to the same fixed point: beta histogram
+   `[8080, 2, 110, 0, 0, 0]` over bins `[0, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0]`, mean
+   0.0070, **zero cells above 0.5**, realized volume fraction approximately
+   0.007 against the 0.462 target. The `vol` objective value is frozen near
+   1.1493 in both runs and its Lagrange multiplier is pinned at approximately
+   1.99999999, which equals the ISQP penalty parameter `c = 2`.
+3. **The iso-surfaces handed to Stage S were not design surfaces.** Every
+   `topOIsoSurface*.stl` from every cycle of every run is identical: 5120 faces,
+   2822 vertices, not watertight, 6 connected components sized
+   `[1024, 1024, 1024, 1024, 512, 512]`, bounds exactly equal to the domain box.
+   That is the six flat boundary patches of the 32x16x16 domain. A 0.5
+   iso-surface of a field that never reaches 0.5 has nothing to trace.
+
+### Root cause, and the optimizer decision — 2026-09-12
+
+The native ISQP path was diagnosed against the OpenFOAM v2512 sources. Three
+independent faults, detailed in `stage_t_optimizer_diagnosis_2026_09.md`:
+
+- `topOVolume`'s `percentage` is a **fluid-fraction cap over the whole mesh**,
+  `J = (1 - <beta>_V - percentage)/percentage`. With the template's 0.462 and
+  the 5283 forced-fluid buffer cells out of 8192, the minimum attainable `J` is
+  `+0.396 > 0`: the constraint is **unsatisfiable by construction**. The
+  observed frozen value 1.1497 matches the formula exactly.
+- The multiplier pinned at the ISQP penalty `c` is the genuine elastic-variable
+  signature of that infeasibility, not a red herring. The volume sensitivity is
+  ~4000x smaller than the drag sensitivity, so it is invisible in the QP.
+- `function linear` makes the projection the identity, so no 0.5 crossing can
+  form at all. The tutorials use `tanh; b 20`.
+
+With those repaired, the native path does produce real watertight design
+components (one run reached downforce 1.029 against a 0.636 baseline), but it
+still oscillates: an Armijo line search hits its iteration cap every cycle,
+showing the ISQP direction is not a descent direction for the projected
+problem. This is not a gradient error.
+
+**Decision: optimization moves to Python permanently.** Optimality-criteria
+updates on the same verified adjoint gradient advanced monotonically from the
+first attempt (see below). The OpenFOAM template is retained as a primal and
+adjoint evaluator only; its `vol` constraint solver and its `downforce`-as-
+constraint solver should be removed, keeping `drag` and `downforce` as
+independent adjoint solvers.
+
+Also recorded: the 5120-face / 6-component STL signature arises because the
+iso-surface writer always emits the domain boundary patches. **Stage S must
+strip zero-extent components**, or a real design component stays buried among
+them.
+
+### Stage T produced its first design — 2026-09-12
+
+Driving the update from Python with the verified canonical gradient and an
+optimality-criteria step (volume by bisection, move limit, reject-on-worse),
+`downforce_coefficient` rose monotonically from the 0.775975568032 baseline to
+0.821317856508 over 12 iterations, every step accepted on its first attempt,
+with the iteration-0 sign check agreeing to three digits. The resulting 0.5
+iso-surface is 968 faces, 488 vertices, **watertight, 2 connected components**,
+volume 0.0249 — not the degenerate signature — and `build_density_to_sdf_handoff`
+accepts it with all mask and connectivity checks passing. An empty design
+(`rho = 0`) returns `drag = downforce = 0.0` exactly, confirming the objective
+carries no geometry-independent offset.
+
+The known limit is structural: a multiplicative OC update cannot lift a cell off
+exact zero, so achievable volume caps near 3.2% on this seed without an epsilon
+floor.
+
+### The surrogate's ranking did not transfer — 2026-09-12
+
+The architecture only works if the cheap Stage T surrogate **ranks** candidates
+the way body-fitted verification does. Absolute agreement is not required: a
+Brinkman volumetric-force integral and a surface integral of pressure and shear
+are different quantities. The ordering is what must hold.
+
+Both candidates were meshed body-fitted at three resolutions and run at matched
+conditions (1 m/s, the Stage T case's own viscosity, `Aref` 0.64, laminar):
+
+| ratio B/A | Stage T | coarse (5.5k) | medium (30k) | fine (180k) |
+| --- | --- | --- | --- | --- |
+| drag | 2.582 | 0.849 | 0.901 | 0.905 |
+| downforce | 3.882 | 3.167 | 0.896 | 0.918 |
+| L/D | 1.503 | 3.728 | 0.995 | 1.015 |
+
+The drag ranking is **inverted at every grid**. The downforce ranking agrees
+only on the coarsest mesh and flips at both finer ones. A turbulence-model
+confound was ruled out: laminar and `kOmegaSST` runs agree to within 0.02% on
+drag at Re around 300, so the earlier `kOmegaSST` comparison was valid.
+
+**This must not be over-read as "the Brinkman surrogate is unusable".** Two
+concrete defects make the comparison a test of something other than the
+surrogate's fidelity, and both are fixable:
+
+- **The designs are not binary.** Candidate A peaks at `rho` 0.62 and candidate
+  B at 0.55, with **zero cells above 0.9** in either. Stage T optimized a
+  semi-permeable blob; Stage S extracted a solid body at the 0.5 contour and
+  Stage V solved that. These are physically different objects. The cause is the
+  `function linear` projection defect above.
+- **The Stage T grid may be too coarse to resolve what it optimizes.** Its 8192
+  cells are comparable to the 5534-cell coarse body-fitted mesh, and that is
+  precisely the resolution at which the two fidelities agree; agreement
+  disappears as the body-fitted mesh is refined.
+
+These are distinct claims and the present data does not separate them.
+
+**Consequence for the roadmap: a discreteness gate becomes a precondition for
+the Stage S handoff.** A grey density field must not be passed downstream, and
+no cross-fidelity ranking claim is meaningful until the design is near-binary
+and the surrogate grid is shown to be adequate. Whether the surrogate ranks
+correctly for a binarized, adequately resolved design is **untested**.
+
+### The haze was the optimum, and why — 2026-09-12
+
+An external audit (`problem_resolution_plan_2026_09.md`) prompted a measurement
+that changes the diagnosis from "the optimizer is broken" to "the objective's
+optimum is a haze, and the optimizer found it".
+
+Holding the material budget `integral(rho dV)` fixed and spreading it from a
+compact body outward, the linear interpolation this project has always used
+scores the haze **4.3x better** than the solid, monotonically better the thinner
+it gets. Under RAMP penalization the ordering inverts and the compact body wins
+by roughly a hundredfold.
+
+The mechanism is worse than an unpenalized interpolation. **The Brinkman force
+saturates near `alpha = 25`, which is 1% of the `alphaMax = 2500` in use**, so
+99% of the density range is already fully blocking and a material budget buys
+the most blocking at the lowest density it can be smeared to. Penalization alone
+cannot overcome that: matching the economics at `alphaMax = 2500` would need
+`q` around 3000. Lowering `alphaMax` to the saturation knee **and** applying
+RAMP with `q = 8 -> 30 -> 100`, re-baselining at each `q`, does.
+
+With that, plus single ownership of projection (OpenFOAM regularisation off) and
+gradients from converged adjoints bound to a declared response:
+
+| | before | after |
+| --- | ---: | ---: |
+| solver-side `beta` max | 0.436 | **1.0** |
+| cells above 0.9 | 0 | **1034** |
+| `mean(4b(1-b))` | — | **0.005** (gate 0.01) |
+| downforce carried by `[0.9, 1]` | 0% (band empty) | **103%** |
+| downforce carried by `beta < 0.1` | 77% | **-4%** |
+| injected field vs solver field | up to 0.11 apart | **1.9e-9** |
+| predicted vs actual step ratio | 0.21 | **0.80-0.97** |
+| 0.5 iso-surface | 5120 faces, 6 components, domain box | **2810 faces, watertight, 1 component** |
+
+The chain rule is verified rather than assumed: finite differences against the
+analytic directional derivative give **0.965** with the interpolation derivative
+included and 0.117 without it.
+
+**Stage S now receives the same object Stage T computed forces on** — the
+precondition the earlier ranking test lacked.
+
+### Stage V is now a qualified reference — 2026-09-12
+
+`checkMesh -allGeometry -allTopology`, explicit `residualControl`, and force
+stationarity over a final window are hard gates. On the grey candidates, V0/V1/V2
+pass every gate (`residual_control_met`, stationary forces), and **V3 at ~1.28M
+cells is correctly refused** (`iteration_cap`, `solver_qualified: false`) rather
+than silently used.
+
+On that qualified reference the grey-candidate ranking result is unchanged: drag
+B/A is 0.849 / 0.901 / 0.905 against Stage T's 2.582. The negative finding
+survives qualification — **for grey candidates**, which we now know were the
+wrong test. Downforce also remains un-converged (candidate A: 0.0358, 0.0449,
+0.0407 across V1/V2/V3), and the grid that would settle it is the one that will
+not converge.
+
+### Thick-candidate V3 closes execution, not grid convergence — 2026-09-20
+
+The P15 thickness experiment was requalified on its actual comparison candidate,
+`opt_q100_b0_step0_try0_block`. Its V3 mesh has 1,260,201 cells, no
+small-determinant failure, and passes the registered mesh profile. The conservatively
+relaxed `simpleFoam` run met residual control at iteration 2237; the final residuals
+were `Ux=1.50e-7`, `Uy=9.98e-7`, `Uz=3.01e-7`, and `p=6.09e-7`, and both Cd and
+downforce passed the final-window stationarity gate. This establishes that a qualified
+V3 body-fitted reference is executable on the 32 GiB Mac for this reduced case. The
+candidate binding, V0–V3 gates, raw artifact hashes, and runtime are recorded in
+`evidence/stage_v_v3_requalification_2026_09.json`.
+
+The force sequence is Cd `2.68528, 3.01397, 3.14010, 3.13009` and downforce
+`0.61446, 0.68146, 0.82310, 0.85302` on V0–V3. The finest Cd transition changes by
+0.319% and passes the 2% bound. The finest downforce transition changes by 0.02993,
+which is still about six times the registered absolute bound of 0.005. The architecture
+therefore executes and rejects claims correctly; it has not yet produced a grid-independent
+downforce reference for ranking.
+
+### Fixed-domain grid study and wake-refinement family — 2026-09-20
+
+With WP1 in place, the correct candidate was re-evaluated under the declared fixed
+domain. Two measured results change the standing picture:
+
+1. **The union-box reference carried an unmeasured ground coupling.** The old cases
+   took their outer box from the geometry union bounds, whose bottom sat ~0.19 m below
+   the body. Under the declared fixed domain (bottom at z=-0.6 m) the same candidate
+   gives Cd ~1.63–1.74 instead of ~3.14 and downforce ~0.51–0.52 instead of ~0.82.
+   Union-box force values, ratios, and P16 drifts measured through old V3 are therefore
+   not transferable and are superseded for reference purposes
+   (`evidence/stage_v_fixed_domain_grid_study_2026_09.json`).
+2. **The pre-declared wake-refinement family did not settle the bounds and isolated the
+   factor.** The plain fixed-domain family qualified V1/V2/V3 (33k/188k/1.35M cells;
+   V0 refused by the mesh profile at 9.57% concave > 8%, no solver launch). Finest
+   downforce drift improved to 0.01291 (2.3x better than union box) but remained above
+   the 0.005 bound, and Cd still changes ~3% per transition. A pre-declared level-3
+   near-wake refinement box produced three *further* qualified levels (V3 via a
+   declared endTime continuation 3000→6000; the endTime cap itself correctly refused
+   the first attempt) and moved forces by only ~0.003 — downforce still misses the
+   bound (V2→V3: 0.0147). Conclusion: near-wake local refinement is not the dominant
+   factor behind the drift.
+3. **The steady reference is a valid time-mean of the laminar physics.** The WP3
+   pre-declared fallback — pimpleFoam, 15 s = 5 flow times on the same plain V2 mesh —
+   reproduced the steady point (Δdownforce -8.6e-5, ΔCd -0.09%, final-window std ~8e-8,
+   no shedding) and rules out unsteady contamination
+   (`evidence/stage_v_transient_check_2026_09.json`). The residual V2→V3 drift is a
+   refinement-family discretization effect; no further factor remains inside the
+   pre-declared WP3 program. The honest continuations are a newly registered
+   discretization factor, or WP4 contract work followed by the 8-candidate ranking
+   experiment with the measured uncertainty band stated explicitly.
+
+An earlier V3 attempt targeted the wrong 1,600-cell `keep_round` candidate. That candidate
+failed the determinant gate at every level. All 220 V3 under-determined cells touched the
+candidate wall and 208 also touched the outer top patch; the candidate `zmax` equaled the
+far-field top. This exposed a separate G3 contract gap: candidate-to-far-field clearance and
+fixed outer-domain binding must be checked before Stage V generation. Quality thresholds are
+unchanged.
+
+The next qualification slice is deliberately one factor at a time:
+
+1. ~~bind the outer CFD domain to the ProblemSpec and fail before meshing when candidate clearance
+   is below a declared physical margin~~ — **implemented 2026-09-20 (WP1)**: fixed
+   `grid.domain_bounds_m` binding plus the `stage_v_clearance_v1` pre-mesh preflight
+   (0.25 m declared margin); the recorded wrong candidate is refused before any mesh
+   command (`evidence/stage_v_domain_clearance_2026_09.json`);
+2. freeze the qualified `step0` geometry, operating point, numerics, and force normalization;
+3. replace another global halving with a predeclared local-refinement family around the body and
+   wake, then require three qualified levels and the same Cd/downforce bounds;
+4. if downforce still misses the 0.005 bound or steady residuals stop decaying, compare steady
+   RANS with a time-resolved run on the same mesh before changing the design formulation;
+5. resume cross-fidelity ranking only after the body-fitted downforce reference passes. No FSAE
+   full-vehicle or high-Re claim inherits qualification from this laminar reduced case.
+
+> **Scope note (2026-09-28):** Sections 5–8 retain common ProblemSpec/geometry
+> contracts and earlier OpenFOAM qualification detail. OpenFOAM case compilation
+> and the G2 physical checks serve the later independent Stage V verifier; they
+> are not the current WaterLily primal or optimization path. The current W3/W4,
+> FD, gradient, update, and topology order is only in section 11.
 
 ## 5. G1 — generic problem and artifact contract
 
@@ -262,76 +601,7075 @@ Generic acceptance requires at least three geometry families, three-grid
 evidence, filtered-random gradient checks, grey-density reporting,
 extracted-geometry constraint status, and reproducibility metadata.
 
-## 9. Stage T — production topology optimizer
+## 9. Retained density/Brinkman Stage T assets
 
-Begin production T work only after G2 runtime qualification and the relevant
-G3/G4 gates pass.
+Stage T density/Brinkman optimization is not the current production path. Keep
+its research results as historical capability evidence and preserve its
+candidate-generation, Python optimizer, artifact, and provenance infrastructure
+for possible reuse. A density/Brinkman method may later be evaluated as one
+candidate topology-birth proposer, but no such role or backend is currently
+selected. It is not a mandatory SDF handoff or an active execution workstream.
 
-Implementation order:
+## 10. Retained Stage S evidence and current Stage V role
 
-1. Qualify real-run semantic bindings for the implemented fail-closed native
-   v2 primal/sensitivity writer.
-2. Generic response/objective/aggregate derivative assembly.
-3. Production analytic/adjoint nominal and eroded connectivity derivatives.
-4. Filter/projection continuation with explicit chain-rule metadata.
-5. Nonlinear iteration with primal re-evaluation, acceptance/rollback, move
-   bounds, checkpoints, resume, and deterministic artifacts.
-6. GCMMA or equivalent constrained backend behind the existing optimizer
-   interface.
-7. Mesh epochs and conservative state/gradient transfer only after the uniform
-   fixed-grid profile is qualified.
+The old B-spline / Work F Stage S route is retained as historical geometry and
+derivative-qualification evidence. It is not the production SDF shape-update
+path, and its K=16 campaign remains frozen; do not resume it as the current
+optimizer.
 
-The existing projected-gradient and linearized SLSQP backends validate
-plumbing; they are not the production nonlinear optimizer.
+Body-fitted OpenFOAM Stage V remains in the production architecture as an
+independent verifier and cross-fidelity judge. It is not the optimization
+engine. Existing physical-profile and domain-comparison evidence applies only
+to its registered candidate and conditions; it does not establish
+grid-independent downforce, high-Re or full-vehicle qualification.
 
-## 10. Stage S and Stage V
+## 11. Current SDF-native execution order
 
-Stage S implementation order:
+The latest controlling amendment is [the 2026-10-22 order correction](#2026-10-22-evidence-based-roadmap-correction-and-issue-plan),
+following the 2026-10-16 re-baseline. Read it before the historical gate sequence in this section.
 
-1. Quantify density-to-surface/SDF fidelity.
-2. Use body-fitted-first refinement as the baseline.
-3. Select ghost-node IBM or cut-cell research backend only after an explicit
-   accuracy, adjoint, and implementation-cost comparison.
-4. Add Hamilton–Jacobi updates, reinitialization, curvature control, and
-   output-based adaptation.
+`phase_plan.md` is the sole current roadmap and order authority. The older
+[`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md)
+and [`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md)
+are retained historical plans; neither controls current execution.
 
-Stage V acceptance requires three-grid body-fitted RANS evidence, pressure and
-skin-friction decomposition, force/moment agreement, mesh-quality checks, and
-cross-fidelity comparison with Stage T/Stage S.
+**2026-09-30 checkpoint (supersedes the FD items below where they conflict):** FD-04 (#36) traced the FD-02 non-smoothness to 66 flat force-band cells in canonical v16 (1-cell-thick plates on h=0.05 nodes). Genesis v17 (#43, h=0.025, same source surface) removes those exact-zero-gradient cells; W3 v17 passed its registered T0-T10 contract, and W4 v17 passed the registered four-case sensitivity contract on Kaggle T4. W4 shows a large response to flow resolution and a small response to the tested x+ domain extension; it does not establish convergence. v17 is the adopted canonical state. See [`session_handoff_2026_09_30.md`](session_handoff_2026_09_30.md) and [`issues/43_result.md`](issues/43_result.md).
 
-## 11. Immediate execution order
+**2026-09-30 FD-05 (#37) terminal result (supersedes the prior pending-FD-05 status and sequence items below where they conflict):** The registered v17 / flow_24 criteria ran once on Kaggle kernel `/1`; all 33 fresh primals completed. T0-T9 passed, while T10 and T11 failed the unchanged N-based 5% plateau gate in all six direction/response combinations. Strict host verification failed closed (`KernelWorkerStatus.ERROR`, no `DONE`); supplemental source-bound recomputation is diagnostic only. See [`issues/37_fd05_result.md`](issues/37_fd05_result.md) and its append-only evidence. No retry was run. FD, gradient, optimizer, topology, and shape-update qualification remain false; stop after this result.
 
-1. Consume the canonical `P @ rho` state artifact in the solver case compiler,
-   bind the returned `P.T @ topOSens` gradient to the same candidate/run identity,
-   and bind response units, reference quantities, `rho` gradient convention,
-   mesh-grid mapping, and topology-policy values for one shared Stage T/V
-   canonical problem. **Implementation required.**
-2. Qualify the new fail-closed T5 cell-density -> iso-surface/SDF artifact
-   bridge. Its capability layer records hashes, interpolation, threshold,
-   grid, masks, components, root availability and volume mismatch. Add the
-   remaining surface-distance, self-intersection, minimum-feature and
-   feature-survival gates, then produce one `ready_for_stage_s=true`
-   canonical artifact. **Qualification implementation required.**
-3. Re-evaluate the same initial and small-step candidates with three-grid
-   body-fitted OpenFOAM, including pressure, skin-friction, total-force, and
-   cross-fidelity comparison. **Implementation required.**
-4. Establish a feasible seed or an explicit feasibility-restoration phase;
-   add nonlinear candidate acceptance, rollback, and move-radius reduction.
-   **Implementation required.**
-5. Complete G3 and execute G4 B0–B2 before production optimizer work.
-   **Implementation required.**
-6. Implement production Stage T derivatives and a sparse/scalable constrained
-   backend, then advance through B3–B5, Stage S refinement, and Stage V.
+**2026-10-01 FD-05 solver-free diagnosis (diagnostic only; registered T10/T11 FAIL unchanged):** Re-analysis of the 33 raw force histories shows fully steady flow (window std ≤ 2.5e-6 N) and a viscous-force offset that does not vanish as ε→0 (D1/D2 +ε and −ε both shift by about −0.002 to −0.003 N at ε = 0.5 mm, almost unchanged up to 10 mm). A numpy re-evaluation of the `measure()` normal on the flow_24 band finds 348 samples with φ≈0 and |∇φ|≈0 (all on ≥2 v17 node planes where source faces lie on the lattice); any perturbation reverses their normal independently of ε. flow_16 has 377 such samples, flow_32 has 0. The causal link to the force jump is a hypothesis, not qualified. See [`issues/37_fd05_solver_free_diagnosis.md`](issues/37_fd05_solver_free_diagnosis.md). FD-06 is not registered; it needs a user decision between normal regularization and breaking sample-plane/face-plane coincidence.
+
+**2026-10-01 FD-06 (#37) result (supplements the FD-05 entries; diagnostic scope as stated):** FD-06 is the FD-05 contract with one change, body normal floor `n = g/max(|g|, 0.25)` (new `NormalFloorWaterLilyBody`; `WaterLilyBody.jl` untouched). The registered v17 / flow_24 kernel `/1` completed all 33 primals; T10/T11 still fail closed, but only 4 of 6 combinations miss the unchanged 5% plateau gate, now by 5.2–8.7% instead of FD-05's 83–150%, with ε-proportional pair signals; D2 drag and D0 downforce pass. Strict host verification failed closed (no `DONE`, as any gate failure implies); an independent raw-data recomputation matches the runner. FD oracle and all gradient/optimizer/topology/shape-update flags remain false. See [`issues/37_fd06_result.md`](issues/37_fd06_result.md). No retry; any further change is a new preregistered round.
+
+**2026-10-01 FD-07 (#37), diagnostic only:** Ten fixed short CPU solves test
+same-source resampling on a design lattice shifted by h×(0.27,0.37,0.43),
+with the physical flow grid unchanged. The shift does not remove irregular
+±10 nm force response and changes short-window baseline drag/downforce by
++11.88%/+7.23%; it is not adopted as v18. Both lattices retain initial BDIM
+mu0 jumps of about 0.8183. A separate nine-initialization/zero-flow-step
+arithmetic matrix and fixed-distance branch ablation localize those large
+coefficient jumps at recorded faces to WaterLily's half-cell sign-consistency
+correction. Float64 arithmetic alone with retained Float32-rounded constants
+reduces the tested local jump, whereas original Float64 physical constants
+retain it; no general precision fix is established. At this checkpoint,
+solved-force causality, long-window FD and physical/gradient qualification
+remained unproven. The subsequent bounded intervention is recorded below.
+See [FD-07 result](issues/37_fd07_lattice_shift_diagnosis.md).
+All qualification/update flags and historical FD-05/FD-06 FAIL results remain
+unchanged.
+
+**2026-10-01 FD-07 bounded causal intervention (#37; diagnostic only):** A
+pre-registered 26-solve A/B experiment compared a diagnostic copy of the
+pinned WaterLily 1.8.0 sign-consistency branch with the same initialization
+minus only that `copysign` operation. For the registered v17 / flow_24 CPU
+fixture, `NO_SIGN_CORRECTION` reduced the perturbation-relative initial
+`μ₀` maximum from `0.818311–0.818314` to `8.34e-7–9.30e-6` and removed faces
+above `|Δμ₀|=1e-3`; force absolute-departure ratios were at most `1.10e-3`
+for drag and `1.67e-3` for downforce. The weakest odd-response reduction was
+about 108-fold. This supports the correction as the dominant cause of the
+short-horizon irregularity on this fixture, while residual responses remain.
+The no-correction arm also changes one baseline `μ₀` face by `0.81831` and
+shifts baseline drag/downforce by `−3.66e-6 N / −2.93e-6 N`; it is a
+changed discrete model, not a production candidate.
+Geometry/map inputs and moving-ground controls match. Thin-body treatment,
+conservation, long-horizon response, formal FD, physical accuracy and any
+replacement remain unqualified. Stop at this result; no v18, production patch
+or formal FD round is authorized by the diagnostic. See
+[`issues/37_fd07_sign_consistency_causal_diagnosis.md`](issues/37_fd07_sign_consistency_causal_diagnosis.md)
+and its append-only evidence.
+
+**2026-10-02 FD-07 continuous replacement screen (#37; bounded diagnostic only):** A
+pre-registered Stage 1/2/3 comparison selected Candidate C, the one-sided
+moment-level blend, as the single most promising diagnostic candidate. It
+preserves all registered analytic plane/sphere/one-cell/two-cell plate
+moments, all 49 legal half-cell crossings, reflection symmetry, and the
+moving-ground initialization; A and B fail the registered thin-body and/or
+ground semantics. On the single v17 / `flow_24` fixture, C's maximum paired
+force departures were lower than upstream for all 72 signed component
+comparisons. The baseline coefficient map still differs at one face by
+`0.81831` in `μ₀`; short-window force response does not scale 10× with 10×
+input and is not a derivative qualification. The first execution attempt
+stopped after the upstream baseline due to a recorder scope error; its
+partial evidence is preserved, and attempt 2 reran the full matrix. Candidate
+C is not adopted. Stop here: formal FD, production replacement, W3/W4
+requalification, Kaggle, v18, gradient, and optimizer remain unauthorized and
+unqualified. See [`issues/37_fd07_continuous_replacement_result.md`](issues/37_fd07_continuous_replacement_result.md)
+and its append-only evidence.
+
+Current gates and sequence below retain the 2026-09-30 checkpoint. The dated FD-06 result and later diagnostic checkpoints above supersede their pending-registration instructions:
+
+1. **Retain the closed W3 owner-lifetime diagnosis.** Exact owner-lifetime
+   diagnostic `/2` completed and passed host verification under immutable
+   criteria round 3. The backing `owner.grid.phi` owner was collected at step 1
+   in both natural-GC B replicas; each later developed non-finite forces while
+   the retained A controls completed the horizon with finite, nonzero forces.
+   This confirms an implementation lifetime defect, but not the exact W3 v4
+   full-horizon all-zero symptom.
+2. **W3 round 4 finite-box primal contract passed.** `OwnedV16Run` retains the
+   owner, bodies and simulation through `run_primal`. Immutable criteria round
+   4 SHA-256 is
+   `eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb`,
+   bound to source commit `ee6298e843e130b121d918ca9a321b707dcd4ae0`. Exact
+   private kernel `/5` passed host verification for T0-T10. The supported
+   claim is only the registered WaterLily finite-box primal contract.
+3. **W4 v16 round 4 and canonical v17 round 1 finite-box sensitivity matrices
+   passed.** The v16 round-4 record remains immutable and historical. W4 v17
+   criteria SHA-256 is
+   `5eceb62c17e347679cdadc88c68266e7fe00b392da40a8029ed3544a002e0f01`,
+   tied to source commit `4c20787c1ab55ea45f98631e6e78ba6d5502a1a2` and W3
+   v17 PASS. Private dataset version 1's five-file remote inventory was
+   verified (inventory SHA-256
+   `d3cbdfb385f443e5f8b413fc07675d79f319250b8e01bb617476041c651bc6fb`);
+   exact private kernel `/1` completed. Strict host verification at the exact
+   registered source commit passed T0-T10. The append-only result is
+   [`kaggle_w4_v17_sensitivity_result_2026_09.json`](evidence/kaggle_w4_v17_sensitivity_result_2026_09.json),
+   SHA-256 `25297c4646d048050974d6beccbb90ac672c910eeb558a99c1006226bdd59933`.
+   All four cases passed the 2% stationarity gate. Flow16→24 changed total drag
+   by `+0.103140 N` (`31.61%`) and downforce by `+0.077547 N` (`23.43%`);
+   flow24→32 changed them by `+0.023684 N` (`6.77%`) and `+0.030232 N`
+   (`8.37%`). Extending x+ by 1 m changed drag by `-0.000201 N` (`0.09%`)
+   and downforce by `+0.000651 N` (`0.26%`). Pressure and viscous splits are
+   recorded in the issue result and machine-readable evidence. These are
+   sensitivity observations, not grid/domain convergence or physical
+   aerodynamics.
+4. **Keep broader qualification scoped.** The W3 v4 all-zero force root cause
+   remains unresolved. Physical-profile equivalence, absolute downforce,
+   grid/domain convergence, gradient/reverse, topology, optimizer and shape
+   update remain false. Do not modify historical W3/W4 criteria or evidence.
+5. **FD-05 and FD-06 are terminal FAIL; FD-07 diagnostics selected Candidate C
+   for possible follow-up only.** Preserve all registered criteria and
+   outcomes. The 2026-10-01 causal intervention supports the sign-consistency
+   correction as the dominant cause of this fixture's short-horizon
+   irregularity. The 2026-10-02 screen selects one diagnostic moment-level
+   candidate, but its baseline still differs at one `μ₀` face and its
+   short-window force response is not a qualified derivative. Stop after this
+   result; production adoption, formal FD, or requalification requires a
+   separately authorized, preregistered task.
+6. **Repair the FD runner/host-verifier contract before a future authorized
+   execution.** Round 5 is terminal failed evidence; preserve its immutable
+   criteria, dataset v5, exact kernel `/4`, outputs, and diagnostics. The source
+   fix must reconcile the six integrated pressure/viscous metrics between
+   runner `outcome.json` and per-run summaries, and the host verifier must
+   compare the agreed schema. Also repair the statically identified `evaluate()`
+   name shadowing before it can be reached. Investigate the measured
+   non-plateau directional responses under the unchanged registered 5% threshold;
+   do not relabel them as qualified or edit rounds 1-5. Register any retry as a
+   new immutable round with fresh 33-run outputs. Centered FD remains the
+   permanent independent numerical gradient oracle.
+7. **Select a production gradient backend** only after comparing candidate
+   reverse AD, discrete-adjoint, or other methods against the qualified FD
+   oracle. No production backend is selected or qualified.
+8. **Take the first constrained SDF update** only after the primal, grid/domain,
+   gradient, SDF-volume, and geometry hard gates pass.
+9. **Qualify topology birth** as a separate mechanism. Register SDFTopologyPolicy
+   v1 before Birth-0; the method (topological derivative, nucleation, a retained
+   density/Brinkman proposer, or another explicit operator) is not selected.
+10. **Run multi-step optimization** only after the one-step and topology gates
+   pass, with reinitialization and geometry/connectivity/manufacturing gates
+   applied to every accepted shape.
+11. **Verify independently in Stage V** with body-fitted OpenFOAM and registered
+    cross-fidelity/grid checks. Stage V remains a verifier, not the optimizer.
+
+Post-FD-05 status remains deliberately scoped: the v17 / flow_24 FD-05 run is terminal FAIL under T10/T11, and strict host verification failed closed; its supplemental recomputation is diagnostic only. W3 v16 and v17 registered finite-box
+primal contracts passed, and W4 v16 and v17 registered finite-box sensitivity
+matrices passed (`w4_sensitivity_matrix_passed=true`). The W3 v4 all-zero force root-cause
+mapping remains open. `physical_profile_qualified=false`,
+`absolute_downforce_qualified=false`,
+`grid_or_domain_convergence_qualified=false`,
+`sdf_gradient_qualified=false`, `waterlily_reverse_cpu_qualified=false`,
+`waterlily_reverse_cuda_qualified=false`, `topology_birth_qualified=false`,
+and `shape_update_allowed=false`. W0/W1/sphere fixtures are capability evidence
+only. The registered v16 Stage V profile, its two-domain comparison, and the
+WaterLily W4 sensitivity matrix do not imply grid-independent or target-vehicle
+downforce qualification.
+
+Kaggle and Colab provide reproducible execution, exact source/runtime binding,
+and evidence capture. They remain outside the solver/optimizer architecture.
+
+### 2026-09-30 W4 canonical v17 exact kernel `/1` PASS
+
+See [`issues/43_result.md`](issues/43_result.md) for the four-case force and
+pressure/viscous tables, pairwise deltas, the diagnostic-only comparison with
+W4 v16, and all artifact hashes. The registered result SHA-256 is
+`25297c4646d048050974d6beccbb90ac672c910eeb558a99c1006226bdd59933`;
+the strict host verifier passed T0-T10 at the registered source commit.
+
+The normal verifier CLI's first attempt failed closed because the optional
+`remote_inventory_sha256` parameter shadows the helper with the same name. The
+unchanged verifier function was then run at the same source commit through an
+external driver that supplied the existing hash helper as that parameter; the
+full host recomputation passed. This invocation issue is preserved in
+[`kaggle_w4_v17_sensitivity_host_cli_attempt_diagnostic_2026_09.json`](evidence/kaggle_w4_v17_sensitivity_host_cli_attempt_diagnostic_2026_09.json)
+(SHA-256 `6a520b17db979021bca68f345bc5f99f71f4204f3eeda30aa7df58247c5e8508`)
+and should be repaired before the verifier's next CLI use. No W4 source,
+criteria, threshold, or output was changed after registration.
+
+W4 v17 observed `flow16→flow24` and `flow24→flow32` response changes of
+`31.61%/23.43%` and `6.77%/8.37%` for drag/downforce, respectively, and a
+`0.09%/0.26%` change for the tested x+ domain extension. These support
+resolution sensitivity in the registered cases, not convergence, absolute
+force accuracy, or physical-profile qualification. `fd05_execution_authorized`
+is false; FD-05 remained unregistered at the time of this W4 entry (superseded: FD-05 ran on 2026-09-30, see [`issues/37_fd05_result.md`](issues/37_fd05_result.md)).
+
+### 2026-09-29 FD round-5 dataset v5 and exact kernel `/4` terminal FAIL
+
+Round 5 kept the registered 3 directions, 30 perturbations, 33-run order, T4
+backend, and numeric criteria unchanged. Exact private dataset version 5 was
+remote-inventory verified and its mounted host-input preflight passed before
+GPU discovery. The dataset verification record is
+[`sdf_directional_fd_v16_dataset_round5_verification_2026_09.json`](evidence/sdf_directional_fd_v16_dataset_round5_verification_2026_09.json),
+SHA-256 `fe6159799cd23a4b44d83b5b89b616159a9f128cb34c0a373b0d0f4e981af55e`.
+The source/criteria identity remained bound to commit
+`a07bba2fd1dcf0d3d28b211eef58d91309a24a75` and criteria file SHA-256
+`2aad32922b2746d9ee7b170b590673779e60f032b238c29d1bc7ca6b2779ee17`.
+
+Exact private T4 kernel
+`ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel/4` ended in
+`KernelWorkerStatus.ERROR`. Its log records 33/33 solver calls returned to
+`tU/L >= 120`; `FD_JOB_DONE` is present and the outer `DONE` marker is absent.
+The runner gates were T0-T5 PASS, T6-T7 FAIL, T8-T9 PASS, T10-T11 FAIL, and
+runner T12 PASS. Aggregate solver wall time was `970.7994556427002 s` against
+the registered `7200 s` limit. The strict exact-version host verifier failed
+closed with `ValueError: FD Kaggle output has no DONE marker`; this is not a
+host PASS.
+
+Two append-only records separate terminal status from diagnostic recomputation:
+
+- Strict kernel diagnostic
+  [`sdf_directional_fd_v16_round5_kernel4_diagnostic_2026_09.json`](evidence/sdf_directional_fd_v16_round5_kernel4_diagnostic_2026_09.json),
+  SHA-256 `0b49997661d059a23e4a3cde4952d5cc2a8176468bf3726c42758ff7a65322f8`.
+- Raw CSV postmortem
+  [`sdf_directional_fd_v16_round5_kernel4_postmortem_2026_09.json`](evidence/sdf_directional_fd_v16_round5_kernel4_postmortem_2026_09.json),
+  SHA-256 `e17ae5eb9aabd1f29d92638756197dcafe5fd3b44802f84e93605ef7d1e56dcb`.
+
+The diagnostic postmortem independently parsed all 33 force CSVs, checked all
+87 output-manifest hashes, verified force-component closure and physics
+identity for all runs, and recomputed 660 metrics that matched the runner's
+`outcome.json`. All 14 recomputed fields present in each per-run summary also
+matched. Each summary omits the same six integrated pressure/viscous fields
+that `close_summary()` compares. In the pinned runner, that schema mismatch
+makes the shared summary comparison false in both T6 and T7. Separately, the
+registered response-resolution check found all five epsilons resolved for each
+direction/response and stable signs over the selected first three epsilons,
+but the maximum plateau deviations were:
+
+| Direction | Drag derivative at selected epsilons (`N/m`) | Drag max deviation | Downforce derivative (`N/m`) | Downforce max deviation |
+| --- | --- | ---: | --- | ---: |
+| D0 interface offset | `-5.009319, -2.517892, -1.034651` | `98.95%` | `-0.197284, -0.071772, -0.020327` | `174.87%` |
+| D1 filtered seed 11 | `4.265878, 2.030319, 0.688382` | `110.11%` | `2.095685, 1.075749, 0.465460` | `94.81%` |
+| D2 filtered seed 2026 | `0.810939, 0.483772, 0.289585` | `67.63%` | `2.881399, 1.567029, 0.784102` | `83.88%` |
+
+All six deviations exceed the unchanged 5% plateau limit, so T10 and T11
+remain genuine measurement failures even after accounting for the summary
+schema problem. The three repeated baselines were identical: drag
+`0.3360177299176748 N`, downforce `0.3533732402215731 N`; each registered
+noise floor is `1e-8 N`. Maximum relative half-window stationarity drift was
+`3.25496e-5` for drag and `1.91534e-5` for downforce. These are diagnostics
+for this registered finite-box run only.
+
+Strict host verification stopped before raw-run verification. Static review
+also found that its raw-summary check expects those six missing component
+integrals, and `evaluate()` shadows the helper name `runner_metrics_match`
+before the first call in that function. Neither static issue caused the
+recorded missing-`DONE` rejection. Any repair or retry belongs to a new
+immutable round; do not change criteria or qualification flags. Directional
+FD, gradient, reverse, optimizer, topology, and shape update remain false;
+`shape_update_allowed=false`.
+
+### Historical Stage T/S/V execution record (retained; not current instructions)
+
+The following dated campaign notes preserve their original reasoning and
+measurements. Their roadmap and "next step" language is historical. Use the
+current order above for all new work; do not infer a current Stage T campaign
+or old Stage S execution from this record.
+
+
+The historical Stage T/S/V architecture plan is
+[`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md).
+The historical post-PQ3.3 Stage T-to-Stage S execution detail is
+[`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md).
+Both retain their original Stage T -> Stage S -> Stage V record; neither is
+current execution guidance. Follow the SDF-native order in section 11.
+
+Current status on 2026-09-23 (historical snapshot; the dated addenda under
+items 5--6 carry the later v12--v16, baseline v2 and Work F records):
+
+- PQ0.1 closed the nonlinear integration defects for the reduced problem:
+  compiled projected volume, parent/trial oracle separation, accepted-primal
+  reuse, fail-closed parent adjoint, Path B centered-FD bracket and semantic
+  names are integrated. PQ0.2 exercised the real OpenFOAM oracle path with a
+  correct rollback and deterministic resume. These are bounded capability
+  results, not a production-gradient claim.
+- PQ1 remains a **Path B bounded exception**. The refined source grid gives
+  FD/adjoint ratios `1.1504 / 1.1134 / 1.1441` with stable epsilon plateaus.
+  PQ1.1 measured the refined source mesh gate as pass, but canonical-only
+  refinement changed the ratios to `1.1172 / 2.2454 / 1.8916`; the mismatch
+  depends on design/source-grid coupling. The registered third source-grid
+  campaign remains unrun. No magnitude correction is allowed.
+- PQ3 demonstrated three accepted real-OpenFOAM steps. PQ3.1 reached solver-
+  field discreteness but not extraction coherence. PQ3.2 failed because an
+  upper volume bound did not fill the design. PQ3.3's raw-design volume target
+  grew the b=0 state, then b=8/b=16 reduced projected volume from 0.02745 to
+  0.01302; b=16 accepted no steps.
+- The PQ3.3 extraction used RAMP output `beta_solver` as the geometry field.
+  The adopted geometry/volume field is the pre-RAMP `rho_projection`. With
+  q=100, beta threshold 0.5 corresponds to projection about 0.9902, so the
+  recorded empty/sparse extraction is not yet a valid 0.5-projection verdict.
+  The current global verdict remains fail-closed at `ready_for_stage_s=false`.
+- PQ4.0 restored `ready_for_stage_s` as a conjunction and made threshold
+  selection fail-closed. Its self-intersection, component-gap, minimum-width
+  semantics and volume-profile calibration still require correction before a
+  qualified PQ4.1 verdict.
+- Stage V `linearUpwind` qualifies drag at 0.364% finest-transition drift.
+  Downforce remains non-monotone at 0.010374 against the 0.005 bound. The
+  preregistered domain/boundary factor remains unrun.
+- No optimizer-generated candidate has `ready_for_stage_s=true`.
+
+Historical execution order at that snapshot (superseded; do not use as the current roadmap):
+
+1. **PQ3.3a — semantic re-materialization.** Without more CFD, reconstruct
+   `rho_design`, `rho_filtered`, `rho_projection` and `beta_solver` from the
+   saved PQ3.3 candidate; bind their hashes; contour `rho_projection`; verify
+   the exact RAMP threshold mapping; and add an immutable correction artifact
+   for the PQ3.3 evidence ID. This re-judgment is diagnostic because the b=16
+   level has no accepted step.
+2. **PQ4.0a — repair the entry measurements.** Replace the invalid self-
+   intersection probe, measure actual inter-component gap, align minimum-width
+   semantics with ProblemSpec, and calibrate volume fidelity on analytic binary
+   shapes. Required but unmeasured checks fail closed.
+3. **PQ3.3b preflight and implementation.** Make the proposal target
+   `V(rho_projection)` over the declared design-active mask, reject unreachable
+   targets, verify the final residual, and test b=8/b=16 reachability from the
+   saved state. Use a projected target no larger than Vmax; do not reuse the raw
+   design target 0.10 as a projected-volume target.
+   **Current status (2026-09-23):** the raw-design target basis was abandoned
+   after preflight v1 (diagnostic evidence) showed measurably sub-threshold
+   material; the multiplicative OC family was measured locally infeasible for
+   the projected target 0.018 inside a single step's move box at every level
+   (preflight v2/v3 evidence and the blocked manifest are registered as
+   diagnostics). The registered two-phase policy (projected-volume restoration
+   backend + volume-corrected objective backend) reached the target in 1/3/7
+   steps in preflight v3 at b=4/8/16. Preflight v4 accepted only b=4, but its
+   b=8 failure ledger was lost and it carried the b=4 restoration state rather
+   than the objective-accepted state. Preflight v5 corrected that lineage and
+   repeated the identical baseline as two independent uncached OpenFOAM runs.
+   It accepted b=4 and restored b=8 projected volume to 0.018 in three steps.
+   All five b=8 trial candidates improved canonical J and raw downforce, but
+   none could form the registered centered Path B pair: design-active cells
+   sat exactly at rho=1 and moved inward, so the minus perturbation exceeded
+   the box. No b=8 candidate was accepted and b=16 was not evaluated. This is
+   a bracket-feasibility failure, not measured evidence that the directions
+   are non-descent. At that preflight point, the v3 manifest remained
+   `registered_blocked`; the later v4 campaign result is recorded below.
+
+   **Preflight v6 result:** exact box-face cells were frozen in the Phase 2
+   proposal and its projected-volume correction; the centered Path B rule was
+   unchanged. With objective-accepted rho passed exactly between levels,
+   b=4/b=8/b=16 each restored projected volume to 0.018 and accepted alpha=1.0
+   after a signed adjoint/FD bracket and an improving real trial. The b=16
+   parent/trial raw downforce was 0.316591/0.319135. All 13 referenced solver
+   summaries in the v6 artifact were present and matched their recorded SHA-256.
+   This is **preflight feasibility only**: it proves neither ten accepted
+   iterations and level convergence nor extractable Stage S geometry.
+
+   **Preparation completed before the long run:** campaign manifest v4 fixes
+   the input, compiled-problem, Python source, runner, solver-image, template
+   and v6 evidence hashes. Its runner's read-only `--verify-preconditions`
+   passed for manifest SHA-256
+   `01d40d48ebe12f73e66ab646ed51c1cce611b28901f6cc7ee7564abed2753484`.
+   It checkpoints accepted rho, verifies the checkpoint chain on resume,
+   requires ten accepted steps and the registered stability window per level,
+   and makes an independent final primal check. The real multi-iteration
+   campaign was then run under the registered v4 manifest. The b=4 level
+   converged after 23 accepted objective steps. The b=8 level restored
+   projected volume to 0.018 and accepted eight objective steps, but its ninth
+   attempt stopped: every alpha's centered pair had an objective difference
+   near `7.2e-7`, below the registered `1e-6` absolute noise floor. All five
+   trial primals improved downforce; this does not waive the Path B bracket.
+   The b=16 level and terminal check were not run. The immutable result is
+   [`evidence/pq3_3b_campaign_v4_outcome_2026_09.json`](evidence/pq3_3b_campaign_v4_outcome_2026_09.json).
+
+   A separate diagnostic at the exact b=8 stopped rho repeated the parent
+   primal and tested centered epsilons `2e-4`, `4e-4` and `8e-4` with the same
+   `1e-6` floor. All three formed acceptable brackets with stable negative
+   FD slopes; see [`evidence/pq3_3b_bracket_recovery_v1_2026_09.json`](evidence/pq3_3b_bracket_recovery_v1_2026_09.json).
+   Manifest v5 registers `epsilon=8e-4` and a verified continuation from the
+   eighth accepted b=8 checkpoint in a separate output directory, preserving
+   the b=4 and b=8 histories. It is locally qualified at the stopped b=8
+   parent only; all future proposals retain fail-closed brackets. The user's
+   2026-09-23 instruction authorizes starting this bounded optimization.
+   The v5 run accepted three more b=8 steps (11 in total), raising same-level
+   downforce from the v4 stop value `0.579504694421` to `0.579818003757`.
+   Attempt 12 then rejected every alpha. At alpha=1, the centered bracket
+   passed, but the trial improvement was `2.7124e-7`, below the registered
+   `1e-6` improvement threshold. Smaller corrected updates collapsed to
+   machine-scale or zero. The last three accepted objective changes were
+   `1.0881e-4`, `1.0734e-4`, and `9.7168e-5`, so the registered requirement
+   that all three be at most `1e-4` was **not met**. The immutable result is
+   [`evidence/pq3_3b_campaign_v5_outcome_2026_09.json`](evidence/pq3_3b_campaign_v5_outcome_2026_09.json).
+   Stop the current campaign here. Before registering any v6 run, diagnose
+   box-face saturation, volume-correction cancellation, actual corrected-step
+   norms, and independent objective repeatability at this checkpoint. A
+   normalized FD direction built from a machine-scale corrected step must
+   not be treated as evidence of an effective optimizer update. Define an
+   explicit measurable-stationarity rule or a justified proposal change in a
+   new manifest before another long run; do not retroactively relax v5.
+   Stage S remains blocked until campaign convergence, terminal evaluation
+   and PQ4.1 pass.
+4. **PQ3.3b stopped-state diagnosis, then bounded continuation if justified.**
+   Preserve v4/v5 artifacts. Measure why the volume-corrected Phase 2 update
+   collapses at the v5 b=8 checkpoint and verify objective repeatability.
+   The bounded diagnostic and decision rules are specified in
+   [`pq3_3b_post_v5_plan_2026_09.md`](pq3_3b_post_v5_plan_2026_09.md).
+   Only a new immutable manifest with a justified stopping/proposal rule may
+   resume the campaign. Each b/q level must recompute its parent and pass
+   Path B brackets, real trial primals, projected-volume feasibility, minimum
+   iteration counts and objective/field stability. A terminal b=16 candidate
+   needs level convergence and an independent feasible evaluation under the
+   original upper-bound problem.
+
+   **Current status (2026-09-23, D0--D3 executed):** D0
+   ([`evidence/pq3_3b_stopped_state_diagnosis_2026_09.json`](evidence/pq3_3b_stopped_state_diagnosis_2026_09.json))
+   reconstructed the stopped parent from verified saved artifacts with no new
+   solver run and reproduced every registered alpha kappa exactly: 9495 active
+   cells are frozen at exact 0/1 box faces (9263 at zero), and the uniform
+   volume correction cancels the objective sign step at machine scale for
+   alphas <= 0.5; only alpha=1 leaves a 2.67e-5 inf-norm corrected update whose
+   objective dot is -3.1e-7. D1
+   ([`evidence/pq3_3b_d1_discriminant_outcome_2026_09.json`](evidence/pq3_3b_d1_discriminant_outcome_2026_09.json))
+   ran the pre-registered bounded discriminant (10 fresh primals, budget
+   respected, parent spread 0.0): the registered corrected step improved only
+   +2.71e-7 (below threshold), while the objective-only direction without the
+   equality volume pullback improved +0.13399 and the orthogonal
+   volume-exchange direction +0.02789 with the projected volume held near
+   0.018. D2 registered the minimal change
+   ([`evidence/pq3_3b_d2_change_manifest_2026_09.json`](evidence/pq3_3b_d2_change_manifest_2026_09.json)):
+   policy `objective-oc-inequality-v1` drops the equality volume correction,
+   enforces the original `V<=Vmax`, rejects machine-scale corrected updates
+   (1e-8 inf-norm gate) and adds an extractability guard against the recorded
+   stop-state occupancy (explicitly not a PQ4.1 substitute). The immutable v6
+   campaign manifest
+   ([`evidence/pq3_3b_campaign_manifest_v6_2026_09.json`](evidence/pq3_3b_campaign_manifest_v6_2026_09.json))
+   is registered as `registered_preflight_pending`. The two-stage entry
+   preflight passed
+   ([`evidence/pq3_3b_v6_entry_preflight_2026_09.json`](evidence/pq3_3b_v6_entry_preflight_2026_09.json)):
+   one inequality step at the b=8 stop point accepted +0.13399 downforce; the
+   b=16 transition lowered the projected volume by only 1.06e-6, the formation
+   target was maintained, and one b=16 inequality step accepted +0.02556. The
+   long v6 campaign is NOT started; a campaign runner is not implemented and an
+   explicit user go is required. Stage S remains blocked.
+
+   **Campaign cycles run (2026-09-23):** the v6 inequality campaign accepted
+   nine b=8 steps (same-level downforce 0.579818003757 upward; projected
+   volume reached 99.1% of Vmax) and stopped fail-closed when every alpha
+   exceeded the volume bound
+   ([`evidence/pq3_3b_campaign_v6_outcome_2026_09.json`](evidence/pq3_3b_campaign_v6_outcome_2026_09.json)).
+   The registered alternative was implemented as the minimal active-set
+   change: `volume_cap_correction` projects the sign step back onto the
+   feasible set. The v7 manifest resumed at the v6 checkpoint
+   ([`evidence/pq3_3b_campaign_manifest_v7_2026_09.json`](evidence/pq3_3b_campaign_manifest_v7_2026_09.json))
+   after its entry preflight passed
+   ([`evidence/pq3_3b_v7_entry_preflight_2026_09.json`](evidence/pq3_3b_v7_entry_preflight_2026_09.json)),
+   then accepted 27 more b=8 steps exactly on the Vmax boundary; same-level
+   downforce reached 3.82622378522. The registered convergence window was not
+   met (one accepted delta 1.31e-4 above the 1e-4 bound) before attempt 28
+   rejected every alpha on the machine-scale corrected-update gate, so the
+   level stopped fail-closed
+   ([`evidence/pq3_3b_campaign_v7_outcome_2026_09.json`](evidence/pq3_3b_campaign_v7_outcome_2026_09.json)).
+   The measured state is a cap-constrained near-stationary point of the
+   registered policy; no convergence or stationarity certificate is claimed.
+   A further level exit or the b=16 transition requires a new pre-registered
+   rule (for example a stationarity exit measured separately from the
+   accepted-step window) in a new immutable manifest; the long campaign
+   remains unstarted for that path and Stage S stays blocked.
+5. **PQ4.1 — complete T-to-S handoff.** Extract `rho_projection`, retain
+   `beta_solver` as solver audit state, and require the full composite gate.
+   Only `ready_for_stage_s=true` may register a Stage S baseline.
+
+   **Current status (2026-09-23):** the Stage T chain reached its first
+   converged terminal candidate (v9: b=8 exited by the pre-registered
+   cap-stationarity rule, b=16 met the convergence window, independent
+   terminal repeat downforce 2.92433989091 at projected volume 0.0763257).
+   The composite gate was run on the `rho_projection` iso-0.5 handoff
+   ([`evidence/pq4_1_terminal_stage_s_entry_2026_09.json`](evidence/pq4_1_terminal_stage_s_entry_2026_09.json)):
+   `ready_for_stage_s=false` with three measured reasons — discreteness
+   `mean_nd 0.109` against `0.01`, a measured self-intersecting extracted
+   surface, and the clearance preflight below the declared margin. Lineage,
+   the projected-volume constraint, volume fidelity (5.97% relative) and the
+   width/gap measurement pass. The semantic path (target, backend and geometry
+   all on `rho_projection`) is exercised end to end, so P19's semantic
+   mismatch is closed; the remaining failures are the physical extraction
+   issues tracked under P2/P17/P20 (grey design at the volume cap, surface
+   self-intersection, clearance). No Stage S baseline is registered.
+
+   **Margin-mask and b=128 continuation (2026-09-23):** the self-intersection
+   reason was a detector bug (barycentric formula) and is fixed (P20); the
+   corrected PQ4.1 v2 keeps discreteness and clearance as the two real
+   failures. The v10/v11 campaigns then resumed the terminal rho under a
+   clearance margin mask (`allowed_mask` restricted to `|y_center| <= 0.475`)
+   and a b=128 continuation. The b=128 level accepted 256 steps in total, met
+   the registered convergence window (last deltas 3.57e-5 / 3.37e-5 / 2.30e-5)
+   and the independent terminal repeat gave downforce `3.36972164196` at
+   projected volume `0.0763257`. The PQ4.1 judgment on the registered
+   iso-threshold sweep (0.4/0.5/0.6) with the registered
+   range-first-that-passes rule selects no threshold: the terminal field
+   re-greyed during the campaign (`mean_nd 0.0555` at b=128 against the 0.01
+   bound, started at 0.0058), the iso-0.5 surface pinches (non-manifold,
+   handoff rejected) and iso 0.4/0.6 fail feature shrink / surface distance
+   and volume fidelity. Conclusion: the Phase 2 acceptance lacks a
+   discreteness criterion (the extractability guard only prevents an
+   occupancy collapse). The next registered change is a discreteness gate in
+   the acceptance (transform-measured, no extra solver runs); no Stage S
+   baseline is registered.
+
+   **V12 discreteness-preserving replay (2026-09-23):** the missing acceptance
+   invariant is now implemented and registered in
+   [`evidence/pq3_3b_campaign_manifest_v12_2026_09.json`](evidence/pq3_3b_campaign_manifest_v12_2026_09.json).
+   It measures `mean(4*rho_projection*(1-rho_projection))` on the active
+   transform cells and requires `<= 0.01` before Path B or a trial primal is
+   run. The replay begins at v10 checkpoint 5, the last accepted b=128 state
+   inside the bound (`mean_nd 0.0085623`), rather than the infeasible v11
+   terminal. The bounded entry preflight passed
+   ([`evidence/pq3_3b_v12_entry_preflight_2026_09.json`](evidence/pq3_3b_v12_entry_preflight_2026_09.json)):
+   alpha 1.0/0.5/0.25 were rejected without solver calls at mean_nd
+   0.03123/0.01589/0.01128, while alpha 0.125 passed every existing gate at
+   mean_nd 0.00973685, projected volume 0.0684123 and fresh downforce
+   2.32152697653. This establishes entry feasibility only. Execute the
+   registered v12 campaign without relaxing the bound; then rerun the full
+   PQ4.1 threshold sweep on its independent terminal candidate. Stage S may
+   start only if that new composite gate returns `ready_for_stage_s=true`.
+
+   **V12 result and v13 direction discriminant (2026-09-23):** v12 accepted
+   one new sign step (`DF 2.27551379853 -> 2.32152697653`) while preserving
+   `mean_nd=0.00973685`, then stopped fail-closed because every registered
+   sign-step alpha exceeded 0.01
+   ([`evidence/pq3_3b_campaign_v12_outcome_2026_09.json`](evidence/pq3_3b_campaign_v12_outcome_2026_09.json)).
+   This is neither convergence nor proof that all feasible directions are
+   exhausted. A bounded v13 discriminant instead projects the raw objective
+   gradient onto the linearized active discreteness tangent in design space.
+   Its solver-free audit selected alpha 1.0 at `mean_nd=0.00975157` and
+   projected volume 0.0689811; the registered one-step OpenFOAM preflight then
+   passed Path B (`d_adj=-13.4884`, `d_fd=-13.4887`) and improved downforce to
+   2.45647595951
+   ([`evidence/pq3_3b_v13_entry_preflight_2026_09.json`](evidence/pq3_3b_v13_entry_preflight_2026_09.json)).
+   The next step is a short immutable learning campaign using this direction,
+   capped at ten new accepted attempts. If projected volume reaches Vmax, a
+   separate volume-tangent change must be registered; the discreteness bound
+   must not be relaxed. A passing short campaign still requires a fresh PQ4.1
+   composite gate before Stage S.
+
+   **V14 result and v15 registration (2026-09-24):** the bounded v14 campaign
+   accepted five further tangent steps and increased downforce from the v13
+   entry state to `2.61268983854`, while the final accepted state remained
+   inside the registered bounds (`mean_nd=0.00994531219`, projected volume
+   `0.07052783246`). Attempt 6 passed the transform gates and the sign/noise
+   Path B checks, but its full trial reduced downforce by `0.00029093771`;
+   v14 therefore stopped fail-closed and did not establish convergence
+   ([`evidence/pq3_3b_campaign_v14_outcome_2026_09.json`](evidence/pq3_3b_campaign_v14_outcome_2026_09.json)).
+   PQ4.1 on the last accepted v14 checkpoint found that iso 0.5 passes the
+   discreteness, extraction-profile and volume-fidelity sub-gates but still
+   fails the registered 0.25 m clearance gate; iso 0.4 and 0.6 have additional
+   extraction/fidelity failures
+   ([`evidence/pq4_1_v14_state_stage_s_entry_2026_09.json`](evidence/pq4_1_v14_state_stage_s_entry_2026_09.json)).
+
+   V15 is registered as a bounded learning experiment from a deterministic
+   clearance-support trim of the v14 checkpoint. Because that trim changes the
+   state materially, accepted counts and convergence metrics are reset rather
+   than carried over. The unchanged hard gates are `mean_nd<=0.01`, projected
+   `V<=Vmax`, the existing response thresholds and the PQ4.1 clearance profile.
+   Each attempt may evaluate smaller transform-feasible alphas only after Path
+   B passes and the full trial response fails; a Path B failure stops the
+   attempt. The immutable budget is at most ten fresh attempts/accepted steps
+   and at most 16 evaluator requests per attempt. The registered entry
+   preflight subsequently passed at alpha 1.0: parent/trial downforce
+   `2.00516803057 -> 2.01655864594`, Path B
+   `d_adj=-1.67506090`, `d_fd=-1.65081812`, candidate
+   `mean_nd=0.00348178008`, projected volume `0.06216404077`, and zero support
+   violations
+   ([`evidence/pq3_3b_v15_entry_preflight_2026_09.json`](evidence/pq3_3b_v15_entry_preflight_2026_09.json)).
+   Because the first alpha passed, this run did not exercise physical
+   response backtracking to a smaller alpha. At that point the bounded v15
+   campaign had not started. Its first runner invocation reproduced the same
+   successful alpha-1 physics evaluation but stopped before checkpointing due
+   to an implementation error: the runner selected the last ledger row rather
+   than the row marked `accepted`. The failed output is hash-recorded in
+   [`evidence/pq3_3b_v15_runner_lineage_failure_2026_09.json`](evidence/pq3_3b_v15_runner_lineage_failure_2026_09.json),
+   archived, and is not counted as a campaign step. The runner now selects the
+   sole accepted row explicitly; the clean campaign restart below was required.
+
+   **V15 bounded learning result (2026-09-24):** the clean campaign restart ran
+    under the immutable manifest (SHA-256
+    `4a46c740dd4fd2f350326b82bab90a67c64e8bb2de1334bc3bb563b2d2e5ceda`) and
+    stopped at `paused_learning_budget`: 10 fresh attempts, 10 accepted steps,
+    all at alpha 1.0, so the alpha-below-1 physical response backtracking path
+    was not exercised. The final accepted state has raw downforce
+    `2.10035503533`, projected volume `0.06406567400358908` (83.94% of Vmax),
+    active projected discreteness `0.003213044195919047` and zero support
+    violations. The registered convergence window was not observed
+    (`window_accepted=3`, `level_converged=false`); this is a bounded budget
+    stop, not terminal or converged; the campaign evidence alone does not
+    establish Stage S readiness. The final rho
+    array hash is `00efe715f32c46f8d55a7ace599936ce61613cdfcaa2b8ff35270db8dd711f31`
+    and the outcome records verified checkpoint-chain and output hashes in
+    [`evidence/pq3_3b_campaign_v15_outcome_2026_09.json`](evidence/pq3_3b_campaign_v15_outcome_2026_09.json)
+    (verified against `work/pq3_3b_campaign_v15` and the manifest). No v16 is
+    registered. PQ4.1 was then run on this checkpoint
+    ([`evidence/pq4_1_v15_state_stage_s_entry_2026_09.json`](evidence/pq4_1_v15_state_stage_s_entry_2026_09.json)):
+    the registered iso sweep (0.4/0.5/0.6) selects iso 0.5 and the complete
+    composite `stage_s_entry_v1` gate returns **`ready_for_stage_s=true`** at
+    `rho_projection` iso 0.5 (discreteness, extraction profile with a measured
+    watertight manifold non-self-intersecting surface, volume fidelity, volume
+    constraint, width/gap, lineage-hash and the `stage_v_clearance_v1`
+    preflight all pass). Iso 0.4 fails feature shrink; iso 0.6 fails volume
+    fidelity. This measured gate pass is at the paused v15 checkpoint, not a
+    converged terminal candidate: it closes this diagnostic's open clearance
+    blocker (P2's v14 failure mode) but proves neither sustained optimization
+    behavior, a Stage S-qualified geometry after later states, nor grid-
+    independence, and the P20 measurement scope (volume-calibration artifact
+    shape label, strict minimum width) remains open. No Stage S baseline is
+    registered by this record; registration remains a separate authorized
+    decision.
+
+   **Adopted execution order (2026-09-24, user-approved):** P20 remaining
+   repairs → a v16 continuation registration and bounded campaign → a fresh
+   PQ4.1 judgment on the v16 terminal with the repaired gate → Stage S baseline
+   registration → Stage S Work F (surface FD, at most one shape step). The
+   order is chosen because v15 stopped at its registered budget while still
+   improving (last objective deltas `0.0125/0.0133/0.0154`, projected volume
+   `0.0641` of `Vmax 0.0763`) and each Stage T attempt costs ~20 s on the
+   8192-cell case, while Stage S Work F is hours-to-days of body-fitted solver
+   work; the v15 PQ4.1 pass does not expire, so the Stage S baseline is bound
+   to the final v16 terminal instead of the paused checkpoint.
+
+   **P20 closure (2026-09-24):** the remaining Stage S entry measurement scope
+   is implemented: calibrated `component_boundary_gap_m`, true-minimum width
+   compared against the declared policy (`thickness_ridge_m_min`) with
+   `ridge_width_p5_m` kept as a separate quantile, the append-only
+   `evidence/pq4_volume_fidelity_calibration_correction_2026_09.json` shape
+   label correction, and a false-positive/true-positive/cap audit of the
+   self-intersection detector with a memory-safe AABB stage. The v15 PQ4.1
+   artifact is a pre-repair record; the next PQ4.1 runs on the repaired gate.
+
+   **Stage S baseline conditions (2026-09-24, adopted):** registration
+   requires a `ready_for_stage_s=true` candidate judged by the repaired gate
+   (Exit Gate E: selected threshold, source field, transform, candidate,
+   surface and revoxelized-volume hashes bound in one handoff manifest, and the
+   `beta_solver` vs `rho_projection` difference traceable by name and formula),
+   the `stage_v_clearance_v1` preflight pass, and `V(rho_projection) <= Vmax`.
+   Work F then qualifies the body-fitted baseline against
+   `stage_v_qualification_v1` (mesh, explicit `residualControl`, force
+   stationarity), fixes the response identity, and qualifies drag and
+   downforce surface derivatives separately with centered FD under the
+   registered `fd_gradient_v1` profile; only if both pass is one small shape
+   step accepted and every geometry/mesh/solver gate re-run.
+
+   **V16 registration and entry preflight (2026-09-24):** the continuation
+   manifest
+   [`evidence/pq3_3b_campaign_manifest_v16_2026_09.json`](evidence/pq3_3b_campaign_manifest_v16_2026_09.json)
+   (SHA-256 `28e8f7b5fa7a0fc0d67143f7b2f2fa55a8c7ca3c6a7d0cc50c766afb64630751`)
+   continues the same b=128 margin level from the v15 checkpoint 10 unchanged,
+   carries over the cumulative accepted count (10) and the last three accepted
+   metrics, enables the cap-stationarity exit (machine-scale /
+   projected-volume rejection reasons) and the independent terminal repeat,
+   and registers 90 attempts with at least 10 cumulative accepted steps. Its
+   entry preflight
+   ([`evidence/pq3_3b_v16_entry_preflight_2026_09.json`](evidence/pq3_3b_v16_entry_preflight_2026_09.json))
+   passed: start state `mean_nd=0.0032130442`, projected volume
+   `0.0640656740`, support violations 0; alpha 1.0 was accepted
+   (`DF 2.10035503533 -> 2.11252824711`, Path B `d_adj=-1.29080394`,
+   `d_fd=-1.41661536`, candidate `mean_nd=0.0031861835`, projected volume
+   `0.0643333567`).
+
+   **V16 campaign result (2026-09-24):** the registered 90-attempt
+   continuation accepted 87 steps (cumulative accepted count 97) and stopped
+   fail-closed at attempt 88 with `objective_rejected`: the alpha-1.0 Path B
+   bracket failed as `not_a_descent_direction` (`d_adj=-0.04161669`,
+   `d_fd=+0.01716448`), which stops the attempt by the registered policy. The
+   final accepted state has raw downforce `2.65056396128`, projected volume
+   `0.0719735014` (94.30% of Vmax), active projected discreteness
+   `mean_nd=0.0025088808` and zero support violations; the last three
+   objective deltas are `5.52e-4/1.53e-4/7.33e-4`, so the registered
+   convergence window was not met and no independent terminal repeat ran
+   ([`evidence/pq3_3b_campaign_v16_outcome_2026_09.json`](evidence/pq3_3b_campaign_v16_outcome_2026_09.json)).
+   This is a bounded response/gradient stop, not convergence, stationarity or
+   Stage S readiness by itself.
+
+   **PQ4.1 on the v16 state with the repaired gate (2026-09-24):** the
+   registered iso sweep (0.4/0.5/0.6) selects iso 0.5 and the composite
+   `stage_s_entry_v1` gate returns **`ready_for_stage_s=true`**
+   ([`evidence/pq4_1_v16_state_stage_s_entry_2026_09.json`](evidence/pq4_1_v16_state_stage_s_entry_2026_09.json)):
+   discreteness `mean_nd=0.0025088807`, extraction profile (watertight,
+   manifold, non-self-intersecting), volume fidelity (relative 0.0736,
+   revoxelized 0.0783, absolute 0.00951 m3), volume constraint
+   (`V=0.0719735015 <= 0.0763256681`), width/gap (measured true minimum solid
+   width 0.05 m; the policy declares no minimum), lineage hashes and the
+   `stage_v_clearance_v1` preflight all pass. Iso 0.4 fails feature shrink;
+   iso 0.6 fails volume fidelity. The candidate is a blocked-stop checkpoint,
+   not a converged terminal.
+
+   **Stage S baseline registration (2026-09-24):** the selected iso-0.5
+   `rho_projection` handoff is registered as the Stage S baseline
+   ([`evidence/stage_s_baseline_v16_2026_09.json`](evidence/stage_s_baseline_v16_2026_09.json),
+   SHA-256 `db54601caa3acc02649b5b4b759d30c4e8668d530a614993b5f8c0dd4bef412f`)
+   with the Exit Gate E binding: candidate rho hashes, campaign
+   manifest/outcome, handoff manifest, surface STL, revoxelized/source density,
+   four-field bundle file hashes plus the `rho_projection`/`beta_solver` array
+   hashes, transform (`r=0.15`, `b=128`, `eta=0.5`, `q=100`), volume
+   (`V=0.0719735015 <= Vmax`), and a re-run `stage_v_clearance_v1` preflight
+   pass. Work F profiles are pinned (`stage_v_qualification_v1`,
+   `fd_gradient_v1`). Registration is not a Stage S qualification.
+
+   **P20 re-audit repair, PQ4.1 v2 and baseline v2 (2026-09-24):** an
+   independent audit found two reproducible false-negative classes in the
+   direct self-intersection detector (coplanar area overlap; shared-vertex
+   crossings away from the shared vertex). The topology-aware repair (commit
+   `17e80f4`) detects both, permits contact only on the shared simplex, and
+   rejects degenerate triangles fail-closed. The repaired gate rejected the
+   registered iso-0.5 surface: marching cubes emitted 4-8 collinear sliver
+   triangles (area <= 1e-10 m^2, aspect > 1e7) that point merging could not
+   remove. The handoff now extracts the binary cell material with VTK surface
+   nets (`contour_labels`, no smoothing): no degenerate triangles, watertight,
+   manifold, and the cell volume is reproduced exactly (measured absolute
+   difference 1.5e-9 m^3 on the v16 candidate). The PQ4.1 v2 judgment
+   ([`evidence/pq4_1_v16_state_stage_s_entry_v2_2026_09.json`](evidence/pq4_1_v16_state_stage_s_entry_v2_2026_09.json))
+   selects iso 0.5 and returns `ready_for_stage_s=true`; the Stage S baseline
+   v2
+   ([`evidence/stage_s_baseline_v16_v2_2026_09.json`](evidence/stage_s_baseline_v16_v2_2026_09.json),
+   SHA-256 `a6d40a5c25d9a4ca44aaf1c4d9a7b667d6d33fcfeed45d4b7e2b3cdb049abed6`)
+   re-binds the baseline to that judgment and supersedes the v1 record. The
+   volume-fidelity and feature-survival sub-gates pass by construction for the
+   exact extractor; they remain guards against future extractor changes.
+
+   **Work F0 baseline preparation (2026-09-24):** the immutable Work F manifest
+   ([`evidence/stage_s_work_f_manifest_2026_09.json`](evidence/stage_s_work_f_manifest_2026_09.json),
+   SHA-256 `03b109f15e79036fe31a6ec76cd58831f8f834926aee2c0eaf654ea80b47dfdd`)
+   binds the baseline v2, the matched-Re laminar problem spec, the V1 voxel size
+   (`0.05 m`), the case path, the clearance/mesh profiles, the drag/downforce
+   response identities, the mesh-only commands and the fail-closed stop rules.
+   The solver-free preflight
+   ([`evidence/stage_s_work_f_v1_preflight_2026_09.json`](evidence/stage_s_work_f_v1_preflight_2026_09.json),
+   SHA-256 `3f850e20dfff91bef91fb676cc84bdcd55710912fa4cfa899fcaf6d46c350f06`)
+   rendered the V1 case from the registered v16 iso-0.5 surface and verified
+   the metadata (flow case `matched_re_laminar`, laminar, `U=1`, `rho=1`,
+   `mu=1e-2`, Aref `0.64`, lRef `0.8`, CofR `(0.25,0,0)`, drag `(1,0,0)`, lift
+   `(0,0,1)`, force patch `design_candidate`, fixed domain bounds, voxel size)
+   and the clearance preflight pass. The mesh-only run
+   ([`evidence/stage_s_work_f_v1_mesh_2026_09.json`](evidence/stage_s_work_f_v1_mesh_2026_09.json),
+   SHA-256 `4a257ac608c022479a918e2adb0e2ebba2fe1bb6f3680c7f38ba6efd961d2577`)
+   passed the registered `stage_v_qualification_v1` mesh gate: `39848` cells,
+   one failed check line (`Concave cells ... 2441`, fraction `0.06126` below
+   the registered `0.08`), `solver_allowed=true`; no solver was started.
+
+   **Work F V1 baseline qualification (2026-09-24):** the primal baseline ran
+   ([`evidence/stage_s_work_f_v1_solver_2026_09.json`](evidence/stage_s_work_f_v1_solver_2026_09.json),
+   SHA-256 `3c1e5b437f5a9e425dee8b0e7f0b488365bf5c3ddd971c74fd7aaa2e1657fe4f`):
+   `residualControl` convergence (final `Ux/Uy/Uz/p` `4.91e-7/8.18e-7/9.80e-7/3.11e-6`),
+   force stationarity pass (Cd mean `2.52344`, window drift `-1.106e-4`; downforce
+   mean `1.69084`, window drift `-6.305e-5`), and the solver-execution clearance
+   reconfirmation for the exact registered surface, which meets P17's closure
+   condition (bounded to this candidate and level). `surface_fd_allowed=true`.
+
+   **Work F surface-FD registration and solver-free preflight (2026-09-24):**
+   two response-specific immutable FD manifests (drag, downforce) share one
+   perturbation catalog
+   ([`evidence/stage_s_work_f_surface_fd_catalog_2026_09.json`](evidence/stage_s_work_f_surface_fd_catalog_2026_09.json),
+   SHA-256 `e4cdbe437eaa32dc752ad603a5d921aa94a4a47511e4a0403ead58ac49d5b4a8`;
+   drag manifest hash `3f8f8e5973f300dd4b27892024486ced4e064bbd3c2682ed66f1279cd77c7f79`,
+   downforce `9c19160d078bbc283bc96f9e1a6a7d9a806b3e6bc030348189917602de0c4701`):
+   epsilons are registered as dimensionless ratios (0.002/0.005/0.01/0.02 of
+   the 0.05 m voxel -> `1e-4/2.5e-4/5e-4/1e-3 m`), the four directions are
+   downforce- and drag-gradient-aligned plus random seeds 11/2026, and the
+   fixture binds the `volumetricBSplines` surface basis, the fixed outer
+   patches, the `1e-3 m` displacement cap, the response identity/sign contract
+   and the near-zero rules. The solver-free preflight
+   ([`evidence/stage_s_work_f_surface_fd_preflight_2026_09.json`](evidence/stage_s_work_f_surface_fd_preflight_2026_09.json),
+   SHA-256 `93c6c6b5007f6ff6741a3bedc4fa2d87ce85d48c5bf8be0b2a0297bff9588efc`)
+   checked the conservative uniform normal offset at every epsilon in both
+   signs: watertight, winding-consistent, no self-intersection, minimum solid
+   width `0.05 m`, volume change `<= 2.1%`, clearance pass;
+   `campaign_allowed=true`, no solver started. The v2 FD evaluator's
+   below-noise silent pass is fixed: a gradient-aligned derivative below the
+   noise floor is unresolved and fails closed, and non-aligned near-zero
+   directions use the registered absolute rule.
+
+   **Work F base adjoint case (2026-09-24):** the qualified V1 case was copied
+   to `work/stage_s_work_f_v1/adjoint/base` and the OpenFOAM v2512
+   `adjointOptimisationFoam` dictionaries were rendered: two adjoint solvers
+   (`adjDownforce` direction `(0,0,-1)`, `adjDrag` direction `(1,0,0)`, both
+   with the registered Aref `0.64` / UInf `1` / rhoInf `1` and the
+   `design_candidate` patch), `shapeType volumetricBSplines` with
+   `sensitivityType surface` / `includeSurfaceArea true`, and the
+   `volumetricBSplinesMotionSolver` with an
+   axis-aligned `8x8x8` control volume whose boundary control points are
+   confined (the far-field stays fixed). The structural checks and OpenFOAM's
+   own dictionary reader pass
+   ([`evidence/stage_s_work_f_adjoint_preflight_2026_09.json`](evidence/stage_s_work_f_adjoint_preflight_2026_09.json),
+   SHA-256 `0f5f94fb50ac566952d384311bd6da91f91d008c0465b8bbfe05a264239e45b4`);
+   `adjoint_allowed=true`, no solver started. (The earlier `12fb6985...` record
+   is a superseded diagnostic from the first render and is not retained.)
+
+   **Work F base adjoint run (2026-09-24):** the base adjoint case ran to
+   completion (`returncode=0`; primal 292 iterations, `adjDownforce` 425,
+   `adjDrag` 562; three convergence markers). Both solvers wrote their
+   design-variable derivative files
+   (`optimisation/derivatives/volumetricBSplinesadjDownforceadjDownforceESI425`,
+   `...adjDragadjDragESI562`); the `sensitivityType surface` variant also wrote
+   `562/faceSensNormaladjDragESI`. The evidence
+   ([`evidence/stage_s_work_f_adjoint_run_2026_09.json`](evidence/stage_s_work_f_adjoint_run_2026_09.json),
+   SHA-256 `5034dc01b508a4e8e6f6628de7fab67776cdbd23f5640d6b59865c811cc8aeb7`)
+   records `adjoint_converged=true`, `analytic_derivatives_ready=true`,
+   `perturbation_allowed=false`. The analytic directional derivative for a
+   registered direction is the derivative-file inner product
+   `sum_i total_i * direction_i` over the active control-point variables.
+
+   **Work F base-adjoint qualification and directions (Slice A, 2026-09-25):**
+   the derivative contract is now authoritative, not row-order inferred:
+   `NURBS3DVolume::getCPID = k*nCPUs*nCPVs + j*nCPUs + i`, `varID = 3*cp_id +
+   component`, and `confineBoundaryControlPoints true` leaves exactly the
+   interior `6x6x6` control points (648 components) active; the qualifier
+   verified the derivative files' `varID` set equals that active set exactly.
+   Both adjoint final-residual maxima are `<= 9.3e-9` (primal `6.2e-8`) and the
+   three solvers bind their convergence iterations. The four registered
+   directions (`drag_gradient_aligned`, `downforce_gradient_aligned`,
+   `random_seed_11`, `random_seed_2026`) are materialized as committed
+   unit-infinity-norm vectors with hashes in
+   [`evidence/stage_s_work_f_adjoint_qualification_2026_09.json`](evidence/stage_s_work_f_adjoint_qualification_2026_09.json)
+   (SHA-256 `f0bec416540d3faf7f78dba09bcd3b2cb647740cf90fb53b4038cf9b2dcea606`).
+   `perturbation_allowed=true`, `shape_update_allowed=false`.
+
+   **Work F perturbation sides (Slice B, 2026-09-25):** the registered
+   B-spline movement path is implemented and verified. Because
+   ``volumetricBSplinesMotionSolver`` consumes a *control-point movement*
+   (``setControlPointsMovement``) that plain ``moveMesh`` never sets, the
+   repository now carries a small OpenFOAM utility
+   ([`openfoam_utils/moveControlPoints`](../openfoam_utils/moveControlPoints))
+   that applies the prescribed movement through the registered morpher and
+   writes the moved mesh. For every registered direction/epsilon/sign pair the
+   runner copies the qualified V1 baseline, writes the exact inf-norm
+   `epsilon` control-point movement, applies the morpher, and runs
+   `checkMesh`: all **32 sides pass** the pair-side gates (moved surface
+   watertight/manifold/non-self-intersecting, volume change `<= 0.14%`,
+   minimum solid width `0.05 m`, clearance preflight, registered checkMesh
+   profile `concave <= 0.06128`, outer-patch displacement exactly `0.0`).
+   Evidence
+   ([`evidence/stage_s_work_f_perturbation_sides_2026_09.json`](evidence/stage_s_work_f_perturbation_sides_2026_09.json),
+   SHA-256 `01aeda492f43e76e9dad173599f339ba48f9adb8dc5744de062de7ce47cbc9db`)
+   records `all_sides_pass=true`, `primal_campaign_allowed=true`,
+   `solver_started=false`.
+
+   **Work F centered-FD campaign and judgment (Slice C/D, 2026-09-25):** all
+   **32 perturbation primals** ran sequentially and every side converged to the
+   registered solver/stationarity/checkMesh profile
+   ([`evidence/stage_s_work_f_surface_fd_result_2026_09.json`](evidence/stage_s_work_f_surface_fd_result_2026_09.json),
+   SHA-256 `048a2f9307d36a645e76dee7fac26c6325568888cfaa28063cf5685a4acbc9ee`).
+   The gradient-aligned directional derivatives are qualified within the 5%
+   profile with tight epsilon plateaus: downforce response
+   `downforce_gradient_aligned` ratio `1.0408`, `drag_gradient_aligned` `1.0279`;
+   drag response `downforce_gradient_aligned` `1.0266`,
+   `drag_gradient_aligned` `0.9595` (plateau spread `<= 3e-4`). Every sign
+   agrees. However, the registered random-seed directions exceed the 5%
+   relative rule (downforce: seed 11 `1.0858`, seed 2026 `0.8796`; drag:
+   seed 2026 `1.4593`; drag seed 11 `1.0376` passes at 3.8% but the response
+   still fails on seed 2026), so the complete registered FD qualification is
+   **false**: `both_responses_pass=false`, `shape_update_allowed=false`. This is a bounded fail-closed verdict, not a
+   threshold change; the plan's fail branch applies: keep the shape update
+   blocked and diagnose one factor at a time (candidate factors: the morphed
+   movement bounding, the surface-area weighting convention, and the
+   first-order `upwind` primal discretization behind the continuous adjoint).
+
+   **Work F derivative diagnosis D0--D2 (2026-09-25, solver-free):** the
+   diagnosis plan
+   ([`stage_s_work_f_fd_diagnosis_plan_2026_09_25.md`](stage_s_work_f_fd_diagnosis_plan_2026_09_25.md))
+   was executed through its first checkpoint. **D1 realized-direction audit**
+   ([`evidence/stage_s_work_f_realized_direction_audit_2026_09.json`](evidence/stage_s_work_f_realized_direction_audit_2026_09.json))
+   passes: all 32 sides reproduce the prescribed movement exactly (max
+   `<= 9.7e-9 m`), the boundary control points stay fixed, and all 16 pairs
+   show unit cosine similarity with movement difference, odd-symmetry error and
+   even component all `<= 1e-8 m`; the prescribed and realized analytic
+   contractions agree to `~4e-6` absolute. **D2 semantics audit**
+   ([`evidence/stage_s_work_f_sensitivity_semantics_audit_2026_09.json`](evidence/stage_s_work_f_sensitivity_semantics_audit_2026_09.json))
+   passes: the adjoint objectives, the manifest response identities and the
+   primal forceCoeffs identities agree, the contraction joins by `varID` with
+   the boundary variables excluded, and an independent minimal parser
+   reproduces the eight analytic directional derivatives at `1e-9` relative.
+   No mapping or semantics defect was found, so the plan's conditional **D3
+   bounded discretization diagnostic** (one registered middle epsilon, three
+   directions, `linearUpwind` factor, 6 primals plus base/adjoint lineage) was
+   registered and run
+   ([`evidence/stage_s_work_f_discretization_diagnostic_2026_09.json`](evidence/stage_s_work_f_discretization_diagnostic_2026_09.json),
+   SHA-256 `f3a85709817aa67d4fee8123d84d524784b403fd944702211c1677af878e67b6`):
+   the `linearUpwind` base primal, both adjoints and all six sides pass, but the
+   scheme shifts the baseline responses strongly (Cd `2.5234 -> 2.2333`,
+   downforce `1.6908 -> 1.6659`). The mixed result — two previously failing rows
+   cross the 5% gate (downforce `random_seed_11` `1.0857 -> 1.0432`, downforce
+   `random_seed_2026` `0.8796 -> 1.0336`) while one control regresses (drag
+   `random_seed_11` `1.0376 -> 0.8521`) and drag `random_seed_2026` remains
+   `1.2608` — does not satisfy the plan's "controls do not worsen" condition:
+   `supports_discretization_cause=false`. Discretization is a contributing
+   factor, not the sole cause; the direction-dependent residual points to the
+   continuous-adjoint formulation / surface-weighting / morpher chain-rule
+   terms. No D4 full requalification and no D5 shape step are registered; the
+   derivative remains unqualified and `shape_update_allowed=false`.
+
+   **Work F post-D4.4 architecture decision (2026-09-25):** D4.1 component
+   closure and D4.2 geometry Jacobian passed, while both D4.3 option ablations
+   failed the sole-cause rule. The current detailed order is now
+   [`stage_s_work_f_post_d3_plan_2026_09_25.md` §21](stage_s_work_f_post_d3_plan_2026_09_25.md#21-d44-後の-architecture-decision).
+   Preserve the primal, mesh, objective, `volumetricBSplines` parameterization,
+   registered directions/epsilons and FD evidence. First register a solver-free
+   A0 comparison contract, then run at most one fixed base/primal lineage and
+   the two A1 adjoints that change only
+   `sensitivityType surface` (E-SI) to the native `sensitivityType shapeFI`
+   formulation. `surfacePoints` is not an independent architecture candidate
+   because it inherits the same E-SI formulation; a parameterization change is
+   deferred because the current B-spline geometry Jacobian passed.    A1 is only
+   a diagnostic against the existing FD rows: only a complete no-regression
+   pass may enter the existing D5 holdout, then D6 requalification. A mixed or
+   failed A1 stops this branch and requires a zero-run architecture memo before
+   selecting a discrete-consistent sensitivity path or a new low-dimensional
+   FD parameterization. `derivative_qualified=false` and
+   `shape_update_allowed=false` remain authoritative throughout A0/A1 and until
+   D5/D6 pass plus a separate D7 manifest.
+
+   **A0/A1 executed (2026-09-25).** A0 registered the FI comparison contract
+   (`evidence/stage_s_work_f_fi_formulation_diagnostic_manifest_2026_09.json`,
+   SHA-256 `e78d2fb8f40044910b9a80e672c5b0111c22a4741f7f319327a8a52c5ca357ce`).
+   A1 ran one fixed lineage with `sensitivityType shapeFI`: both adjoints
+   converged with `adjointSensitivity type : shapeFI`, the primal lineage and
+   the 648-`varID` schema are unchanged, sign/plateau/near-zero gates hold, but
+   the pass controls worsen and the failing rows remain, so
+   `candidate_formulation_supported=false`
+   (`evidence/stage_s_work_f_fi_formulation_diagnostic_2026_09.json`,
+   SHA-256 `de814a57de1a55f8cc1e4cee7039874d80af0f58e24d76692cd76bf914f0ed92`).
+   The zero-run memo
+   [`stage_s_work_f_architecture_decision_2026_09_25.md`](stage_s_work_f_architecture_decision_2026_09_25.md)
+   now registers exactly two options for a future contract (alternative
+   sensitivity path, or reduced-parameterization centered-FD path); neither is
+   selected and no solver campaign is running.
+
+   **Reduced-basis architecture S0/S1 executed (2026-09-25).** Option 2 was
+   selected and the solver-free S0 contract was registered
+   (`evidence/stage_s_reduced_basis_fd_manifest_2026_09.json`, SHA-256
+   `261a20f1ad97c0feddc9641765d8ad3171dfd68d4051317a1b1f69b80e24a0d1`): the
+   versioned reduced-basis ProblemSpec
+   (`work/stage_sv_laminar/project_matched_re_laminar_reduced_basis_v1.yaml`,
+   SHA-256 `e4b31ad3399ed6934b98192e5d941c871be81b84d28b5bca56bb499a6f771f79`)
+   declares `maximize downforce / J = -downforce` with drag report-only and no
+   constraints, and the design space is K=16 modes over the registered
+   `volumetricBSplines` morpher (`delta_cp = B q`). S1 then generated the
+   frequency-ordered y-symmetry-preserving sine modes, normalized each to unit
+   maximum normal displacement per unit coefficient, and passed the plus/minus
+   max-epsilon geometry/mesh/realized-motion preflight for all 16 selected
+   modes (`evidence/stage_s_reduced_basis_mode_preflight_2026_09.json`,
+   SHA-256 `1942993fbaf306f14932361ec85c71e48230aee8270af10b936c7d92ee1226f9`;
+   modes span frequencies 3--11, efficiencies `0.45--0.95`, cosines `~1`,
+   realized `+/-1e-3 m`). Two invalid preflight attempts were preserved and
+   corrected (scratch-case reuse plus missing sine frequency factors; rate-gate
+   misuse). No flow solver has run: `original_adjoint_derivative_qualified=false`,
+   `reduced_basis_fd_qualified=pending` and `shape_update_allowed=false`. The
+   registered PQ2 factor and +1.6 m continuation are both No-Go for S2. The
+   same-candidate v16 factor screen and its corrected lineage audit are now
+   also complete; both v16 outer-condition factors move the response beyond
+   the registered band. A v16-specific +1.6 m continuation was registered and
+   executed, and its adjacent transition remains outside the band. The final
+   planned +3.2 m continuation and a same-domain mixed far-field contract also
+   remain outside the band. The next step is solver-free case-construction and
+   boundary audit; no further solver run is authorized until it identifies one
+   physically justified correction.
+6. **Stage S first step (blocked).** Keep the reduced-basis S2 epsilon
+   calibration, all shape updates, and full optimization blocked. The
+   solver-free v16 lineage audit has passed, but the same-candidate factor
+   screen, domain ladder, and mixed far-field contract are all No-Go against
+   the registered response bounds. The audit is registered in
+   [`evidence/stage_s_v16_contract_audit_manifest_2026_09.json`](evidence/stage_s_v16_contract_audit_manifest_2026_09.json)
+   and is contract evidence only. The next action is a solver-free
+   case-construction and boundary audit; no new solver campaign is authorized
+   until it identifies one physically justified correction and that correction
+   is registered as a new contract. After an applicable contract passes, the
+   local Work F path may qualify drag and downforce by centered FD; it does not
+   establish an absolute or grid-independent downforce reference. Only a full
+   S4 holdout pass may authorize at most one body-fitted shape step, followed by
+   every geometry, mesh, and solver gate.
+7. **PQ2 and v16 outer-condition diagnostics — No-Go for transfer.** The
+   registered V2 treatments and the +1.6 m continuation belong to the PQ2
+   candidate with STL SHA-256
+   `613637cf0fac8bce8a124a479eb3f18417c06995bdbfbe1c99b792fe1db3686e` and
+   remain diagnostic only. The Stage S v16 candidate is
+   `5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11`.
+   Its factor contract (`evidence/stage_v_v16_domain_boundary_contract_v2_2026_09.json`)
+   was executed against the same Work F V1 baseline: `+0.8 m` domain
+   extension gives downforce `0.6498148547` and top pressure-outlet gives
+   `0.4379600526`, versus baseline `1.6908432549`; both exceed the registered
+   bound, with all treatment-level qualification gates passing. The corrected
+   post-processing lineage is independently audited in
+   `evidence/stage_v_v16_domain_boundary_lineage_audit_2026_09.json`; the
+   earlier reused-history result is diagnostic and is not used.
+   The v16 `+1.6 m` continuation (`evidence/stage_v_v16_domain_continuation_2026_09.json`)
+   gives downforce `0.5052720696` and remains outside the adjacent bound
+   (`delta=-0.1445427850`, relative Cd `-0.1546827787`). Keep
+   `reduced_basis_fd_qualified=pending`, `shape_update_allowed=false`, and do
+   not start S2 while the solver-free case-construction and boundary audit is
+   unresolved.
+   The final planned `+3.2 m` continuation is also a No-Go: the adjacent
+   transition from `+1.6 m` is downforce `-0.0773044` and relative Cd
+   `-0.1952577`. A mixed `freestreamVelocity`/`freestreamPressure` contract
+   at the same `+3.2 m` domain was then registered and executed; it changes
+   downforce by `-0.0779653` and relative Cd by `-0.1035744` against the
+   symmetry/patch baseline, also outside the bound. The candidate, non-boundary
+   mesh, patch face ranges, and fresh force-history lineage are audited in
+   `evidence/stage_v_v16_far_field_contract_audit_2026_09.json`. The
+   domain-only ladder is closed. The subsequent solver-free construction audit
+   found that the baseline and mixed case metadata still identify the generated
+   ProblemSpec as `...domain_1p6_v2` even though the registered contract is
+   `+3.2 m`; all other audited boundary, force-patch, operating-point,
+   ground/domain, and final-flux checks pass. This is a provenance blocker,
+   not evidence that the response is physical or transferable. The continuation
+   runner now fails closed on this identity mismatch. No further solver run is
+   authorized until a corrected contract is registered after the audit. Keep S2
+   and all shape updates blocked.
+8. **PQ5 — independent Stage V verification.** Evaluate baseline, Stage T and
+   Stage S candidates on at least three qualified grids. Preregister
+   baseline-to-T and T-to-S required pairs and candidate-specific uncertainty.
+9. **PQ6 — production backend and target physics.** Only after PQ5, integrate
+   robust fields/connectivity, add actual MMA/GCMMA if warranted, and advance
+   through turbulence, finite-wing, moving-ground/multipoint,
+   vehicle-interference and physical-validation gates.
+
+PQ7 is not defined by the current authoritative roadmap. Do not create a PQ7
+status or use it as an implicit gate without a separate roadmap revision.
 
 No new parametric candidate generator belongs to this execution sequence.
+Fixed-shape generators may be used only as registered diagnostics. A stronger
+optimiser, robust projection, control-volume post-processing or custom
+sharp-interface solver must not be used to bypass PQ0.1--PQ5.
 
 ## 12. Document authority
 
-- `docs/phase_plan.md`: only roadmap and status source.
+- `docs/phase_plan.md`: only current roadmap, status, and execution order.
+- `docs/problem_register_2026_09.md`: issue ledger; it does not set roadmap order.
 - `docs/problem_contract_v2.md`: authoritative user problem schema.
-- `docs/fixed_grid_data_contract_v2.md`: authoritative Stage T artifact schema.
-- `docs/fixed_grid_backend_decision.md`: selected-backend decision record.
+- `docs/fixed_grid_data_contract_v2.md`: retained Stage T artifact schema; it
+  does not define the canonical SDF design state.
+- `docs/CFD_opt_sdf_SDF_native_handoff/00_HANDOFF_MASTER.md`: frozen supporting
+  architecture rationale, subordinate to this roadmap.
+- `docs/downforce_optimization_architecture_plan_2026_09.md` and
+  `docs/stage_t_to_stage_s_bridge_plan_2026_09.md`: historical Stage T/S/V
+  plans and evidence context; neither defines current execution order.
+- `docs/kaggle_batch_runbook_2026_09.md`: execution procedure only.
 - `docs/git_branching_strategy.md`: repository workflow.
 
 If another document conflicts with this roadmap, this file wins and the
-conflicting document must be corrected or removed.
+conflicting current-status or execution-order wording must be corrected. Keep
+historical measurements, artifact interpretations, and their recorded scope.
+
+The dated sections following this authority statement preserve the chronology
+of implementation and evidence. Their local "next" notes are snapshots, not
+current instructions, when they conflict with sections 1, 2, 4, or 11. The
+current W3 owner-lifetime state is the latest dated entry below.
+
+## 2026-09-25 physical-profile correction registered (solver-free)
+
+The v16 domain ladder exposed a physical confound: extending the inlet while
+leaving a no-slip stationary ground changes the upstream boundary-layer
+development.  The Stage V body-fitted adapter now consumes the existing
+`boundary_conditions`/`motion_profiles` vocabulary, preserves the historical
+default when only the legacy inlet/outlet pair is declared, and supports an
+explicit `far_field` profile (`freestreamVelocity`/`freestreamPressure`) plus
+an explicit translating ground.  Generated case metadata records the
+normalized boundary contract, derived ground model, and a `physical_profile`
+hash.
+
+The next v16 physical profile is registered in
+[`evidence/stage_v_v16_physical_profile_contract_manifest_2026_09.json`](evidence/stage_v_v16_physical_profile_contract_manifest_2026_09.json)
+with run-manifest SHA-256
+`394378c5cd86684c3eebb3d54b3ac55af0dfe4951aca4a0038c62d6c6297a412` and
+profile-spec SHA-256
+`3051b089de1642b93525a4d3f7ce89c5755f61fc6931101aa0eec177f2b2f278`.
+It keeps the original V1 box and v16 candidate, sets all five outer patches to
+`far_field`, and sets `bottom` to `moving_wall` with the `(1,0,0) m/s`
+translation profile.  The contract is `registered_not_run`; no mesh, solver,
+optimization, or Stage S update has started.  The registration script is
+[`scripts/register_stage_v16_physical_profile_contract_2026_09.py`](../scripts/register_stage_v16_physical_profile_contract_2026_09.py).
+
+The contract is a reduced laminar diagnostic and does not qualify an absolute
+or grid-independent downforce value, Stage S finite differences, or high-Re
+FSAE physics.  Keep `reduced_basis_fd_qualified=pending`,
+`shape_update_allowed=false`, and perform the solver-free construction audit
+before authorizing one physical-profile solver run.
+
+## 2026-09-25 physical-profile contract v2 (solver-free correction)
+
+The first physical-profile registration is retained as immutable historical
+evidence but is superseded before any solver run.  Its renderer used
+`movingWallVelocity`, which is a mesh-motion semantic and does not express the
+fixed-mesh translating-ground contract required here.  The renderer now emits
+`translatingWallVelocity` with an explicit `U (1 0 0)` and fixed `value` on the
+bottom patch.
+
+The corrected v2 contract is registered in
+[`evidence/stage_v_v16_physical_profile_contract_manifest_v2_2026_09.json`](evidence/stage_v_v16_physical_profile_contract_manifest_v2_2026_09.json)
+with run-manifest SHA-256
+`de7068b1719fa9ecf854733e778ae69d7af8d34227b5927e071923b7431952cd` and
+physical-profile SHA-256
+`a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca`.
+The canonical ProblemSpec, design-domain STL, and v16 candidate snapshot are
+tracked under
+[`evidence/assets/stage_v_v16_physical_profile_v2`](evidence/assets/stage_v_v16_physical_profile_v2),
+and the candidate lineage is recorded in
+[`evidence/stage_v_v16_physical_profile_candidate_lineage_v2_2026_09.json`](evidence/stage_v_v16_physical_profile_candidate_lineage_v2_2026_09.json).
+
+The physical-profile hash now includes the normalized boundary contract, the
+OpenFOAM boundary-condition implementation, free-stream velocity and pressure,
+motion profiles, and turbulence model.  The metric is split into two gates:
+first qualify the new physical profile itself; only then compare at least two
+domains with the same physical-profile hash and unchanged physics.  The old
+stationary-ground result is not a pass/fail reference for the first run.
+
+Registration and materialization remain solver-free.  Keep
+`reduced_basis_fd_qualified=pending`, `shape_update_allowed=false`, and do not
+start Stage S or a domain-convergence campaign until the v2 profile passes the
+registered physical-profile gates.
+
+## 2026-09-26 physical-profile qualification: V1 No-Go and next contract
+
+The numeric physical-profile gates were registered before computation in
+[`evidence/stage_v_v16_physical_profile_qualification_manifest_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_qualification_manifest_v1_2026_09.json)
+and its run manifest
+[`evidence/stage_v_v16_physical_profile_qualification_run_manifest_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_qualification_run_manifest_v1_2026_09.json).
+The manifest pins the v2 ProblemSpec, candidate, design-domain surface,
+physical-profile hash `a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca`,
+the Docker image ID, the existing `stage_v_qualification_v1` mesh/solver/force
+profile, and explicit mass, wall-flux, upstream-velocity, outer-backflow and
+pressure-disturbance thresholds.  Registration recorded no solver or mesh
+execution.
+
+Exactly one controlled OpenFOAM run then used the original V1 box and the
+registered v16 candidate.  The run completed normally: `simpleFoam` stopped at
+the declared residualControl criterion after 546 iterations.  Mesh
+qualification, final residuals, force stationarity, normalized mass imbalance,
+moving-ground velocity and zero-normal-flux, candidate flux, clearance, and
+upstream velocity all passed.  The raw `checkMesh` output still contains its
+allowed concave-cell failed line; the measured concave fraction is `0.06126`
+against the registered `0.08` limit.
+
+The physical-profile result is
+[`evidence/stage_v_v16_physical_profile_qualification_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_qualification_v1_2026_09.json)
+(SHA-256 `de500ec9ce7166ef71dee721fbd6d45f548896f381a11880b411e6489c7fb002`).
+The outer backflow ratios passed, but the outer kinematic-pressure gate failed:
+the inlet maximum was `0.29055 U_inf^2` and the top maximum was `0.05192
+U_inf^2`, above the pre-registered `0.05 U_inf^2` limit.  This is a physical
+profile/far-field adequacy No-Go, not a solver-convergence failure.  The old
+stationary-ground result is not a reference comparison.
+
+The next slice is a new immutable contract with the same candidate, operating
+point, laminar model, moving-ground/freestream semantics, force normalization,
+and physical-profile hash, changing only the domain bounds to increase
+upstream/top/side clearance.  Re-measure the same gates before any
+same-profile domain-convergence comparison.  Do not loosen the recorded
+pressure threshold after seeing this run.  Stage S, reduced-basis FD,
+optimization, PQ5 ranking, and shape updates remain blocked until the
+physical-profile gate passes; only then may at least two same-profile domains
+be compared using the registered `0.005` downforce and `0.02` relative-Cd
+bounds.
+
+## 2026-09-26 physical-profile qualification and same-profile convergence
+
+The numeric physical-profile gates were registered before computation in
+[`evidence/stage_v_v16_physical_profile_qualification_manifest_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_qualification_manifest_v1_2026_09.json).
+The original V1 box returned a No-Go only for the outer pressure-disturbance
+gate: inlet `0.29055416` and top `0.051920264` in `U_inf^2`, against the
+immutable `0.05` limit.  Solver convergence, force stationarity, mass
+conservation, moving-ground/candidate flux, clearance, upstream velocity, and
+mesh qualification all passed.  This result is diagnostic evidence and was
+not compared with the old stationary-ground case.
+
+The first same-profile expansion changed only the inlet bound from `-1.5 m` to
+`-2.5 m`.  Its controlled outcome
+[`evidence/stage_v_v16_physical_profile_expanded_domain_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_expanded_domain_v1_2026_09.json)
+still failed only the inlet pressure gate (`0.077604551`), so it cannot count
+as a qualified domain.  The next case kept the same physical profile and
+passed the outer gate: its outcome is
+[`evidence/stage_v_v16_physical_profile_expanded_domain_v2_2026_09.json`](evidence/stage_v_v16_physical_profile_expanded_domain_v2_2026_09.json),
+SHA-256 `8871255838b9666683581a3cb50d949764f6a4b27fb3dab24d6f6f52b4a75e66`.
+It measured inlet pressure maximum `0.020346387`, top maximum `0.026347419`,
+`42,619` cells, mean `Cd=1.1693991`, and mean downforce `0.7565515`.
+
+The same-profile convergence contract then changed only the downstream bound
+from `2.5 m` to `3.5 m`.  The child outcome
+[`evidence/stage_v_v16_physical_profile_domain_convergence_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_domain_convergence_v1_2026_09.json)
+passed all physical-profile gates with `43,204` cells, mean `Cd=1.1703630`,
+and mean downforce `0.7573549`.  The immutable pair evaluation
+[`evidence/stage_v_v16_physical_profile_domain_convergence_result_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_domain_convergence_result_v1_2026_09.json),
+SHA-256 `13374c722b4993f941ca6487a305fe2f371551d2eed152f744ef016f5b18b5bf`,
+passes with `|delta downforce|=0.0008034 <= 0.005` and
+`|delta Cd|/|Cd_parent|=0.0008242 <= 0.02`.  Both cases share candidate SHA
+`5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11` and
+physical-profile SHA
+`a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca`.
+
+This closes the registered reduced-laminar physical-profile and two-domain
+convergence gates for this v16 candidate.  It does not establish an absolute,
+grid-independent, high-Reynolds-number, or full-vehicle downforce reference;
+the raw `checkMesh` concave-cell marker remains visible under the allowed
+qualification profile.  The next authorized slice is to freeze this profile
+as the Stage V reference, register the K=16 reduced-basis centered-FD
+preflight, and run only its prescribed epsilon and holdout gates.  Keep
+`shape_update_allowed=false` until the complete S4 holdout and every geometry,
+mesh, solver, and clearance gate pass.  PQ5 ranking and production
+optimization remain downstream of that qualification.
+
+## 2026-09-26 Stage S reduced-basis FD v2 contract and S0R/S1R
+
+The v2 qualified physical profile is now frozen as the Stage S working
+reference and rebound to the exact historical K=16 mode basis.  The
+registration was computed without a flow solver and is immutable:
+[`evidence/stage_s_reduced_basis_fd_v2_manifest_2026_09.json`](evidence/stage_s_reduced_basis_fd_v2_manifest_2026_09.json),
+SHA-256 `b96df520e6a359c206b9ded3c4cb1872220344ba9a46c7a7492d0e1ba47860dd`.
+
+It binds the v2 Stage V ProblemSpec
+(`project_matched_re_laminar_moving_ground_far_field_v2_expanded_domain_v2.yaml`,
+SHA-256 `6e41d2bbe9ac6a272f122f7e2556fe2ae9904b0572415eb548f438406885278e`),
+the Stage S working ProblemSpec
+(`evidence/assets/stage_s_reduced_basis_fd_v2/project_matched_re_laminar_moving_ground_far_field_v2_reduced_basis.yaml`,
+SHA-256 `9503400412509be755b7599d1e504b36519a1e33c5599347caf6f0c62e9318ed`),
+candidate SHA-256
+`5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11`,
+physical-profile SHA-256
+`a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca`,
+Docker image ID
+`sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319`,
+the working domain `[-2.5,-1.2,-0.9] -> [2.5,1.2,0.9]` m (v3 is retained only
+as the same-profile domain-convergence witness), the `J = -CDF` downforce
+objective with drag report-only and no constraints, the force normalization,
+the `8x8x8` control-point catalog, the unchanged morpher, all 16 historical
+mode vector hashes, and the epsilon ladder
+`1e-4/2.5e-4/5e-4/1e-3 m`.
+
+The objective audit isolates the difference from the Stage V reference to
+`problem_id` and `objectives` only: Stage V remains `minimize_drag` (the
+expanded-domain spec), while the Stage S spec declares
+`maximize_downforce` with canonical `J = -CDF`.  The historical mode
+selection is reused byte-for-byte and was not rerun or replaced; no
+response-dependent reselection or reserve substitution is allowed.
+
+The solver-free S0R/S1R requalification
+([`evidence/stage_s_reduced_basis_fd_v2_preflight_2026_09.json`](evidence/stage_s_reduced_basis_fd_v2_preflight_2026_09.json),
+SHA-256 `3f6cb15eae5b7770640466c89f9c296a383dd152f9f1dc0fedbc95d69acdaf50`)
+passed on all counts.  The S0R base-case construction audit passed every
+identity, bounds, field, and candidate check on the registered
+`42,619`-cell v2 body-fitted case.  S1R applied the registered maximum
+epsilon `1e-3 m` to both signs of all 16 modes (32 sides plus 16 morpher
+amplitude calibrations) and every side passed: morpher success, outer-patch
+CP immobility exactly `0.0`, realized-equals-prescribed (max movement
+difference `4.7e-9 m`), realized direction cosines `>= 0.9999999999`, even
+component `<= 5.0e-9 m`, unit-normalized amplitude (realized max normal
+displacement `1.0000000e-3 m`), watertight/winding/positive-volume surface,
+no self-intersection, minimum solid width `>= 0.0466 m` against the declared
+`0.01 m` policy, volume change `<= 0.31%` against `2%`, clearance profile
+pass, and the registered `checkMesh` profile pass at a concave-cell fraction
+of `0.0692--0.0699` (raw concave marker recorded, not a raw clean pass).
+The v2 morpher amplitude calibration is recorded per mode
+(`0.986--1.044`); the mode directions and historical vector hashes are
+unchanged.
+
+`preflight_pass=true`, `n_modes_passed=16/16`, `flow_campaign_allowed=true`.
+No flow solver was started and no flow field was evaluated.
+`reduced_basis_fd_qualified` remains `pending` and `shape_update_allowed`
+remains `false` until S2 epsilon calibration, S3 all-mode centered FD, and
+the S4 holdout all pass under the registered rules.  The registered S2 budget
+is at most 24 primals for the lowest/middle/highest-frequency modes; every
+perturbed shape must additionally pass the v2 physical-profile gates
+(mass balance, ground/candidate normal flux, upstream velocity, outer
+backflow, outer pressure), and a case that loses far-field adequacy is not a
+usable gradient sample.  Epsilon and thresholds must not be changed from the
+observed results; S4 failure keeps the shape update blocked.
+
+## 2026-09-26 SDF-native architecture fork (legacy K=16 Stage S superseded)
+
+The checksum-verified handoff bundle `docs/CFD_opt_sdf_SDF_native_handoff/`
+is adopted as the subordinate execution plan for the next line;
+`phase_plan.md` remains the sole roadmap authority.
+
+**Decision.**
+
+- The canonical design state becomes the SDF field `phi` with the immutable
+  convention `phi < 0` solid / `phi > 0` fluid. STL, B-spline control points
+  and body-fitted meshes are derived artifacts, never the design variable.
+- The K=16 B-spline reduced-basis Stage S v2 contract and its S0R/S1R pass
+  are preserved byte-identically as `superseded_reference`; **S2 is
+  intentionally not started**. The freeze record is
+  [`evidence/stage_s_reduced_basis_fd_v2_supersession_2026_09.json`](evidence/stage_s_reduced_basis_fd_v2_supersession_2026_09.json)
+  (SHA-256 `1eee51fdd03bc0402650d45b2d8174f969cbe2216c329c76b7275880f2c4a35d`).
+  No existing manifest or evidence was modified.
+- WaterLily.jl is the first candidate primal backend only. PR #285 "Reverse
+  AD via Enzyme extension" was re-verified open at
+  `feed49f480b52047b4e9b8bfacdf3e4f8201106b` on 2026-09-26: CPU reverse mode
+  works through full `sim_step!` with a custom implicit Poisson rule; GPU
+  reverse remains blocked by a missing Enzyme CUDA rule
+  (`cuMemcpyHtoDAsync_v2`); the default Poisson tolerance gives roughly 10%
+  disagreement versus ForwardDiff, improving to roughly `2.4e-5` at
+  tolerance `1e-10`. WaterLily is not a qualified production reverse-adjoint
+  backend, and its license and paper were re-verified (MIT Expat; CPC 315,
+  109748, 2025).
+- OpenFOAM Stage V remains the independent body-fitted verifier; DAFoam is
+  the discrete-adjoint correctness reference; OpenLB/TCLB are fallback
+  research backends; centered FD remains the permanent gradient oracle.
+- Objective semantics for the new line: minimize `f = -CDF`; division-free
+  efficiency constraint `g_R = R_min*CD - CDF <= 0`; normalized volume
+  `g_V = V/V_max - 1 <= 0`. The Stage V physical-profile gates are retained
+  as the solver-independent semantic contract with per-backend adapter
+  identities.
+
+**PR-01 (solver-free, commit `Architect SDF-native optimization core and
+freeze legacy Stage S`).** Adds the canonical SDF design-state contract
+(`design/sdf_state.py`), solver-neutral oracle/gradient protocols
+(`oracles/base.py`, `gradients/base.py`), deterministic runtime identity
+(`runtime/fingerprint.py`), the canonical objective/efficiency/volume
+semantics (extended `canonical_objective.py`), the repo inventory
+([`evidence/repo_inventory_sdf_native_v1.json`](evidence/repo_inventory_sdf_native_v1.json),
+SHA-256 `00694da5b33b95893ca256bbd8cd5996686ee266c0e0291b8152ff6c562fa559`),
+and the architecture registration
+([`evidence/sdf_native_architecture_registration_2026_09.json`](evidence/sdf_native_architecture_registration_2026_09.json),
+SHA-256 `743e90cb58dc46e93392ec3283a6d7f549f7ad8597b93c0d109220ecea637cbe`).
+All conservative flags stay false: `shape_update_allowed`,
+`sdf_gradient_qualified`, `waterlily_reverse_cpu_qualified`,
+`waterlily_reverse_cuda_qualified`, `topology_birth_qualified`. No CFD
+campaign, no WaterLily run, no topology birth, and no evidence rewrite.
+
+**Next gates, in order:** SDF genesis from the v16 candidate lineage ->
+WaterLily primal (GPU) under the physical-profile adapter -> SDF directional
+centered-FD qualification -> CPU reverse-AD PoC on a tiny case -> GPU
+reverse/custom-adjoint Go/No-Go -> one constrained SDF update -> topology
+birth -> OpenFOAM PQ5 verification. No optimization campaign before the
+production gradient backend decision, and no high-Re/FSAE claim is implied
+by the reduced-laminar physical profile.
+
+## 2026-09-26 SDF genesis slice (v16 lineage) executed; repo inventory v2
+
+The first gate of the SDF-native order is complete as solver-free contract
+and capability work:
+
+- `src/cfd_sdf/design/genesis.py` builds the canonical SDFDesignState from
+  a registered Stage S handoff directory. Every handoff artifact hash is
+  re-verified fail-closed; `phi` is the handoff's own point-grid SDF sample
+  (`phi < 0` solid); the geometry masks are the registered fixed-grid cell
+  masks under the recorded projection policy `v16_handoff_mask_projection_v1`
+  (design = strict all-eight-active interior projection; fixed/forbidden/root
+  = permissive any-adjacent projection).
+- The v16 genesis ran on the hash-frozen handoff manifest
+  (`work/pq4_1_v16_state_v2/sweep/threshold_0.5/handoff_manifest.json`).
+  All nine mask contract checks pass, the material volume diagnostic is
+  `0.12925000000000003 m^3` (equal to the handoff cell-threshold volume),
+  and the state binds `source_sha256` to the registered baseline surface
+  STL `5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11`.
+  Evidence:
+  [`evidence/sdf_native_genesis_v16_2026_09.json`](evidence/sdf_native_genesis_v16_2026_09.json)
+  SHA-256 `3c8e241681c80962a7fd62f1926e382d473ec8e9f3e6b9140bea9600d41cf670`;
+  canonical state `sdf_design_state.npz`
+  `44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8`
+  (`phi_sha256`
+  `45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785`,
+  point grid `61x33x25`, spacing `0.05 m`).
+- A latent freeze-mechanism defect surfaced: the registered v1 repo
+  inventory verified a live glob, so any append-only downstream addition
+  failed its `--verify` even though no registered byte changed. The v1
+  artifact, generator and sidecar remain untouched and byte-frozen; the
+  fixed-set verifier
+  [`repo_inventory_sdf_native_v2.json`](evidence/repo_inventory_sdf_native_v2.json)
+  (SHA-256
+  `8e31d9e30feca97d112a7803d611f926e1e0d8a3f993367f24e043c75a3c5d27`)
+  records the same discovery globs with the live-tree defect corrected and
+  a recorded supersession reason, and new freeze tests pin both sidecars.
+- No solver started; all conservative flags stay false; no existing
+  evidence was modified. Next gate: WaterLily primal under the
+  physical-profile adapter (Colab T4 primary per the 2026-09-26 execution
+  plan), preceded by the Julia/WaterLily environment registration on the
+  Colab side and the pinned `julia/CFDSDFWaterLily/` package skeleton.
+
+## 2026-09-26 plan correction v2.1: design-grid/flow-grid separation, SDF volume semantics, topology-policy gate
+
+User-approved correction after the genesis slice.  The research direction
+and the SDF-native architecture are unchanged; three contracts and the
+WaterLily gate ladder are now explicit before the WaterLily primal gate.
+
+**Contract 1 — design grid and flow grid are separate (permanent).**  The
+canonical SDF grid (61x33x25 points, spacing `0.05 m`, origin
+`(-1.0, -0.8, -0.6)`, x in [-1, 2], y in [-0.8, 0.8], z in [-0.6, 0.6]) is
+a local design-space representation.  The qualified OpenFOAM v2 flow
+domain (x in [-2.5, 2.5], y in [-1.2, 1.2], z in [-0.9, 0.9]) is a
+different, independent solver box.  No run may claim a grid property by
+silently equating the two; `SDFDesignState` must never be used directly as
+a WaterLily flow grid.  The WaterLily side must embed the canonical phi
+through a world-space adapter (trilinear `sdf_at_world(xyz_m)` over the
+canonical grid, e.g. a `GridSDFBody`), with the solver flow grid
+(resolution and domain) as an independent variable so the same canonical
+phi can be run on coarse/medium/fine flow grids for grid studies.  The W1
+adapter qualification must additionally fix, before any solver run:
+
+- **outside-domain semantics**: for world points outside the design box
+  the adapter returns a guaranteed positive read-only fluid extension
+  (zero-level surface can never exist there), not an extrapolated
+  negative value;
+- **interface-to-boundary margin hard gate**: the zero-level surface must
+  sit at least a registered margin away from the design-box boundary, so
+  the constant-exterior extension can never contaminate an interface
+  region;
+- **world<->solver coordinate contract**: WaterLily typically uses
+  solver/scaled coordinates, so the adapter registers the exact
+  `x_sol <-> x_world[m]` scale and offset (affine map) with a fail-closed
+  probe fixture, and every registered run advertises it in its
+  `runtime fingerprint`.
+
+**Contract 2 — SDF sharp volume semantics (registered; P22-01 smooth primitive
+implemented, shape update still gated).**  The Stage T density
+volume `V_rho` (`0.0719735015` at limit `Vmax = 0.0763256681`) and the
+handoff's measured binary sharp volume `V_sharp = 0.12925000000000003`
+are different quantities; the ratio `V_sharp/Vmax` is about `1.69`, so a
+sharp v16 start under the legacy Stage T `Vmax` would be grossly
+infeasible by construction.  In the SDF-native line the constraint volume
+is the voxel-equivalent sharp volume of the canonical state under the
+registered center-sampling rule,
+
+    V_phi = |{h-cubes with trilinear centre sample < 0}| * h^3,
+
+which is the `epsilon -> 0` limit of the differentiable volume
+`V_eps = integral H_eps(-phi) dOmega` under center sampling **at fixed
+grid spacing**: letting the indicator sharpen (`epsilon -> 0`) gives the
+sharp midpoint occupancy rule on the discrete grid, and the separate
+continuum limit `h -> 0` of that discrete measure is what would converge
+toward the geometric solid volume of the probability limit; these two
+limits are distinct and only the discrete rule is registered.  The P22-01
+smooth primitive is specified in
+[`sdf_native_smoothed_volume_contract_v1_2026_09.md`](sdf_native_smoothed_volume_contract_v1_2026_09.md):
+it uses a one-sided cosine transition of width one design-grid cell and
+reports the smooth value separately from sharp `V_phi`. This software
+capability does not authorize a shape update or move the one-step gate. The
+first SDF volume constraint is `V_phi <= V_phi_0` with `V_phi_0` **re-measured**
+on the registered genesis state: 1009 sampled solid centers,
+`V_phi_0 = 0.12612500000000004 m^3`.  Three samplings are registered and
+explicitly separated in
+[`evidence/sdf_native_volume_semantics_v1_2026_09.json`](evidence/sdf_native_volume_semantics_v1_2026_09.json)
+(SHA-256 `0142ace4de9419dd73cc27e90135ed1fe1f847b074ca2faa37fdb0962505bbce`):
+the contract measure (`0.12612500000000004`, 1009 centers), the
+mesh-derived / revoxelized discrete volume of the registered baseline
+surface (`0.12925000000000003`, 1034 cells, the handoff physical
+cross-check, ratio `1.0248`; a discrete volume, not a continuum exact
+volume), and the non-contracted node-occupancy diagnostic
+(`0.17750000000000005`, 1420 nodes).  The legacy Stage T `Vmax` is not
+carried into SDF Stage S evaluation.  If a physically smaller target were
+wanted, it is a separate material-lineage decision requiring a
+volume-calibrated offset rebuild, not a contract reuse.  The module
+`src/cfd_sdf/design/volume_semantics.py` implements the sampled sharp
+measure, reporting-only sharp over-volume (`max(0, V - V_lim)`), and the
+separate P22-01 smooth value/gradient API with signed residual
+`g_V = V_epsilon / V_phi_0 - 1`. This is a contract/software result only;
+the finite-width one-sided smoothing underestimates sharp volume inside its
+transition band, so `g_V <= 0` is not a conservative feasibility certificate
+and cannot admit an optimizer step or shape update by itself. Acceptance must
+independently require the registered sharp residual `V_phi - V_phi_0 <= 0`.
+The result reports this signed sharp residual and positive violation separately.
+The one-step gate still requires its full solver, gradient, volume, and
+hard-gate preconditions.
+
+**Contract 3 — SDFTopologyPolicy v1 contract registered; v16 binding
+unresolved.** The immutable registration is
+[`evidence/sdf_topology_policy_v1_2026_09.json`](evidence/sdf_topology_policy_v1_2026_09.json)
+and the semantics are described in
+[`sdf_topology_policy_v1_2026_09.md`](sdf_topology_policy_v1_2026_09.md).
+It reuses the ProblemSpec v2 root groups, connectivity modes, and exact
+minimum-feature lengths by content hash. Its component checker follows the
+existing Stage S 26-neighbour convention; disconnected solids are allowed
+only if every component has a designated root owner. Birth and whole-component
+deletion are disabled, merge is conditional on all gates, and split is
+conditional on every resulting component retaining a root owner. Forbidden,
+fixed-solid, root, design, and minimum solid/void-width rules are explicit.
+
+The v16 genesis state has empty `fixed_solid`, `forbidden` and `root` masks
+(`solid_design_fraction = 1.0`), and the Stage S entry evidence records
+`root_connectivity = not_applicable` for this candidate. The tracked Stage V
+v16 ProblemSpec has root connectivity disabled and null minimum solid/void
+widths; it is not a topology-policy source. The v16 genesis lineage has no
+bound ProblemSpec v2 topology-policy digest, per-group root-mask provenance,
+or registered minimum-feature values. Empty-root `not_applicable` is
+unresolved, not evidence of a passing root rule. The registration records
+these omissions and keeps `topology_birth_qualified=false`;
+Birth-0 remains blocked. Per-group masks passed to the checker are external
+registered evidence; the checker validates their IDs, shape, union with the
+state root mask, and material occupancy, while callers must independently
+verify the geometry-mask manifest provenance.
+
+**Updated gate order after genesis (W series).**  The gate ladder replaces
+any implication that the WaterLily primal starts directly on v16:
+
+```text
+DONE   architecture fork                       (5750da1)
+DONE   SDF genesis on the v16 lineage          (a35e687)
+REGD   sharp-SDF volume semantics contract     (registration in this slice; enforcement deferred)
+NEXT   W0  WaterLily environment registration  (Julia resolve/pin, Manifest, runtime fingerprint)
+W1     SDF->WaterLily geometry adapter qualification (GridSDFBody interpolation; analytic sphere vs grid-SDF sphere)
+W2     analytic WaterLily primal               (sphere fixture; CPU first, then T4)
+W2b    same geometry at three flow-grid resolutions (bug isolation: interpolation / solver / BC)
+W3     v16 WaterLily primal + physical-profile adapter
+W4     WaterLily grid/domain response qualification
+       SDF directional centered-FD qualification
+       CPU reverse-AD PoC (Pinned PR #285)
+       GPU reverse/custom-adjoint Go/No-Go
+       one constrained SDF step (volume contract + all hard gates enforced)
+REGD   SDFTopologyPolicy v1 contract           (v16 root/feature binding OPEN)
+BLOCKED topology birth                         (birth disabled; P23 unresolved)
+       bounded closed loop
+       OpenFOAM PQ5 verification
+```
+
+**WaterLily package layout for W0-W4** (per the Colab T4 worker plan):
+
+```text
+julia/CFDSDFWaterLily/
+  Project.toml
+  Manifest.toml
+  src/
+    GridSDFBody.jl
+    Simulation.jl
+    Forces.jl
+    Runtime.jl
+  test/
+    test_grid_sdf_body.jl
+    test_analytic_vs_grid_sdf.jl
+    test_force_sign.jl
+scripts/run_waterlily_job.py
+colab/worker.ipynb
+```
+
+Colab execution sequence: select T4 explicitly, record the runtime
+fingerprint, Julia instantiate, then analytic sphere CPU, analytic sphere
+T4, grid-SDF sphere T4, and only then the v16 geometry.  Repository
+inventory v3 mints at the WaterLily primal gate, not per commit.
+
+No qualified-gradient, shape-update or optimization-campaign claim is
+authorized by this correction, and no claim inherits it; all conservative
+flags remain false.
+
+## 2026-09-26 W0 executed: Julia environment registered and verified on Colab CPU
+
+- `julia/CFDSDFWaterLily/Project.toml` + `Manifest.toml` are committed as the
+  pinned solver environment: WaterLily `1.8.0` resolved under Julia `1.12.6`
+  (warning dato: the resolver-printed whole-graph versions are recorded in the
+  W0 evidence). The Manifest is the byte-exact resolver output whose every
+  uuid/tree-sha/version was cross-checked against the generating runtime;
+  SHA-256 `65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c`.
+- Verification on the Colab CPU runtime (clone of the committed branch, no
+  push from Colab): `Pkg.instantiate()` exit 0 with `[ed894a53] WaterLily
+  v1.8.0` and `using WaterLily` loads on a CPU-only runtime without a GPU.
+- Evidence: [`evidence/sdf_native_w0_julia_env_2026_09.json`](evidence/sdf_native_w0_julia_env_2026_09.json)
+  SHA-256 `9689ed58dfda87414bc1a4be8fce49d86405c2619217540bfe08391b98b3e5e7`.
+- No CUDA/Enzyme added yet; no CFDSDFWaterLily package source modules yet
+  (they arrive with W1/GridSDFBody); no solver, no force value; all flags
+  false. Next gate: W1 GridSDFBody adapter qualification under contract 1
+  (outside-domain fluid extension, interface-to-boundary margin, world<->solver
+  coordinate map), then W2 analytic sphere primal (CPU first, then T4).
+
+## 2026-09-26 W1 executed: GridSDFBody adapter qualified, v16 margin gate accepted
+
+- Registered criteria: `evidence/sdf_native_w1_adapter_criteria_2026_09.json`
+  SHA-256 `6da068fad8c79ba39197377157d4a5172dedf04511b2acbd8f69146aefea70ef`,
+  used in correction round 4. Rounds 2/3 had bounded the interface-band sdf
+  error at 1.0e-3 m from a Float32-rounding rationale; the deterministic
+  fixture then failed fail-closed at 1.250e-3 m. The controlling term is the
+  trilinear truncation error of the curved sphere SDF, not input rounding: the
+  same run passes affine exactness (1.776e-15 m), round-trip (2.220e-16 m) and
+  exact outside extension, and an independent numpy evaluation reproduces the
+  band sup (1.2520e-3 m over 200,000 probes). Round 4 registers the analytic
+  Kergin/tensor-Newton truncation bound 3.3e-3 m (surface cells cover
+  r >= R - band - sqrt(3)h/2 = 0.455699 m; pure-second-derivative 2.057e-3 +
+  mixed allowance 1.029e-3 + triple allowance 0.139e-3) and leaves every other
+  bound unchanged. This is a documented fail-closed correction, not a
+  post-measurement threshold fit; the failed value is carried in the criteria
+  history and the evidence.
+- Fixture suite: 10/10 registered gates pass under CLI Julia 1.12.6 with the
+  pinned Manifest (`65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c`):
+  world<->solver round-trip 2.220e-16 m, affine exactness 1.776e-15 m,
+  interface-band error 1.250e-3 m on 5000 explicit band probes (uniform-sampling
+  interior diagnostic 1.271e-2 m recorded, not gated), zero-level radius
+  1.826e-3 m, exact positive outside extension, margin-gate pass and refusal,
+  all-solid refusal.
+- Real-data diagnosis: the registered v16 genesis state (canonical state SHA
+  `44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8`, phi SHA
+  `45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785`) is
+  accepted by the gate constructor at the registered 0.15 m margin with
+  measured conservative clearance 0.34999999399 m, and the world<->solver
+  round trip on the genesis grid is exact. Every later registered run must
+  advertise the measured affine map (origin (-1.0,-0.8,-0.6) m, h 0.05 m,
+  scale 20 m^-1) in its runtime fingerprint.
+- Evidence: `evidence/sdf_native_w1_grid_sdf_body_2026_09.json` SHA-256
+  `d618b556ec71c638f8d10f201c4ae4c62a2b163f824dd9466dd928e89c725567`. No
+  solver run, no force value, no CUDA/Enzyme or Manifest change; all flags
+  false. Next gate: W2 analytic sphere primal (CPU first, then T4), then W2b
+  three-resolution bug isolation, then W3 v16 primal.
+- 2026-09-26 user review of `10c940e`: two W1 prose statements are corrected
+  append-only in `evidence/sdf_native_w1_prose_corrections_2026_09.json`
+  (SHA-256 `0557cff619be80e1a3057e5048c0047629bcd0ee03fda39ff9a61e4ce3ad3b42`):
+  the 0.001 m interface band is 0.02 h, not "ten cells"; the genesis margin
+  measure is `d_face - |phi|`, not "gap plus |phi|". No immutable artifact,
+  threshold, gate or measured value changes; W1 remains closed.
+
+## 2026-09-26 W2a executed: first WaterLily primal (analytic vs sampled sphere, CPU)
+
+- Registered criteria: `evidence/sdf_native_w2a_sphere_cpu_criteria_2026_09.json`
+  SHA-256 `aea91e6cc8de65ef072b3fbb19a3ca50a01b5e75198e62c128fda3fe8849602f`.
+  Fixture: WaterLily 96x64x64 solver grid (16 cells per diameter), Re_D = 100
+  (U = 1, D = 16 solver units, ν = 0.16), Float32, CLI CPU multi-threaded;
+  the sampled geometry is the exact sphere on a 61x33x29 lattice (h = 0.05 m,
+  margin 0.2 m) fed through the W1 `GridSDFWaterLilyBody` bridge; t_end = 60
+  tU/D, burn-in 40, force on the body `F_body = -total_force`; gates G1-G8
+  (completion, finiteness, force finiteness, drag sign, stationarity, cross-
+  fixture Cd, lift bound, repeatability).
+- Outcome: `evidence/sdf_native_w2a_sphere_cpu_2026_09.json` SHA-256
+  `26b6a65f6a2f89dde7e9976b2209b776eeb90d895432707214a582e9192f920b`;
+  all 8 gates pass. 2246 steps analytic / 2242 sampled; wall 612 s / 820 s on
+  4 Julia threads (excludes kernel warm-up, reported separately); window-mean
+  drag 88.425780 vs 88.233538; Cd 0.879587 vs 0.877675 (relative difference
+  0.217% against the registered 10% bound); stationarity drift <= 1.9e-7
+  (bound 0.02); |lift|/drag <= 3.5e-5; the identical analytic repeat matches
+  with relative drag difference 0.0 (bound 1e-6); fields, forces and the
+  sampled phi gate (margin 0.199999988 m) all finite/pass; child peak RSS
+  580 MB.
+- This is capability/numerical evidence for the first solver run, not a Cd
+  validation: the compact domain and 16 cells/D rung are not qualified for
+  absolute values and blockage is about 5%. No T4/CUDA, no Manifest change,
+  no gradient and no v16 physics. Next gates: W0b Colab T4 + CUDA environment,
+  then the W2 T4 primal on the identical fixture, then W2b three flow-grid
+  resolutions.
+- 2026-09-26 append-only semantic clarification:
+  `evidence/sdf_native_w2_semantic_clarification_2026_09.json` (SHA-256
+  `6a46e63fcf798797d9c7706ac6dcbb1712fd8578010f752d8c94d43ac13850e3`).
+  (1) The W2a arithmetic sample mean is a steady-fixture diagnostic only;
+  (2) future canonical time-averaged aerodynamic responses use physical
+  solver-time weighting `mean(F) = integral(F dt) / integral(dt)` with a
+  registered trapezoidal or equivalent rule; (3) the generic solver backend
+  returns the Cartesian `F_body = -total_force` and drag/lift/downforce are
+  ProblemSpec / physical-profile projections, not fixed components. W1 and
+  W2a evidence are unmodified and the W2a verdict stands.
+
+## 2026-09-26 W0b executed: Colab T4 CUDA environment registered
+
+- Registered criteria: `evidence/sdf_native_w0b_t4_cuda_env_criteria_2026_09.json`
+  SHA-256 `9f68eb6fae9cf412b1ab9694045fd053b9b7298ba11d2b277394e8526f15d843`.
+  The T4 environment is a separate directory `julia/CFDSDFWaterLilyT4` (same
+  WaterLily 1.8.0 pin plus CUDA.jl, deps-only Project, no compat block) so
+  the W0 CPU environment stays byte-frozen.
+- Environment resolved on the explicitly selected Colab T4 runtime:
+  Project SHA-256 `e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194`,
+  Manifest SHA-256 `c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707`
+  (846 lines, resolved under Julia 1.12.6; CUDA v6.3.1 + WaterLily v1.8.0).
+- Measured: Tesla T4 (UUID `GPU-1fe89c69-4615-ad3d-88cb-2450c240208e`,
+  15360 MiB, compute capability 7.5), driver 580.82.07, CUDA runtime 12.8.0,
+  `CUDA.functional() == true`, CuArray and KernelAbstractions CUDA smoke pass,
+  `WaterLilyCUDAExt` loads; no `Simulation`/`sim_step!` was constructed
+  (registered gate G5). The KernelAbstractions smoke uses the names reexported
+  by WaterLily, so the T4 Project needs no additional direct dependency.
+- Evidence: `evidence/sdf_native_w0b_t4_cuda_env_2026_09.json` SHA-256
+  `4f822429656f36020410bcae6c375591d512ac3f4f58011e263346515f1237e6`; 7/7
+  gates. The W0 CPU evidence is unmodified. Next: W2-T4a analytic sphere
+  primal on this exact fixture, then W1g GPU GridSDF bridge, W2-T4b sampled
+  sphere, W2b three flow grids. No solver step is qualified by W0b.
+
+## 2026-09-26 W2-T4a executed: analytic sphere primal on Colab T4
+
+- Registered criteria: `evidence/sdf_native_w2t4a_analytic_sphere_criteria_2026_09.json`
+  SHA-256 `154fec9111737f8cb76579f0a02fd2d6b4c043c30250d1d24b8a5d05b3ea15ad`.
+  Identical W2a fixture (96x64x64, 16 cells/D, Re_D=100, Float32, t_end
+  60 tU/D, burn-in 40) with `mem=CuArray`; the criteria additionally register
+  the trapezoidal physical-time-weighted mean as a diagnostic
+  (`integral(F dt)/integral(dt)` over the window samples) next to the W2a
+  arithmetic mean used for the CPU/T4 historical comparison.
+- Result: `evidence/sdf_native_w2t4a_analytic_sphere_2026_09.json` SHA-256
+  `70f747e264bacc9c3360ab9d6445c7bb77e6b11a6a6d521271297780301af754`;
+  9/9 registered gates (T0-T8). 2246 steps; wall 27.94 s on the T4 against
+  612 s on the 4-thread CPU; 12.45 ms/step with a 21.48 s warm-up excluded;
+  polled peak CUDA VRAM 53.8 MB of 15.6 GB. Window-mean drag 88.42577373 on
+  T4 versus 88.42577970 on CPU (relative difference 6.75e-8 against the
+  registered 1% bound); stationarity drift 1.20e-7; the identical T4 repeat
+  reproduces the statistics exactly (relative difference 0.0); the
+  time-weighted mean drag is 88.42577367 (diagnostic, nearly identical on
+  this steady fixture).
+- This qualifies the CUDA solver path for the analytic fixture only. The
+  GridSDF bridge on GPU (W1g), the sampled sphere on T4 (W2-T4b) and the
+  grid ladder (W2b) remain open; no v16, gradient or reverse-mode claim is
+  authorized. Job `scripts/waterlily_w2t4_job.jl` (analytic mode; the
+  `gridsdf` mode is reserved for W2-T4b), recorder
+  `scripts/register_sdf_native_w2t4a_analytic_sphere_2026_09.py`.
+- 2026-09-26 append-only hygiene before W1g:
+  `evidence/sdf_native_w0b_driver_metadata_clarification_2026_09.json`
+  (SHA-256 `801c5800ec1fe146991251217e2286d1f7975e0f5f779f04984f9a6330151505`)
+  separates the three W0b version fields (nvidia-smi NVIDIA driver 580.82.07,
+  `CUDA.driver_version()` 13.3.0, CUDA runtime 12.8.0); W0b verdict unchanged.
+  `scripts/t4_backend_identity.py` (with pytest coverage) now fail-closes any
+  future T4 job whose GPU/UUID/compute capability/versions or T4
+  Project/Manifest hashes drift from the W0b record.
+
+## 2026-09-27 Kaggle background GPU migration: K0 passed
+
+The GPU execution route for the **next** SDF-native slices is now the private
+Kaggle background script kernel, operated and collected through the Kaggle CLI
+without an interactive notebook. The registered K0 contract is
+[`evidence/kaggle_k0_criteria_2026_09.json`](evidence/kaggle_k0_criteria_2026_09.json)
+(SHA-256 `5978460903fa193ec667c36ff86603d3cb7b067714d124c72094c94f2e3d30ac`).
+Its outcome is
+[`evidence/kaggle_k0_result_2026_09.json`](evidence/kaggle_k0_result_2026_09.json)
+(SHA-256 `0f9176083c2cb2503101b7f69fd48ef9bc24f15f63d7d187e32bc8eef4cda719`);
+the exact commands and retrieval check are in
+[`kaggle_batch_runbook_2026_09.md`](kaggle_batch_runbook_2026_09.md).
+
+K0-A--F passed: private version 1 completed a two-T4 background smoke;
+version 2 instantiated the unchanged Julia 1.12.6 Project/Manifest, passed
+CUDA/WaterLily smoke, then ran the original W2-T4a analytic job once on a
+single T4 and concurrently in two Julia processes pinned to separate T4s.
+All three runs reached 2246 steps and returned the same window-mean drag
+`88.42577373189188` as the existing Colab reference, within the
+pre-registered cross-backend relative bound `1e-4`; the dual processes
+overlapped. CLI retrieval by exact version and SHA-256 verification passed
+for 19 output files. This is execution and analytic-fixture numerical evidence,
+not new aerodynamic or optimizer qualification.
+
+The Kaggle GPU UUIDs changed between versions 1 and 2. The Colab W0b UUID
+cannot be a Kaggle hard gate. The next authorized slice is a **new, immutable
+Kaggle W1g backend/geometry criteria round**, registered before running the
+existing GPU GridSDF fixture. Require hardware class, compute capability,
+package/Manifest identity and per-run UUID recording; do not silently relax
+the old Colab G9 or overwrite its evidence. After a passing W1g, continue
+W2-T4b sampled sphere and W2b flow-grid ladder in that order. Colab evidence
+remains the historical reference, not the active execution route.
+`shape_update_allowed=false`, `sdf_gradient_qualified=false`, and no v16
+optimization or topology work is authorized by this migration.
+
+### 2026-09-27 Kaggle W1g round 1 retained as diagnostic
+
+Kaggle private-kernel version 3 completed and reported G1–G9 true, but the
+result is not accepted: its pinned fixture source checked finiteness only for
+the x component of each normal while the registered G3 required the complete
+normal vector. Preserve the exact version-3 download under
+`work/kaggle_w1g_version3_diagnostic`; see
+[`evidence/kaggle_w1g_round1_diagnostic_2026_09.json`](evidence/kaggle_w1g_round1_diagnostic_2026_09.json)
+for the source, criteria, and output hashes. No W1g or downstream gate is
+qualified by this run.
+
+Before the next GPU measurement, the fixture was corrected to check all three
+CPU/GPU normal components, then round-2 criteria were registered at
+[`evidence/kaggle_w1g_criteria_2026_09_round2.json`](evidence/kaggle_w1g_criteria_2026_09_round2.json)
+(SHA-256 `717053a2e4cb32d16cbbc2e3de2007371c1046f365f76a404cb166322adaadcb`).
+The next authorized slice is a fresh private Kaggle W1g run pinned to source
+`f01462a44bf8b8cbefb0f5f7977916be94687b6c`; only a verified pass proceeds to
+W2-T4b. No bound was relaxed. `shape_update_allowed=false` and
+`sdf_gradient_qualified=false` remain in force.
+
+### 2026-09-27 Kaggle W1g round 2 passed
+
+The private Kaggle kernel version 4 passed the preregistered W1g round 2 and
+was independently verified after version-specific output retrieval. Evidence:
+[`evidence/kaggle_w1g_round2_result_2026_09.json`](evidence/kaggle_w1g_round2_result_2026_09.json),
+SHA-256 `bb233f72068b5c6681b9f3f9b4dba180b538f945f8283312fb521c24ac802eb8`.
+All 11 manifested files passed SHA-256 checks; all nine gates passed over
+200,012 probes. Maximum world-distance error was `3.5762787e-7 m` (bound
+`1e-5 m`), maximum unit-normal error was `2.4211522e-7` (bound `1e-3`), and
+there were zero sign violations among 199,321 gated probes. The kernel ran
+source `f01462a44bf8b8cbefb0f5f7977916be94687b6c` on two Tesla T4s with driver
+`580.159.04`, CUDA runtime `13.3.0`, Julia `1.12.6`, CUDA.jl `6.3.1`, and
+WaterLily `1.8.0`; the selected ephemeral GPU UUID is recorded in the result.
+
+This qualifies only the GPU GridSDF geometry bridge. It does not qualify a
+WaterLily sampled-sphere CUDA step or force. At this W1g completion checkpoint,
+the next slice is W2-T4b; before its GPU run, implement the smallest
+sampled-sphere CUDA entry point and register its numerical/force criteria. The
+current T4 job still enables only `analytic`, and no W2-T4b GPU criteria were
+registered yet. Continue to keep
+`shape_update_allowed=false`, `sdf_gradient_qualified=false`, and
+`waterlily_reverse_cuda_qualified=false`.
+
+### 2026-09-27 W2-T4b Kaggle sampled-sphere criteria registered
+
+Before the first sampled-sphere CUDA measurement, the W2-T4b criteria were
+registered at
+[`evidence/kaggle_w2t4b_criteria_2026_09.json`](evidence/kaggle_w2t4b_criteria_2026_09.json),
+SHA-256 `4617f98ca2cd95e60baba4c86d78f66aa8dff2261ff688e17f06a00ab06fc444`.
+They pin implementation source `99c013a089b196975c190d413e4b4103ccbe755e`,
+the existing W2a CPU sampled-sphere result, the W2-T4a analytic T4 result, the
+Kaggle K0 result, the W1g round-2 result, and the T4 Project/Manifest. The
+registered Kaggle sampled drag must agree with the W2a CPU sampled drag within
+1%; its Cd must remain within the existing 10% W2a cross-geometry bound of the
+T4 analytic reference. The sampled solver run has not started. Next: switch
+the private Kaggle runner from the W1g fixture to the registered single-T4
+W2-T4b job, add independent artifact verification, then submit a fresh
+version. All gradient, reverse-mode, topology, and shape-update flags remain
+false.
+
+### 2026-09-27 W2-T4b version 5 retained as diagnostic; round 2 registered
+
+Private Kaggle version 5 fetched source
+`99c013a089b196975c190d413e4b4103ccbe755e`, completed the sampled-sphere
+primal, and returned all 14 manifested files with locally verified hashes.
+The worker exited `ERROR` because T9 failed; T0–T8, T10, and T11 passed. The
+append-only diagnostic record is
+[`evidence/kaggle_w2t4b_round1_diagnostic_2026_09.json`](evidence/kaggle_w2t4b_round1_diagnostic_2026_09.json),
+SHA-256 `1836a4a7e33fa14c4c959560c712637e9706771ab13457715ad9b3753a623781`.
+The exact download remains host-local under
+`work/kaggle_w2t4b_version5/w2t4b`; it has no `DONE` marker and does not qualify
+W2-T4b.
+
+The failure is a reporting error, not a relaxation of T9 or evidence of a
+changed grid. Version 5's phi and device-round-trip hashes both equal the
+canonical phi hash, but its `phi_margin_m` was `0.15`. In the `GridSDF`
+constructor, `margin_m` is the caller's configured gate; the measured
+clearance is calculated separately with `zero_level_margin_m`. The job had
+serialized the stored gate as the measurement. The byte-identical canonical
+CPU fixture reports measured margin `0.19999998807907104 m` in the existing
+W2a evidence. The job now reports measured `phi_margin_m` and configured
+`phi_margin_gate_m` separately in source commit
+`2da94a92ffb9af55dfc159068ace8f25c55c0e6c`.
+
+Before another sampled-sphere GPU measurement, round-2 criteria were
+registered at
+[`evidence/kaggle_w2t4b_criteria_2026_09_round2.json`](evidence/kaggle_w2t4b_criteria_2026_09_round2.json),
+SHA-256 `85bd5ba4f6ff0a13c7f0509b1ba86b74cfeb7bc346fc590b27a819ce3f228e66`.
+Every numerical threshold is identical to round 1. T9 now also verifies the
+reported gate field against its already registered `0.15 m` value while
+checking the measured margin against the same expected value and tolerance.
+Validation after the correction: the W2-T4b runner tests pass (`4 passed`),
+Python compilation and Julia parser checks pass, and `git diff --check` passes.
+The full suite reports `1043 passed, 37 failed, 4 skipped`; all 37 failures are
+missing ignored `work/` campaign inputs in this fresh worktree, not failures in
+the W2-T4b slice. The full suite limitation is the same missing-artifact class
+seen on the earlier migration checkpoint.
+
+At this registration checkpoint, the next action was to push the
+runner/verifier update and independently verify a fresh Kaggle run. The
+version-6 outcome is recorded below; reverse CUDA, gradients, topology, and
+shape updates remain unauthorized.
+
+### 2026-09-27 Kaggle W2-T4b round 2 passed
+
+The private Kaggle kernel version 6 ran the repaired source
+`2da94a92ffb9af55dfc159068ace8f25c55c0e6c` against immutable round-2 criteria
+`85bd5ba4f6ff0a13c7f0509b1ba86b74cfeb7bc346fc590b27a819ce3f228e66`.
+Kaggle reported T0–T11 true; after collecting version-specific outputs, the
+host verifier independently checked all 13 manifested files, the `DONE`
+marker, force CSV values/schema/hash, source and runner identity, preregistered
+inputs, and recomputed T0–T12. All gates passed.
+
+The measured zero-level clearance is `0.19999998807907104 m`; the configured
+constructor gate is separately recorded as `0.15 m`. Both canonical phi and
+device-round-trip hashes match
+`393d5d7897885d71cda0902129a4aa3db561c59b1a85e8e221d55ce19fca4161`. The
+window-mean drag is `88.2360589943`, with relative difference `2.86e-5` from
+the registered W2a CPU sampled sphere. `Cd=0.8777003092`, with relative
+difference `0.00215` from the analytic T4 reference; stationarity drift is
+`2.65e-8` and relative lift/drag is `9.50e-6`. The run took `26.71 s`
+after warm-up and sampled `54.1 MB` peak VRAM on one selected T4 from a
+two-T4 inventory.
+
+Append-only result:
+[`evidence/kaggle_w2t4b_round2_result_2026_09.json`](evidence/kaggle_w2t4b_round2_result_2026_09.json),
+SHA-256 `737ea3f6946b0eb3867902ea2b1db8bc6c92ccb8f45de30f664cd34dd2fb4b82`.
+This closes W2-T4b only for the registered Re_D=100, Float32, 16-cells/D
+sampled-sphere primal and its numerical agreement gates. It does not qualify
+grid convergence, absolute/literature Cd, gradients, reverse CUDA, topology,
+v16, optimizer readiness, or target aerodynamics. The next planned slice is
+W2b, with a 16/24/32-cells/D flow-grid ladder; preregister that matrix and its
+acceptance rules before any W2b GPU measurement.
+
+### 2026-09-27 W2b six-case criteria registered; runner preflight
+
+Before the first W2b solver measurement, the analytic/GridSDF matrix at 16,
+24, and 32 cells/D and all numerical bounds were registered in
+`evidence/kaggle_w2b_criteria_2026_09_round1.json` (SHA-256
+`eab8213461d95a714910a2055a957d3614f1e257dcc79197f6068cd35a04b1bd`). The
+round-1 criteria initially recorded the solver source as
+`5482310d9778229fe692cdc6799c2e1c31cc9982`; version 7 later confirmed that
+transcription was invalid, as recorded below. The 3% 24-to-32 cells/D response
+is only the explicitly proposed PoC bound from the WaterLily deep dive; this
+ladder is not registered as formal GCI or absolute-Cd qualification.
+
+The standalone Kaggle runner and host verifier are ready for the next private
+kernel version. Preflight review found two prerequisite file hashes
+transcribed incorrectly in the runner, which would have failed T0 before any
+case started. The values are corrected to match the immutable criteria. The
+host verifier also recomputes reported force means and time-weighted Cd from
+the retrieved CSV history, and both runner and verifier check the registered
+one-thread identity. These checks do not change any registered CFD threshold.
+Validation: `tests/test_kaggle_w2b.py` reports 4 passed; `compileall src tests`,
+Python syntax checks, metadata JSON parsing, Julia parser, the criteria/input
+hash checks, and `git diff --check` pass. The full suite reports 1047 passed,
+37 failed, 4 skipped; all 37 failures are `FileNotFoundError` for pre-existing
+ignored `work/` CFD fixtures absent from this fresh managed worktree. W2b was
+submitted to its dedicated private Kaggle kernel
+`ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder`, version 7, but failed in T0
+before source checkout or solver execution: Kaggle's Git server refused a fetch
+of the mistyped, nonexistent raw commit SHA. The immutable diagnostic is
+`evidence/kaggle_w2b_version7_fetch_diagnostic_2026_09.json` (SHA-256
+`5df35a54ea1755ea12cf70b180618fdfc99700c6958334312a2b43e48f38ec91`). The
+correct job commit is `548231050fc6ca22bc1c0394272564f81571dbbc`. Append-only
+round-2 criteria are registered at
+`evidence/kaggle_w2b_criteria_2026_09_round2.json` (SHA-256
+`36c4cc138af4c30e022ddad9993798dfea6c8432cc72c4d216fb4cc569ce4cb5`); only
+the source pin changed, with all fixture values, source-input hashes and
+numerical thresholds equal to round 1. A depth-8 fetch of the advertised
+feature branch followed by detached checkout of the corrected commit was
+verified locally, including the registered job hash. This infrastructure
+retry does not constitute a W2b solver measurement. After registering round 2,
+all 20 registered source, Project, and Manifest file hashes also verified at
+the pinned checkout. The 4 focused W2b tests, Python compile/syntax checks,
+Julia parser, criteria and diagnostic sidecars, and `git diff --check` pass; the full suite was rerun
+with the same 1047 passed, 37 missing-`work/` failures, and 4 skipped. The next
+submission used the dedicated kernel's version 8. That run passed source
+fetch, registered file hashes and package instantiation, then stopped in CUDA
+smoke before a WaterLily solver step because runtime 12.8.0 differed from the
+round-2 13.3.0 pin. See the round-3 checkpoint below. T4 selection, evidence
+scope limits, and `shape_update_allowed=false` remain unchanged.
+
+### 2026-09-27 W2b version 8 CUDA identity diagnostic; round 3 registered
+
+Kaggle version 8 retrieved all 8 files in its failure manifest, and each
+downloaded hash verifies. Source checkout at
+`548231050fc6ca22bc1c0394272564f81571dbbc`, all 20 registered source/Project/
+Manifest hashes, Julia 1.12.6 package instantiation, and the T4 CUDA, CuArray,
+and KernelAbstractions smoke passed. The smoke observed CUDA driver API
+`13.3.0` and CUDA runtime `12.8.0`; NVIDIA driver `580.159.04` and compute
+capability `7.5.0` matched the registration. Version 8 stopped because round 2
+had pinned CUDA runtime `13.3.0`. The append-only diagnostic is
+`evidence/kaggle_w2b_version8_runtime_diagnostic_2026_09.json` (SHA-256
+`08385ba971be70ad08fa73fa6d5f6587fa89b4137d3fded4c922ab15d6fc000d`). No
+WaterLily simulation or solver step began.
+
+Round 3 criteria are registered at
+`evidence/kaggle_w2b_criteria_2026_09_round3.json` (SHA-256
+`3573b903c2ff025db62cb184ba328f81c48da70f72d4393e3623bd3bbb58bf1c`). They
+record the observed CUDA runtime `12.8.0` separately from driver API `13.3.0`.
+The source commit, fixture, inputs, and every numerical threshold remain equal
+to rounds 1 and 2. This registers the actual T4 runtime identity before the
+first W2b solver measurement; it does not relax CFD acceptance. Next is
+dedicated Kaggle kernel version 9. Before submission, the 4 focused W2b tests,
+Python compilation/syntax and JSON checks, the criteria-chain and sidecar
+hashes, all 8 version-8 output hashes and kernel-log hash, CUDA identity
+binding, the Julia parser, and `git diff --check` passed. The full suite
+reported 1047 passed, 37 failed, and 4 skipped. Re-running its 37 failures
+confirmed they depend on ignored `work/` evidence artifacts absent from this
+fresh managed worktree (including an STL load after its registered file is
+missing); none is a W2b contract test. `shape_update_allowed=false` remains in
+force.
+
+### 2026-09-27 W2b version 9 partial-run diagnostic; round 4 registered
+
+Kaggle version 9 fetched the round-3 source and verified the registered input
+hashes, instantiated Julia dependencies, and passed the registered T4 CUDA
+smoke. `analytic_16` then completed through `t_end=60.0000228882` with finite
+fields and forces; its 561-sample force CSV reproduces the reported
+time-weighted drag and Cd `0.879587436031` under host recomputation. Before
+case 2, Julia stopped at the top-level `case_count += 1` with
+`UndefVarError: case_count not defined in local scope`; no
+`W2B_JOB_DONE` marker or remaining five cases exist. The exact 12 downloaded
+output hashes and kernel log are retained in
+`work/kaggle_w2b_version9/`; its append-only diagnostic is
+`evidence/kaggle_w2b_version9_partial_failure_diagnostic_2026_09.json`
+(SHA-256 `43ffa63058606638cd70f2bfbd18c68c8521a3fa67c81ad9bf03ebd8f7b3f35e`),
+kernel-log SHA-256
+`d12a2e07f65bdfe5c7a8811fa8fd5fbd4d29239a5790014abe045b7322a21ee3`. The
+one-case response is diagnostic only; it does not satisfy any complete-matrix
+claim and will not be reused as round-4 acceptance evidence.
+
+The minimal source fix removes the top-level mutable counter and prints the
+registered tuple length after the loop; source commit
+`a29e282982a923e0a93ed31d3643e59c7ec6e42e`, job SHA-256
+`cc351f6eb5f8ca8f2bc210100f82b46481335003a818d45466757f588ffd0440`. Julia
+parser and a top-level execution of the corrected completion-marker pattern
+passed. Append-only round-4 criteria are registered at
+`evidence/kaggle_w2b_criteria_2026_09_round4.json` (SHA-256
+`4b5789d4dcf2e9b79b10eb5e388d5a56951df5c835f0c993903527463b6a82d0`); only the
+source pin and job hash change for the implementation fix. Backend identity,
+fixture, all other inputs, and every numerical threshold remain the same as
+round 3. The 5 focused W2b
+tests, compile/syntax and JSON checks, criteria and diagnostic sidecars, all
+12 version-9 output hashes, kernel-log hash, Julia parser and marker check,
+and `git diff --check` passed. Full pytest reports 1048 passed, 37 failed,
+and 4 skipped; rerunning the 37 confirms dependence on absent ignored `work/`
+evidence artifacts. Next is dedicated Kaggle kernel version 10.
+`shape_update_allowed=false` remains in force.
+
+### 2026-09-27 W2b version 10 diagnostic; round 5 registered
+
+Kaggle version 10 used the round-4 pin, passed the registered Tesla T4 CUDA
+smoke, and completed `analytic_16` through `t_end=60.0000228882`. Its
+561-sample force CSV reproduces the reported time-weighted drag and Cd
+`0.8795874360307699` under host recomputation. `gridsdf_16` stopped during
+`build_body`, before solver integration, because `zero_level_margin_m` was
+defined in `CFDSDFWaterLily.GridSDFBody` but referenced unqualified from
+`Main`. The 12 retrieved output hashes and kernel log were verified. The
+append-only diagnostic is
+`evidence/kaggle_w2b_version10_partial_failure_diagnostic_2026_09.json`
+(SHA-256 `b2df282a40d776abeaf3ec63b086c4e297e6ffe1bafdd1de3b44d17a415f7cec`),
+kernel-log SHA-256
+`1ce4d69aec373c4d20e86937b2868b771f8a58390f1209289e2579481ba2ed97`. The
+single completed case is diagnostic only and is not reused as acceptance
+evidence; the other five cases and all T1-T12 gates remain incomplete.
+
+The minimal fix qualifies the already-existing helper with
+`CFDSDFWaterLily.GridSDFBody.zero_level_margin_m`; it changes neither the
+helper nor fixture or solver settings. The source commit is
+`65dbb015994e34669ec5d22f671b97128eaf87d2`, and the W2b job SHA-256 is
+`eaedc02478ee1b966dce3ecb24bc9b8bb2b41223706f9ea1a71c070619c53e15`.
+Append-only round-5 criteria were registered before measurement at
+`evidence/kaggle_w2b_criteria_2026_09_round5.json` (SHA-256
+`32c1fb8a80658a9ea37713c477c6ededcc0808d5cbb8bbd07d91a2b83ed1eb47`). Only
+the source/job pin changes from round 4; runtime identity, fixture, all other
+registered inputs, and every numerical threshold remain unchanged. Before
+version 11, all 6 focused W2b tests, Python `compileall`, version-10 artifact
+and kernel-log hashes, and `git diff --check` pass. Full pytest reports 1049
+passed, 37 failed, and 4 skipped. Re-running only those 37 failures reproduces
+the same missing ignored `work/` evidence paths (FileNotFoundError); none is a
+W2b contract test. `shape_update_allowed=false` remains in force.
+
+### 2026-09-27 W2b version 11 round 5 passed
+
+The dedicated Kaggle T4 kernel completed all six registered cases at 16, 24,
+and 32 cells per diameter. The exact version-11 download contains 23 files;
+the host verifier confirmed each SHA-256, recomputed all force-window metrics
+from the six raw CSVs, and passed T0-T13. The immutable result is
+`evidence/kaggle_w2b_round5_result_2026_09.json` (SHA-256
+`8edf0d36cb706e9f6862faf7ea44845b100c3213433e94ae334251c16c94cccc`), with
+output-manifest SHA-256
+`6c6c940605c76007f171bb8b5ffcf21b50d060ef9ec6b8cfd2514d258fd3bb87` and
+Kaggle-log SHA-256
+`cc65a38d805b74bf920f41371b542cc674ad919c3be9a7d413757796573cc44d`.
+Analytic versus GridSDF time-weighted Cd differs by 0.209-0.243% at the three
+resolutions. The 24-to-32 cells/D response is 1.903% analytic and 1.869%
+GridSDF, within the preregistered 3% PoC candidate bound; both changes are
+smaller than the corresponding 16-to-24 changes. This is the registered
+sphere-fixture flow-grid response result, not a formal GCI/asymptotic-order or
+absolute-Cd qualification. The target-vehicle, gradient, reverse-mode,
+topology, and optimizer gates remain closed; `shape_update_allowed=false`.
+
+The next roadmap gate is W3, the v16 WaterLily primal with its physical-profile
+adapter. Before that solver measurement, register its separate input, geometry,
+profile, force, runtime, and acceptance contracts against the canonical v16
+state. Do not inherit W2b sphere thresholds as W3 acceptance criteria.
+
+### 2026-09-27 Kaggle W3 version 1 stopped before the primal
+
+W3 criteria were immutably registered at SHA-256
+`3c54f3867d9eb9a5960b4c153bd1bffbfc4ca3a547456ecd51b340f808476de3`
+against source commit `b46ef4270df0c76d91922b8f1b2455fabad62418`. The private
+dataset reached `ready` and its five registered input files were listed. The
+kernel's committed metadata includes that dataset as a source, but Kaggle
+version 1 could not find `w3_v16_criteria.json` at the configured input path.
+It stopped in criteria loading before GPU inventory, source checkout, Julia
+setup, CUDA smoke, or any solver step. The exact diagnostic and downloaded
+artifact hashes are recorded in
+[`evidence/kaggle_w3_v16_primal_version1_diagnostic_2026_09.json`](evidence/kaggle_w3_v16_primal_version1_diagnostic_2026_09.json).
+
+This does not identify whether `/kaggle/input` was empty or the dataset was
+available at another path. The unchanged kernel was pushed as version 2 after
+the dataset reported ready. Until input loading and all preregistered gates
+pass, W3 remains open and all qualification/update flags remain false.
+
+## 2026-09-27 execution-order adjustment: W3/W4 qualification plus parallel reverse scratch
+
+The architecture is unchanged. WaterLily is the optimization oracle; OpenFOAM
+is the independent physical verifier. WaterLily 1.8.0's outer boundary is not
+equivalent to the registered OpenFOAM per-patch freestream profile, so W3 will
+not force the two solvers into an artificial identical problem. W3 retains its
+registered profile and criteria.
+
+W3 version 2 remains the next qualification run. Its current Kaggle state is
+`QUEUED`; version 1 stopped at criteria loading before backend inventory or a
+solver step. No W3 primal evidence exists yet. The mandatory formal order is:
+
+1. W3: first v16 primal under the registered WaterLily profile.
+2. W4: v16 flow-grid resolution and domain response under that same profile.
+3. Local SDF perturbations and centered finite differences.
+4. CPU reverse-gradient correctness against the registered finite differences.
+5. GPU reverse/custom-adjoint Go/No-Go.
+6. P22 SDF volume enforcement.
+7. One constrained SDF update.
+8. P23 topology policy.
+9. Birth-0.
+
+In parallel, a diagnostic-only Enzyme track has started on
+`exp/w3-enzyme-reverse-spike`; it has no preregistered qualification criteria
+and cannot open any formal gate. On Julia 1.12.6 / Enzyme 0.13.205, the tiny
+sphere's primal runs on CPU. In both the current WaterLily 1.8.0 environment
+and WaterLily PR #285 (`feed49f480b52047b4e9b8bfacdf3e4f8201106b`, version
+1.6.1), reverse through the full time step stops at
+`MixedDuplicated(Flow, Flow)`, even with static-body remeasurement disabled.
+PR #285's isolated Poisson VJP does execute, but its directional derivative
+was `1.0658` times the centered finite difference in this small test; this is
+diagnostic only and the default Poisson solve tolerance is not a qualified
+gradient setting. The WaterLily 1.8.0 project currently loads no Enzyme
+extension.
+
+The exact package pair Enzyme 0.13.205 + CUDA.jl 6.3.1 does not resolve under
+Julia Pkg because the required GPUCompiler ranges do not intersect. The
+separate scratch environment resolves with CUDA.jl 6.2.1 and PR #285; it does
+not change the W2/W3 environment. A private T4 reverse-spike kernel was pushed
+as version 1 and is currently `QUEUED`; its output is pending. Track commands
+and package pins are in
+[reverse-spike README at experiment commit 7aa9c61](https://github.com/ramhachi/CFD_opt_sdf/blob/7aa9c61/infra/kaggle/kernel_enzyme_reverse_spike/README.md).
+
+These scratch findings do not qualify CPU or GPU reverse mode, SDF gradients,
+or an optimizer update. Keep `waterlily_reverse_cuda_qualified=false`,
+`sdf_gradient_qualified=false`, and `shape_update_allowed=false`. The existing
+W2b sphere resolution result remains PoC-only; W4 stays ahead of formal FD.
+
+### W4 v16 sensitivity design draft (not yet preregistered)
+
+> **Superseded matrix note (2026-09-28):** The small-box dimensions in this
+> historical draft predate the expanded-domain W3 round-4 PASS. Do not use
+> them for registration. The current matrix is the post-round-4 matrix in
+> `julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl` and the mutable criteria
+> draft: `flow_16/24/32` use `100x48x36`, `150x72x54`, and `200x96x72` on
+> `[-2.5,2.5] x [-1.2,1.2] x [-0.9,0.9] m`; `domain_xplus1m_16` uses
+> `120x48x36` on `[-2.5,3.5] x [-1.2,1.2] x [-0.9,0.9] m`. The canonical
+> design SDF remains unchanged. All four cases are reexecuted; the W3 baseline
+> result is compared and reported separately.
+
+Prepare the W4 matrix from the W3 profile while holding the canonical v16 phi,
+its hashes, Re=80, physical force definitions, and dimensionless measurement
+window fixed. Treat the canonical design lattice (`h=0.05 m`) and WaterLily
+flow grid as separate inputs. The baseline physical flow box is
+`[-1,2] x [-0.8,0.8] x [-0.6,0.6] m`; refine only the flow lattice using
+`world_per_solver_m = 0.8 / N_D`, with `N_D` the cells per 0.8 m reference
+length:
+
+| Cells per reference length | Flow spacing | WaterLily cells |
+| --- | --- | --- |
+| 16 (W3 baseline) | 0.0500 m | 60 x 32 x 24 |
+| 24 | 0.0333 m | 90 x 48 x 36 |
+| 32 | 0.0250 m | 120 x 64 x 48 |
+
+For every rung, set the solver reference length to `N_D` and recalculate
+`nu_solver = (mu_physical / rho) * (dx / U_physical) / dx^2`, preserving
+Re=80; this yields `nu_solver` 0.20, 0.30, and 0.40 for 16, 24, and 32 cells
+per reference length. Keep `tU/L=[80,120]`, physical force integration, and
+reference area fixed. The canonical SDF stays at 0.05 m spacing; only its
+world-to-solver scale and the flow lattice change.
+
+Add one independent domain case at 16 cells per reference length by extending
+the +x outlet 3.5 m while keeping the canonical v16 SDF, inlet, side/top
+bounds, ground, flow spacing, and native WaterLily boundary treatment fixed;
+this gives a 130 x 32 x 24 flow grid. The 3.5 m extension is a sensitivity
+perturbation in WaterLily's declared approximation, not an OpenFOAM-equivalence
+claim or a transferred acceptance result. This minimum matrix estimates the
+domain effect at the W3 resolution; if it is comparable to or larger than the
+resolution response, add an extended-domain fine-grid case before FD to check
+for a resolution/domain interaction. Reuse the passing W3 baseline only if
+its registered gates pass. Register every W4 case, thresholds, runtime/VRAM
+limits, and output contract before its first GPU measurement. Until those
+criteria exist and W4 is independently verified, centered-FD execution stays
+closed.
+
+The W4 source/harness preparation after W3 round 4 now has structural owner
+retention through the complete case solve using the existing `OwnedV16Run`
+contract, and keeps its canonical device owner reachable across all four cases.
+Each case computes exact endpoint-clipped trapezoidal means over `[80,100]`,
+`[100,120]`, and `[80,120]`; host and Kaggle runner independently recompute
+drag/downforce drift with the inherited `0.02` gate. This is the W3 round-4
+stationarity precedent, ultimately inherited from the registered W2 sphere
+convention; it was not chosen from W3 v3 or W4 measurements. This preparation
+does not register criteria or authorize measurement by itself.
+
+### 2026-09-28 live queue recheck and W4 preparation
+
+After `git fetch origin codex/kaggle-batch-migration`, local HEAD and the
+remote feature ref both resolved to `fe1552770e1e27ab49fedf44c53f5248b475d3f0`;
+the worktree was clean before W4 edits. At 2026-09-27 15:23:35 UTC, the
+version-bound Kaggle status command reported W3
+`ramhachi888/cfd-opt-sdf-w3-v16-primal/2` as `QUEUED`; its logs were empty.
+The reverse diagnostic
+`ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/1` was also `QUEUED` with empty
+logs. Neither run has retrievable terminal output at this check, so no solver
+start, reverse failure locus, or new measurement is inferred. W3 qualification
+and all gradient/reverse/update flags remain false.
+The local W3 dataset staged at
+`work/kaggle_w3_v16_dataset_registered_3c54f386` is available: the criteria,
+sidecar, canonical state NPZ, Fortran phi, and dataset manifest hashes match
+their registrations: criteria `3c54f3867d9eb9a5960b4c153bd1bffbfc4ca3a547456ecd51b340f808476de3`,
+sidecar `9268906c5c5aadab69be30ef579fdc6bdee51a2b7e1078302633202d51042c2f`,
+state NPZ `3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe`,
+Fortran phi `9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7`,
+and dataset manifest `f01176977c3c15cb93d5a164e0b7d166adbb750143ee49ac62114968575c868f`.
+
+Unexecuted W3 source-review risk: the pinned Julia job calls names such as
+`V16_PROFILE_POINT_SHAPE` and `v16_physical_profile_bodies` without module
+qualification after including `V16PhysicalProfile.jl` into
+`CFDSDFWaterLily`. That parent module declares no exports, and a Julia 1.12
+namespace probe confirmed that plain `using .ModuleName` does not import
+non-exported bindings. If version 2 reaches this job, an `UndefVarError` before
+the first `sim_step!` is plausible. This is a source-level hypothesis, not an
+observed failure; preserve the submitted v2 source/criteria and resolve it
+from its exact terminal log before registering any changed-source retry.
+
+W4 local preparation is tracked separately from W3's pinned source and
+criteria. `julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl` encodes the fixed
+four-case physical-grid matrix, and
+`scripts/waterlily_w4_v16_sensitivity_job.jl` is the CUDA job draft. The
+non-immutable criteria sketch is
+[`evidence/w4_v16_sensitivity_criteria_draft_2026_09.json`](evidence/w4_v16_sensitivity_criteria_draft_2026_09.json);
+it is explicitly not registered and cannot authorize a GPU run. It keeps the
+canonical phi at 0.05 m while changing only the flow-grid spacing and box,
+preserves Re=80 and the [80,120] tU/L window, and defines the extended-domain
+follow-up rule by comparing the absolute physical-force response of the
+domain and 24-to-32 resolution changes. Its integrity checks are not
+grid/domain-convergence gates.
+
+Local checks completed: Julia's standalone case builder returned the
+registered dimensions `(60,32,24)`, `(90,48,36)`, `(120,64,48)`, and
+`(130,32,24)` with solver viscosities `0.2`, `0.3`, `0.4`, and `0.2`; the
+W4 job parsed with `Meta.parseall`; `git diff --check` passed. Loading the
+local T4 Project failed because its CUDA package is not installed in this
+managed worktree. No package installation or GPU run was attempted. W2b's
+registered 32-grid GridSDF case took 327.4 s for its 60 tU/D window; this is
+planning context only, not a runtime prediction or acceptance result for the
+v16 W4 cases.
+
+### 2026-09-28 W3 v2 recheck and W4 execution-shell preparation
+
+Starting from branch `codex/kaggle-batch-migration` at
+`62f5150de2b0c8ebe1c5f920492999569f4e7639`, the remote feature ref was fetched
+and matched that commit. The exact-version Kaggle status recheck returned W3
+`ramhachi888/cfd-opt-sdf-w3-v16-primal/2` as `QUEUED`; its logs were empty.
+The reverse diagnostic
+`ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/1` also remained `QUEUED`. No
+terminal output was available, so no W3 solver start/failure or reverse locus
+is inferred. A second version-bound recheck after harness validation returned
+the same statuses and empty logs. W3 v2 criteria, runner, and submitted source
+remain unchanged.
+All W3, physical-profile, gradient, reverse, topology, optimizer, and shape
+update qualification flags remain false.
+
+The W4 implementation shell is now present, still strictly unregistered:
+
+- `infra/kaggle/kernel_w4/runner.py` discovers the staged criteria by filename
+  under `/kaggle/input`, verifies the immutable criteria, dataset manifest,
+  source and input hashes, bound host-verified W3 PASS evidence, canonical
+  NPZ/raw phi identity and independently measured CPU SDF margin; it then
+  verifies T4 inventory/smoke, records execution stage and per-case solver-step
+  markers, and hashes the retrieved output inventory.
+- `scripts/verify_kaggle_w4_v16.py` independently recomputes the exact-window
+  force metrics, 3-axis pressure/viscous closure, drag/downforce projections,
+  physical N conversion, backend/source identity and T0-T9 integrity gates.
+  It also independently compares the domain and 24-to-32 resolution response
+  and emits the registered extended-domain fine-grid follow-up decision.
+- `scripts/waterlily_w4_v16_sensitivity_job.jl` now emits explicit solver
+  progress markers and captures a terminal force sample at or after tU/L=120.
+  Julia and host both linearly interpolate bracketing raw samples to exact 80
+  and 120 endpoints before trapezoidal physical-time integration. The CSV
+  retains pressure, viscous and total force components for x/y/z.
+- `tests/test_kaggle_w4.py` contains eight contract tests. The mutable W4
+  criteria draft now states the point shape, physical constants and endpoint
+  sampling semantics, but remains `immutable:false` and
+  `registered_before_computation:false`.
+- `infra/kaggle/kernel_w4/kernel-metadata.json` is private T4 metadata for the
+  future W4 dataset; it has not been submitted to Kaggle. No final W4 criteria
+  or private dataset has been registered, and no W4 CFD measurement has been
+  submitted.
+
+Before eventual registration, the W3 prerequisite must bind both the immutable
+W3 criteria and append-only PASS result. The result record must carry the exact
+criteria SHA, version, source commit, `host_verification_passed: true`, and
+observed backend identity including WaterLily's backend string. W4 criteria
+must copy that backend identity exactly; the selected GPU UUID is recorded per
+W4 run rather than assumed stable between Kaggle sessions.
+
+Checks completed: eight focused W4 tests passed; project `.venv` Python
+`compileall src tests`, Julia `Meta.parseall` for the W4 job, standalone W4
+case-builder output, criteria and kernel-metadata JSON parsing, and
+`git diff --check` passed. Full project pytest reported `1064 passed, 37
+failed, 4 skipped`; rerunning only the 37 failures reproduced missing ignored
+`work/` solver/evidence files (`FileNotFoundError`, with one missing-mesh-file
+`ValueError`). None of the failures is a W4 test; the seven W4 tests present in
+that full run passed. The current eight-test W4 suite also passes focused.
+These checks validate the harness and available repository slice only; they do
+not qualify or measure W4. After W3 reaches a terminal state,
+collect its exact version-bound logs/output first and run its existing host
+verifier before any W3 retry or W4 registration.
+
+### 2026-09-28 W3 version 2 terminal diagnostic and bounded retry correction
+
+The exact-version recheck and collection changed W3 version 2 from the
+previously recorded `QUEUED` state to `KernelWorkerStatus.ERROR`. The Kaggle
+2.2.4 command was bound to
+`ramhachi888/cfd-opt-sdf-w3-v16-primal/2`. Its traceback ends in
+`read_criteria()` with `registered W3 criteria missing from the attached
+private dataset`. The downloaded `w3_v16/ERROR.txt` SHA is
+`adb716bff1b5b48becb415440290c4be917d27e8509d35f68f42ad3644f821fb`; its
+output `sha256.json` SHA is
+`b42d39774c19a43c31d381c371956c944bc2b73b5d060d4d4a6070bed74c978e`, and the
+version-bound Kaggle log SHA is
+`2c669c91e88c0fbf1f53639c8270b0b4cbfaaa8823230edc0ab87a2f6c91e89a`. The
+append-only record is
+[`evidence/kaggle_w3_v16_primal_version2_diagnostic_2026_09.json`](evidence/kaggle_w3_v16_primal_version2_diagnostic_2026_09.json).
+
+The Kaggle dataset API currently reports the registered private input dataset
+as `ready`, and its file listing includes `w3_v16_criteria.json` and its SHA
+sidecar. The v2 runner did not record `/kaggle/input` inventory, so evidence
+establishes a fixed-path lookup failure but cannot distinguish a differently
+named mount directory from a runtime attachment failure. The traceback occurs
+before GPU inventory, source fetch, Julia setup, CUDA smoke, and the Julia job;
+solver started is false, solver steps are zero, and no T4 identity or force
+measurement was captured. Version 2 therefore adds no W3 qualification.
+
+The minimal next-round source correction is prepared but not submitted:
+
+- W3 now discovers exactly one `w3_v16_criteria.json` under `/kaggle/input`,
+  verifies its bound dataset ID, and saves the top-level input-mount inventory
+  before lookup so a repeated infrastructure failure is attributable.
+- The W3 Julia job now explicitly imports the non-exported profile constants
+  and helper functions. This is a latent static risk found before the retry,
+  not the observed version 2 failure.
+- The W3 registrar can create append-only criteria rounds and accept the
+  canonical state NPZ path from the already staged round-1 dataset. Round 2
+  will bind the changed runner and job with the existing acceptance limits.
+- No round-2 criteria or Kaggle dataset version has been registered, and no
+  retry has been submitted yet.
+
+The reverse diagnostic remains
+`ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/1` `QUEUED` with no new logs. W4
+remains an unregistered sensitivity shell; its final criteria and dataset stay
+gated on host-verified W3 PASS, and no W4 CFD measurement has been submitted.
+
+Current checks: the focused W3/W4 contract set passes (19 tests), Python
+`compileall src tests`, Julia parsing of both W3/W4 jobs, all four standalone
+W4 case mappings, draft/diagnostic/metadata JSON parsing, and `git diff
+--check`. The full repository run returned `1067 passed, 37 failed, 4
+skipped`; rerunning the 37 failures reproduced missing ignored `work/`
+artifacts (primarily `FileNotFoundError`, plus STL `ValueError`). The current
+focused W3/W4 set also passes after adding the latest W4 staged-dataset
+inventory check. These software checks do not constitute a GPU or physics
+qualification.
+
+### 2026-09-28 gated W3 retry and W4 registration tooling
+
+Following the version-2 diagnostic above, the smallest W3 retry source change
+is prepared on the local feature worktree. Criteria lookup now searches for
+the unique `w3_v16_criteria.json` under `/kaggle/input` and records top-level
+mount entries before lookup. The W3 Julia job explicitly imports the
+non-exported profile symbols identified in source review. The registrar can
+write a separate immutable criteria round and accept the already staged
+round-1 NPZ path. A builder probe confirmed that round 2 preserves the exact
+round-1 acceptance and measurement objects while binding the changed runner,
+Julia job and host verifier hashes. The round has not yet been written or
+submitted; no W3 threshold has changed.
+
+The W3 host verifier now emits a PASS result object with exact criteria path
+and SHA, source commit, kernel version, `host_verifier_sha256`, T0-T9 results,
+and an observed backend identity including the WaterLily backend string. This
+gives the future W4 registration a machine-checkable backend prerequisite.
+W4 tooling is also prepared: the immutable-criteria registrar refuses W3
+diagnostics or non-PASS output and binds the W3 criteria/result plus exact W4
+source inputs; the dataset stager accepts only immutable criteria, verifies
+canonical state and phi identities, and creates the registered private input
+inventory. The W4 private dataset is not staged or uploaded, its draft remains
+mutable, and no W4 run has been submitted.
+
+Latest exact-version Kaggle check: W3 v2 remains `ERROR`; reverse spike v1
+remains `QUEUED` and its logs are empty. Current focused W3/W4 contract tests
+pass (21 tests); project Python `compileall`, Julia parsing for both jobs, W3
+round-2 builder invariance probe, and `git diff --check` pass. The full suite
+run immediately before the last two focused-test additions reported `1067
+passed, 37 failed, 4 skipped`; the 37 failures were independently rerun and
+all refer to missing ignored `work/` CFD files. All 21 current task-focused
+tests pass. W3 round-2 criteria, the updated W3 dataset version, and kernel
+version 3 remain unregistered/unsubmitted until the current source changes are
+committed and pushed.
+
+### 2026-09-28 final source-preparation verification
+
+The W3 host verifier now independently requires the observed Julia archive
+SHA-256 and `CUDA_VISIBLE_DEVICES` value in `fingerprint.json` to match the
+immutable backend criteria before it can report T4 PASS. The result evidence
+exports those observed values for exact W4 backend binding. The test fixture
+uses the registered Julia archive identity. The W3/W4 focused contract set
+passes (21 tests), Python compilation passes, both Julia jobs parse, the four
+W4 case mappings match 60x32x24 / 90x48x36 / 120x64x48 / 130x32x24 with the
+registered spacing and viscosity, the W4 draft remains mutable, and
+`git diff --check` passes.
+
+The W3 round-2 builder probe binds the new runner (`e84b4a50...`), host
+verifier (`1e06142a...`), and Julia job (`c5da2f04...`) hashes while preserving
+the original round-1 `acceptance` and `measurement` objects exactly. The full
+repository suite completed with 1,070 passed, 37 failed, and 4 skipped; a
+failure-only rerun reproduced the same 37 missing ignored `work/` artifacts
+(including absent registered specs, checkpoints, meshes, and solver outputs).
+None is in the W3/W4 focused set. The private v16 state NPZ needed to stage the
+next W3 dataset is present under the worktree's ignored `work/` directory.
+
+The latest exact-version Kaggle checks still show W3 v2 `ERROR` and reverse
+spike v1 `QUEUED`; reverse v1 log retrieval and output download returned no
+artifacts. W3 v2 remains an infrastructure diagnostic with zero solver steps.
+No W3 round-2 criteria, dataset version, or retry kernel has been registered
+or submitted yet. W4 remains unregistered and unrun pending exact host-verified
+W3 PASS. OpenCode remains frozen; no OpenCode CLI or worker was used.
+
+### 2026-09-28 W3 immutable round 2 submitted
+
+The source preparation was committed and pushed as `abb0aee8351095d13a7166ea72556e0fff474242`.
+W3 immutable criteria round 2 was generated only after that source commit, with
+SHA-256
+`0624c3498cddc40db0b21144cd818b3cd5837bbb8e735d3d84f8b78782a1fb2e`, then
+committed and pushed as `9daaa55`. It preserves round 1 acceptance and
+measurement criteria exactly; no threshold changed. The private input dataset
+staging manifest binds the canonical NPZ
+`3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe`, C-order
+phi `45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785`, and
+Fortran phi
+`9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7`. After
+Kaggle reported the dataset `ready`, the remote dataset was downloaded again;
+its exact five-file inventory and all file hashes, including manifest SHA
+`84ed2cde5bc22647592c74ecc81511e25f5d014774f93eb9afda5b2dbb821c12`, match
+the local staged dataset.
+
+The existing private W3 kernel was pushed to Kaggle as version 3 with
+`NvidiaTeslaT4`, timeout 7200 seconds, and the registered round-2 dataset.
+The first exact status check reports `KernelWorkerStatus.QUEUED`; no v3 logs or
+solver result are available yet. Version 2 remains preserved as the
+pre-solver criteria-path diagnostic. W4 remains blocked on v3 completing and
+passing its exact-version host verifier; no W4 criteria, dataset, or GPU run
+has been created.
+
+### 2026-09-28 W3 version 3 completed as a T7 diagnostic; W4 remains blocked
+
+This is the latest execution checkpoint and supersedes the preceding `QUEUED`
+status without modifying any earlier evidence or immutable criteria.
+
+- **Implemented:** the W3 input-discovery and Julia explicit-import source
+  changes are bound to source commit
+  `abb0aee8351095d13a7166ea72556e0fff474242`. The W4 case builder, solver
+  harness, runner, host verifier, registrar/stager and contract tests remain
+  implemented.
+- **Submitted:** W3 kernel version 3 used immutable round-2 criteria SHA-256
+  `0624c3498cddc40db0b21144cd818b3cd5837bbb8e735d3d84f8b78782a1fb2e` and the
+  registered private dataset. Its terminal Kaggle worker status is
+  `KernelWorkerStatus.ERROR`.
+- **Measured:** the W3 primal reached 10,600 solver steps and `tU/L=120.0103759766`;
+  it wrote 1,325 finite force rows and 441 samples in `[80,120]`. The registered
+  time-weighted `+Fx` drag is `-23.45292019493048` solver units
+  (`-0.05863230048732621 N`), so the preregistered positive-drag T7 gate is
+  false. Wall time was `94.272037 s`, peak VRAM `7,132,408` bytes. No criterion,
+  sign convention or threshold was changed after measurement.
+- **Verified:** the append-only execution diagnostic
+  [`evidence/kaggle_w3_v16_primal_version3_diagnostic_2026_09.json`](evidence/kaggle_w3_v16_primal_version3_diagnostic_2026_09.json)
+  has SHA-256 `fa278d11d7f2dfcde134671fea35580955d542447a51646864fc14ddad2fbe1f`.
+  Its exact Kaggle log SHA-256 is
+  `7e12fbec7c2c1e850fad9faad05f776162dbab5a3112f8ee28946d10e143a57a`; the
+  downloaded output-manifest SHA is
+  `305e829d315b88381843e4db010a2288d66dc8b0afe35914b56604c683bdd393` and all
+  19 listed file hashes match. Registered source and dataset identities,
+  canonical state/phi and round-trip hashes, CPU SDF margin, two-T4/Julia/CUDA/
+  WaterLily identity, force-row arithmetic and time-weighted recomputation,
+  recorded x-force component closure, completion, runtime, VRAM, and T0-T9
+  values were independently inspected. T0-T6, T8, T9 are true; T7 is false.
+  The success-only host verifier was not run against `ERROR.txt`/missing `DONE`,
+  so `formal_host_verification_passed=false`. The v3 force CSV has separate
+  pressure/viscous x components only; y/z component closure cannot be
+  independently recomputed from these registered outputs.
+- **Qualified:** no new qualification. In particular,
+  `waterlily_v16_primal_qualified=false`,
+  `physical_profile_qualified=false`, `grid_response_qualified=false`,
+  `sdf_gradient_qualified=false`, `waterlily_reverse_cpu_qualified=false`,
+  `waterlily_reverse_cuda_qualified=false`, `topology_birth_qualified=false`,
+  and `shape_update_allowed=false`. No OpenFOAM equivalence, absolute-downforce,
+  stationarity, grid/domain convergence, gradient, reverse, topology or
+  optimizer claim follows.
+- **Open:** diagnose the negative registered drag and any force-contract or
+  fixture issue without changing round-2 criteria. The current evidence does
+  not establish a source-code sign bug, so do not blindly flip force signs or
+  repeat under the same criteria. Any justified source/measurement change
+  needs a new immutable W3 round. W4 criteria and dataset are still
+  unregistered, and no W4 measurement or formal FD measurement may begin until
+  an exact W3 result passes its formal host verifier.
+
+The diagnostic-only Enzyme reverse spike version 1 is now terminal: Kaggle
+reports `KernelWorkerStatus.COMPLETE`, but its output contains `ERROR.txt`.
+The append-only record is
+[`evidence/kaggle_enzyme_reverse_spike_version1_diagnostic_2026_09.json`](evidence/kaggle_enzyme_reverse_spike_version1_diagnostic_2026_09.json)
+(SHA-256 `9d969272bd3730b6d7cd5609a93bd3748d3fe9698dcf5597c3ee8def755e0e67`).
+GPU inventory and Julia archive extraction succeeded; `Pkg.instantiate()` then
+failed with `EROFS` while attempting to write a manifest under read-only
+`/kaggle/src/julia`. This is a Julia setup/project-path failure. Package
+resolution outcome is unverified, and no CUDA initialization or reverse test
+was reached. It is not evidence of Enzyme/CUDA incompatibility or a reverse
+failure; all reverse and gradient qualification flags remain false. If retried
+for diagnosis, use a writable temporary copy of the pinned scratch project and
+keep the CUDA.jl 6.2.1 scratch environment isolated from production W2/W3/W4.
+
+### 2026-09-28 W3 expanded-domain round-3 preparation
+
+This checkpoint preserves W3 v3 and reverse spike v1 as historical diagnostics.
+The negative v3 `+Fx` drag is an acceptance failure, but it does not by itself
+establish a force-sign implementation bug. The registered sign is unchanged.
+The v3 first/second-half diagnostics were approximately drag `-8.73/-37.27`
+and downforce `-196.19/-254.50` solver units, showing a strongly changing
+response. Those measurements were not registered as a stationarity gate and
+were not used to choose round 3's threshold.
+
+- **Implemented:** W3 round-3 source uses the expanded WaterLily finite box
+  `[-2.5,2.5] x [-1.2,1.2] x [-0.9,0.9] m`, flow origin
+  `[-2.5,-1.2,-0.9] m`, and `100x48x36` cells at `dx=0.05 m`. It keeps the
+  canonical design SDF at origin `[-1,-0.8,-0.6] m`, spacing `0.05 m`, and
+  point shape `61x33x25`; the body map uses the flow origin while GridSDF keeps
+  its canonical origin. Candidate world location and moving ground at the
+  flow-domain bottom are covered by the Julia adapter test.
+- **Implemented:** the W3 raw force CSV records total, pressure and viscous
+  `Fx/Fy/Fz`, plus `drag=+Fx` and `downforce=-Fz`. Runner and host verifier
+  independently enforce all-axis component closure, exact `[80,120]` endpoint
+  interpolation/trapezoidal weighting, half-window integration and the hard
+  stationarity gate. T10 inherits relative half-window drift `<=0.02` from the
+  preregistered W2 sphere capability convention; this threshold was fixed
+  independently of the W3 v3 measurement. Positive +x drag remains T7; no
+  downforce sign/magnitude threshold was introduced.
+- **Implemented:** round-3 fixture selection binds three existing Stage V
+  records: original small-box failure on
+  `outer_patch_backflow_and_pressure_disturbance`, expanded-box physical-profile
+  pass, and same-candidate parent/child domain-convergence pass. The OpenFOAM
+  values `Cd=1.16939914/1.17036295` and downforce `0.75655147/0.75735487` are
+  retained solely as fixture-selection evidence, not WaterLily targets or an
+  equivalence claim. The W2 round-5 sphere's positive-drag gate is also bound
+  as a sign-convention precedent.
+- **Implemented:** W4 remains mutable and unregistered, but its draft, case
+  builder, solver, runner, host verifier and dataset preparer now use the
+  expanded W3 baseline. The four cases are `100x48x36` at `dx=.05`,
+  `150x72x54` at `dx=.033333...`, `200x96x72` at `dx=.025`, and the matched
+  `[-2.5,3.5]x[-1.2,1.2]x[-.9,.9] m` domain case at `120x48x36`; all retain
+  Re=80 and the canonical SDF unchanged. No W4 criteria are frozen and no W4
+  measurement has run.
+- **Implemented:** the diagnostic-only reverse spike runner copies its pinned
+  Project/Manifest to writable `/kaggle/working`, checks the copied input
+  hashes, then instantiates and runs from that copy. CUDA.jl 6.2.1, Enzyme and
+  WaterLily PR #285 pins remain scratch-only and unchanged. This corrects v1's
+  read-only-project EROFS failure without claiming a reverse result.
+- **Registered:** no W3 round-3 criteria yet. The criteria may be frozen only
+  after source, tests and draft are complete, committed and pushed, then
+  regenerated from the clean exact source commit. W4 criteria remain
+  unregistered and gated on a formally host-verified W3 PASS.
+- **Submitted:** no W3 round-3 or reverse-spike v2 kernel has been submitted at
+  this checkpoint.
+- **Measured:** no W3 round-3, W4, or reverse-spike v2 measurement exists.
+- **Verified:** 19 focused W3/W4 pytest tests pass; all 16 Julia adapter checks
+  pass without advancing a solver step; W3/W4 Julia jobs parse; W4 case mapping
+  yields the registered 100x48x36 / 150x72x54 / 200x96x72 / 120x48x36 grids at
+  Re=80; Python compileall, W4-draft JSON parsing, round-3 criteria preview,
+  and `git diff --check` pass. These are harness/contract checks only and do
+  not qualify a solver or gradient.
+- **Qualified:** W2 sphere primal/grid response remains qualified. W3 v3 remains
+  unqualified (T7 false); W3 expanded-domain primal, physical profile,
+  stationarity, grid response, gradient, CPU/GPU reverse, topology, optimizer
+  and shape update remain unqualified.
+- **Open:** complete requested syntax/tests and documentation, commit/push W3
+  source before immutable round-3 registration, stage and remotely re-verify
+  its private dataset, then submit the next exact W3 kernel version. Collect
+  its version-bound log/output and host-verify all T0-T10. W4 may freeze only
+  after that exact PASS; reverse spike v2 is a parallel diagnostic only.
+
+### 2026-09-28 W3 expanded-domain round 3 submitted; exact run active
+
+This checkpoint supersedes the round-3 preparation status above. The W3 v3
+diagnostic, criteria, force sign, and measurement thresholds remain unchanged.
+
+- **Implemented:** expanded-domain W3 runner/job, independent host verifier,
+  round-3 contract tests, and the rebased mutable W4 shell are bound to source
+  commit `5e985fa3395a01228c18910d96e09ecbc5497628`.
+- **Registered:** immutable W3 round-3 criteria
+  `docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json` has SHA-256
+  `f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2`. The
+  corresponding private dataset is `ready`; its remote download has the same
+  five-file inventory and hashes as the staged dataset. The manifest SHA-256
+  is `17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b`.
+- **Submitted:** `ramhachi888/cfd-opt-sdf-w3-v16-primal/4` was pushed with a
+  T4 and 7200-second timeout. The latest exact-version status is
+  `KernelWorkerStatus.RUNNING`.
+- **Measured:** no round-3 force or solver result has been recovered. The
+  exact-version log retrieval is one newline byte (SHA-256
+  `01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b`), and
+  the output endpoint has not exposed an artifact. This is not evidence that
+  Julia or the solver has started.
+- **Verified:** round-3 registration check reproduces the criteria SHA;
+  W3/W4 focused pytest passes 19 tests; Python `compileall` passes; the W3
+  Julia adapter reports 16 checks passed without a solver step. The local
+  `.venv` is absent from this managed worktree, so Python validation used the
+  compatible interpreter at
+  `/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python`. These are
+  contract/preflight checks, not primal measurement or host verification.
+- **Qualified:** W2 sphere primal/grid response remain qualified. W3 v3
+  remains a T7 diagnostic; W3 round 3, physical profile, stationarity, grid
+  response, gradient, CPU/GPU reverse, topology, optimizer, and shape update
+  remain unqualified. All W4 and formal FD gates remain closed.
+- **Open:** continue polling only exact W3 version 4, retrieve its exact logs
+  and output at terminal status, then run the registered host verifier. If any
+  criterion fails, preserve an append-only diagnostic and do not proceed to
+  W4. Diagnostic-only Enzyme reverse spike version 3 is independently
+  `RUNNING`; it does not affect the qualification sequence.
+
+### 2026-09-28 W3 round 3 version 4 terminal diagnostic; reverse spike version 3
+
+This checkpoint supersedes the preceding “exact run active” checkpoint. Exact
+W3 kernel version 4 is terminal `KernelWorkerStatus.ERROR`; reverse-spike
+version 3 is terminal `KernelWorkerStatus.COMPLETE` with an internal
+`ERROR.txt`. Both records remain diagnostic-only. W3 v3 evidence, registered
+round-3 acceptance criteria, force projections, and thresholds are unchanged.
+
+- **Implemented:** expanded-domain W3 source, runner, host verifier, and tests
+  remain pinned to source commit
+  `5e985fa3395a01228c18910d96e09ecbc5497628`. The registered fixture keeps
+  flow origin `[-2.5,-1.2,-0.9] m`, dimensions `100x48x36`, and the canonical
+  GridSDF origin `[-1.0,-0.8,-0.6] m`. The short host-side follow-up probe
+  found the candidate interface on that mapped lattice and nonzero raw
+  WaterLily forces in a 100-step CPU smoke. This does not establish the remote
+  T4 body field or explain its zero force history.
+- **Registered:** W3 round-3 criteria remain immutable at SHA-256
+  `f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2`; the
+  five-file private dataset manifest SHA-256 remains
+  `17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b`. No
+  threshold or force sign changed after measurement. Round-3 criteria SHA-256
+  sidecar is `dcb5a919575f495d53e67cb950bd4f5a3326e85d9be5131e68c6c892d6a04b05`.
+- **Submitted:** exact kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-primal/4` reached terminal
+  `KernelWorkerStatus.ERROR`. The exact Kaggle log SHA-256 is
+  `c1217626c24d099c850c79378c42771ed235ad392393d3b8098e51cee3544ab3`; the
+  status response SHA-256 is
+  `368662655f7cc049a9f53b4e73c2db1e674c8d6dc20fd026940603cbe300f115`.
+- **Measured:** the T4 solver reached 3,841 steps and `tU/L=120.015625` with
+  finite velocity and pressure. It recorded 481 force rows, including 160 in
+  `[80,120]`; every total, pressure, and viscous `Fx/Fy/Fz` value is exactly
+  signed zero. The raw CSV SHA-256 is
+  `cf20d9ccf0c685500819801be9a6925346d15a2c881031a09cba599135ea8d9c`. The
+  run used Julia 1.12.6, CUDA.jl 6.3.1, WaterLily 1.8.0 on
+  `KernelAbstractions`, and the selected Tesla T4 UUID
+  `GPU-3adff65b-4908-2981-c7a1-cfd5b5a5bd3c`; wall time was 31.033535 s and
+  peak VRAM was 24,741,180 bytes. Exact-window drag/downforce and physical N
+  projections recompute to zero. T10 evaluates true only because both
+  half-window signals are zero; it is a degenerate stationarity diagnostic,
+  not evidence of a stationary nonzero response.
+- **Verified:** all 19 output artifacts match the version-4 SHA-256 manifest;
+  the exact output-bundled log is the Kaggle log without its final newline.
+  Remote dataset inventory and all five payload hashes match the staged
+  dataset. The independent host diagnostic recomputation matches the runner
+  gate map: T0-T6 true, T7 false, T8-T10 true. Formal success-only host
+  verification did not pass: it refused the output because `ERROR.txt` is
+  present and the required `DONE` marker is absent. The append-only primary
+  diagnostic is
+  [`kaggle_w3_v16_primal_version4_diagnostic_2026_09.json`](evidence/kaggle_w3_v16_primal_version4_diagnostic_2026_09.json)
+  (SHA-256 `1a22808509795a2735589743817fe2287014d7fbce7944492cd7e19bf4d4f51d`);
+  the host CPU follow-up is
+  [`kaggle_w3_v16_primal_version4_followup_diagnostic_2026_09.json`](evidence/kaggle_w3_v16_primal_version4_followup_diagnostic_2026_09.json)
+  (SHA-256 `360f7b12f4090fe9447d9aa3b1a13cce9d3e7fc58998329cb1a9884faddf2ac5`).
+  Validation: `python -m compileall src tests` passed; focused W3/W4 pytest
+  passed 19 tests; both W3/W4 Julia jobs parsed; the W3 adapter test passed 16
+  checks without solver steps; all three evidence JSON/sidecar pairs matched.
+  The full pytest suite reported 1,068 passed, 37 failed, and 4 skipped; the
+  failure tracebacks are `FileNotFoundError` for historical solver fixtures
+  and state files under ignored `work/` paths absent from this managed
+  worktree. The changed W3/W4 slice passes independently.
+- **Qualified:** no new qualification. W2 sampled-sphere primal and W2b
+  sphere grid-response evidence remain qualified. W3 round 3 remains
+  unqualified: T7 failed the registered positive `+Fx` drag gate. The
+  all-zero response does not establish a force-sign bug. It also does not
+  establish physical-profile equivalence, absolute downforce correctness,
+  grid/domain response, gradient, reverse mode, topology, optimizer, or a
+  shape update. Fixture selection was separately audited against the existing
+  Stage V evidence: the original `[-1,2]x[-0.8,0.8]x[-0.6,0.6] m` OpenFOAM
+  box failed `outer_patch_backflow_and_pressure_disturbance` (inlet normalized
+  pressure mean absolute disturbance `0.153719` against `0.05`, maximum
+  `0.290554`); the registered expanded `[-2.5,2.5]x[-1.2,1.2]x[-0.9,0.9] m`
+  box passed. Its same-candidate child with only the +x limit extended to
+  `3.5 m` also passed the registered domain-pair gate: parent/child Cd
+  `1.16939914/1.17036295`, downforce `0.75655147/0.75735487`, absolute
+  downforce delta `0.00080340 <= 0.005`, and relative Cd delta
+  `0.00082419 <= 0.02`. W2b round 5's `T4_drag_sign` gate and positive sampled
+  sphere drag support the unchanged `drag=+Fx` convention. These independent
+  records justify fixture/sign selection only; their OpenFOAM or sphere values
+  are not WaterLily v16 targets, nor do they establish solver equivalence or
+  absolute aerodynamics.
+- **Reverse diagnostic:** version 3 fixed the prior read-only Julia project
+  setup issue: the writable Project/Manifest copy hash-checked, instantiation
+  completed, and CUDA initialized on two T4 devices. Basic Enzyme reverse of a
+  CuArray then stopped with `EnzymeRuntimeActivityError` in
+  `GPUArrays._mapreduce`; the continued WaterLily Flow construction failed
+  compiling `llvm.nvvm.shfl.sync.down.f32` before `WATERLILY_PRIMAL_BEGIN`.
+  No primal, Poisson VJP, or timestep reverse ran. Append-only evidence is
+  [`kaggle_enzyme_reverse_spike_version3_diagnostic_2026_09.json`](evidence/kaggle_enzyme_reverse_spike_version3_diagnostic_2026_09.json)
+  (SHA-256 `71323038d1ff5404ec23e5b695f6ea2102116ca7f9406a27074aaa2a87b41185`);
+  this remains diagnostic-only and changed no production dependencies.
+- **Open:** isolate why the remote T4 path returns an all-zero candidate-force
+  history before another W3 qualification attempt. Any code or diagnostic
+  change requires an append-only new immutable criteria round and matching
+  dataset before another T4 measurement; keep T7 and stationarity thresholds
+  unchanged unless a pre-measurement scientific basis justifies a new round.
+  W4 criteria/dataset/measurement and formal FD remain blocked. Keep WaterLily
+  as the optimization oracle and OpenFOAM as an independent physical verifier.
+
+### 2026-09-28 W3 all-zero-force CUDA implementation diagnostic versions 1-2
+
+These are private implementation diagnostics, separate from W3 qualification.
+W3 round-3 criteria, positive `+Fx` drag gate, stationarity limit, old W3 v4
+output, and qualification status were not changed.
+
+- **Implemented:** local CPU reference and private T4 diagnostic kernel scan
+  the expanded-domain candidate, ground, and union SDF; exercise representative
+  CPU/CUDA body measurements; attempt one CPU/CUDA primal step and W2b sphere
+  controls. Diagnostic-only source fixes are pinned per Kaggle kernel version.
+  The version-3 source uses Julia's valid `1f-5` Float32 threshold, saves the
+  representative CPU/CUDA rows before comparison, and fingerprints immutable
+  input/backend/source identity before entering the diagnostic job.
+- **Registered:** no new W3 qualification criteria. Diagnostic versions reuse
+  round-3 input identity only and cannot set any qualification flag.
+- **Submitted:** private kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/1` and `/2` both reached
+  terminal `KernelWorkerStatus.ERROR`; exact status, logs, outputs, and their
+  SHA-256 manifests were retrieved version-bound.
+- **Measured:** version 1 passed the T4 runtime/CUDA smoke, immutable input
+  checks, and device round-trip, then stopped in representative probe-list
+  construction at `UndefVarError: f` caused by a malformed diagnostic literal.
+  Solver steps: 0. Version 2 again passed setup, matched canonical phi hashes
+  and the `0.3499999939931499 m` margin, and constructed 10 candidate probes.
+  The candidate CPU and CUDA `WaterLily.measure` calls returned; the following
+  comparison stopped at `UndefVarError: f0` from `1e-5f0`. Probe matrices were
+  not persisted in that version; no ground/union probe, full-grid scan,
+  simulation construction, or solver step was reached. These findings do not
+  explain the earlier full W3 run's all-zero force history.
+- **Verified:** exact-version artifacts passed host output/input hash checks.
+  Version-1 and version-2 evidence plus append-only correction records are
+  [`v1`](evidence/kaggle_w3_v16_cuda_diagnostic_version1_2026_09.json),
+  [`v1 stage correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version1_correction_2026_09.json),
+  [`v2`](evidence/kaggle_w3_v16_cuda_diagnostic_version2_2026_09.json), and
+  [`v2 source identity correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version2_identity_correction_2026_09.json).
+  The corrections preserve the original records and clarify that v1's failing
+  stage was probe construction and that v2 executed source commit
+  `9a2f0950ef9d320f7290581203e7ca102d8ef2a6` with Julia job SHA-256
+  `f731d86cab15b17aaded24b8dfdbb565b1ee24e359babf0af997c974e959b998`.
+  The focused W3/W4/diagnostic slice passes 29 tests; Python compileall,
+  diagnostic Julia parsing, and `git diff --check` pass.
+- **Qualified:** nothing new. W3 v16 primal remains unqualified; the source of
+  its zero-force T4 history is still open. Physical profile, grid response,
+  gradient, reverse, topology, optimizer, and shape update remain unqualified
+  or disallowed. W4 and formal FD remain blocked.
+- **Open:** push the version-3 diagnostic source/runner/verifier changes, submit
+  only the private minimal diagnostic kernel, and host-verify that exact
+  version's result or failure checkpoint. Do not rerun full W3, freeze W4, or
+  start formal FD based on these diagnostics. Keep all W3 gates and force
+  projection fixed.
+
+### 2026-09-28 W3 all-zero-force CUDA implementation diagnostic version 3
+
+This checkpoint supersedes the versions 1-2 diagnostic progress entry. It
+does not change the immutable W3 round-3 criteria or qualify the W3 primal.
+
+- **Implemented:** the private diagnostic job scans all 172,800 pressure-cell
+  centers for candidate, ground, and combined SDFs on CPU and T4 CUDA; runs
+  solver-free body measurements; constructs v16 CPU/CUDA simulations; takes
+  one primal step on each; and runs a one-step sphere control. The owner of the
+  non-owning CUDA SDF view is explicitly rooted during this diagnostic. The
+  host verifier now returns geometry-contract checks, accepts the observed
+  Float32 representation of pinned flow origin/spacing within representation
+  roundoff, maps the report's CUDA naming correctly, and uses a diagnostic
+  recomputation tolerance of `5e-8 m` for CPU/CUDA distance arithmetic.
+- **Registered:** no new qualification criteria or thresholds. W3 round-3
+  criteria remain SHA-256
+  `f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2`.
+- **Submitted:** private diagnostic kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/3` reached
+  `KernelWorkerStatus.COMPLETE`. Exact status SHA-256 is
+  `e728d1ce05074fee394cf33e6f060f6a09a02868dbd21c289b90701744c0f763`; exact
+  Kaggle log SHA-256 is
+  `4113bfa739c118ec231681e27a2fed95388e2b0f25aef1f720f37c35ede2d216`.
+- **Measured:** runtime was Julia 1.12.6, CUDA.jl 6.3.1, CUDA runtime 12.8.0,
+  CUDA driver API 13.3.0, NVIDIA driver 580.159.04, WaterLily 1.8.0 on
+  `KernelAbstractions`; the selected device was a Tesla T4
+  (`GPU-d5fd398c-ae72-ef9e-54ae-c229cf2ea025`). The expanded flow grid was
+  `100x48x36`, with flow origin `[-2.5,-1.2,-0.9] m`; the unchanged canonical
+  SDF remained `61x33x25` at `[-1,-0.8,-0.6] m`. Candidate CPU/CUDA negative
+  cell counts were `1009/1009`, support counts (`|d|<=1` solver unit) were
+  `2481/2476`, and distance sign mismatches outside the zero band were zero.
+  The maximum CPU/CUDA candidate distance difference was
+  `4.76837158203125e-7 m`. The ground scan matched its registered plane.
+  At initial state both candidate force snapshots were zero; after one step,
+  CPU and CUDA repository-projected drag were `3485.0465` and `3485.1330`
+  solver units, respectively. Raw total force vectors were
+  `[-3485.0465,-22.4661,4627.1703]` and
+  `[-3485.1330,-22.2581,4627.4747]`; pressure-plus-viscous closure held on all
+  three axes to floating-point roundoff. The CUDA candidate normal comparison
+  still has a maximum vector error of `1.338` against the independent NumPy
+  reference; pointwise normal/gradient parity is not qualified by this scan.
+- **Verified:** the exact output manifest, inputs, source/job/runner identity,
+  full lattice CSV, host-recomputed SDF statistics, force closure, and exact
+  Kaggle status/log were independently checked. The append-only host record is
+  [`v3 diagnostic`](evidence/kaggle_w3_v16_cuda_diagnostic_version3_2026_09.json);
+  the interpretation/source-audit supplement is
+  [`v3 interpretation`](evidence/kaggle_w3_v16_cuda_diagnostic_version3_interpretation_2026_09.json).
+  Focused W3/W4/diagnostic tests pass (30), Python compileall and py_compile
+  pass, the diagnostic Julia job parses, and `git diff --check` passes. The
+  repository-wide pytest run reports 1,079 passed, 37 failed, and 4 skipped;
+  the inspected failures are `FileNotFoundError` for historical, ignored
+  `work/` artifacts absent from this managed worktree. The focused changed
+  slice passes.
+- **Interpretation:** the full W3 v4 T4 run still completed 3,841 steps at
+  `tU/L=120.015625` with every total, pressure, and viscous force component
+  exactly zero, and T7 failed. The diagnostic's nonzero one-step CUDA force
+  shows that the candidate geometry and force path can produce a nonzero
+  response when the CUDA grid owner remains rooted. The pinned W3 source
+  creates `device_owner`, derives a non-owning `CuDeviceArray` view, builds the
+  bodies/simulation, then does not explicitly preserve the owner during
+  `run_primal`; the adapter contract says the owner must remain live while a
+  kernel uses that view. Premature owner collection is therefore a strong
+  source-level hypothesis, but no forced-GC retained/unrooted A/B has yet
+  confirmed it. The full-horizon zero-force cause remains unlocalized.
+- **Qualified:** nothing new. W3 remains unqualified; physical profile, grid
+  response, gradient, CPU/GPU reverse, topology, optimizer, and shape update
+  remain false. W4 and formal FD remain blocked. Force sign and registered
+  thresholds remain unchanged.
+- **Open:** the next minimum experiment is a diagnostic-only T4 A/B with the
+  exact same round-3 fixture and backend: one arm explicitly roots the owner
+  through body measurement and a tiny number of steps; the other constructs
+  view-backed objects in a helper scope, forces full GC before measurement,
+  and records a weak reference to the owner. Record whether collection
+  occurred, fixed-point/full-grid geometry summaries, fields, force components,
+  and exact identities. Treat a difference as support for the hypothesis
+  only if it repeats and coincides with confirmed owner collection. Do not
+  launch another full W3, W4, or FD measurement before that diagnosis and a
+  new immutable qualification round if source changes.
+
+### 2026-09-28 W3 diagnostic force-projection clarification
+
+The diagnostic CSV names retain the unmodified WaterLily API force as
+`waterlily_*_force_raw`; these components have the opposite sign from the
+repository's force-on-body vectors. The registered W3 job negates the
+WaterLily pressure and viscous vectors first, then applies
+`drag=+Fx_body_total` and `downforce=-Fz_body_total`. The diagnostic snapshot
+stores raw WaterLily force, so its equivalent projected values are
+`drag=-Fx_WaterLily_raw` and `downforce=+Fz_WaterLily_raw`. The W2b
+`pressure_force_on_body`/`viscous_force_on_body` wrappers use the same negation.
+
+Therefore the v3 one-step projected drag of `3485.0465/3485.1330` solver units
+on CPU/CUDA is consistent with the registered body-force sign convention. It
+is a valid one-step implementation observation, but it is not an exact-window
+time-weighted result, a stationarity result, or W3 qualification. This
+clarification is recorded append-only in
+[`v3 force-projection correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version3_force_projection_correction_2026_09.json).
+No force sign, threshold, measurement, or qualification state changed. The
+owner-lifetime hypothesis remains unconfirmed and the next minimum test stays
+the retained-versus-forced-GC T4 A/B described above.
+
+### 2026-09-28 owner-lifetime diagnostic kernel version 4: runner workspace error
+
+This entry supersedes the preceding `RUNNING` checkpoint for exact kernel
+version 4. It preserves both that version's original evidence and a
+host-verification correction; neither is a W3 or owner-lifetime pass.
+
+- **Implemented:** version 4 successfully passed dataset/input identity,
+  Julia 1.12.6 package setup, CUDA smoke, T4 inventory, canonical SDF device
+  round-trip, CPU/CUDA geometry scan, and the existing one-step W3 diagnostic.
+  The owner-lifetime A/C/B process sequence did not start. `run_owner_lifetime_arms`
+  attempted to launch A only after leaving the `TemporaryDirectory` that held
+  Julia and the fetched project. A minimal runner correction now keeps base
+  output validation and all four arm subprocesses within that directory's
+  lifetime. The host verifier accepts an explicit exact-version runner source
+  and distinguishes this wrapper failure from Julia/WaterLily failures.
+- **Registered:** round-2 owner criteria remain byte-identical and unchanged:
+  SHA-256
+  `8530e084ed33807b67b175f2234266cae34f74ccf510ea31130a199f30a0bec9`.
+  The v4 failure occurred before any owner arm measurement, so no owner
+  observation or acceptance threshold was changed.
+- **Submitted:** private kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/4` reached
+  `KernelWorkerStatus.ERROR`. T4 identity was 2 × Tesla T4, selected UUID
+  `GPU-7685ef41-8af8-4f82-39ba-0609f744d9ba`, Julia 1.12.6, CUDA.jl 6.3.1,
+  runtime 12.8.0, driver API 13.3.0, and WaterLily 1.8.0.
+- **Measured:** the separate base diagnostic completed one v16 CUDA step at
+  `t=0.015625`; its projected candidate drag was `3485.132996` solver units
+  after that step. This reproduces a tiny one-step observation only. Owner A
+  was not spawned, so owner solver steps are zero and there are no A/C/B
+  geometry, field, force, GC, or normal-comparison measurements.
+- **Verified:** the first append-only record is
+  [`version 4 diagnostic`](evidence/kaggle_w3_v16_cuda_diagnostic_version4_2026_09.json),
+  SHA-256
+  `c3bf3b4e64503996cde1e138d56dbe448b0fccef03cbe945d687f9c653a54480`.
+  Its correction is
+  [`version 4 runner correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version4_runner_correction_2026_09.json),
+  SHA-256
+  `5928c8388ae455376a1ed055802f86b4a307ccf238b05acc0e8201b104d6766c`.
+  The correction verified source/input/backend identity and the complete
+  output manifest, then classified the exact exception as
+  `owner_lifetime_runner_workspace_expired` at Julia process launch before A.
+  Kaggle log SHA-256 is
+  `cb474ff4890348dd2f15de7d2a7506c5b127030f838b0416e4868642948d8862`,
+  status SHA-256 is
+  `b0fc55f87e13b86a9fb93993640d490630b7ee3606d09b5f4ef2970e757344c7`,
+  output SHA-manifest SHA-256 is
+  `a2984ba02b056999b1a73bc3ec26ac835d14db91acb7dd9fe1644987cf4f8488`, and
+  `ERROR.txt` SHA-256 is
+  `f3dc9101d5880c49027a197e9d330befb4a5f6cd34f94e67846dfceed2127575`.
+  The exact uploaded v4 runner is recovered from commit `6fe9752` and has SHA-256
+  `609a86f40424a83ab4ed870d1fe2c321c9c0994ff5e27077e821c01457f36378`.
+  The overall owner diagnostic is incomplete and its hypothesis remains
+  unresolved.
+- **Qualified:** nothing. W3 v4 remains failed/unqualified; no W3 gate,
+  physical profile, grid response, gradient, reverse, topology, optimizer, or
+  shape-update status changed. The v4 one-step sample does not establish a
+  cause for the full W3 v4 all-zero force history.
+- **Open:** submit a new diagnostic kernel version with only the workspace
+  lifetime correction and the host verifier update. Reuse the unchanged
+  registered owner criteria, then retrieve exact logs/output and verify the
+  A/C controls plus both B collection brackets. No production fix or new W3
+  qualification run is authorized by version 4.
+
+### 2026-09-28 owner-lifetime diagnostic version 5 submitted
+
+- **Implemented:** runner workspace lifetime correction, exact runner-source
+  override for historical host verification, and a regression test for the
+  version-4 missing Julia executable classification are committed at
+  `a5022c8`. Runner SHA-256:
+  `fbecc7093ef3fe05ca637a0bf4e4d5e993bd4beca29087b2ebd6ef02c8842ee1`.
+- **Registered:** unchanged criteria round 2, SHA-256
+  `8530e084ed33807b67b175f2234266cae34f74ccf510ea31130a199f30a0bec9`, and
+  unchanged owner Julia job SHA
+  `7fa98a26105f1a2938ab85550931a22cb1020bd27d687d6f4dedb99c1b5572ea`.
+- **Submitted:** private kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/5` was submitted with T4.
+  Its first exact-version check returned `KernelWorkerStatus.RUNNING`.
+- **Measured:** version 5 is not terminal; no owner arm result has been
+  recovered.
+- **Verified:** local focused W3/W4/diagnostic slice passes 38 tests; Python
+  compileall/py_compile, Julia syntax parsing, criteria/evidence JSON and
+  sidecar checks, and `git diff --check` pass. Remote host verification remains
+  open.
+- **Qualified:** nothing new. All qualification flags remain false.
+- **Open:** retrieve only exact version 5 status, logs, and outputs after it
+  reaches a terminal state; verify A/C agreement, actual owner collection in
+  both B replicates, geometry/field/force differences, and exception class.
+
+### 2026-09-28 owner-lifetime diagnostic version 5 submitted
+
+- **Implemented:** runner workspace lifetime correction, exact runner-source
+  override for historical host verification, and a regression test for the
+  version-4 missing Julia executable classification are committed at
+  `a5022c8`. Runner SHA-256:
+  `fbecc7093ef3fe05ca637a0bf4e4d5e993bd4beca29087b2ebd6ef02c8842ee1`.
+- **Registered:** unchanged criteria round 2, SHA-256
+  `8530e084ed33807b67b175f2234266cae34f74ccf510ea31130a199f30a0bec9`, and
+  unchanged owner Julia job SHA
+  `7fa98a26105f1a2938ab85550931a22cb1020bd27d687d6f4dedb99c1b5572ea`.
+- **Submitted:** private kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/5` was submitted with T4.
+  Its first exact-version check returned `KernelWorkerStatus.RUNNING`.
+- **Measured:** version 5 is not terminal; no owner arm result has been
+  recovered.
+- **Verified:** local focused W3/W4/diagnostic slice passes 38 tests; Python
+  compileall/py_compile, Julia syntax parsing, criteria/evidence JSON and
+  sidecar checks, and `git diff --check` pass. Remote host verification remains
+  open.
+- **Qualified:** nothing new. All qualification flags remain false.
+- **Open:** retrieve only exact version 5 status, logs, and outputs after it
+  reaches a terminal state; verify A/C agreement, actual owner collection in
+  both B replicates, geometry/field/force differences, and exception class.
+
+### 2026-09-28 diagnostic-only CUDA owner-lifetime A/B/C round 2 prepared
+
+This controlled implementation diagnostic follows the exact W3 round-3
+fixture and existing private W3 CUDA diagnostic kernel. It does not alter the
+W3 production source, round-3 criteria, force projection, T7/T10 gates, or any
+qualification flag.
+
+- **Implemented:** `scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl`
+  compares explicitly retained owner (A), structurally owned components (C),
+  and two helper-scoped unrooted replicas (B1/B2), each in a separate Julia
+  process. Every arm records forced-GC/WeakRef checkpoints, representative
+  probes, full 172,800-point candidate/combined CPU and CUDA geometry scans,
+  simulation fields, raw pressure/viscous/total force, body-force projections,
+  and two primal steps. The Kaggle runner and host verifier now capture and
+  independently check the arm artifacts and failure classes. Focused tests
+  cover immutable criteria/job hashes, owner/GC schema, force closure and
+  projections, A/C/B comparison, binary artifact order/hash, process failure
+  classification, and append-only evidence.
+- **Registered:** immutable diagnostic-only criteria round 2 is
+  [`kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round2.json`](evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round2.json),
+  SHA-256
+  `8530e084ed33807b67b175f2234266cae34f74ccf510ea31130a199f30a0bec9`; its
+  sidecar SHA-256 is
+  `ef9df9f54f4408783a243f3b92f014722a3131da7bccc86f5b34b24100538b43`. It
+  supersedes round 1 before any measurement because a representative positive
+  phi probe differed from the v3-compatible minimum-positive selection. The
+  fixture, arms, GC procedure, tolerances, and causal decision rules did not
+  change. Owner job SHA-256 is
+  `7fa98a26105f1a2938ab85550931a22cb1020bd27d687d6f4dedb99c1b5572ea`.
+- **Submitted:** private kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/4` was submitted with the
+  NvidiaTeslaT4 accelerator after source commit
+  `885ae7558012da43e6310e2ffb04db4230150f5b` was pushed. At this checkpoint
+  its exact version-bound Kaggle status is `KernelWorkerStatus.RUNNING`. The
+  uploaded runner SHA-256 is
+  `609a86f40424a83ab4ed870d1fe2c321c9c0994ff5e27077e821c01457f36378`.
+- **Measured:** no terminal owner-lifetime measurements are available yet.
+  Local Julia syntax parsing,
+  Python `compileall`, Python `py_compile`, focused owner diagnostic tests
+  (18 passed), and `git diff --check` pass. The related W3/W4/diagnostic
+  slice passes 37 tests. The required repository-wide run reports 1,086
+  passed, 37 failed, and 4 skipped; the reported failures are attempts to read
+  ignored historical `work/` artifacts absent from this managed worktree
+  (including Stage-S and Stage-V fixtures), not failures in the changed slice.
+  Remote CUDA execution is still required.
+- **Verified:** no remote owner-lifetime result exists yet. The host verifier
+  records an unresolved result if the owner experiment was not reached and
+  rejects unregistered artifact identities or a non-append-only evidence
+  target.
+- **Qualified:** nothing. This experiment can only support, weaken, or leave
+  unresolved the implementation-layer owner-lifetime hypothesis. It cannot
+  qualify W3 primal, physical profile, grid response, gradients, reverse mode,
+  topology, optimizer, or shape update.
+- **Open:** submit and collect one exact private Kaggle kernel version, then
+  host-verify its exact status, logs, output manifest, runner/job/criteria
+  identities, A/C agreement, both B collection brackets, geometry, fields,
+  forces, and process outcomes. Preserve failed outputs and append a
+  diagnostic result. Do not modify the production W3 path or restart full W3,
+  W4, or formal FD from this scratch experiment.
+
+### 2026-09-28 owner-lifetime diagnostic version 5 terminal diagnosis and round 3
+
+- **Implemented:** host failure classification now reads each exact arm report
+  and distinguishes the repeated missing-import failure from a CUDA/lifetime
+  arm failure. The owner job uses explicit imports for
+  `v16_physical_profile_bodies` and
+  `build_v16_physical_profile_simulation`; the W3 production job is unchanged.
+- **Registered:** immutable owner-lifetime criteria round 3 was frozen before
+  another measurement at
+  [`kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round3.json`](evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round3.json),
+  SHA-256
+  `906fda6a3991d7a37ea29f50ccc851f3788cde9a6bb90dfcc5b11279fb3f4274`; sidecar
+  SHA-256
+  `23033b9601f6f38932e08c3c5e994651f71559da6b0966f7e0bc4172fe166c03`. It
+  binds owner job SHA-256
+  `b952aae000f6a2047b050ca5d46bd8fdd1a5c320ebc222bd380b70c0924c8cac` and
+  supersedes round 2 only because version 5 reached no owner/body construction,
+  GC bracket, geometry/field/force measurement, or owner primal step. All
+  fixture values, arm order, GC procedure, tolerances, sample points and
+  causal rules remain identical.
+- **Submitted:** version 5 of the private owner-lifetime kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/5` terminated as
+  `KernelWorkerStatus.ERROR`. Exact runner SHA-256 was
+  `fbecc7093ef3fe05ca637a0bf4e4d5e993bd4beca29087b2ebd6ef02c8842ee1` and the
+  runner fetched source commit `885ae7558012da43e6310e2ffb04db4230150f5b`.
+- **Measured:** the base CUDA diagnostic reached one v16 step. Each of A, C,
+  B1 and B2 launched a separate Julia process, but all four stopped at
+  `canonical_input_load_started` with
+  `UndefVarError: v16_physical_profile_bodies not defined in Main` before
+  candidate body construction. The base diagnostic's candidate drag was
+  `3485.132996418866` solver units after that single step. No owner was
+  constructed or collection-tested; the owner experiment has no geometry,
+  simulation-field, force, GC, or normal measurements.
+- **Verified:** exact version 5 log SHA-256 is
+  `500306c3c4e0f7ca31dfe7a3c4191b5180ec7a8ad0fd8a154cb008a5581cb8f3`, status
+  SHA-256 is
+  `2341886fe14bda95b1cf663ab933c531b25e6cba8b281d9b6fd6c4cd6d8c5f16`, output
+  manifest SHA-256 is
+  `c95d0836fee46c74334599fd7ff00d98559495b19d26224d8cde61ad6525a91e`, and
+  `ERROR.txt` SHA-256 is
+  `01f5ccc61439cb579aba16c988da9a51381fbf6084d20033b5d0396f74b6eb81`. The
+  original append-only evidence is
+  [`version 5 diagnostic`](evidence/kaggle_w3_v16_cuda_diagnostic_version5_2026_09.json),
+  SHA-256
+  `6e125c47a252fcbbf5c2e78c8342cc16e352a1edea7674bf1510d75a0832e19e`; its
+  host-classification correction is
+  [`version 5 host correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version5_host_correction_2026_09.json),
+  SHA-256
+  `907babecef7f5ee9547e3c74a1f18d4bf751e9187a7a078de9bc67f9dd47a823`. Both
+  verify the output artifacts, but the owner diagnostic is incomplete and the
+  exact failure class is `owner_lifetime_julia_missing_import`.
+- **Local validation:** focused command
+  `PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q tests/test_kaggle_w3.py tests/test_kaggle_w4.py tests/test_kaggle_w3_cuda_diagnostic.py`
+  passed 39 tests. `python -m compileall src tests`, Python `py_compile` for
+  the runner/verifier/tests, Julia `Meta.parseall` for the owner job, criteria
+  JSON/sidecar/job hash checks, and `git diff --check` passed. Repository-wide
+  pytest reported 1,088 passed, 37 failed, 4 skipped; the failures are
+  historical tests requiring ignored `work/` artifacts absent from this
+  worktree (for example PQ0.2/PQ3 checkpoints and Stage-S/Stage-V solver logs).
+- **Qualified:** nothing new. The owner-lifetime hypothesis remains unresolved;
+  the v5 import failure does not explain W3 v4's 3,841-step all-zero force
+  history. W3 v4 remains unqualified, and W4, FD, gradient, reverse, topology,
+  optimizer, and shape update remain unqualified/disallowed.
+- **Open:** push the frozen round-3 source and submit a new exact private
+  kernel version. Recollect its exact status/log/output and host-verify A/C
+  agreement, both B owner-collection brackets, and the registered geometry,
+  fields, forces, and normal diagnostics before interpreting causality.
+
+### 2026-09-28 owner-lifetime diagnostic version 6 measured; causal result unresolved
+
+- **Implemented:** version 6 used the round-3 owner job and runner pinned to
+  source commit `22137e2c7e15e4bb4f62806e29e221a5965f64b2`. The four arms ran
+  in separate Julia processes on one selected T4. The verifier was corrected
+  after the first host pass attempt exposed two latent host-only issues: the
+  Julia archive SHA is bound under criteria inputs, and completed arm arrays
+  must be kept internal while compact report summaries are serialized. A/C/B
+  measurements and registered conditions were not changed.
+- **Registered:** version 6 used immutable round-3 criteria SHA
+  `906fda6a3991d7a37ea29f50ccc851f3788cde9a6bb90dfcc5b11279fb3f4274` and owner
+  job SHA
+  `b952aae000f6a2047b050ca5d46bd8fdd1a5c320ebc222bd380b70c0924c8cac`.
+- **Submitted:** exact private kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/6` completed. Diagnostic
+  runner SHA-256 is
+  `deb12c2b9a9a72993f9a8967f12385d935022306ac25b8c30cd9cd07c3e5bc4e`; the
+  selected GPU is `GPU-a66ae48d-3270-ed38-0d97-a68246cf09ec` from an inventory
+  of 2 × Tesla T4. Runtime identity: Julia 1.12.6, CUDA.jl 6.3.1, CUDA runtime
+  12.8.0, driver API 13.3.0, WaterLily 1.8.0, backend `KernelAbstractions`.
+- **Measured:** A, C, B1 and B2 each completed two primal steps. Full 172,800
+  point candidate/combined CPU and CUDA geometry artifacts were captured. All
+  four arms had identical geometry arrays; candidate negative cells were
+  1,009 CPU and CUDA, CPU/CUDA distance error was at most
+  `4.7683716e-7 m`, and the pre-existing maximum normal-vector discrepancy
+  stayed `1.3379748`. A/C final flow-field arrays were byte-identical. Both B
+  replicates matched A through step 1 and diverged in final step-2 flow fields
+  and force: A/C drag/downforce were `707.1370 / 847.9948`, B1
+  `720.2276 / 854.9039`, and B2 `712.4746 / 853.7397` solver units. The
+  A/C host comparison passed and both B replicates had host divergence classes
+  `simulation_fields` and `force_history`.
+- **Verified:** exact `/6` log SHA-256 is
+  `0e300babad42276fcf18f6d9b11d2b6fd5f05802e906bd9c98c5e0becabf4b95`, status
+  SHA-256 is
+  `2f547f8fea5f9f2cc6b6c1d9bf11669c39105cb8dc194699c6d6398fc068a2b1`, output
+  manifest SHA-256 is
+  `f4944ddac2b19b6e1ba680964ed587e81c173a3544b8f3a189bd90a6b03b46ac`, and
+  `DONE` SHA-256 is
+  `c3ae0c1108a07ac153b0ee13893bc731b7e210607850bbb5c7956f02c3fc2525`. The
+  first host record is
+  [`version 6 result`](evidence/kaggle_w3_v16_cuda_diagnostic_version6_2026_09.json),
+  SHA-256
+  `68cf588200b84edf056a815e7d7f35683e113e21533a8819f641d7f17354482d`; its
+  appended host correction is
+  [`version 6 host correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version6_host_correction_2026_09.json),
+  SHA-256
+  `ad7e930eda5aa0ade067ed8797cacf03de256c31ddb7390383460e44652b25fb`. Base
+  source/input/backend and raw output artifact verification passed. Owner
+  behavioral verification is false because C and both B wrapper WeakRefs were
+  already clear before the forced-GC bracket.
+- **Causal interpretation:** source inspection shows round-3 code made
+  `WeakRef(owner)` where `owner` is immutable `DeviceGridSDF`, rather than
+  weak-referencing `owner.grid.phi`, the backing `CuArray`. The captured clear
+  state therefore does not prove backing-array collection. C has the same
+  wrapper WeakRef issue and nevertheless matches A exactly; B1/B2 share a
+  step-2 field/force divergence, but their collection was not bracketed at the
+  registered GC boundary. The owner-lifetime hypothesis remains **unresolved**;
+  this is not a root-cause confirmation and does not explain W3 v4's complete
+  all-zero force history.
+- **Qualified:** nothing. All W3 primal/physical/grid/gradient/reverse/topology
+  and shape-update qualification flags remain false. No production W3 path,
+  force convention, or acceptance threshold changed.
+- **Open:** register the next diagnostic round with `WeakRef(owner.grid.phi)`
+  for A/C/B and record the weak-reference target path/type explicitly. Keep the
+  same fixture, process isolation, GC procedure, force/field/geometry probes,
+  tolerances and causal rules; rerun only after that immutable round is pushed.
+
+### 2026-09-28 owner-lifetime diagnostic round 4 submitted; version 7 running
+
+- **Implemented:** the diagnostic now weak-references the backing
+  `owner.grid.phi` `CuArray` directly for A/C/B1/B2 and records the target path
+  and runtime type. B1/B2 disable automatic GC at the noinline helper boundary
+  after creating the WeakRef, verify GC was initially enabled, and re-enable it
+  immediately before each of the two registered full collections. Automatic GC
+  is disabled again between the two forced collections and remains enabled
+  after the second. The existing shared body/simulation path, arm order, full
+  geometry scan, field/force snapshots, fixture, tolerances, and causal rules
+  are unchanged. No production W3 source, force convention, or acceptance gate
+  changed.
+- **Registered:** immutable criteria
+  [`round 4`](evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round4.json)
+  SHA-256
+  `58867bf2e68e989200edb39b401f8db2f52df340db2d84534853dad01679530e`; sidecar
+  SHA-256
+  `0637966ce609c452797241e42498e6503a02dde6ba09298b93e692ac5373f3c0`. It
+  supersedes round 3 only because v6 showed that `WeakRef(owner)` targeted the
+  immutable wrapper and B's references cleared before the registered GC
+  bracket. The W3 fixture, owner hypotheses, acceptance thresholds, and
+  causal decision rules are not relaxed. Owner job SHA-256 is
+  `3676babc3b7516690a813acb84fa324a46a75e8b98b39c447b755394a80c6212`; the
+  runner SHA-256 is
+  `5e004a1e32529271b1b45a7f65086e173ca8246b5df57e8ea127b40f834ea710`; the
+  source checkout to be used by the pinned runner is commit
+  `ffb5cc7edc4d3a598d420ef6c065d10c5c8bbc07`.
+- **Submitted:** after source-pin commit `dec3e2f0728ba03df2d3951d6c5972bdb41c7d1a`
+  was pushed, private kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/7` was submitted with the
+  registered T4 runtime. Its first exact-version status was
+  `KernelWorkerStatus.RUNNING`; the captured status file SHA-256 is
+  `172bce72b56e63812fe433424e62e85da4677860437b57b598d5db11ec53048c`.
+- **Measured:** no round-4 GPU observations exist. Version 6 remains the latest
+  measurement and its owner-lifetime result remains unresolved; it does not
+  explain W3 v4's 3,841-step all-zero force history.
+- **Verified:** focused W3/W4/diagnostic tests pass 40/40; Python `compileall`,
+  targeted `py_compile`, Julia `Meta.parseall` of the owner job, criteria JSON
+  and sidecar verification, and `git diff --check` pass. These are local
+  contract checks only. Repository-wide pytest completed with 1,089 passed,
+  37 failed, and 4 skipped. The 37 failures match the known managed-worktree
+  limitation: historical PQ/Stage S/V tests read ignored `work/` checkpoints,
+  logs, and case files absent from this checkout. The changed W3/W4/diagnostic
+  slice passes independently.
+- **Qualified:** nothing new. W3 v4 remains failed/unqualified; WaterLily
+  primal, physical profile, grid response, gradient, reverse, topology,
+  optimizer, and shape update remain unqualified.
+- **Open:** continue checking only exact Kaggle version 7; when terminal,
+  retrieve its exact logs/output and run host verification before making any
+  causal interpretation.
+
+### 2026-09-28 owner-lifetime diagnostic version 7 complete; host-verified
+
+- **Measured:** exact private kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/7` reached
+  `KernelWorkerStatus.COMPLETE`. Version-bound terminal status SHA-256 is
+  `15530f04c1915580ac9ef78acb78a48b4c5dff418243add0aa9cd2620920f27a`; exact
+  Kaggle log SHA-256 is
+  `a8e9b9481de43bcdfd246e33885fa3aea9ce1d02c396fba1d35c07540e4eab88`; output
+  `sha256.json` SHA-256 is
+  `5a44a351600f56226cf07234a4ce6eb9ac8ccf426c3b2ebd98f22f2603d16adb`.
+  The run performed four isolated arms (A, C, B1, B2), each with two primal
+  steps and 172,800-point geometry scans, on a Tesla T4 with Julia 1.12.6,
+  CUDA.jl 6.3.1, CUDA runtime 12.8.0, driver API 13.3.0, and WaterLily 1.8.0.
+- **Verified:** the host verifier independently checked input/source/runtime
+  identity and every output artifact. Immutable criteria SHA-256 is
+  `58867bf2e68e989200edb39b401f8db2f52df340db2d84534853dad01679530e`; owner
+  job SHA-256 is
+  `3676babc3b7516690a813acb84fa324a46a75e8b98b39c447b755394a80c6212`; runner
+  SHA-256 is
+  `5e004a1e32529271b1b45a7f65086e173ca8246b5df57e8ea127b40f834ea710`; host
+  verifier SHA-256 is
+  `20484ef7d1c885d3f163ae721292181264085f13889dca94a722f2178f97ad68`. The
+  primary append-only result is
+  [`version-7 diagnostic evidence`](evidence/kaggle_w3_v16_cuda_diagnostic_version7_2026_09.json),
+  SHA-256
+  `66dd9396967f95ef92cb682b24ed14ac4a56345b12cfb2d38f67d4e5bbbb63c3`.
+  After the host correction, focused W3/W4/diagnostic tests pass 42/42 and
+  `python -m compileall src tests` passes. Repository-wide `pytest -q` reports
+  1,091 passed, 37 failed, and 4 skipped; the 37 failures read ignored
+  historical `work/` case, checkpoint, or log artifacts absent from this
+  managed checkout. `git diff --check` passes.
+- **Interpretation:** A/C retained the direct `owner.grid.phi` backing-array
+  WeakRef through both full GCs and agreed exactly in fields and force through
+  step2. B1/B2 were alive immediately before the registered forced-GC bracket,
+  cleared after both collections, agreed with controls through step1, then
+  reproduced the same simulation-field and force-history divergence class at
+  step2. Their viscous and total raw force components were JSON `null` on all
+  axes; these values remain invalid observations, so no force closure is
+  claimed on those axes. The result strongly supports owner-lifetime
+  sensitivity in this two-step fixture but does not explain W3 v4's complete
+  3,841-step all-zero force history.
+- **Host correction:** the initial verifier attempt stopped because it rejected
+  the registered post-GC B-step2 null force observations and wrote no result
+  evidence. The correction permits those nulls only under the measured B-step2
+  owner-collection bracket and checks null masks plus finite components. The
+  append-only correction record is
+  [`version-7 host correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version7_host_correction_2026_09.json),
+  SHA-256
+  `53900176b17b0f91a0513c40b531ad538ae028da0b13034244d7fe6ea939ba6c`.
+- **Identity limitation:** the registered type label is
+  `CuArray{Float32, 3, CUDA.DeviceMemory}`, while every arm reports the exact
+  runtime string `CuArray{Float32, 3, CUDACore.DeviceMemory}`. The primary
+  verifier records the mismatch and assumes no alias equivalence. The arms
+  still report the same observed runtime type; resolving the label is open.
+- **Qualified:** nothing new. The W3 v16 primal, physical profile, grid/domain
+  response, gradient, CPU/GPU reverse, topology, and shape update remain
+  unqualified; `shape_update_allowed=false`. No production owner-lifetime fix
+  is authorized by this diagnostic.
+- **Open:** freeze a new immutable W3 qualification round against the committed
+  structural owner fix, update and remotely re-verify the private dataset, then
+  submit and host-verify the exact T4 kernel version. W4 remains blocked on a
+  passing host-verified W3 primal.
+
+### 2026-09-28 full-horizon owner diagnostic closed; W3 owner fix implemented
+
+- **Measured:** exact private kernel
+  `ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-diagnostic/2` reached
+  `KernelWorkerStatus.COMPLETE` on the registered two-T4 Kaggle inventory,
+  selected UUID `GPU-594bac6d-f97e-246d-4962-065f751ba972`, Julia 1.12.6,
+  CUDA.jl/CUDACore 6.3.1, CUDA runtime 12.8.0, driver API 13.3.0, and
+  WaterLily 1.8.0. Registered criteria SHA-256 is
+  `2b28c0284833cdc3b360fe2f55e6babb435394b69ea001fcb677fe94c5b40000`;
+  source commit `a8ce5a8104b8d115ed9d706257f0e0b5956c7db3`; exact log SHA-256
+  `763c53bfd5b5fe234da74e2a475ca8dc1a7b73d7befa46566b9a640e7a4ac239`;
+  terminal status SHA-256
+  `b460246279ec24d862be48d472007531d1b16c7e49584c98fe9fc862fdd28c35`;
+  output `sha256.json` SHA-256
+  `58b7265cfe8f9e53997683e966ec00fadc5d9986ab83201472a03ab5b692324c`.
+- **Verified:** A-natural and A-forced each retained the backing owner and
+  completed 4,808 steps to `tU/L=120.0019378662`, with finite, nonzero forces;
+  their 601 force samples matched exactly. B-natural-1 and B-natural-2 both
+  observed the backing `owner.grid.phi` WeakRef clear at step 1 and completed
+  the horizon. Their first sampled non-finite force was step 16 at
+  `tU/L=0.3506548703` and step 128 at `tU/L=3.0178484917`, respectively.
+  The registered first-collection and endpoint velocity/pressure snapshots
+  remained finite. The type probe result
+  [`owner type round 2`](evidence/kaggle_w3_owner_type_probe_result_2026_09.json)
+  SHA-256 `91667c7dc783bd7f8f05dd8b2b596ec6242c2c887f60c8f7d142f4c53ea67fb6`
+  confirms `CUDA.DeviceMemory === CUDACore.DeviceMemory` on the exact Julia
+  1.12.6/CUDA.jl 6.3.1 T4 runtime.
+- **Host correction:** the first local verifier attempt completed artifact and
+  arm validation but stopped at final evidence assembly with
+  `KeyError: qualification_flags`; the immutable schema stores the flags under
+  `evidence_output`. The corrected host verifier reads that registered
+  location and records its actual hash versus the registered hash. It does not
+  change the criteria, measurement, or thresholds. Primary result evidence
+  SHA-256 is `72e887e02b406b964bf7b6c617dcf111fc51dc9e1d275fc827689e80e29c9aeb`;
+  host-correction evidence SHA-256 is
+  `a56590757b46b176102d7c3e92517bbac57d7d9740ca41036c72fd28bbe29ccb`.
+  The corrected verifier hash differs from the criteria-bound verifier hash;
+  this discrepancy is explicitly recorded in the correction evidence.
+- **Interpretation:** the preregistered rule classifies this as
+  `owner_lifetime_implementation_bug_confirmed_exact_v4_zero_force_symptom_unresolved`
+  and sets `production_fix_gate_met=true`. It does not reproduce W3 v4's
+  complete all-zero force history: B forces became non-finite rather than
+  remaining finite exact zero. Owner lifetime is the confirmed defect; the
+  exact v4 symptom's complete root cause remains open.
+- **Implemented:** `OwnedV16Run` holds the owner, body tuple, and simulation;
+  production `run_primal` preserves that wrapper for its entire solver call.
+  Geometry/source hashes, grid, profile, force projection, burn-in, sample
+  stride, runtime and acceptance thresholds are unchanged. A CPU adapter test
+  forces GC and verifies the wrapper still strongly retains its owner. Focused
+  W2b/W3/W4/diagnostic pytest: 62 passed; Julia adapter test: 16 checks passed
+  with no solver step; W3 Julia syntax, Python compileall, py_compile, and
+  `git diff --check` pass. Full pytest: 1,109 passed, 37 failed, 4 skipped;
+  all 37 failures read ignored historical `work/` artifacts absent from this
+  managed worktree.
+- **Registered:** not yet. New immutable W3 qualification round 4 will bind
+  this owner fix and the exact owner diagnostic prerequisite after the source
+  commit is pushed. Existing round-3 criteria/evidence remain unchanged.
+- **Submitted / qualified:** no new W3 qualification kernel has been
+  submitted, and W3 remains unqualified. W4, formal FD, gradient/reverse,
+  topology, optimizer, and shape update remain blocked/false.
+- **Open:** commit and push the tested source, diagnostic result/correction,
+  and status refresh; register W3 round 4; stage/upload/re-download and verify
+  its private dataset; submit the next exact W3 T4 kernel version. Do not
+  start W4 or formal FD before exact host-verified W3 PASS.
+
+### 2026-09-28 W3 owner-fix qualification round 4 registered
+
+- **Implemented:** the production W3 run now structurally retains its CUDA SDF
+  owner with `OwnedV16Run` for the full `run_primal` lifetime. The fix changes
+  owner reachability only; canonical SDF bytes, grid/profile, force signs,
+  measurement window, sampling, runtime limit and thresholds are unchanged.
+- **Registered:** immutable W3 round-4 criteria are
+  [`round 4`](evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json),
+  SHA-256
+  `eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb`;
+  sidecar SHA-256 is the same. The registrar `--round 4 --check` passed.
+  Criteria bind production source commit
+  `ee6298e843e130b121d918ca9a321b707dcd4ae0`, the owner-diagnostic criteria,
+  result and host correction by their registered hashes, and the existing W3
+  measurement contract. The unchanged 2% drag/downforce half-window drift gate
+  is inherited from registered W2 sphere capability precedent.
+- **Submitted:** no W3 round-4 kernel has been submitted at this checkpoint.
+- **Measured / verified:** no round-4 primal measurement or host-verification
+  result exists yet.
+- **Qualified:** W3 remains unqualified. This round does not qualify physical
+  profile equivalence, absolute aerodynamics, grid/domain response, gradients,
+  reverse mode, topology, optimizer, or shape update. All corresponding flags
+  remain false.
+- **Open:** commit/push the immutable criteria and status, stage the canonical
+  input dataset in a new ignored work directory, publish and re-download the
+  private Kaggle dataset, compare complete file inventory and hashes, then
+  submit the next exact W3 T4 version. Do not start W4 or formal FD before
+  exact round-4 host verification passes.
+
+### 2026-09-28 W3 round 4 dataset verified; exact version 5 running
+
+- **Registered:** round-4 criteria remain immutable at SHA-256
+  `eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb`,
+  source commit `ee6298e843e130b121d918ca9a321b707dcd4ae0`; criteria and status
+  were pushed in commit `94add3ada878c9931dfb5593c9cb32611a327d9f`.
+- **Dataset staged/submitted:** canonical dataset staging used
+  `work/kaggle_w3_v16_dataset_round4/`. Kaggle private dataset
+  `ramhachi888/cfd-opt-sdf-v16-genesis-state` reports version 4, status
+  `ready`. The five uploaded data files match the re-downloaded inventory and
+  SHA-256 values exactly. Manifest SHA-256 is
+  `995d3e3aa931f28e8fb4dadcc9cb9e17fe8235d57190a188b75939505d4eacad`;
+  host dataset audit SHA-256 is
+  `88733b10c8f62c58ab252e7982c89aa7222990d79a7f8e2a8aeb1cded19f13d0`.
+  Canonical NPZ SHA-256 is
+  `3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe`,
+  C-order phi SHA-256 is
+  `45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785`,
+  and Fortran-order phi SHA-256 is
+  `9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7`.
+  Kaggle's metadata endpoint returns a server API envelope rather than the
+  upload `dataset-metadata.json` file; ID, owner, slug, private status, title,
+  and license were compared semantically.
+- **Submitted:** exact private T4 kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-primal/5` was pushed with a 7200-second
+  timeout. Its captured initial status is `KernelWorkerStatus.RUNNING`; the
+  status-file SHA-256 is
+  `7b50a5e1f6646832eca3f3040bc89b9931761c92f83cb599be88fd6ca4487098`.
+  The round-4 runner, Julia job, host verifier, Project and Manifest hashes
+  match both the registered values and source commit `ee6298e`.
+- **Measured / verified / qualified:** no terminal primal output or W3
+  host-verification verdict exists yet. W3 and all downstream qualification
+  flags remain false.
+- **Open:** no additional W3 run is open. W4 criteria registration is the next
+  separate phase; formal FD remains gated on W4. Do not reinterpret this W3
+  result as OpenFOAM equivalence, absolute downforce correctness, stationarity
+  beyond the registered window, grid/domain convergence, or gradient evidence.
+
+### 2026-09-28 W3 round 4 exact version 5 PASS and host-verified
+
+- **Measured:** exact private kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-primal/5` reached
+  `KernelWorkerStatus.COMPLETE`. Terminal status SHA-256 is
+  `59e3f698703e6684b7d9e7acdb92c1c9bc593a0d02e35da6824610547e75d771`;
+  exact Kaggle log SHA-256 is
+  `011b878cf20ee47c70cfde67e7d636eb0f96dbcdf2fed9a08f9b3f5901f643d4`;
+  output `sha256.json` SHA-256 is
+  `6973f1facb6ba1b8241d97601dc4d74a17e7df91d894dcccdfde2f240391595e`.
+  Registered criteria SHA-256 is
+  `eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb`.
+- **Verified:** append-only result
+  [`round-4 result`](evidence/kaggle_w3_v16_primal_result_round4_2026_09.json)
+  SHA-256
+  `d00949d0ea2f2ddcd222f0f376449d9d7aba9b634a650cf75822c640b9e6f4a8`;
+  its sidecar contains the same digest. All T0-T10 passed. The independently
+  checked output contains 18 files plus the `DONE` marker. Backend identity is
+  two Tesla T4 GPUs, selected UUID
+  `GPU-9a967f15-342d-f7c4-fad3-2da5ddc7c609`, `CUDA_VISIBLE_DEVICES=0`, driver
+  `580.159.04`, CUDA driver API `13.3.0`, runtime `12.8.0`, Julia `1.12.6`,
+  one Julia thread, CUDA.jl `6.3.1`, WaterLily `1.8.0`, backend
+  `KernelAbstractions`.
+- **Raw measurements:** canonical state SHA-256
+  `3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe`, C-order
+  phi SHA-256
+  `45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785`,
+  Fortran-order/device-roundtrip phi SHA-256
+  `9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7`, and
+  measured CPU margin `0.3499999939931499 m` against `0.15 m`. Flow grid is
+  `100×48×36`, flow origin `[-2.5,-1.2,-0.9] m`, canonical SDF origin
+  `[-1.0,-0.8,-0.6] m`, spacing `0.05 m`, `Re=80`, and `tU/L=120.0019378662`
+  after 4,808 steps. Velocity, pressure and candidate force history are finite;
+  601 force samples were recorded. The exact `[80,120]` window contains 200
+  samples. Host-recomputed time-weighted drag is `+0.3360177299 N`, downforce
+  is `+0.3533732402 N`, and `Cd=1.0500554060`. Half-window relative drift is
+  `8.16e-6` for drag and `4.17e-6` for downforce, below the registered `0.02`.
+  Three-axis pressure-plus-viscous force closure, projections, exact-window
+  interpolation/integration and host recomputation passed T7. Raw force CSV
+  SHA-256 is `3e53ad09fd3d88bf1d8c71feb5f5de9dad05efcc5dce3dcbd54d19f89f5ff5bb`.
+  Solver wall time is `35.2219 s`; peak VRAM is `24,941,544 bytes` out of
+  `15,636,037,632 bytes`.
+- **Host-only correction:** the first direct verifier invocation reached final
+  evidence assembly but raised `NameError: HOST_VERIFIER is not defined` and
+  wrote no result. Its exact log SHA-256 is
+  `783fd332d98f9bbbe0eb59d36ec22f4d330fde5ce87ad5404cbdb9c7c3ae9d7e`. The
+  compatibility entrypoint supplies that missing path global and invokes the
+  unchanged registered verifier; its SHA-256 is
+  `d3ee66e9b4c045d214dd420d28a19dcacd53f7f34de7da737b7b12b8531c2472`.
+  The result records the exact registered verifier SHA, which matches round 4.
+  Append-only correction evidence
+  [`round-4 host correction`](evidence/kaggle_w3_v16_primal_result_round4_host_correction_2026_09.json)
+  SHA-256 is
+  `27f0f60bbfbffd111259ecb988bec9b6e8cb1f9498d3a8ba46c04c8d79bddb9b`.
+- **Qualified:** only the registered canonical v16 primal integrity/force/
+  stationarity contract on the registered WaterLily finite-box approximation
+  passed (`primal_contract_qualified=true`). No OpenFOAM profile equivalence,
+  absolute downforce correctness, grid/domain response, gradient, reverse,
+  topology, optimizer or shape-update claim follows. The exact W3 v4 all-zero
+  force root cause remains unresolved; `shape_update_allowed=false`.
+- **Open:** W4 is the next separately scoped phase but was not started here.
+  Its immutable criteria and measurement remain open. Formal centered FD,
+  reverse qualification and all optimization work remain gated on later
+  evidence; do not run them from this W3 result alone.
+- **Validation:** focused W3/W4/owner/reverse-diagnostic pytest passed 56 tests;
+  `compileall`, host compatibility-entrypoint `py_compile`, evidence/sidecar
+  chain checks and `git diff --check` passed. Full repository pytest reported
+  1,109 passed, 37 failed and 4 skipped. All 37 failures are the known
+  historical tests requiring ignored `work/` checkpoints, cases or solver logs
+  absent from this managed worktree; no W3/W4 task test failed.
+
+### W4 round 1 pre-computation inventory defect and round 2 correction
+
+- **Implemented:** round-1 local preflight found that the runner and host
+  verifier keyed expected dataset files by logical criterion names
+  (`canonical_state_npz`, `canonical_phi_fortran_raw`) instead of each
+  registered physical filename (`sdf_design_state.npz`,
+  `canonical_v16_phi_f4_fortran.raw`). Both verifiers now derive filenames
+  from `inputs[*].path`; a focused regression test requires the runner and
+  host implementations to agree. The existing round-1 staging passes the
+  corrected local host preflight, including canonical state/phi hashes and
+  measured margin. This is a contract check only.
+- **Registered:** immutable round-1 W4 criteria remain unchanged at
+  [`kaggle_w4_v16_sensitivity_criteria_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json),
+  SHA-256
+  `5bdfb819ff9512dcc3ca85f8919e5cff236de4706240cbdf09a577d56183a9ea`.
+  They bind the prior verifier/runner source and are retained as historical
+  pre-computation evidence. Corrected immutable round 2 is now registered at
+  [`kaggle_w4_v16_sensitivity_criteria_2026_09_round2.json`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round2.json),
+  SHA-256 `5e41ffd790b64638659136bfba5b0abfda7325c3578f15fe4d16fa610a7123da`
+  (sidecar contains the same digest). It binds source commit
+  `97a5bcaedcc8f171cda3710a763a22e6210cfbb5`, W3 round-4 criteria SHA
+  `eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb`, and
+  W3 host-PASS result SHA
+  `d00949d0ea2f2ddcd222f0f376449d9d7aba9b634a650cf75822c640b9e6f4a8`.
+- **Submitted:** private Kaggle dataset
+  `ramhachi888/cfd-opt-sdf-v16-w4-sensitivity` version 1 reports `ready`.
+  Staging is under `work/kaggle_w4_v16_dataset_round2/`; exact download and
+  server inventory are under `work/kaggle_w4_v16_dataset_round2_remote/`.
+- **Verified:** runner-mounted inventory and independent host checks pass
+  locally. The downloaded remote inventory contains the exact five registered
+  files with matching SHA-256 values; remote NPZ/phi identity and CPU SDF
+  margin also pass. Manifest SHA-256 is
+  `3d505dfa1ee55d935f7123aa30cf8e665471e91105a5ce968f5de6aa509d7f42`; remote
+  audit SHA-256 is
+  `20503ff4e6492b1acc23ef46813f1999e42a86f082a93aa45b88ea8934c53b9f`.
+- **Measured / qualified:** no W4 primal measurement or result exists. Exact
+  kernel version 1 was submitted, but returned `ERROR` before a solver step.
+  The earlier host preflight failure remains preserved by immutable round 1;
+  neither criteria round was edited.
+- **Validation:** source-fix commit
+  `f69c56e6306d30f6e6590da898088e4af7606c00` is pushed to the canonical branch.
+  Focused W4/W3/owner-regression tests pass (38); `compileall`, the required
+  W4 Python `py_compile`, Julia syntax parsing and four-case mapping/Re=80
+  assertions, round-1 JSON/sidecar check, and `git diff --check` pass. The full
+  repository run reports 1,114 passed, 37 failed, and 4 skipped. The 37
+  failures are historical Stage T/S/V tests whose tracebacks read absent,
+  ignored `work/` checkpoints, cases, meshes, or solver logs; no W3/W4 task
+  test failed.
+- **Open:** preserve the version-1 diagnostic, make only the pre-solver Julia
+  tuple-materialization correction, add regression coverage, then register
+  immutable round 3 and a new private dataset version before retrying. Formal
+  FD, reverse/adjoint qualification, shape update and topology birth remain
+  out of scope.
+
+### W4 round-2 kernel version 1: pre-solver case-inventory diagnostic
+
+- **Registered:** W4 immutable round 2 remains unchanged at SHA-256
+  `5e41ffd790b64638659136bfba5b0abfda7325c3578f15fe4d16fa610a7123da`, bound
+  to source `97a5bcaedcc8f171cda3710a763a22e6210cfbb5`; private dataset version 1
+  remains ready with its exact remote inventory verified.
+- **Submitted:** exact kernel
+  `ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/1` ended with
+  `KernelWorkerStatus.ERROR`. Terminal status SHA-256 is
+  `f784304d00893b3509b023e2636407faa6cdcb335eebd6a2563c4504c8fc6b82`; exact
+  `kernels logs` response SHA-256 is
+  `93464d8f48672b3ad98552d87adf9eff400a42bb219842524b7ce74d3e44d329`; the
+  downloaded kernel log SHA-256 is
+  `1079cb67af44cbc9a545d1c13143ff5404eb9085ba196f3a784574638e5cab73`.
+- **Diagnostic:** append-only evidence is
+  [`kaggle_w4_v16_sensitivity_version1_diagnostic_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_version1_diagnostic_2026_09.json),
+  SHA-256 `30e4a3444e07570cff70ad40feff653ffe9858e30d7eea693213d09b610a8df3`
+  (sidecar contains the same digest). Kaggle input/source identity, package
+  instantiation, Julia 1.12.6/CUDA.jl 6.3.1/WaterLily 1.8.0 CUDA smoke, and
+  two-T4 inventory passed. The Julia job failed at source line 300 with
+  `W4 case inventory drift`: `tuple(generator)` wraps the generator as one
+  tuple element, while `Tuple(generator)` materializes the four registered
+  case IDs. The corrected expression was reproduced locally against the exact
+  four IDs.
+- **Solver / host verification:** `solver_started=false`;
+  `solver_steps=0`; both `solver_step_invoked` and `solver_step_returned` are
+  empty. SDF load/device round-trip, body construction, simulation, force
+  integration and all four primal runs were not reached. The 14 payload files
+  in Kaggle's output manifest match their hashes; the full host verifier
+  rejects this incomplete output because `DONE`, `outcome.json`,
+  `fingerprint.json` and case measurements are absent. No T0-T10 gate or W4
+  result was evaluated; all qualification flags remain false.
+- **Implemented:** `scripts/waterlily_w4_v16_sensitivity_job.jl` now uses
+  `Tuple(case.case_id for case in V16W4_CASES)` before comparing the four
+  registered case IDs. A focused regression test prevents reintroducing
+  `tuple(generator)`.
+- **Registered:** immutable W4 criteria round 3 is
+  [`kaggle_w4_v16_sensitivity_criteria_2026_09_round3.json`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round3.json),
+  SHA-256 `6cbe15769a8728c4f3ceba165ef75d6d11543c633c6651daafb8d6c901f8dfc6`
+  (matching sidecar). It binds source snapshot
+  `6d4608f39d2937ced96dd934b6be1cf61b4aa150`, exact W3 round-4 host-PASS
+  criteria/result, and the observed T4 cohort. No case, force, time-window or
+  threshold criteria were relaxed or changed from round 2.
+- **Validation:** focused W4/W3/owner pytest passed 39 tests; `compileall`,
+  targeted Python `py_compile`, Julia job `Meta.parseall`, and an executable
+  four-case ID/dimension/Re=80 assertion pass. Full repository pytest reported
+  1,115 passed, 37 failed and 4 skipped. All 37 failures are the known
+  historical Stage T/S/V tests requiring ignored `work/` checkpoints, meshes,
+  cases or solver logs absent from this managed worktree; no W4/W3 test failed.
+- **Submitted:** private dataset
+  `ramhachi888/cfd-opt-sdf-v16-w4-sensitivity` version 2 reports `ready`.
+  The downloaded five-file payload exactly matches the round-3 manifest;
+  manifest SHA-256 is
+  `0215f60cbb9ab567ae2b79d2f03d29b3e1eb532adc060f96af71e289f49e49e7` and
+  remote audit SHA-256 is
+  `e281ab7ad3e3025d89f4084b18b5ad900365f608d8a51bfc9109583608271a56`.
+- **Verified:** independent host and runner-mount dataset checks pass; canonical
+  state, C-/Fortran-order phi, criteria/sidecar, CPU SDF margin
+  (`0.3499999939931499 m`) and all payload hashes match.
+- **Measured:** exact kernel `/2` reached tU/L=120 in `flow_16`, `flow_24`,
+  `flow_32` and `domain_xplus1m_16`; total solver time was `515.3048713 s`.
+  All raw CSVs passed independent host component closure and time-weighted
+  recomputation. Numerical values are diagnostic only because T3/T4 failed.
+- **Verified:** source, criteria, dataset, output manifest, runtime/backend,
+  raw force recomputation and gates T0-T2/T5-T10 were independently checked.
+  The pinned full host verifier rejects the run because the runner did not emit
+  top-level `DONE` after T3/T4 failed. W4 remains unqualified.
+- **Diagnostic:** append-only evidence is
+  [`kaggle_w4_v16_sensitivity_round3_kernel2_diagnostic_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_round3_kernel2_diagnostic_2026_09.json),
+  SHA-256 `cde5c72b7a9996bd47933ec76ac3ce9990a57921256d96d6c5341de257458681`
+  (sidecar matches). It records exact kernel/log/output hashes, solver progress,
+  raw data, independent recomputation, T3/T4 failures and false qualification
+  flags.
+- **Implemented:** commit `52a50e488cb01f93c971dc29b5fc29f1670e36a5` fixes the
+  T3 xyz maximum comparison in both runner and host verifier and aligns the
+  summary-only T4 ground descriptor with the registered wording. The physical
+  ground, cases and criteria were not changed. Regression tests prove both
+  gate parity and rejection of wrong values.
+- **Validation:** focused W4/W3/owner pytest passed 41 tests; Python `compileall`,
+  targeted `py_compile`, Julia job `Meta.parseall`, and `git diff --check` pass.
+  Full pytest reports 1,117 passed, 37 failed and 4 skipped. All 37 failures
+  require ignored historical `work/` artifacts absent from this managed
+  worktree; no W4/W3 test failed.
+- **Registered:** immutable round 4 is
+  [`kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json),
+  SHA-256 `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f`,
+  bound to source `b9ae43b540a94b52fdb8a05051fba6f250034a6f` and exact W3
+  round-4 host PASS. Cases, physical conditions, time window, force semantics,
+  stationarity limit and response follow-up rule equal round 3 exactly.
+- **Implemented / local stage verified:** fresh inputs are staged at
+  `work/kaggle_w4_v16_dataset_round4/`. Host and runner-mount checks pass;
+  manifest SHA-256 is
+  `d5093b23be0a26c5cf5ce1030e42189a71b58f834160bcbd15c272d00561e8a7`.
+  Canonical state/phi hashes are unchanged and measured CPU margin is
+  `0.3499999939931499 m`.
+- **Submitted:** private dataset `ramhachi888/cfd-opt-sdf-v16-w4-sensitivity`
+  version 3 reports `ready`. The downloaded five-file payload exactly matches
+  the round-4 manifest; manifest SHA-256 is
+  `d5093b23be0a26c5cf5ce1030e42189a71b58f834160bcbd15c272d00561e8a7`, and
+  remote inventory audit SHA-256 is
+  `81a477314cf7a34f8f157a703ed11b63f912747e0c82446c61d327044ad687e4`.
+- **Verified:** remote inventory, criteria/sidecar, NPZ/raw phi, host dataset
+  verifier, runner mount, canonical hashes and margin all pass.
+- **Open:** verify kernel metadata and submit the next exact private T4 kernel
+  version. Preserve round-3 criteria and kernel `/2` evidence.
+
+
+### 2026-09-29 W4 round 4 exact kernel version 3 PASS and host-verified
+
+This checkpoint supersedes the preceding W4 round-4 “submit the next exact
+kernel version” status. It closes W4 host verification only; it does not start
+formal FD or any reverse/optimizer work.
+
+- **Registered:** immutable round-4 criteria remain
+  [`kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json),
+  SHA-256
+  `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f`, bound
+  to source snapshot `b9ae43b540a94b52fdb8a05051fba6f250034a6f` and the exact
+  W3 round-4 host-verified PASS. No criteria, measurement window or threshold
+  changed after measurement.
+- **Submitted:** private dataset
+  `ramhachi888/cfd-opt-sdf-v16-w4-sensitivity` version 3 was `ready`; its
+  manifest SHA-256 is
+  `d5093b23be0a26c5cf5ce1030e42189a71b58f834160bcbd15c272d00561e8a7`, and
+  remote inventory audit SHA-256 is
+  `81a477314cf7a34f8f157a703ed11b63f912747e0c82446c61d327044ad687e4`. Exact
+  private kernel
+  `ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/3` ended
+  `KernelWorkerStatus.COMPLETE`. Terminal status SHA-256 is
+  `80449770970ace3350548b96005931282c52a791555986628382897e930fb1af`;
+  `kaggle kernels logs` response SHA-256 is
+  `380f53ba8a0ad08c5fdf7c6266ebd63d041d40d6be2ff9e7f56ffa11db7b25fe`, and
+  downloaded Kaggle log SHA-256 is
+  `3f42c3a9041e8baa8c2ee248fc7cc6be71df9dabab4d5e6441b2cee057e38dee`.
+- **Measured:** all four cases completed to `tU/L >= 120` on the registered
+  T4 backend. Exact-window `[80,120]` time-weighted physical force results are:
+
+  | Case | Grid | Steps | `tU/L` | Wall (s) | Peak VRAM (bytes) | Drag (N) | Downforce (N) | Cd | Drag drift | Downforce drift |
+  | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+  | `flow_16` | 100×48×36 | 4,808 | 120.001938 | 35.6669 | 24,934,924 | 0.336017730 | 0.353373240 | 1.050055406 | 8.16e-6 | 4.17e-6 |
+  | `flow_24` | 150×72×54 | 8,741 | 120.009331 | 95.8426 | 81,567,020 | 0.357619959 | 0.356747660 | 1.117562371 | 2.06e-6 | 1.17e-5 |
+  | `flow_32` | 200×96×72 | 13,536 | 120.005043 | 311.2219 | 184,412,116 | 0.410305278 | 0.411820160 | 1.282203995 | 1.99e-6 | 1.41e-6 |
+  | `domain_xplus1m_16` | 120×48×36 | 4,808 | 120.000877 | 29.8522 | 29,631,500 | 0.336375219 | 0.353220289 | 1.051172558 | 1.98e-5 | 1.08e-5 |
+
+- **Verified:** independent host verifier
+  `scripts/verify_kaggle_w4_v16.py` (SHA-256
+  `139d45ef1edc5c7a04d250a88ce7e71710a6c07e2b10062c96db78bf86698aa0`)
+  checked 24 output-manifest files, input/source/backend identity, canonical
+  SDF hashes and margin, GPU round-trip, all raw force rows and x/y/z
+  pressure-plus-viscous closure, force projections, endpoint interpolation,
+  time-weighted force/Cd recomputation, runtime/VRAM and T0-T10. Host verifier
+  JSON SHA-256 is
+  `77e5a2fe93c817b206a0f65a3a02039db1eb8e1fe5a387fdfcc34d12c3e384dd`; the
+  output `sha256.json` manifest SHA-256 is
+  `1a72ab72cf16a35e0828636c03ef86602e35d32589d28c4898aaf9c1a909b710`.
+- **Response:** host-recomputed 24→32 absolute deltas are `0.0526853195 N`
+  drag and `0.0550725000 N` downforce. The 16-cell baseline→extended-domain
+  deltas are `0.0003574887 N` drag and `0.0001529516 N` downforce. Domain
+  deltas are smaller than their corresponding resolution deltas, so the
+  registered extended-domain fine-grid follow-up is not required. W4 flow_16
+  and W3 round 4 have zero observed delta in drag, downforce, Cd, stationarity,
+  steps, and `tU/L`; the criteria did not register a numerical repeatability
+  gate, so this comparison remains descriptive.
+- **Evidence:** append-only result
+  [`kaggle_w4_v16_sensitivity_result_round4_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_result_round4_2026_09.json),
+  SHA-256
+  `87a881784dd42ef9c2c43ee78be761e8165e727f01df7d544765006d9c1b2fae`;
+  its sidecar matches. Output manifest SHA-256 is
+  `1a72ab72cf16a35e0828636c03ef86602e35d32589d28c4898aaf9c1a909b710`.
+- **Qualified:** `w4_sensitivity_matrix_passed=true` only for the registered
+  finite-box WaterLily sensitivity matrix. `physical_profile_equivalence_qualified`,
+  `absolute_downforce_qualified`, `stationarity_qualified`,
+  `grid_or_domain_convergence_qualified`, `gradient_qualified`,
+  `reverse_mode_qualified`, `topology_qualified`, `optimizer_qualified`, and
+  `shape_update_allowed` remain false. No OpenFOAM equivalence, absolute
+  aerodynamics or grid/domain convergence claim follows.
+- **Open:** formal FD entry gate is `OPEN` because the registered domain
+  follow-up condition is false and W3/W4 drag signs agree. Formal centered FD
+  measurement has not started; this checkpoint stops after W4 host
+  verification. W3 v4 all-zero-force root cause remains unresolved.
+- **Validation:** focused W4/W3-owner tests passed (`45 passed`); Python
+  `compileall`, the registered W4 Python `py_compile` set, Julia `Meta.parseall`,
+  the standalone four-case/Re=80/origin mapping check, and `git diff --check`
+  passed. Full repository pytest reported `1,117 passed, 37 failed, 4 skipped`
+  in `196.88 s`. Traceback review confirmed the 37 failures are historical
+  Stage T/S/V checks blocked by missing ignored `work/` artifacts (mostly
+  `FileNotFoundError`; one audit test reports the missing prerequisite); no
+  W4, W3-owner or focused task test failed. Captured log:
+  `work/kaggle_w4_version3/final_pytest.log`, SHA-256
+  `60bdff0c767d3e043847d04ea072371cffd47f875dabed89c5c5af33284406b8`.
+
+## 2026-09-29: centered directional-FD oracle implementation status
+
+This checkpoint advances the FD work from the W4 entry gate without starting a
+measurement. It supersedes the preceding statement that the task stops at W4
+verification, while preserving W3/W4 evidence and all qualification limits.
+
+- **Implemented locally:** solver-neutral scalar directional-FD contracts;
+  three deterministic frozen directions; the five-level epsilon ladder; all
+  30 direct `phi0 +/- epsilon*d` states and margin preflight; a 33-run fixed
+  order; fresh WaterLily `flow_16` primals with retained CUDA SDF ownership;
+  raw three-axis pressure/viscous/total force capture; endpoint-clipped
+  trapezoidal physical-force recomputation; stationarity/noise/plateau rules;
+  Kaggle runner, host verifier, dataset preparer, and mutable criteria draft.
+- **Prerequisite verified:** W3 round 4 criteria/result SHAs remain
+  `eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb` /
+  `d00949d0ea2f2ddcd222f0f376449d9d7aba9b634a650cf75822c640b9e6f4a8`; W4
+  round 4 criteria/result SHAs remain
+  `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f` /
+  `87a881784dd42ef9c2c43ee78be761e8165e727f01df7d544765006d9c1b2fae`.
+  The FD entry gate is open and W4 says no extended-domain fine-grid follow-up
+  is required.
+- **Registered:** no immutable FD criteria round exists yet. The checked-in
+  draft remains mutable and measurement thresholds are not frozen.
+- **Submitted / measured:** no FD private dataset or kernel has been created
+  or submitted; no FD solver step has run.
+- **Host verified:** prerequisite W3/W4 evidence only. FD outputs, host report,
+  and result evidence do not exist.
+- **Qualified:** `sdf_directional_fd_oracle_qualified=false`,
+  `sdf_directional_fd_flow16_qualified=false`,
+  `sdf_gradient_field_qualified=false`, `gradient_qualified=false`,
+  `reverse_mode_qualified=false`, and `shape_update_allowed=false`.
+- **Open:** commit and push the validated source/harness; only then freeze
+  criteria, stage and remotely verify the private dataset, submit the exact T4
+  kernel version, and host-verify that exact version. Stop after the FD host
+  result. Do not run reverse/adjoint, optimization, or shape updates in this
+  work item.
+
+## 2026-09-29: centered directional-FD round 1 registered
+
+The FD source/harness and validation were committed before registration. The
+registrar initially failed with an undefined local W4 backend binding before
+writing either criteria file. The binding was repaired in
+`d0ac7163d86b4f5db5ba99c8113c767669365312`, pushed, and the registrar was
+rerun from the clean pushed branch. No measurement occurred in that attempt.
+
+- **Implemented:** source/harness commit `167dc992339d8edf9f368cbeff97963cca969deb`;
+  registration repair commit `d0ac7163d86b4f5db5ba99c8113c767669365312`.
+- **Registered:** immutable FD criteria round 1 at
+  `docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round1.json`, file
+  and sidecar SHA-256
+  `ad0bd7dcc6f8e2f0927799fe1c9818e58c43fbc4205312a5ad4c397d61f6fdc6`;
+  internal canonical criteria SHA-256
+  `a110132ff6df6859fe4e38b5e4cb634c8ef2ac0015cfb6fbc5562d63c5bc292c`.
+  It is `registered_not_run`, has `immutable=true`,
+  `registered_before_computation=true`, and binds source commit `d0ac716…`.
+  Registrar `--check` passed.
+- **Frozen identities:** 24 exact source-repository inputs, 35 raw dataset
+  payload inputs, canonical state SHA `44507748…`; D0/D1/D2 SHA-256 values
+  `fb74a1e7…`, `26964bfa…`, and `e6ad0912…`; all 30 plus/minus states are
+  bound and their minimum measured SDF margin is `0.33999999370425943 m`.
+  The run order has 33 fresh primals with baseline A/B/C at beginning, middle,
+  and end. The exact W3/W4 criteria and result SHAs are bound, including the
+  W4 observed-runtime identity SHA.
+- **Submitted / measured:** private dataset is not staged or uploaded; no FD
+  kernel submitted; `formal_measurement_started=false`; no FD `sim_step!`
+  invoked.
+- **Host verified:** only the prerequisite W3/W4 evidence and premeasurement
+  registration hashes. No FD output or host result exists.
+- **Qualified:** directional FD oracle, 3D gradient field, gradient backend,
+  reverse mode, topology and shape update remain unqualified/false.
+- **Open:** prepare the exact private dataset from the immutable criteria,
+  verify local inventory, upload, wait for `ready`, redownload and hash-compare
+  the exact remote version, then submit the private T4 kernel. Stop after
+  exact-version host verification; no reverse/adjoint or shape work in this
+  task.
+- **Validation:** 22 focused FD tests passed. Python `compileall src tests
+  scripts`, runner `py_compile`, Julia parse plus exact flow_16 dims/origin/
+  Re=80 assertion, both JSON parses, 30 canonical-state perturbation
+  regenerations, and canonical margin checks passed. Full pytest reported
+  `1,139 passed, 37 failed, 4 skipped` in `206.53 s`; the FD tests passed in
+  that run. The 37 failures are pre-existing Stage T/S/V tests blocked by
+  ignored historical `work/` ProblemSpec, STL, checkpoint, mesh, or solver
+  artifacts missing from this managed worktree. Full log SHA-256:
+  `17bb1c99705602b5c9dd5d499ffa3595d3cdf94cdb859c3b2de64123f0c8fd6f`.
+
+### 2026-09-29 centered directional-FD round 1 submission diagnostic
+
+Immutable FD criteria round 1 remains unchanged and unmeasured. The private
+input dataset version 1 is `ready`; its 38-file remote inventory and hashes
+match the local manifest. Five kernel submission requests using the registered
+kernel ID returned HTTP 409 before a kernel version was created. The exact
+latest Kaggle response body is preserved under ignored `work/` with SHA-256
+`e4e5bd0dd4f0f27f19783d675a1483c8301817d2f4c9c25fe5676f234e452d7c`; its
+message says the requested title is already in use by a dataset. The exact
+post-failure kernel search returned `Not found` (SHA-256
+`493fda53120050f85836032324409be6c6484f90a0755ae0c6a673ba7626818b`).
+
+The submitted kernel ID equals the registered input dataset ID. This is a
+Kaggle title/slug namespace conflict, not a solver or criteria failure. The
+append-only diagnostic is
+[`sdf_directional_fd_v16_round1_kernel_submission_diagnostic_2026_09.json`](evidence/sdf_directional_fd_v16_round1_kernel_submission_diagnostic_2026_09.json),
+SHA-256 `3cabf32761785ac1f9cf1bf353b92e80649259a36197ba88e89f644b62edb9b8`.
+
+- **Implemented:** round-1 source, runner, verifier, frozen directions and
+  perturbations are unchanged.
+- **Registered:** round 1 criteria and its sidecar are unchanged; its exact
+  kernel slug cannot be submitted because of the API conflict.
+- **Submitted:** no kernel version was created. Dataset version 1 is ready and
+  remotely hash-verified.
+- **Measured / verified:** no solver, CUDA, or host-result verification ran.
+  `formal_measurement_started=false`, `solver_started=false`, and
+  `solver_steps=0` remain true.
+- **Qualified:** no FD or gradient qualification is granted.
+- **Open:** minimally change only the kernel ID/title to a unique slug, add
+  immutable round-2 criteria binding that metadata/source commit and the
+  unchanged dataset ID and measurement contract, publish a new dataset
+  version, verify it, then submit and verify that exact kernel version.
+
+Do not edit or reuse round-1 criteria to accommodate the submission failure.
+
+### 2026-09-29 centered directional-FD round 2 retry implementation
+
+The Kaggle API conflict was isolated to a kernel ID/title that reused the
+input dataset slug. The round-1 registered source, criteria, sidecar and
+dataset version remain preserved. The minimal retry changes the kernel ID to
+`ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel` and uses title
+`CFD Opt SDF v16 Directional FD Oracle Kernel`; its input dataset ID and source
+remain unchanged.
+
+- **Implemented:** the metadata and mutable draft use the distinct kernel ID.
+  The registrar accepts round 2 only when round-1 criteria/sidecars and the
+  no-measurement HTTP 409 diagnostic match their exact hashes. It binds that
+  diagnostic into round-2 source inputs and machine-checks that geometry,
+  responses, directions, all 30 perturbations, run order, force/stationarity,
+  noise and plateau rules, backend, gates and dataset payload are identical to
+  round 1.
+- **Registered:** round 1 remains immutable and `registered_not_run`; round 2
+  is not yet registered. No existing evidence file was changed.
+- **Submitted:** private dataset version 1 remains `ready` and host-side
+  inventory/hash verified. Round-2 dataset version and kernel do not yet exist.
+- **Measured / verified:** focused FD validation passed 24 tests; Python
+  compileall, py_compile, JSON parsing and `git diff --check` passed. No Julia
+  or GPU measurement was launched. Full pytest reported `1,141 passed,
+  37 failed, 4 skipped` in `205.73 s`. All 37 failures are historical
+  Stage T/S/V checks that require ignored `work/` artifacts absent from this
+  managed worktree; no FD test failed. Full log SHA-256:
+  `c15194356f71c095af09cac4767fe15fad139c20ec7a5d3ac44c19a8868662f1` at
+  `work/sdf_directional_fd_v16_round2_retry_implementation/full_pytest.log`.
+- **Qualified:** directional FD, field gradient, reverse mode, optimizer and
+  shape update remain false/unqualified.
+- **Open:** run the full suite, commit/push the retry source, register immutable
+  round 2 from that clean source commit, stage and remotely verify dataset v2,
+  then submit and host-verify one exact private T4 kernel version.
+
+### 2026-09-29 centered directional-FD round 2 registered
+
+This checkpoint supersedes the preceding implementation checkpoint's
+`round 2 is not yet registered` status; that entry is retained as the prior
+state.
+
+The source retry commit `178792e9065df87d87ea1d445baaedace404304e` is pushed to
+the canonical branch. From that clean pushed source, the registrar created
+immutable round 2 before any FD primal ran:
+
+- Criteria:
+  [`sdf_directional_fd_v16_criteria_2026_09_round2.json`](evidence/sdf_directional_fd_v16_criteria_2026_09_round2.json),
+  file/sidecar SHA-256
+  `150a60232f1adb413fa7021833943c8effe5b91ef068909d4d9364112c248e1b`,
+  canonical criteria SHA-256
+  `91756109ce69fbe7c77cb0f18417f6d48619bb0020585db1aab7f8e891d19bfa`.
+- Registered source commit: `178792e9065df87d87ea1d445baaedace404304e`.
+- Kernel: `ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel`.
+- Input dataset identity remains
+  `ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle`.
+- Round 2 references round-1 criteria file SHA `ad0bd7dc…` and submission
+  diagnostic SHA `3cabf327…`. The registrar `--check` passed.
+- A machine comparison reported no changes across geometry, primary responses,
+  directions and their hashes, all 30 perturbations, run order, force and
+  stationarity conditions, noise/plateau rules, backend, gates, or registered
+  dataset payload. Round 2 only changes kernel identity/source binding and
+  adds the explicit supersedes record.
+
+**Status:**
+
+- **Implemented:** the slug-conflict retry metadata, fail-closed round-2
+  registrar, tests and documentation are committed/pushed.
+- **Registered:** round 2 is immutable, `registered_not_run`, and bound to
+  source commit `178792e…`; it precedes any GPU measurement.
+- **Submitted:** dataset v1 remains ready; dataset v2 and the new kernel do not
+  yet exist.
+- **Measured:** no FD primal or `sim_step!` has run.
+- **Verified:** registrar `--check` and the round-1/round-2 contract comparison
+  passed. Focused tests: 24 passed. Full pytest: 1,141 passed, 37 failed,
+  4 skipped; the 37 failures are existing checks blocked by missing ignored
+  historical `work/` artifacts. Captured log SHA-256 is
+  `c15194356f71c095af09cac4767fe15fad139c20ec7a5d3ac44c19a8868662f1`.
+- **Qualified:** no directional-FD or gradient claim is granted.
+- **Open:** commit this append-only round-2 criteria record, prepare the exact
+  dataset from round 2, publish and remotely verify the new version, then
+  submit one exact private T4 kernel and collect/host-verify that exact version.
+
+### 2026-09-29 FD round-2 kernel version 1 host-preflight diagnostic
+
+This entry supersedes the preceding round-2 registered checkpoint's
+“dataset v2 and the new kernel do not yet exist” status. Round 2 remains
+immutable and unchanged. Private dataset version 2 is `ready`; its remote
+38-file payload was downloaded and all names, sizes and SHA-256 values matched
+the round-2 local manifest. The remote inventory audit SHA-256 is
+`223876dcef040be82ab80f5e6036220da38d21232efd1a0c134c928126b56e26`.
+
+Exact private kernel
+`ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel/1` ended in
+`KernelWorkerStatus.ERROR`. Kaggle fetched and checked out exact source commit
+`178792e9065df87d87ea1d445baaedace404304e`; dataset criteria, sidecar and
+manifest were present and verified by the runner. The runner reached
+`host_input_preflight`, then raised:
+
+```text
+NameError: name 'phi_sha256' is not defined
+```
+
+The missing import occurs while assembling the canonical state identity
+summary in `run_main`, before GPU inventory, Julia installation, CUDA smoke,
+Julia job start or the first `sim_step!`. Runner execution state records
+`solver_started=false`, an empty invoked-step list and stage
+`host_input_preflight`. This is a runner/source integration failure, not an FD
+measurement or a numerical gate result.
+
+Exact captured artifacts (all under ignored `work/`):
+
+- Status file SHA-256:
+  `88172e3e7f3b67a7250a9e2621f23f0a57ac32d8d14122897884eb065196cfc9`.
+- `kaggle kernels logs` response SHA-256:
+  `f9dfe268c59efc836d6cd72641b459fca4f69cb538b62f85dc100096b2174563`.
+- Downloaded raw kernel log SHA-256:
+  `00e2811704d8bb560bf938b0b52ffd3e1ee36107f22ab025ecbf247ab76fb710`.
+- `ERROR.txt` SHA-256:
+  `1311692cc5419f0d4ac45682d1a43bf4514f516942fa32abcff21fd059fb1ca2`.
+- Runner output manifest SHA-256:
+  `41bbafba85e9ebea4a8d2726db574d1a45ef67b978c1fb58eb69d5311187812f`; all
+  downloaded output files matched it.
+- Execution-state SHA-256:
+  `86bf0ed3e5b0d3f97dcfc913240b0e86f054f6b4c6699d579a0429108c17b5e2`.
+- Mount inventory SHA-256:
+  `73e3dc66c814f380c7e78f44060541200fbbd42eb463eb3a763edddb5498b0a5`.
+- Output-download command capture SHA-256:
+  `041f94f82ed412b8b91716a737964c50dbeaeb9793d2cda4d4ef2f3b4862ed2e`.
+- Host verifier rejected the incomplete output for missing `DONE` and wrote
+  append-only diagnostic
+  [`sdf_directional_fd_v16_round2_kernel1_diagnostic_2026_09.json`](evidence/sdf_directional_fd_v16_round2_kernel1_diagnostic_2026_09.json),
+  file/sidecar SHA-256
+  `1c39d56953ef6e15979ea84bd2a5cca209af8689bb491be777d50e6f16a6d06a`.
+
+- **Implemented:** round-2 runner source was the registered source; its missing
+  `phi_sha256` import is isolated. No fix has been applied yet.
+- **Registered:** round 2 criteria and dataset v2 remain immutable/preserved.
+- **Submitted:** exact kernel `/1` ended `ERROR`; exact status, logs and output
+  are recovered. No subsequent kernel version exists yet.
+- **Measured / verified:** no Julia/CUDA setup, GPU inventory, solver step,
+  FD response or host PASS occurred. The host diagnostic keeps all
+  qualification flags false.
+- **Qualified:** directional oracle, gradient field, reverse mode, optimizer,
+  topology and shape update remain false.
+- **Open:** add the missing import and a regression test; validate, commit/push
+  the minimal fix, preregister round 3 against this diagnostic and unchanged
+  numerical contract, upload/verify dataset v3, submit the next exact kernel
+  version, and resume host verification.
+
+### 2026-09-29 FD round-3 pre-registration runner repair
+
+This checkpoint supersedes the preceding “add the missing `phi_sha256` import”
+work instruction with a complete host-input identity scope repair. Round 2 and
+its exact kernel `/1` diagnostic remain immutable.
+
+- **Implemented locally:** `verify_canonical_and_preflight()` now returns one
+  canonical identity object containing C-order phi SHA, Fortran-order phi SHA,
+  measured canonical margin, and all four mask hashes. The new
+  `build_state_identity_payload()` assembles that verified object with NPZ SHA,
+  direction audit, and all 30 perturbation preflight rows. `run_main()` calls
+  `host_input_preflight()` and writes the JSON payload before `gpu_inventory()`.
+  It no longer reaches into local names from the nested preflight function.
+- **Latent scope audit:** besides the observed `phi_sha256` failure, `run_main()`
+  also previously referenced `zero_level_margin_m` and `mask_hashes` outside
+  their defining function scope. These are returned through the same canonical
+  identity object; this is not an import-only patch.
+- **Regression / local preflight:** executable payload tests cover C/F hashes,
+  margin, four mask hashes, direction audit, and perturbation details. An AST
+  check requires host preflight and identity serialization before GPU inventory;
+  a `symtable` audit finds no unresolved module-global names in runner function
+  scopes. Using the exact round-2 dataset and a source archive at registered
+  commit `178792e9065df87d87ea1d445baaedace404304e`, local criteria/dataset,
+  source, W3/W4 prerequisite, canonical NPZ/C/F phi, margin, mask, three
+  direction, 30 perturbation, and JSON assembly checks all completed. The
+  helper stopped before GPU inventory.
+- **Validation:** focused FD tests passed (`29 passed`). Python
+  `compileall src tests scripts`, the four targeted `py_compile` files, Julia
+  FD-job `Meta.parseall`, JSON parsing, and `git diff --check` passed. Full
+  repository pytest reported `1,146 passed, 37 failed, 4 skipped` in `207.26 s`.
+  The 37 failures are historical Stage T/S/V tests whose ignored `work/`
+  checkpoints, meshes, solver logs, or case files are absent from this managed
+  worktree; neither FD test file failed. Full log:
+  `work/sdf_directional_fd_round3_source_validation/full_pytest.log`,
+  SHA-256 `35b3ad1e7d8e3376679a975b486daa669594c4aefceb4db88d78ea2d5a5fc916`.
+- **Registered:** immutable round 3 is registered at
+  `docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round3.json`, file
+  SHA `45fb570bc3628ff083d5cd34f496e352f6ec0834ac93f381909bef1c4d13f6c5`,
+  sidecar SHA
+  `517e9f5650f706ccfab84f1d8ca8812918197c158d81e74847e29c2b2edea3b7`, and
+  canonical criteria SHA
+  `fe49a91e5800460dc4560f453b72fd25f12158ecd4a099a1e940cbf434db8d52`. It
+  binds source commit `9978eb4f19c716b9666c50c18261738edd978e4f`, round-2
+  criteria canonical SHA
+  `91756109ce69fbe7c77cb0f18417f6d48619bb0020585db1aab7f8e891d19bfa`, and
+  exact round-2 `/1` diagnostic SHA
+  `1c39d56953ef6e15979ea84bd2a5cca209af8689bb491be777d50e6f16a6d06a`.
+  The registrar's machine comparison found the full measurement contract
+  identical to round 2.
+- **Dataset verified:** private dataset version 3 is `ready`. The staged
+  manifest contains 37 registered payload files; the exact redownloaded
+  mounted inventory has those 37 plus the manifest, and every path, size, and
+  SHA-256 matches. Remote inventory SHA-256 is
+  `1b74127038a414c39de72a681bc02f44661e27dfcae56e789cadf40091da3466`;
+  dataset-verification evidence is
+  `docs/evidence/sdf_directional_fd_v16_dataset_round3_verification_2026_09.json`,
+  SHA-256 `aad6667f391543d78a338d089daf737203222e7ec54b4ffe871ffd740745d48c`.
+  Running the exact round-3 `read_criteria`, `verify_dataset`, `verify_source`,
+  `verify_prerequisites`, and `host_input_preflight` on that remote payload
+  passed. It checked canonical state SHA
+  `44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8`, C/F
+  phi identity, four masks, three directions, and 30 perturbations, and stopped
+  before `gpu_inventory()`.
+- **Submitted:** the exact registered private T4 kernel
+  `ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel/2` was returned by
+  Kaggle and is `KernelWorkerStatus.RUNNING` (observed at
+  `2026-09-29T07:56:16Z`). The push used the registered 14,400-second timeout.
+  Append-only submission checkpoint
+  `docs/evidence/sdf_directional_fd_v16_round3_kernel2_submission_2026_09.json`
+  has SHA-256
+  `379ad6ac7968109bbb7962afbfc03f5a1be8f8e9d6a7e6eed3f15d90c3db4629`.
+- **Measured / verified:** solver start/progress is not yet observable from
+  the current status/log/output response; do not infer `solver_started` from
+  `RUNNING`. No terminal logs/output or host verdict are available yet. Round-2
+  kernel `/1` remains preserved as `ERROR` with `solver_started=false`.
+- **Qualified:** all FD-oracle, field-gradient, reverse, optimizer, topology,
+  and shape-update flags remain false.
+- **Source commit:** runner, tests, registrar round-3 support, and mutable
+  draft identity are committed and pushed as
+  `86087b888e7ea42033476bfcee9c8c7e888bb3cb`. The source tree is clean at that
+  commit before the current documentation update.
+- **Open:** collect terminal status, logs, and output for exact kernel `/2`,
+  verify its output with the host verifier, and append a round-3 result or
+  diagnostic. Stop at that verification boundary; reverse/adjoint, optimizer,
+  shape update, and topology birth remain outside this work slice.
+
+### 2026-09-29 FD round-3 kernel `/2` terminal pre-primal diagnostic
+
+This terminal checkpoint supersedes only the earlier `/2` `RUNNING` status.
+The round-3 criteria, round-2 diagnostic, and round-3 dataset verification
+evidence remain immutable.
+
+- **Registered:** exact round-3 criteria file SHA-256
+  `45fb570bc3628ff083d5cd34f496e352f6ec0834ac93f381909bef1c4d13f6c5`,
+  canonical SHA-256
+  `fe49a91e5800460dc4560f453b72fd25f12158ecd4a099a1e940cbf434db8d52`,
+  source commit `9978eb4f19c716b9666c50c18261738edd978e4f`; private dataset
+  version 3 was ready and its 37 registered files matched by path/size/SHA.
+- **Submitted:** Kaggle returned exact private T4 kernel
+  `ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel/2`; it ended in
+  `KernelWorkerStatus.ERROR` after about 328 seconds. Status SHA-256
+  `87263620a40ab44e2deafcb0d99b5b15a7b0de047373bde7d6402e645d104174`.
+- **Reached:** registered source commit was fetched and checked out. The full
+  33-row run queue was read and validated; canonical NPZ/C/F hashes, CPU margin,
+  masks, three directions and 30 perturbations were emitted. Julia project
+  instantiate passed. The no-solver T4 smoke passed with Julia 1.12.6,
+  CUDA.jl 6.3.1, CUDA runtime 12.8.0, driver API 13.3.0, WaterLily 1.8.0 and
+  Tesla T4 inventory.
+- **Failure locus:** exact `fd_v16.log` SHA-256
+  `4632902eed4ebc6aad21f0100b4c81a13a7e9c883a5625d8351dbdda1dd2c3f8`
+  reports `ArgumentError: 'src' and 'dst' refer to the same file/dir. This is
+  not supported.` The registered Julia job attempted to copy
+  `/kaggle/working/sdf_directional_fd_v16/run_queue.tsv` onto itself at line
+  304, before `CUDA.memory_info()`, body/simulation construction, or the first
+  `sim_step!`. Runner state is `stage=julia_job`, `solver_started=false`, with
+  empty invoked/returned step lists and no Julia run/step markers. This is a
+  Julia job pre-primal harness initialization failure, not package resolution,
+  CUDA initialization, SDF transfer, WaterLily construction, force integration,
+  or long-horizon integration.
+- **Exact artifacts:** round-3 diagnostic
+  `docs/evidence/sdf_directional_fd_v16_round3_kernel2_diagnostic_2026_09.json`,
+  SHA-256 `4044e4f01508590f622e89194427af47c599d00959cf721a0f143b136d746fae`;
+  exact `ERROR.txt` SHA-256
+  `968da5e0f673790b2c250b60da07025c177525cb52a4ddc48ca868762c9a0dcf`;
+  output `sha256.json` file SHA-256
+  `51e1d939d4aeee1bb9eb1be6137be113f785252517de27d18ba4b6ba48a7be1f`;
+  downloaded Kaggle kernel log SHA-256
+  `b77bf9f207be08236ed90d9b4ed155257b7b936fdbac3cbbd87297ceccbd024d`;
+  Kaggle logs-command response SHA-256
+  `0201d4054bff91dea7f6ee03d8f1a9fc09e03d126bd6c976cc57db30af4e1822`;
+  download response SHA-256
+  `cb6330b63a951b06a3bf48da889f8cd555a0e1f79a14f04a7016c03add533c7d`.
+  The output manifest is consistent; there are no force CSVs or `DONE` marker.
+- **Host verified:** the strict verifier was run against exact dataset version 3
+  and kernel `/2`; it failed closed before gate evaluation with
+  `ValueError: FD Kaggle output has no DONE marker`. The verifier correctly
+  grants no PASS. Append-only failure analysis
+  `docs/evidence/sdf_directional_fd_v16_round3_kernel2_failure_analysis_2026_09.json`,
+  SHA-256 `faf0f9b8100b02f303b029a3644cbf5c3df4e3e0a18d935014401142936c8596`,
+  binds the exact Julia exception, stage and hashes.
+- **Qualified:** FD oracle, flow16 FD, full gradient, reverse, optimizer,
+  topology and shape update remain false. Round 3 is a pre-primal diagnostic;
+  it is not a measurement result.
+- **Open:** preserve this terminal diagnostic, move only the queue input file
+  to the already available temporary `base` directory so it differs from
+  `OUT/run_queue.tsv`, add a focused regression, validate and push the source,
+  then register immutable round 4 against this exact round-3 diagnostic. Keep
+  the 33-run contract, thresholds and all measurement semantics unchanged.
+  Do not retry round 3 or submit a new kernel under its criteria.
+
+### 2026-09-29 FD round-4 queue-path fix and immutable preregistration
+
+This checkpoint closes the round-3 pre-primal queue-path defect and registers
+the next immutable FD round. It does not start a dataset upload, Kaggle kernel,
+or primal measurement.
+
+- **Implemented:** the runner now writes the run-queue input to the existing
+  temporary `base` directory. The Julia job continues copying that input to
+  `OUT/run_queue.tsv`, so source and destination differ while the output
+  snapshot remains available. Queue row serialization and registered run
+  order are unchanged.
+- **Regression:** an executable test builds baseline and perturbation rows in
+  a temporary input directory and confirms the input path differs from the
+  Julia output-snapshot path. Registrar tests bind the exact round-3 criteria,
+  `/2` submission, terminal diagnostic, dataset verification, and failure
+  analysis. A machine comparison requires the full round-4 measurement
+  contract to equal round 3 and rejects a changed noise-resolution gate.
+- **Validation:** focused FD tests passed (`32 passed`); Python `compileall
+  src tests scripts`, targeted `py_compile`, Julia FD-job `Meta.parseall`, JSON
+  parsing, and `git diff --check` passed. Full pytest reported `1,149 passed,
+  37 failed, 4 skipped` in `211.37 s`. The 37 failures are historical tests
+  whose ignored `work/` fixtures are absent in this managed worktree; all
+  reported tracebacks are missing paths under `work/`, and no FD test failed.
+  Full log is `work/sdf_directional_fd_round4_source_validation/full_pytest.log`,
+  SHA-256 `54a56120fbbf9caf0ad84712a65e039027a27f101bda5dcaf186aef29130a805`.
+- **Source commit:** the runner, tests, round-4 registrar, and mutable draft
+  are committed and pushed as `8bf88756791213ac75b3c36ab6316323653d5c9a`.
+- **Registered:** immutable criteria
+  [`sdf_directional_fd_v16_criteria_2026_09_round4.json`](evidence/sdf_directional_fd_v16_criteria_2026_09_round4.json)
+  has file and sidecar-content SHA-256
+  `ace4e53963ee7d37d7806f48ef1ef449380294c0a5216043e50558f1d31192fd`,
+  sidecar-file SHA-256
+  `8e0ef570cba16e6964bc7d8763b41fe1fed8d2d69dcba841047e16f0b745494a`,
+  canonical criteria SHA-256
+  `949d998bb9e5b83ddbb2a24efc25b57754f4db29568e0a0f6e8b062647206db9`,
+  and binds source commit `8bf88756791213ac75b3c36ab6316323653d5c9a`. Registrar
+  `--check --round 4` passed. The exact round-3 criteria, submission, diagnostic,
+  dataset verification, and failure-analysis hashes are bound in its
+  `supersedes` record. Contract comparison passed: 3 directions, 30
+  perturbations, 33 runs, and all registered measurement/gate semantics are
+  unchanged.
+- **Dataset / kernel:** private dataset version 4 has not been staged or
+  uploaded. No new kernel version has been submitted, and there is no round-4
+  primal measurement or host verification.
+- **Qualified:** centered-FD oracle, flow16 FD, gradient field, reverse mode,
+  optimizer, topology, and shape update remain false; `shape_update_allowed`
+  remains false. Round 3 remains an exact pre-primal diagnostic.
+- **Open:** prepare and remotely verify the next dataset version against
+  round-4 criteria before submitting an exact T4 kernel. Preserve the round-3
+  criteria and diagnostic; do not modify any measurement threshold.
+
+### 2026-09-29 FD round-4 dataset verification and exact kernel `/3` submission
+
+This checkpoint supersedes the preceding round-4 preregistration section's
+dataset-not-uploaded and kernel-not-submitted state. Round-4 criteria remain
+immutable and unchanged; this is an execution checkpoint, not a primal result.
+
+- **Dataset v4:** private dataset
+  `ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle` reports `ready`. The
+  redownloaded inventory contains 38 files (37 registered payload files plus
+  the manifest). Every downloaded file matches the staged file by path, size
+  and SHA-256, and the authenticated Kaggle file listing matches all names and
+  sizes. Remote inventory SHA-256 is
+  `ec9871eeaf6b95dec7f82b4a5eae902b649dd27cb6c81b1262cb450ec01738b5`; listing
+  SHA-256 is
+  `71b4a458676157f8172b152a0b0c9ccbe5093a639d02b4451dc737ccc10b770e`.
+- **Host input preflight:** round-4 criteria and all 32 pinned source inputs,
+  including the exact W3/W4 host-PASS prerequisites, verified. The downloaded
+  dataset passed canonical state identity, C/F `phi` hashes, mask hashes,
+  three direction hashes and all 30 perturbation checks. Canonical state SHA is
+  `44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8`; its
+  measured CPU margin is `0.3499999939931499 m`. Host GPU inventory was not
+  called. Append-only dataset verification evidence is
+  [`sdf_directional_fd_v16_dataset_round4_verification_2026_09.json`](evidence/sdf_directional_fd_v16_dataset_round4_verification_2026_09.json),
+  file SHA-256
+  `e3f4fecde25f4161595deda684a2db7a9bd5d83298d299cf22f4745dda4831aa`,
+  sidecar-file SHA-256
+  `a6c306c572597d60217acb4f6150c79da67fe89a57d151f60de6790761a59c81`.
+- **Submitted:** exact private T4 kernel
+  `ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel/3` was submitted
+  with the registered 14,400-second timeout. The append-only submission
+  checkpoint is
+  [`sdf_directional_fd_v16_round4_kernel3_submission_2026_09.json`](evidence/sdf_directional_fd_v16_round4_kernel3_submission_2026_09.json),
+  file SHA-256
+  `7906199306835e1da529b52313e7f27b7e18bf3665c091e6c4d099b340ee52bb`,
+  sidecar-file SHA-256
+  `af200d5aa3aced2e178b00fbef13ed96a2156c012962004b6cc1b10c19a153cb`.
+  Exact-version status was `RUNNING` at `2026-09-29T09:35:27Z`; its logs
+  response contained one newline byte. An earlier queued snapshot is preserved
+  with its provenance, but its exact observation time was not captured. Solver
+  start/progress remains unknown from these status and log responses.
+- **Measured / verified:** no terminal kernel output has been collected, no
+  primal measurement has been host-verified, and no round-4 result or
+  diagnostic is yet recorded. Continue monitoring only exact `/3`; after it
+  reaches a terminal state, collect that version's status, logs and output and
+  run the registered host verifier. Do not submit a substitute version.
+- **Qualified:** directional-FD oracle, flow16 FD, full gradient field, reverse
+  mode, optimizer, topology and shape update remain unqualified; all registered
+  qualification flags remain false.
+
+### 2026-09-29 FD round-4 kernel `/3` terminal host-recompute failure
+
+This checkpoint supersedes the prior `/3` `RUNNING` observation. Keep the
+round-4 criteria and the exact `/3` terminal artifacts unchanged. Its 33
+primal outputs are execution evidence from a failed runner invocation, not a
+host-verified FD result and not a reusable fresh-primal run.
+
+- **Exact terminal evidence:** private T4 kernel
+  `ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel/3` ended in
+  `KernelWorkerStatus.ERROR` at `2026-09-29T09:51:47Z`. Kaggle terminal-log
+  SHA-256 is
+  `60c5b6d95f7522b8f868293424d3e5a78a99abe63030863c0e93157f7f185a3e`;
+  exact status SHA-256 is
+  `a41990c17fc9854c822b3459124dfa5b3139aed4edea17bfc51ee2eb92ee7836`.
+  The immutable download contains 33 force CSVs, 33 summary JSONs, all 33
+  ordered start/finish/step-invoked/step-returned markers, and no `DONE` file.
+  The output SHA manifest is consistent. Aggregate solver wall time was
+  `988.253036737442 s`; total job wall time was `1064.1104481220245 s`.
+  These counts and timings describe completed calls only; they do not establish
+  the registered output gates or a qualification result.
+- **Host verification:** strict verification of those exact `/3` artifacts
+  exited 1 with `ValueError: FD Kaggle output has no DONE marker`. The
+  append-only diagnostic is
+  [`sdf_directional_fd_v16_round4_kernel3_diagnostic_2026_09.json`](evidence/sdf_directional_fd_v16_round4_kernel3_diagnostic_2026_09.json),
+  SHA-256 `f53ce0cf2784db810cdec39ba05448795010210e5e39e664810ae9f84527ded8`;
+  its sidecar file SHA-256 is
+  `01fe41f9c0dac90b43c64aacf75462af2fb2874143654f460bb72a48e7b47f4d`. The
+  downloaded output-manifest file SHA-256 is
+  `b23ed08c5692076d7532a210678d86a319cb1e2e098bd1643fb86cb15e4ec498`; the
+  Kaggle output-download command response SHA-256 is
+  `867001bb057671a403ff6e2fcec0b387466774d31256f9c91575c03bed5dea5f`.
+- **Failure cause:** the exact source commit
+  `8bf88756791213ac75b3c36ab6316323653d5c9a` includes the registered W4 result
+  at SHA-256
+  `87a881784dd42ef9c2c43ee78be761e8165e727f01df7d544765006d9c1b2fae`.
+  Dataset v4's exact files, manifest and API listing were verified; source
+  identity checks and the W3/W4 prerequisite checks passed in the kernel.
+  In `infra/kaggle/kernel_sdf_directional_fd_v16/runner.py`, the `source`
+  checkout lived inside `TemporaryDirectory`. The code left that context after
+  Julia completed, then called `verify_runner(source, ...)`, which tried to
+  reopen the W4 JSON beneath the now-deleted source directory. The resulting
+  `FileNotFoundError` happened at `host_inside_runner_recompute`, after all 33
+  solver calls.
+- **Local repair / registration:** the runner now retains the already SHA-verified W4 result
+  object in memory and passes it into `verify_runner`, so final recomputation no
+  longer reads from a deleted temporary path. A focused regression copies the
+  W3/W4 prerequisite files into a temporary checkout, verifies them, removes
+  that checkout, and confirms the parsed W4 result remains usable. Round-5
+  registrar plumbing binds the exact round-4 `/3` failure and requires its
+  33-run evidence, but asserts that its outputs cannot satisfy a fresh run.
+  Round-5 inputs retain the same state, masks, three directions, 30
+  perturbations, 33-run order, T4 backend and numeric thresholds; no scientific
+  criterion is changed. Focused FD tests passed (`22 passed`); `compileall
+  src tests scripts` and `git diff --check` passed. Full pytest reported
+  `1,151 passed, 37 failed, 4 skipped` in `199.91 s`; the 37 failures are
+  existing tests requiring ignored `work/` evidence absent from this worktree,
+  including PQ0/PQ3 and Stage S/V fixtures. No FD test failed.
+- **Round 5 preregistration:** immutable criteria are locally registered at
+  [`sdf_directional_fd_v16_criteria_2026_09_round5.json`](evidence/sdf_directional_fd_v16_criteria_2026_09_round5.json),
+  file/sidecar-content SHA-256
+  `2aad32922b2746d9ee7b170b590673779e60f032b238c29d1bc7ca6b2779ee17`,
+  canonical criteria SHA-256
+  `afb87dc75538c1970cc332711ae638f33fe417df68e018e61f70824e77b7a4ac`,
+  bound source commit `a07bba2fd1dcf0d3d28b211eef58d91309a24a75`. It supersedes
+  the exact round-4 `/3` failure evidence without editing round 4.
+- **Local dataset v5 candidate:** staged at
+  `work/kaggle_sdf_directional_fd_dataset_round5/`. All 35 canonical-state,
+  phi, direction and perturbation inputs are byte-identical to the locally
+  staged v4 inputs whose manifest SHA matches the remote-verified round-4
+  record. Exact criteria, source inputs, W3/W4 prerequisites, canonical state,
+  three directions and 30 perturbations passed host checks against a simulated
+  mounted inventory; GPU discovery was not called. Candidate manifest SHA-256
+  is `c2aa1360263d04bd8d61d9079b7d3e644fd35e2551d1715d91bf0199e09f003e`.
+  Append-only local-stage record
+  [`sdf_directional_fd_v16_dataset_round5_candidate_verification_2026_09.json`](evidence/sdf_directional_fd_v16_dataset_round5_candidate_verification_2026_09.json)
+  SHA-256 is
+  `079581ea1f9df6cca37b44223b1f0f1d79f9c961569daf70d29a56ef833235ae`.
+- **Dataset/run gate:** dataset v5 has not been uploaded or remotely verified,
+  and no successor kernel has been submitted. Both remain gated on the user's
+  explicit answer about versioning the append-only registration/source identity
+  update. Do not overwrite/relabel `/3`, modify rounds 1–4, or reuse `/3`
+  outputs for a new 33-primal execution.
+- **Qualified:** round 4 remains failed, and the directional-FD oracle,
+  flow16 FD, field gradient, reverse mode, optimizer, topology and shape update
+  remain false. `shape_update_allowed=false` remains a hard stop.
+
+## 2026-10-02 execution-order adjustment: four parallel tracks after FD-07
+
+FD-05/06/07 (#37) are terminal diagnostics. FD-07 (merge `a6c52a0`) selected
+**Candidate C**, a one-sided C1 blend of raw and upstream-corrected `μ₀`
+applied only when sign disagreement leaves the half-cell band, as the sole
+continuous-replacement candidate. It preserves the 49 legal half-cell
+crossings, 1-/2-cell plate moments and moving-ground initialization, and cut
+short-CPU max force departure from the 1e-3 N class to drag `1.46e-7 N` /
+downforce `9.79e-7 N`. Open defects: one baseline face changes `μ₀`
+`0.09084 -> 0.90915`, and a 10x input changes response only `0.265-3.08x`.
+Candidate C is a production-qualification candidate, not a production
+operator.
+
+The directional-FD line is removed from the sole critical path and run in
+parallel. It remains the formal gate for GRAD-03 (#23), GRAD-05 (#25),
+GRID-01 (#26) and therefore OPT-01 (#30); "FD-02 PASS" in those issues now
+means FD-08 (#46) PASS.
+
+```text
+Track A  C-OP-01 (#44)  1-face dissection (solver-free) -> analytic/thin-body/
+                        moving-ground/mass+force closure (CFD) -> operator
+                        contract -> W3-C -> W4-C
+Track B  XFID-01 (#45)  preregistered {-eps, baseline, +eps} directions,
+                        WaterLily-C vs OpenFOAM Stage V on Kaggle CPU
+                        (sign and ordering)
+Track C  FD-08 (#46)    C-specific micro-response model -> preregistered
+                        eps ladder/noise-aware criteria -> CPU -> Kaggle T4
+         STEP-01 (#47)  finite-step secant oracle (0.1-0.5 h), separate
+         GRAD-02 (#22)  CPU reverse capability, parallel (capability only)
+Track D  solver-free    #28 reinit, #29 geometry gates, #31 topology policy,
+                        #17 preflight, #19 supersession
+Insurance LOWDIM-01 (#48) fixed low-dimensional basis, 2N primal; does not
+                        close OPT-01 without a recorded contract supersession
+```
+
+Rules:
+
+- The FD-06 noise level (`+3-4.5e-4 N` drag at 10 nm) is an upstream-operator
+  measurement and must not be carried into Candidate C; FD-08 measures its own.
+- Local directional-FD (gradient qualification) and finite-step secant
+  response (optimizer-step robustness) are separate oracles.
+- Stage V backend (user decision 2026-10-02): OpenFOAM code removal from the
+  repository continues; Stage V runs as a self-contained Kaggle CPU kernel
+  extracted from tag `archive/pre-openfoam-removal-2026-09-29`, with OpenFOAM
+  installed via apt and its version pinned in evidence.
+- **Branch condition:** if Track B shows WaterLily-C and OpenFOAM disagree in
+  response sign or candidate ordering on representative directions, lower the
+  priority of Track C FD/AD work and escalate; if they agree, allocate
+  compute to FD-08 and the gradient backend.
+
+No qualification flag changes. `shape_update_allowed=false`, the FD oracle,
+field gradient, reverse mode, optimizer and topology flags remain false.
+
+### 2026-10-02 execution prerequisites and verdict clarification
+
+These user decisions supersede conflicting pilot and branch-rule wording above
+and in issues #44–#48; they do not amend historical criteria or evidence.
+
+- Production Candidate C is the composite **Candidate C moment blend plus
+  `normal_floor=0.25`**, registered as a new body type. Neither component alone
+  is the production operator. W3-C/W4-C preserve the existing v17 numerical
+  thresholds and four-case W4 matrix; operator identity changes in new rounds.
+- W2 sphere and thin-plate fixtures sample analytic geometry onto a GridSDF
+  and solve through the Candidate C body. Native analytic bodies are controls.
+- GPU を必要とする正式計算は Kaggle T4 のみ。OpenFOAM Stage V は Kaggle CPU。
+  CPU だけで足りる diagnostics と capability test は CPU で実施してよい。
+  Colab は使用しない。OpenCode Go／OpenCode CLI は 2026-10-20 まで使わない。
+- Stage V must use the historical **OpenCFD v2512** family associated with
+  image digest `sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319`.
+  Record OS, exact apt package version, `foamVersion`, and package hashes.
+  Before new shapes, reproduce the archive's v16 Stage V PASS fixture on
+  Kaggle CPU: STL and physical-profile SHA, mesh/solver settings, Cd/downforce,
+  qualified mesh interpretation, stationarity, and mass balance. Preregister
+  the reproduction contract; failure or missing evidence blocks XFID.
+- The only permitted early Track B pilot is that v16 environment/harness
+  reproduction. Upstream WaterLily pilot responses cannot support scientific
+  verdicts or branch decisions. Formal XFID waits for the composite C contract.
+- XFID verdicts are **AGREE / DISAGREE / UNRESOLVED**. For each solver, compute
+  `delta_R_plus=R(+epsilon)-R0`, `delta_R_minus=R(-epsilon)-R0`, and the centered
+  secant in N-based semantics. Compare signs and ranking only for responses
+  resolved above both solvers' preregistered resolution floors. An unresolved
+  response yields UNRESOLVED, never PASS. Stop Track C compute only for a
+  **resolved representative DISAGREE**; AGREE prioritizes FD-08, and UNRESOLVED
+  leaves the cross-fidelity branch undecided.
+- FD-08 uses disjoint calibration and fresh qualification sets. After the C
+  contract freezes, calibrate C's micro-response uncertainty on the same
+  backend, flow_24, time window, and canonical v17 state; freeze the epsilon
+  ladder and model, register immutable criteria, then use **33 new runs only**
+  for the formal verdict. Calibration runs cannot satisfy formal FD evidence.
+  Keep the 5% relative plateau term, independently measured absolute response
+  resolution floor, and sign consistency as separate conditions. Unresolved
+  responses yield UNRESOLVED. STEP-01's 0.1–0.5h secants remain a separate oracle.
+- #31's component/root and birth/split/merge/delete choices require user
+  decisions. Implement only mechanically determined existing requirements;
+  record undecided choices, effects and recommended defaults without silently
+  registering a canonical policy.
+- Work in issue-specific feature branches/worktrees from
+  `codex/kaggle-batch-migration`; integration uses `merge --no-ff` after review.
+  Preserve pinned bodies, historical rounds and unrelated work. Record commands,
+  results, artifact paths/hashes and evidence class in `docs/issues/` and the
+  corresponding issue. Run focused checks, compileall, full pytest and diff
+  checks; compare failure IDs to a measured baseline, not just a count of 37.
+- All six qualification/shape-update flags remain false. #48 starts only if
+  #22–#25 stall, and cannot close #30 without explicit recorded supersession.
+
+### 2026-10-02 partial research topology decision (#31)
+
+The user selected detached components allowed and root connectivity optional
+for the research policy. Record this in a new successor policy identity;
+preserve historical v1 and state bindings. Birth/split/merge/whole-component
+deletion permissions remain awaiting the separate user decision. This partial
+choice is not a canonical registration or execution permission. Missing
+physical feature limits and provenance remain unresolved; all six flags remain
+false. See [the decision record](issues/31_research_policy_decisions_2026_10_02.md).
+
+### 2026-10-02 reviewed execution checkpoint: reinitialization FAIL and CPU fixtures
+
+- #28 Godunov2 v2 immutable Round 3 completed a solver-free operator-effect
+  qualification: sphere and two spheres PASS; thin box and canonical v16 FAIL.
+  The thin box failed fixed-band Eikonal/idempotence gates, and canonical v16
+  failed smoothed-volume drift, edge displacement and idempotence. All gates
+  remain unchanged. Parent raw-output recomputation confirmed the stored
+  Eikonal statistics and volume drift. This operator is not qualified for
+  accepted shape updates; the failure does not establish a CFD or FD result.
+  See `docs/issues/28_result.md` and `docs/evidence/reinitialization_parent_review_2026_10_02/`.
+- #44 sampled-GridSDF composite Candidate C sphere CPU Round 4 is executing
+  after parent source review, preregistration, full baseline-ID validation and
+  push. Native analytic sphere/repeat are controls and sampled upstream is
+  diagnostic only. No terminal sphere verdict exists at this checkpoint.
+  This round does not qualify mass conservation or freeze production C.
+  Thin-plate, moving-ground/mass/force closure and operator-contract freeze
+  remain ahead of W3-C/W4-C and FD-08 measurements. Its W2 window estimator
+  differs explicitly from legacy arithmetic means; W3/W4 must retain their
+  actual historical evaluator semantics.
+- #45 exact private Kaggle CPU versions 1 and 2 both terminated before CFD.
+  Version 1 exposed the actual Jammy OS versus the Noble environment lock.
+  Version 2 installed the fixed Jammy OpenCFD v2512 packages, then exposed a
+  wrong hardcoded bashrc path. Both terminal failures are preserved under
+  their own registered rounds. A harness-only successor round must retain
+  every numerical gate, fixture and exact package lock. Environment
+  reproduction is not PASS and formal XFID is not permitted yet. These
+  harness failures are not resolved XFID DISAGREE; Track C's scientific
+  branch remains undecided.
+- #17 preflight preparation and #46/#47 registrars are implemented; #22's
+  CPU reverse capability replay remains blocked at the recorded Enzyme
+  MethodError. #19 identity/supersession helper is under final parent review.
+  #29 mechanical geometry gates are in progress. #31's event choices remain
+  pending; disconnected components/root policy was recorded only as a
+  partial user decision. #48 has not started. All six flags remain false.
+
+### 2026-10-02 reviewed execution checkpoint: geometry and environment harness
+
+- #19 supersession/collision helper is reviewed and integrated, with exact source and runtime identity checks and literal false qualification flags. Its full source-bound suite has zero new failure IDs. This is infrastructure contract evidence, not solver evidence.
+- #29 canonical v16 solver-free GEOM-01 diagnostic reports 3 PASS, 0 FAIL and 10 UNMEASURED gates; the aggregate gate remains closed. Width/gap estimates and the voxel cell-union mesh are diagnostic proxies. Missing physical limits, source/mask/policy bindings and actual GridSDF zero-level export checks block canonical qualification. See `docs/issues/29_result.md`.
+- #46/#47 reviewed plans bind actual float32 perturbations, exact [80,120] physical-time force means, runtime/source identity and disjoint evidence sets. Their existing arithmetic helpers remain preparation only. Neither formal campaign is registered or running.
+- #45 Kaggle CPU version 3 installed and hash-verified all fixed v2512 packages but failed before meshing at the noninteractive `foamVersion` function lookup. Exact package setup loads aliases only for interactive shells; the next immutable harness round must explicitly load that package function. All numerical gates, historical fixtures and package hashes are preserved. This is not resolved XFID DISAGREE and does not stop Track C.
+- #31 research detached components are allowed and root connectivity is optional by the user's partial decision. Event permissions and source/physical-limit bindings remain unresolved; no successor canonical policy has been registered. All six qualification flags remain false.
+
+### 2026-10-02 reviewed CPU sphere checkpoint
+
+The #44 immutable Round4 sampled-GridSDF composite C sphere calculation completed all 11 registered CPU fixture gates. Parent review verified the independent NumPy interpolation/trapezoid audit and all 20 retained artifact hashes. Candidate C drag is 0.34466230665836467 N, native analytic control/repeat 0.3454132018610324 N (relative difference 0.2173904%); analytic repeated force histories are identical. The gate includes only finiteness of boundary-flow diagnostics, not a physical mass-conservation threshold. CPU sphere PASS does not freeze or qualify production C, W3-C/W4-C, target physics, FD or optimization. Thin-plate/moving-ground and body-relative flux/force observables remain pending. See `docs/evidence/candidate_c_w2a_sphere_cpu_round4_retained/`.
+
+Source/equation review of WaterLily 1.8.0 confirms that its first kernel moment is even in signed distance: the C μ0 blend is a convex mixture of the ±sign-branch μ0 values sharing μ1. The normal floor can return a subunit operator normal; geometric surface flux needs a distinct unit normal. A compatible μ0 Poisson/projection algebra and whole-grid telescoping identity alone do not establish immersed-body no-through or fluid-region mass/force closure. These are static findings with conditional equations, not observed failures. See `docs/issues/44_mass_force_contract_research.md`. All six flags remain false.
+
+### 2026-10-02 reviewed environment reproduction and bounded CPU dispatch
+
+#45 exact Kaggle CPU kernel version 4 completed the immutable Round5 v16
+environment reproduction. The unchanged, preregistered independent host
+verifier passed with the required `.venv/bin/python` (observed Python 3.12.13).
+An earlier invocation using system Python failed exact floating-sum equality;
+that diagnostic is preserved separately. No criteria, verifier, numerical
+gate, fixture or package identity was changed to obtain the host PASS.
+The parent independently downloaded the exact `/4` manifest, result and DONE,
+confirmed equality with the worker's complete download, and verified all 64
+artifact hashes. Exact-package OpenCFD v2512, Ubuntu Jammy, STL/profile/case
+identity, mesh qualification, stationarity, residual and mass gates passed.
+Measured drag is 0.37426349429041095 N, downforce 0.24225913050301373 N;
+normalized mass imbalance is 1.753881451723771e-8. The raw mesh reports the
+registered allowed concave-cell failed check: 2,969 of 42,619 cells, not a raw
+clean `checkMesh` result. See
+`docs/evidence/xfid_v16_environment_reproduction_2026_10_02_round5/terminal_kernel_v4_parent_verified/`.
+This opens the environment prerequisite only. Formal XFID has not run and
+remains dependent on composite C operator-contract freeze. No resolved XFID
+DISAGREE exists; Track C's scientific branch remains undecided.
+
+#44 immutable CPU fixture diagnostic Round7 is executing after reviewed exact
+source hashes, preregistration and integration push. All 12 fixture/arm
+initializations passed without solver steps; the formal bounded diagnostic
+has no terminal verdict at this checkpoint. Four sampled analytic fixtures
+and three arms retain raw solver forces and SI forces separately. Descriptive
+half-window drift, native differences and whole-domain flux arithmetic do not
+qualify physical accuracy, no-through or immersed-fluid mass conservation.
+The parent full suite reports 37 failed, 1,296 passed and 5 skipped, exactly
+the existing failure IDs and zero new ones after restoring the hash-verified
+ignored canonical v17 fixture. See
+`docs/evidence/candidate_c_fixture_diagnostic_2026_10_round7_parent_review/`.
+
+Surface-flux method preparation remains unregistered. A sphere VTK seed has
+degenerate apex triangles that collapse on exact trilinear projection;
+nonzero neighboring one-sided gradients do not support an isolated-zero-set
+claim. Preserve that geometry-only failure while auditing zero-measure
+coverage. No physical flux measurement or tolerance change follows from it.
+All six qualification flags remain false; W3-C/W4-C, FD-08 calibration/fresh
+qualification and STEP-01 have not been dispatched.
+
+### 2026-10-02 long CPU fixture terminal and bounded surface preregistration
+
+#44 Round7 completed all 12 solver arms to t=10 but the immutable host verifier
+terminated ERROR: Julia promoted four Boolean values to Float64 1.0 in the CSV
+writer. The original source, CSV and ERROR are retained unchanged. A pure Julia
+control reproduces that promotion. An explicitly derived copy decodes only
+those four source-proven Boolean columns; its numerical integrity reanalysis
+is conditional used-data evidence, not formal Round7 PASS. Forces and
+whole-grid bookkeeping do not qualify no-through or immersed mass closure.
+See `docs/evidence/candidate_c_fixture_diagnostic_2026_10_round7_terminal_parent/`.
+
+The independently reviewed immutable Round8 surface plan and source bind
+three levels of exact GridSDF surface quadrature, a bounded moving-ground
+patch, fixed N+2 masks and independently recomputable final point/field data.
+Only exactly zero-area projected faces are removed; all positive-area faces
+and closed-body edge coverage are retained. External parent preregistration
+authorizes initialization and a fresh short CPU diagnostic after integration
+push. No physical acceptance threshold is introduced. It is not mass closure,
+stationarity, production operator qualification or a resolution floor.
+See `docs/evidence/candidate_c_surface_flux_round8_parent_review/registration.json`.
+All six qualification flags remain false. W3-C/W4-C source copies are reviewed
+preparation; formal criteria and T4 dispatch await the composite operator
+contract. Formal XFID remains pending; its environment gate is PASS and no
+resolved representative DISAGREE has been observed.
+
+### 2026-10-02 surface initialization ERROR and fresh CPU Round9
+
+#44 surface Round8 terminated before Simulation at an unavailable direct
+StaticArrays import. The exact original ERROR and source remain immutable.
+Fresh Round9 references the same vector type through pinned WaterLily and
+adds raw pressure/viscous operands in Float64 before converting to N. It
+retains exact geometry/operator/window/threshold identity and exclusive new
+outputs. Parent source review and external preregistration authorize only
+initialization and bounded transient diagnostics after integration push.
+Focused controls and dependency loading PASS; full suite 37 failures all
+baseline IDs, 1311 passes, 5 skips; compileall and diff PASS. No physical
+acceptance threshold or qualification is introduced. All six flags remain false.
+See `docs/evidence/candidate_c_surface_flux_round9_parent_review/registration.json`.
+
+### 2026-10-02 composite C identity freeze and bounded surface terminal
+
+#44 fresh Round9 completed 12 CPU arms and all 63 surface groups. The parent
+verified original output hashes, reran the unchanged independent host
+point/field/force integrity calculation, and rehashed every retained raw
+archive member. Status is diagnostic_data_integrity_ok, not physical
+qualification. Nonzero geometric slip and flux were observed; no physical
+acceptance threshold was preregistered. The short transient window and open
+ground patch do not establish stationarity or fluid-control-volume closure.
+See `docs/evidence/candidate_c_surface_flux_round9_terminal_parent/`.
+
+The composite algorithm/source identity is now frozen in immutable
+`docs/evidence/candidate_c_composite_operator_identity_v1_2026_10.json`:
+moment blend PLUS normal_floor=0.25, the fixed transition width and outer C
+body composition. It freezes the object to measure and does not promote
+physical or production qualification. W3-C/W4-C fresh criteria may now be
+registered after exact source/evaluator review, preserving actual v17 gates
+and the four-case matrix. W4-C still requires exact host-verified W3-C PASS.
+XFID environment reproduction is PASS; same-geometry lineage, solver-specific
+independent response floors and immutable comparison criteria remain pending.
+FD08 calibration may be prepared for this frozen identity, with formal
+qualification requiring separate fresh33 runs. No resolved representative
+XFID DISAGREE exists, so Track C's stop condition has not been triggered.
+All six qualification flags remain false.
+
+### 2026-10-02 XFID and FD08 preparation checkpoint
+
+The reviewed XFID arithmetic helper now has three-valued force-response
+verdicts. Any required contrast that is independently resolved in both
+solvers and has opposite signs is DISAGREE; an unresolved different contrast
+does not erase that observed disagreement. AGREE requires all required
+contrasts to resolve and agree. Other cases are UNRESOLVED. This is tested
+contract arithmetic, not a measured cross-fidelity verdict. WaterLily
+physical-time averaging and OpenFOAM steady-iteration tail averaging remain
+distinct, with shared physical-input/geometry lineage still to register.
+See docs/issues/45_xfid_comparison_contract_draft.md and
+docs/evidence/xfid_comparison_contract_preparation_2026_10_02/validation.json.
+
+FD08 now verifies the frozen composite Candidate C source identity and
+caller-declared flow_24, [80,120], canonical v17, disjoint calibration and
+fresh33 design bindings. It also audits in-memory Float32 perturbations.
+It does not verify actual T4 runtime, newly executed run provenance, or raw
+force artifacts, and registers no criteria. Candidate C calibration, epsilon
+ladder and uncertainty model remain pending; no formal FD evidence exists.
+W3-C source/host review is in progress before immutable registration.
+All six qualification flags remain false; no measured resolved XFID
+DISAGREE exists and Track C stop condition has not been triggered.
+
+### 2026-10-02 W3-C Round1 immutable registration
+
+Fresh composite C W3-C Round1 is preregistered before Kaggle submission in
+docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10.json, SHA-256
+cff792c51fbb24218bd7f21d336a3d4b704aeb20498d18a9e16976e6a295597e.
+Source is 6aaa353a40ef5030fffb9b3377654149507df6c1. Parent verified every
+source input against that commit and exact staged canonical v17 bytes.
+Actual v17 measurement/backend/profile/acceptance numerics are unchanged;
+only operator identity, force-body description and source bindings differ.
+Parent focused tests11 pass; compileall/diff pass; full suite37 failed,1335
+passed,5 skipped with exact baseline failure IDs and zero new failures.
+See docs/evidence/kaggle_w3_v17_candidate_c_round1_parent_registration/.
+
+No W3-C solver verdict exists yet. The private new dataset/kernel will use
+Kaggle T4 only, record actual versions/runtime and retain raw forces for
+independent host verification. W4-C registration still requires actual
+host-verified W3-C PASS. Physical/production and all six qualification
+flags remain false; registration is not physics evidence.
+
+### 2026-10-02 W3-C Round1 terminal environment failure and Round2 registration
+
+W3-C Round1 (criteria SHA-256 cff792c5…297e) stopped fail-closed with
+`W3 NVIDIA driver drift` before any solver work: the Kaggle T4 host driver moved
+from the registered 580.159.04 to 580.178.04 (both GPUs). This is an environment
+terminal failure, not a W3-C verdict and not physics evidence. Evidence is kept
+immutable in `docs/evidence/kaggle_w3_v17_candidate_c_round1_terminal_failure/`.
+
+User decision: the host NVIDIA driver version is recorded but no longer gated.
+Round2 (`docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round2.json`)
+keeps every numerical gate, the operator identity and the six false qualification
+flags unchanged; GPU model, CUDA driver API/runtime, Julia, CUDA.jl, WaterLily and
+source hashes remain gated, and drivers must agree across GPUs. The runner and
+host verifier honor this only for criteria carrying
+`backend.driver_version_policy = recorded_not_gated`; Round1 behavior is
+unchanged and `evaluate_gates` is byte-identical to v17. Results from other
+driver versions must note the driver difference when compared with historical
+v17 runs. W4-C registration still requires an actual host-verified W3-C PASS and
+must carry the same driver policy. See
+`docs/evidence/kaggle_w3_v17_candidate_c_round2_registration/`.
+
+### 2026-10-02 W3-C Round2 source-defect terminal failure and Round3 registration
+
+W3-C Round2 (criteria SHA-256 dd5121e3…3bf) passed the recorded-not-gated driver
+check (both GPUs 580.178.04) but stopped before any solver work on `NameError:
+sys` in the W3-C runner (defect introduced when the runner was integrated for
+Round1 and never exercised before). It is a terminal source-defect failure, not a
+W3-C verdict; evidence is in
+`docs/evidence/kaggle_w3_v17_candidate_c_round2_terminal_failure/`. Round3
+(`docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round3.json`) changes
+only that import; numerical gates, operator identity, the driver policy and the
+six false flags are unchanged. See
+`docs/evidence/kaggle_w3_v17_candidate_c_round3_registration/`.
+
+### 2026-10-02 W3-C Round3 host-verified PASS
+
+W3-C Round3 (criteria SHA-256 0db63d6a…325a, kernel v3, dataset v3, source commit
+0fc2e0d6…) completed on Kaggle T4 (host driver 580.178.04, recorded not gated) and
+passed all 11 in-kernel gates T0–T10 and the independent host verifier (18 files,
+verdict PASS). Result: `docs/evidence/kaggle_w3_v17_candidate_c_round3_result_2026_10.json`;
+retained artifacts in `docs/evidence/kaggle_w3_v17_candidate_c_round3_retained/`.
+This is a primal contract/capability PASS with Candidate C composite operator on the
+canonical v17 state under the limited profile adapter: it is not target-physics
+evidence and does not qualify FD, gradient, reverse, optimizer or topology; all six
+flags remain false. W4-C may now be registered (it must carry the same driver
+policy).
+
+### 2026-10-02 W4-C Round1 immutable registration
+
+Fresh composite C W4-C Round1 is preregistered before Kaggle submission in
+`docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10.json`. It binds the
+host-verified W3-C Round3 PASS, preserves the v17 four-case matrix and numerical
+gates, and keeps all six qualification flags false. Preparation required three
+registrar/verifier fixes (backend-identity binding, measurement-preservation
+assertion, legacy-validation view dataset id), all found by dry runs on the real
+W3-C evidence. W4-C binds the W3-C observed backend identity including host driver
+580.178.04 (the legacy W4 evaluator requires W3 result = prerequisite = W4
+backend), so a driver change between the W3-C and W4-C runs would stop W4-C and
+need a new round. No W4-C solver verdict exists yet. See
+`docs/evidence/kaggle_w4_v17_candidate_c_round1_registration/`.
+
+### 2026-10-02 W4-C Round1 gate failure and Round2 registration
+
+W4-C Round1 (criteria SHA-256 802f85bc…84d9, kernel v1) ran all four cases to
+completion on Kaggle T4 (driver 580.178.04, same as W3-C) and passed every
+registered gate except `T4_native_profile_limitation_preserved`: the Julia job
+reported a descriptive `force_integration_body` string that differed from the
+registered operator string `CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))`.
+Round1 verdict is FAIL on that pre-registered gate; the cause is a reporting-string
+mismatch, not a numerical result, and the retained forces are not reused. Evidence:
+`docs/evidence/kaggle_w4_v17_candidate_c_round1_terminal_failure/`. Round2
+(`docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10_round2.json`) changes only
+that job string; matrix, numerical gates, backend binding and the six false flags
+are unchanged. See `docs/evidence/kaggle_w4_v17_candidate_c_round2_registration/`.
+
+### 2026-10-02 W4-C Round2 host-verified PASS
+
+W4-C Round2 (kernel v2, dataset v2, source 51808f7…) completed on Kaggle T4 (host
+driver 580.178.04, identical to W3-C) and passed all 11 in-kernel gates T0–T10 and
+the independent host verifier (verdict PASS). Result:
+`docs/evidence/kaggle_w4_v17_candidate_c_round2_result_2026_10.json`; retained artifacts
+in `docs/evidence/kaggle_w4_v17_candidate_c_round2_retained/`. flow_16 reproduces
+W3-C exactly. Against the v17 primal W4 matrix, Candidate C changes drag/downforce
+by +0.10/+0.40% (flow_16), −0.74/+0.18% (flow_24), +0.01/+0.00% (flow_32) and
++0.01/+0.44% (domain_xplus1m_16); the resolution spread (downforce 8.2% flow_24→32,
+23% flow_16→24) is a property of the grid sensitivity, not of Candidate C. This is a
+primal contract/capability PASS under the limited profile adapter: it is not
+target-physics, grid-convergence or absolute-downforce evidence, and FD, gradient,
+reverse, optimizer and topology flags remain false (fd05_execution_authorized stays
+false until the FD entry is separately authorized). Candidate C is now eligible for
+the FD-08 (#46) calibration step.
+
+### 2026-10-03 user-directed dependency order and C-OP-01 audit
+
+The user-directed order for this execution supersedes earlier wording that
+allowed Track B to run in parallel with Track C:
+
+1. Complete the #44 C-OP-01 final audit and close decision.
+2. Run formal XFID-01 (#45) against the frozen composite Candidate C identity.
+3. Start #46 FD-08 calibration/formal solver work only if XFID is AGREE.
+4. If XFID is DISAGREE or UNRESOLVED, stop before the #46 solver campaign and
+   report the bounded result and unresolved inputs.
+
+The #44 final audit satisfies its Done conditions: the frozen composite
+identity is hash-verified; W3-C Round3 and W4-C Round2 were freshly downloaded
+from Kaggle, their output and input inventories were checked, and the unchanged
+independent host verifiers passed. Raw W4-C versus historical-v17 force
+differences were independently recomputed from the force histories. The
+append-only audit is `docs/issues/44_final_audit_2026_10_03.md`, with structured
+hashes and host results in
+`docs/evidence/candidate_c_final_audit_2026_10_03/audit.json`. The audited
+close conditions are satisfied; closing #44 does not change any qualification
+flag.
+
+Use the existing independently verified Kaggle CPU v16 OpenCFD v2512
+environment reproduction as the #45 prerequisite. Do not rerun it as part of
+XFID, and do not report environment reproduction as a scientific comparison.
+No XFID direction response, comparison floor, or verdict is registered by this
+audit. All qualification flags remain false.
+
+### 2026-10-03 XFID-01 geometry preflight stop
+
+The #45 input-geometry preflight rebuilt the registered canonical v17 baseline
+and the six fixed D0/D1/D2 `±0.005 m` surfaces using the existing direction
+generator and canonical zero-level exporter. Exact perturbed GridSDF snapshots,
+surface hashes, topology measures, and Stage V clearance are retained in
+`docs/evidence/xfid01_geometry_preflight_2026_10_03/` and summarized in
+`docs/issues/45_xfid_geometry_preflight_2026_10_03.md`.
+
+The baseline zero-level STL fails watertightness, winding, manifold edge,
+duplicate-face, and positive-volume checks. All six perturbed surfaces are
+watertight and winding-consistent with no non-manifold or duplicate faces, but
+have negative signed volume and fail the required positive-volume gate. All
+seven surfaces meet the 0.25 m Stage V domain-clearance minimum. No surface was
+repaired, reoriented, smoothed, or replaced; directions and epsilon were not
+changed.
+
+Classify this as a premeasurement geometry-blocker **UNRESOLVED**, not an
+evaluated cross-fidelity force-sign/order result. Formal XFID criteria, solver
+response floors, force measurements, meshes, and solver runs do not exist for
+this attempt. The issue remains open. Stop before #46's FD-08 solver campaign;
+all qualification flags remain false. A future attempt needs a separately
+registered deterministic export/input round that passes the baseline and all
+required perturbed-geometry gates without losing GridSDF-to-STL identity.
+
+Software validation passed compileall and 58 focused tests. The full suite had
+37 failures, 1339 passes, and 5 skips; the exact 37 failure IDs match the pinned
+four-track baseline (zero new or resolved IDs). The full log, failure-ID list,
+and hash-bound validation record are retained under the preflight evidence
+directory.
+
+### 2026-10-03 #45 deterministic zero-level surface export preregistration
+
+A separate solver-free geometry-export round is preregistered in
+`docs/evidence/xfid45_surface_export_round_2026_10_03_prereg.json` (SHA-256
+`96cece05ee24a2c63f46c27cbbff8b493b71c9340a8e9d21d0a04ac55393a6cd`). It binds
+the canonical v17 state, six byte-frozen D0/D1/D2 `±0.005 m` snapshots and
+direction hashes, the prior raw PLY/STL surfaces, exporter/canonicalizer/audit
+sources, and the Python/NumPy/SciPy/PyVista/VTK/trimesh runtime. The fixed
+candidate merges only exact coincident coordinates, removes duplicate and
+degenerate triangles, then orients each resolvable face by its local trilinear
+GridSDF gradient; it does not use signed volume to choose orientation.
+
+The round remains `PREREGISTERED_NOT_EVALUATED` until this registration commit
+is pushed. No target-case evaluation, solver, formal XFID measurement, or #46
+FD-08 run is authorized by this geometry registration. XFID remains unresolved
+and all qualification flags remain false pending all seven geometry gates
+plus an independent recomputation. The round addresses only #29 GEOM-01's
+actual zero-level / Stage V STL export check, not the remaining #29 close
+conditions.
+
+### 2026-10-03 #45 zero-level surface export candidate result
+
+The preregistered geometry-only export round was evaluated after its criteria
+commit was pushed. D0 ±0.005 m passed individually; the baseline and all D1/D2
+perturbations failed, so the all-seven acceptance gate fails. The exact-
+coordinate sequence removes 4 duplicate faces and 1,126 repeated-index
+zero-area triangles from the baseline, but leaves 12 non-manifold edges and one
+ambiguous orientation face. Exact local `+grad(phi)` orientation makes D1/D2
+face dots positive but creates 191, 211, 229, and 248 same-direction shared
+edges respectively. See
+`docs/issues/45_surface_export_qualification_2026_10_03.md` and its registered
+and independently recomputed evidence. The production exporter remains
+unchanged; no solver or formal XFID ran. #45 remains UNRESOLVED, #46 remains
+blocked, and all qualification flags remain false. This updates only the actual
+zero-level / Stage V STL component referenced by #29 GEOM-01; it does not close
+#29.
+
+Validation: focused canonicalization tests 3 passed; compileall over `src` and
+`tests` passed; full pytest reported 36 failed, 1,343 passed, and 5 skipped
+after restoring and hash-checking the missing ignored v17 state fixture. Exact
+failure-ID comparison with the pinned 37-ID baseline found zero new failures
+and one baseline failure absent in this run. The pre-restoration log and final
+log/comparison remain separately preserved under
+`docs/evidence/xfid45_surface_export_round_2026_10_03/validation/`.
+
+### 2026-10-03 #45 successor surface export round 2 preregistration
+
+Step 0 is diagnostic-only evidence: the remaining 12 baseline non-manifold
+edges all touch exact-zero source cells; six main perturbation components
+have stable inward sidedness, but some small D2 components remain unresolved.
+No threshold is inferred from these observations. Round 2 freezes current
+contour/component-sidedness (A), pinned Lewiner with positive symbolic tie
+(B), and fixed Kuhn-6 tetrahedra with combinatorial edge identities (C).
+Its preregistration binds all seven unchanged inputs plus three held-outs,
+original-trilinear sampled identity at the analytically fixed 0.5 mm limit,
+serialized STL gates, runtime/source hashes and an independent verifier that
+imports no extractor. Criteria must be committed and pushed before evaluation.
+See `docs/issues/45_surface_round2_2026_10_03.md` and
+`docs/evidence/xfid45_surface_round2_2026_10_03/preregistration.json`.
+This is geometry evidence only for #29's actual zero-level / Stage V export
+gap. No production exporter, solver, Kaggle, formal XFID or #46 execution is
+part of this round; all qualification flags remain false.
+
+### 2026-10-03 #45 successor surface round 2 result (geometry only)
+
+After criteria/source commit `4dbcfb8d5f71d73324f30c9be16d39f68390a552` was
+pushed, all A/B/C candidates were measured on the seven frozen inputs and
+three preregistered held-outs. All 30 cases FAIL; no candidate is selected.
+Original-trilinear sampled Lipschitz lower distances exceed the fixed 0.5 mm
+limit on every canonical/frozen-direction case. A retains baseline's 12 bad
+edges and D2 sidedness ambiguities; B baseline has a pinched vertex link even
+with closed edges; C also fails float32 STL topology and baseline numerical/
+implementation integrity. Construction arguments do not qualify manifoldness.
+See `docs/issues/45_surface_round2_2026_10_03.md` and the immutable raw and
+independent evidence under `docs/evidence/xfid45_surface_round2_2026_10_03/`.
+
+The extractor-free verifier agrees with overall FAIL in 30/30 cases and with
+every individual gate in 24/30. Six orientation-gate discrepancies expose
+component-definition differences on non-manifold/zero-area surfaces and are
+retained without altering registered programs. They also fail the required
+independent agreement gate. Reconsider direct GridSDF Stage V as a separate
+representation/independence decision; no implementation or solver execution
+is authorized by this result. #45 remains UNRESOLVED; formal XFID and #46
+remain blocked and all qualification flags false. Production exporter changes
+require a separate PR. The #29 reference is only its actual zero-level / STL
+export gap, not overall GEOM-01 closure.
+
+Validation: focused 15 passed; compileall, script compilation, ruff and diff
+check passed; full pytest 36 failed, 1,355 passed, 5 skipped. Exact failure-ID
+comparison with the pinned 37-ID baseline found zero new IDs and one absent
+baseline ID, matching the predecessor's fixture-restored 36-ID set.
+
+### 2026-10-03 — #45 surface export Round 3 registration
+
+Round 2 (`4dbcfb8` / `7351d41`) remains immutable failed evidence. Round 3 tests
+export-only virtual refinement `r=1,2,4,8` of the original trilinear GridSDF with
+pinned Lewiner, fixed exact-zero scratch tie, fixed component/vertex-link definitions,
+float64 and float32 STL topology, sidedness, sampled 0.5 mm absolute geometry and
+0.5 mm normal perturbation fidelity. Three fresh heldouts supplement the frozen
+seven canonical inputs. Sources, evaluator, independent verifier and runtime are
+frozen before target evaluation; synthetic definition checks precede registration.
+See [Round 3 issue note](issues/45_surface_round3_2026_10_03.md).
+Evidence class: solver-free candidate registration, not physical qualification.
+All qualification flags false; production exporter unchanged; solver/Kaggle/formal
+XFID/#46 prohibited. Direct GridSDF Stage V is a user decision if candidates fail,
+not an implementation selected here. #29 reference is limited to actual export.
+
+### 2026-10-03 — #45 surface export Round 3 results
+
+The registered run completed 40 surface cases: 9 PASS, 31 FAIL; pass counts at
+`r=1,2,4,8` were 0/10, 2/10, 3/10 and 4/10. No refinement was selected. The
+24 canonical fidelity pairs were N/A for qualification because surface
+prerequisites failed; their numerical diagnostics report `within_limit=false`.
+The frozen root residual-filter omission means Boolean gate agreement does not
+imply quantitative correspondence agreement. All four independent partitions
+are complete: individual/aggregate surface maps agree in 40/40 cases, pair
+Boolean gate/status maps agree in 24/24, and all volumes agree. Exact coverage
+and partition source bindings are recorded in the complete independent assembly.
+
+Geometry-gate failures at `r=1,2` include certified lower-bound exceedances of
+0.5 mm (8/10 and 7/10 respectively). At `r=4,8`, failing G cases have lower
+bounds below tolerance but insufficient upper-bound certificates; those results
+do not demonstrate actual distance above tolerance. The `r=1` baseline is a
+closed edge-manifold surface with a bad vertex link, so orientation is N/A and
+its negative signed volume is not a valid solid-volume measurement. Topology
+passes at `r>=2`, without proving that the original continuous trilinear zero
+set is nonsingular. Component-wise SDF diagnostics attribute the original six
+shapes' negative signed-volume findings to inward main-component winding; the
+diagnostic correction flips whole components and leaves vertices unchanged, but
+small components remain unstable. The `r=8` source-volume quadrature has no
+certified error bound and is
+descriptive only; signed-volume differences against the invalid `r=1` baseline
+are not physical solid-volume differences.
+
+Original scientific registration `4a7b8da` and serialization-only JSON adapter
+`3a32eee` are separate. All qualification flags remain false; production state
+is unchanged; #45 remains UNRESOLVED and formal XFID/#46 remain blocked.
+The all-r failure does not prove intrinsic zero-set impossibility. Reconsidering
+direct GridSDF Stage V requires a separate user decision on cross-fidelity
+independence and is not selected or implemented here. This result is limited to
+the actual #29 zero-level / STL export gap and does not close #29 GEOM-01 overall.
+See [Round 3 issue note](issues/45_surface_round3_2026_10_03.md) for bounds,
+diagnostic limitations and disposition.
+
+Evidence class: solver-free export failure screen with independent saved-artifact
+recomputation and an explicitly unresolved numerical correspondence limitation;
+no physical or FD qualification. Focused tests 16 passed; compileall, Round 3
+Ruff checks/format and diff check passed. Full frozen pytest: 36 failed, 1,371
+passed, 5 skipped; pinned-baseline failure-ID comparison found zero new IDs.
+
+### 2026-10-03 — #45 XFID45-CERT-01 root/correspondence result
+
+The registered solver-free replay completed all saved `r=1,2,4,8` surfaces
+and correspondence samples without rerunning extraction. All 201 inventoried
+inputs and bound source hashes match. The fixed 512-case property suite and
+synthetic/regression qualification passed before target access. On the fixed
+Round 3 `r=4` D0-minus sample 691, both implementations now enumerate and
+select the near `+0.00416667075 m` target root; the old roughly 54 mm
+far-root artifact is not reproduced on that sample, whose saved
+mesh/source-displacement diagnostic is about 33.8 nm.
+
+The complete trace has 98,304 primary/Sturm comparisons. Trace-derived counters
+match the independent result aggregate, but target root-set agreement fails:
+5,670 status mismatches, 5,214 root-count mismatches and 234 paired-root
+position mismatches. The maximum paired-root position delta is 14.3 nm against
+the unchanged maximum 0.364 pm agreement tolerance. CERT-01 is not qualified
+on target data and stops under Case C; no criteria or tolerance changed.
+
+Absolute geometry at the unchanged 0.5 mm limit is `r=4: 3 PASS, 0 FAIL,
+7 UNRESOLVED` and `r=8: 4 PASS, 0 FAIL, 6 UNRESOLVED` for both double and
+float32. Including unchanged non-geometry gates, the surface totals are
+`3/2/5` PASS/FAIL/UNRESOLVED at r=4 and `4/3/3` at r=8. The combined FAILs
+are the pre-existing orientation blockers: D1-minus and D2-plus at r=4, plus
+D2-minus at r=8; each also fails `positive_total_volume`, while the other
+listed legacy non-geometry gates pass. No perturbation fidelity pair qualifies:
+each of the 12 case/storage pairs at r=4 and r=8 fails the registered surface
+prerequisite. Per-pair agreement fields in the primary result are cumulative
+snapshots; the post-run table recomputed from the full trace supplies
+case-local counters.
+
+See [CERT-01 result](issues/45_root_certifier_2026_10_03.md) and its evidence
+under `docs/evidence/xfid45_root_certifier_2026_10_03/target/attempt02/`.
+Round 3, the production exporter, and all qualification flags remain
+unchanged. #45 remains OPEN/UNRESOLVED; formal XFID must not restart. #46
+remains BLOCKED. The #29 reference remains limited to actual zero-level /
+Stage V export measurement and does not close GEOM-01 overall.
+
+### 2026-10-04 — #45 order revision: practical Stage V geometry gate; #46 in parallel
+
+User decisions (2026-10-04), superseding the 2026-10-03 wording that XFID waits for
+every certified geometry gate and that #46 solver work waits for XFID AGREE:
+
+- The certified 0.5 mm absolute-geometry, root-set (CERT-02), and small-component
+  orientation work is **not** a prerequisite for XFID. It moves to #29 GEOM-01 and
+  is pursued after the XFID result or when a certified Stage V geometry claim is
+  needed. CERT-01 stays FAIL; Round 3 and CERT-01 evidence are unchanged.
+- XFID uses a practical Stage V STL gate instead (watertight, edge/vertex-link
+  manifold, no duplicate/degenerate faces, positive signed volume, clearance) on a
+  derived STL built from the saved Round 3 `r=8` surfaces, with sub-resolution
+  components removed by a deterministic registered rule. Geometry error is
+  measured and reported with the verdict, never certified. Any XFID result is
+  scoped to that uncertified-geometry condition.
+- Evidence behind the change: the Stage V mesh surface cells are 25-50 mm
+  (`snappyHexMeshDict` level (2 3) on a 0.2 m background), about 50-100 times the
+  0.5 mm gate; the epsilon=5 mm perturbation is 1/5-1/10 of a surface cell, so the
+  open risk is mesh noise versus epsilon, measured first (X2) rather than gated by
+  the STL certificate. Details: `docs/issues/45_next_steps_plan_2026_10_04.md`.
+- #46 FD-08 calibration may run in parallel with XFID (frozen composite
+  Candidate C identity, flow_24, [80,120], canonical v17). A **resolved
+  representative XFID DISAGREE** still stops Track C compute; UNRESOLVED does not.
+- CERT-01 mismatch taxonomy (post-hoc, solver-free): 5,796 disagreements, 5,706 on
+  the baseline side; all 90 target-side ones are primary-UNRESOLVED with the same
+  unique nearest root. See `docs/issues/45_cert01_mismatch_taxonomy_2026_10_04.md`.
+
+No qualification flag changes; all six remain false.
+
+### 2026-10-04 — #45 X1 complete; X2 OpenFOAM grid-phase probe registered and submitted
+
+- X1 (practical Stage V STL inputs, `XFID45-STAGEV-INPUT-01`): 7/7 practical gates PASS in double and float32-STL
+  storage on the saved Round 3 `r=8` surfaces; four sub-resolution components removed by the registered rule; independent
+  recomputation agrees on all gates and all STL sha256 values. Geometry is uncertified; see
+  `docs/issues/45_stage_v_input_2026_10_04.md`.
+- X2 (`xfid45_gridphase_x2_r1`): measurement-only probe of OpenFOAM force sensitivity to rigid sub-cell translation of the
+  baseline STL (32 cases, 0.5-8 mm, z/y/x, fixed Round 5 case template), recording forces in N, mesh and cost. No axis is
+  assumed null. Registered criteria SHA-256 `571d36fb7071415db6f96e6bf0d5e58fc9c5f4980b79df563ae24471940ea673`; private
+  Kaggle dataset `ramhachi888/cfd-opt-sdf-xfid-x2-inputs` and CPU kernel `ramhachi888/cfd-opt-sdf-xfid-gridphase-x2` v1
+  submitted at source `01a5a46`. No result exists at this checkpoint; the run is not an XFID response or verdict. See
+  `docs/issues/45_xfid_gridphase_x2_2026_10_04.md`.
+- Formal XFID criteria (X3) will be registered only after the X2 result; #46 may run in parallel per the 2026-10-04 decision.
+  All six qualification flags remain false.
+
+### 2026-10-04 — #46 FD-08 decision-rule implementation checkpoint
+
+FD-08 calibration/formal source tooling now encodes the reviewed hash
+separation, five-repeat Candidate C response floors, broad preregistered
+calibration epsilon ladder, Float32 realized-direction audit, deterministic
+common five-point window selection, fresh 33-run formal inventory, and
+`FAIL`-before-`UNRESOLVED` verdict precedence. The host analysis paths bind and
+recompute raw force histories and verify complete runner manifests. A bounded
+CPU setup rehearsal is available for one baseline and one registered D0
+perturbation step; it does not feed the `[80,120] tU/L` calibration or formal
+verdict.
+
+The input-builder dry-run produced 47 calibration state rows with a 1000×
+candidate epsilon span and passed the builder's Float32 and margin checks.
+These values were not written as immutable criteria. Calibration criteria are
+not registered, the CPU rehearsal and Kaggle solver have not run, no FD-08
+measurement or verdict exists, and all six qualification flags remain false.
+
+
+See `docs/issues/46_fd08_preparation.md` for the implementation contract and
+validation evidence. This checkpoint does not advance the roadmap beyond
+preparation; the calibration registration/execution and subsequent fresh-33
+formal phase remain pending.
+
+Final implementation verification later on 2026-10-04: the focused FD-08
+suite passed 23 tests and the full suite reported 37 failures, 1422 passes and
+9 skips, with 0 new and 0 resolved failure IDs against the pinned baseline.
+The added regression test confirms resolved plateau/sign failures take
+precedence over a separate unresolved epsilon. No CPU or Kaggle solver ran;
+calibration criteria remain unregistered and all six qualification flags
+remain false. Detailed commands and hashes are recorded in
+`docs/issues/46_fd08_preparation.md`.
+
+The final source-integrity review also binds the uploaded kernel wrapper/core
+hashes, checks the runner hashes in the calibration and formal terminals, and
+has the formal verifier compare its registered source hash, the complete
+source inventory, Candidate C identity and canonical v17 hashes. The final
+focused suite passed 24 tests; full-suite failure IDs remain exactly equal to
+the pinned baseline (37 failures, 1423 passes, 9 skips). No solver or
+calibration ran; all six qualification flags remain false.
+
+The complete final source tree was rerun on 2026-10-05: 24 focused tests
+passed; the full suite had 37 baseline failures, 1423 passes and 9 skips, with
+no new or resolved failure IDs. Compileall, Julia parsing, CLI imports, the
+47-row builder preview and `git diff --check` passed. No solver or criteria
+registration occurred; qualification flags remain false.
+
+### 2026-10-04 — #45 X2 OpenFOAM grid-phase probe result
+
+Round 1 stopped fail-closed on Kaggle host-image drift (Jammy-only OS gate; preserved, not a measurement). Round 2 (kernel v2,
+criteria `dea2d558...491f`) completed 33/33 cases in 0.73 h on Ubuntu 24.04 (Noble), OpenFOAM v2512 `2512.0-2`; the 236-file
+manifest was host-verified. The v16 fixture reproduces the Round 5 (Jammy) result bit-for-bit, so the host OS does not change the
+result. A 681,504-triangle surface meshes in about 12 s and solves in about 60 s per case. Rigid sub-cell translation of the baseline
+STL changes cell counts and forces non-smoothly: baseline-subtracted one-sided differences reach 0.7-0.9% (a y-shift of either sign
+adds a ~0.5% even-in-shift jump), centered secants S have drag RMS 9e-5 N / max 1.8e-4 N and downforce RMS 2.9e-4 N / max 4.9e-4 N
+(upper bounds; they include any real translation response). This is a diagnostic, not an XFID response; no floor is adopted and
+formal XFID criteria (X3) remain unregistered. See `docs/issues/45_xfid_gridphase_x2_result_2026_10_04.md`. All six qualification
+flags remain false.
+
+### 2026-10-04 — #45 X3 calibration result (grid-phase ensemble)
+
+User-approved X3 defaults (epsilon 5 mm, M = 32 with a 3x standard-error rule, six centered-S sign contrasts required, ordering
+reported only). The calibration kernel (criteria `ea66bb60...d8ac3`) completed 32/32 cases on Ubuntu 24.04 in 0.65 h; the 229-file
+manifest was host-verified. Single-state phase noise is 1.05e-4 N (0.028%) in drag and 5.94e-4 N (0.243%) in downforce; the
+pre-registered split-half check of the 1/sqrt(M) averaging model passed for both (ratios 1.16 and 1.21, band 0.5-2.0). The
+unshifted baseline sits 0.6-0.8% away from the ensemble mean (symmetric-phase outlier), so contrasts must use matched-phase
+ensembles. This is calibration, not an XFID response; no floor is adopted, formal XFID criteria remain unregistered, all six
+qualification flags remain false. See `docs/issues/45_x3_calibration_result_2026_10_04.md`.
+
+### 2026-10-04 — #45 XFID part B (WaterLily Candidate C) executed; part A still blind
+
+Part B (criteria `39974802...775b`, source commit `1d17457`, kernel `ramhachi888/cfd-opt-sdf-xfid-candidate-c` v1) completed on Kaggle T4
+in 28 minutes: 8/8 states COMPLETED with all registered gates passing (baseline, baseline repeat, D0/D1/D2 at -/+5 mm, flow_24,
+Candidate C composite identity, window [80,120] tU/L); the 49-file manifest was host-verified (0 mismatches) and the baseline repeat is
+bit-identical to the baseline. Per-state forces are in `docs/evidence/xfid_candidate_c_2026_10_04/result/`. No XFID verdict exists:
+the OpenFOAM part A data (kernel `...-gridphase-x3-formal`) are not analyzed (blind hold) and the verdict script has not been run.
+All six qualification flags remain false.
+
+### 2026-10-04 — #45 XFID-01 formal verdict: UNRESOLVED
+
+Part A (OpenFOAM, 7 states x 32 matched phases, 224/224, hash-verified) and part B (Candidate C, T4, 8/8, hash-verified) were analyzed once under the
+unchanged part A rules after part A was held blind. Six required sign contrasts: four (D0 downforce, D0 drag, D2 downforce, D2 drag) are resolved in both solvers
+and agree in sign; the two D1 contrasts are unresolved on the OpenFOAM side (|S| below 3 SE). **Verdict UNRESOLVED**: no resolved DISAGREE, so Track C is not
+stopped, and AGREE is not reached. Scope: uncertified geometry, Re = 80 profile. Report `docs/issues/45_xfid_verdict_2026_10_04.md`; the next step (more matched
+phases or a larger epsilon for D1) needs a new registration and the user's decision. All six qualification flags remain false.
+
+
+### 2026-10-05 — #46 CPU rehearsal attempt 1 terminal
+
+After source review and `--no-ff` integration, the 47-state calibration
+builder preview passed its Float32/margin checks. The bounded CPU setup
+rehearsal stopped before the first solver step on a Julia `GridSDF` constructor
+type mismatch (Float64 spatial values with Float32 margin). The failed attempt
+and its hashes are preserved in
+`docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05/` and detailed in
+`docs/issues/46_fd08_preparation.md`. This is an infrastructure/harness
+terminal, not a scientific verdict. No calibration criteria were registered,
+no T4 kernel was submitted, and all six qualification flags remain false.
+
+
+### 2026-10-05 — #46 CPU rehearsal retry 1 terminal
+
+Under source `3fabdcac99d67f34a1704d8bc7bbc77efd75b809`, the bounded baseline
+and smallest-epsilon D0+ setup states each completed one CPU solver step. Host
+parsing, component semantics, runner manifest and terminal checks passed. The
+outer result writer then failed to resolve a repository-relative output path.
+The complete CPU diagnostic and reporting failure are preserved under
+`docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/`; details and
+hashes are in `docs/issues/46_fd08_preparation.md`. This is a harness terminal,
+not a scientific FD result. No criteria or T4 run has started, and all six
+qualification flags remain false.
+
+
+### 2026-10-05 — #46 bounded CPU rehearsal PASS
+
+After two preserved criteria-neutral harness repairs, source
+`b47769662dc78981b5c3b3f09aaa7056a2b276d3` passed the bounded baseline and
+smallest-epsilon D0+ one-step CPU rehearsal. Host parsing, force sign/component
+semantics and the complete runner manifest passed. The evidence and hashes are
+in `docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry2/` and
+`docs/issues/46_fd08_preparation.md`. This is setup/operator evidence only: it
+does not measure the registered `[80,120] tU/L` response. Criteria remain
+unregistered, no T4 or fresh33 run has started, and all six qualification
+flags remain false.
+
+
+### 2026-10-05 — #46 post-rehearsal full-suite verification
+
+After the bounded CPU rehearsal and harness-only repairs, integration source
+`41d84ab1a6f6c8f5f339f89354d411297cec1f30` passed the FD-08 focused suite
+(38), Python compileall, Julia constructor regression (2/2), Julia parse and
+CLI imports. The full repository suite reported 37 failures, 1435 passes and 9
+skips; failure IDs exactly match the pinned baseline (0 new, 0 resolved). The
+log and comparison-record hashes are documented in
+`docs/issues/46_fd08_preparation.md`. Calibration criteria remain unregistered
+and all six qualification flags remain false.
+
+
+### 2026-10-05 — #46 calibration criteria preregistered
+
+Immutable FD-08 calibration round `fd08_candidate_c_calibration_2026_10_04_r1`
+is registered against integration source `b559c56a123fc62f73da1bea3429f18ec22b3f8f`.
+The criteria SHA-256 is
+`23e5eef9f1b7c6a878ea5267c26738089d0cffd3a88b6144a89418ddf9b7ad75`; the
+host registration audit SHA-256 is
+`44ff025d541865ec8c4a0f68af205f69923a2c746f33335539063237526c6685`.
+The fixed calibration inventory contains five baseline repeats and all 42
+D0/D1/D2 signed perturbations across the pre-registered seven-value, 1000x
+calibration epsilon span. The complete 89-file local dataset and 27 source
+inputs passed hash verification before measurement. The immutable selector
+requires one common deterministic five-point plateau across all six response
+series; no epsilon has been selected, and no formal ladder is registered.
+Stationarity remains report-only under the explicit Candidate C side rule and
+the runner/analyzer gate set. No Kaggle measurement has started, and all six
+qualification flags remain false. Full details and inventory digests are in
+`docs/issues/46_fd08_preparation.md` and
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04/registration_audit.json`.
+
+The private Kaggle input dataset is now `ready`. A fresh archive download
+matched the 91-file catalog and passed host verification for all 89 registered
+input hashes plus the criteria and sidecar. Download archive SHA-256 is
+`76edd195c74b5590fdc649dfade14a124d8d72c9154a471fdbbe26ced90e20e4`; the
+append-only remote inventory audit is
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04/remote_dataset_verification.json`.
+The calibration T4 kernel has not yet been submitted; no solver measurement
+or calibration verdict exists.
+
+Calibration kernel v1 (`KernelWorkerStatus.ERROR`) stopped before solver or T4
+smoke startup because Kaggle uploaded only the `code_file`, leaving the
+wrapper's adjacent `runner_base.py` absent. The failure logs and identity
+audit are preserved in
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04/r1_kernel_v1_terminal/`.
+This is an infrastructure terminal with no scientific measurement. Round 1
+criteria and dataset remain unchanged; a separate retry registration will
+bind the packaging correction and updated source inventory before another T4
+submission. All six qualification flags remain false.
+
+The criteria-neutral repair packages the hash-bound core into the submitted
+single-file Kaggle script, verifies embedded wrapper/core hashes before running,
+and aligns the kernel title slug with its registered ID. A distinct r2 criteria
+and output namespace are supported; only a read-only 47-state registration
+dry-run has been performed. Focused tests passed 40/40 and compileall passed.
+The full suite retained exactly the 37 pinned baseline failure IDs (0 new, 0
+resolved; 1436 passed, 9 skipped). R1 remains an infrastructure terminal; r2
+CPU rehearsal and immutable registration are pending. No calibration result
+exists, and all six qualification flags remain false.
+
+The bounded CPU rehearsal then passed under source `f0ffb82839836516fdc786f36e0530b2361d7b22`:
+the baseline and smallest-epsilon D0+ setup states each completed one Array
+step, and both raw histories passed the host component/sign audit. This is
+setup-only evidence outside the registered response window. Its result SHA-256
+is `c74c903d2d1f1714bf16ce5a8daaaf357a90e01e03dd7b40d7b4e7cbbaaf6e89`; full
+details and inventories are in
+`docs/issues/46_fd08_preparation.md` and
+`docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry3/`. R2 immutable
+criteria registration is now the next gate; no T4 calibration measurement or
+verdict exists, and all six qualification flags remain false.
+
+
+### 2026-10-05 — #46 calibration retry round 2 preregistered
+
+After the bundled single-file kernel repair and setup-only CPU rehearsal,
+immutable calibration round `fd08_candidate_c_calibration_2026_10_04_r2` was
+registered on integration source
+`d69a6ed94cd6fd8cc4b4be676f971f3620daa5e5`. Criteria SHA-256 is
+`27e4e159960576afcd297f116ca6545c640ea783dcc5fbdc9b78d1aecc0bb64d`; host
+registration audit SHA-256 is
+`201fd5f892dc23a95bd90e3f542cb6f42506b834526a8cccfbd35b8e84f6ef19`.
+
+The registered inventory is unchanged at 47 runs (five baselines and 42 signed
+perturbations) over the same seven calibration-only epsilon candidates. All
+89 input files and 29 source inputs passed host hash verification; full
+inventory digests and CPU rehearsal bindings are in the issue preparation log
+and R2 evidence directory. Formal criteria and epsilon remain unregistered.
+The private Kaggle dataset must be versioned with R2 criteria before the
+corrected T4 kernel is submitted. No T4 measurement or calibration verdict
+exists; all six qualification flags remain false.
+
+Focused FD-08 tests passed 40/40, compileall and `git diff --check` passed.
+Full pytest reported 37 failures, 1437 passes and 9 skips; the exact sorted
+failure IDs match the pinned baseline (0 new, 0 resolved). Log and comparison
+record hashes are preserved in `docs/issues/46_fd08_preparation.md`.
+
+
+### 2026-10-05 — #46 private Kaggle dataset version 2 verified
+
+The existing private calibration dataset reached `ready` after version 2 was
+created with the immutable R2 criteria. The downloaded archive's 91-file
+catalog matched every extracted name and size; all 89 registered inputs and
+the criteria plus sidecar passed the host verifier. Archive, catalog, criteria
+and audit hashes are recorded in `docs/issues/46_fd08_preparation.md` and
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r2/`. Dataset visibility
+was unchanged. The corrected T4 kernel is not yet submitted; no calibration
+measurement or verdict exists, and all six qualification flags remain false.
+
+
+### 2026-10-05 — #46 retry round 2 kernel identity terminal
+
+Kaggle rejected R2 before kernel creation with HTTP 409 `ALREADY_EXISTS`:
+the bound kernel ID and input dataset ID share the same slug, which Kaggle
+rejects when creating the kernel. The exact response and source identities are
+preserved in the R2 evidence directory. R2 criteria and dataset v2 remain
+unchanged; no Julia, T4 or solver measurement started. The next allowed step
+is a new immutable retry round with a distinct kernel ID, new source identity,
+and passing bounded CPU rehearsal. All six qualification flags remain false.
+
+
+### 2026-10-05 — #46 distinct kernel identity and CPU rehearsal retry 4
+
+Source `483067ddf926c1df2d23ee47124422099dc0ab93` separates the Kaggle kernel
+slug from the input dataset slug while preserving the dataset and all
+scientific criteria. The bounded baseline and smallest-epsilon D0+ CPU states
+both passed their one-step setup checks; source hashes, raw force semantics,
+manifest, and terminal were verified. This is setup evidence only. Exact test
+and artifact hashes are in `docs/issues/46_fd08_preparation.md`. R3 criteria
+registration is the next gate; no T4 measurement or formal ladder exists, and
+all six qualification flags remain false.
+
+The first R3 registrar invocation correctly stopped before writing because
+two valid rehearsal `.log` files were ignored by Git and absent from the
+pushed evidence commit. The failed registration and their hashes are recorded
+append-only; the logs are being added to the evidence commit without rerunning
+CPU or changing criteria.
+
+
+### 2026-10-05 — #46 calibration retry round 3 preregistered
+
+Immutable calibration round `fd08_candidate_c_calibration_2026_10_04_r3` is
+registered on source `05c9c59c475f24e3da41e582b49dec3e1e844604`. Criteria
+SHA-256 is `a7a8437394f7b34afc591b45db150b0c5d899e86765acdcb49db783272cd31c5`;
+host registration audit SHA-256 is
+`f8a5f19d195dc0d3dcc1ac8a51d8533a05bcc5d9c9b4c9625da35934175624cc`.
+The 47-state calibration inventory and epsilon candidates are unchanged; the
+kernel slug is now separate from the dataset slug. The committed CPU rehearsal
+is bound and the full local input inventory passed hash verification. Next:
+publish and verify the private dataset's next version, then submit the T4
+calibration kernel. No calibration result or formal epsilon exists, and all
+six qualification flags remain false.
+
+
+### 2026-10-05 — #46 private Kaggle dataset version 3 verified
+
+The private calibration dataset's version 3 reached its current listing at
+21,834,724 bytes. All 91 catalog entries matched the downloaded archive, and
+all 89 inputs plus the R3 criteria and sidecar passed host verification. The
+archive, catalog, and audit hashes are recorded in
+`docs/issues/46_fd08_preparation.md` and the R3 evidence directory. No T4
+kernel has yet been submitted and no calibration verdict exists; all six
+qualification flags remain false.
+
+
+### 2026-10-05 — #46 calibration round 3 kernel v1 submitted
+
+Kaggle accepted private kernel v1 with a T4 request and registered dataset
+version 3. Its first status was `KernelWorkerStatus.RUNNING`; stdout was not
+yet available, so runtime identity and solver progress remain pending. The
+submission identity is preserved in the R3 evidence directory. No terminal
+result or FD-08 verdict exists, and all six qualification flags remain false.
+
+
+### 2026-10-05 — #46 calibration round 3 kernel v1 terminal
+
+Kernel v1 ended with `KernelWorkerStatus.ERROR` at `criteria_discovery` with
+`RuntimeError: criteria SHA mismatch`. The wrapper validated that the mounted
+criteria file and sidecar agreed, then attempted to inject the digest into the
+core via the mapping returned by `runpy.run_path`. That mapping is distinct
+from the functions' `__globals__`, so the core retained its old embedded digest
+`39974802…` and stopped before dataset verification, Julia, T4 smoke, or solver
+steps. The failure is a harness binding defect; the runtime did not emit the
+mounted criteria digest, so this terminal is not calibration evidence.
+
+The complete terminal log, `criteria_discovery` state, output inventory, and
+hash audit are preserved in
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r3/kernel_v1_terminal/`.
+R3 criteria, dataset version 3, and prior evidence remain unchanged. Repair the
+Python global binding, add a regression test, rerun the bounded CPU rehearsal,
+and register a new append-only calibration round before resubmitting. No
+calibration result or formal epsilon exists; all six qualification flags
+remain literal `false`.
+
+
+### 2026-10-05 — #46 R3 wrapper repair and bounded CPU rehearsal
+
+Source commit `91bb6f4175435cc0259f3ff7d83c7dd260352ec2` repairs the
+`runpy.run_path` binding by updating the embedded core `main` function's actual
+globals. A regression test exercises criteria SHA, input root, and output root
+binding with a synthetic stale core. Focused FD-08/contract tests passed 39;
+compileall, Julia parse, module imports, and `git diff --check` passed. Full
+pytest reported 37 failures, 1438 passes, and 9 skips; all 37 failure IDs match
+the pinned baseline (0 new, 0 resolved). The log hash and ID-set comparison
+are preserved in the CPU rehearsal evidence directory.
+
+The bounded CPU rehearsal passed for the first registered baseline and
+smallest-epsilon D0+ state, one `Array` step each, using Julia 1.12.6 and
+WaterLily 1.8.0. Both raw histories and signs passed the host audit; the window
+was `[0, 0.0104167] tU/L`, and margins were about 0.35 m. This is setup-only
+evidence, not Candidate C calibration data. Preview SHA-256 is
+`5ac384c3d034f79acb3c5f2e724eaa0dc9f5c74206899ea16c9f7ee0cc8a521b`; result
+SHA-256 is
+`b7265211f71206ec7f377f556d758ae097e6bb7e477cc3076507d9dbf9c11cfd`; runner
+manifest SHA-256 is
+`04f2534b5b0307ba2d42ceeb372e29bc8fdb2d469d4f5cc4ad82d65546dd1108`. All 29
+source inputs passed with inventory SHA-256
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`.
+
+The first host invocation stopped before Julia because it passed an empty
+dataset root instead of the builder's staged input directory. That validation
+attempt and its SHA are preserved at
+`docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry5_attempt1/`;
+the corrected bounded rehearsal then passed. R4 criteria registration remains
+the next gate. No Kaggle calibration or formal criteria are active; all six
+qualification flags remain literal `false`.
+
+
+### 2026-10-05 — #46 calibration retry round 4 preregistered
+
+Immutable calibration round `fd08_candidate_c_calibration_2026_10_04_r4` is
+registered on reviewed integration source
+`b098d1a60992e217fd131e0b02c383bb39b0a8f5`. Criteria SHA-256 is
+`81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5`; the
+host registration and inventory audit SHA-256 is
+`5c9ec766f0eeac5679ae28db7ccfd0af598615fe5b0224a55cbbaab789c25042`.
+All 29 source inputs verify against the registered integration commit and
+all 89 staged dataset files verify with inventory SHA-256
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`.
+
+R4 keeps the registered 47-state inventory and seven calibration-only
+epsilon candidates; it does not select a formal ladder. The bounded CPU
+rehearsal is bound as setup-only evidence. Next: create and download-verify
+the private dataset's version 4, then submit the corrected kernel. No
+calibration measurement or verdict exists; all six qualification flags remain
+literal `false`.
+
+### 2026-10-05 — #46 private Kaggle calibration dataset version 4 verified
+
+The private dataset's latest download contains R4 criteria SHA-256
+`81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5`. All 91
+catalog entries match the downloaded archive names and byte sizes; the 89
+registered data inputs, criteria, and sidecar pass host verification. Archive
+SHA-256 is `d6f95b717b8e65039728a74ce2e3f1d70ec66c525b088f8a70a9453216f03741`,
+catalog SHA-256 is
+`43f5cb16ebf3af8f67d91a70ef145b1796fa133ee30695f5272cc8d5c54f88e9`, and
+host verification audit SHA-256 is
+`521f8c6e4311c27bd9e147ce21655b3624c62827221be1fb852cd49b223e6ec7`.
+Next: submit the corrected calibration kernel against version 4. No solver
+measurement has started; all six qualification flags remain literal `false`.
+
+
+### 2026-10-05 — #46 calibration round 4 kernel v2 submitted
+
+Kaggle accepted private kernel version 2 against dataset version 4 with the
+registered `NvidiaTeslaT4` request. The first status was
+`KernelWorkerStatus.RUNNING`; initial logs were empty. Criteria SHA-256 is
+`81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5`, bound
+to wrapper SHA-256
+`c1c9e495fc457fe8667ad546e71ce45c128a0d2353fcc316f5cfa840bdb6a78c` and
+core SHA-256
+`508f818d638691f421961103aabd3c6c183b72fab9d128d343f3091ab4d13dd8`.
+Submission identity and first status are preserved in the R4 evidence
+directory. Runtime identity, solver progress, and terminal analysis remain
+pending. No calibration verdict exists; all six qualification flags remain
+literal `false`.
+
+
+### 2026-10-05 — #46 calibration round 4 kernel v2 incomplete at runtime limit
+
+Kaggle kernel v2 reached `KernelWorkerStatus.CANCEL_ACKNOWLEDGED` after its
+requested 7,200-second run limit. The final saved runner state is
+`state_D2_filtered_seed2026__eps_5_0000000000e_04__minus`; the last API log
+event at 7,189.427 seconds starts that state. The output `result.json` is
+explicitly partial: 38 of 47 registered states completed, and the remaining
+nine D2 states are absent. This is runtime/infrastructure incompleteness,
+not a scientific FAIL.
+
+Host verification matched the result criteria SHA-256 to immutable R4
+criteria `81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5`;
+all 29 registered source inputs match source commit
+`b098d1a60992e217fd131e0b02c383bb39b0a8f5`. The completed per-state force
+CSV hashes match both `result.json` and the saved state result records. The
+runtime identity records two Tesla T4 GPUs, compute capability 7.5.0, Julia
+1.12.6, CUDA driver API 13.3.0/runtime 12.8.0, CUDA.jl 6.3.1, WaterLily 1.8.0,
+and driver 580.178.04 (recorded, not a gate under R4).
+
+The 200 downloaded output files and SHA-256 inventory are preserved under
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/kernel_v2_terminal/`;
+host inventory SHA-256 is
+`c2fa76d425669da1d97f1e03d370c84209937ee27061cdb3551681d83691ee10`, and
+terminal audit SHA-256 is
+`accc34a667d40ebe73e29e041bdf3e63575518b2e240281c4353c69a7a15dddf`.
+Because the 47-state inventory and final output manifest are incomplete, the
+registered analyzer was not run. No response floor, epsilon selection, or
+calibration verdict is issued; no formal criteria are registered, and all six
+qualification flags remain literal `false`.
+
+The next attempt may use the same immutable R4 criteria, source, and dataset
+with a 10,800-second Kaggle run limit. This changes only the execution time
+allowance, not the 5,400-second aggregate solver budget or any measurement,
+response, epsilon, or verdict rule. The v2 partial outputs remain separate
+and will not be combined with retry results.
+
+
+### 2026-10-05 — #46 calibration round 4 retry kernel v3 submitted
+
+After preserving the v2 timeout terminal, the same immutable R4 criteria,
+registered integration source, dataset version 4, runner, and 47-state inventory
+were resubmitted as Kaggle kernel version 3 (retry attempt 2). The requested
+Kaggle execution limit is 10,800 seconds; R4's 5,400-second aggregate solver
+budget and all per-case, measurement, response-floor, epsilon-selection, and
+verdict rules remain unchanged. Version 2's partial artifacts are not mixed
+with version 3.
+
+The first v3 status is `KernelWorkerStatus.RUNNING`; initial logs are empty.
+The submission record and initial captures are in
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/kernel_v3_retry/`;
+submission record SHA-256 is
+`9d5381339fbd5deba922d1a96e881f996d406ca71765619acb3e6f41457cb2db`.
+Issue checkpoint:
+https://github.com/ramhachi/CFD_opt_sdf/issues/46#issuecomment-5984879282.
+No calibration analyzer or formal registrar has run; no calibration verdict
+exists and all six qualification flags remain literal `false`.
+
+
+### 2026-10-05 — #46 R4 v3 complete; registered analyzer schema defect
+
+Kaggle kernel v3 reached `KernelWorkerStatus.COMPLETE` after 9,297.601 seconds.
+Its terminal result binds R4 criteria SHA-256
+`81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5`, integration
+source `b098d1a60992e217fd131e0b02c383bb39b0a8f5`, and runner SHA-256
+`508f818d638691f421961103aabd3c6c183b72fab9d128d343f3091ab4d13dd8`. All 47
+registered states completed. The runner manifest covers 244 files and passes
+host SHA-256 verification; output inventory digest is
+`a6ecfc7c658a96242a9cd37b37370612ce5f80ef838ab32fe917e6926f9939bb`, manifest
+SHA-256 is
+`348867206996a78ba2763b1c7b784f590b54d86c3808ce9f7ae9ddb321fb35ae`, and the
+terminal audit SHA-256 is
+`6ca8e72dfb7bf8dac5c0f1f357a77dc6f7938ec0959007d9eca4c18d21f79aa4`.
+
+Host checks matched the registered source and dataset inventories (29 and 89
+files), exact criteria/source/runner identities, all state IDs, and every raw
+force-history file. Runtime records two Tesla T4 GPUs, Julia 1.12.6, CUDA.jl
+6.3.1, CUDA runtime 12.8.0, WaterLily 1.8.0, and driver 580.178.04 (recorded,
+not gated). Full outputs are under
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/result/`.
+
+The byte-exact `instantiate.log` is preserved as
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/kernel_v3_retry/runner_logs_exact/instantiate.log.gz`;
+its raw SHA-256 is recorded in the adjacent archive metadata and in the runner
+manifest. Its trailing space requires decompression to the registered result
+path before rerunning the complete output-manifest audit from a fresh checkout.
+
+The registered analyzer stopped before reading histories or computing
+responses. R4 stores flow and time window at `case.case_id=flow_24` and
+`measurement.force_window_t_u_l=[80,120]`; the analyzer incorrectly requires
+absent top-level `flow_id` and `window_tu_l`. The failed preflight record is
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/kernel_v3_retry/calibration_analysis_attempt.json`
+(SHA-256 `72153f39c22ec1a90a8d7ef97e5ef762da89808aed4e17cb9d9747d48f1d92e0`).
+No response floor, epsilon selection, calibration verdict, or formal
+registration was produced. R4 criteria, solver outputs, and scientific rules
+remain unchanged; all six qualification flags remain literal `false`.
+
+Because R4 binds the analyzer source hash, this defect cannot be repaired
+in-place and attributed to R4. Fix the schema mapping with regression coverage,
+create a new source and criteria lineage, repeat the bounded setup-only CPU
+rehearsal for that lineage, then run a new calibration round. Keep R4 recorded
+as a complete solver execution whose responses remain unclassified by its
+registered analyzer.
+
+
+### 2026-10-05 — #46 analyzer schema defect repaired
+
+Integration commit `f6eaac3eb11eb26d1b9bcc5e13ab20f1cb942ce1` fixes the
+calibration analyzer to read the registered nested flow and window fields and
+adds a regression test for the accepted schema and rejected mismatches.
+Analyzer SHA-256 is
+`f96e4521b6ab73b0bd195fa9427e5d18eeaa9cccf35c92453f842bb8158f7206`; test
+SHA-256 is
+`fce527006ac8c5bc692bea29f2f4e471df56023ecabcf3c9950f4989eaf04477`. Focused
+FD-08 tests passed **40**, compileall and `git diff --check` passed. Full pytest
+reported **37 failed, 1,439 passed, 9 skipped**; comparison to the pinned
+baseline (`71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a`)
+found **0 new and 0 resolved IDs**. Validation details and log/XML hashes are
+in `docs/evidence/fd08_analyzer_schema_fix/source_validation.json` (SHA-256
+`965a029cf3f8cbdce63a262b358a494acbee3f4f7b60162a72cc781b3c223942`).
+
+This reporting/schema correction changes no scientific criterion or solver
+output. R4 remains immutable and unclassified because its registered analyzer
+hash is the old one. Repeat the bounded CPU setup rehearsal for the corrected
+source, then preregister a new calibration round with the same builder-derived
+inventory and unchanged broad candidate epsilon set. Do not analyze R4 with
+the modified analyzer or register formal fresh33 until a new calibration
+round produces an eligible PASS.
+
+
+### 2026-10-05 — #46 corrected-source CPU rehearsal passed
+
+The R5 builder preview was regenerated against clean integration HEAD
+`529f8d13a8d99d927ca4036afed85c4fe7853f03`, retaining the same 47-state
+inventory and seven calibration-only epsilon candidates. Preview SHA-256 is
+`394dad9ee63c9a914256cbb2a51e76fe47f62f13a414e88e085c2b644df707b6`; all 89
+staged input hashes match inventory SHA-256
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`.
+
+The bounded setup rehearsal passed the first identical-input baseline and the
+smallest-epsilon D0+ state, one CPU `Array` step each. Julia 1.12.6 and
+WaterLily 1.8.0 were observed. Both two-row raw histories pass host
+force-component/sign checks; the short diagnostic interval is
+`[0, 0.010416666977107525] tU/L`, not the registered calibration window.
+Runner output manifest SHA-256 is
+`04f2534b5b0307ba2d42ceeb372e29bc8fdb2d469d4f5cc4ad82d65546dd1108`, rehearsal
+result SHA-256 is
+`919c24bd96ef52a106fa2c1de57e4e19fa4f42ae1252f63a019862d45699b2ee`, and
+terminal audit SHA-256 is
+`d1a668d05967490bf4f9d55dc17966d2718e5cd1c16b9ef333a4f06e3ad1fc66`. This is
+setup-only CPU evidence and does not enter calibration or formal analysis.
+
+An earlier preview was rejected before Julia because it recorded source
+`f6eaac3` while integration HEAD had advanced to `529f8d1`; no solver started.
+That preview-binding attempt is preserved at
+`docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry6_analyzer_fix/preview_attempt1.json`
+(SHA-256 `d8ce534607b2d99caa78bcba961b5a354a4c8269cd4e15cfc469817928cb5f7a`).
+The corrected rehearsal is bound to the analyzer fix and current preview. R5
+criteria were then registered against clean pushed source
+`95bd9cbf8e67f0c718e346f7edca3f343ed1091f`. Criteria SHA-256 is
+`928292ca1911875a564e74ffbe64b7d3d4790d9e49b81272ed39dedd9ebdce6c`;
+registration audit SHA-256 is
+`6c45ba460daf53bceb28af371217d45924e9445babf13254bb790fa78e7c9f3e`.
+The registrar verified all 29 source inputs, the CPU rehearsal result and
+manifest, and all 89 staged dataset hashes (inventory SHA-256
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`). R5
+retains the same 47-state inventory and seven calibration-only epsilon values;
+its aggregate solver wall budget is 5,400 s and per-case limit 1,800 s. At this
+registration checkpoint, private dataset versioning and T4 submission were
+pending. No solver measurement had started; all six qualification flags
+remained literal `false`.
+
+
+### 2026-10-05 — #46 R5 Kaggle dataset v5 integrity verified
+
+Private dataset `ramhachi888/cfd-opt-sdf-fd08-calibration` version 5 was
+uploaded with directory-preserving `tar` mode. Its complete remote catalog
+contains 91 entries: the 89 registered data files, criteria JSON, and criteria
+SHA sidecar. A fresh download passed the registered host dataset verifier;
+all 91 file paths, sizes, and hashes match. Criteria SHA-256 remains
+`928292ca1911875a564e74ffbe64b7d3d4790d9e49b81272ed39dedd9ebdce6c`, and the
+remote verification record is
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/remote_dataset_v5/remote_dataset_verification.json`
+(SHA-256 recorded in its adjacent sidecar). Catalog SHA-256 is
+`256d97bc909f11db93c5c09fd4c43fb49dda5849234ae76f079af7d26e2ad3a9`.
+
+All 29 registered source inputs were reverified against the current checkout.
+This is transport and source-integrity evidence only. At that checkpoint no
+calibration kernel had been submitted. All six qualification flags remain
+literal `false`.
+
+
+### 2026-10-05 — #46 R5 calibration kernel version 4 submitted
+
+Kaggle accepted private kernel version 4 for
+[`CFD Opt SDF FD08 Calibration Kernel`](https://www.kaggle.com/code/ramhachi888/cfd-opt-sdf-fd08-calibration-kernel).
+The first host status was `KernelWorkerStatus.RUNNING`; the initial runtime log
+contained no non-whitespace output. Kernel metadata requests `NvidiaTeslaT4`
+and the requested execution timeout is 10,800 s. These operational settings do
+not alter R5's 5,400 s aggregate solver budget or 1,800 s per-case limit.
+
+The run is bound to R5 criteria SHA-256
+`928292ca1911875a564e74ffbe64b7d3d4790d9e49b81272ed39dedd9ebdce6c`, source
+commit `95bd9cbf8e67f0c718e346f7edca3f343ed1091f`, and the integrity-verified
+private dataset version 5. Preflight verified all 29 registered source-input
+hashes against the current source tree. The submission evidence, including
+preflight, Kaggle response, initial status, and runtime-log capture, is under
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/kernel_v4_submission/`;
+submission record SHA-256 is
+`e3239ac0a6f7764635ae90d3930b18810836578430e00a478029b75ee9a0c5eb`.
+The GitHub submission checkpoint is
+https://github.com/ramhachi/CFD_opt_sdf/issues/46#issuecomment-5988913154.
+
+`RUNNING` is not a calibration result. No terminal artifact has been
+downloaded or host-verified, no response analysis or verdict exists, and all
+six qualification flags remain literal `false`.
+
+
+### 2026-10-05 — #46 R5 T4 calibration terminal integrity verified
+
+Kaggle kernel version 4 reached `KernelWorkerStatus.COMPLETE`. The host
+verified all 47 registered states completed, the exact state inventory, 244
+runner-manifest file hashes and terminal marker, all 89 registered dataset
+inputs, all 29 source-input hashes, and the registered criteria/source/runner
+bindings. The original downloaded output and a byte-identical copy at the
+preregistered result namespace are preserved under
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/kernel_v4_terminal/`
+and `docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/result/fd08_calibration/`.
+The copy inventory SHA-256 is
+`0db862f4743387b0b06f648c684b26be63d6b5072c966d1dce417b3c8e75eb81`; the
+registered output-manifest SHA-256 is
+`1b04c3c2243459d2889dc16aa0f3c02c2ff6a5555a64406bb8177b9ee0b8600e`.
+
+Observed runtime identity: two Tesla T4 GPUs, driver `580.178.04` (recorded,
+not gated for cross-run equality), CUDA driver API 13.3.0, CUDA runtime 12.8.0,
+Julia 1.12.6, CUDA.jl 6.3.1, and WaterLily 1.8.0. Aggregate solver wall time
+was 5,109.380774 s / 5,400 s; maximum per-case solver wall time was
+110.081359 s / 1,800 s. Kernel elapsed time was 8,596.544 s.
+
+This checkpoint verifies terminal completion and artifact integrity only.
+The registered host analyzer has not run, so no response floor, epsilon
+selection, plateau, sign, calibration verdict, or formal-phase eligibility is
+established. All six qualification flags remain literal `false`.
+
+
+### 2026-10-05 — #46 R5 calibration FAIL at the preregistered gate
+
+The registered host analyzer ran once against R5 criteria SHA-256
+`928292ca1911875a564e74ffbe64b7d3d4790d9e49b81272ed39dedd9ebdce6c`, the
+host-verified 47-state runner output, and its raw force histories. Analysis
+SHA-256 is
+`dc769d6f2b5a2d6dfa45c6a5aeddfde726dd75f6e44ac564b128effecce3fb8b` at
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/calibration_analysis.json`.
+Baseline repeats had zero reported span; the registered drag and downforce
+response floors were both `1e-8 N`. All 42 directional response samples were
+resolved. The immutable selector found no common five-point plateau on the
+registered seven-value epsilon ladder. Every possible five-point window had
+resolved plateau failures; the largest window also had a resolved D1
+downforce sign reversal at `epsilon=0.05 m`.
+
+**R5 calibration disposition is `FAIL`; formal fresh33 registration is
+blocked and the 33-run phase was not executed.** This is the registered
+scientific gate result after intact solver completion and artifact
+verification, not an infrastructure failure. Do not pick another epsilon or
+expand the ladder based on these results. FD-08 cannot authorize downstream
+gradient/oracle/optimizer work from this calibration. All six qualification
+flags remain literal `false`; no #47 solver campaign follows this terminal.
+The detailed per-series slopes and failure windows are in
+`docs/issues/46_fd08_preparation.md` and the immutable analysis JSON above.
+The final Issue #46 checkpoint is
+https://github.com/ramhachi/CFD_opt_sdf/issues/46#issuecomment-5991085590.
+
+
+### 2026-10-05 — #46 post-R5 plan approved (diagnose first, no run)
+
+User approved `docs/issues/46_fd08_post_r5_plan_2026_10_05.md`. Order: P1
+solver-free post-hoc diagnostic of the R5 evidence (unregistered, sets no
+threshold, changes no gate) -> P2 user decision on how to proceed -> P3 a new
+preregistered R6 calibration only if P2 approves it -> P4 fresh33 only after
+an R6 PASS. R5 stays `FAIL`; the plan does not reinterpret it and does not
+choose an epsilon from it. Any change to the epsilon ladder, a plateau/sign
+gate, the FD-08 definition, or the directions needs separate user approval at
+P2 and a new registration. If R6 also fails scientifically, calibration is not
+repeated; whether the FD-08 gate is attainable is re-discussed with the user.
+Implementation is assigned to codex. #45 XFID D1 add-on waits for the P1
+effective-displacement result. All six qualification flags remain literal
+`false`.
+
+### 2026-10-05 — #46 P1 post-R5 diagnostic completed; stop at P2
+
+The solver-free, unregistered P1 diagnostic recomputed all 47 raw force
+histories and all 42 directional response pairs from the immutable R5 evidence.
+The original R5 `FAIL` / `NO_COMMON_PLATEAU` and all six false qualification
+flags are unchanged. The descriptive local-window scan found no common
+six-series interval; individual windows on some D0/D2 series do not replace the
+registered five-point selector. Float32 perturbations changed 4,718 nodes in
+each of 42 states; changed-node RMS per nominal epsilon averaged 1.0000 for D0,
+0.2894 for D1, and 0.2897 for D2, so projection-equivalent epsilon does not
+establish equal RMS displacement across directions.
+
+The added paired-response half-window sensitivity check compared each
+`S=(R(+epsilon)-R(-epsilon))/2` on `[80,100]` and `[100,120]` against full-window
+`S` in `[80,120]`. Its largest relative difference was 72.324% for D1 downforce
+at 0.05 mm; the check is post-hoc and has no pass/fail threshold. Small
+state-level force stationarity and bit-identical baseline repeats therefore do
+not exclude deterministic time-window sensitivity in micro-responses. The P1
+plots and exact bindings are recorded in
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/post_hoc_p1/`
+(`diagnostic_result.json` SHA-256
+`ef243a6f3fda133f60c0c347817f919608fdfe4644da83bcc8137054e3831820`).
+
+Validation on the feature worktree: `python -m compileall src tests
+scripts/diagnose_fd08_r5_posthoc_p1.py` passed. The first full pytest run had
+two extra failures because the worktree lacked the ignored shared fixture
+`work/sdf_native_genesis_v17/sdf_design_state.npz`; restoring the byte-identical
+fixture (SHA-256 `7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31`)
+made both isolated tests pass. The final full run was `37 failed, 1439 passed,
+9 skipped`; its sorted failure-ID set exactly matched
+`docs/evidence/four_track_baseline_2026_10_02/failure_ids.json` (SHA-256
+`71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a`): zero new
+and zero resolved IDs. JUnit output was captured at
+`/tmp/fd08_r5_p1_pytest_20261005_final.xml` (SHA-256
+`dba16059a64ed5f14da9ecf83d2327fc3265ccd2758f1fa67d1cc9c9e01ff006`).
+
+P1 does not choose B1/B1-prime/B2/B3 or register R6. Stop at P2 for the user's
+decision on whether to proceed and which approved change, if any, to make. R6
+and fresh33 remain unregistered and unrun.
+
+### 2026-10-05 — #46 P1 Japanese chart companion
+
+A Japanese-rendered companion set was generated from the same immutable R5
+download and post-hoc analysis at
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/post_hoc_p1_ja/`.
+It translates figure titles, axes, legends, and annotations; the English P1
+files remain unchanged and their existing SHA-256 manifest still verifies.
+The scientific result payload is unchanged after excluding renderer metadata
+and the recorded integration-head provenance. Japanese diagnostic JSON
+SHA-256: `2b13484f52b63a7504bb34954e3fe18bea45efa65bb7b79f5394118be555ce12`.
+R5 remains `FAIL` / `NO_COMMON_PLATEAU`; this is a presentation-only companion,
+not a new gate, criteria registration, or solver run. P2 remains the stop point.
+
+### 2026-10-05 — #46 P1 Japanese chart copy refinement
+
+The final Japanese chart rendering is recorded at
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/post_hoc_p1_ja_v2/`.
+It replaces the remaining English words in Japanese titles and legends; the
+earlier Japanese rendering is retained at `post_hoc_p1_ja/`, and the original
+English P1 set remains unchanged. The scientific result payload still matches
+the English analysis after excluding renderer, script, and HEAD provenance.
+Final Japanese diagnostic JSON SHA-256:
+`ed381c38d30d8665972dc9f26fdbc08c0e7c1c6a13cafbb7be38e89021ef8022`.
+R5 remains `FAIL` / `NO_COMMON_PLATEAU`; no gate, criteria, or solver run changed.
+
+
+### 2026-10-05 — #46 P2a Step A completed; stop at B
+
+The approved Step A ran only solver-free descriptive diagnostics against the
+saved R5 calibration. It did not revise the R5 criteria, gate, directions or
+epsilon ladder, and it did not register R6 or formal fresh33. The original R5
+`FAIL` and all six false qualification flags remain unchanged. The diagnostic
+combines the seven R5 epsilon values with the 40-point descriptive log grid
+(43 unique values after exact overlap handling), records A1–A5, and provides
+Japanese plateau and SDF soft-volume figures. Per-series best five-point
+window deviations are D0 drag 23.7348%, D0 downforce 5.0905%, D1 drag 8.1934%,
+D1 downforce 23.7527%, D2 drag 3.3183%, and D2 downforce 7.5062%; these are
+descriptive values and do not change the registered selector result. LOO status
+remains `undeterminable` where numeric errors are computable because no
+pass/fail error boundary was registered. The SDF continuous functionals are
+grid proxies and do not establish WaterLily cut/mask stability.
+
+An independent checker recomputed A1–A4 from the registered definitions and
+inputs. Dataset hashes were 89/89, force CSV hashes 47/47, and `state_result`
+hashes 47/47. Its final comparison checked 3,388 numeric values with zero
+mismatches at absolute/relative tolerance `5e-12`. The source, raw output and
+comparison are preserved under
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/post_hoc_p2a/`;
+the runner manifest has one missing non-input file, `instantiate.log`, which is
+disclosed in the note and integrity record.
+
+Validation: focused FD-08 tests passed 46; compileall and `git diff --check`
+passed. The final full suite reported 37 failed, 1,445 passed and 9 skipped;
+the sorted failure-ID set exactly matched the pinned 37 IDs (zero new and zero
+resolved). An initial feature-worktree run had two extra failures because the
+ignored canonical `sdf_design_state.npz` fixture was absent there. Both tests
+passed after the feature worktree referenced the byte-identical existing
+integration fixture, and the full suite was rerun. Exact JUnit files, failure
+IDs, fixture binding and hashes are preserved under the P2a `validation/`
+directory.
+
+The result is recorded at
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/post_hoc_p2a/P2a_diagnostic_note.md`
+(SHA-256 `1e6839d4f85df2d90447ee8830290a1f63767767bbfa95fe26f4064918c66dd9`)
+and `diagnostic_result.json` (SHA-256
+`df003b46056c00e609f93550438e088f7a9955147acea81be2cd54e389a743bc`). Stop at
+the user decision point B; the gate and FD-08 definition remain for the user to
+decide.
+
+
+### 2026-10-06 — #46 RCFG-1 approved; R6 execution preparation
+
+The user approved RCFG-1 for the FD-08 v2 diagnostic operating contract. T2
+remains arbitrary-provisional and diagnostic only; it does not set #23's
+numerical precision delta or qualify gradient accuracy, physical truth, grid
+independence, or an epsilon-to-zero derivative. Historical Stage 1 strict
+numeric mismatches remain 17, and R5 remains `FAIL` without reinterpretation.
+
+The approved next calibration is R6 and it is the last calibration. It uses
+COV-A (all four registered directions by drag and downforce, 8/8 required), the
+six-value L6 ladder `geomspace(0.5, 5, 6) mm`, no jitter, and the frozen P1
+upstream-lobe direction. Formal, only after R6 PASS, uses the pre-frozen
+predict-then-run rule at interior interval indices `{0, 2, 4}` with geometric
+means of adjacent calibration magnitudes. Scientific FAIL or UNRESOLVED does
+not permit threshold, direction, model, or ladder adjustment or a new
+calibration. All six qualification flags remain literal `false`.
+
+Solver-free R6 geometry, direction, Float32 centered-direction, and byte
+uniqueness preflight passed for the 49-state inventory. The T2 parameter file
+SHA-256 was recorded before any R6 setup or scientific solver invocation.
+Kaggle CLI 2.2.4 confirmed the requested timeout interface; the captured
+setup-only allowance is 7,200 seconds, within the documented 43,200-second
+CPU/GPU session ceiling and the then-current 22.55-hour GPU quota. R6 and
+formal capability snapshots will be refreshed immediately before their
+respective registrations. These are capacity checks, not runtime guarantees.
+
+Implementation validation on the feature worktree: focused v2 tests passed
+49; `compileall`, command-line import smoke, Julia parse, and `git diff --check`
+passed. Full pytest reported 37 failed, 1,494 passed, and 9 skipped. The 37
+failure IDs exactly match the pinned baseline (zero new and zero resolved),
+with comparison and JUnit evidence under
+`docs/evidence/fd08_v2_r6_2026_10_06/validation/`.
+
+At this checkpoint source-ready integration, bounded setup rehearsal, R6
+criteria registration, and solver execution are still pending. No Kaggle
+dataset or kernel has been created or submitted for this round. R6/formal
+criteria remain unregistered; no response result is claimed.
+
+### 2026-10-06 — setup rehearsal attempt 1 rejected; kernel slug corrected
+
+The private setup dataset version 1 reached `ready`; its 8 remote files matched the local registered inventory by path, size, and SHA-256. Kaggle CLI submitted kernel version 1, which completed the bounded two-state setup check and emitted no force history. Kaggle created it under the title-derived slug `ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal`, while setup criteria expected `ramhachi888/cfd-opt-sdf-fd08-v2-r6`; this attempt is preserved but rejected as a setup preflight. No R6 scientific result was evaluated.
+
+The private kernel metadata title was corrected to resolve to the criteria ID. Fix feature commit `03980df` was merged with `--no-ff` as `3b9d6a5082f90a4a394d107d25260ba4c99030ab`. The post-fix full suite remained 37 failed / 1,494 passed / 9 skipped, with the exact pinned 37 failure IDs (zero new, zero resolved). Attempt 1 outputs and CLI status/log captures are archived under `docs/evidence/fd08_v2_r6_2026_10_06/setup_attempt1_artifacts.tar.gz`; rejection record SHA-256 is `06821952b6b1bafb6dc6cf14317da71f44e4fe8e8ed3f23f8723345f13eb310a`. All flags remain false; R6/formal criteria are unregistered. A new setup criteria/dataset version is required before proceeding.
+
+### 2026-10-06 — setup attempt 2 stopped before kernel creation
+
+Setup criteria/dataset v2 were prepared from integration `b1a8bd3`; Kaggle dataset version 2 reached `ready` and all 8 files matched the registered inventory. A kernel push using slug `ramhachi888/cfd-opt-sdf-fd08-v2-r6` returned HTTP 409 from `SaveKernel`; no kernel version was created and no solver step ran. The requested kernel slug equals the private dataset slug; resource-ID collision is the likely cause, recorded as an inference because Kaggle returned no structured reason.
+
+Attempt 2 is preserved at `docs/evidence/fd08_v2_r6_2026_10_06/setup_attempt2_conflict.json`. The source now centralizes a distinct kernel ID matching the existing title-derived slug `ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal`, while keeping the dataset ID `ramhachi888/cfd-opt-sdf-fd08-v2-r6`. R6/formal remain unregistered; scientific contract, params and state inventory are unchanged; all flags remain false.
+
+### 2026-10-06 — #46 FD-08 v2 R6 immutable preregistration
+
+The bounded T4 setup rehearsal passed as infrastructure-only evidence under
+source commit `2a09610e6a7aa7d1c464e675e56b3d547beea930`: baseline plus the
+smallest P1 signed state completed the setup path, with no force history and no
+R6 measurement. Its two-state criteria, terminal output, runtime logs, host
+verification, and hashes are preserved in
+`docs/evidence/fd08_v2_r6_2026_10_06/setup_attempt3_artifacts.tar.gz` and the
+adjacent append-only records.
+
+R6 was preregistered before R6 solver execution. Immutable criteria SHA-256 is
+`80d2526c6ef4f41b5f3772a54960968a6a58685e41c5968fb42304bf0f6d049b`, bound to
+clean pushed integration source `2a09610e6a7aa7d1c464e675e56b3d547beea930`.
+The frozen inventory contains the baseline and 48 signed states (49 total),
+with four approved directions, six L6 epsilon values, and no jitter. All
+geometry, P1 independence, Float32 centered-direction, margin, mask, and
+byte-uniqueness pre-registration gates passed. The T2 params hash remains
+`c5f3fe1a3875c44d5fd0b87d48fd0bd0c06bdf22fb74581cb399e382dbac95ba`.
+
+The R6 Kaggle CLI budget preflight passed for 6,600 s aggregate solver cap and
+11,200 s kernel allowance; the observed GPU quota remaining was 22.3 h and the
+platform CPU/GPU session ceiling was 43,200 s. These are capability checks,
+not runtime guarantees. The private R6 input dataset version 4 is ready, and
+all 103 remote files match the registered paths, sizes, and SHA-256 values.
+Remote inventory SHA-256 is
+`b144b20ac70e07fc602ca23bf134f98001097e26b813b89bb53c2e8d2034fae4`; the
+criteria, sidecar, data manifest, setup evidence, budget evidence, and 49-state
+payload hashes are archived in the same evidence directory.
+
+This records preregistration and input delivery only; R6 terminal evidence and
+scientific verdict are pending. R6 remains the last calibration. R5 remains
+`FAIL`, the 17 historical Stage 1 strict mismatches remain unchanged, and all
+six qualification flags remain literal `false`.
+
+### 2026-10-06 — #46 FD-08 v2 R6 submitted
+
+After the immutable criteria and complete remote input payload passed exact
+hash verification, Kaggle CLI 2.2.4 submitted private kernel
+`ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal/3` on Nvidia Tesla T4 with the
+registered 11,200-second kernel allowance and 6,600-second aggregate solver
+cap. The immediate CLI status was `RUNNING`. Submission identity, command,
+status/log snapshots, output hashes, criteria SHA, source SHA, and dataset
+version are recorded in
+`docs/evidence/fd08_v2_r6_2026_10_06/r6_submission.json` and its SHA sidecar.
+This is an execution checkpoint only; no R6 terminal artifact has been
+verified and no scientific analysis or verdict has been made.
+
+The criteria remains bound to source
+`2a09610e6a7aa7d1c464e675e56b3d547beea930` and SHA-256
+`80d2526c6ef4f41b5f3772a54960968a6a58685e41c5968fb42304bf0f6d049b`. R6 is
+the last calibration. R5 remains `FAIL`, the 17 historical Stage 1 strict
+mismatches remain unchanged, and all six qualification flags remain literal
+`false`. Formal remains conditional on an 8/8 R6 PASS.
+
+### 2026-10-07 — R6 attempt 1 terminal integrity passed; analyzer infrastructure failure
+
+Kaggle CLI kernel version 3 completed. Its output was downloaded through the
+CLI, archived, and checked by the registered host verifier before analysis:
+49/49 states, zero unexpected states, 254 manifested output files, and all
+criteria/source/runner/dataset/runtime/raw-history hashes verified. Host
+reconstruction of every drag/downforce history matched the registered
+summaries. Aggregate solver wall time was 5,221.153 s against the 6,600 s cap;
+kernel elapsed time was 9,115.770 s against the 11,200 s allowance. The
+terminal archive, CLI captures, and verification record are preserved under
+`docs/evidence/fd08_v2_r6_2026_10_06/`.
+
+The registered analyzer was invoked once for criteria
+`80d2526c6ef4f41b5f3772a54960968a6a58685e41c5968fb42304bf0f6d049b`, bound to
+source `2a09610e6a7aa7d1c464e675e56b3d547beea930`. It completed the numerical
+computations but failed while serializing C5 `Decimal` diagnostics, so it
+produced no analysis artifact and no scientific verdict. This is preserved as
+an infrastructure failure, not R6 `FAIL` or `UNRESOLVED`. The source repair
+serializes exact `Decimal` diagnostics as strings and NumPy scalar values as
+JSON scalars without changing numerical decisions. Synthetic focused tests
+passed 41; full pytest reported 1,497 passed, 37 failed, and 9 skipped. The 37
+failure IDs exactly match the pinned baseline (zero new or resolved); the
+normalized comparison is
+`docs/evidence/fd08_v2_r6_2026_10_06/r6_retry1_source_fix_pytest_comparison_r2.json`.
+
+The failed analyzer attempt and original R6 criteria remain immutable. Under
+the registered retry policy, any corrected R6 evaluation must use a new clean
+integration source identity and a new immutable R6 criteria/dataset identity;
+the completed version 3 output will not be reused for a verdict. No scientific
+result is claimed, formal remains unregistered, R5 remains `FAIL`, the 17
+historical Stage 1 mismatches remain unchanged, and all six qualification
+flags remain literal `false`.
+
+
+### 2026-10-07 — #46 FD-08 v2 R6 retry 2 immutable preregistration
+
+The first R6 attempt's complete solver output remains preserved but was not used
+for a scientific verdict: its registered analyzer stopped on a serialization
+error before producing an analysis artifact. The serialization-only fix was
+merged and pushed in integration source `f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9`.
+A new setup-only T4 rehearsal on that exact source passed for baseline plus the
+smallest P1 signed state and produced no force history.
+
+Retry 2 was preregistered as a new immutable identity before its solver run.
+Criteria SHA-256 is `90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837`; it binds source H6
+`f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9`. The T2 params hash remains
+`c5f3fe1a3875c44d5fd0b87d48fd0bd0c06bdf22fb74581cb399e382dbac95ba`, and regenerated solver-free
+preflight SHA-256 `8eab67329b66082a23d1c5ef5957671ab1d6c083e7bca8e246564c2de93a911d` matches the earlier
+frozen geometry inventory exactly. The approved four directions, P1 hash, six
+epsilon ladder, Float32 audits, 49 states, and no-jitter rule are unchanged.
+All 98 state payload files match the previous frozen state inventory before
+criteria/support files are added.
+
+The retry-2 Kaggle CLI preflight passed for the unchanged 6,600 s solver cap and
+11,200 s kernel allowance. Its setup rehearsal source identity is exact and
+force-history-free. Criteria, setup, budget, precheck, and registration records
+are stored append-only under `docs/evidence/fd08_v2_r6_2026_10_06/`. This is a
+registration checkpoint only: no retry-2 solver execution or scientific
+analysis has started. The previous immutable R6 criteria and failed analyzer
+attempt remain untouched. R6 remains the last calibration, R5 remains `FAIL`,
+the 17 historical Stage 1 mismatches remain unchanged, formal remains
+conditional on an 8/8 R6 `PASS`, and all six qualification flags remain
+literal `false`.
+
+
+### 2026-10-07 — R6 retry 2 Kaggle dataset version 6 verified
+
+Using the repository Kaggle batch runbook with pinned Kaggle CLI 2.2.4, the
+immutable retry-2 payload was appended as private dataset version 6. Kaggle
+reported `ready` and `current_version_number: 6`. CLI download and host-side
+SHA-256 comparison passed for all 103 remote files against the complete
+registered upload, criteria SHA
+`90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837`, and the
+dataset manifest. The canonical remote inventory SHA-256 is
+`f1c5f614ee89a4210746fe34a5a6a2933c36da88534a13a4715e492e7b709972`. The upload, download, status, and
+comparison captures are archived under
+`docs/evidence/fd08_v2_r6_2026_10_06/`.
+
+The first local comparison record compared the criteria's 100-file payload map
+with the 103-file complete remote upload and marked that scope mismatch as a
+content failure. Its byte comparisons showed the local payload files matched;
+the corrected append-only comparison includes `criteria.json`, its SHA sidecar,
+and the dataset manifest, and all six exact-content checks pass. Both records
+are retained, with the corrected record explicitly superseding the initial
+comparison. No solver was submitted or run during dataset transfer. Kernel
+submission remains pending. The criteria still bind source H6
+`f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9`; all fixed R6 parameters and
+coverage remain unchanged. R5 remains `FAIL`, the 17 historical Stage 1
+mismatches remain unchanged, and all six qualification flags remain literal
+`false`.
+
+
+### 2026-10-07 — R6 retry 2 source-ready checkpoint
+
+Before submitting the retry-2 kernel, a clean pushed integration checkout
+`480085e95072618e9789efb2427338e20ea88913` was checked against all 35 source/input hashes bound by the
+immutable criteria. They match; the criteria remains bound to source H6
+`f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9` and SHA-256
+`90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837`. The exact remote dataset version 6 is ready and
+all 103 downloaded files passed the registered inventory comparison. The T4
+kernel identity is `ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal`; solver and kernel allowances
+remain 6,600 s and 11,200 s. The source-ready check is recorded at
+`docs/evidence/fd08_v2_r6_2026_10_06/r6_retry2_kernel_pre_submit_check.json`.
+No solver execution has started at this checkpoint. No criteria or source
+change is planned. R6 remains the last calibration; R5 remains `FAIL`, the 17
+historical Stage 1 mismatches remain unchanged, and all six qualification
+flags remain literal `false`.
+
+
+### 2026-10-07 — R6 retry 2 submitted
+
+After the source-ready and exact dataset-version-6 checks passed, pinned Kaggle
+CLI 2.2.4 submitted kernel
+`ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal/5` on Nvidia Tesla T4. It is
+bound to immutable criteria SHA
+`90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837`, source H6
+`f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9`, and the fully verified 103-file private input
+dataset version 6. The initial CLI status was `KernelWorkerStatus.RUNNING`. The
+registered limits remain 6,600 s aggregate solver time and 11,200 s kernel
+allowance; these are caps, not runtime guarantees.
+
+Submission identity, commands, version/status captures, and their SHA sidecars
+are preserved in `docs/evidence/fd08_v2_r6_2026_10_06/`. This is an execution
+checkpoint only: terminal integrity, actual runtime, and scientific analysis
+are pending. The criteria, source, state inventory, directions, ladder, model,
+thresholds, and budget are unchanged. R6 remains the last calibration; R5
+remains `FAIL`, the 17 historical Stage 1 mismatches remain unchanged, formal
+remains conditional on 8/8 R6 `PASS`, and all six qualification flags remain
+literal `false`.
+
+
+### 2026-10-07 — R6 retry 2 PASS; formal preregistration blocked
+
+Kaggle CLI 2.2.4 reported kernel
+`ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal/5` complete. The registered
+host verifier passed terminal integrity for all 49 expected states, zero
+unexpected states, 254 manifest-verified output files, criteria/source/runtime
+identity, every state and force-history hash, and host force recomputation.
+Aggregate solver time was 5,354.967 s / 6,600 s; kernel elapsed time was
+8,976.250 s / 11,200 s. Terminal archive SHA-256 is
+`17e57c020cb9bd398c1d794748bdf876f111b11f5982716a589fadf89f930856`.
+
+The registered R6 analyzer ran exactly once after terminal verification and
+returned `PASS` for all 8/8 direction-response series under COV-A. Criteria SHA
+is `90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837`; result
+SHA is `b5d55b77f750f447fd486a600f9e52a66a3f6c2610c5dba5ce6792018cc647be`. The detailed fit, uncertainty, nested,
+model-comparison, holdout, magnitude, and sign metrics are preserved in
+`docs/evidence/fd08_v2_r6_2026_10_06/r6_retry2_analysis_summary.json`.
+
+The formal CLI budget preflight also passed for 3,300 s solver cap and 5,600 s
+kernel allowance. Formal criteria registration then stopped before writing any
+formal criteria or preflight: the R6-prehashed formal registrar
+`7882195db39b01a3178c9ef1b8bc8c014ba1a579c81c768cf8fdb7df22b5c92c` initializes `raw_states` as a dict
+and calls `.add()` at line 106, raising `AttributeError: 'dict' object has no
+attribute 'add'`. Its current SHA still matches the formal registrar hash fixed
+in the R6 criteria. No formal criteria was registered, no formal dataset
+version was uploaded, and no formal solver was submitted. The blocker record is
+`docs/evidence/fd08_v2_formal_2026_10_06/formal_retry2_registration_failure.json`.
+
+This is a formal preregistration implementation blocker, not a scientific
+formal `FAIL` or `UNRESOLVED`; no formal verdict exists. The hash-frozen source
+was not repaired or bypassed after observing R6. Campaign status is
+`BLOCKED_PREREGISTRATION`; R6 remains the last calibration. R5 remains `FAIL`,
+the 17 historical Stage 1 mismatches remain unchanged, and all six qualification
+flags remain literal `false`.
+
+### 2026-10-07 — #46 Formal Preregistration Lineage Amendment source preparation
+
+The user explicitly authorized the post-R6 Formal Preregistration Lineage
+Amendment. The original preregistration dict/set failure and the subsequent
+source-lineage/dataset-identity blockers remain historical evidence. R6 remains
+PASS (8/8), with source/criteria/result/terminal/dataset/raw outputs unchanged.
+The registrar now uses a set for the 49 raw parent arrays, binds a separate
+formal execution commit, preserves exact R6 parent provenance, and emits
+amendment lineage plus distinct formal criteria/round/dataset/kernel identities.
+The shared Kaggle runner and all scientific sources remain byte-identical.
+
+Implementation commit is `bf7e6ae`; independent review/parent-input checkpoint
+is `9c2aa51cc02207308ad11307b2dc6633fd7c1026`. Amended registrar SHA-256 is
+`0570d34a06fa9469b9db7a96f780fc8f95d3535867fe48f8e53b162dd81467b6`.
+Both independent reviews passed. Solver-free canonical dry construction passed
+25-state byte uniqueness, disjointness from 49 parent states, geometry/masks,
+Float32 centered-direction audits, unchanged epsilon/scientific-contract checks,
+and a fresh checkout using the unchanged runner's 40-source-input verification.
+
+Focused FD-08 tests passed 107/107. Full pytest returned 37 failed / 1506 passed /
+9 skipped, with exactly the pinned 37 baseline IDs (zero new and zero resolved).
+Compileall, py_compile, CLI imports and diff check passed. The first focused
+run's missing canonical fixture is preserved and was resolved solely by placing
+the exact canonical NPZ in this worktree's ignored work directory.
+Evidence is in `docs/evidence/fd08_v2_formal_2026_10_07_amend1/` and design in
+`docs/issues/46_fd08_v2_formal_lineage_amendment_2026_10_07.md`.
+
+Formal is still NOT REGISTERED / NOT RUN at this source-preparation checkpoint.
+After no-ff integration and push, the resulting clean remote-synced integration
+HEAD will be bound as the formal execution source. Registration still requires
+fresh budget capability and full lineage/state integrity. RCFG-1, T2, four
+directions, COV-A, epsilon rule, 25 states, prediction/aggregation and caps are
+unchanged. R5 FAIL and the 17 Stage 1 historical strict mismatches remain;
+all six qualification flags are false. No R6 reanalysis or solver was executed.
+
+### 2026-10-07 — formal amend1 immutable registration checkpoint
+
+The Formal Preregistration Lineage Amendment was merged with `--no-ff` and
+pushed to integration at `30aa20a6891ccabefaa2ef6d41a2e2b5e26701b5`. This clean,
+remote-synced commit is the formal execution source; immutable R6 parent source
+remains `f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9`. The pre-registration
+[source-ready issue checkpoint](https://github.com/ramhachi/CFD_opt_sdf/issues/46#issuecomment-6029850353)
+was posted while formal remained unregistered and unrun.
+
+The first immutable formal criteria was then registered successfully under
+`FD08-V2-FORMAL-AMEND1-2026-10-07`, round
+`fd08_v2_formal_2026_10_07_amend1`. Criteria SHA-256 is
+`857c21231eb48708daba784318445c43d115dca48567dfd3378c3ba177bd57fe`;
+formal preflight SHA-256 is
+`417ca756e49de1a6f6355c47cb10f5da41edcebc533c05626c0be844a05dee2f`.
+The registered 25-state inventory consists of one baseline and 24 signed states.
+Interior epsilons are exactly 0.6294627058970836, 1.5811388300841898, and
+3.971641173621408 mm. Registrar audits passed uniqueness, disjointness from the
+49 parent arrays, geometry/masks and Float32 centered-direction requirements.
+The formal dataset/kernel identities are distinct from R6:
+`ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend1`.
+
+All 55 local packaging files (54 mounted input files and metadata) are preserved
+losslessly in `formal_registered_payload.tar.gz`, SHA-256
+`b8102a7ed16c6e5925bc2876d8289b8e75a076015c644bf48aca2094d3fcde1b`,
+with an independently byte-checked archive inventory. This checkpoint records
+registration only: host execution-path verification is required before upload
+or submission. No formal response, solver execution, analyzer or verdict exists;
+all six flags remain false. The criteria and payload are immutable.
+
+### 2026-10-07 — formal amend1 host gate BLOCKED_INFRASTRUCTURE
+
+After the first immutable formal registration above, the actual registered
+runner passed criteria loading, the exact 54-file mounted dataset inventory,
+and 40-source-input Git-tree SHA verification. It then failed in
+`validate_state_files()` at `infra/kaggle/kernel_fd08_v2_r6/runner.py:253` with
+`KeyError: 'geometry_reject_gates'`: the formal criteria stores the unchanged
+geometry conditions as `geometry`, while the shared runner consumes
+`geometry_reject_gates`. This pre-existing consumer/schema mismatch was not
+covered by the earlier dry-run's runner source verification. The passing
+registrar audits and tests must not be interpreted as a complete host execution
+path pass.
+
+The [host blocker record](issues/46_fd08_v2_formal_amend1_host_blocker_2026_10_07.md)
+and `registration_host_verification.json` preserve the traceback and identities.
+The registered criteria SHA remains
+`857c21231eb48708daba784318445c43d115dca48567dfd3378c3ba177bd57fe`;
+its source remains `30aa20a6891ccabefaa2ef6d41a2e2b5e26701b5`. Neither has been
+patched or superseded. The user's post-registration source-repair rule requires
+a new amendment/source/preregistration identity, so work stops at this gate.
+
+Formal is REGISTERED / NOT UPLOADED / NOT SUBMITTED / NOT RUN. No remote dataset
+or kernel version, formal response, terminal verification, scientific analyzer
+execution, or formal verdict exists. Campaign status is
+**BLOCKED_INFRASTRUCTURE**, not a scientific FAIL or UNRESOLVED. R6 remains PASS
+(8/8) with immutable evidence and no rerun/reanalysis. R5 FAIL, Stage 1's 17
+historical strict mismatches and Stage 1.5 remain unchanged. All six flags remain
+literal false. No result-dependent adjustment or scientific retry occurred.
+
+## #46 AMEND2 runner schema / pre-solver checkpoint (2026-10-07)
+
+The user authorized **Formal Infrastructure AMEND2 — Runner Schema Repair**.
+AMEND1 criteria `857c21231eb48708daba784318445c43d115dca48567dfd3378c3ba177bd57fe`
+and its registered payload/source/blocker remain immutable historical evidence.
+The new registration will supersede its unrun infrastructure identity; no
+AMEND1 evidence is patched. R6 remains immutable PASS 8/8, without rerun or
+reanalysis. R5 FAIL, Stage 1's 17 strict mismatches and Stage 1.5 remain unchanged.
+
+The [AMEND2 design](issues/46_fd08_v2_formal_amend2_runner_schema_2026_10_07.md)
+dispatches formal geometry to `geometry`, preserving R6's
+`geometry_reject_gates` and setup behavior. It adds a guarded hook immediately
+before the measured solver invocation. The new registrar copies AMEND1's
+scientific contract and state bytes, changing only execution/lineage/package
+identities. The scientific projection remains exactly
+`8d76b3b4b5837dda38259d560f163223be92531d83b62236a21f5788a01cdb0f`.
+Independent schema and scientific reviews both PASS at the final source hashes.
+
+Implementation source `e42fc8f0c8cae1e54ad9349d441117fe49986894` passed focused
+tests (152 passed, 5 skipped), compile/import/diff checks and full pytest
+(1551 passed, 37 failed, 14 skipped). The 37 failure IDs exactly match the
+frozen baseline: new failures 0, resolved failures 0. Logs and comparisons are
+saved in `docs/evidence/fd08_v2_formal_2026_10_07_amend2/` with SHA sidecars.
+
+The actual hash-bound production runner passed private T4 pre-solver rehearsal
+kernel `ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-pre-solver/1` using the
+separate rehearsal input version 1. Host verification confirms source 43/43,
+mounted files 54/54 and state preparation/verification 25/25; elapsed runner
+time 295.52815814 s. Terminal is `PASS_PRE_SOLVER_EXECUTION_PATH`,
+solver_started=false, force history absent and formal observations 0. This
+is runtime execution-path evidence, not formal scientific qualification.
+
+AMEND2 formal criteria are **NOT REGISTERED** and the formal scientific dataset
+and kernel are **NOT UPLOADED / NOT SUBMITTED / NOT RUN** at this checkpoint.
+After the no-ff integration merge, the exact final-source candidate must pass
+the same actual rehearsal before registration. Registered bytes must then
+pass again before publication. All six qualification flags remain false.
+
+## #46 AMEND2 immutable registration checkpoint (2026-10-07)
+
+The no-ff integration merge `f072bc7c5a9e98cc84f7a6a225c0780ad10e31be`
+is the frozen AMEND2 execution source. Its exact-source T4 rehearsal kernel
+version 2 passed all 43 source inputs, 54 mounted files and 25 states; actual
+runner elapsed 307.809623341 s. The host verification passed with no solver,
+force history, observation or scientific verdict. A fresh 3300/5600 capability
+recheck passed. The [source-ready checkpoint](https://github.com/ramhachi/CFD_opt_sdf/issues/46#issuecomment-6032722158)
+was posted before registration.
+
+The new immutable criteria `FD08-V2-FORMAL-AMEND2-2026-10-07` were first
+registered with SHA-256
+`ccbe6abd4f41c0900a3dd69612e31af7013d01040b7554b9e394d2f9eef0cf6e`.
+AMEND1 is retained unchanged and explicitly superseded as
+`REGISTERED_NOT_RUN_SUPERSEDED_INFRASTRUCTURE`. The new criteria retain exact
+R6 parent provenance, frozen fits/covariances and every AMEND1 scientific field.
+The 55-file registered payload archive (54 mounted inputs plus metadata) was
+independently read back with every SHA verified.
+
+Registration did not publish the formal dataset or submit the formal kernel.
+The registered 54 bytes/files were independently matched to rehearsal dataset
+version 2, and a new actual runner execution (rehearsal kernel version 3) was
+submitted against those exact registered bytes. Its PASS is required before
+formal publication. No candidate report is reused as this post-registration
+execution evidence. At this checkpoint its terminal is pending, formal
+observations/comparisons are 0/24, and all six flags remain false. R6 remains
+PASS 8/8 without rerun/reanalysis; historical artifacts remain unchanged.
+
+## #46 AMEND2 registered-byte execution gate PASS (2026-10-07)
+
+The newly executed registered-byte rehearsal kernel version 3 passed actual
+production execution through the pre-solver boundary: 43 source inputs,
+54 mounted registered files, 25/25 state verification/preparation, exact frozen
+source `f072bc7c5a9e98cc84f7a6a225c0780ad10e31be` and registered criteria SHA
+`ccbe6abd4f41c0900a3dd69612e31af7013d01040b7554b9e394d2f9eef0cf6e`.
+Its distinct report SHA is
+`9d6ee7899d131e18f066876ff81f432d1ecc99c43d3ee69ef7feaa52c10badd4`;
+host verification PASS, actual runner elapsed 286.500020805 s. The same private
+rehearsal input version 2 was reused only after every mounted byte was matched
+to the newly immutable registration; the new execution did not reuse a
+candidate report. Solver_started=false, force history absent, formal
+observations 0 and no scientific verdict. All six flags remain false.
+
+This completes the post-registration publication gate. The dedicated private
+formal dataset may now be uploaded and must pass exact remote-version inventory
+and SHA checks before the formal kernel submit. Criteria/source/model/T2/
+directions/epsilon/caps remain frozen; R6 and AMEND1 are unchanged. A complete
+25/25 formal terminal and host integrity PASS remain prerequisites for the
+single scientific analyzer invocation.
+
+## #46 AMEND2 immutable submission stop (2026-10-07)
+
+Registered-byte rehearsal PASS permitted dedicated private formal dataset
+upload. Dataset `ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2` version 1 is
+ready, with all 54 remote files independently downloaded and SHA-verified
+against immutable criteria
+`ccbe6abd4f41c0900a3dd69612e31af7013d01040b7554b9e394d2f9eef0cf6e`.
+
+Formal `SaveKernel` failed with HTTP 409. One identical-request diagnostic
+retry, without source/criteria/dataset/cap changes, returned the same 409:
+`The requested title "CFD Opt SDF FD08 V2 Formal Amend2" is already in use by a dataset. Please choose another title.`
+The registered metadata binds the colliding kernel identity; fixing that
+bound metadata now requires a new source/protocol/preregistration amendment.
+**AMEND3 is required.** No title/slug/source/criteria repair or further retry
+was performed. The [submission blocker](issues/46_fd08_v2_formal_amend2_submission_blocker_2026_10_07.md)
+and SHA-fixed attempts preserve the exact error and identities.
+
+Campaign stops at **BLOCKED_INFRASTRUCTURE**. AMEND2 is REGISTERED / UPLOADED /
+NOT SUBMITTED / NOT RUN, with no successful formal kernel version. Completion
+is 0/25 and comparisons 0/24; formal runtime/solver time and scientific verdict
+do not exist. No terminal verifier or scientific analyzer was run. R6 remains
+immutable PASS 8/8 with no rerun/reanalysis, AMEND1 remains unchanged historical
+superseded registration, R5 FAIL and Stage 1/1.5 remain unchanged. All six flags
+remain false. This infrastructure stop makes no scientific FAIL, UNRESOLVED or
+qualification PASS claim. Main and unrelated worktrees are untouched.
+
+## #46 AMEND3 formal result: PASS 24/24 (2026-10-07)
+
+AMEND3 repaired only the Kaggle kernel identity (kernel title slug no longer equals
+the dataset slug; scientific projection SHA `8d76b3b4…` and all 25 state byte files
+equal AMEND2). Immutable criteria SHA
+`31b29cccc9d3fd6912a910b09694a8230f9ee0aa84e6a418161881ffbcf907be`, frozen execution
+source `b1d4330f919b682d50f28a4d2267eb3058340a19`. Exact-source and registered-byte
+T4 pre-solver rehearsals (kernel `…-formal-amend3-pre-solver` versions 1 and 2)
+passed (44 source inputs, 54 mounted files, 25/25 states, solver not started).
+The private formal dataset `ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3` v1 was
+verified 54/54 against the registered bytes. The formal kernel
+`ramhachi888/cfd-opt-sdf-fd08-v2-formal-run-a3` was submitted once (version 1) and
+raised no Kaggle error.
+
+Host terminal verification: `PASS_TERMINAL_INTEGRITY`, 25/25 states, 0 unexpected,
+aggregate solver 2,817.845 s (cap 3,300 s), kernel elapsed 5,059.814 s (allowance
+5,600 s). The registered analyzer ran once, without refit: **formal verdict PASS,
+24/24 comparisons**. Worst absolute error / threshold 0.263; worst standardized
+error 0.79 (D2 downforce, 1.581 mm); worst relative error 7.6% (D1 drag, 0.629 mm,
+absolute error 3.0 µN against an 11.7 µN threshold). All magnitude and same-sign
+checks passed. R6 remains PASS 8/8, not rerun or reanalyzed; R5 FAIL, the 17
+historical Stage 1 mismatches and AMEND1/AMEND2 records are unchanged.
+
+Claim limit: this is deterministic-solver interior-interpolation validation of the
+frozen six-point Model A at three unused interior epsilons for four registered
+directions. It is not noise validation, extrapolation, direction generalization,
+grid independence, physical truth, high-Re validity, an epsilon-to-zero derivative,
+a full-field gradient, reverse AD, optimizer or topology qualification, and it
+makes no joint-confidence statement. All six qualification flags remain false
+(`fd_oracle`, `field_gradient`, `reverse`, `optimizer`, `topology`,
+`shape_update_allowed`); any change to them needs a separate user decision.
+Evidence: `docs/evidence/fd08_v2_formal_2026_10_07_amend3/` (`campaign_final.json`,
+`formal_analysis.json`, `formal_terminal_verification.json`).
+
+## #46 FD-08 v2 post-PASS solver-free records (2026-10-08)
+
+Three solver-free artifacts follow the AMEND3 formal PASS (24/24, interior interpolation only). None changes
+a verdict, a registered contract or a qualification flag; all six flags remain false.
+
+- **Oracle scope record** (`docs/evidence/fd08_v2_oracle_scope_record_2026_10_08/`): binds R6 PASS 8/8 and the
+  formal PASS to Candidate C / canonical v17 / flow_24 / D0, D1, D2, P1 × drag, downforce / ε 0.5–5 mm, with the
+  GRAD-01 bridge identities (float64 direction hashes regenerated from the canonical state and checked against the
+  registered float32 hashes; response-semantics hash; FD backend fingerprint). It uses a scoped status key, no
+  `fd_oracle` or `*_qualified` true key, and records no error gate. Flipping any flag needs a separate user decision.
+- **Trust radius** (`docs/evidence/fd08_v2_trust_radius_2026_10_08/`): extrapolation of the frozen Model A/B fits.
+  Binding series is D0 drag: the 10% higher-order radius is about 3.1 mm (Model A) and 1.6 mm (Model B), with
+  plug-in 5th percentiles 2.5 mm and 1.0 mm. Radii beyond the 0.5–5 mm calibrated range are extrapolations; ε is a
+  max-nominal coefficient. Implication for #47 STEP-01 (2.5–12.5 mm steps): the upper half has no FD-08 support.
+- **GRAD-03 delta options** (`docs/issues/46_fd08_v2_grad03_delta_options_2026_10_08.md`): oracle uncertainty table
+  and four gate options. No δ is chosen; numeric examples are labelled arbitrary illustrations. #23's "every
+  registered direction" is unchanged.
+
+An independent numerical review re-derived every quoted number (PASS); its wording findings were applied.
+Gradient accuracy, ε→0 derivatives, grid independence and physical truth are not claimed.
+
+## #22 GRAD-02 follow-up: CPU forward-mode AD spike, result PARTIAL (2026-10-08)
+
+A CPU-only capability spike asked whether ForwardDiff Dual numbers can differentiate a few WaterLily 1.8.0
+`sim_step!`s of the Candidate C composite body with respect to a perturbation `phi + t·d` of the SDF design field.
+No Kaggle or T4 was used; the six qualification flags remain false; #23's scope and error gate are unchanged.
+The decision rule was fixed before the registered runs (`prerun_note.md`, `prerun_freeze.json`); a one-step toy smoke
+run preceding the freeze is disclosed there.
+
+Registered result: **PARTIAL**. Forward AD completes on the toy and on the real canonical v17 state (D0, flow
+150×72×54, two steps) with finite tangents and AD-vs-plain primal agreement of about 1e-13. Against centered FD of the
+same discrete model at the registered reference ε, the canonical tier is grade A (about 1e-5), while the toy is grade C
+and misses the GO-forward threshold B. A post-hoc diagnostic shows AD agreeing with FD to 2e-9–1.4e-7 for ε ≤ 1e-6 on the
+toy; the toy's non-smooth scale is not Candidate C's blend (inert there). An independent review confirmed the harness and
+the PARTIAL grade and corrected two claims. A concrete-typed Enzyme reverse probe moved the failure to `pressure_force`
+and is inconclusive.
+
+Open items (user decisions): whether to test Dual numbers on CuArray/T4 (the oracle runs ~8,700 Float32 steps), how to
+restore reverse for a reverse-vs-forward check, and how the GRAD-03 error gate should account for the difference between
+a pointwise AD derivative and the FD-08 mesoscale regression slope. This is not a gradient qualification.
+Evidence: `docs/evidence/grad02_forward_ad_spike_2026_10_08/`; note: `docs/issues/22_forward_ad_spike_2026_10_08.md`.
+
+## #22/#23 G1: T4 Dual-number capability gate, result G1-PASS (2026-10-08)
+
+A one-shot diagnostic on Kaggle T4 asked whether ForwardDiff `Dual{Tag,Float32,1}` numbers go through a few WaterLily
+1.8.0 `sim_step!`s of the Candidate C composite body on the canonical v17 state with CuArray storage. The decision rule
+was fixed before the run (`prerun_note.md`, `prerun_freeze.json`; CPU dry-runs were disclosed, no GPU result had been seen).
+Result under the registered rule: **G1-PASS**. The kernel completed (Tesla T4, CUDA.jl 6.3.1, WaterLily 1.8.0), tangents
+and partial-carrying fields are finite and nonzero, the Dual primal matches the plain primal to 2.2e-6, and the Float32
+GPU tangents agree with the CPU Float64 AD tangents to 0.6% (Fx) and 8.0% (Fz, close to the 10% limit).
+
+Scope: two-step instantaneous force, one direction (D0); not the FD-08 window mean and not a comparison with the FD-08
+oracle. It is not a gradient qualification, reverse is untouched, #23's scope and error gate are unchanged, and all six
+qualification flags remain false. Next, only after a separate pre-registration written from this result: a full-window
+forward bridge (four directions in one run) as calibration data for the GRAD-03 gate.
+Evidence: `docs/evidence/grad03_gpu_dual_spike_2026_10_08/`.
+
+## #23 G2: full-window forward-AD bridge, attempt 1 result G2-BLOCKED (2026-10-08)
+
+G1 (T4, 2 steps, one direction) remains capability evidence only. G2 pre-registered a full-window measurement of the
+point derivative of the exact FD-08 observable (Candidate C, canonical v17, flow_24, [80,120] tU/L window) for D0, D1, D2
+and P1 as four independent Dual{Float32,1} runs plus a plain baseline, to compare with the FD-08 Model-A regression
+slopes. It chose no delta, gives no GRAD-03 verdict, leaves reverse untouched and changes no flag
+(`docs/evidence/grad03_g2_full_window_forward_bridge_2026_10_08/`, freeze, two independent reviews PASS, source
+`e44d0f0`, T4 kernel version 1).
+
+Result: **G2-BLOCKED** under the registered rule. The plain Float32 baseline completed (8,740 steps, 1,093 samples) and its
+host-recomputed window mean reproduced the registered `baseline_v17` measurement bit-for-bit (drag 0.3239039699743226 N,
+downforce 0.3316344583180616 N), validating measurement reuse on the T4. The D0 Dual run aborted on a non-finite
+force/tangent at step 1200 (t=16.41, start-up transient); the remaining directions were not run, no DONE marker was
+written, the runner exited non-zero, the host terminal verifier returned FAIL and the bridge analyzer was not run. No bridge
+value exists. The harness saved no partial history for the failed run, so the cause (tangent overflow versus another
+non-finite quantity) is undetermined. Any retry needs a new source identity and pre-registration; the options are a
+D0-only diagnostic run that saves partial histories, a Float64 Dual run, or abandoning the long-window bridge. Not a
+gradient qualification; delta unset; six qualification flags false.
+
+## #23 G2-DIAG1: D0 long-horizon Dual failure localization, result DIAG_LOCALIZED (2026-10-08)
+
+G2 attempt 1 (G2-BLOCKED) lost its partial history, so the cause of the D0 `Dual{Float32,1}` failure at step 1200 was
+unknown. G2-DIAG1 was pre-registered (freeze, two independent reviews PASS-WITH-FINDINGS, all findings applied before the
+run) as an observation-only diagnostic: D0 only, same scientific state as G2, one reference run (plain `sim_step!`, G2's
+sampling) and one instrumented run (read-only probes inside copies of WaterLily 1.8.0's `mom_step!` stages), per-step
+durable ledgers, no clipping/reset/Float64/bridge/delta. One T4 run (kernel version 1, source `2cd713a`).
+
+Result under the registered rules: **DIAG_LOCALIZED**. The reference run reproduced G2's failure exactly (step 1200,
+t=16.409412384033203); reference and instrumented states agree bit-for-bit at all 1197 steps (observation did not change
+the state). The first non-finite value is a **tangent** (`Inf`) while the primal stays finite and bounded (max|u|=1.231,
+steady since step ~500): step 1196, stage `correct_conv_diff`, field `f`, cell (24,61,40), a far-field cell (sdf 38.5).
+The tangent grew roughly exponentially (~x1.26/step, 0.0975 decade/step, R^2 0.992) up to 6e37 (Float32 max 3.4e38) before
+overflowing. The Poisson solve converged in one iteration (itmx 32 never reached) and the Candidate C geometry audit is
+finite. Mechanical classification: Case A; H1 and H2 supports, H3-H6 refutes.
+
+Post-hoc observation (outside the registered rules): the exponential growth started at step ~849 (t~11.6 tU/L), not at
+the start-up; before that the tangent was steady near the body. It then grew from far-field boundary-corner cells
+(sdf ~50 cells), not from the body. A constant-rate extrapolation also overflows Float64 near step ~4000, whereas the
+registered window needs ~8,740 steps, so a Float64 run alone may not complete the long-window bridge. The cause (boundary
+treatment, exit BC, time-Dual propagation, an unstable linearized mode) is not identified by this diagnostic.
+
+No bridge value exists; delta unset; no GRAD-03 verdict; reverse untouched; six qualification flags false. Next step is a
+user decision: Float64 precision discriminator, local diagnostic of the far-field tangent mode, Poisson derivative
+diagnostic, or abandoning the long-window forward bridge.
+Evidence: `docs/evidence/grad03_g2_diag1_d0_nonfinite_2026_10_08/`.
+
+## #23 G2-DIAG1 post-hoc addendum (2026-10-08, exploratory; the DIAG1 record is unchanged)
+
+Corrects one DIAG1 classification and records four post-hoc observations that motivate G2-DIAG2. **H4 (finite-iteration
+Poisson derivative) "refutes" is withdrawn**: the registered rule used "itmx reached" as a proxy, but the Poisson stop
+test uses only the primal residual, so it says nothing about tangent convergence. From step 31 on the solver runs one
+iteration; the primal relative residual is ~1e-3 while the tangent relative residual is 1.7-4.3 % throughout.
+Observations: 99.97 % of the u-tangent energy at step 900 lies in a corner box (x-min / y-min / top, 3-8 cells inside the
+faces, sign-alternating in x) where the primal is uniform free stream; the box tangent was steady at ~1e-2 until step 500
+and grows ~0.093 decade/step from an extrapolated onset near step 800; the dt tangent is steady until step 860 (a
+consequence, not a cause); the per-step gain ~x1.31 is made in the two BDIM stages and partly cancelled by projections.
+Interpretation (unverified): an AD artefact of a stopped iterative solver / boundary handling rather than physical growth.
+Evidence: `docs/evidence/grad03_g2_diag1_d0_nonfinite_2026_10_08/posthoc_addendum.{md,json}`.
+
+## #23 G2-DIAG2: D0 far-field tangent mode, counterfactual fork replay, result DIAG2_LOCALIZED (2026-10-08)
+
+G2-DIAG1 left a tangent-only exponential growth (primal steady) in a far-field corner box. G2-DIAG2 was pre-registered
+(freeze, two independent reviews PASS-WITH-FINDINGS, all findings applied before the run) as a counterfactual fork replay:
+one T4 kernel replays D0 to step 780, restores that state into fresh simulations and runs 200 steps for 12 variants (baseline;
+Poisson iterations forced to 4/16/32; dt tangent frozen; tangent of u zeroed in the corner box, three face slabs, all slabs,
+ghost layers, exit slab). The interventions are counterfactual perturbations, not fixes. Source `6742b68`, T4 kernel v1.
+
+Result under the registered rules: **DIAG2_LOCALIZED**. The baseline V0 is bit-identical to the straight replay for all 200
+steps and reproduces the growth (0.101 decade/step). Forcing 32 Poisson iterations **suppresses** the growth (the global
+tangent stays at the near-body steady value ~21 at step 980 versus 1e15), 16 iterations reduces it, and 4 iterations makes it
+worse (0.171). Zeroing the tangent in the corner box or in any one of the three face slabs (each contains the corner)
+suppresses it; freezing the dt tangent, zeroing the ghost layers and zeroing the exit slab have no effect. Mechanical
+status: H11 (tangent Poisson solve unconverged under a primal-only stop test) supports, H8 (corner tangent path) supports;
+H12, H7, H13 refute.
+
+Limits: the V1 variants change the primal solve too (primal relative residual 1e-3 to 3e-8), and the effect is not monotone in
+the residual (4 iterations has a 500x smaller tangent residual than the baseline yet grows faster), so the mechanism is not
+explained by residual size alone. Kill variants cannot see regrowth below the near-body floor. No bridge value, delta unset,
+no GRAD-03 verdict, reverse untouched, six flags false, no Float64 run. Next step is a user decision; the natural candidate is a
+pre-registered diagnostic of a tangent-aware Poisson stopping rule (iteration-count scan and a long horizon).
+Evidence: `docs/evidence/grad03_g2_diag2_d0_tangent_counterfactual_2026_10_08/`.
+
+## #23 G2-DIAG3: tangent-only Poisson continuation, result TANGENT_ONLY_NO_SUPPORT (2026-10-08)
+
+G2-DIAG2 found that forcing 32 Poisson iterations suppresses the corner tangent growth, but that also changes the primal.
+G2-DIAG3 was pre-registered (freeze, two independent reviews PASS-WITH-FINDINGS, all findings applied before the run) to
+separate the two: the primal Poisson solve is left exactly as in WaterLily (primal-only stop rule) and only the tangent
+part of the pressure solution is converged further (value-only multigrid on the same operator, `dA x` included, tangent
+mean of the active set removed, primal bytes never written). 24 arms from a step-780 fork (A0 baseline; A1 tangent-only with
+tau 1e-4..1e-7 and fixed counts 1..64; D Dual stop on primal AND tangent residual; forced 32 Dual iterations), one T4 run
+(source `f097dcd`), Stage B (held-out D0 long horizon) only for a mechanically selected candidate.
+
+Result under the registered rules: **TANGENT_ONLY_NO_SUPPORT**. A0 is bit-identical to the plain replay and reproduces the
+growth (0.1009 decade/step). All 18 tangent-only arms keep the primal values bit-identical at every step and bring the
+tangent Poisson residual from 2.7e-2 down to 1e-7, yet **the growth is unchanged** (0.1006-0.1058 decade/step, same onset
+step ~836-838): no plateau, no Stage B candidate. The Dual-stop arms (primal and tangent residuals 1e-6..4e-8 at both
+projections) do not suppress it either; the forced-32 arm reproduces the DIAG2 suppression and moves the primal by 3.3e-6
+(u, relative L2), 5e-4 (p), 4e-5 / 8e-5 (fx / fz). F32 and Dual-stop(1e-7) have the same drift and residual level but opposite
+outcomes, and the tangent mean (gauge) is negligible (2e-13 of max|dz|).
+
+Interpretation (post-hoc, unverified): the tangent Poisson convergence (H11) and a tangent-aware stopping rule are not the
+mechanism or the fix; the suppression by forced iterations may be a delay of the onset rather than an elimination (the
+window is 200 steps; Dual-stop(1e-7) delays the onset by ~27 steps). No bridge value, delta unset, no GRAD-03 verdict,
+reverse untouched, six flags false, no Float64 run. Next step is a user decision: a long-horizon replay of the forced-32 arm
+(delay or elimination), the internal split of the corner mode (BDIM / conv_diff boundary closures), Float64, or abandoning the
+long-window bridge.
+Evidence: `docs/evidence/grad03_g2_diag3_tangent_poisson_2026_10_08/`.
+
+## #23 G2-DIAG4: forced-32 long-horizon replay, result FORCED32_DELAYED_ONSET (2026-10-09)
+
+G2-DIAG2/DIAG3 showed that forcing 32 Poisson iterations suppresses the D0 corner tangent growth over a 200-step window. G2-DIAG4 was
+pre-registered (freeze, two independent reviews, findings applied before the run) to ask whether this is an elimination or a delay.
+One T4 run (source `a6ecbc61`), three independent lock-step simulations: B0 (original semantics, 0..1500), B32fork (PRIMARY: bitwise
+clone of B0 at step 780, then forced 32 iterations, 781..1500) and B32fresh (SECONDARY: forced-32 from step 0, never used for the
+primary verdict). Mandatory regression gates passed bit for bit (B0 steps 1..980 = DIAG3 straight; B32fork steps 781..980 = DIAG3 F32 arm
+= DIAG2 V1c; clone exact at the fork).
+
+Result under the registered rules: **FORCED32_DELAYED_ONSET**. B0 reproduces the corner mode (box max > 1 at step 838, tangent
+non-finite at 1196). B32fork stays suppressed (slope ~0 through step ~1200) and then grows again in the same corner: box max > 1 at
+1216, magnitude gate at 1261, persistent growth declared at 1300, slope 0.046 / 0.039 decade/step (B0: ~0.10), reaching 9e9 by step 1500
+with primal and tangent finite; mode localised in the corner (energy fraction 0.9999). The onset is delayed ~1.45x and the rate roughly
+halved, but the mode is not removed. B32fresh (forced-32 from step 0) grows from step 838 as fast as B0 (registered classification
+DIFFERENT_MODE, evaluated at an isolated body-side spike at step 445; descriptively its growth starts at (6;70;51), outside the
+registered box); fork x fresh reading: unstable x unstable, so the DIAG2/3 200-step suppression was a delay/transient. Primal differences
+B32fork vs B0 are small (u 3.7e-6 rel L2, p 2.3e-3, drag 4.2e-5, downforce 8.5e-5) but forced-32 is not an AD fix.
+
+No bridge value, no FD-08 comparison, delta unset, no GRAD-03 verdict, reverse untouched, six flags false, no Float64 run; the horizon
+was not extended and the 8740-step bridge was not run. Next step is a user decision: per the registered expectation the delay result
+argues against Path A (adopting fixed32 as candidate semantics) and for Path B (keep the original semantics; decompose the corner
+mode: BDIM / conv_diff boundary closures, x-min/y-min/z-max coupling = DIAG5); Float64 stays low priority.
+Evidence: `docs/evidence/grad03_g2_diag4_forced32_horizon_2026_10_09/`.
+
+## #23 G2-DIAG5: one-step gain of the corner tangent, registered result R4_INCONCLUSIVE (2026-10-09)
+
+DIAG1-DIAG4 showed that the D0 corner tangent grows from step ~838 in the AD of the implemented map and that forced-32 Poisson only delays it. G2-DIAG5 was
+the pre-registered last local diagnostic (freeze, two independent reviews with all findings applied before the run; CPU, Float32, Dual width 1, one process
+per state x group): re-evaluate the one-step map at stored T4 states (steps 900 and 1000) and ask where the one-step gain is made (E1 stages/terms), whether
+the AD tangent agrees with a finite-amplitude response of the implemented map (E3, eps 1e-6..1e-2, ||eps t||_inf = eps, persistent state (u incl. ghosts, p),
+Delta t = CFL(u)), whether a derivative-convention counterfactual at the nonsmooth QUICK/median limiter (E4: value unchanged, partials tie-averaged) removes it,
+whether a finite perturbation grows over 40 steps (E5, variants A/B/C), and how it reacts to +-1 ulp noise (E6).
+
+Registered result: **R4_INCONCLUSIVE** in both states (the bounded No-Go of the CURRENT long-window forward-AD qualification programme, not a statement about
+full-field AD in general). All mechanical gates passed. R2 was not testable (the corner box has branch flips at every eps, 3% at 1e-6); R3 failed (AD never agrees
+with the finite difference); R1 failed on the registered conditions (mismatch is O(1) already at eps 1e-6 so it does not grow with the flip rate; the tie-averaged
+derivative removes 88-89% of the mismatch but its relative L2 error 0.126/0.157 is above the 0.10 agreement threshold; S1000's 40-step AD rate is below +0.02).
+
+Post-hoc descriptive observations (not part of the classification): the finite-amplitude one-step gain in the corner box is 0.53-0.59 (S900) / 0.53-0.55 (S1000) for
+every eps 1e-6..1e-2 and for variants B and C, while the baseline AD gain is 1.33-1.39 / 1.44-1.49; the tie-averaged derivative gives 0.586 / 0.538. Over 20 steps the
+finite perturbation decays (2.08 -> 0.0053) while the baseline AD tangent grows (2.08 -> 1240); the tie-averaged AD decays like the finite response. The gain is made by
+the (i=1, j=1) advected-field term of conv_diff through the limiter. The AD tangent pattern changes by ~60% under +-1 ulp noise on the primal, the finite response
+by 0.1%. A genuine finite-perturbation instability (R3) is not observed. The tie-averaged surrogate is not the derivative of the implemented map; adopting it would be
+a different gradient contract with its own pre-registration (GRAD-03 work, not a DIAG).
+
+No bridge value, no FD-08 comparison, delta unset, no GRAD-03 verdict, reverse untouched, six flags false, no Float64 simulation, no T4 run. Next step is a user
+decision: (a) as registered, stop the exact-AD programme and pivot to #47 STEP-01 and #48 LOWDIM-01, or (b) additionally pre-register an investigation of the
+tie-averaged derivative as a separate gradient contract.
+Evidence: `docs/evidence/grad03_g2_diag5_one_step_gain_2026_10_09/`.
+
+## #47 STEP-01: finite-step secant oracle, result STEP01_RECORDED (2026-10-09)
+
+STEP-01 measured the response of the Candidate C operator to finite design steps of 0.1-0.5 h (2.5-12.5 mm) along the four FD-08 directions (D0, D1, D2, P1; 5 steps x +-)
+and two combined directions (D0+P1, D1+D2, +-0.3 h, renormalised to max SDF displacement 7.5 mm). Pre-registered (freeze, two independent reviews with all findings applied),
+47 runs on three T4 kernels (A 21, B 21, C 5 states; each kernel has its own baseline), the unchanged FD-08 per-state Julia job, source `d7bd1fda`. The three baselines are
+byte-identical to FD-08's `baseline_v17` force CSV. Primary quantity: the centered secant g_sec = [R(+s)-R(-s)]/(2s) with eta_even = |R(+s)+R(-s)-2R(0)|/|R(+s)-R(-s)|.
+This is not a gradient qualification; no flag, FD-08 verdict, delta or GRAD-03 verdict changes.
+
+Registered result: the centered secant keeps its sign and the sign of FD-08's g-hat through 12.5 mm for all 8 direction x response series (30% agreement radius 12.5 mm for
+7 series, 10 mm for D0 drag; agreement radii are descriptive, g-hat is the Model-A local slope and 5 mm+ is outside its calibrated range). eta_even exceeds 1 at 2.5 mm for
+several series (D0 downforce 1.37 -> 8.75 at 12.5 mm): the even (curvature) part, which scales with s^2, dominates the odd part. Combined directions: D1+D2 is additive within
+0.8-25%, D0+P1 is strongly non-additive (130-450%).
+
+Post-hoc description: the one-sided responses of the steps an optimizer would take do not follow the sign of g-hat for the downforce-increasing side in any of the four directions
+(already at 2.5-5 mm), while the drag-decreasing side does through 12.5 mm; the even part is negative for every series and step. The origin of the even part is untested
+(possibly physical curvature, possibly the loss of the signed-distance property under phi + eps*d). For #48 LOWDIM-01 this means the step-size contract has to rest on
+accept/reject of the actual one-sided primal response and on curvature, not on the centered slope; reinitialisation and the use of combined directions need their own decisions.
+Next step is a user decision (#48 is not started).
+Evidence: `docs/evidence/step01_finite_step_secant_2026_10_09/`.
+
+## #48 LOWDIM-01: fixed four-direction low-dimensional capability, result LOWDIM_ACCEPT (2026-10-09)
+
+First LOWDIM-01 trial on a fixed four-direction basis (D0, D1, D2, P1; the FD-08 directions). The coefficient gradient was the STEP-01 centered +-2.5 mm downforce difference
+(hash-bound, proposal only); the proposal direction c = g/||g|| (Euclidean) was renormalised to max|dphi| = s; line-search candidates s = 1.25, 2.5, 5.0, 7.5 mm and two reverse
+controls (1.25, 2.5 mm; never accepted) were evaluated by actual primal runs on one T4 kernel (unchanged FD-08 per-state job; baseline byte-identical to FD-08's baseline_v17).
+Acceptance used only the actual responses and hard gates: downforce gain > 3e-5 N, drag not above baseline + 3e-5 N, clearance >= 0.15 m, masks, solid-cell component count,
+smoothed volume within +-10%, narrow-band median | |grad phi| - 1 | <= 0.10 (no reinitialization: #28 is unqualified); predictions were reference only. Pre-registered (freeze, two
+independent reviews with all findings applied), source `4c99143c`.
+
+Registered result: **LOWDIM_ACCEPT**. The 1.25 mm candidate was accepted: downforce +4.05e-4 N (+0.12%), drag -1.7e-4 N, volume -2.1%, Eikonal median 0.019, all gates passed. 2.5, 5.0
+and 7.5 mm were rejected (downforce -5e-5, -3.4e-3, -1.0e-2 N; 7.5 mm also failed the volume and Eikonal gates). The reverse controls lowered downforce (-1.2e-3, -3.2e-3 N): the odd part
+of the response matched the FD-based linear prediction within 3% and 0.2%, the even part (curvature) is negative and scales with s^2 (-4.0e-4, -1.6e-3 N), so a single step along this
+direction can gain at most about 4e-4 N (post-hoc fit: zero at 2.5 mm, maximum at 1.25 mm).
+
+This is a capability statement for a fixed four-direction basis (one trial, one flow grid, deterministic Float32 T4 runs, T2 time-weighted force); not a full-field gradient, not OPT-01 (#30;
+replacing it needs a separate phase-plan supersession), not a general descent direction, not grid-independent downforce. No flag, FD-08 verdict, delta or GRAD-03 verdict changes.
+Next step is a user decision: iterate from the accepted state, widen the basis, handle curvature, or address reinitialization (#28).
+Evidence: `docs/evidence/lowdim01_four_direction_capability_2026_10_09/`.
+
+## #49 LOWDIM-02A: flow_32 cross-grid check of the LOWDIM-01 accepted step, result STAGE_A_CONSTRAINT_FAIL (2026-10-09)
+
+The LOWDIM-01 accepted state (+1.25 mm along the fixed four-direction proposal) and its -1.25 mm reverse control were re-evaluated on flow_32 (200x96x72) with a baseline, a baseline
+repeat and a descriptive +2.5 mm state (one T4 kernel, five runs; flow_32 copy of the XFID per-state job; host recomputation with the flow_32 force scale). Pre-registered (freeze, two
+independent reviews with all findings applied), source `972fcce9`. The flow_32 baseline force CSV was byte-identical to the W4 v17 round-2 flow_32 baseline and the repeat was byte-identical.
+
+Registered result: **STAGE_A_CONSTRAINT_FAIL**. +1.25 mm: downforce +7.31e-4 N (+0.20%; flow_24: +4.05e-4 N), reverse control -1.09e-3 N, geometry gates passed, but the drag change was
++5.4e-5 N against the registered allowance 3e-5 N (the nominal flow_24 floor; the byte-identical repeat measured no flow_32 noise), so the registered conditions were not all met. Descriptive:
+the odd part is 1.13x and the even (curvature) part 0.45x of flow_24, so the sign and size of the first-order response carried over while the curvature roughly halved; +2.5 mm gains +1.2e-3 N on
+flow_32 (flow_24: -5e-5 N), i.e. the useful step size is grid dependent. The verdict is not re-read after the fact; Stage B is not registered.
+
+One direction, one step, one window: not GRID-01 (#26), not grid-converged or physical downforce, not a gradient qualification, not OPT-01 (#30). No flag, FD-08 verdict, delta or GRAD-03
+verdict changes. Next step is a user decision (Stage B with an explicit post hoc drag rule, a flow_32 drag-resolution measurement first, or another direction).
+Evidence: `docs/evidence/lowdim02a_flow32_cross_grid_2026_10_09/`.
+
+## #26 GRID-01: four-direction cross-grid secants, result FEASIBLE_CONE_FOUND (2026-10-09)
+
+The registered flow_32 baseline plus four exact STEP-01 directions at +-2.5 mm (nine T4 states) completed in kernel
+`ramhachi888/cfd-opt-sdf-grid01-a/2`, source `ea320dc5`. Amendment 1 replaced only the pre-solver CUDA probe's unavailable JSON3
+with Julia Base JSON output after v1 failed before any state. Original freeze and failed attempt remain historical; analysis used
+`prerun_freeze_amend1.json` (SHA `522b409b75e9ab8579603770850683bde336fc010977a3916147fab7cdadf431`). DONE exists, ERROR is absent,
+all 43 manifest files and nine state identities/host force recomputations passed, and the baseline is byte-identical to W4 flow_32.
+The analyzer passed --check before exactly one --write; retained analysis SHA `ec00ed9afe4f44926dd40ff1e87f303dd9baf89195b19cb550103606beedb69c`.
+
+Registered solver-free result: **FEASIBLE_CONE_FOUND**, main t*=0.500260963 N/m and L1-sensitivity t*=0.456190830 N/m. At a spatially
+normalized 1.25 mm step the main raw downforce predictions are +3.74755e-4 / +4.94438e-4 N (flow_24 / flow_32); sensitivity lower
+bounds are +3.44300e-4 / +4.59704e-4 N, above the registered 3e-5 N gain floor. Both proposal families meet their corresponding
+linear drag constraints; the main proposal alone does not promise nonpositive drag under the sensitivity model. All six proposal
+solutions have verified exhaustive branch/KKT certificates. No new proposal state, geometry qualification, or actual CFD step was run.
+
+All eight component comparisons are resolved under the frozen GRID-01 contrast rule: downforce D1 and drag D0 flip sign; the other
+six preserve sign. Raw coefficient-vector cosines are 0.983904 for downforce and 0.278773 for drag, norm ratios 1.205829 / 0.892767.
+The D1 positive flow_32 centered secant does not imply a one-sided gain (both +-2.5 mm states lose downforce). Single-grid constrained
+main t*/unconstrained downforce-norm retention is 99.79% / 64.18%; the cross-grid worst-objective/single-grid objective ratios are
+56.88% / 73.35%, distinct from achieved per-grid slopes and spatially normalized predictions. LOWDIM-01's raw first-order drag slope
+is +0.019493 N/m on flow_24 but +0.221831 N/m on flow_32. These are finite-step first-order hypotheses, not accepted primal responses.
+
+Fixed four-direction basis, Re80, +-2.5 mm, [80,120] only; nominal flow_24-derived floor, flow_32 noise unmeasured. Not grid convergence,
+physical downforce, gradient qualification or OPT-01. No flag, FD-08 verdict, delta or GRAD-03 verdict changes; reinitialization none,
+shape_update_allowed=false. #26 remains open: the first optimization grid is not decided. Stop after recording; the feasible branch
+permits only a user decision about separately preregistering a two-grid actual-primal line-search with reverse controls. No new issue,
+CFD, basis expansion, curvature model, #30 supersession or Stage B is authorized. The separate uncommitted #29 GEOM-01 track is untouched.
+Evidence: `docs/evidence/grid01_cross_grid_secant_2026_10_09/` (Japanese note, saved analysis/raw output, amended freeze, post-run command
+record, SHA256SUMS and validation logs/failure-ID comparison); `tests/test_grid01_evidence.py` independently reconstructs the saved
+numerical evidence and verifies existing certificates without rerunning the production analyzer.
+Validation: six retained-evidence tests passed; full pytest 2114 passed, 37 failed, 23 skipped. The 37 failure IDs exactly match
+the preserved pre-run baseline (zero new failures; not an all-pass suite); compileall passed. Scoped artifact attributes preserve raw
+console/traceback trailing whitespace without changing authenticated output bytes or source whitespace policy.
+
+## LOWDIM-03: approved bounded two-grid actual-primal trial (2026-10-10)
+
+The user approved the separately preregistered continuation from GRID-01's saved
+L1-sensitivity proposal: one canonical baseline and three signed pairs at
+0.625/1.25/2.5 mm on each of flow_24 and flow_32 (14 runs, two independent T4
+kernels). Implementation/input preflight is in progress; no LOWDIM-03 CFD result
+exists at this checkpoint. The proposal is fixed, no GRID-01 analysis or convex
+subproblem is rerun, and the same seven SDF geometries are used on both grids.
+The strict actual rule is Δdownforce>3e-5 N and Δdrag<=0 on both grids, with the
+existing five bounded LOWDIM geometry gates. Reverse pairs are diagnostics only.
+Select the common positive step with maximum worst-grid actual gain; exact ties
+use the smaller step. The nominal floor/L1 sensitivity model does not establish
+statistical uncertainty or physical drag nonincrease. This is a bounded capability
+trial, not a trust-region/filter optimizer or grid/gradient qualification.
+Terminal/integrity failure forbids analyzer --write, automatic repair or retry.
+Stop after recording; no secant rebuild, second iteration, basis expansion,
+reinitialization, #49 Stage B or #30 supersession. All qualification flags and
+shape_update_allowed=false remain unchanged; the GEOM-01 track stays separate.
+Registration: `docs/evidence/lowdim03_dual_grid_primal_2026_10_10/prerun_note.md`.
+
+### Post-measurement Amendment 1 result (2026-10-10)
+
+The 14 registered CFD runs were not rerun. Attempt 1 remains an integrity-failed
+analysis (`LOWDIM03_INCOMPLETE`); it was not retroactively converted into a pass.
+After an analyzer-only correction from the wrong C-order to the registered
+Fortran-order device-roundtrip SHA expectation, independent static review and a
+new analysis freeze were recorded. The immutable saved outputs passed one
+`--check` with zero integrity failures, followed by exactly one `--write`.
+
+The formal bounded result is `LOWDIM03_ACCEPT`, selecting 1.25 mm under the
+registered largest-minimum-grid-gain rule. At that step, flow_24 computed
+Δdownforce `+2.09216e-4 N` and Δdrag `-1.30094e-4 N`; flow_32 computed
+Δdownforce `+3.87199e-4 N` and Δdrag `-6.30537e-5 N`. The flow_32 drag
+prediction is inside the registered ±3e-5 N small-drag margin, so its computed
+sign is not expected to be noise-resolved. Reverse pairs and model comparisons
+remain diagnostic only. This result is limited to the registered direction,
+two grids, and three-step ladder; it is not physical downforce, grid convergence,
+gradient, or optimizer qualification.
+
+All six qualification flags remain false, `selected_delta` remains unset,
+reinitialization remains `none`, and `shape_update_allowed=false`. No subsequent
+iteration, secant rebuild, basis expansion, Stage B work, #30 supersession, or
+new CFD run was started. During pre-freeze review, a summary excerpt exposed
+per-state force fields to the reviewer; no result-blindness claim is made. The
+reviewer reports no interpretation or comparison of those values. Full
+provenance, actual/reverse/model diagnostics, this disclosure, and validation
+are recorded in
+`docs/evidence/lowdim03_dual_grid_primal_2026_10_10/amendment1/amendment1_note.md`.
+The amendment source commit is `b88ea35b6cecf1252afaf873e43153ee58b6e6d9`,
+and the analysis freeze SHA-256 is
+`c8b17f6666b66274784a40e825ce17d58c2224e9cc165d6af5abd9e083c7e893`.
+Full pytest was `2177 passed, 37 failed, 23 skipped`; the 37 failure IDs match
+the pre-amendment baseline exactly (zero new failures). Compileall passed.
+
+## LOWDIM-04A (#51): pre-registration blocked by the existing P22 sharp-volume gate (2026-10-11)
+
+LOWDIM-03 Amendment 1's selected experimental parent was reconstructed from its
+registered baseline and direction. Its Float32 Fortran-order phi SHA-256
+`b02dc49c39c3e8895befd5a95ae007ccf04fb2582064e8d79bd0f4c57c55286e`, state
+SHA-256 `81d24fe4a66704ed469f560b7396b4c0cbf6810ef8082e710f002145ca6e3a65`, and
+serialized state NPZ SHA-256
+`0ce3256b0f3e5c919caeb2ac1b36f1a33838f34c767c091cb89bda0234ac750b` match the
+retained LOWDIM-03 result inputs/output summaries.
+
+The existing P22 `sdf_native_smoothed_volume_v1` sharp reference is
+`V_phi_0=0.12612500000000004 m^3`. On the v17 design grid, the reconstructed
+parent has registered center-sampled sharp volume `0.12925000000000003 m^3`, a
+positive residual of `0.003125 m^3`. Its smooth residual is `g_V=-0.3029303`,
+but P22 explicitly says the one-sided smooth value can undercount sharp volume
+and cannot replace the independent sharp-feasibility gate. Thus this
+experimental parent is not feasible under the current sharp reference. This
+does not revise or retroactively reject `LOWDIM03_ACCEPT`, which was a bounded
+capability result and not a P22 shape-update acceptance.
+
+The eight proposed `D0/D1/D2/P1 × ±1.25 mm` states pass the existing five LOWDIM
+geometry preflight gates, but all retain the parent's same absolute sharp
+volume above the P22 limit. The solver-free pre-registration record is
+`docs/evidence/lowdim04_dual_grid_local_model_2026_10_11/pre_registration_blocker.json`
+(SHA-256
+`494c393f0d4662935256fa05083b3dac35e9a441157d20102323edd96371978c`). No
+LOWDIM-04A preregistration/source freeze, subproblem verdict, Kaggle kernel, or
+CFD run was created. No contract, threshold, or qualification flag changed;
+this is a pre-registration blocker, not a LOWDIM-04A terminal experimental
+verdict. Issue #51 remains open pending a compatible registered volume
+reference/parent decision. #26 remains open because no first-step flow grid was
+selected.
+
+## P22–v17 volume semantic bridge audit: INCONCLUSIVE (2026-10-12)
+
+The solver-free audit reproduced the exact registered v16 reference with the current P22 hard evaluator. The retained canonical v17 baseline and LOWDIM-03 selected parent both measure `0.12925000000000003 m³`; their hard-volume difference is zero. #51 directly used the authoritative evaluator. This excludes a different-volume-measure explanation and does not assign the v16→v17 difference to the selected step. However, strict source-geometry resampling failed to reproduce the retained v17 field; a separately saved diagnostic has three nonzero near-surface sign differences. Under the predeclared numerical-drift rule the terminal classification is **INCONCLUSIVE**, and LOWDIM-04A remains blocked. No volume limit, contract, parent, qualification flag, or execution gate changed; CFD runs and Kaggle submissions are zero. Review the investigation record before separately authorizing any mapping diagnosis, contract migration, or restart. See [audit report](evidence/p22_v17_volume_semantics_bridge_2026_10_11/audit_report.md), [classification](evidence/p22_v17_volume_semantics_bridge_2026_10_11/classification.json), and [validation](evidence/p22_v17_volume_semantics_bridge_2026_10_11/validation.json). The existing pre-registration blocker and LOWDIM-03 result remain historical records.
+
+## SRCMAP-01 (#52): current source mapping algorithmically nondeterministic (2026-10-12)
+
+The separately frozen, solver-free diagnosis completed 21 full-field jobs and one
+local analysis without reruns. Terminal classification is
+**SOURCE_MAPPING_ALGORITHM_NONDETERMINISTIC**: identical current runtime/input/code
+produced v17 registered bit-difference counts `4,0,4,0,0`; the two observed v16 controls were
+exact (finite observations only). Unsigned distances were stable within the current environment. Observed
+production calls used the outer try path, while randomized inner ray-containment
+retry changed signs; the three fixed local retry vectors demonstrate sign
+sensitivity at all three historical near-edge nodes. Historical Oct11/Oct12
+runtime/path identity and historical cause remain unresolved. Chunk/order and a minimum dependency
+bundle were diagnosed without adopting a remedy or claiming an individual
+dependency cause. See [diagnostic report](evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostic_report.md)
+and [classification](evidence/srcmap01_v17_reproducibility_2026_10_12/classification.json).
+The original bridge remains INCONCLUSIVE, P22-v1 is unchanged, P22-v2 is not
+registered, and LOWDIM-04A/#51 remains blocked. No parent, threshold,
+qualification or execution gate changed; this diagnosis has
+`selected_delta=null`, `shape_update_allowed=false`, CFD runs 0 and Kaggle
+submissions 0. Stop at the diagnosis record; no automatic migration or restart.
+
+
+## SRCMAP-02 (#53): deterministic signer qualification stopped INCONCLUSIVE (2026-10-13)
+
+The solver-free attempt froze 32 full-field jobs at SHA256
+`58fe2853fe2b913b82555bd4a5cbcefd2b6fcf93740e88c3c644e9c893d0d707`.
+Official libigl 2.6.3 pseudonormal (preselected A) and winding-number control B
+passed the formal 42-point analytic fixture set. The first current canonical
+v17 pseudonormal job then detected an exactly zero libigl returned scalar with
+strictly positive separate closest-point unsigned distance. The frozen zero
+rule stopped the attempt: **SRCMAP02_INCONCLUSIVE**, campaign incomplete,
+1 attempted / 0 complete retained fields / 31 unattempted / 0 reruns.
+The failed process raised before array persistence, so conflicting-node count,
+coordinates, A/B field agreement, repeat/chunk/order/environment identity and
+new deterministic v16/v17 volumes are unavailable. No tolerance/tie rule was
+added and no target query was repeated. See [stop report](evidence/srcmap02_deterministic_signer_2026_10_13/diagnostic_report.md),
+[raw classification](evidence/srcmap02_deterministic_signer_2026_10_13/classification.json)
+and [validation](evidence/srcmap02_deterministic_signer_2026_10_13/validation.json).
+SRCMAP-01 (#52) was closed as a completed nondeterminism diagnosis with no
+qualified remedy; its evidence and the prior INCONCLUSIVE bridge are preserved.
+No signer is qualified/adopted. P22-v1 and production mapping/dependencies are
+unchanged; P22-v2 remains unregistered; LOWDIM-04A/#51 remains blocked.
+CFD runs 0; Kaggle submissions 0; qualification flags unchanged;
+selected_delta=null; shape_update_allowed=false. Stop at this recorded result;
+additional measurement or contract work requires a separate user decision.
+
+## SRCMAP-03a (#54): P22-v17 boundary-sign invariance CERTIFIED (2026-10-13)
+
+The solver-free certificate (freeze
+`8eabccd3dbe4b67e26852e9581f5b4f8696f4bac2147cc481ff9bdaa463cab1e`; attempt 1 stopped INCOMPLETE in the preflight
+before any measurement and was handled as Amendment 1) classifies
+**P22_V17_SIGN_INVARIANCE_CERTIFIED** for the retained v17 baseline lattice and source STL only: 5370 boundary-ambiguous
+nodes (|phi| < 1e-6, gap ratio 1.05e6); outside-band signs independently certified numerically by a generalized winding
+number (380,015 nodes, 0 mismatches); for every sign assignment of the ambiguous nodes (exhaustive per-cell enumeration
+through the production `_corner_mean`) no h-cube centre changes sign, so the P22 hard mask and count (8272) are
+identical; the five registered LOWDIM geometry gates keep their pass/fail classification for the baseline and one retained
+parent by explicit bounds; 19 retained variants agree. See [report](evidence/srcmap03a_sign_invariance_2026_10_13/diagnostic_report.md),
+[classification](evidence/srcmap03a_sign_invariance_2026_10_13/classification.json) and
+[validation](evidence/srcmap03a_sign_invariance_2026_10_13/validation.json) (full pytest: same 48 known failures, new 0).
+Independent pre-run (three rounds) and post-run reviews are retained. This does **not** resolve source-mapping
+nondeterminism, qualify a signer, establish the correctness of any sign inside the band, or cover other STLs, lattices,
+candidate states, CFD, or physical/continuum volume. P22-v1 and production mapping/dependencies are unchanged; #53 stays
+OPEN as the unresolved signer question; #51 remains blocked pending the separately recorded P22-v2 registration stage.
+CFD runs 0; Kaggle submissions 0; selected_delta=null; shape_update_allowed=false.
+
+## P22-v2 (#55): v17-lattice discrete volume contract registered (2026-10-13)
+
+[`sdf_native_volume_semantics_v2_2026_10`](evidence/sdf_native_volume_semantics_v2_2026_10.json) registers the integer
+constraint `N_phi <= 8272` on the registered v17 design lattice, referenced to the hash-pinned pre-LOWDIM v17 baseline artifact
+(not to the LOWDIM-03 parent), with a thin `sdf_native_smoothed_volume_v2` wrapper that reuses the v1 primitive and refuses every
+other lattice. It is a **representation-specific discrete constraint, not a physical or continuum volume constraint**. The decision
+record ([record](evidence/p22_v2_registration_2026_10_13/decision_record.md)) supersedes the migration proposal's precondition
+and reference definition (item-by-item table) and reclassifies source-mapping reproducibility, which stays UNRESOLVED (#52, #53),
+as non-blocking for the hard count of this artifact only, on the strength of the SRCMAP-03a certificate. Baseline, LOWDIM-03
+parent (re-measured) and the eight recorded LOWDIM-04A perturbation states (from recorded volumes, not re-derived) are all exactly at 8272 (zero slack: the hard count is active and
+integer-quantized; equal count does not mean equal volume). P22-v1 and its limit are unchanged and remain the historical authority for
+the v16 lattice. **#51 stays blocked** pending a separate decision and preregistration; no CFD, Kaggle or shape update;
+selected_delta=null; shape_update_allowed=false.
+
+## LOWDIM-04A (#51) Stage A: LOCAL_FEASIBLE_CONE_FOUND under the linear model (2026-10-13)
+
+The preregistered (non-blind, freeze `c0532d145f2b6a8813a3ca0372b8bc4148c01944ee0920622cedc8331aa53b43`) local dual-grid model at the accepted LOWDIM-03 parent ran once: nine states per grid (parent plus D0/D1/D2/P1 at +-1.25 mm), 18 CFD runs on two Kaggle T4 kernels. The fresh parent
+runs were byte-identical to the retained LOWDIM-03 s1.25 mm force CSVs on both grids; all identity, manifest and budget checks passed; every state is at the lattice count N = 8272 (P22-v2; this constrains no physical volume).
+Registered result: **LOCAL_FEASIBLE_CONE_FOUND** (main t* 0.258 N/m, L1-robust t* 0.201 N/m, predicted 1.25 mm downforce gains 2.0e-4 N flow_24 and 5.7e-4 N flow_32 under the linear model; one of sixteen components, flow_32 drag P1, unresolved).
+The registration was non-blind and disclosed that FOUND was near-certain and says little about the gain. All sixteen even parts are negative (cause untested) and the flow_24 ones are larger than the disclosed 42% expectation; a descriptive, unregistered diagonal estimate puts the flow_24 gain of the solution near +2e-5 N against +1.7e-4 N linear, with sign and size not established, so the linear FOUND is not a gain forecast. See the
+[report](evidence/lowdim04a_stage_a_2026_10_13/diagnostic_report.md), [analysis](evidence/lowdim04a_stage_a_2026_10_13/lowdim04a_analysis.json) and [validation](evidence/lowdim04a_stage_a_2026_10_13/validation.json) (full pytest: the same 48 known failures, new 0).
+Not established: any gain, drag nonincrease, volume feasibility beyond the count, grid convergence, #26, #30, optimizer or second-iteration progress. No flag changed; selected_delta=null; shape_update_allowed=false. Stage B (an actual-primal ladder) needs its own preregistration; #51 stays open until then.
+
+## LOWDIM-04 Stage B (#51): LOWDIM04B_ACCEPT at the smallest step, bounded capability only (2026-10-14)
+
+The preregistered (non-blind, freeze `0cc5a112fd98b81e80b4471afa94ab33b5d9d824f554e5fb76688c7dba3537ed`) actual-primal ladder along the Stage A robust solution ran once: parent plus steps 0.3125/0.625/0.9375/1.25 mm and two reverse diagnostics, 14 CFD runs on two Kaggle T4 kernels; the fresh parent runs were again byte-identical to the retained LOWDIM-03
+ones; all states at the lattice count N = 8272. Registered result **LOWDIM04B_ACCEPT**, selected step 0.3125 mm, the only step meeting the rule (strictly more than 3e-5 N downforce gain and a computed drag change <= 0 on both grids): flow_24 +3.57e-5 N (drag -5.7e-5 N), flow_32 +1.15e-4 N (drag -1.15e-5 N, within the small-drag margin).
+The 0.625 mm step missed on flow_24 by 0.34 micro-newton (+2.97e-5 N) and the full Stage A step **loses** flow_24 downforce (-5.2e-5 N) although the linear model predicted +1.7e-4 N; the descriptive diagonal-curvature estimate agrees only at the quarter step. The accepted gain is about 0.011% of the 0.33 N downforce, below the Stage V resolution;
+the rule has no multiplicity control, so the selected gain is likely biased upward and is not an estimate of the true gain; the flow_24 gains at 0.3125 and 0.625 mm are indistinguishable (a threshold artifact, not a ranking), the diagonal estimate's miss at large steps has an untested cause, and the flow_32 drag decrease is mostly even-part. See the [report](evidence/lowdim04b_stage_b_2026_10_13/diagnostic_report.md), [analysis](evidence/lowdim04b_stage_b_2026_10_13/lowdim04b_analysis.json) and [validation](evidence/lowdim04b_stage_b_2026_10_13/validation.json) (full pytest: the same 48 known failures, new 0).
+Not established: a physical gain, drag nonincrease, grid convergence, #26, #30, optimizer or second-iteration qualification. No flag changed; selected_delta=null; shape_update_allowed=false. Per the plan's exit rule the LOWDIM-04 track ends here and #51 is closed.
+
+## GRID-01 (#26) closed: DUAL_GRID_REQUIRED_FOR_FIRST_UPDATE (2026-10-14)
+
+A solver-free synthesis of the retained cross-grid evidence (no new CFD; [decision record](evidence/grid01_closure_2026_10_14/decision_record.md), [synthesis](evidence/grid01_closure_2026_10_14/synthesis.json)) closes #26 with a conservative policy: flow_24 may propose the downforce direction, drag-feasible proposals need
+both grids' secants, flow_32 is a mandatory confirmation, **acceptance of a first update needs both grids** (strictly more than 3e-5 N downforce gain and a computed drag change <= 0 on the same candidate, plus the geometry gates), and the step size comes from the actual dual-grid ladder, never from a flow_24 linear model. What the data show robustly is that flow_24 alone is insufficient:
+5 of 9 retained states measured on both grids get opposite accept/reject verdicts (4 with the floor lowered; correlated trials from three direction families); the drag secant vectors of the two grids are nearly unrelated (cosine 0.28 at the baseline, 0.10 at the parent) and the downforce vectors agree in direction (0.98, 0.86) but differ in magnitude (flow_32/flow_24 1.2 and 2.1). W4 shows flow_24 to 32 changes of 6.8% (drag)
+and 8.4% (downforce): convergence is not established and no grid is declared the truth. The rule costs about 3.3 times a flow_24-only evaluation per candidate. Interpretation, not a #26-specific user grant (see the record). All flags unchanged; shape_update_allowed=false.
+
+## Execution order after LOWDIM-04 (2026-10-14; supplements section 11, which remains the order authority)
+
+With LOWDIM-04 and #26 closed, the next work is the contract around a first shape update, in this order: **#31** (topology policy, solver-free; the user's partial research decision is already recorded, the event permissions are decided in its own record), then **#29** (GEOM-01 hard-gate bundle: 3 PASS and 10 UNMEASURED at the last canonical diagnostic, the actual zero-level STL export still fails on the baseline and D1/D2),
+then **#28** (reinitialization: the Godunov2 candidate failed the thin-box and canonical-v16 gates, a new contract is a research task and reinitialization is a post-update operator, not a prerequisite of any finite-difference result), then **#25** (production gradient backend, which depends on the open #23 CPU reverse and #24 CUDA outcomes). #30 (OPT-01) still depends on #25 and #26 to #29: there is no separate
+"first accepted update" gate before them, and the LOWDIM-03/04 parent remains an experimental state under false flags. No further LOWDIM cycle is planned (exit rule recorded in the LOWDIM-04 Stage B entry).
+
+
+## #31 research topology policy registered (2026-10-14; supersedes the "#31 event choices pending" lines above)
+
+`sdf_topology_policy_v2_research` is registered ([decision record](issues/31_event_policy_decision_2026_10_14.md), `docs/evidence/sdf_topology_policy_v2_research_2026_10_14.json`): detached components allowed, root connectivity optional, birth/split/merge/whole-component deletion permitted at policy level only (read from the user's 2026-10-13 blanket words as an interpretation, not a #31-specific grant). A detected birth is rejected unless separately qualified, and a topology-fixed step passes `allowed_events=()`; only solid components are judged (cavities and tunnels are not).
+Physical solid width, void width, inter-component gap and the source ProblemSpec binding stay unresolved (`None`, never inferred), so no admissibility PASS exists yet; a resolved policy would be a new registration. v1 and every v16/v17 state binding are unchanged, and `geometry_gates.py` is still typed to v1 (moving it is #29 work). All flags false; `shape_update_allowed=false`.
+
+## #29 GEOM-02 closed (2026-10-15): all geometry gates measured on v17
+
+Every GEOM-01 gate is measured on the v17 baseline and the LOWDIM-03 parent against a registered research profile (lattice representability width/gap limits, not physical): 12 pass, `near_zero_gradient_band` fails on both as predicted
+([record](issues/29_geom02_result_2026_10_14.md)). The failing nodes are mostly kinks of an accurate distance field at one-node-thick edges (63/106 baseline, 149/154 parent), which a reinitialization cannot remove. Next remains #28, re-scoped by this: reinitialization can bound Eikonal drift, zero-level and volume after updates,
+but the gradient-floor rule needs its own decision before #30 (keep it and change the representation, or a profile separating kinks from degeneracies). All flags false; `shape_update_allowed=false`.
+
+## #28 REINIT-04 (2026-10-15): registered Godunov2 operator NOT bounded on v17; first OPT-01 contract excludes reinitialization
+
+The unchanged operator failed on the LOWDIM-03 parent (displacement 0.65 edges, smoothed drift 6.65%, idempotence 0.45h, GEOM-02 distance property 0.012 → 0.122, surface integrity) and on the tie-bearing baseline
+([record](issues/28_reinit04_result_2026_10_15.md)). Decision (interpretation of the 2026-10-13 delegation): #30's first contract does not include reinitialization (its dependency is conditional); #28 stays open as off-critical-path research.
+Next: the gradient backend cluster (#23 → #24 → #25), which is #30's actual blocker. All flags false.
+
+## #23 GRAD-TA1 (2026-10-15): tie-averaged forward-AD also BLOCKED
+
+Official `GRAD_TA1_INCOMPLETE` (frozen analyzer τ-type check), Amendment 1 `GRAD_TA1_BLOCKED`: all four directions' tangents exceed 1e30 at step 700 of 8,740 at one near-ground wake cell, onset in steps 300–400,
+earlier than exact AD and at a different place ([record](issues/23_grad_ta1_result_2026_10_15.md)). No derivative was compared with FD-08; no backend qualified; #23 open. The derivative route of the solver map is blocked in both conventions tried; the next step is a #25/#30 roadmap decision.
+
+## #30 OPT-01 v1 closed (2026-10-15): prospective trial REJECTED by the both-grid rule
+
+Decisions D1–D3 (with Amendments 1–2) registered: OPT-01 v1 uses a dual-grid φ-space subspace step (supersedes #25 for this step only; the 2026-10-14 sentence "#30 still depends on #25 … no separate first accepted update gate" is superseded), GEOM-02 profile v2 (crossing-slope rule, report-only for secant probes), no reinitialization, and amends the LOWDIM exit rule for one contract-testing cycle.
+Stage A FOUND, Stage B `OPT01_V1_REJECT`: all four proposal steps passed every gate; flow_24 downforce +3.5e-6 N at 0.3125 mm then negative while flow_32 gained +1.3e-4 to +4.7e-4 N ([record](issues/30_opt01_v1_result_2026_10_15.md)). The outcome was recorded as more likely before submission. #30 is closed (Done: unambiguous verdict). The binding constraint is grid disagreement in the downforce response; next directions (grid study, re-genesis, basis) are open and undecided. All flags false.
+
+## GRID-02 (#56): grid dependence of the downforce response, result GRID02_RECORDED (2026-10-16)
+
+The seven OPT-01 v1 Stage B geometries (same phi bytes) were run on flow_48 and flow_16 (native placement) and, as a rigid-translation placement control (body shifted by (h/2, h/2, 0) through `W4_CANONICAL_ORIGIN_M`, z unshifted so the control is partial), on flow_24 and flow_32: 29 runs, five Kaggle T4 kernels, one submission each. Pre-registered (freeze `67eab367…`, source `807157d0`; a three-angle adversarial plan review and two source reviews with all findings applied, including a factor-2 error in the attainable-gain formula and the run count). Plan: `docs/grid02_plan_2026_10_15.md`; evidence: `docs/evidence/grid02_trend_2026_10_16/`.
+
+Registered result: **GRID02_RECORDED** with classifications `GRID02_ALIGNMENT_PARTIAL_OR_MIXED` (G = b_32n - b_24n = 3.96e-4 N/mm; m24 = +0.56, m32 = -1.11) and `FINE_CONTINUES_TO_FLOW32` (r = 1.007; `STABLE_32_TO_48` true, but false if the central-difference slope replaces the fitted one). Slope b (N/mm) of the forward-step downforce response: flow_16 +4.1e-4, flow_24 +0.94e-4, flow_32 +4.9e-4, flow_48 +4.9e-4: not monotone in n; flow_24 alone is low, flow_32 and flow_48 agree. The placement shift moved the flow_24 slope toward flow_32 by 56% of the gap, moved the flow_32 slope away (+4.4e-4 N/mm), changed the flow_32 parent downforce by -9.6% (+1.7% on flow_24) and made flow_24's response positive at every forward step. By the registered decision map (PARTIAL_OR_MIXED) the next step is a second placement-phase study before any rule change; nothing further is started here.
+
+One parent, one direction, one window; the 3e-5 N floor is a nominal flow_24 value and the flow_48 fit residual (3.7e-5 N) exceeds it. Not established: grid convergence or GCI, a true grid, physical downforce or drag, a gradient, an optimizer, an amendment of the dual-grid rule, a full alignment control. No flag changed; selected_delta=null; shape_update_allowed=false.
+
+## 2026-10-16 roadmap re-baseline (supersedes the execution order above where they conflict)
+
+A whole-history review (2026-07-12 to #56; six reading subagents, three adversarial reviews: facts, strategy, feasibility) is recorded in [roadmap_review_2026_10_16.md](roadmap_review_2026_10_16.md); the one-page current position is [STATE.md](STATE.md).
+User decisions (verbatim): 「二層化はOK、期限なし、OpenFOAMは残してT2-0進めて」 — the two-tier process is approved, there is no deadline, OpenFOAM is kept (reversing the 2026-10-02 removal direction) and the T2-0 FSAE-physics feasibility track starts. The other open points were decided as interpretations of the 2026-10-13 delegation (review §0): the minimum gain is set from the measured paired-difference uncertainty with the E2 rule I_f > 2·max(S_b, S_c) at M3a registration; the pre-committed NO-GO branch is a smooth-advection-scheme WaterLily test, then the T2-0 evaluator; work stays within the Kaggle quota.
+
+**Diagnosis (evidence-scoped).** The optimizer sees response differences. Absolute grid/placement shifts (8-10 %) largely cancel in differences, but the slope of the same direction varies 50-100 % across flow grid and placement (GRID-02: 0.94e-4 to 9.27e-4 N/mm), a multiplicative error that larger steps do not remove; flow_24 is the outlier and flow_32 ≈ flow_48. Wide-support smooth changes agree across solvers (XFID D0 downforce within 2 %), local ones do not (D1). The AD failure cause is unidentified. The architecture's central hypothesis (`architecture_effectiveness_2026_09.md:160`, gate E2) has never been tested on an optimized shape; the 2026-09-12 Brinkman surrogate test was negative.
+
+**Principles.** R1 decisions on paired same-phase differences with measured σ_d (E2 rule); R2 wide-support smooth modes, rigid/analytic transforms preferred; R3 optimize on flow_32, confirm on flow_48, flow_24 demoted for decisions; R4 common random placement phases within a generation, finalists on the full phase set; R5 screening plus a small response surface (no gradient backend on the critical path; no CMA-ES/BO); R6 a common campaign harness before new campaigns.
+
+**Execution order.** M0 re-baseline (done) → T2-0 (parallel, Kaggle CPU: 2D/2.5D ground-effect wing section RANS, k-ω SST and γ-Reθ, timing, published-data comparison, DAFoam feasibility) and M1 (HARNESS-01 common runner/schema/build-freeze-smoke-verify with a mandatory smoke and replay equivalence; JOB-02 per-state placement) → M1' MODE-01 (wide-support volume-neutral modes, solver-free prescreen) → M2 UNC-01 (σ_d) → M3a FID-01 (fidelity go/no-go without an optimizer) → M3b SCREEN-01 + XV-01 (only if GO) → M4 evaluator/product-scope decision → M5 (#32 topology, #33 loop re-scoped, #40 CLI). Gradient issues: #23 stays the single research issue (off critical path, no further DIAG rounds); #24, #25, #39 are closed as not triggered or fail-closed No-Go; #28, #53, #20 parked with re-open triggers; #41 is decided by this entry.
+
+**PROC-01 two-tier evidence process (approved).** Every result carries, in addition to its evidence class (§3), a registration status:
+- `EXPLORATORY_COMMITTED`: committed scripts and output hashes with a short note (what was visible before, claim ceiling). It never feeds a qualification flag, a threshold, a gate or `shape_update_allowed`, its claim ceiling is capability or descriptive numerical evidence, and it is listed in the append-only `docs/exploratory_index.md` including failures. An exploratory finding becomes citable only after a registered re-run on disjoint data. Uncommitted work is not evidence.
+- `REGISTERED_FROZEN` / `REGISTERED_AMENDED`: pre-registration, freeze, independent review (at most one three-angle plan review and one source review per study), fail-closed, analysis written once. Required for M2, M3a, M3b and for any claim used in a decision.
+Evidence-class discipline (§3) and the claims limits of AGENTS.md are unchanged. All qualification flags stay false; `shape_update_allowed=false`.
+
+**2026-10-16 addendum (compute backend, user decision).** User (verbatim): 「今回はkaggleのt4を使っているけど、gpu貸出APIとかでコスト削りつつできるのはわかっているのでバックエンドは必要になった段階で切り替える判断をしたい。まだ全面切り替えはしたくないが」 — Kaggle T4/CPU remain the execution backends; a switch to a rented-GPU API is decided only when needed. Triggers to raise it: weekly GPU need above the Kaggle quota, round-trip latency dominating a milestone, or a run class Kaggle cannot hold. The user also confirmed T2-0 (high-Re evaluator feasibility first) after asking why a wing section is studied: it is a validation case for the evaluator, not a change of product (see STATE.md).
+
+## 2026-10-19 B1 = v18 analytic plate; v18 genesis and MODE-01 v18 prescreen (#60, M1'), M2 draft (#61)
+
+User decision on B1 (verbatim, #60 comment 2026-10-19): 「v18 analytic plate (Recommended)」 — the M2 parent and mode basis are built on a new analytic parent instead of the OPT-01 v1 parent. Plan: [v18_mode01_plan_2026_10_19.md](v18_mode01_plan_2026_10_19.md) (rev. 2 after three independent adversarial reviews, numerical/governance/strategy; every finding and its adoption is in its §8), committed before the runs.
+- **PROC-01 staging.** S0 shape probes, S1 genesis and S2 prescreen are `EXPLORATORY_COMMITTED`; the registered tier starts at M2 (#61), whose freeze pins the v18 bytes, the generator, the modes and amplitudes and re-derives gate cleanliness on the harness bytes. The v18 shape was tuned on the same gates (disclosed in the plan); S2 pass rates are not evidence of generalisation.
+- **v18 parent** ([evidence](evidence/v18_genesis_2026_10_19/README.md)): exact SDF of a stadium section (t = 0.1153 m, round edges) extruded over |y| <= 0.4375 m with flat tips on the cell-centre plane, on the unchanged v17 lattice and masks; bounding box, ride height (0.65 m) and every measurement-contract item unchanged. Changed: body (staircase → analytic plate), span 0.900 → 0.875 m, incidence 21.07 → 20.395 deg, N_phi 8272 → 7544, smoothed volume equal by construction. P22-v2 is **applied unchanged to a second parent and is not binding by design** (slack 728); the 10 % smoothed-volume band (base: v17 baseline) carries the volume constraint. Passes all 13 GEOM-02 v2 gates.
+- **MODE-01 v18** ([evidence](evidence/mode01_v18_prescreen_2026_10_19/README.md)): `V18_BASIS_READY` — six distinct wide members heave 31.1 mm, pitch 3.1 deg, camber 19.7 mm, reflex 29.3 mm, twist 1.1 deg, sweep 11.3 mm and the control surge 31.1 mm, with support probes (Gaussian normal offsets sigma 0.4/0.125/0.05 m) and D0 (outward only). dihedral and twist_anti have no gate-clean point; thick_chord is excluded by the support rule. The binding gate on the smooth body is `min_feature_width` (one-cell occupancy nubs at the 2.4 h edges; 40-50 % of sub-cell placements fail); a width rule for smooth bodies must be decided before any optimiser runs on v18 (M3).
+- **M2 (UNC-01)**: pre-registration draft [unc01_preregistration_draft_2026_10_19.md](unc01_preregistration_draft_2026_10_19.md) (paired same-phase differences, P = 6 phases on flow_24/flow_32 and 4 on flow_48, flow_32 to optimise and flow_48 to confirm, sigma_d and the E2 inputs S_b, S_c and S_d, about 11.4 GPU h with a 13 h cap, stopping rules); not frozen; the freeze waits for JOB-02 (#59) and the TODOs listed there.
+All qualification flags stay false; `shape_update_allowed=false`.
+
+## 2026-10-19 T2-0b registered feasibility result (#57)
+
+T2-0b ran under PROC-01 `REGISTERED_FROZEN` (registration `docs/t20b_registration_2026_10_19.md`, SHA-256 fa06aa4e...0595; one three-angle plan review, one source
+review, three development smokes; frozen source 941e8a76; kernels `cfd-opt-sdf-t20b-wf` 60/60 and `cfd-opt-sdf-t20b-lm` 4/4 completed, one submission each).
+Verdict **T20B_NO_GO** (scope: 2D single-element Tyrrell 026 section, Re_c 4.6e5, moving ground, OpenFOAM v2512 SA wall functions, med30 primary).
+Failing gates: G2 (Cl maximum at h/c 0.179, 1.412 vs 1.396 at 0.134; mean |e| 4.24 % nominal, 5.45 % with the +0.15 deg incidence shift), G3b (h/c 0.09 incidence
+derivative med30 0.055 vs fine30 0.082 per deg), G6 (at h/c 0.134 the +-0.25 deg change, 0.0327, is below 5 sqrt(2) sigma_mesh = 0.0341). Passing: G2d 0.288,
+G3a 4.46 %, G3c 0.236, G4 (SST/SA derivatives within 2 %), G5 (about 15 s to the force plateau). Labels: LM_DATA_AGREES (cycle means within 4.8 %, limit cycle with
+8-9 % Cl std at 0.134/0.09, about 3.5 h per case), ADJ_FAILED (frozen-turbulence adjoint SIGFPE after 1322 iterations), DAFOAM_NOT_ATTEMPTED (T2-0's "DAFoam
+feasibility" item was narrowed to the adjointOptimisationFoam test by the registration: R5, #23 parked, #66 does not require an adjoint). Thresholds were set
+after T2-0a was visible; T2-0a's own numbers stay non-citable. Consequences: #66 item 1 (high-Re evaluator) is NO-GO on this basis; the pre-agreed next actions are a
+wall-resolved/transition evaluator study or another validation case (G2) and a fixed-topology morphing mesh study (G3b/G6). Evidence:
+`docs/evidence/t20b_registered_2026_10_19/` (README.md, note.md, analysis.md, verdict.json, freeze.json, SHA256SUMS). All qualification flags false;
+`shape_update_allowed=false`.
+
+## JOB-02 (#59) closed (2026-10-19): per-run flow-grid placement in one kernel, byte-identity gate JOB02_GATE_PASS
+The harness gains an optional run `name`, so one kernel can run the same state at several (x, y) placements of `W4_CANONICAL_ORIGIN_M`; z (ride height) must stay one value per kernel; campaigns without names are unchanged (run name = state); Julia jobs and the measurement contract are unchanged. Engineering gate (capability evidence, not a PROC-01 scientific registration; spec frozen with hashes before the run, one independent source review with no blockers): on Kaggle T4 the parent ran at the native and the GRID-02-shifted origin in one flow_24 and one flow_32 kernel, and all four force CSVs equal the historical references byte for byte (OPT-01 v1 Stage B native parents `e62b6bab…`/`282aceed…`, GRID-02 shifted parents `471ea410…`/`667127c5…`). Evidence: `docs/evidence/job02_gate_2026_10_19/`. The gate was run ahead of UNC-01 (#61) rather than folded into its smoke, because its references are the existing parents and do not depend on the B1 parent choice (#60); the UNC-01 smoke only has to check its new (v18) parent. M1 is complete; with B1 decided (v18, entry above) the M2 freeze no longer waits for JOB-02. All qualification flags stay false; `shape_update_allowed=false`.
+
+## 2026-10-20 WIDTH-RULE (exploratory): smooth-body width rule for M3 (UNC-01 draft §9 TODO 0, #62, #64)
+Solver-free study, `EXPLORATORY_COMMITTED`. Plan: [width_rule_plan_2026_10_20.md](width_rule_plan_2026_10_20.md), rev. 2. Rev. 2 records one adversarial review (sonnet; numerical and governance angles; 13 findings, each with its decision) and was committed with the code before the run. The compute deviation (§9) was committed before the rerun. Evidence: [evidence/width_rule_2026_10_20/](evidence/width_rule_2026_10_20/README.md).
+- **Origin of the gate.** GEOM-02 `min_feature_width` (1.5h, guard h/4) is a lattice-representability limit, not a manufacturing or physical one. Its estimator binarises cells. The solver and the export use the trilinear phi.
+- **Decomposition.** No v18 state is physically thin: all are >= 103.8 mm thick and the SDF ridge is >= 90 mm. The registered estimator still fails:
+  - 1,089 of 1,824 v18 (state, sub-cell phase) pairs, always at exactly one cell (25.0 mm);
+  - at tips 890, leading/trailing-edge rounds 645 each, faces 370 (pairs containing each location);
+  - 190 of 200 optimiser-like basis combinations.
+  These failures are occupancy protrusions of 0.75–1.15 cells.
+- **Verdict `NO_CANDIDATE_MEETS_K1_K6`.** R3, the opening defect of the trilinear body (ball 0.75h, tolerance h), passes every v18 state, combination and round tip, and every thick synthetic shape. It fails every lattice-held thin slab, fin and slot. It misses:
+  - 6 draws of 0.5h necks whose represented body is two components;
+  - the OPT-01 v1 rim mismatch (zero level on frozen nodes; impossible on v18, whose frozen nodes have |phi| >= h/2);
+  - two thinned-slab states with SDF width 40–44 mm.
+  R1 fails K6 (phi units); R2 and R4 fail K1.
+- **Proposal** (not adopted; [width_rule_decision_2026_10_20.md](width_rule_decision_2026_10_20.md)):
+  - M3a keeps R0 with designs chosen R0-clean, R3 descriptive.
+  - M3b registers R3 plus a frozen-node margin precondition and the fixed-topology gates, with R0 reported alongside.
+  - The composite is validated in a registered run on disjoint data before any optimiser run.
+- GEOM-02 v2, its profile/policy and every record are unchanged. All qualification flags stay false; `shape_update_allowed=false`.
+
+## 2026-10-21 LOCAL-OF-01: OpenFOAM moves to local Docker, gated (U3 pipeline PASS_BITWISE, T2-0c pipeline FAIL)
+
+User decision (2026-10-20, verbatim): 「そうだね、タスクが重そうなのでopen formはローカルにしようか」 (open form = OpenFOAM): the OpenFOAM work of #61 (UNC-01 U3)
+and #57 (T2-0c) moves from Kaggle CPU to the local machine, after an environment gate as in #45; WaterLily stays on Kaggle T4. Registration
+[local_openfoam_env_gate_2026_10_20.md](local_openfoam_env_gate_2026_10_20.md) (one two-angle adversarial review, 28 findings adopted or partly adopted
+before the freeze; freeze `e8579970`), evidence [local_openfoam_env_2026_10_20](evidence/local_openfoam_env_2026_10_20/README.md).
+- Environment: linux/amd64 Ubuntu 24.04.5 noble image under Rosetta (the registered runners require amd64 and an Ubuntu-codename OpenCFD lock), OpenFOAM
+  2512.0-2 installed by the X3 formal runner's own hash-locked `install_openfoam`, image ID `sha256:e9ceb8a7…25eb` saved as a tarball, lock
+  `infra/local_openfoam/local_openfoam_lock.json`; wrapper `scripts/local_openfoam.py run` mounts the kernel at the `/kaggle` paths and runs it unchanged.
+- **U family `LOCAL_ENV_PASS_BITWISE`:** 14 X3 formal cases and the 8 v18 U3 smoke cases reproduce Kaggle's force histories byte for byte (v18 compared
+  blinded), deterministic across two local runs -> the U3 formal kernel runs locally (#61 amends; `REGISTERED_AMENDED` by the M2 session).
+- **T family `LOCAL_ENV_FAIL`:** locally deterministic (262/262 mesh files and all force histories identical across two runs), but 86 of 262 T2-0c
+  smoke geometries get other cell counts than on Kaggle; every geometry without displacement matches, the differences enter where the generator rotates
+  or displaces the contour in floating point (Python stack under Rosetta vs Kaggle's Xeon; diagnosis, not proven); T2-0b cases move by 0.2-0.75 % in Cl
+  (the remeshing sigma) -> T2-0c stays on Kaggle CPU. Also found: the gmsh generator writes numbering variants of one mesh from run to run, on Kaggle too
+  (7 of 41 geometries differ between the T2-0b and T2-0c smoke sessions), which bears on T2-0c's `REPLICATED_BITWISE` prediction (sent to #57).
+- A later T-family round would need Kaggle's Python numerical stack identified (unrecorded) or mesh generation kept on Kaggle; not decided here.
+All qualification flags stay false; `shape_update_allowed=false`.
+
+## GRIDRES-01 (2026-10-21): downforce response along the OPT-01 direction not grid-resolved (flow_24/32/40)
+
+Registered verdict `FLOW40_SIDES_WITH_FLOW24` (G_max 0), but flow_40 is a third value: slope +9.8e-5, +4.73e-4, −2.31e-4 N/mm on flow_24/32/40 and the differences grow with refinement; Poisson cap saturation negligible; parent reruns byte-identical
+([record](issues/gridres01_result_2026_10_21.md)). Hypothesis: mm-scale (sub-cell) shape responses are discretization-dominated on these grids. No GRID-01 amendment. Next direction (larger resolvable shape changes with volume-neutral directions, grid-phase ensembles, or re-genesis) is undecided. All flags false.
+Correction (2026-10-21, same day, after merging the integration branch): GRIDRES-01 was planned on a stale base without GRID-02 (#56). flow_40 is the only negative slope among seven grid/placement cells (GRID-02: all positive, flow_32 ≈ flow_48), and its per-sample maximum Poisson residual is 0.076–0.081 versus 3.9e-5 on flow_32 (250×120×90 coarsens poorly). The flow_40 result is treated as Poisson-confounded, the "discretization-dominated on all grids" hypothesis is withdrawn, and the 2026-10-16 re-baseline (R3) stands. Record updated.
+
+## UNC-01 (#61, M2) registered result: M2_COMPLETE (2026-10-21)
+Registration `docs/unc01_registration_2026_10_20.md` (supersedes the 2026-10-19 draft): one three-angle plan review (numerical 19, controls 22, strategy 11 findings; §12) and one source review (13 findings, one blocker; §13), freeze 1 (plan and sources, `14e42120`), freeze 1b (U01 harness), freeze 2 (`REGISTERED_FROZEN`, `ea6ffeba`), amendment 1 (per-kernel verification wrapper around the harness's own checks, because `harness.py verify` accepts only all kernels at once; no rule change, before any U01 value) and amendment 2 (`REGISTERED_AMENDED`: U3 in the local OpenFOAM v2512 Docker environment after the LOCAL-OF-01 gate `LOCAL_ENV_PASS_BITWISE`; user, verbatim: 「そうだね、タスクが重そうなのでopen formはローカルにしようか」). Main design changes from the draft (before any v18 force): surge ±31.1 mm replaced by an exact one-cell roll on flow_32 (null control); s125 dropped; L_mid and a second-family arm L2 added; Q2 made a descriptive ordering; Q3 a ratio-interval equivalence rule; U2 phases k = 1..6 / 1..4 disjoint from the U1 native phase; E2 on common phases.
+Run: U0 (smoke + gate) `U0_PASS` on flow_24/32/48; U1 (exploratory) selected L = pitch 3.1 deg, L2 = reflex 29.3 mm, L_mid = pitch 1.3 deg; U2 six Kaggle T4 kernels (12.2 GPU h, cap 13 h; flow_24 full by the budget rule); U3 256/256 local OpenFOAM cases. Analysis written once: `docs/evidence/unc01_2026_10_20/analysis.json`, summary `analysis.md`.
+Result (`M2_COMPLETE`): flow_32 sigma_d (downforce, P = 6) 2.1-5.5e-4 N for the wide arms (D0, pitch ±3.1, pitch 1.3, reflex), 3.9e-6 N for the 4.4 mm local bump, 2.1e-4 N for the roll; common phases remove 71-89 % of the parent's placement spread; sigma_d ~ |Delta|^0.48±0.11. Q2 `NOT_SEPARATED` (D0 is a weak, grid-sign-dependent downforce lever on v18). Q3: flow_32/flow_48 `EQUIVALENT` for pitch +3.1 (0.980 [0.962, 0.999]); `FLOW24_DIFFERENT` (D0 changes sign on flow_24). E2 (k = 1..4): S_b 0.0067, S_c 0.0101, S_d 0.0034 (downforce): literal minimum gain 2.0 %, paired 0.68 %. U3 retention 0.63-0.71 (downforce), 0.67-0.80 (drag) for pitch and reflex, signs agree; D0 downforce unresolved on OpenFOAM. The exact one-cell x-translation is not null (-1.65e-3 N on flow_32, -6.6e-4 N on OpenFOAM): an x-translation negative control must be judged against it. Coefficients for M3a are listed in `analysis.md`; M3a (#62) decides how it uses them. Claim ceiling: Re = 80 reduced laminar, one parent, one amplitude per state, in-plane phases only, uncertified geometry. No flag changed; `shape_update_allowed=false`.
+
+## 2026-10-21 T2-0c registered fixed-topology morphing and mesh series (#57): T20C_MORPH_NO_GO
+
+T2-0c ran under PROC-01 `REGISTERED_FROZEN` (registration `docs/t20c_registration_2026_10_20.md`, SHA-256 3e41e05f...4582; one three-angle plan review with 38 findings,
+one source review, three development smokes; freeze 2 at a8673a2d, source 6d11badf; kernels `cfd-opt-sdf-t20c-remesh` 82/82, `-morph` 93/93, `-shape` 96/96 completed on
+Kaggle CPU, one submission each). It is the pre-agreed T2-0b next action for G3b/G6: incidence changed by moving the nodes of one gmsh baseline (generator-side node
+mapping, fixed polyMesh topology checked by hash) instead of remeshing, on med30/fine30 and a new xfine30 (1 mm, two wall layers), gated at fine30 against xfine30.
+Verdict **T20C_MORPH_NO_GO**; next action row 5: steady SA-WF RANS does not settle on xfine30 at h/c 0.09 (no plateau after 15000 iterations, 12 SOLVER_FAIL) and at
+0.134 for incidence >= 0 (UNSTEADY, raw Cl std 0.7-2 %), so an unsteady/solver-convergence study comes before any mesh-dependence or morph conclusion there. At h/c 0.224
+every gate passes (morph sigma 24x below remeshing on fine30, +-0.25 deg resolved, the derivative agrees between fine30 and xfine30, between two base-mesh realisations and
+with the geometry-identical remeshed cases). At 0.134 the morph removes T2-0b's remeshing jumps (G6 passes on med30, T2-0b's failing case) but the morphed derivative depends
+on the base mesh realisation by 26-29 % (fine30 0.063 vs 0.086 per deg). The T2-0b G3b failure at 0.09 rested on a limit-cycling fine30 +1 deg case (found by the plan
+review; UNSTEADY class added). Labels: remeshing alone fixes neither G6 nor G3b on any level; the mesh-series and peak labels are not computable except at 0.224 (Cl falls in
+equal steps med30 -> fine30 -> xfine30), so this study makes no G2 routing decision and the T2-0b G2 action stays the default; shapes `SHAPE_NOT_RESOLVED` (camber and flap
+resolved and consistent at 0.224/0.134, heave not); `NOT_BITWISE` against T2-0b (36/41 identical meshes; gmsh writes renumbered variants run to run). Operational findings:
+the Kaggle output API returns HTTP 429 after about 2400 per-file downloads (the registered kernels pack cases/ into one tar); a local Docker OpenFOAM backend was gated by
+LOCAL-OF-01 and failed for this pipeline (platform-dependent gmsh meshes), so T2-0c stayed on Kaggle CPU. #66 item 1 is unchanged (NO-GO under T2-0b's G2); the M3a NO-GO
+branch is not triggered by this result. Cap from the registration: at most one more registered T2-0 study before a T2-0 summary is written as M4 input. Evidence:
+`docs/evidence/t20c_registered_2026_10_20/` (README.md, note.md, analysis.md, verdict.json, freeze.json, SHA256SUMS). All qualification flags false;
+`shape_update_allowed=false`.
+
+## 2026-10-22 T2-0d registered URANS and steady-solver controls (#57): T20D_NO_GO (the last registered T2-0 study)
+
+T2-0d ran under PROC-01 `REGISTERED_FROZEN` (registration `docs/t20d_registration_2026_10_21.md`, SHA-256 3f1b0ec1...79bb; one three-angle plan review with 40
+findings, one source review with 13 findings and 2 blockers fixed; development smoke 2 attempts; freeze 2 `freeze.json` 8f956a05...bfa, source commit 7a57fcc9;
+six Kaggle CPU kernels, one submission each, no loss). It is T2-0c's next-action row 5: an unsteady/solver-convergence study where steady SA-WF RANS does not
+settle. Per geometry the T2-0c steady case (S0) is followed by a time-averaged URANS (pimpleFoam, dt 1e-5 s, 6 T_c transient, 10 T_c window), 2 dt and dt/2
+controls, a relaxed steady control (SIMPLE 0.3/0.7) and, at two conditions, a second start state. Result: **T20D_NO_GO** (DATA `FAIL_INPUT`, DIFF `FAIL_VALUE`,
+cost `NOT_AFFORDABLE`). Q1: every valid URANS run (58) settles to a steady state, none oscillates; at the conditions where SIMPLEC 0.9 did not settle, relaxed
+SIMPLE does not converge either (`STEADY_URANS_ONLY`), the result does not depend on the start state, and the steady pseudo-means were 1.4-6.2 % above the settled
+values; the Q1 forms stay INDETERMINATE (two controls miss the 0.5 % agreement band; the PIMPLE and SIMPLEC steady limits differ by 0.25-0.91 %). DATA: h/c 0.09
++1 deg drifts through the window on fine30 and xfine30 (invalid input); the realisation noise of a remeshed Cl at 0.134 (sigma 0.020) exceeds the digitised
+curve's peak margin, so the peak test is non-diagnostic; xfine30 is 7.2 % below fine30 at 0.134; `G2_ACTION` UNDECIDED (T2-0b's G2 action stays the default until
+M4 decides). DIFF: on xfine30 at 0.134 the evaluator resolves +-0.25 deg (sigma 0.00058) and +-0.25 mm camber/flap, consistent between time steps and between two
+base meshes (G6u, GSu, G8u, GT134 pass), but G3bu against fine30 is unresolved by fine30's base-realisation spread. Cost: 92 min median, 134 min maximum per
+xfine30 evaluation against R5's 27.5 min. T2-0 ends with no registered high-Re evaluator GO (T2-0b, T2-0c, T2-0d all NO-GO); the T2-0 summary for M4 is
+`docs/t20_summary_for_m4_2026_10_22.md`. Operational: Kaggle allows 5 concurrent batch CPU sessions per account (the sixth kernel waited about 2.5 h).
+Evidence: `docs/evidence/t20d_registered_2026_10_21/`. All qualification flags stay false; `shape_update_allowed=false`.
+
+
+
+## 2026-10-22 evidence-based roadmap correction and issue plan
+
+This amendment follows the user's request to analyse the current state, revise the plan and file issues with reference to prior research. It controls execution order where the 2026-10-16 re-baseline or older entries conflict. The goal, evidence classes, PROC-01 and immutable result contracts are unchanged. Rationale, source limitations and alternatives: [review](roadmap_review_2026_10_22.md); current projection: [STATE](STATE.md).
+
+**Evidence checkpoint.** Integration `1467af14`: UNC-01 #61 is `M2_COMPLETE`; T2-0b/c/d are registered NO-GO outcomes and #57 is closed for the completed investigation. Separate public branch `claude/m3a-fid01` at `78e1e76f` has FID-01 freeze 3 and verified flow_32/flow_48 output; a final registered verdict was not confirmed. Do not import an incomplete result into a GO claim. GRIDRES-01's flow_40 is Poisson-confounded; the correction and R3 remain in force.
+
+**Order now.** Finish #62 under its frozen contract. In parallel prepare M4 #66's evidence packet and EVAL-VALID-01's source/condition matrix without new CFD. Preparing M4 is earlier than the old serial order; the final product/evaluator decision retains the applicable M3-result dependency. Literal E2 stays the tier-A threshold; M3b uses the gain mapping in #62's completed registration, not a post-hoc 0.68% replacement.
+
+**Branches.** `FID01_GO` -> a registered geometry-admissibility path (GEOM-03 if adopting R3 composite, otherwise a registered R0-clean fixed set) -> SCREEN-01 #64 -> XV-01 #65 -> M4 final. `FID01_NO_GO/WL_OF` -> the existing pre-committed bounded smooth-advection WaterLily study, filed and registered only when triggered; `OF_MESH` -> M4's reference/evaluator choice, not the automatic WaterLily intervention. Inconclusive/incomplete/invalid outcomes retain #62's classifications and retry cap.
+
+**Correct the unavailable fallback.** “Then move to the T2-0 evaluator” is replaced by “M4 chooses a new registered evaluator investigation, bounded scope or research NO-GO”. T2-0 has no adopted evaluator and its study cap is exhausted. A future high-Re evaluator requires a *new* registered GO: EVAL-VALID-01 first establishes the data and physics contract; conditional EVAL-PT-01 tests a fixed-mesh numerical/cost route. Neither is T2-0e or an automatic solver adoption. #67 remains blocked on this new evidence and M4's scope decision; #57's NO-GO results stay unchanged.
+
+**Geometry.** WIDTH-RULE remains exploratory and no candidate met K1–K6. #62 retains R0. Before #64 uses R3, GEOM-03 must freeze and validate R3 + frozen-node margin + fixed topology on disjoint shapes/seeds (solid and void features), with declared limitations and no retuning after the result. Failure returns to a registered R0-clean fixed set with its selection bias or to parent choice. It does not lower the old threshold or change manufacturing claims.
+
+**Research-informed candidates, unvalidated here.** Use official benchmark geometry/data for model and validation separation; identify the ground-effect experimental series before model tuning. Existing OpenFOAM v2512 `localEuler`/LTS is a candidate steady solver route, not a physical transient scheme. Reuse fixed mesh inputs and existing morphing; distinguish convergence, mesh-realisation, grid, model and extraction errors. References and access limits are in review §4. No new solver campaign, GPU measurement, threshold relaxation, optimizer, AD diagnostic campaign, paid compute or production gate was started/adopted by this documentation task. Existing local CPU/Julia fixtures invoked by the required full pytest are regression validation, recorded separately. All qualification flags remain false; `shape_update_allowed=false`.
+
+**Issue roles.** #63 projects the roadmap, #66 owns the final evaluator/product decision, #64/#65 own L1/L2, #67 owns conditional L3. New [EVAL-VALID-01 #68](https://github.com/ramhachi/CFD_opt_sdf/issues/68), [EVAL-PT-01 #69](https://github.com/ramhachi/CFD_opt_sdf/issues/69) and [GEOM-03 #70](https://github.com/ramhachi/CFD_opt_sdf/issues/70) carry the bounded missing work; the issue ledger links their filed records. #23 remains the sole off-path gradient research issue; #28/#20/#53 keep their reopen triggers. Exact source hashes, integrity checks and validation are in [the audit record](evidence/roadmap_review_2026_10_22/validation.json).
+
+## 2026-10-22 parallel preparation and primary-reference audit
+
+The user authorised continued work and parallel workers after inspecting active processes. This amendment permits independent source research and registration preparation in parallel; it does not alter frozen FID-01, allow a new CFD campaign, or bypass any registration/adoption gate. The previous amendment's FID outcome/cause branches remain controlling.
+
+**Active work.** A status-only snapshot at 2026-10-22 22:25 JST found FID-01 V1 672 completed case records, V2 52, and V3 5 of 9; four V3 simpleFoam processes were advancing. V3 partial result.json files are not finished kernels: only one of five V3 kernels had its host local_run finalisation. Images, limits, inputs and processes were preserved; no forces or final FID verdict were exposed by this inspection. New parallel work stays outside those outputs. [Runtime snapshot](evidence/parallel_preparation_2026_10_22/process_snapshot.json).
+
+**EVAL-VALID-01 #68 completed its bounded audit: REFERENCE_INADEQUATE for the existing absolute-Cl adoption reference.** The full Zerihan (2001) thesis was obtained and hash-pinned. All seven legacy Genua-figure points match primary Table 15 within 0.000919 Cl. Section 9.3.1 identifies pressure-integrated sectional Cl and limits it to qualitative trends, not quantitative absolute comparisons. This resolves the observable/source ambiguity without establishing total experimental/integration uncertainty; per-record trip remains unknown. Preserve all T2-0 inputs, thresholds and NO-GOs. The source/condition matrix, primary page anchors, two official alternative-case comparisons, B5 requirements and M4 packet are in [the reference audit](eval_valid01_reference_audit_2026_10_22.md).
+
+**XV-01 preparation.** [Registration requirements](xv01_registration_requirements_2026_10_22.md) separate dimensionless paired grid terms from placement SD in N; retain FID's final M3b gain mapping and secondary-label consequences; require a valid single-finalist V3 uncertainty/consistency plan and actual geometry/drag feasibility. FID's cross-design regression and G5 fidelity PASS cannot be copied as single-finalist uncertainty or constraint success. This is PREPARATION_ONLY; #62 GO and SCREEN's frozen finalist remain prerequisites. No new thresholds or XV retry permission were granted.
+
+**GEOM-03 preparation.** A [draft registration](geom03_registration_2026_10_22.md) now makes the sampled-width, frozen-node, and node-graph observables explicit, including boundary/void cases and independent-checker requirements. Existing source/policy/lattice metadata are hash-pinned. It remains DRAFT_FOR_REVIEW: exact fixture/mask bindings, K5 spanning-boundary/P1 semantics, non-SDF combination coverage, implementation and formal plan/source reviews remain before freeze. No held-out fixture or seed has been run. It grants neither GEOM03_PASS nor adoption into #64. Resource checks precede a frozen attempt; a waiting preparation is not an INCOMPLETE experimental result.
+
+**Concurrent-agent catch-up.** At 22:48 JST, remote heads, PRs, related issue bodies, every local worktree status and active Claude process directories were refreshed. Integration remained `1467af14`, FID `78e1e76f`, and PR #71 `e2f7b5f9`; no new remote update or related issue-body change was found. Both active Claude CFD worktrees had no tracked/nonignored uncommitted changes; ignored runtime artifacts and later agent edits are outside that statement. Preserve their ownership and refresh again before publication. [Catch-up record](evidence/parallel_preparation_2026_10_22/github_catchup.json).
+
+**Next authorised order.** Finish existing FID-01 under its contract. In parallel finish the bounded preparation inputs; M4 may use #68's negative reference result now. Selection of a new high-Re numerical study still belongs to M4 and a new registration, with no automatic T2-0e, solver switch, paid compute or threshold relaxation. Final evaluator/product choice retains the applicable M3 outcome dependency, including explicit recorded decisions after FID's own retry cap. All qualification flags stay false; shape_update_allowed=false. [Continuation validation](evidence/parallel_preparation_2026_10_22/validation.json).
+
+## 2026-10-23 FID-01 (#62, M3a) registered fidelity go/no-go without an optimizer: FID01_GO
+
+FID-01 ran under PROC-01 `REGISTERED_FROZEN` (registration `docs/fid01_registration_2026_10_21.md` rev. 3, SHA-256 4d692af6...1051; one three-angle plan review with 44 findings (§12a), one source review with 17 findings (§13); freeze 1 with engineering amendments 1-3 before the runs they govern (V3 contingency recorded at freeze 3, the Kaggle "[Private Notebook]" listing row exempted by a wrapper, V3 kernels of at most two cases), freeze 2 before the first formal run, freeze 3 (d_set, V3 contingency, flow_48 budget and campaign, V2/V3 criteria) before any V2/V3 or flow_48 run). Question: does a difference WaterLily (flow_32 placement-phase mean) shows as large enough to act on persist in body-fitted OpenFOAM on three meshes, on fixed pre-registered v18 designs (no optimizer)? Coefficients from M2; the literal E2 threshold (2.0 %, 5.363e-3 N) decides (tier A), the paired one (0.68 %) is the tier-B floor that sets the M3b minimum gain.
+Run: 16 designs (heave, pitch, camber, reflex, twist; combinations; three narrow bumps; all R0-clean, X1 STL gate) plus the roll negative control; WaterLily flow_32 phases 7-10 (four Kaggle T4 kernels, 8.5 h) and flow_48 phase 7 (one kernel, 4.4 h), all harness-verified; OpenFOAM v2512 locally (LOCAL-OF-01): V1 672 cases (16 mirror pairs, including the r = 4 export control), V2 52, V3 9, every case valid and converged, no rerun. Analysis written once (`analysis.json`, reproduced byte-identically), summary `analysis.md`.
+Result **`FID01_GO`**: tier A (8 designs, rigid/section/combination, 5 positive) passes every rule: same sign on V1, V2, V3; V1 retention 0.57-0.77 (M2: 0.63-0.71); V1-V2 spread inside 0.5 |m|; V3-on-V1 slope 1.086 [0.992, 1.181]; drag retention 0.58-0.87 where tested; geometry gates pass. Controls: x-translation reproduces M2 on both solvers (z 0.41, 1.45), STL export resolution r = 4 vs 8 insensitive. Secondary: `TIER_B_FAIL` (pure heave ±31.1 fails: retention 0.08 and an opposite sign on V1; heave -31.1 + pitch +0.7 and twist +2.3 pass), heave sub-label FAIL (heave moves the body against the never-phased z lattice; the WaterLily heave difference also changes by 0.62-1.49x between flow_32 and flow_48), `SUPPORT_UNTESTABLE` (no narrow design reached 0.68 %; N1 has the opposite sign on V1, descriptive), R3 confirmed for all six flow_48 designs (`R3_E2_EXCEEDED` on heave +31.1), aggregate slope 0.648, Kendall tau 0.85 (1.0 among positive tier A), S_d,OF 0.00634.
+Fixed for M3b (registration §8): minimum gain g_min = max(2 S_d, x*/|J_b,48|) = 2.70 % (x* = 7.184e-3 N, camber -11.3, the smallest passing difference above the largest failing tier-B design, heave +31.1); XV-01 uses the §6.3 rules, the §5 OpenFOAM procedure and the OpenFOAM minimum gain 2 max(S_d, S_d,OF) = 1.27 %; no mandatory flow_48 P >= 2 confirmation (R3 not challenged); no export-resolution obligation. How heave enters the M3b search is left to the M3b registration. Claim ceiling: Re = 80 reduced laminar vs laminar steady OpenFOAM on not-converged meshes, one analytic parent, registered amplitudes, in-plane phases, differences of pre-registered designs (not optimizer-selected ones). Evidence: `docs/evidence/fid01_2026_10_21/` (README.md, analysis.md, analysis.json, freezes, SHA256SUMS). All qualification flags stay false; `shape_update_allowed=false`.
+
+## 2026-10-23 GEOM-03 plan review and implementation
+
+The user requested the next thoroughly planned execution slice. The [concrete continuation plan](next_execution_plan_2026_10_23.md) is subordinate to this roadmap. FID-01 completed while this preparation was running: accept the owner-written FID01_GO at result b2314d9d/integration458e2df5, preserve its written-once analysis, and finish GEOM-03 source, independent checker and development validation. Do not treat preparation or software tests as a GEOM03_PASS. The previous FID outcome/cause/secondary-label branches continue unchanged.
+
+**Prospective design.** The [dated GEOM-03 protocol](geom03_registration_2026_10_23.md) replaces the unfrozen prior draft prospectively. It binds180 base rows:24 analytic controls,28 new non-SDF phi-space combinations,76 shape controls including a long thin fin and open/closed voids,8 margin/topology controls,3 diagnostics,40 finite-array slabs and1 historical replay. Two scale checks per177 scored rows give354 additional evaluations. Exact P1 margins, P2 overlap-based node events, Float32 R0 occupancy, morphology boundaries, masks/halos, seeds, disjointness and one-attempt budgets are declared before outcomes. These observations are sampled geometry; no continuous-topology, CAD/manufacturing or flow qualification follows.
+
+**Review and execution gate.** One formal plan review with numerical, governance and analytic-geometry angles returned NEEDS_FIXES; [findings and parent resolutions](evidence/geom03_2026_10_23/plan_review.json) preserve the unchanged reviewed snapshot. Engineering drafting overlapped that round, a recorded workflow deviation; final source integration must precede the single source review and regression validation. No registered fixture/seed has been executed, no study verdict is available, and no freeze or release is inferred from a completed plan review.
+
+**Launch dependency.** A held-out attempt requires completed reviews/validation, a parent-owned frozen registration, a hash-bound decision that the R3-validation or explicit M4-geometry branch is needed, and resource evidence: no active FID containers, load<=4 and sufficient memory within the existing3GiB study limit. Waiting consumes no attempt. One numerical child with numerical threads=1 and a lightweight own-child watchdog must enforce the cumulative2-hour/200-base-row limits including reconstruction/checker and downtime. Terminal results/stops are not retried. No partial FID force is an input or analysis source.
+
+**Checkpoint.** At2026-10-23 02:05JST, fetched integration1467af14, FID78e1e76f and PR#71 head73802a5b were unchanged; issues#62/#70 and PR metadata were unchanged. Four V3 OpenFOAM jobs remained active. Implementation integration and development validation are in progress; publication must refresh this checkpoint and record actual results. No new CFD/GPU/paid compute or production gate was adopted. All qualification flags stay false; shape_update_allowed=false.
+
+**Live handoff and selected next branch (02:47JST).** FID01_GO is now available, not inferred from a running job. It fixes the SCREEN gain at2.70% and XV OF gain at1.27%; pure heave fails as a secondary result, flow-grid R3 is confirmed (R3_E2_EXCEEDED reported), EX insensitive, support untestable. These do not validate geometry-width R3. Select GEOM-03's proposed R3-composite validation route prospectively because R0's known occupancy artefacts impede optimizer-like combinations. Retain all180 already-declared geometry rows and seeds, including heave-bearing combinations; no FID force drives fixture selection. After source review, full regression and source commit, prepare the parent-owned freeze/release and, only when resources pass, execute its one bounded CPU-only attempt. This extends the original implementation-only slice because its FID dependency completed during work. A waiting dependency/resource gate consumes no attempt. A complete valid GEOM03_NO_GO returns to the registered R0-clean/parent path; INCOMPLETE retains its counterexamples and finite stop, without retuning or automatic retry. SCREEN/XV need their own registrations; pure-heave handling and single-finalist uncertainty remain explicit decisions.
+
+**Source-review resolution.** The one formal source round found two P2 gaps: a child pre-input waiting gate consumed an attempt, and analytic/translation development oracles were missing. Both were corrected and verified by the same independent reviewer within that round ([record](evidence/geom03_2026_10_23/source_review.json)). Fresh preparation now has attempts0/start null; the attempt starts before input arithmetic, while resumed waiting retains the original budget. Final source passes25 known-development tests. Initial full regression passed3110 with73 skipped; the final regression after corrections passes3117 with73 skipped (604.17s). Compileall, explicit script compilation and own diff checks pass. Source commit/push, parent-owned freeze/release and launch resource gates remain next. No registered array or seed has yet been executed.
+
+**Concrete next registration work.** [SCREEN/XV preparation](screen_xv_preparation_2026_10_23.md) sets out the heave-fixed five-wide-mode proposal, exact gain/normalization choices, retained geometry/drag constraints, matched controls and finite phase/cost decisions. XV must resolve V2's pooled-design variance as well as V3's cross-design residual calibration. Fixed Halton shifts and iterative force windows do not automatically provide iid placement SE. Direct paired-shift80/96-case alternatives are unregistered proposals, not a compute launch or a new acceptance threshold. Existing FID/T2-0 verdicts and all qualification flags remain unchanged.
+
+**Parent-owned freeze (03:44JST).** Sourcece95612f is committed/pushed after all software checks. The [registration](evidence/geom03_2026_10_23/registration.json) SHA-256 eed4a83e6676d3d93df5f1e1ef288e58e8a6153b78be177a5e0951808f1264ea pins23 source files,8 review/validation records, git tree, ordered180 metadata definitions, seeds and exact runtime/platform. The [release](evidence/geom03_2026_10_23/execution_release.json) SHA-256 313a65716224f15e32a763dd7eebcc89b6863718f0d14315e53077f68c0fccb6 binds the owner FID analysis and selected R3-validation need. Both implementations validate the frozen metadata; no target input or seed has yet executed. Snapshot: no Docker containers, load2.94,12.28GB available-memory evidence. Publish these records before launch; the controller rechecks resources, then allows one serial CPU attempt,2h cumulative/3GiB observed RSS/180 base+354 K6. Terminal outcomes are immutable and not retried. This grants no R3 adoption or qualification.
+
+**Registered result (03:51JST): GEOM03_NO_GO.** The [terminal result](evidence/geom03_2026_10_23/run/results.json) and [human record](evidence/geom03_2026_10_23/result.md) complete the registered independent reconstruction/comparison checks for all534 records with no incomplete reasons; E2 remains a helper-only descriptive diagnostic whose numerical equality is not an acceptance condition. The attempt used attempt1/resume0,301.39s and906.39MiB observed peak child RSS. K1 52/52,K3 28/28,K5,K6 354/354,H0 pass. K2's W40_th1_q0 has12 represented thin-tip nodes but composite pass (solid opening defect0.935414h); K4's T1_th0_q0 gives inf/fail instead of pass/unmeasured. These two valid counterexamples determine NO_GO. All28 new combinations passing cannot override the failures; their R0 1pass/27fail is descriptive. All534 input NPZ and full rows/manifest/state/results are retained with byte hashes in a standard archive; no checker/analysis rerun was used to change the verdict.
+
+**Selected continuation after the finite stop.** Complete/close#70 for the bounded negative validation. R3 is not adopted; no radius/tau/refinement/label/case/seed repair or automatic second attempt follows. #64 proceeds through the previously declared R0-clean fixed-pool/parent path. Register that finite pool's joint-analytic construction/filtering, selection bias, matched manual/random controls, constraints, phase/cost budget and rank/insufficient-pool stopping rules before new force observations. Do not refill the pool based on poor forces or use XV feedback. [Concrete preparation](screen_xv_preparation_2026_10_23.md) retains the five-wide-mode/heave-fixed proposal and single-finalist V2/V3 gaps. FID01_GO and the2.70%/1.27% mappings stay unchanged; all qualification flags and shape_update_allowed=false remain unchanged.
+
+**Publication and issue reconciliation (04:18JST).** Result commitf5d3f990 is pushed with all534 input byte streams, complete registered outputs and a538-member integrity-checked archive. #70 is closed/completed with GEOM03_NO_GO; #63/#64/#65/#66 and PR#71 now point to this terminal result and the R0 continuation. PR#71 remains open against integration458e2df5; no merge or new SCREEN/XV CFD is part of this publication. The [GitHub readback receipt](evidence/geom03_2026_10_23/github_publication_sync.json) records exact bodies/states and publication scope.

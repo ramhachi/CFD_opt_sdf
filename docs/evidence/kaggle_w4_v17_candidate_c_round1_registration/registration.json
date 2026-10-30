@@ -1,0 +1,34 @@
+{
+  "backend_binding": "W4-C binds the exact backend identity of the host-verified W3-C round 3 PASS, including its observed host driver 580.178.04 (legacy W4 evaluator requires W3 result == prerequisite == W4 backend); a driver change between W3-C and W4-C runs would stop the run and need a new round",
+  "criteria_path": "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10.json",
+  "criteria_round": 1,
+  "criteria_sha256": "802f85bc4d1cf807b9474eceb773a48a6fc0349acf246080f97da7260c4984d9",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-v17-w4-candidate-c",
+  "immutable": true,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w4-v17-candidate-c",
+  "numerical_contract_preserved": true,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "registered_before_kaggle_submission": true,
+  "scope": "No solver run and no W4-C verdict; registration is not physics evidence.",
+  "source_commit": "2611a55a4096da309b29f729fc1363d3cc8e6e71",
+  "validation": {
+    "compileall": "PASS",
+    "diff_check": "PASS",
+    "dry_run": "registrar and dataset staging executed on real W3-C round 3 evidence",
+    "focused": "12 passed (candidate_c_w3_w4_source_prep)",
+    "static": "ruff F821 clean"
+  },
+  "w3_prerequisite": {
+    "criteria": "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round3.json",
+    "criteria_sha256": "0db63d6a3424e650c4953be3253692ca37acde6f0c60b7ae5ca2cc0169aa325a",
+    "result": "docs/evidence/kaggle_w3_v17_candidate_c_round3_result_2026_10.json",
+    "result_sha256": "ca8f420e455afbcaf41184097fe7c9246930fe57bc58f06f38f128ebc2a31f1d"
+  }
+}

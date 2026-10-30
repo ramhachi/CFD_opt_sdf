@@ -1,0 +1,24 @@
+{
+  "cpu_count": 4,
+  "cpu_model": "AMD EPYC 7B12",
+  "meminfo_first_line": "MemTotal:       32869444 kB",
+  "mode": "morph",
+  "pins": {
+    "data/t20/tyrrell026s_genua2009.dat": "ae5fa889e3090ff35e819f195f90111b9b16e990e51d99d8aa3999bcb2d10f83",
+    "infra/kaggle/kernel_openfoam_xfid_v16/openfoam_package_lock.json": "8bcf141db29d18800a55a70bca93175a37465ac18494e473efd32985317c7340",
+    "infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/openfoam_package_lock.json": "b5e59f8a7da34820fc3c6bda93b3524204dcaf4fa6e4f7f11d6c46ddddb66746",
+    "scripts/t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+    "scripts/t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+    "scripts/t20c_case.py": "156cd8416d3291a42704dc712f78ee62fef5ff9c60b5f552b3800d22a78bc5ad"
+  },
+  "python": "3.13.15 (main, Aug  6 2026, 11:06:22) [GCC 13.3.0]",
+  "runner_sha256": "3a3992f7cff46a2ec951b1972c686f73598296cf117d6f0e110affefd7c2daee",
+  "source_commit": "6d11badfabfda86a4c4934ecbbb6537884195449",
+  "uname": [
+    "Linux",
+    "30961322fac0",
+    "6.18.48+",
+    "#1 SMP Sun Sep 27 17:32:16 UTC 2026",
+    "x86_64"
+  ]
+}

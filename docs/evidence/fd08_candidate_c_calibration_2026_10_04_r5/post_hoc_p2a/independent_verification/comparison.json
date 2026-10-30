@@ -1,0 +1,47 @@
+{
+  "checks_by_section": {
+    "A1": 210,
+    "A1 count": 6,
+    "A2": 216,
+    "A2 n": 54,
+    "A2 spread": 18,
+    "A3": 90,
+    "A3 windows": 6,
+    "A3double": 540,
+    "A3double qref": 270,
+    "A3prime": 688,
+    "A4": 1290
+  },
+  "comparison_tolerance": {
+    "absolute": 5e-12,
+    "relative": 5e-12
+  },
+  "independent_dataset_hash_count": 89,
+  "independent_force_csv_verified": {
+    "matched": 47,
+    "present": 47
+  },
+  "independent_json_sha256": "5978c022eaac294c198b1970300615179eaff9cd8feb318b393de8edef7b4711",
+  "independent_runner_manifest_missing_files": [
+    "instantiate.log"
+  ],
+  "independent_state_result_verified": {
+    "matched": 47,
+    "present": 47
+  },
+  "max_abs_numeric_difference": 9.14823772291129e-14,
+  "max_difference_check": {
+    "abs_diff": 9.14823772291129e-14,
+    "independent": 4.285903877454207,
+    "label": "A2 spread/D1_filtered_seed11/downforce/50_micro_n",
+    "ok": true,
+    "primary": 4.285903877454116
+  },
+  "mismatch_count": 0,
+  "mismatch_counts_by_section": {},
+  "mismatches": [],
+  "primary_runner_manifest_missing_files": [
+    "instantiate.log"
+  ],
+  "primary_vs_independent_numeric_checks": 3388
+}

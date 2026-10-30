@@ -1,0 +1,226 @@
+{
+  "h4_correction": "DIAG1's mechanical H4 'refutes' used 'itmx reached' as a proxy; the stop test uses the primal residual only, so it says nothing about tangent convergence",
+  "kind": "grad03_g2_diag1_posthoc_addendum",
+  "ledger": {
+    "dt_tangent": {
+      "100": 0.13165917992591858,
+      "300": 0.053819917142391205,
+      "500": 0.049232710152864456,
+      "700": 0.04845976084470749,
+      "800": 0.048444658517837524,
+      "815": 0.04843518137931824,
+      "850": 0.04845214635133743,
+      "860": 0.04844594746828079,
+      "900": 0.09312786906957626,
+      "1000": 12753030.0
+    },
+    "dt_value_step_800": 0.3297393321990967,
+    "net_gain_step_871_start_to_end": 1.3082208263033848,
+    "poisson_iterations_one_from_step": 31,
+    "poisson_relative_residual": {
+      "100": {
+        "primal_relative_residual": 0.0011525241055257679,
+        "tangent_relative_residual": 0.02853322991468747
+      },
+      "300": {
+        "primal_relative_residual": 0.0010539962667749892,
+        "tangent_relative_residual": 0.022627913515155633
+      },
+      "400": {
+        "primal_relative_residual": 0.0010195662620408647,
+        "tangent_relative_residual": 0.01695880766049791
+      },
+      "500": {
+        "primal_relative_residual": 0.0010118277080334154,
+        "tangent_relative_residual": 0.0434807908866054
+      },
+      "700": {
+        "primal_relative_residual": 0.0010044170930357532,
+        "tangent_relative_residual": 0.04226395454415454
+      },
+      "800": {
+        "primal_relative_residual": 0.0010038512736593181,
+        "tangent_relative_residual": 0.04211564820201521
+      },
+      "845": {
+        "primal_relative_residual": 0.0010036761943819548,
+        "tangent_relative_residual": 0.023696277064305254
+      },
+      "849": {
+        "primal_relative_residual": 0.0010036763725940513,
+        "tangent_relative_residual": 0.0217623271765664
+      },
+      "850": {
+        "primal_relative_residual": 0.001003678745193757,
+        "tangent_relative_residual": 0.021083415278248065
+      },
+      "870": {
+        "primal_relative_residual": 0.0010037280891794524,
+        "tangent_relative_residual": 0.0208454560826906
+      },
+      "900": {
+        "primal_relative_residual": 0.001003629457923672,
+        "tangent_relative_residual": 0.01924724829732075
+      },
+      "1000": {
+        "primal_relative_residual": 0.0010035714706350914,
+        "tangent_relative_residual": 0.023959943958492335
+      },
+      "1190": {
+        "primal_relative_residual": 0.001003504409224319,
+        "tangent_relative_residual": 0.025824307362934642
+      }
+    },
+    "u_stage_chain_step_871": [
+      {
+        "max_abs_tangent_u": 6135.9736328125,
+        "ratio_to_previous_u_stage": null,
+        "stage": "pre_scale"
+      },
+      {
+        "max_abs_tangent_u": 13884.5537109375,
+        "ratio_to_previous_u_stage": 2.262811827725104,
+        "stage": "predict_bdim"
+      },
+      {
+        "max_abs_tangent_u": 13884.5537109375,
+        "ratio_to_previous_u_stage": 1.0,
+        "stage": "predict_bc"
+      },
+      {
+        "max_abs_tangent_u": 13884.5537109375,
+        "ratio_to_previous_u_stage": 1.0,
+        "stage": "predict_exitbc"
+      },
+      {
+        "max_abs_tangent_u": 8087.01708984375,
+        "ratio_to_previous_u_stage": 0.5824470312987615,
+        "stage": "project1_gradient"
+      },
+      {
+        "max_abs_tangent_u": 8087.01708984375,
+        "ratio_to_previous_u_stage": 1.0,
+        "stage": "project1_bc"
+      },
+      {
+        "max_abs_tangent_u": 22661.091796875,
+        "ratio_to_previous_u_stage": 2.8021570308457004,
+        "stage": "correct_bdim"
+      },
+      {
+        "max_abs_tangent_u": 11330.5458984375,
+        "ratio_to_previous_u_stage": 0.5,
+        "stage": "correct_scale"
+      },
+      {
+        "max_abs_tangent_u": 11330.5458984375,
+        "ratio_to_previous_u_stage": 1.0,
+        "stage": "correct_bc"
+      },
+      {
+        "max_abs_tangent_u": 8027.20849609375,
+        "ratio_to_previous_u_stage": 0.7084573477788669,
+        "stage": "project2_gradient"
+      },
+      {
+        "max_abs_tangent_u": 8027.20849609375,
+        "ratio_to_previous_u_stage": 1.0,
+        "stage": "project2_bc"
+      }
+    ]
+  },
+  "snapshots": {
+    "box": "i<12, j<8, k>=48 (0-based; ghost layers included)",
+    "energy": {
+      "900": {
+        "argmax_cell_0based": [
+          5,
+          3,
+          50
+        ],
+        "fraction_by_distance_to_nearest_outer_face_cells": {
+          "[0,3)": 0.056620645432069405,
+          "[16,40)": 1.287801184303326e-09,
+          "[3,8)": 0.9433785483603592,
+          "[8,16)": 8.049197704267507e-07
+        },
+        "fraction_in_box": 0.9996847206925595,
+        "primal_u_at_argmax": [
+          0.9999989867210388,
+          -0.0001813181588659063,
+          -0.00043387344339862466
+        ],
+        "x_line_through_argmax_normalised": [
+          0.0,
+          0.003,
+          0.027,
+          -0.533,
+          1.0,
+          -0.675,
+          0.203,
+          -0.119,
+          0.038
+        ]
+      },
+      "1100": {
+        "argmax_cell_0based": [
+          6,
+          3,
+          52
+        ],
+        "fraction_by_distance_to_nearest_outer_face_cells": {
+          "[0,3)": 0.23549319723201945,
+          "[16,40)": 2.165051143614254e-09,
+          "[3,8)": 0.7645058365309506,
+          "[8,16)": 9.640719789726346e-07
+        },
+        "fraction_in_box": 0.9997060244762029,
+        "primal_u_at_argmax": [
+          0.999995768070221,
+          -0.00018724691472016275,
+          -0.00026489776792004704
+        ],
+        "x_line_through_argmax_normalised": [
+          -0.003,
+          -0.026,
+          -0.154,
+          -0.591,
+          1.0,
+          -0.29,
+          0.179,
+          -0.086,
+          0.035
+        ]
+      }
+    },
+    "extrapolated_onset_step_from_500_level": 800.1607048749374,
+    "growth_rate_box_decade_per_step_900_to_1000": 0.09289981560125721,
+    "max_abs_tangent_u": {
+      "2": {
+        "in_box": 0.015156274661421776,
+        "outside_box": 59.54893112182617
+      },
+      "100": {
+        "in_box": 0.011948658153414726,
+        "outside_box": 397.0400695800781
+      },
+      "500": {
+        "in_box": 0.012884893454611301,
+        "outside_box": 20.984670639038086
+      },
+      "900": {
+        "in_box": 24273530.0,
+        "outside_box": 208609.234375
+      },
+      "1000": {
+        "in_box": 4.732760184428954e+16,
+        "outside_box": 435652021714944.0
+      },
+      "1100": {
+        "in_box": 3.176709369714944e+27,
+        "outside_box": 2.2209838359572134e+25
+      }
+    }
+  },
+  "status": "post-hoc exploratory; not part of the registered DIAG1 rules"
+}

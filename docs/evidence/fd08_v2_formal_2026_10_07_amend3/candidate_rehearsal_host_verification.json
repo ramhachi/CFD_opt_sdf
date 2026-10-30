@@ -1,0 +1,21 @@
+{
+  "all_pass": true,
+  "checks": {
+    "criteria_sha256_equals_registered": true,
+    "force_history_absent": true,
+    "no_DONE_or_result": true,
+    "runner_sha256_equals_bound": true,
+    "scientific_verdict_null": true,
+    "solver_started_false": true,
+    "source_commit_equals": true,
+    "source_input_count_44": true,
+    "states_25": true,
+    "status": true
+  },
+  "elapsed_kernel_seconds": 280.92835399300003,
+  "kernel": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3-pre-solver",
+  "kernel_version": 1,
+  "kind": "fd08_v2_formal_amend3_rehearsal_host_verification",
+  "rehearsal_kind": "exact_source_candidate",
+  "report_sha256": "a0a8782340578ba2bda7084be5cfe60c6e13d30e1e06e4422d9baef6fb1834af"
+}

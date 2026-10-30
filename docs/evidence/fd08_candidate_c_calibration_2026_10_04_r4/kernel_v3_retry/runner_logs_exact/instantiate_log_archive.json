@@ -1,0 +1,9 @@
+{
+  "compressed_path": "docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/kernel_v3_retry/runner_logs_exact/instantiate.log.gz",
+  "compressed_sha256": "c1b0bc004b0258b90ba61faf5186a7177ee6fdb420e7456031e2e78d5db5e615",
+  "path_in_runner_manifest": "instantiate.log",
+  "raw_bytes": 1749,
+  "raw_sha256": "8b703dc81374176b2039efb0436973fa57d1a44e8edfd740553009632251d68b",
+  "reason": "byte-exact solver environment log contains trailing whitespace; compressed to preserve raw evidence while keeping git diff --check clean",
+  "restore_command": "gunzip -c docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/kernel_v3_retry/runner_logs_exact/instantiate.log.gz > docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/result/fd08_calibration/instantiate.log"
+}

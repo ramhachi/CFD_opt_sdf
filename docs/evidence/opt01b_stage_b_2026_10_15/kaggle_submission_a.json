@@ -1,0 +1,24 @@
+{
+  "command": [
+    "kaggle",
+    "kernels",
+    "push",
+    "-p",
+    "infra/kaggle/kernel_opt01b_a",
+    "--accelerator",
+    "NvidiaTeslaT4",
+    "--timeout",
+    "10800"
+  ],
+  "evidence_class": "execution_provenance_not_measurement_result",
+  "exact_reference": "ramhachi888/cfd-opt-sdf-opt01b-a/1",
+  "exit_code": 0,
+  "freeze_sha256": "519d0356492a61c66c4aeb598f8ee29fd821d004f951f1c43f5e93adf5279075",
+  "frozen_pushed_commit": "cdd591d7b8f5535db4b3820e3e150284a37cd5f6",
+  "issue": 30,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-opt01b-a",
+  "kernel_version": 1,
+  "source_commit": "eedc51b61dcb63cf851968730b9f1069d3826917",
+  "stdout": "Kernel version 1 successfully pushed.  Please check progress at https://www.kaggle.com/code/ramhachi888/cfd-opt-sdf-opt01b-a",
+  "submitted_utc": "2026-10-14T22:18:38+00:00"
+}

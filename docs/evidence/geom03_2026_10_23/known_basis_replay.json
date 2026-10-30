@@ -1,0 +1,79 @@
+{
+  "schema": "geom03_known_basis_replay_v1",
+  "evidence_class": "historical_input_reconstruction_only_no_new_study_arrays_or_outcomes",
+  "source_commit": "73802a5bef333bce63cd8ff34644304371387a37",
+  "registered_seed_executed": false,
+  "parent_sha256": "29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a",
+  "parent_match": true,
+  "versions": {
+    "python": "3.12.13",
+    "numpy": "2.5.2",
+    "scipy": "1.18.1"
+  },
+  "rows": [
+    {
+      "mode": "heave",
+      "a_star": 31.1,
+      "expected_sha256": "e71fc989179f638666e875d77a082d453f2dfaeb28e6466b3c04f6ca2d152041",
+      "actual_sha256": "e71fc989179f638666e875d77a082d453f2dfaeb28e6466b3c04f6ca2d152041",
+      "match": true
+    },
+    {
+      "mode": "pitch",
+      "a_star": 3.1,
+      "expected_sha256": "b4c14e4eaa55d557058d84d6ae38b2b24dbbf33ca7ba56532a9ecc8ba6d863b2",
+      "actual_sha256": "b4c14e4eaa55d557058d84d6ae38b2b24dbbf33ca7ba56532a9ecc8ba6d863b2",
+      "match": true
+    },
+    {
+      "mode": "camber",
+      "a_star": 19.7,
+      "expected_sha256": "6cfc5e9cd6b8c759d9c976bb8cb39c58c9888d136024b93dc20591ece1822629",
+      "actual_sha256": "6cfc5e9cd6b8c759d9c976bb8cb39c58c9888d136024b93dc20591ece1822629",
+      "match": true
+    },
+    {
+      "mode": "reflex",
+      "a_star": 29.3,
+      "expected_sha256": "44ce69780650b11cca7acb62dbae02358bf25b736a9d2ca91d2211dbd1a20bbb",
+      "actual_sha256": "44ce69780650b11cca7acb62dbae02358bf25b736a9d2ca91d2211dbd1a20bbb",
+      "match": true
+    },
+    {
+      "mode": "twist",
+      "a_star": 1.1,
+      "expected_sha256": "5b5165c2ac95eb95060528f9aae41658e6e1d73c430b423893bf66b6e64f4c1f",
+      "actual_sha256": "5b5165c2ac95eb95060528f9aae41658e6e1d73c430b423893bf66b6e64f4c1f",
+      "match": true
+    },
+    {
+      "mode": "sweep",
+      "a_star": 11.3,
+      "expected_sha256": "8ee0a9e79fcaf7a60e0ffe4ada73a5e6a0a29fe586ad406de60943a865142b21",
+      "actual_sha256": "8ee0a9e79fcaf7a60e0ffe4ada73a5e6a0a29fe586ad406de60943a865142b21",
+      "match": true
+    },
+    {
+      "mode": "surge",
+      "a_star": 31.1,
+      "expected_sha256": "0e8911477af2dcc3faa7037f344bdfd974234d737e406fb071d8f9fcda319fbf",
+      "actual_sha256": "0e8911477af2dcc3faa7037f344bdfd974234d737e406fb071d8f9fcda319fbf",
+      "match": true
+    }
+  ],
+  "source_files": [
+    {
+      "path": "scripts/mode01_v18_prescreen.py",
+      "sha256": "baa429bec975437459ecb6cea28a328d1dba4ac5b07c979a6eac08027082f71b"
+    },
+    {
+      "path": "scripts/mode01_modes.py",
+      "sha256": "1c10aeb9df6004fdfe0d5e5a06ce1b332ca102574e5829d7d42482339dad2681"
+    },
+    {
+      "path": "scripts/v18_plate.py",
+      "sha256": "4641c2f4cc06135825a67cb32a07dcb2a60adb6462a7d0b6149926d3812c6df7"
+    }
+  ],
+  "method": "P18.load_parent(); P18.state_phi(parent,params,each known mode,a_star); SHA256 little-endian float32 Fortran bytes only; no measurements or new schedules"
+}

@@ -1,0 +1,314 @@
+{
+  "acceptance_gates": {
+    "all_seven_required": true,
+    "all_triangle_normal_gradient_dots_resolved_positive": true,
+    "canonical_v17_exact_zero_node_count_matches_498": true,
+    "canonicalizer_unique_vertex_coordinate_set_unchanged": true,
+    "duplicate_face_count": 0,
+    "independent_recomputation_all_pass": true,
+    "new_test_failures_allowed": 0,
+    "non_manifold_edge_count": 0,
+    "positive_area_triangle_surface_support_unchanged_exactly": true,
+    "required_cases": [
+      "baseline",
+      "D0_interface_offset_minus",
+      "D0_interface_offset_plus",
+      "D1_filtered_seed11_minus",
+      "D1_filtered_seed11_plus",
+      "D2_filtered_seed2026_minus",
+      "D2_filtered_seed2026_plus"
+    ],
+    "signed_volume_m3_strictly_positive": true,
+    "source_cell_mapping_complete": true,
+    "stage_v_minimum_clearance_m_at_least": 0.25,
+    "surface_hausdorff_distance_m": 0.0,
+    "watertight": true,
+    "winding_consistent": true
+  },
+  "authoritative_integration_branch": "codex/kaggle-batch-migration",
+  "authoritative_start_head": "8959f7dcc9427d2234b8faf6313a5050735bade3",
+  "canonical_grid_sdf": {
+    "exact_zero_node_count_expected": 498,
+    "origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "shape": [
+      121,
+      65,
+      49
+    ],
+    "sign_convention": "phi < 0 is solid; phi > 0 is fluid; canonical outward solid normal follows +grad(phi)",
+    "spacing_m": 0.025,
+    "state_file_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb"
+  },
+  "evidence_output_path": "docs/evidence/xfid45_surface_export_round_2026_10_03/",
+  "focus_test_pre_registration": {
+    "command": "PYTHONPATH=src python -m pytest -q tests/test_surface_canonicalization.py",
+    "result_before_any_target_case_evaluation": "3 passed",
+    "test_source_sha256": "6340510a28e2523812085b7063faa2d342f82bb8f81c8491e408d3ab0ef4cacc"
+  },
+  "forbidden_changes": [
+    "iso-value change or post-hoc 0 +/- epsilon",
+    "GridSDF node/value changes or symbolic zero tie-break",
+    "vertex movement, smoothing, hole filling, manual edits, or geometric repair",
+    "direction hash or epsilon changes",
+    "solver execution, formal XFID measurement, or #46 FD-08 solver campaign",
+    "result-dependent changes to the preregistered processing sequence or gates"
+  ],
+  "frozen_inputs": {
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/SHA256SUMS": "3cc2be3f11742ce2720e1983aa3060c42e99148590f9ac5b0e44f44bd39f5123",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/canonical_state.npz": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/geometry_audit.json": "a5fef9732e03b15f87931f70841b26453b6c96ccc5f7402c132b95491da6cb83",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D0_interface_offset_minus.npz": "e7a83328efc9a7a263e54e59fa349e2d57c6cba5dceffff783291056cbc7fd5f",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D0_interface_offset_plus.npz": "de56ae5b73572ac6fecabb81760c83f9b7a65d3894779ed4bfb2a1b732e55683",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D1_filtered_seed11_minus.npz": "b2109466ae483d631ed476a62fd5ae32d5a40ebf325edbfecbfedec76ec454c8",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D1_filtered_seed11_plus.npz": "43d033b0143549369bf8da718019d276abd1ac65d479a23c7c707629bfdb44dc",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D2_filtered_seed2026_minus.npz": "b6ef1bc458e936a0eb286a3f402acab9392fcd198851abc4689b0e7ce8fede9a",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D2_filtered_seed2026_plus.npz": "14ddbeac636268854048d8c3c5734cbdce36aa1922841d79a8acd058d1e09999",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/SHA256SUMS": "9108b8cc96acd0c4a1b2565420f798d8c59a4881354467e6ccb915ec81774550",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/snapshot_manifest.json": "3e82a6672934d2863d10aafa319a39c728e58b36011fb7003957d5e0825e4955",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_minus/canonical_export/zero_surface.ply": "4420631618832eea629e94da2d13a422cd957b376ac105745505d751e188fb02",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_minus/design_candidate.stl": "88ab3aed96d97ab188b37368f13ab50e89758ec9ea3ca42556151e131fc6e11d",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_plus/canonical_export/zero_surface.ply": "6cd05f19ade86ca90f25693d6571e7ef0976184b8d38fdf18dd01f56a36d03b0",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_plus/design_candidate.stl": "a2698a28049ce1532e03297155cffb387674e0cd2f0e513e248e878b7dbefaa1",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_minus/canonical_export/zero_surface.ply": "9ce73f7d7ee0b7ce0437d9a8fd66f65c8af87cfc12597d219a27b979e34a3d95",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_minus/design_candidate.stl": "86d2a09ac6deec08b0aa6f656531a93c510f0bfe1a4f45093a7978c0e2da8f26",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_plus/canonical_export/zero_surface.ply": "854ee63a8860e2db76a1375de8a0d562317750a5f9136a6f7849ac72a35c2191",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_plus/design_candidate.stl": "d0a7911785d7bc8177e9f8a944d0cb65d688c6f448ba4af285af49ebc87c5eeb",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_minus/canonical_export/zero_surface.ply": "6f135498c772c61b0b49ac160eb416fd87c2a72293f8f138f6ee0ecdfeecac01",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_minus/design_candidate.stl": "ed0d2eab234a02f3d38c0e6fb7488f960b367a089d9171367955400f6f7cd91f",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_plus/canonical_export/zero_surface.ply": "b014e8dbac48127bfd2e2a3c0256d462e7a1e36b121a9d80dcc90969f98c0ee2",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_plus/design_candidate.stl": "debe4be598dc3a303e7e9d8f9523aa2dd8cb06d9e4da2187966e72ba1c0e95ea",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/baseline/canonical_export/zero_surface.ply": "ce78d1d4448e54c72d0ff0f6022cf5c3be8c0b438640e10bcc8cdeec91cfdd96",
+    "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/baseline/design_candidate.stl": "0c8f78c1befbf3612fe7cb5a1e42b89c4c836850069688d5ea4c883f80bcc32b"
+  },
+  "frozen_perturbation_contract": {
+    "cases": {
+      "D0_interface_offset_minus": {
+        "direction_sha256": "8b5773b7d404cc21819078085eddeae437cad619472910fcac17430b2b6be3b5",
+        "epsilon_m": 0.005,
+        "phi_fortran_sha256": "74dd2d0f5dde097e0b66b8da490abd78f3acf2a3ab36f46ec7a76cc2bfe16989",
+        "raw_ply_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_minus/canonical_export/zero_surface.ply",
+        "raw_ply_sha256": "4420631618832eea629e94da2d13a422cd957b376ac105745505d751e188fb02",
+        "raw_stl_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_minus/design_candidate.stl",
+        "raw_stl_sha256": "88ab3aed96d97ab188b37368f13ab50e89758ec9ea3ca42556151e131fc6e11d",
+        "sign": -1,
+        "state_sha256": "3647a33b44652c9a630baa1726aa80ccc4a60dcc0c2c2b1a4092e7e159524693",
+        "state_snapshot_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D0_interface_offset_minus.npz",
+        "state_snapshot_sha256": "e7a83328efc9a7a263e54e59fa349e2d57c6cba5dceffff783291056cbc7fd5f"
+      },
+      "D0_interface_offset_plus": {
+        "direction_sha256": "8b5773b7d404cc21819078085eddeae437cad619472910fcac17430b2b6be3b5",
+        "epsilon_m": 0.005,
+        "phi_fortran_sha256": "754389103d0e1ed1de58518394a6759bd65ec51a3e368dbac7208252a3fbc8ac",
+        "raw_ply_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_plus/canonical_export/zero_surface.ply",
+        "raw_ply_sha256": "6cd05f19ade86ca90f25693d6571e7ef0976184b8d38fdf18dd01f56a36d03b0",
+        "raw_stl_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_plus/design_candidate.stl",
+        "raw_stl_sha256": "a2698a28049ce1532e03297155cffb387674e0cd2f0e513e248e878b7dbefaa1",
+        "sign": 1,
+        "state_sha256": "6f6cf11c43cf5910220086aaadf9e7cf43f892a4c8e38e14d29fee295c817dbb",
+        "state_snapshot_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D0_interface_offset_plus.npz",
+        "state_snapshot_sha256": "de56ae5b73572ac6fecabb81760c83f9b7a65d3894779ed4bfb2a1b732e55683"
+      },
+      "D1_filtered_seed11_minus": {
+        "direction_sha256": "4da3513780c3ba9b2ab91837911d46a2cab362e9a561eedb18468b424f81d4f5",
+        "epsilon_m": 0.005,
+        "phi_fortran_sha256": "4b676d2ad0c66b7741a75bb164ab82a4e2996187615c09c65bc441b01caa5840",
+        "raw_ply_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_minus/canonical_export/zero_surface.ply",
+        "raw_ply_sha256": "9ce73f7d7ee0b7ce0437d9a8fd66f65c8af87cfc12597d219a27b979e34a3d95",
+        "raw_stl_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_minus/design_candidate.stl",
+        "raw_stl_sha256": "86d2a09ac6deec08b0aa6f656531a93c510f0bfe1a4f45093a7978c0e2da8f26",
+        "sign": -1,
+        "state_sha256": "9c602e20690e7863d61a6c54cc4864fb6ebc74c024cec79d045cf1417b893fc1",
+        "state_snapshot_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D1_filtered_seed11_minus.npz",
+        "state_snapshot_sha256": "b2109466ae483d631ed476a62fd5ae32d5a40ebf325edbfecbfedec76ec454c8"
+      },
+      "D1_filtered_seed11_plus": {
+        "direction_sha256": "4da3513780c3ba9b2ab91837911d46a2cab362e9a561eedb18468b424f81d4f5",
+        "epsilon_m": 0.005,
+        "phi_fortran_sha256": "74304eb97b5ed77abb4317a286b8c0a0842dc1031f8f76ade2418b85e9b61fee",
+        "raw_ply_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_plus/canonical_export/zero_surface.ply",
+        "raw_ply_sha256": "854ee63a8860e2db76a1375de8a0d562317750a5f9136a6f7849ac72a35c2191",
+        "raw_stl_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_plus/design_candidate.stl",
+        "raw_stl_sha256": "d0a7911785d7bc8177e9f8a944d0cb65d688c6f448ba4af285af49ebc87c5eeb",
+        "sign": 1,
+        "state_sha256": "5b4dc6679c8025d2e899c1213f8b9f6fb8e2ec338e85024bebb99a38f50b77e3",
+        "state_snapshot_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D1_filtered_seed11_plus.npz",
+        "state_snapshot_sha256": "43d033b0143549369bf8da718019d276abd1ac65d479a23c7c707629bfdb44dc"
+      },
+      "D2_filtered_seed2026_minus": {
+        "direction_sha256": "bb1eeaf0cdd43bc71085499c853f24eae6335e030851dfc0f9b581f4f5aa8fe8",
+        "epsilon_m": 0.005,
+        "phi_fortran_sha256": "67a7abc7740ef8853f77eb6e7d6913c1d1d0bcb0b98f401d5825b46f515ff42e",
+        "raw_ply_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_minus/canonical_export/zero_surface.ply",
+        "raw_ply_sha256": "6f135498c772c61b0b49ac160eb416fd87c2a72293f8f138f6ee0ecdfeecac01",
+        "raw_stl_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_minus/design_candidate.stl",
+        "raw_stl_sha256": "ed0d2eab234a02f3d38c0e6fb7488f960b367a089d9171367955400f6f7cd91f",
+        "sign": -1,
+        "state_sha256": "7924db57acfd10f644db017e241e8d938422033b818c4b0932eafbba55425f58",
+        "state_snapshot_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D2_filtered_seed2026_minus.npz",
+        "state_snapshot_sha256": "b6ef1bc458e936a0eb286a3f402acab9392fcd198851abc4689b0e7ce8fede9a"
+      },
+      "D2_filtered_seed2026_plus": {
+        "direction_sha256": "bb1eeaf0cdd43bc71085499c853f24eae6335e030851dfc0f9b581f4f5aa8fe8",
+        "epsilon_m": 0.005,
+        "phi_fortran_sha256": "966a90e5dca081415669a567bb33e4fd9f45a4687adb3e2c172c5058d1a1a9f6",
+        "raw_ply_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_plus/canonical_export/zero_surface.ply",
+        "raw_ply_sha256": "b014e8dbac48127bfd2e2a3c0256d462e7a1e36b121a9d80dcc90969f98c0ee2",
+        "raw_stl_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_plus/design_candidate.stl",
+        "raw_stl_sha256": "debe4be598dc3a303e7e9d8f9523aa2dd8cb06d9e4da2187966e72ba1c0e95ea",
+        "sign": 1,
+        "state_sha256": "741e2c8bbbb23668a5dca1391a3bd002cbb0926bb8aa0e91058cbc7f003dab3a",
+        "state_snapshot_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D2_filtered_seed2026_plus.npz",
+        "state_snapshot_sha256": "14ddbeac636268854048d8c3c5734cbdce36aa1922841d79a8acd058d1e09999"
+      }
+    },
+    "direction_ids": [
+      "D0_interface_offset",
+      "D1_filtered_seed11",
+      "D2_filtered_seed2026"
+    ],
+    "direction_sha256": {
+      "D0_interface_offset": "8b5773b7d404cc21819078085eddeae437cad619472910fcac17430b2b6be3b5",
+      "D1_filtered_seed11": "4da3513780c3ba9b2ab91837911d46a2cab362e9a561eedb18468b424f81d4f5",
+      "D2_filtered_seed2026": "bb1eeaf0cdd43bc71085499c853f24eae6335e030851dfc0f9b581f4f5aa8fe8"
+    },
+    "directions_and_epsilon_may_not_change_after_observation": true,
+    "epsilon_m": 0.005,
+    "frozen_snapshot_manifest_sha256": "3e82a6672934d2863d10aafa319a39c728e58b36011fb7003957d5e0825e4955"
+  },
+  "frozen_sources": {
+    "scripts/audit_xfid45_geometry_preflight_2026_10_03.py": "7865f6be1ede7d919ee77117f7d5c6a120b14475930a7c93535e7671323d5b00",
+    "scripts/audit_xfid45_surface_export_round_2026_10_03.py": "46f9b50d1ab2373bf5dae1af9155e7333a8da5668659166670ed0c06d1ad6028",
+    "scripts/export_xfid45_perturbed_state_snapshots_2026_10_03.py": "5fac5aa3becea361aff859027d8ff1c629e3a9c5a53918acc6f8a90aa236fb49",
+    "scripts/verify_xfid45_surface_export_round_2026_10_03.py": "10bde4144f19930e40c576f174f2444b550ad35774c76b4313e86475c6f9b25b",
+    "src/cfd_sdf/design/sdf_state.py": "74c675ed658c85fa2d8f306652d0de712698daf36e4e86f1f508b676c4f96faf",
+    "src/cfd_sdf/export_vtk.py": "44c152b421415fbc49d047e9a178f7702d40451bb53107ded6d7302872353a72",
+    "src/cfd_sdf/gradients/directional_fd.py": "ac49c4e3a6f3b14a6c254c6cbdf7dcda26da7e3c62d40d7c735ae473cbc52837",
+    "src/cfd_sdf/grid.py": "b8dcec2f1539feb5b1a2e3a69d0c9d50b2f75a21c2518d8ded19e3e270ff1f4d",
+    "src/cfd_sdf/surface_canonicalization.py": "3384f2daec3db9a36d3c17e1494670c368a83917627f5372ab1150666301241e",
+    "tests/test_surface_canonicalization.py": "6340510a28e2523812085b7063faa2d342f82bb8f81c8491e408d3ab0ef4cacc"
+  },
+  "issue": 45,
+  "kind": "xfid45_zero_level_surface_export_preregistration",
+  "pre_registration_synthetic_integration_checks": {
+    "checks": [
+      {
+        "fixture": "analytic sphere on a synthetic 13x13x13 GridSDF grid",
+        "purpose": "Exercise PyVista source-cell metadata propagation, PLY mapping, and raw orientation audit only.",
+        "raw_contour_triangles": 560,
+        "raw_face_normal_gradient_signs": {
+          "ambiguous": 0,
+          "negative": 560,
+          "positive": 0
+        },
+        "saved_ply_triangle_to_source_cell_mapping": "560/560 exact coordinate-key matches"
+      },
+      {
+        "fixture": "same synthetic sphere, independent verifier implementation",
+        "fresh_contour_triangle_multiset_matches_saved_ply": true,
+        "purpose": "Exercise independent contour and metric code without using canonical v17 or any XFID target case.",
+        "topology_and_local_gradient_recomputed": true
+      }
+    ],
+    "solver_started": false,
+    "target_cases_read_or_evaluated": false
+  },
+  "processing_sequence": [
+    "Read each byte-frozen raw PyVista PLY produced from the bound GridSDF using ImageData.contour(isosurfaces=[0.0], scalars=\"design_phi\"); independently attach source grid-cell IDs and require exact triangle-coordinate multiset agreement.",
+    "Merge numerically exact coincident vertex coordinates with numpy.unique(axis=0); preserve every unique coordinate value.",
+    "Remove exact duplicate triangles using sorted merged vertex IDs, retaining the earliest source triangle in input order.",
+    "Remove triangles with repeated vertex indices and triangles whose float64 cross-product norm is exactly zero; report the two reasons separately.",
+    "Partition remaining faces into deterministic edge-connected components ordered by first input face.",
+    "For each face, evaluate the local trilinear GridSDF gradient at its centroid. Use floor-based half-open grid-cell selection, clamping only the outermost grid plane to the final cell. Flip that face iff dot(n, grad(phi)) is below -64*eps64*max(1, norm(grad(phi))). Leave roundoff-ambiguous faces unchanged and fail the gate if any remain. Never orient from signed volume.",
+    "Write candidate PLY and Stage V STL with trimesh process=False; do not smooth, move vertices, fill holes, repair geometry, or alter the GridSDF."
+  ],
+  "purpose": "Qualify a deterministic, manifold, oriented Stage V surface export of the canonical v17 GridSDF zero-level geometry without changing vertex coordinates or the signed-distance field.",
+  "registered_date": "2026-10-03",
+  "related_issue": 29,
+  "required_diagnostics": {
+    "baseline_defects": [
+      "every edge with incidence != 2",
+      "every two-face same-direction winding conflict edge",
+      "every extra duplicate face"
+    ],
+    "before_after_mesh_metrics": [
+      "unique vertex coordinate set and hash",
+      "bounds",
+      "edge-connected components",
+      "Euler characteristic",
+      "area",
+      "unsigned enclosed volume when defined",
+      "vertex-coordinate Hausdorff distance",
+      "positive-area surface Hausdorff distance",
+      "watertightness",
+      "winding consistency",
+      "non-manifold edge count",
+      "duplicate face count"
+    ],
+    "defect_localization": [
+      "source triangles",
+      "contouring source cell IDs",
+      "cell corner GridSDF node indices and phi values",
+      "exact-zero node involvement",
+      "triangle area",
+      "coincident vertex coordinates and source vertex instances"
+    ],
+    "exact_zero_node_and_defect_zero_touch_counts_and_percentages": true,
+    "independent_recomputation": true,
+    "orientation": [
+      "raw triangle normal",
+      "local trilinear gradient",
+      "dot(n, grad(phi))",
+      "sample cell nodes and phi values",
+      "per-component resolvability"
+    ],
+    "per_case_raw_and_candidate_surface_hashes": true
+  },
+  "round_id": "xfid45_canonical_zero_surface_geometry_preserving_export_2026_10_03_round1",
+  "runtime_identity": {
+    "backend": "local CPU; geometry operations only",
+    "numpy": "2.5.2",
+    "python": "3.12.13",
+    "pyvista": "0.48.4",
+    "scipy": "1.18.1",
+    "trimesh": "5.1.0",
+    "vtk": "9.6.2"
+  },
+  "schema_version": 1,
+  "scope": {
+    "all_qualification_flags_remain_false": true,
+    "cases": [
+      "baseline",
+      "D0_interface_offset_minus",
+      "D0_interface_offset_plus",
+      "D1_filtered_seed11_minus",
+      "D1_filtered_seed11_plus",
+      "D2_filtered_seed2026_minus",
+      "D2_filtered_seed2026_plus"
+    ],
+    "formal_xfid_started": false,
+    "issue_29_scope": "Only the actual zero-level / Stage V STL export integrity portion of GEOM-01 is addressed; minimum feature, topology policy, manufacturing and full #29 closure are not qualified.",
+    "solver_started": false,
+    "xfid45_previous_unresolved_evidence_is_immutable": true
+  },
+  "stage_v_clearance_profile_id": "stage_v_clearance_v1",
+  "stage_v_domain_bounds_m": [
+    [
+      -2.5,
+      -1.2,
+      -0.9
+    ],
+    [
+      2.5,
+      1.2,
+      0.9
+    ]
+  ],
+  "status_at_registration": "PREREGISTERED_NOT_EVALUATED",
+  "working_branch": "exp/issue-45-export-qualification-2026-10-03"
+}

@@ -1,0 +1,254 @@
+{
+  "arm_definitions": {
+    "A": "Build the shared owner/view/body/simulation path; retain the owner explicitly with GC.@preserve during pre/post-GC probes, full geometry scan, field sampling, force measurement and two steps.",
+    "B": "Build the same shared path inside a noinline helper; return bodies, simulation, WeakRef and scalar/type metadata only, with no strong owner or DeviceGridSDF return. Force full GC and perform the same post-GC geometry, fields, forces and steps. Run twice in separate Julia processes.",
+    "C": "Build the same shared path; a OwnedV16Diagnostic wrapper structurally owns owner, bodies and simulation through the same measurements and two steps."
+  },
+  "causal_decision_rules": {
+    "not_sufficient_alone": [
+      "a cleared WeakRef without observable divergence",
+      "a CUDA error without direct collection evidence",
+      "nonzero A/C force alone",
+      "single B replicate difference"
+    ],
+    "strongly_supported": "A/C agree within registered geometry, field and force tolerances; BOTH B replicates have WeakRef alive immediately before forced GC and cleared after it; BOTH B replicates then show the same class of candidate geometry, field, force divergence, or CUDA/lifetime operation error compared with A/C; all other recorded input/backend identities match.",
+    "unresolved": "A/C controls disagree, a B replicate is non-repeatable/incomplete, the owner clears before the forced-GC bracket, identities differ, or evidence does not meet another registered rule.",
+    "weakened": "Both B replicates retain the owner through forced GC, or both owners are collected and neither replicate shows an observable post-GC difference from A/C."
+  },
+  "claim_scope": "implementation-layer owner-lifetime diagnosis only; not W3 primal qualification, target-physics qualification, or a production fix",
+  "comparison": {
+    "a_c_controls_must_match_within_registered_tolerances": true,
+    "field_per_element_tolerance": "abs(delta) <= 1e-6 + 1e-5 * max(abs(reference), abs(observed))",
+    "force_component_tolerance": "abs(delta) <= 1e-4 + 1e-5 * max(abs(reference), abs(observed))",
+    "geometry_distance_abs_tolerance_solver_units": 1e-05,
+    "normal_and_velocity_component_abs_tolerance": 1e-05
+  },
+  "created_utc_date": "2026-09-28",
+  "criteria_id": "kaggle_w3_v16_cuda_owner_lifetime_2026_09_round3",
+  "evidence_type": "diagnostic_only",
+  "execution": {
+    "arm_order": [
+      "A",
+      "C",
+      "B1",
+      "B2"
+    ],
+    "cuda_synchronize_before_and_after_gc": true,
+    "field_artifact_phase": "after_step2",
+    "force_components": [
+      "raw_pressure_xyz",
+      "raw_viscous_xyz",
+      "raw_total_xyz",
+      "body_projection_drag_plus_fx",
+      "body_projection_downforce_minus_fz"
+    ],
+    "force_sampling": [
+      "step0_before_gc",
+      "step0_after_gc",
+      "step1",
+      "step2"
+    ],
+    "forced_full_gc_calls": 2,
+    "full_grid_geometry_scan": {
+      "backends": [
+        "CPU Array",
+        "T4 CUDA"
+      ],
+      "bodies": [
+        "candidate",
+        "combined"
+      ],
+      "dims": [
+        100,
+        48,
+        36
+      ],
+      "points": 172800
+    },
+    "full_horizon_or_qualification_gates": false,
+    "geometry_artifact": {
+      "body_arrays": [
+        "candidate_cpu",
+        "candidate_cuda",
+        "combined_cpu",
+        "combined_cuda"
+      ],
+      "dtype": "little-endian Float32",
+      "order": "Fortran",
+      "row_columns": [
+        "distance_solver",
+        "normal_x",
+        "normal_y",
+        "normal_z",
+        "velocity_x",
+        "velocity_y",
+        "velocity_z"
+      ]
+    },
+    "max_primal_steps_per_arm": 2,
+    "normal_diagnostic_top_n": 5,
+    "output_is_append_only_diagnostic": true,
+    "reason": "A/C artifacts and the second B replicate must survive a B invalid-memory/CUDA process failure",
+    "replicates": {
+      "A": 1,
+      "B": 2,
+      "C": 1
+    },
+    "representative_probe_set": "same ten canonical v16 world probes and minimum-positive-phi selection as diagnostic v3",
+    "separate_julia_process_per_arm": true,
+    "simulation_fields": [
+      "flow.u",
+      "flow.p",
+      "flow.σ",
+      "flow.μ₀",
+      "flow.V"
+    ]
+  },
+  "fixture": {
+    "backend": {
+      "compute_capability": "7.5.0",
+      "cuda_driver_api_version": "13.3.0",
+      "cuda_jl_version": "6.3.1",
+      "cuda_runtime_version": "12.8.0",
+      "cuda_visible_devices": "0",
+      "driver_version": "580.159.04",
+      "gpu_count": 2,
+      "gpu_name": "Tesla T4",
+      "julia_threads": 1,
+      "julia_version": "1.12.6",
+      "machine_shape": "NvidiaTeslaT4",
+      "selected_gpu_policy": "visible device index 0; exact UUID captured by each arm",
+      "waterlily_version": "1.8.0"
+    },
+    "body_order": [
+      "candidate",
+      "ground",
+      "combined"
+    ],
+    "candidate_geometry_changed": false,
+    "canonical_grid_resampling": false,
+    "flow_dims": [
+      100,
+      48,
+      36
+    ],
+    "flow_origin_m": [
+      -2.5,
+      -1.2,
+      -0.9
+    ],
+    "ground_model_changed": false,
+    "reynolds": 80.0,
+    "solver_length": 16.0,
+    "solver_viscosity": 0.2,
+    "spacing_m": 0.05
+  },
+  "force_contract": {
+    "body_force": "-raw_total",
+    "downforce": "-Fz_body_total = +Fz_waterlily_raw_total",
+    "drag": "+Fx_body_total = -Fx_waterlily_raw_total",
+    "host_recompute_component_closure": true,
+    "host_recompute_projection": true,
+    "raw_total_definition": "raw_total = raw_pressure + raw_viscous",
+    "w3_force_sign_or_acceptance_changed": false,
+    "waterlily_raw_force": "pressure_force and viscous_force are saved before negating to force-on-body"
+  },
+  "immutable": true,
+  "inputs": {
+    "canonical_phi_c_order_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+    "canonical_phi_fortran_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+    "canonical_phi_origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "canonical_phi_shape": [
+      61,
+      33,
+      25
+    ],
+    "canonical_phi_spacing_m": 0.05,
+    "canonical_state_npz_sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe",
+    "canonical_state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8",
+    "design_domain_sha256": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446",
+    "diagnostic_job": {
+      "path": "scripts/waterlily_w3_v16_cuda_diagnostic_job.jl",
+      "sha256": "4c080a72f48754c758ee999a38b7d7b83737dd01d2fe7573f4b164d7f0e1ce4e"
+    },
+    "input_dataset_id": "ramhachi888/cfd-opt-sdf-v16-genesis-state",
+    "input_dataset_manifest_sha256": "17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b",
+    "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+    "manifest_sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "owner_lifetime_job": {
+      "path": "scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl",
+      "sha256": "b952aae000f6a2047b050ca5d46bd8fdd1a5c320ebc222bd380b70c0924c8cac"
+    },
+    "project_sha256": "e4b56407b8df30b5abe0e26fede8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "w3_criteria_sha256": "f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2",
+    "w3_job_sha256": "5fc5e1006e8f39ccde40a7820665f1ab03cae9e062762a59fc6585e395e8f142",
+    "w3_source_commit": "5e985fa3395a01228c18910d96e09ecbc5497628"
+  },
+  "prior_evidence": {
+    "cuda_diagnostic_v3": {
+      "candidate_cpu_cuda_max_distance_error_m": 4.7683716e-07,
+      "candidate_cpu_cuda_sign_mismatches": 0,
+      "diagnostic_job_sha256": "4c080a72f48754c758ee999a38b7d7b83737dd01d2fe7573f4b164d7f0e1ce4e",
+      "full_flow_points": 172800,
+      "one_step_cuda_body_drag_solver_units": 3485.132996418866,
+      "owner_was_rooted": true,
+      "path": "docs/evidence/kaggle_w3_v16_cuda_diagnostic_version3_2026_09.json",
+      "sha256": "e0c9f1ee5bff1f07fb6daf268924b55e6b78fb61863d5620afc93dc11191f3cb"
+    },
+    "force_projection_correction": {
+      "path": "docs/evidence/kaggle_w3_v16_cuda_diagnostic_version3_force_projection_correction_2026_09.json",
+      "sha256": "8511973f3f6cc4d2b3166e15752072e83891cbc2535f35915116a39ffa8ed58c"
+    },
+    "w3_round3_criteria": {
+      "path": "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json",
+      "sha256": "f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2"
+    },
+    "w3_version4_followup_diagnostic": {
+      "expanded_grid_host_negative_cells": 1121,
+      "host_cpu_short_primal_nonzero_force": true,
+      "interpretation": "fixture mapping and short CPU force exist; T4 full-run zero-force cause remains unlocalized",
+      "path": "docs/evidence/kaggle_w3_v16_primal_version4_followup_diagnostic_2026_09.json",
+      "sha256": "360f7b12f4090fe9447d9aa3b1a13cce9d3e7fc58998329cb1a9884faddf2ac5"
+    },
+    "w3_version4_zero_force_diagnostic": {
+      "T7_positive_drag": false,
+      "all_pressure_viscous_total_force_components_signed_zero": true,
+      "path": "docs/evidence/kaggle_w3_v16_primal_version4_diagnostic_2026_09.json",
+      "qualified": false,
+      "sha256": "1a22808509795a2735589743817fe2287014d7fbce7944492cd7e19bf4d4f51d",
+      "solver_steps": 3841,
+      "t_u_l": 120.015625
+    }
+  },
+  "prohibitions": [
+    "do not modify W3 production path, criteria, force sign, thresholds, T7 or T10",
+    "do not claim WaterLily/OpenFOAM boundary equivalence or absolute aerodynamic correctness",
+    "do not run W3 full horizon, W4 measurement, FD, gradient, reverse qualification, optimization, or shape update",
+    "do not change production Julia Project/Manifest for this scratch diagnostic",
+    "do not qualify the owner lifetime hypothesis from only collection, CUDA error, or nonzero control force"
+  ],
+  "qualification_flags": {
+    "grid_response_qualified": false,
+    "physical_profile_qualified": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "waterlily_v16_primal_qualified": false
+  },
+  "question": "Does losing the strong DeviceGridSDF/CuArray owner reference change candidate geometry, CUDA simulation fields, or force compared with explicit retention and structural ownership?",
+  "registered_before_computation": true,
+  "round": 3,
+  "schema_version": 1,
+  "supersedes_before_measurement": {
+    "path": "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round2.json",
+    "sha256": "8530e084ed33807b67b175f2234266cae34f74ccf510ea31130a199f30a0bec9",
+    "reason": "Exact version 5 reached all four Julia arm processes but each stopped at v16_physical_profile_bodies symbol resolution before candidate body construction; no owner creation, GC bracket, geometry/field/force measurement, or owner primal step occurred. Round 3 freezes the minimal explicit-import correction. Fixture, arms, GC procedure, tolerances, sampling, and causal decision rules are unchanged."
+  }
+}

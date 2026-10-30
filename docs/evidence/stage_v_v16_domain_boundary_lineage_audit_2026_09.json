@@ -1,0 +1,93 @@
+{
+  "baseline": {
+    "case_dir": "work/stage_s_work_f_v1/baseline/V1",
+    "history": {
+      "numbered_sibling_files": [],
+      "row_count": 292,
+      "sha256": "5e09d349a0162ea6edcaffd6cd159ffc6decf81ff5f2fd388deadc2c0b2d1603",
+      "source": "work/stage_s_work_f_v1/baseline/V1/postProcessing/forceCoeffs/0/coefficient.dat",
+      "source_is_canonical": true
+    },
+    "qualification": {
+      "path": "work/stage_s_work_f_v1/baseline/V1/stage_v_qualification.json",
+      "sha256": "f013f09b54c903b024384c7dcd35ec950e8e9daab3156f5fa53689266a21be47"
+    },
+    "responses": {
+      "Cd_mean": 2.5234447210958906,
+      "downforce_mean": 1.690843254931507
+    }
+  },
+  "boundary_identity": {
+    "baseline_top": {
+      "U": "symmetryPlane",
+      "mesh": "symmetryPlane",
+      "p": "symmetryPlane"
+    },
+    "top_pressure_outlet": {
+      "U": "zeroGradient",
+      "mesh": "patch",
+      "p": "fixedValue"
+    }
+  },
+  "candidate_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+  "checks": {
+    "boundary_change_matches_registered_top_outlet_factor": true,
+    "preliminary_reused_postprocessing_case_not_used": true,
+    "qualification_reads_canonical_coefficient_dat": true,
+    "treatment_histories_distinct_from_baseline": true
+  },
+  "claims_not_supported": [
+    "grid-independent or absolute Stage V downforce",
+    "Stage S S2 qualification",
+    "shape update or optimization authorization"
+  ],
+  "contract_manifest": {
+    "path": "docs/evidence/stage_v_v16_domain_boundary_contract_manifest_v2_2026_09.json",
+    "sha256": "b8eccba3c0bc26fcc5eb392e52287a8e92a44e9b0541e8f589383fe307c54b8a"
+  },
+  "factor_evidence": {
+    "path": "docs/evidence/stage_v_v16_domain_boundary_contract_v2_2026_09.json",
+    "sha256": "e87558be5ee8efb24723603ff4c1bc9ace8a84efeaaec658e34a09db7e0f2ae8"
+  },
+  "kind": "stage_v_v16_domain_boundary_lineage_audit",
+  "schema_version": 1,
+  "status": "pass",
+  "treatments": {
+    "far_field_domain_extension_0p8": {
+      "case_dir": "work/stage_v_v16_domain_boundary_v2_2026_09/far_field_domain_extension_0p8/V1",
+      "history": {
+        "numbered_sibling_files": [],
+        "row_count": 431,
+        "sha256": "a7524466a22821bdaab5600f71a12863bc94adb771fe31f61d2b8cd26658bd2f",
+        "source": "work/stage_v_v16_domain_boundary_v2_2026_09/far_field_domain_extension_0p8/V1/postProcessing/forceCoeffs/0/coefficient.dat",
+        "source_is_canonical": true
+      },
+      "qualification": {
+        "path": "work/stage_v_v16_domain_boundary_v2_2026_09/far_field_domain_extension_0p8/V1/stage_v_qualification.json",
+        "sha256": "a3970f14d0f7da17e7d674412dad1e030e1d10b69545fd05a704ecd9926e123d"
+      },
+      "responses": {
+        "Cd_mean": 1.5083067055555557,
+        "downforce_mean": 0.6498148546851852
+      }
+    },
+    "top_pressure_outlet": {
+      "case_dir": "work/stage_v_v16_domain_boundary_v2_2026_09/top_pressure_outlet/V1",
+      "history": {
+        "numbered_sibling_files": [],
+        "row_count": 458,
+        "sha256": "ba2a9103a20ec7684a3e2b6f346768207685c2439033d636d4ce1bd996df657f",
+        "source": "work/stage_v_v16_domain_boundary_v2_2026_09/top_pressure_outlet/V1/postProcessing/forceCoeffs/0/coefficient.dat",
+        "source_is_canonical": true
+      },
+      "qualification": {
+        "path": "work/stage_v_v16_domain_boundary_v2_2026_09/top_pressure_outlet/V1/stage_v_qualification.json",
+        "sha256": "d6678d077329ef6110a13dfa38396507abdbecccea8002819f29a13b97f91003"
+      },
+      "responses": {
+        "Cd_mean": 1.5756433196491229,
+        "downforce_mean": 0.437960052622807
+      }
+    }
+  }
+}

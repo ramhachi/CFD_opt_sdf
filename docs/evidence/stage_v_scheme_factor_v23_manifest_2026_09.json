@@ -1,0 +1,47 @@
+{
+  "kind": "stage_v_scheme_factor_v23_manifest",
+  "created": "2026-09-21",
+  "registered_before_computation": true,
+  "supersedes": "stage_v_scheme_factor_manifest_2026_09.json used the V1->V2 transition, which was already inside the bound; that screen is closed and retained as recorded",
+  "hypothesis": "the failing V2->V3 downforce drift (baseline 0.012908) is dominated by the first-order upwind convection scheme",
+  "factor": {
+    "name": "div(phi,U) convection scheme",
+    "baseline": "bounded Gauss upwind",
+    "treatment": "bounded Gauss linearUpwind grad(U)"
+  },
+  "transition": "V2 -> V3 (finest registered transition)",
+  "reused_runs": {
+    "V1_linearUpwind": "work/stage_v_scheme_factor_2026_09/opt_q100_b0_step0_try0_block/V1_linearUpwind",
+    "V2_linearUpwind": "work/stage_v_scheme_factor_2026_09/opt_q100_b0_step0_try0_block/V2_linearUpwind"
+  },
+  "new_runs": [
+    "V3_linearUpwind"
+  ],
+  "metric": {
+    "downforce_absolute_drift": "|downforce(V3) - downforce(V2)|",
+    "drag_relative_drift": "|Cd(V3) - Cd(V2)| / |Cd(V2)|",
+    "bounds": {
+      "downforce_absolute": 0.005,
+      "drag_relative": 0.02
+    }
+  },
+  "decision": "if the treatment's finest drift is inside both bounds, register the second-order scheme as the discretization factor for the qualified reference family; otherwise escalate the mesh-convergence policy",
+  "stop_conditions": [
+    "a failed V3 qualification is reported as failed, never dropped",
+    "no further grid level is added in this campaign"
+  ],
+  "budget": {
+    "new_runs": 1,
+    "finest_cells_estimate": 1348281
+  },
+  "inputs": {
+    "baseline_evidence": {
+      "path": "docs/evidence/stage_v_fixed_domain_grid_study_2026_09.json",
+      "sha256": "668449c13c4e624756f61a1209f0f69b4e6774eb9bfdc7b776f01077317815c9"
+    },
+    "v1v2_screen": {
+      "path": "docs/evidence/stage_v_scheme_factor_2026_09.json",
+      "sha256": "070b57e21b99a7d98e225b8741e8fa6de550b3548d3816f62923b27bb13d579c"
+    }
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "criteria": {
+    "path": "docs/evidence/kaggle_w2b_criteria_2026_09_round4.json",
+    "sha256": "4b5789d4dcf2e9b79b10eb5e388d5a56951df5c835f0c993903527463b6a82d0"
+  },
+  "decision": "Retain Kaggle version 10 as an append-only partial-run diagnostic. CUDA smoke and analytic_16 completed; its force metrics match the CSV under host recomputation. The next GridSDF case stopped before solver integration because build_body called zero_level_margin_m as an unbound Main name. Qualify the existing function from CFDSDFWaterLily.GridSDFBody, pin the corrected job, and register round 5 before retrying. No fixture or numerical acceptance threshold changes.",
+  "evidence_class": "partial_w2b_solver_run_unbound_grid_margin_function",
+  "generated_on": "2026-09-27",
+  "immutable": true,
+  "kernel": {
+    "id": "ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder",
+    "version": 10
+  },
+  "observed": {
+    "analytic_16": {
+      "cuda_driver_api_version": "13.3.0",
+      "cuda_runtime_version": "12.8.0",
+      "finite_forces": true,
+      "finite_p": true,
+      "finite_u": true,
+      "force_csv_sha256": "e321b5c568001f9c6ab9774b365d32b5a7aa0b699df25b6003efe306115d9075",
+      "force_samples": 561,
+      "gpu_name": "Tesla T4",
+      "steps": 2246,
+      "summary_sha256": "7f29830338fb08f54be5f995f4b1a3307a94dc7f838c5f32dea3cfbdd7374f88",
+      "t_end_reached": 60.000022888183594,
+      "t_end_target": 60.0,
+      "time_weighted_cd": 0.8795874360307699,
+      "time_weighted_mean_drag": 88.42577367117276
+    },
+    "completed_case_ids": [
+      "analytic_16"
+    ],
+    "cuda_smoke_passed": true,
+    "error": "UndefVarError: `zero_level_margin_m` not defined in `Main`",
+    "failed_case_id": "gridsdf_16",
+    "failure_stage": "build_body for gridsdf_16, before solver integration",
+    "gpu_inventory": [
+      "0, Tesla T4, GPU-da3534e8-8131-82ab-b217-1300df7b6e8c, 15360 MiB, 580.159.04",
+      "1, Tesla T4, GPU-01999a07-41d9-a9d5-1c36-052ac363172f, 15360 MiB, 580.159.04"
+    ],
+    "job_completion_marker_present": false,
+    "solver_started": true,
+    "status": "KernelWorkerStatus.ERROR",
+    "w2b_log_sha256": "84ed55d2b54c58c071fad8622718d37af179ee30777c69d6faa30d93490fb0c9"
+  },
+  "retrieval": {
+    "artifact_sha256": {
+      "ERROR.txt": "65acd077e3aee2640d84da51e0079a2d244cfdbe8cda6f9b0c581735dc354231",
+      "analytic_16.forces.csv": "e321b5c568001f9c6ab9774b365d32b5a7aa0b699df25b6003efe306115d9075",
+      "analytic_16.summary.json": "7f29830338fb08f54be5f995f4b1a3307a94dc7f838c5f32dea3cfbdd7374f88",
+      "git_checkout.log": "233ddf1f8b9f866b92e59569f218f623c99d963846fc84120474c0aa931f20b6",
+      "git_fetch.log": "f787ad9fb708b5f6ad6860e5d5bf36a96a9a74bdc3bb9d7b611ee9feed4ff784",
+      "git_init.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "instantiate.log": "8ff9cd36a54aba10de23610d875664ab2c4cf8fee9dfe0d2d9aa326d49220d90",
+      "julia_extract.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "julia_smoke.log": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+      "nvidia_smi.csv": "114511fe0e9aac3978920139c5e41be9f540a2a773c0684b83516d18c2cb917d",
+      "params.jl": "ea93813ded0e91f7375030d635bc8c456a994ac8f9e4bb45ae7001ed59360283",
+      "w2b.log": "84ed55d2b54c58c071fad8622718d37af179ee30777c69d6faa30d93490fb0c9"
+    },
+    "download": "work/kaggle_w2b_version10/w2b",
+    "kernel_log_sha256": "1ce4d69aec373c4d20e86937b2868b771f8a58390f1209289e2579481ba2ed97",
+    "manifest_sha256": "68af023ee46e321c9cb14a510557e4cc2a25f9a9663a5826fb18cdd1c135474d",
+    "verified_files": 12
+  },
+  "scope_exclusions": [
+    "the remaining five registered cases did not complete",
+    "gridsdf_16 failed before solver integration",
+    "no complete W2b matrix or T1-T12 acceptance result",
+    "the analytic_16 partial result is diagnostic only and is not reused as round-5 acceptance evidence",
+    "no fixture parameter or numerical acceptance threshold changed after this partial response",
+    "no Grid Convergence Index, absolute Cd, target-aerodynamics, full-vehicle, high-Re, gradient, topology, or optimizer claim"
+  ],
+  "source": {
+    "defined_at": "julia/CFDSDFWaterLily/src/GridSDFBody.jl:113",
+    "failure_line": 79,
+    "job_path": "scripts/waterlily_w2b_grid_ladder_job.jl",
+    "job_sha256": "cc351f6eb5f8ca8f2bc210100f82b46481335003a818d45466757f588ffd0440",
+    "repository": "https://github.com/ramhachi/CFD_opt_sdf.git",
+    "source_commit": "a29e282982a923e0a93ed31d3643e59c7ec6e42e",
+    "unbound_function": "zero_level_margin_m"
+  }
+}

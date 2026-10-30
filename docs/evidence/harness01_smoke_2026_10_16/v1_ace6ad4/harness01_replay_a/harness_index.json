@@ -1,0 +1,22 @@
+{
+  "case_id": "flow_16",
+  "kernel": "a",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-harness01-replay-a-smoke",
+  "parent_forces_csv_sha256": "97e7b43c346a57a1e24be28e385d9cb9ac03d17b427677b9052683cc3e9c6477",
+  "solver_process_wall_seconds_total": 103.13115429878235,
+  "states": [
+    {
+      "complete": true,
+      "direction": null,
+      "exit_code": 0,
+      "forces_csv_sha256": "97e7b43c346a57a1e24be28e385d9cb9ac03d17b427677b9052683cc3e9c6477",
+      "kind": "parent",
+      "matches_retained_parent_reference": true,
+      "name": "opt01b__parent",
+      "seconds": 103.13115429878235,
+      "sign": 0,
+      "step_mm": 0.0
+    }
+  ],
+  "status": "COMPLETE"
+}

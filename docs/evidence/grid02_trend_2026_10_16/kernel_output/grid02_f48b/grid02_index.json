@@ -1,0 +1,43 @@
+{
+  "case_id": "flow_48",
+  "kernel": "f48b",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-grid02-f48b",
+  "parent_forces_csv_sha256": "e044577f962910813b28054389641d0398ea90dd03e8c24604a65bc713c63f01",
+  "solver_process_wall_seconds_total": 6490.4217529296875,
+  "states": [
+    {
+      "complete": true,
+      "direction": null,
+      "exit_code": 0,
+      "forces_csv_sha256": "e044577f962910813b28054389641d0398ea90dd03e8c24604a65bc713c63f01",
+      "kind": "parent_repeat",
+      "name": "opt01b__parent_repeat",
+      "seconds": 2128.0369782447815,
+      "sign": 0,
+      "step_mm": 0.0
+    },
+    {
+      "complete": true,
+      "direction": "robust_opt01a",
+      "exit_code": 0,
+      "forces_csv_sha256": "d5c8dfd18139426c8421fe4cfd0861bd632d33c9a5f21805fd6b464cd9afc3d7",
+      "kind": "candidate",
+      "name": "opt01b__prop__s1.25mm",
+      "seconds": 2171.5488045215607,
+      "sign": 1,
+      "step_mm": 1.25
+    },
+    {
+      "complete": true,
+      "direction": "robust_opt01a",
+      "exit_code": 0,
+      "forces_csv_sha256": "df460d7f493329f8a29cc11655b2b3f5999fc04713b770b6439b0c63d6c14985",
+      "kind": "control",
+      "name": "opt01b__ctrl_reverse__s1.25mm",
+      "seconds": 2190.8359701633453,
+      "sign": -1,
+      "step_mm": 1.25
+    }
+  ],
+  "status": "COMPLETE"
+}

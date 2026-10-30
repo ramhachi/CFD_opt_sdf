@@ -1,0 +1,15 @@
+{
+ "file_sha256": {
+  "docs/unc01_registration_2026_10_20.md": "b937fcc93a535277bb66060de92f4c6fe030969782ced717013970dfc8b81d7e",
+  "scripts/unc01_verify.py": "fd9ae7e876bcec58d0ab0827b5fc97146d1c89662ea73696817e6aef855b6c18",
+  "src/cfd_harness/campaign_verify.py": "8db4714799e258e08ce1a2e8ed9de4b5ff90ba3d9fa56513ec6d6997b0e57a2e",
+  "tests/test_unc01.py": "678f38e3766f0752b1eb1e88472cda0332880e33d29adf4de1a8f9e7c4eb35ea"
+ },
+ "freeze1_sha256": "b0df254ecdfae2e2a43e709331b276e6bed25b6356d2b61ab189ddfac7dda4d6",
+ "frozen_utc": "2026-10-20T13:24:08.487142+00:00",
+ "kind": "unc01_freeze1_amendment1",
+ "reason": "harness verify accepts only all kernels of a campaign at once; per-kernel isolation and the f24/f24r alternative need a per-kernel wrapper (registration \u00a714)",
+ "rule_change": false,
+ "source_commit": "6135f89cadfb0e6a55f1e2524042b2f9a3c5b736",
+ "u01_values_read_before": false
+}

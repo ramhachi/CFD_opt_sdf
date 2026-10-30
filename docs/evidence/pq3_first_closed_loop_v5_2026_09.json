@@ -1,0 +1,254 @@
+{
+  "artifact_id": "pq3_first_closed_loop_v5_2026_09",
+  "evidence_class": "bounded_closed_loop_capability",
+  "issue": "PQ3 first bounded closed loop (Path B)",
+  "reduced_problem": {
+    "objective": "minimize -C_DF (maximize downforce)",
+    "volume_limit": 0.018325312499999996,
+    "seed_projected_volume": 0.016325312499999998,
+    "seed_rule": "max(rho_canonical, 1e-3) on the 2-cell dilation of the body mask",
+    "seed_sha256": "4f4463d3f27a1447939a5228480ae620ca92018ec07dd846411dfa06c51ef006",
+    "bracket": {
+      "epsilon": 0.0001,
+      "noise_floor_abs": 1e-06
+    },
+    "move_limit": 0.02,
+    "max_iterations": 3
+  },
+  "inputs": {
+    "problem_spec": {
+      "path": "work/pq0_2_smoke/project_downforce_volume.yaml",
+      "sha256": "90314ab78073330a784939b3fe03c24319d217f564d3ebad4dea9a29c82d75fe"
+    },
+    "template_parent": "work/df2_fd_refresh/template_frozen",
+    "template_trial": "work/pq0_2_smoke/template_trial",
+    "canonical_topology_state": "work/df2_fd_refresh/topology_state.json"
+  },
+  "counts": {
+    "value_evaluations": 9,
+    "gradient_evaluations": 0,
+    "parent_evaluations": 4,
+    "bracket_evaluations": 3
+  },
+  "trace": [
+    {
+      "iteration": 1,
+      "parent_objective": -0.393363929644,
+      "parent_constraints": {
+        "volume_fraction_max": -0.0019999999999999983
+      },
+      "parent_gradient_space": "rho_design",
+      "transform_hash": "6fec044182d24e2a78bba636c86dfed2f633be2f193a6cb8ce67d7da929d13ca",
+      "move_radius_in": 0.02,
+      "penalty_in": 1.0,
+      "inner": [
+        {
+          "parent_objective": -0.393363929644,
+          "trial_objective": -0.876554655852,
+          "parent_violation": 0.0,
+          "trial_violation": 0.0,
+          "parent_merit": -0.393363929644,
+          "trial_merit": -0.876554655852,
+          "penalty": 1.0,
+          "move_radius": 0.02,
+          "primal_converged": true,
+          "adjoint_status": "not_applicable",
+          "primal_artifact_hash": "b811eb5fa0277cc53b4edc8635494b8de051a90f18b013053f58e562ff31feae",
+          "geometry_ok": true,
+          "solver_status": "converged",
+          "predicted_trial_objective": -1.6580510613985218,
+          "predicted_merit": -1.6580510613985218,
+          "status": "accept",
+          "reason": "feasible merit decrease",
+          "trust_ratio": 0.3820634480068294,
+          "next_move_radius": 0.02,
+          "next_penalty": 1.0,
+          "inner_iteration": 0,
+          "pre_accept_gate": {
+            "ok": true,
+            "reason": "descent_sign_match",
+            "epsilon": 0.0001,
+            "direction_inf_norm": 0.013982064085940257,
+            "d_adj": -90.4506748060349,
+            "d_fd": -86.60614444500003,
+            "plus_objective": -0.401949088775,
+            "minus_objective": -0.384627859886,
+            "plus_rho_sha256": "6cd3d17d189c4a85d42aa9732879f9ca71f26d318e5eb86c5e3483bba6d4edef",
+            "minus_rho_sha256": "0f60110ec13f2d1399614f1f993226ccaa48275b5de435c645f10d7064f79373",
+            "details": {
+              "difference": 0.017321228889000007,
+              "noise_floor_abs": 1e-06
+            }
+          }
+        }
+      ],
+      "accepted": true,
+      "status": "accept",
+      "reason": "feasible merit decrease",
+      "trial_objective": -0.876554655852,
+      "trial_constraints": {
+        "volume_fraction_max": -0.0019083866119696466
+      },
+      "rho_sha256": "36eac3e1f63f5557656517cbe25d4184e2835500614975cb881abb1fab3be767"
+    },
+    {
+      "iteration": 2,
+      "parent_objective": -0.876554655852,
+      "parent_constraints": {
+        "volume_fraction_max": -0.0019083866119696466
+      },
+      "parent_gradient_space": "rho_design",
+      "transform_hash": "6fec044182d24e2a78bba636c86dfed2f633be2f193a6cb8ce67d7da929d13ca",
+      "move_radius_in": 0.02,
+      "penalty_in": 1.0,
+      "inner": [
+        {
+          "parent_objective": -0.876554655852,
+          "trial_objective": -0.952480114948,
+          "parent_violation": 0.0,
+          "trial_violation": 0.0,
+          "parent_merit": -0.876554655852,
+          "trial_merit": -0.952480114948,
+          "penalty": 1.0,
+          "move_radius": 0.02,
+          "primal_converged": true,
+          "adjoint_status": "not_applicable",
+          "primal_artifact_hash": "ad2ab7ecce84507fe4f80dd7536a7f4c287e08299c09c150215f25ecaff182e0",
+          "geometry_ok": true,
+          "solver_status": "converged",
+          "predicted_trial_objective": -0.9819384792055513,
+          "predicted_merit": -0.9819384792055513,
+          "status": "accept",
+          "reason": "feasible merit decrease",
+          "trust_ratio": 0.7204659755157896,
+          "next_move_radius": 0.02,
+          "next_penalty": 1.0,
+          "inner_iteration": 0,
+          "pre_accept_gate": {
+            "ok": true,
+            "reason": "descent_sign_match",
+            "epsilon": 0.0001,
+            "direction_inf_norm": 0.003761787802485499,
+            "d_adj": -28.014292375535344,
+            "d_fd": -27.613907360000134,
+            "plus_objective": -0.879321085553,
+            "minus_objective": -0.873798304081,
+            "plus_rho_sha256": "ed40527ff700381fdcf4bc207c391ef46f9579a852f89384e646669238a76b24",
+            "minus_rho_sha256": "23d2473ac68cd87c141d7b613a973f703765fce1eb6fb7c9508326e155335741",
+            "details": {
+              "difference": 0.005522781472000027,
+              "noise_floor_abs": 1e-06
+            }
+          }
+        }
+      ],
+      "accepted": true,
+      "status": "accept",
+      "reason": "feasible merit decrease",
+      "trial_objective": -0.952480114948,
+      "trial_constraints": {
+        "volume_fraction_max": -0.0018962653955541045
+      },
+      "rho_sha256": "9bf6956770b4f355ee19d13f8c7e22d60543b1e50f663c96e951c258f7e2116f"
+    },
+    {
+      "iteration": 3,
+      "parent_objective": -0.952480114948,
+      "parent_constraints": {
+        "volume_fraction_max": -0.0018962653955541045
+      },
+      "parent_gradient_space": "rho_design",
+      "transform_hash": "6fec044182d24e2a78bba636c86dfed2f633be2f193a6cb8ce67d7da929d13ca",
+      "move_radius_in": 0.02,
+      "penalty_in": 1.0,
+      "inner": [
+        {
+          "parent_objective": -0.952480114948,
+          "trial_objective": -0.995099373413,
+          "parent_violation": 0.0,
+          "trial_violation": 0.0,
+          "parent_merit": -0.952480114948,
+          "trial_merit": -0.995099373413,
+          "penalty": 1.0,
+          "move_radius": 0.02,
+          "primal_converged": true,
+          "adjoint_status": "not_applicable",
+          "primal_artifact_hash": "ec1f22cf41db1d5237fd2b19f89d19bb0afc4deee26db6d7786085c6f2860320",
+          "geometry_ok": true,
+          "solver_status": "converged",
+          "predicted_trial_objective": -1.0031343864231566,
+          "predicted_merit": -1.0031343864231566,
+          "status": "accept",
+          "reason": "feasible merit decrease",
+          "trust_ratio": 0.8413754106779069,
+          "next_move_radius": 0.03,
+          "next_penalty": 1.0,
+          "inner_iteration": 0,
+          "pre_accept_gate": {
+            "ok": true,
+            "reason": "descent_sign_match",
+            "epsilon": 0.0001,
+            "direction_inf_norm": 0.0027579911322382945,
+            "d_adj": -18.36636488169097,
+            "d_fd": -18.026609475000342,
+            "plus_objective": -0.954281381021,
+            "minus_objective": -0.950676059126,
+            "plus_rho_sha256": "88e99ed5f08717cdd912c5ed09cbc5ac7d636758fd7584211c577bb2a240f6a9",
+            "minus_rho_sha256": "7f043ca0a5982c6cfb2e26741b62b202cda35ee67898760598ec663240db1935",
+            "details": {
+              "difference": 0.0036053218950000687,
+              "noise_floor_abs": 1e-06
+            }
+          }
+        }
+      ],
+      "accepted": true,
+      "status": "accept",
+      "reason": "feasible merit decrease",
+      "trial_objective": -0.995099373413,
+      "trial_constraints": {
+        "volume_fraction_max": -0.0018836745728200328
+      },
+      "rho_sha256": "ad96e1dc92227cfe06232728b4aa15e1239e6ad133a91ecc76dd1553f4540a00"
+    }
+  ],
+  "accepted": 3,
+  "rejected": 0,
+  "resume": {
+    "counts": {
+      "value_evaluations": 9,
+      "gradient_evaluations": 0,
+      "parent_evaluations": 5,
+      "bracket_evaluations": 3
+    },
+    "accepted": 3,
+    "rejected": 0,
+    "trace_matches_first_iteration": true
+  },
+  "claims_supported": [
+    "the production path (compiler + transform + split oracle + bracket + acceptance + checkpoint) optimizes the reduced problem on real OpenFOAM"
+  ],
+  "claims_not_supported": [
+    "no improvement claim; this is execution capability",
+    "no grid/target-physics claim"
+  ],
+  "findings": [
+    "3 accepted steps, 0 rejections: the real primal improved at every accepted step",
+    "downforce coefficient 0.3934 -> 0.8766 -> 0.9525 -> 0.9951 (monotone)",
+    "Path B bracket descent ratios: 0.958, 0.986, 0.981 (d_adj vs d_fd sign match at every step)",
+    "volume constraint maintained at every accepted state (final g_V = -0.00188)",
+    "one parent run per accepted parent (4 = initial + 3), no adjoint on trials, gradient extractions 0 (fast path)",
+    "resume reproduced the first-iteration trace with one extra parent evaluation"
+  ],
+  "conclusions": {
+    "first_bounded_closed_loop": "pass (capability with measured primal improvement)",
+    "magnitude_correction": "none used",
+    "scope": "reduced laminar fixture, floored body-neighbourhood seed, coarse source grid, identity transform",
+    "not_claimed": [
+      "grid independence",
+      "target physics",
+      "absolute force calibration",
+      "that the seed regime (porous neighbourhood) is a meaningful aerodynamic optimum"
+    ]
+  }
+}

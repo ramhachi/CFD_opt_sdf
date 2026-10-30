@@ -1,0 +1,25 @@
+FoamFile
+{
+    version 2.0;
+    format ascii;
+    class dictionary;
+    object fvSchemes;
+}
+
+ddtSchemes { default backward; }
+gradSchemes { default Gauss linear; grad(U) cellLimited Gauss linear 1; }
+divSchemes
+{
+    default none;
+    div(phi,U) Gauss linearUpwind grad(U);
+    div(phi,nuTilda) Gauss upwind;
+    div(phi,k) Gauss upwind;
+    div(phi,omega) Gauss upwind;
+    div(phi,ReThetat) Gauss upwind;
+    div(phi,gammaInt) Gauss upwind;
+    div((nuEff*dev2(T(grad(U))))) Gauss linear;
+}
+laplacianSchemes { default Gauss linear corrected; }
+interpolationSchemes { default linear; }
+snGradSchemes { default corrected; }
+wallDist { method meshWave; }

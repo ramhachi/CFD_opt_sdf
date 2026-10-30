@@ -1,0 +1,20 @@
+{
+  "scope": "post-run static source clarification; no fresh geometry queries or frozen metadata replacement",
+  "correction": "The generic mesh_inventory force_mesh_semantics label names current Scene.to_mesh behavior for both versions. Minimum 4.4.0 actually concatenates loaded.dump() only when loaded is Scene. Preserve frozen label as recorded; this static explanation corrects its interpretation. Actual loaded vertex/face byte identity checks remain valid.",
+  "sources": [
+    {
+      "environment": "current",
+      "source_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/exchange/load.py",
+      "source_sha256": "6b313c1f0ff9295e1cdf6a5567588f5df7d5c02eea12353fc9d15740d19a9e4e",
+      "start_line": 120,
+      "source_excerpt": "    if force == \"mesh\":\n        # new code should use `load_mesh` for this\n        log.debug(\n            \"`trimesh.load(force='mesh')` is a compatibility wrapper for `trimesh.load_mesh`\"\n        )\n        return loaded.to_mesh()\n    elif force == \"scene\":\n        # new code should use `load_scene` for this"
+    },
+    {
+      "environment": "minimum",
+      "source_path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/trimesh/exchange/load.py",
+      "source_sha256": "0828d5a313647ab627210f0b0f9e53fe3956ee1e03e9d4f6c13ccf9b3735185f",
+      "start_line": 156,
+      "source_excerpt": "    if force == \"mesh\" and isinstance(loaded, Scene):\n        return util.concatenate(loaded.dump())\n    if force == \"scene\" and not isinstance(loaded, Scene):\n        return Scene(loaded)\n\n    return loaded\n\n"
+    }
+  ]
+}

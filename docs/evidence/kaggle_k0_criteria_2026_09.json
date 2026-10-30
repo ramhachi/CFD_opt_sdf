@@ -1,0 +1,31 @@
+{
+  "criteria_id": "kaggle_k0_2026_09",
+  "evidence_class": "execution_capability_and_cross_backend_numerical_reproduction",
+  "registered_before_measurement": true,
+  "source_commit": "d81d0ccd13379fc86de48d52a797e6e7612658bd",
+  "julia_version": "1.12.6",
+  "julia_linux_x86_64_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+  "project_sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+  "manifest_sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+  "colab_reference": {
+    "evidence_path": "docs/evidence/sdf_native_w2t4a_analytic_sphere_2026_09.json",
+    "evidence_sha256": "70f747e264bacc9c3360ab9d6445c7bb77e6b11a6a6d521271297780301af754",
+    "window_mean_drag": 88.42577373189188,
+    "steps": 2246
+  },
+  "gates": {
+    "K0_A": "A private Kaggle script kernel starts and finishes without browser interaction",
+    "K0_B": "nvidia-smi reports exactly two Tesla T4 GPUs; Julia 1.12.6, CUDA.jl 6.3.1, WaterLily 1.8.0, CUDA.functional(), CuArray/KernelAbstractions smoke and WaterLily CUDA extension pass with unchanged Project/Manifest hashes",
+    "K0_C": "The original W2-T4a analytic job reaches tU/D >= 60, has 2246 steps, finite velocity, pressure and forces, positive drag, stationarity relative drift <= 0.02, and valid VRAM/timing",
+    "K0_D": "Relative difference of Kaggle and Colab analytic window-mean drag <= 0.0001, fixed before Kaggle measurement; no bitwise equality requirement",
+    "K0_E": "Two independent Julia processes overlap in time, each pinned to one distinct T4 by CUDA_VISIBLE_DEVICES, and each window-mean drag differs from the single-GPU Kaggle run by <= 0.000001 relative",
+    "K0_F": "Kaggle CLI retrieves version-specific output and all named output files match a downloaded SHA-256 manifest"
+  },
+  "relative_difference_definition": "abs(a-b)/max(abs(a),abs(b)); reject zero or non-finite drag",
+  "failure_policy": "A failed gate remains failed; never relax a bound from the observed result. Save diagnostic output, but do not declare Kaggle the primary backend.",
+  "scope_exclusions": [
+    "no GPU GridSDF bridge qualification (W1g)",
+    "no sampled sphere, grid convergence, v16 physics, gradient, topology or optimizer claim",
+    "no production backend switch before all K0 gates and W1g pass"
+  ]
+}

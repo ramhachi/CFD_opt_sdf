@@ -1,0 +1,59 @@
+{
+  "aggregate_solver_wall_seconds": 5354.966737747192,
+  "analysis_performed": false,
+  "captured_utc": "2026-10-06T20:32:26.734313Z",
+  "captures": [
+    {
+      "path": "docs/evidence/fd08_v2_r6_2026_10_06/r6_retry2_kernel_v5_logs.stdout.capture.gz",
+      "sha256": "711628850f5a788a2339365ebc239df20a7c6fe5e17ba83864b4f29f48f0cf9c",
+      "uncompressed_bytes": 23821
+    },
+    {
+      "path": "docs/evidence/fd08_v2_r6_2026_10_06/r6_retry2_kernel_v5_logs.stderr.capture.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "uncompressed_bytes": 0
+    },
+    {
+      "path": "docs/evidence/fd08_v2_r6_2026_10_06/r6_retry2_kernel_v5_output.stdout.capture.gz",
+      "sha256": "1c0fdb56f1627ee82aa7a0da740873d29cc30d5102400030fdbfef6a15ac9308",
+      "uncompressed_bytes": 37796
+    },
+    {
+      "path": "docs/evidence/fd08_v2_r6_2026_10_06/r6_retry2_kernel_v5_output.stderr.capture.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "uncompressed_bytes": 0
+    },
+    {
+      "path": "docs/evidence/fd08_v2_r6_2026_10_06/r6_retry2_kernel_v5_status_terminal.stdout.capture.gz",
+      "sha256": "f806e71c0be04952b3cff438a29e54468b60c8321f3c7e3463afb4becf386568",
+      "uncompressed_bytes": 89
+    },
+    {
+      "path": "docs/evidence/fd08_v2_r6_2026_10_06/r6_retry2_kernel_v5_status_terminal.stderr.capture.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "uncompressed_bytes": 0
+    }
+  ],
+  "criteria_sha256": "90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837",
+  "dataset_manifest_sha256": "42c9bde843788e864338c14576784c67b2592d85555eed4f8be779d0e773db8f",
+  "dataset_version": 6,
+  "download_manifest_file_count": 254,
+  "download_output_manifest_sha256": "b60a1d04015841b6eee27006969649799a118737c2cb8900e1e9bc06c65d5386",
+  "elapsed_kernel_seconds": 8976.249856567001,
+  "expected_state_count": 49,
+  "kernel_allowance_seconds": 11200,
+  "kernel_cli_status": "KernelWorkerStatus.COMPLETE",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal",
+  "kernel_version": 5,
+  "kind": "fd08_v2_r6_retry2_terminal_capture_index",
+  "remote_output_archive_path": "docs/evidence/fd08_v2_r6_2026_10_06/r6_retry2_kernel_v5_terminal_artifacts.tar.gz",
+  "remote_output_archive_sha256": "17e57c020cb9bd398c1d794748bdf876f111b11f5982716a589fadf89f930856",
+  "solver_cap_seconds": 6600,
+  "source_commit": "f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9",
+  "status": "PASS_TERMINAL_INTEGRITY",
+  "unexpected_state_count": 0,
+  "verified_state_count": 49,
+  "verifier_evidence_sha256": "dd0b1c9bd3643adc0d36fcb70d38ac19d4f223d880b840f03a30b8106422f06f",
+  "verifier_path": "docs/evidence/fd08_v2_r6_2026_10_06/r6_retry2_terminal_verification.json",
+  "verifier_sha256": "c6adc6290a47591d46db0221ceeaf25a8a9cd3900f23b36098b5e189c0189a98"
+}

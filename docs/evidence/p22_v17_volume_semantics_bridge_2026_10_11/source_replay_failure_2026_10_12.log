@@ -1,0 +1,12 @@
+P22 replay assertions PASS 87efae21805251ec80f7244fcd8e3edca44264e4d36cd6ac6e155920bf1894b3
+Traceback (most recent call last):
+  File "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/scripts/audit_p22_v17_volume_semantics.py", line 174, in <module>
+    output = canonical(replay())
+    ^^^^^^
+  File "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/scripts/audit_p22_v17_volume_semantics.py", line 170, in main
+    parser = argparse.ArgumentParser(description=__doc__)
+        ^^^^^^^^^^^^^^
+  File "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/scripts/audit_p22_v17_volume_semantics.py", line 142, in check_source
+    from sdf_native_genesis_v17_2026_09 import resample
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: INCONCLUSIVE: source replay differs for v17_baseline

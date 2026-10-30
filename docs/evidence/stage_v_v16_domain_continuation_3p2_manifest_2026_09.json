@@ -1,0 +1,104 @@
+{
+  "baseline": {
+    "Cd": 2.5234447210958906,
+    "case_dir": "work/stage_s_work_f_v1/baseline/V1",
+    "cells": 39848,
+    "downforce": 1.690843254931507,
+    "iterations": 292,
+    "qualified": true,
+    "raw_check_mesh_mesh_ok": false,
+    "reasons": []
+  },
+  "budget": {
+    "max_new_runs": 1,
+    "mesh_levels": [
+      "V1"
+    ],
+    "v2_runs": 0,
+    "v3_runs": 0
+  },
+  "candidate": {
+    "same_candidate_as_stage_s": true,
+    "stl": {
+      "path": "work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl",
+      "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+    }
+  },
+  "claims_not_supported": [
+    "grid-independent or absolute Stage V downforce",
+    "reduced-basis FD qualification or shape update",
+    "full-vehicle or high-Re FSAE qualification"
+  ],
+  "immutable": true,
+  "kind": "stage_v_v16_domain_continuation_3p2_manifest",
+  "metric": {
+    "comparison": "adjacent +1.6 m -> +3.2 m",
+    "downforce_absolute": 0.005,
+    "drag_relative": 0.02
+  },
+  "previous_1p6": {
+    "Cd": 1.2749976332352941,
+    "case_dir": "work/stage_v_v16_domain_continuation_2026_09/far_field_domain_extension_1p6/V1",
+    "cells": 48564,
+    "downforce": 0.505272069639706,
+    "iterations": 544,
+    "qualified": true,
+    "raw_check_mesh_mesh_ok": false,
+    "reasons": []
+  },
+  "question": "Does the same-candidate v16 response settle when the original V1 domain is extended by 3.2 m under unchanged symmetry/freestream/wall boundary semantics?",
+  "registered_before_computation": true,
+  "run_manifest": {
+    "path": "docs/evidence/stage_v_v16_domain_continuation_3p2_run_manifest_2026_09.json",
+    "sha256": "827d93314a8594a9205aa06ad98aa9c50343a6bb361f8e21d2c4d75f36e4aa22"
+  },
+  "schema_version": 1,
+  "status": "registered_not_run",
+  "treatment": {
+    "boundary_contract": {
+      "bottom": "wall / U noSlip / p zeroGradient",
+      "design_candidate": "wall / U noSlip / p zeroGradient",
+      "inlet": "patch / U fixedValue freestream / p zeroGradient",
+      "outlet": "patch / U zeroGradient / p fixedValue",
+      "sideMax": "symmetryPlane",
+      "sideMin": "symmetryPlane",
+      "top": "symmetryPlane"
+    },
+    "case_dir": "work/stage_v_v16_domain_continuation_3p2_2026_09/far_field_domain_extension_3p2/V1",
+    "change": "extend inlet, outlet, sideMin, sideMax, and top by 3.2 m from the original v16 V1 box; bottom remains at z=-0.6 m",
+    "extended_spec": {
+      "canonical_sha256": "dd1039ae76aea6a2b257cd5044958815169d3051637272b629bfed2e1970e209",
+      "diff_keys": [
+        "grid",
+        "problem_id"
+      ],
+      "extension_m": 3.2,
+      "lower_m": [
+        -4.2,
+        -4.0,
+        -0.6
+      ],
+      "path": "work/stage_v_v16_domain_continuation_3p2_2026_09/specs/project_matched_re_laminar_domain_extended_3p2_v1.yaml",
+      "sha256": "434f7c01dfd142cd7ae860c6d17d9375c601f997ec97a7bd741da05229a60585",
+      "staged_design_domain": {
+        "path": "work/stage_v_v16_domain_continuation_3p2_2026_09/specs/geometry/design_domain.stl",
+        "sha256": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446"
+      },
+      "upper_m": [
+        5.2,
+        4.0,
+        3.8000000000000003
+      ]
+    },
+    "factor": "far-field domain size",
+    "far_field_faces": [
+      "inlet",
+      "outlet",
+      "sideMin",
+      "sideMax",
+      "top"
+    ],
+    "ground_face": "bottom",
+    "name": "far_field_domain_extension_3p2"
+  }
+}

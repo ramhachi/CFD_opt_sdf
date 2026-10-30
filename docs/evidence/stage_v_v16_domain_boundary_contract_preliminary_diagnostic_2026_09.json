@@ -1,0 +1,28 @@
+{
+  "kind": "stage_v_v16_domain_boundary_contract_preliminary_diagnostic",
+  "schema_version": 1,
+  "status": "superseded_before_qualification",
+  "reason": "The copied top-pressure-outlet case retained the baseline postProcessing/forceCoeffs/0/coefficient.dat. OpenFOAM wrote a new coefficient_0.dat, while the qualification reader selected the stale canonical coefficient.dat. The preliminary top-treatment response therefore reused the baseline force history and is not valid treatment evidence.",
+  "preserved_artifacts": {
+    "manifest": {
+      "path": "docs/evidence/stage_v_v16_domain_boundary_contract_manifest_preliminary_reused_postprocessing_2026_09.json",
+      "sha256": "093326be74354428be6de4c126e4fb15d4e882c6af1ebb21367a7ddb932b4cf3"
+    },
+    "evidence": {
+      "path": "docs/evidence/stage_v_v16_domain_boundary_contract_preliminary_reused_postprocessing_2026_09.json",
+      "sha256": "bbfc30e3ac2a5efd7e1291aee57ed69953505d451d2b5af89e93c7d19fba9d95"
+    }
+  },
+  "observed_lineage": {
+    "baseline_coefficient_dat_sha256": "5e09d349a0162ea6edcaffd6cd159ffc6decf81ff5f2fd388deadc2c0b2d1603",
+    "preliminary_top_coefficient_dat_sha256": "5e09d349a0162ea6edcaffd6cd159ffc6decf81ff5f2fd388deadc2c0b2d1603",
+    "preliminary_top_new_coefficient_0_dat_present": true,
+    "preliminary_top_solver_log_present": true
+  },
+  "repair": {
+    "action": "delete copied postProcessing before every treatment run",
+    "implementation": "run_stage_v16_domain_boundary_contract_2026_09.py:_clean_case_outputs",
+    "rerun_required": true,
+    "stage_s2_allowed": false
+  }
+}

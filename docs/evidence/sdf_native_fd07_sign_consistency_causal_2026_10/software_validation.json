@@ -1,0 +1,83 @@
+{
+  "branch": "exp/issue-37-sign-consistency-causal-probe",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m pytest -q tests/test_sdf_native_fd07_sign_consistency.py",
+      "failed": 0,
+      "passed": 4,
+      "result": "PASS"
+    },
+    {
+      "command": ".venv/bin/python -m compileall -q src tests scripts",
+      "result": "PASS"
+    },
+    {
+      "command": "julia --project=julia/CFDSDFWaterLily -e \"Meta.parseall(read(\"scripts/sdf_native_fd07_sign_consistency_causal_cpu_probe.jl\", String))\"",
+      "result": "PASS"
+    },
+    {
+      "command": "julia -t 4 --project=julia/CFDSDFWaterLily scripts/sdf_native_fd07_sign_consistency_causal_cpu_probe.jl --preflight-only docs/evidence/sdf_native_fd07_sign_consistency_causal_2026_10",
+      "fixed_face_control_groups": 9,
+      "result": "PASS",
+      "solver_steps": 0
+    },
+    {
+      "command": ".venv/bin/python scripts/sdf_native_fd07_sign_consistency_prepare.py --verify docs/evidence/sdf_native_fd07_sign_consistency_causal_2026_10",
+      "input_files_checked": 19,
+      "result": "PASS"
+    },
+    {
+      "command": "julia -t 4 --project=julia/CFDSDFWaterLily scripts/sdf_native_fd07_sign_consistency_causal_cpu_probe.jl docs/evidence/sdf_native_fd07_sign_consistency_causal_2026_10",
+      "minimum_final_time_u_l": 3.0,
+      "production_package_modified": false,
+      "result": "PASS",
+      "solves_completed": 26,
+      "solves_registered": 26
+    },
+    {
+      "command": ".venv/bin/python scripts/sdf_native_fd07_sign_consistency_analysis.py docs/evidence/sdf_native_fd07_sign_consistency_causal_2026_10",
+      "note": "Initial post-run analysis succeeded; the analysis tool intentionally refuses to overwrite an existing summary on rerun.",
+      "result": "PASS",
+      "summary_sha256": "0c9783a57a05c68c08370102404a991e8b5d8fa2ef4e5a91e64e45a347086a83"
+    },
+    {
+      "baseline_failed": 37,
+      "baseline_passed": 1221,
+      "baseline_skipped": 4,
+      "command": ".venv/bin/python -m pytest -q",
+      "duration_seconds": 209.83,
+      "failed": 37,
+      "failure_id_sets_match": true,
+      "new_failure_count": 0,
+      "passed": 1225,
+      "result": "BASELINE_FAILURES_REPRODUCED",
+      "skipped": 4
+    }
+  ],
+  "date": "2026-10-01",
+  "evidence_class": "software_validation_and_bounded_causal_diagnostic",
+  "full_suite_failure_id_artifact": "software_logs/full_pytest_failure_ids.txt",
+  "full_suite_failure_ids_sha256": "39031c5893dd0cb0f7759d889abd345315fc7b1c69b06c43557cdda6007497bf",
+  "independent_raw_history_recomputation": {
+    "all_history_hashes_match": true,
+    "history_count": 26,
+    "max_abs_integrated_mean_difference_n": 1.1102230246251565e-16,
+    "max_abs_sample_force_closure_error_n": 6.315935428978668e-17,
+    "window": [
+      2.0,
+      3.0
+    ]
+  },
+  "kind": "fd07_sign_consistency_causal_software_validation",
+  "plan_sha256": "790a50aaa5eee8342c8f09ade54db808fd4992dcdfeaee6c6d48969f6f153478",
+  "qualification_flags": {
+    "canonical_v18_registered": false,
+    "formal_fd_qualified": false,
+    "optimizer_allowed": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false
+  },
+  "registered_baseline_evidence": "docs/evidence/sdf_native_fd07_lattice_shift_diagnosis_2026_10/software_validation.json",
+  "registered_baseline_failure_ids_sha256": "39031c5893dd0cb0f7759d889abd345315fc7b1c69b06c43557cdda6007497bf",
+  "source_commit": "b41c8fa8ff054f7f9aeee983850dadeefdf8a7d4"
+}

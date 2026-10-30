@@ -1,0 +1,67 @@
+{
+ "campaign_sha256": "ee3cfe38927e7a66eefb155434da0f81ec594991b65e9a45be20dc2b936a0a66",
+ "grids": {
+  "flow_24": {
+   "downforce_n": 0.2619469615569629,
+   "drag_n": 0.27569839396501955,
+   "drift": {
+    "downforce": 3.1947800251729922e-06,
+    "drag": 4.025600838877709e-06
+   },
+   "pass": true,
+   "ratio_to_v17_native_parent": 0.7892821548661049,
+   "tests": {
+    "downforce_positive": true,
+    "drift_downforce": true,
+    "drift_drag": true,
+    "finite": true,
+    "gross_error_ratio_to_v17": true
+   },
+   "v17_reference_n": 0.33188
+  },
+  "flow_32": {
+   "downforce_n": 0.2670659101302601,
+   "drag_n": 0.2767894028989826,
+   "drift": {
+    "downforce": 2.1295180306769039e-07,
+    "drag": 2.3560740518734094e-07
+   },
+   "pass": true,
+   "ratio_to_v17_native_parent": 0.7381997626465258,
+   "tests": {
+    "downforce_positive": true,
+    "drift_downforce": true,
+    "drift_drag": true,
+    "finite": true,
+    "gross_error_ratio_to_v17": true
+   },
+   "v17_reference_n": 0.36178
+  },
+  "flow_48": {
+   "downforce_n": 0.26730741220163023,
+   "drag_n": 0.2868187278940599,
+   "drift": {
+    "downforce": 3.0014917754795586e-06,
+    "drag": 7.213780410375483e-06
+   },
+   "pass": true,
+   "ratio_to_v17_native_parent": 0.7336555844699608,
+   "tests": {
+    "downforce_positive": true,
+    "drift_downforce": true,
+    "drift_drag": true,
+    "finite": true,
+    "gross_error_ratio_to_v17": true
+   },
+   "v17_reference_n": 0.36435
+  }
+ },
+ "kind": "unc01_u0_gate",
+ "rows_read": "v18__parent__k0 only",
+ "rule": "registration \u00a75.1: finite flags, relative half-window drift <= 0.02 (drag, downforce), downforce > 0, gross-error check 0.5 <= F/F_v17 <= 2",
+ "smoke": false,
+ "table_sha256": {
+  "state_force_table.json": "8804272bcb6ec90f64c0f95b23955ce18db31e6a01e33976ec7c2ff6a696b7f2"
+ },
+ "verdict": "U0_PASS"
+}

@@ -1,0 +1,16 @@
+{
+  "criteria_sha256": "b5e8d16838882c92f17d192cc5b1b0a1a525360ac4968cf5c40e359cb4f3190b",
+  "error": "Command '['bash', '-lc', 'source /opt/openfoam2512/etc/bashrc && foamVersion']' returned non-zero exit status 1.",
+  "error_type": "CalledProcessError",
+  "failure_stage": "environment_install",
+  "package_lock_sha256": "b5e59f8a7da34820fc3c6bda93b3524204dcaf4fa6e4f7f11d6c46ddddb66746",
+  "runner_sha256": "8a0605ee78d3dfe6ccbad1ccfba61488861f33ec988541116c5b6693120469b8",
+  "runtime": {
+    "architecture": "amd64",
+    "executable": "/usr/bin/python3",
+    "os_release": "PRETTY_NAME=\"Ubuntu 22.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\nVERSION=\"22.04.5 LTS (Jammy Jellyfish)\"\nVERSION_CODENAME=jammy\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=jammy\n",
+    "platform": "Linux-6.18.48+-x86_64-with-glibc2.35",
+    "python": "3.12.13"
+  },
+  "status": "FAIL"
+}

@@ -23,6 +23,12 @@ dependencies = [
 dev = [
   "pytest>=8.0",
 ]
+plots = [
+  "matplotlib>=3.8",
+]
+geometry-gates = [
+  "scikit-image==0.25.2",
+]
 metal = [
   "mlx>=0.32.2,<0.33; sys_platform == 'darwin' and platform_machine == 'arm64'",
 ]
@@ -35,3 +41,4 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["src"]

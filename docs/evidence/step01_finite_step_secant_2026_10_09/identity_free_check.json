@@ -1,0 +1,53 @@
+{
+  "all_free": true,
+  "captured_utc": "2026-10-09T03:21:00.716613+00:00",
+  "cli_version": "Kaggle CLI 2.2.4",
+  "intended_slugs": [
+    "cfd-opt-sdf-step01-a",
+    "cfd-opt-sdf-step01-b",
+    "cfd-opt-sdf-step01-c"
+  ],
+  "kind": "fd08_v2_kaggle_identity_free_check",
+  "listed_slug_clashes": {},
+  "owned_dataset_count": 20,
+  "owned_kernel_count": 34,
+  "owner": "ramhachi888",
+  "status_probes": {
+    "cfd-opt-sdf-step01-a": {
+      "datasets": {
+        "exit_code": 1,
+        "stderr": "403 Client Error: Forbidden for url: https://api.kaggle.com/v1/datasets.DatasetApiService/GetDatasetStatus",
+        "stdout": ""
+      },
+      "kernels": {
+        "exit_code": 1,
+        "stderr": "Cannot access kernel 'ramhachi888/cfd-opt-sdf-step01-a' (Permission 'kernels.get' was denied). The most likely cause is a wrong kernel slug. The benchmark_task_slug returned by get_benchmark_leaderboard differs from the actual kernel slug \u2014 use the slug from the notebook URL (kaggle.com/code/owner/K",
+        "stdout": ""
+      }
+    },
+    "cfd-opt-sdf-step01-b": {
+      "datasets": {
+        "exit_code": 1,
+        "stderr": "403 Client Error: Forbidden for url: https://api.kaggle.com/v1/datasets.DatasetApiService/GetDatasetStatus",
+        "stdout": ""
+      },
+      "kernels": {
+        "exit_code": 1,
+        "stderr": "Cannot access kernel 'ramhachi888/cfd-opt-sdf-step01-b' (Permission 'kernels.get' was denied). The most likely cause is a wrong kernel slug. The benchmark_task_slug returned by get_benchmark_leaderboard differs from the actual kernel slug \u2014 use the slug from the notebook URL (kaggle.com/code/owner/K",
+        "stdout": ""
+      }
+    },
+    "cfd-opt-sdf-step01-c": {
+      "datasets": {
+        "exit_code": 1,
+        "stderr": "403 Client Error: Forbidden for url: https://api.kaggle.com/v1/datasets.DatasetApiService/GetDatasetStatus",
+        "stdout": ""
+      },
+      "kernels": {
+        "exit_code": 1,
+        "stderr": "Cannot access kernel 'ramhachi888/cfd-opt-sdf-step01-c' (Permission 'kernels.get' was denied). The most likely cause is a wrong kernel slug. The benchmark_task_slug returned by get_benchmark_leaderboard differs from the actual kernel slug \u2014 use the slug from the notebook URL (kaggle.com/code/owner/K",
+        "stdout": ""
+      }
+    }
+  }
+}

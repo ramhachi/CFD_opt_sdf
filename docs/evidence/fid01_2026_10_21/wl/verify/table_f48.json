@@ -1,0 +1,89 @@
+{
+  "campaign_id": "fid01_f48",
+  "campaign_sha256": "c9500580046afe510a7a49c146797374c986e6ef4eea2f86306fbafd63eecea1",
+  "freeze_sha256": "b1c9b6ce371e909a229d238375d69be3c78002906a4622b05f5e3feb66475c45",
+  "harness_tool_sha256": {
+    "scripts/harness.py": "e9d036846ffd33fced8a1507a8fb191e49e0179a517c25a393354c83de4655fa",
+    "src/cfd_harness/campaign_build.py": "7e3ee902bc3ed020edd5e37cbd9060490f9c0f5119e72a60448edbdcf0688a68",
+    "src/cfd_harness/campaign_runner_template.py": "d53e2df74af8becc4e512c19e14381c549006a499c38c2cfab2ba89b6ab9ead1",
+    "src/cfd_harness/campaign_schema.py": "4c3c494ed381930d9d1e51b063efbbdcf1fa4586c1ac7e84d2b999a5c984d1b8",
+    "src/cfd_harness/campaign_verify.py": "8db4714799e258e08ce1a2e8ed9de4b5ff90ba3d9fa56513ec6d6997b0e57a2e"
+  },
+  "harness_version": "harness v1.1",
+  "integrity": {
+    "failures": [],
+    "pass": true
+  },
+  "kernel_manifest_sha256": {
+    "f48": "4a5d7586f197d8ae1e75b2eeacff8da1c30851332a3acae046f92ec9b40db741"
+  },
+  "kind": "harness_state_force_table",
+  "legacy_replay": false,
+  "per_kernel": true,
+  "smoke": false,
+  "source_commit": "513840fecc3cdbec5f5825b6bd4260fa40829dc0",
+  "state_forces_n": {
+    "f48": {
+      "v18__heave_m31.1__k7": {
+        "downforce_n": 0.26121757122118594,
+        "drag_n": 0.28258102521746936,
+        "forces_csv_sha256": "b2f378bf4eeaf2c9aa63c6a17297658e005ce64100927994a565152913d5b7bf",
+        "julia_summary_wall_seconds": 2119.738867998123,
+        "solver_process_wall_seconds": 2189.4979486465454,
+        "summary_sha256": "79d54e6ceacef3ee635d75b06112990bf766bb61457a9732934b6b0c0b87815a"
+      },
+      "v18__heave_m31.1_pitch_p0.7__k7": {
+        "downforce_n": 0.2711896992198205,
+        "drag_n": 0.28982119101149867,
+        "forces_csv_sha256": "7e6dcd422761b9ce3df887944815b480c28bbf5364a773eb6d51378d40baad6b",
+        "julia_summary_wall_seconds": 2108.6049649715424,
+        "solver_process_wall_seconds": 2177.580845594406,
+        "summary_sha256": "ba61b6c759efc48f05c87faa429aa3abda518290fb30704bb66b7fd978a3dbbc"
+      },
+      "v18__heave_p31.1__k7": {
+        "downforce_n": 0.27016988606440556,
+        "drag_n": 0.28402087520641683,
+        "forces_csv_sha256": "586f4c221ff4cf8e0148a6b2b7704b7f4758bc4850ff6e17999bd106b84768b3",
+        "julia_summary_wall_seconds": 2118.3651440143585,
+        "solver_process_wall_seconds": 2188.9462761878967,
+        "summary_sha256": "691f12f66a6481a71e5152747fe66342398e68ffadc52a80abac02bd1059906b"
+      },
+      "v18__parent__k7": {
+        "downforce_n": 0.26596318903163413,
+        "drag_n": 0.2858304596843789,
+        "forces_csv_sha256": "91ec25e8e7924bfc7f3432a13cc2b186f9ec60dfe4e7d1358e36a8cb45204e6b",
+        "julia_summary_wall_seconds": 2117.415512084961,
+        "solver_process_wall_seconds": 2187.740617990494,
+        "summary_sha256": "6f453815070651960ca81a9724dd5b4c0410cd4d46b6053996d037986d1d6a1e"
+      },
+      "v18__pitch_m1.3_reflex_p29.3_sweep_p11.3__k7": {
+        "downforce_n": 0.2344857850562007,
+        "drag_n": 0.2644755026766717,
+        "forces_csv_sha256": "b009f0d25a826b9823a6bc6eac7bb6749a8a557194dbe24977c39401ed90f8b3",
+        "julia_summary_wall_seconds": 2213.844923019409,
+        "solver_process_wall_seconds": 2282.8486182689667,
+        "summary_sha256": "ab79c8933a96398051f6a8bde0bb2b2e97aaf7574162313852e7f81032aa64fa"
+      },
+      "v18__reflex_m29.3__k7": {
+        "downforce_n": 0.28017373985851013,
+        "drag_n": 0.2987144642561841,
+        "forces_csv_sha256": "484eae177089ce5007d25277bcd34909b1a22e9c479894c58c4d156dfa84b6f6",
+        "julia_summary_wall_seconds": 2171.0864119529724,
+        "solver_process_wall_seconds": 2243.363333463669,
+        "summary_sha256": "139a6ab691398922ff187b21fe231785ab0c39862c0a1442ef36649e0ceb035c"
+      },
+      "v18__twist_p2.3__k7": {
+        "downforce_n": 0.2698021307787208,
+        "drag_n": 0.28733687825826565,
+        "forces_csv_sha256": "36998eaa0720502c2abb8fd8f412d14517bfade77fe0bc0922138bbaf75bd691",
+        "julia_summary_wall_seconds": 2158.9398300647736,
+        "solver_process_wall_seconds": 2229.858549594879,
+        "summary_sha256": "3f142a0dd735afc467c0aa77b68de62e2c59cc17ddcb9fda28dc7f4f45fbad40"
+      }
+    }
+  },
+  "verifier": {
+    "script": "scripts/fid01/fid01_harness.py verify (scripts/unc01_verify.verify_one with the placeholder-tolerant listing parser)",
+    "sha256": "f8d7fe45801e15e8b4d6d0fbbbe6b1827a3be9c49209804ac556c8a870d8dfab"
+  }
+}

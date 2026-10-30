@@ -9,6 +9,7 @@ work/
 
 # Local solver and test outputs
 *.log
+!docs/evidence/**/kernel_output/**/*.log
 *.core
 core
 core.*
@@ -45,3 +46,16 @@ openfoam_extensions/**/Make/*/
 openfoam_extensions/**/lnInclude/*
 openfoam_extensions/**/*.o
 openfoam_extensions/**/*.dep
+
+# macOS metadata
+.DS_Store
+!docs/evidence/lowdim04a_stage_a_2026_10_13/**/*.log
+!docs/evidence/lowdim04b_stage_b_2026_10_13/**/*.log
+!docs/evidence/grad_ta1_2026_10_15/**/*.log
+!docs/evidence/opt01a_stage_a_2026_10_15/**/*.log
+!docs/evidence/opt01b_stage_b_2026_10_15/**/*.log
+!docs/evidence/grid02_trend_2026_10_16/**/*.log
+!docs/evidence/gridres01_2026_10_20/**/*.log
+!docs/evidence/unc01_2026_10_20/**/*.log
+!docs/evidence/t20c_registered_2026_10_20/**/*.log
+!docs/evidence/t20d_registered_2026_10_21/**/*.log

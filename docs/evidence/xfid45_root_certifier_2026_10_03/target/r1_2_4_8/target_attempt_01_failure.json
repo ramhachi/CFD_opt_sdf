@@ -1,0 +1,72 @@
+{
+  "evidence_class": "incomplete_target_replay_attempt",
+  "certifier_identity": "XFID45-CERT-01",
+  "attempt_id": "attempt01",
+  "command": [
+    ".venv/bin/python",
+    "scripts/run_xfid45_root_certifier_replay_2026_10_03.py",
+    "--r",
+    "1",
+    "2",
+    "4",
+    "8"
+  ],
+  "exit_code": 1,
+  "branch": "exp/issue45-root-certifier-2026-10-03",
+  "feature_head": "da301bbc97061e80e529614d310494a6aa23e888",
+  "authoritative_branch_head": "3f9322dc0fa0f2847a3204427b81a665932b83b8",
+  "preregistration_sha256": "ceb3dbd5f70ee9905ebc3ddf9aa90c3afde83b046d6fcd9c9799940783d6a7d7",
+  "preregistration_amendment_01_sha256": "1f7d4c713c591a08e9638e8cd68aa2405fffa7de6fc50a73ed8b3812f052d464",
+  "runner_sha256": "562f5a73e39499c260305a756c654db30eeebfdb02d40f59ac965cab3eb04335",
+  "observed_exception": {
+    "type": "KeyError",
+    "key": "baseline",
+    "traceback_location": "_fidelity_replay surface prerequisite lookup at scripts/run_xfid45_root_certifier_replay_2026_10_03.py"
+  },
+  "execution_progress": {
+    "preregistration_and_201_file_hash_preflight": "passed",
+    "r1_double_and_float32_absolute_geometry_cases": "computed for the 10 registered cases; output summaries remained in memory and were not finalized",
+    "first_pair": "D0_interface_offset_minus / double; all fixed normal samples were root-enumerated before the surface-prerequisite lookup raised KeyError",
+    "r1_float32_fidelity_and_remaining_pairs": "not completed",
+    "r2_r4_r8": "not started"
+  },
+  "nonfatal_diagnostic_warning": "RuntimeWarning invalid value encountered in subtract while comparing corresponding nonfinite geometry bounds; must be represented without NaN in strict JSON output.",
+  "attempt_status": "INCOMPLETE_FAILED_OUTPUT_ASSEMBLY",
+  "criteria_changed": false,
+  "primary_certifier_changed": false,
+  "independent_verifier_changed": false,
+  "target_evaluation_started": true,
+  "solver_kaggle_or_formal_xfid_started": false,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "solver_qualification": false,
+    "topology": false
+  },
+  "partial_artifacts": [
+    {
+      "path": "target/r1_2_4_8/attempt_01_console.log",
+      "bytes": 1312,
+      "sha256": "698c96f7e580d4047d70bd2710924d1031e8b0a15ebe913e927ca3fb193761d2"
+    },
+    {
+      "path": "target/r1_2_4_8/correspondence_roots.jsonl.gz.partial",
+      "bytes": 83820,
+      "sha256": "b1aa715275d0f5e7a95fbbf110e0f23cb2ca511f4a9fd0c225197a81affb1c92"
+    }
+  ],
+  "results_written": false,
+  "partial_root_trace_verification": {
+    "gzip_integrity": "PASS",
+    "valid_jsonl_record_count": 1024,
+    "only_group": {
+      "r": 1,
+      "case": "D0_interface_offset_minus",
+      "storage": "double",
+      "record_count": 1024
+    }
+  }
+}

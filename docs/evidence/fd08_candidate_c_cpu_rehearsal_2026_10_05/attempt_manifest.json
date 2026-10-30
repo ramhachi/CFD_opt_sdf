@@ -1,0 +1,42 @@
+{
+  "calibration_measurement_started": false,
+  "criteria_registered": false,
+  "evidence_class": "preserved_cpu_harness_failure_not_scientific_verdict",
+  "failed_state": "cal_baseline_01",
+  "files": [
+    {
+      "bytes": 70945,
+      "path": "cpu_rehearsal_preview.json",
+      "sha256": "2912e1c0600291f8e19aee10db3c008e6de36b0e3f6a992f57872cd280e5583e"
+    },
+    {
+      "bytes": 65,
+      "path": "cpu_rehearsal_preview.json.sha256",
+      "sha256": "827d9ae1e2e528b2a9a91dc0fd38c0bb1897caeaae340441cbda63e5a4da3934"
+    },
+    {
+      "bytes": 1541540,
+      "path": "inputs/cal_baseline_01.phi_f4_fortran.raw",
+      "sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431"
+    },
+    {
+      "bytes": 534,
+      "path": "rehearsal_failure.json",
+      "sha256": "714bd411215e7a86e27cc30f6cb6be2a2f0f779545a47b7e25f0290a6f1f0299"
+    },
+    {
+      "bytes": 65,
+      "path": "rehearsal_failure.json.sha256",
+      "sha256": "593d05513439a214d61dfa255f470e7dba98db1cbb368fc0e0de45fac4ddef27"
+    },
+    {
+      "bytes": 1517,
+      "path": "runner_output/cal_baseline_01.log",
+      "sha256": "245d43e388651056f254e9b858372eda98f766f0388e65542ed7681ad1c51375"
+    }
+  ],
+  "kind": "fd08_cpu_rehearsal_attempt_manifest",
+  "preview_sha256": "2912e1c0600291f8e19aee10db3c008e6de36b0e3f6a992f57872cd280e5583e",
+  "solver_step_invoked": false,
+  "source_commit": "81c19623bc3d24d64c36691a38cbec0affbdb364"
+}

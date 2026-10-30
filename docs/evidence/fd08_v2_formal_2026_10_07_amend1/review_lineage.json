@@ -1,0 +1,156 @@
+{
+  "amended_registrar_sha256": "0570d34a06fa9469b9db7a96f780fc8f95d3535867fe48f8e53b162dd81467b6",
+  "evidence_class": "independent_static_source_lineage_review",
+  "findings": [
+    {
+      "conclusion": "Formal execution source is an explicit exact 40-character Git commit, must differ from the pinned R6 commit, and is checked against every source_inputs path/SHA before registration. Non-dry registration additionally requires clean local HEAD == pushed integration branch HEAD == supplied execution commit. The shared runner checks out criteria.source_commit and independently validates every source SHA plus uploaded runner bytes and checkout HEAD.",
+      "criterion": "execution source commit and source inventory",
+      "evidence": [
+        "scripts/register_fd08_v2_formal.py:140-159",
+        "scripts/register_fd08_v2_formal.py:203-215",
+        "scripts/register_fd08_v2_formal.py:286-294",
+        "scripts/register_fd08_v2_formal.py:371",
+        "infra/kaggle/kernel_fd08_v2_r6/runner.py:131-150"
+      ],
+      "id": "L1",
+      "limitation": "This is static validation of the enforcement logic. Actual final integration tree, remote reachability and fresh-checkout verification are reserved for the parent validation; no final execution commit has been certified by this review.",
+      "status": "PASS"
+    },
+    {
+      "conclusion": "R6 criteria/result/terminal hashes and source commit are pinned as one exact parent tuple. Original registrar file SHA equals the pre-R6 binding (7882195db39b01a3178c9ef1b8bc8c014ba1a579c81c768cf8fdb7df22b5c92c). Parent criteria digest is 90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837. The 35 R6 SOURCE_FILES keys and paths exactly match the immutable R6 source inventory; all parent entries other than the explicitly amended registrar and replacement formal metadata must retain identical path/SHA. Calibration source commit remains in calibration_binding; frozen fits are copied without a new fit.",
+      "criterion": "immutable R6 provenance preservation",
+      "evidence": [
+        "scripts/register_fd08_v2_formal.py:69-74",
+        "scripts/register_fd08_v2_formal.py:89-123",
+        "scripts/register_fd08_v2_formal.py:162-176",
+        "scripts/register_fd08_v2_formal.py:199-205",
+        "scripts/register_fd08_v2_formal.py:297-307",
+        "docs/evidence/fd08_v2_r6_2026_10_06/r6_retry2_criteria.json:source_commit/source_inputs"
+      ],
+      "id": "L2",
+      "limitation": "R6 result, terminal verification and raw histories were intentionally not read. Their claimed PASS disposition and numerical fit content are not independently certified here; their exact hashes and registration gate logic are reviewed.",
+      "status": "PASS"
+    },
+    {
+      "conclusion": "The new top-level formal source_commit comes from args.source_commit; the R6 commit is calibration provenance and is not substituted into checkout. fetch_source uses only the top-level criteria source_commit, followed by verify_source, before Julia project setup. The shared runner digest is unchanged relative to the R6 source inventory (43cb6e75f08bf2a3333f0e0827422c041cbe572944bdd7644cf5520616f39baf).",
+      "criterion": "formal checkout selects amended execution source only",
+      "evidence": [
+        "scripts/register_fd08_v2_formal.py:143",
+        "scripts/register_fd08_v2_formal.py:293-304",
+        "infra/kaggle/kernel_fd08_v2_r6/runner.py:143-150",
+        "infra/kaggle/kernel_fd08_v2_r6/runner.py:381-398"
+      ],
+      "id": "L3",
+      "limitation": "The uploaded formal runner copy and actual Kaggle checkout have not been inspected or run; verify_source will reject uploaded runner byte drift.",
+      "status": "PASS"
+    },
+    {
+      "conclusion": "Registrar and amendment document contain no eventual integration commit or criteria hash. Reviews bind the amended registrar and permitted input hashes and are committed before registration. The execution commit then binds those review files; generated preflight and criteria are created afterwards. criteria.dataset_files contains state/budget files but excludes criteria itself and the manifest; the later manifest binds criteria and its sidecar while excluding itself. These dependencies are acyclic.",
+      "criterion": "non-circular commit and hash dependencies",
+      "evidence": [
+        "scripts/register_fd08_v2_formal.py:145-159",
+        "scripts/register_fd08_v2_formal.py:177-195",
+        "scripts/register_fd08_v2_formal.py:399-417",
+        "docs/issues/46_fd08_v2_formal_lineage_amendment_2026_10_07.md:40-46"
+      ],
+      "id": "L4",
+      "limitation": "Future amendments or reviews must preserve this ordering and avoid embedding their eventual execution commit or criteria SHA into a file that the execution commit or criteria already hashes.",
+      "status": "PASS"
+    },
+    {
+      "conclusion": "New criteria FD08-V2-FORMAL-AMEND1-2026-10-07, round fd08_v2_formal_2026_10_07_amend1, staging/evidence paths, private dataset and private kernel are distinct from the reviewed original formal/R6 identities. Metadata id agrees with KERNEL_ID, dataset_sources is exactly [DATASET_ID], and is_private is literal true. Dataset and kernel share the new slug in separate Kaggle object namespaces; that is not an identity collision.",
+      "criterion": "criteria, dataset, round and kernel identities",
+      "evidence": [
+        "scripts/register_fd08_v2_formal.py:53-64",
+        "scripts/register_fd08_v2_formal.py:286-289",
+        "scripts/register_fd08_v2_formal.py:418-422",
+        "infra/kaggle/kernel_fd08_v2_formal_amend1/kernel-metadata.json",
+        "docs/evidence/fd08_v2_r6_2026_10_06/r6_retry2_criteria.json:identity"
+      ],
+      "id": "L5",
+      "limitation": "Remote Kaggle objects and upload state were not queried. Metadata identity agreement is checked for the reviewed template; the registrar does not validate a later external upload operation.",
+      "status": "PASS"
+    },
+    {
+      "conclusion": "The reviewed logic preserves exact immutable parent and sidecar checks, R6 8-series one-run PASS and 49-state terminal integrity gates, parent dataset/raw-phi hash checks and 49 unique byte arrays, canonical identity, direction hashes, fixed epsilon, 25 states/24 signed states, signed byte disjointness, baseline identity, budget gate, independent PASS reviews bound to the exact registrar, clean pushed execution source, and no-overwrite checks for criteria/preflight and sidecars. dry_run returns before criteria, preflight or staging writes. The runner verifies immutable unused criteria, literal-false qualification flags, exact dataset inventory/manifest and execution sources. No critical lineage/integrity gate omission was identified within this scope.",
+      "criterion": "critical preregistration and integrity gates",
+      "evidence": [
+        "scripts/register_fd08_v2_formal.py:94-122",
+        "scripts/register_fd08_v2_formal.py:126-136",
+        "scripts/register_fd08_v2_formal.py:169-184",
+        "scripts/register_fd08_v2_formal.py:216-244",
+        "scripts/register_fd08_v2_formal.py:264",
+        "scripts/register_fd08_v2_formal.py:399-429",
+        "infra/kaggle/kernel_fd08_v2_r6/runner.py:82-150",
+        "infra/kaggle/kernel_fd08_v2_r6/runner.py:373-398"
+      ],
+      "id": "L6",
+      "limitation": "Budget implementation, geometric helper implementation, dataset bytes, runtime measurement gates and full tests were outside this review scope. Construction-before-write is present, but the filesystem write sequence is not an atomic transaction; a write interruption can leave a preserved partial preregistration attempt and must not be treated as completed registration.",
+      "status": "PASS"
+    },
+    {
+      "conclusion": "Static AST comparison found identical numeric_prediction_rule, decision_tree, measurement, calibration_binding, formal_epsilon and byte_disjointness dictionaries, and identical load_canonical function. The set initialization fixes the existing distinct-byte gate rather than weakening it. Other changes in the registrar diff concern source lineage, identities, parent selection, packaging and dry-run/no-overwrite behavior. No scientific-contract alteration was identified in the reviewed source diff.",
+      "criterion": "scientific contract changes in the amended registrar diff",
+      "evidence": [
+        "work/formal_lineage_validation/original_registrar.py.txt",
+        "scripts/register_fd08_v2_formal.py",
+        "docs/evidence/fd08_v2_formal_2026_10_07_amend1/scientific_contract_frozen.json"
+      ],
+      "id": "L7",
+      "limitation": "This is source-diff scope; the independent scientific review and parent equivalence/actual geometry checks remain required. It is not evidence of formal interpolation PASS, target physics, solver accuracy or qualification.",
+      "status": "PASS"
+    }
+  ],
+  "independence": {
+    "formal_result_read": false,
+    "primary_conclusion_received": false,
+    "r6_response_result_or_raw_histories_read": false,
+    "repository_modules_imported_or_solver_executed": false
+  },
+  "reviewed_inputs": [
+    {
+      "path": "work/formal_lineage_validation/original_registrar.py.txt",
+      "reviewed_scope": "entire original registrar",
+      "sha256": "7882195db39b01a3178c9ef1b8bc8c014ba1a579c81c768cf8fdb7df22b5c92c"
+    },
+    {
+      "path": "scripts/register_fd08_v2_formal.py",
+      "reviewed_scope": "entire amended registrar",
+      "sha256": "0570d34a06fa9469b9db7a96f780fc8f95d3535867fe48f8e53b162dd81467b6"
+    },
+    {
+      "path": "scripts/register_fd08_v2_r6.py",
+      "reviewed_scope": "SOURCE_FILES, digest and source_inventory only; entire-file digest",
+      "sha256": "28e1e0b17079eab8b958cbce4bbcb413bf3fdff876f7707d805b78fd33ea1980"
+    },
+    {
+      "path": "infra/kaggle/kernel_fd08_v2_r6/runner.py",
+      "reviewed_scope": "source/dataset verification and checkout call ordering only; entire-file digest",
+      "sha256": "43cb6e75f08bf2a3333f0e0827422c041cbe572944bdd7644cf5520616f39baf"
+    },
+    {
+      "path": "infra/kaggle/kernel_fd08_v2_formal_amend1/kernel-metadata.json",
+      "reviewed_scope": "entire formal kernel metadata",
+      "sha256": "a3de6608e4bdbf189ac2f8039968f1b2a335455fdeb55e59cce559e7ff24a77e"
+    },
+    {
+      "path": "docs/evidence/fd08_v2_r6_2026_10_06/r6_retry2_criteria.json",
+      "reviewed_scope": "source schema, identity and original registrar binding only; entire-file digest",
+      "sha256": "90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837"
+    },
+    {
+      "path": "docs/issues/46_fd08_v2_formal_lineage_amendment_2026_10_07.md",
+      "reviewed_scope": "entire amendment document",
+      "sha256": "956d4b292f8e68b2243bda25c957f286225d204b83fc226d0c9abf07d3436d62"
+    },
+    {
+      "path": "docs/evidence/fd08_v2_formal_2026_10_07_amend1/scientific_contract_frozen.json",
+      "reviewed_scope": "entire frozen scientific contract representation",
+      "sha256": "00aef791f5ae65f6c9498b37213cc45cb821428e07762c14d06f29e430fd9a66"
+    }
+  ],
+  "role": "lineage",
+  "scientific_contract_changed": false,
+  "verdict": "PASS",
+  "verification_method": "Manual static source review, unified registrar diff, AST comparison of unchanged scientific dictionaries/function, identity/source-inventory assertions, and SHA-256 of allowed inputs. No repository module import, solver, Kaggle operation or fresh checkout."
+}

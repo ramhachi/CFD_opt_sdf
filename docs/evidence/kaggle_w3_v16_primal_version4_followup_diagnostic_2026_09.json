@@ -1,0 +1,83 @@
+{
+  "evidence_id": "kaggle_w3_v16_primal_version4_followup_diagnostic_2026_09",
+  "evidence_type": "diagnostic_only",
+  "recorded_utc_date": "2026-09-28",
+  "parent_evidence": {
+    "path": "docs/evidence/kaggle_w3_v16_primal_version4_diagnostic_2026_09.json",
+    "sha256": "1a22808509795a2735589743817fe2287014d7fbce7944492cd7e19bf4d4f51d"
+  },
+  "question": "Does the expanded-domain flow-origin map place the unchanged canonical v16 SDF inside the sampled host-side flow lattice, and can a short host CPU primal produce nonzero force using that fixture?",
+  "host_runtime": {
+    "julia_version": "1.12.6",
+    "waterlily_version": "1.8.0",
+    "execution_backend": "host CPU Array",
+    "qualification_evidence": false
+  },
+  "fixture": {
+    "expanded_flow_dims": [100, 48, 36],
+    "expanded_flow_origin_m": [-2.5, -1.2, -0.9],
+    "canonical_sdf_origin_m": [-1.0, -0.8, -0.6],
+    "spacing_m": 0.05,
+    "canonical_point_shape": [61, 33, 25],
+    "canonical_phi_fortran_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7"
+  },
+  "host_lattice_mapping_probe": {
+    "method": "Evaluate GridSDFWaterLilyBody on integer solver-coordinate lattice points using the expanded flow origin, unchanged canonical GridSDF origin, and Float32 map fields.",
+    "small_box_negative_distance_lattice_count": 1083,
+    "expanded_box_negative_distance_lattice_count": 1121,
+    "expanded_box_negative_distance_solver_index_bounds": [[38, 16, 13], [61, 33, 23]],
+    "expanded_box_probe": {
+      "world_m": [0.0, 0.0, 0.0],
+      "solver_coordinates": [50.0, 24.0, 18.0],
+      "signed_distance_solver_units": 0.0000011920929,
+      "normal": [-0.0000011920929, -0.000000010536698, 1.0]
+    },
+    "interpretation": "The candidate interface is present on the host-computed expanded solver lattice under the registered affine map. This does not inspect the remote T4 device body field."
+  },
+  "host_cpu_short_primal": {
+    "steps": 100,
+    "time_after_20_steps": 0.44597852,
+    "time_after_100_steps": 2.4212248,
+    "nonzero_raw_waterlily_force_observed_by_20_steps": true,
+    "after_20_steps_raw_pressure_force": [-108.4301887369009, -0.046992348936874, 155.6528751497019],
+    "after_20_steps_raw_viscous_force": [-58.964308587267624, -0.25923575387567865, -8.80931752528818],
+    "after_100_steps_raw_pressure_force": [-94.62838430846905, 0.4493273797127545, 151.99966643604367],
+    "after_100_steps_raw_viscous_force": [-44.22860357521924, -0.25650631611210883, -3.59332439259623],
+    "force_semantics": "Values are direct WaterLily.pressure_force/viscous_force outputs before the repository adapter's negation; they are recorded only to establish nonzero response in this short CPU smoke.",
+    "interpretation": "The unchanged candidate and expanded-domain mapping can produce nonzero integrated force in a short host CPU smoke. This is not a CUDA reproduction, long-horizon comparison, stationarity result, or qualification."
+  },
+  "diagnostic_artifacts": {
+    "mapping_script": {
+      "path": "work/w3_v4_grid_occupancy.jl",
+      "sha256": "12cad4d28b4effa840fbae27147ba688e5f93c96dcf3f48851db01b1eddf6674"
+    },
+    "mapping_log": {
+      "path": "work/w3_v4_grid_occupancy.log",
+      "sha256": "f0c149ef894cafc5487f9c1ae24d692153661b75c89546ed2d64ab099048e855"
+    },
+    "cpu_smoke_script": {
+      "path": "work/w3_v4_cpu_smoke.jl",
+      "sha256": "a0e6cf130c6579d562d6e576befc5e84922d9fbca4228ccd03c623923f8c17f8"
+    },
+    "cpu_smoke_runtime_identity": {
+      "path": "work/w3_v4_cpu_smoke_runtime.txt",
+      "sha256": "041eff529dd00192922dd33dfc2aa27bc3b44ae30f49aa70d6e64b84553e4564"
+    },
+    "cpu_smoke_log": {
+      "path": "work/w3_v4_cpu_smoke.log",
+      "sha256": "7917bfa0417e8cc85ded4e2dc82c064130d1ef6f1a04bc0b9c901853ad662f3d"
+    }
+  },
+  "conclusion": "The simple host-side origin-map-outside-domain explanation is not supported: the unchanged candidate interface maps into the expanded flow lattice and a short CPU smoke produces nonzero force. W3 Kaggle version 4 still has an unexplained all-zero T4 force history. The cause is not localized, force sign is not changed, and W3 round 3 remains diagnostic-only and unqualified.",
+  "qualification_flags": {
+    "waterlily_v16_primal_qualified": false,
+    "physical_profile_qualified": false,
+    "grid_response_qualified": false,
+    "sdf_gradient_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "topology_birth_qualified": false,
+    "shape_update_allowed": false
+  },
+  "schema_version": 1
+}

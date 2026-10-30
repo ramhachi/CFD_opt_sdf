@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/kaggle/src/script.py", line 620, in <module>
+    main()
+  File "/kaggle/src/script.py", line 497, in main
+    sys.path.insert(0, str(source / "src"))
+    ^^^
+NameError: name 'sys' is not defined. Did you forget to import 'sys'

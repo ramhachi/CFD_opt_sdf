@@ -47,17 +47,21 @@ class FieldBundle:
 
 def build_fields(config: ProjectConfig) -> FieldBundle:
     meshes_by_role = _load_project_meshes(config)
-    all_meshes = [mesh for meshes in meshes_by_role.values() for _, mesh in meshes]
-    if not all_meshes:
-        raise ValueError("No STL geometry was configured.")
+    fixed_domain = config.grid.domain_bounds_m
+    if fixed_domain is not None:
+        grid = _grid_from_declared_domain(fixed_domain, config)
+    else:
+        all_meshes = [mesh for meshes in meshes_by_role.values() for _, mesh in meshes]
+        if not all_meshes:
+            raise ValueError("No STL geometry was configured.")
 
-    bounds = _combined_bounds(all_meshes)
-    grid = grid_from_bounds(
-        bounds=bounds,
-        spacing=config.grid.voxel_size_m,
-        padding=config.grid.padding_m,
-        max_points=config.grid.max_points,
-    )
+        bounds = _combined_bounds(all_meshes)
+        grid = grid_from_bounds(
+            bounds=bounds,
+            spacing=config.grid.voxel_size_m,
+            padding=config.grid.padding_m,
+            max_points=config.grid.max_points,
+        )
     points = grid.points_flat()
 
     arrays: dict[str, np.ndarray] = {}
@@ -196,6 +200,58 @@ def _contains_safe(mesh: trimesh.Trimesh, points: np.ndarray) -> np.ndarray:
         return mesh.contains(points)
     except Exception:
         return np.zeros(len(points), dtype=bool)
+
+
+def _grid_from_declared_domain(
+    fixed_domain: tuple[tuple[float, float, float], tuple[float, float, float]],
+    config: ProjectConfig,
+) -> UniformGrid:
+    """Build the Stage V field grid from the declared ProblemSpec far-field box.
+
+    Fail-closed (P17 / WP1): the box is used exactly as declared -- never padded,
+    never re-derived from geometry union bounds. Every extent must therefore be a
+    positive integer multiple of the selected voxel size, and ``padding_m`` must
+    be zero because the declared box already includes all margins.
+    """
+
+    lower = np.asarray(fixed_domain[0], dtype=float)
+    upper = np.asarray(fixed_domain[1], dtype=float)
+    if config.grid.padding_m:
+        raise ValueError(
+            "grid.padding_m must be 0 when a fixed grid.domain_bounds_m is declared; "
+            "declare all margins inside the domain bounds instead"
+        )
+    extents = upper - lower
+    if (
+        not np.all(np.isfinite(lower))
+        or not np.all(np.isfinite(upper))
+        or np.any(extents <= 0.0)
+        or config.grid.voxel_size_m is None
+        or config.grid.voxel_size_m <= 0.0
+    ):
+        raise ValueError(
+            "declared grid.domain_bounds_m must be finite with positive extents on "
+            "every axis and grid.voxel_size_m must be positive"
+        )
+    cells = extents / config.grid.voxel_size_m
+    rounded = np.round(cells)
+    misaligned = np.abs(cells - rounded) * config.grid.voxel_size_m > 1.0e-9
+    if np.any(misaligned):
+        names = ("x", "y", "z")
+        bad = ", ".join(
+            f"{names[axis]}_extent={extents[axis]!r}" for axis in np.flatnonzero(misaligned)
+        )
+        raise ValueError(
+            "declared grid.domain_bounds_m extents must be integer multiples of "
+            f"grid.voxel_size_m ({config.grid.voxel_size_m!r}); misaligned axes: {bad}"
+        )
+    shape = tuple((rounded + 1.0).astype(int).tolist())
+    if int(np.prod(shape)) > config.grid.max_points:
+        raise ValueError(
+            f"Declared-domain grid has {int(np.prod(shape)):,} points, above "
+            f"max_points={config.grid.max_points:,}. Increase voxel_size_m."
+        )
+    return UniformGrid(origin=lower, spacing=float(config.grid.voxel_size_m), shape=shape)
 
 
 def _combined_bounds(meshes: list[trimesh.Trimesh]) -> np.ndarray:

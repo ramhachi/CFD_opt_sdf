@@ -1,0 +1,299 @@
+{
+  "baseline": {
+    "canonical_npz_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "margin_m": 0.3499999939931499,
+    "path": "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw",
+    "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb"
+  },
+  "basis": [
+    "D0_interface_offset",
+    "D1_filtered_seed11",
+    "D2_filtered_seed2026",
+    "P1_upstream_lobe"
+  ],
+  "directions": {
+    "D0_interface_offset": {
+      "file": "D0_interface_offset.dir_f4_fortran.raw",
+      "sha256_fortran_raw": "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549"
+    },
+    "D1_filtered_seed11": {
+      "file": "D1_filtered_seed11.dir_f4_fortran.raw",
+      "sha256_fortran_raw": "96fe6e62c5fcb7ad0108dd64d6fac68cc488ee49deb188be742530f828037a87"
+    },
+    "D2_filtered_seed2026": {
+      "file": "D2_filtered_seed2026.dir_f4_fortran.raw",
+      "sha256_fortran_raw": "2a22eb09407a14755f495fa07d4df8dee2d4632db41a0b75d1bf744fd3d1d5de"
+    },
+    "P1_upstream_lobe": {
+      "file": "P1_upstream_lobe.dir_f4_fortran.raw",
+      "sha256_fortran_raw": "24cc06aeb18e2a5729e560636f13ce78f8f19746268699783e8498921aec5dcc"
+    }
+  },
+  "flow24_reference_lowdim01": {
+    "baseline": {
+      "downforce_n": 0.3316344583180616,
+      "drag_n": 0.3239039699743226
+    },
+    "downforce_change_n": {
+      "+1.25": 0.00040517653513449936,
+      "+2.5": -5.009925233540047e-05,
+      "-1.25": -0.001213992020523691
+    },
+    "drag_change_n": {
+      "+1.25": -0.00016764795823859258,
+      "+2.5": -0.0007423741489236413,
+      "-1.25": -0.00022082322396527188
+    },
+    "lowdim01_analysis_sha256": "54bf971d178c4c3452cf55b5fb34d308394d8b7e62d7f12ed6bf1192a528a816",
+    "source": "docs/evidence/lowdim01_four_direction_capability_2026_10_09/lowdim01_analysis.json"
+  },
+  "flow32_baseline_reference": {
+    "force_scale_n_per_solver_force": 0.0006250000000000001,
+    "forces_csv_sha256": "032ef1cfae320ada28d05a3ad5785fc1fd770b202d4f0d2e9ed8490c6ab61753",
+    "host_recomputed_n": {
+      "downforce_n": 0.3612783598966907,
+      "drag_n": 0.35002673442739357
+    },
+    "source": "docs/evidence/kaggle_w4_v17_candidate_c_round2_retained/flow_32.forces.csv (same canonical state; a reference for the byte-identity gate only, not a reused record)",
+    "w4_result_total_downforce_n": 0.3612783598966907,
+    "w4_result_total_drag_n": 0.35002673442739357
+  },
+  "flow32_case": {
+    "case_id": "flow_32",
+    "flow_dims": [
+      200,
+      96,
+      72
+    ],
+    "flow_spacing_m": 0.025,
+    "solver_length": 32.0,
+    "solver_time_unit_s": 0.025,
+    "solver_viscosity": 0.4
+  },
+  "formal_criteria_sha256": "31b29cccc9d3fd6912a910b09694a8230f9ee0aa84e6a418161881ffbcf907be",
+  "job_env_common": {
+    "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+    "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+    "W4_CANONICAL_STATE_LABEL": "v17",
+    "W4_CELL_SHAPE": "120,64,48",
+    "W4_MARGIN_GATE_M": "0.15",
+    "W4_MARGIN_TOLERANCE_M": "1e-6",
+    "W4_POINT_SHAPE": "121,65,49",
+    "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+  },
+  "kernels": {
+    "a": [
+      "lowdim02a__baseline",
+      "lowdim02a__baseline_repeat",
+      "lowdim02a__prop__s1.25mm",
+      "lowdim02a__ctrl_reverse__s1.25mm",
+      "lowdim02a__prop__s2.5mm"
+    ]
+  },
+  "kind": "lowdim02a_state_inventory",
+  "lowdim01_inventory_sha256": "684af1c312fa9d896ce328f7e541d942e404e2315bb2f749539fcab9bc10f325",
+  "margin_gate_m": 0.15,
+  "proposal": {
+    "coefficient_unit_vector": {
+      "D0_interface_offset": 0.8858796982324662,
+      "D1_filtered_seed11": -0.12298839933581211,
+      "D2_filtered_seed2026": -0.10908636726456941,
+      "P1_upstream_lobe": -0.43381007176573133
+    },
+    "file": "docs/evidence/lowdim01_four_direction_capability_2026_10_09/inputs/proposal_downforce.dir_f4_fortran.raw",
+    "gradient_norm_n_per_m": 0.8812833389075333,
+    "m_max_abs_sum": 1.402792224500812,
+    "metric": "Euclidean in coefficient space (no curvature weighting)",
+    "objective": "maximise downforce",
+    "per_unit_step_basis_coefficients": {
+      "D0_interface_offset": 0.6315116969996817,
+      "D1_filtered_seed11": -0.08767399561227103,
+      "D2_filtered_seed2026": -0.07776373817825241,
+      "P1_upstream_lobe": -0.309247559395408
+    },
+    "sha256_fortran_raw": "fc239c1169c3336aa283d12734500d882027602e75b619ffffe146ba373c9010"
+  },
+  "rules": {
+    "min_resolved_n": 3e-05,
+    "noise_factor": 10.0,
+    "nominal_sigma0_n": 3e-06,
+    "verdicts": [
+      "STAGE_A_PASS",
+      "STAGE_A_SIGN_FLIP",
+      "STAGE_A_UNRESOLVED",
+      "STAGE_A_CONSTRAINT_FAIL",
+      "STAGE_A_INCOMPLETE"
+    ]
+  },
+  "states": [
+    {
+      "changed_node_count": 0,
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.9999999859292554,
+        "eikonal_median_abs_deviation": 2.458691275020186e-07,
+        "eikonal_p95_abs_deviation": 0.2928934806881839,
+        "node_components": 1,
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.08897032348835406
+      },
+      "geometry_gates": null,
+      "kernel": "a",
+      "kind": "baseline",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0,
+      "name": "lowdim02a__baseline",
+      "npz_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+      "phi_c_order_sha256": "f6419547c7b58991462a19f8116b819e7bbe60074fa524c01a51ef41cc0e3b1f",
+      "phi_fortran_order_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+      "sign": 0,
+      "source_lowdim01_state": "lowdim01__baseline",
+      "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb",
+      "step_mm": 0.0,
+      "zero_level_margin_m": 0.3499999939931499
+    },
+    {
+      "changed_node_count": 0,
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.9999999859292554,
+        "eikonal_median_abs_deviation": 2.458691275020186e-07,
+        "eikonal_p95_abs_deviation": 0.2928934806881839,
+        "node_components": 1,
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.08897032348835406
+      },
+      "geometry_gates": null,
+      "kernel": "a",
+      "kind": "baseline_repeat",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0,
+      "name": "lowdim02a__baseline_repeat",
+      "npz_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+      "phi_c_order_sha256": "f6419547c7b58991462a19f8116b819e7bbe60074fa524c01a51ef41cc0e3b1f",
+      "phi_fortran_order_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+      "sign": 0,
+      "source_lowdim01_state": "lowdim01__baseline",
+      "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb",
+      "step_mm": 0.0,
+      "zero_level_margin_m": 0.3499999939931499
+    },
+    {
+      "changed_node_count": 4718,
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.999999871943146,
+        "eikonal_median_abs_deviation": 0.01938233058899641,
+        "eikonal_p95_abs_deviation": 0.32387974553397425,
+        "node_components": 1,
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.08708225609319897
+      },
+      "geometry_gates": {
+        "all_hard_gates_pass": true,
+        "gates": {
+          "cell_components_equal_baseline": true,
+          "clearance": true,
+          "eikonal_median_within_limit": true,
+          "masks_and_support_preserved": true,
+          "smoothed_volume_band": true
+        },
+        "relative_sharp_volume_change": 0.0,
+        "relative_smoothed_volume_change": -0.021221316514626665
+      },
+      "kernel": "a",
+      "kind": "candidate",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.001250000018626407,
+      "name": "lowdim02a__prop__s1.25mm",
+      "npz_sha256": "9b58ddf27ca63fb96c9556ab8743f20d5e7aa44bed30499d1404b165bc67ddb0",
+      "phi_c_order_sha256": "4969ccb99d9262ce09aeb56401f810ce9887963fd5ca8a0379a565591c1c25af",
+      "phi_fortran_order_sha256": "e762304c16019dade72ca7563f40c2f509646dd6506c7c1a093684e04a01530a",
+      "sign": 1,
+      "source_lowdim01_state": "lowdim01__prop__s1.25mm",
+      "state_sha256": "c60318246e7e5b6dedfff4bc6ad38dc4e1e2695ca35f387bf2abbc4f43e2878d",
+      "step_mm": 1.25,
+      "zero_level_margin_m": 0.34999999925494196
+    },
+    {
+      "changed_node_count": 4718,
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.9999998416751623,
+        "eikonal_median_abs_deviation": 0.020391576923429966,
+        "eikonal_p95_abs_deviation": 0.32372562881630346,
+        "node_components": 1,
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.09089193146473451
+      },
+      "geometry_gates": {
+        "all_hard_gates_pass": true,
+        "gates": {
+          "cell_components_equal_baseline": true,
+          "clearance": true,
+          "eikonal_median_within_limit": true,
+          "masks_and_support_preserved": true,
+          "smoothed_volume_band": true
+        },
+        "relative_sharp_volume_change": 0.0,
+        "relative_smoothed_volume_change": 0.02159830268159002
+      },
+      "kernel": "a",
+      "kind": "control",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0012500000419095603,
+      "name": "lowdim02a__ctrl_reverse__s1.25mm",
+      "npz_sha256": "6cedc07a20723b20a139ad44a86ccb2b975add3a34739b0393f56925866ffc62",
+      "phi_c_order_sha256": "a3733588349175e2fc37c720dfe201229f90a7a87688243308117558ae3ba99c",
+      "phi_fortran_order_sha256": "b1a3de132c791aff87344fccd473c53e97dec1636fbb7991860485d30b156da7",
+      "sign": -1,
+      "source_lowdim01_state": "lowdim01__ctrl_reverse__s1.25mm",
+      "state_sha256": "0aef3fe3325d988c41d118f6108397c9314576104ef7d7a289c28e5647bd8a3b",
+      "step_mm": 1.25,
+      "zero_level_margin_m": 0.34898096057586375
+    },
+    {
+      "changed_node_count": 4718,
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.9999997299164534,
+        "eikonal_median_abs_deviation": 0.0375742893666029,
+        "eikonal_p95_abs_deviation": 0.35486561860878535,
+        "node_components": 1,
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.08523613655620679
+      },
+      "geometry_gates": {
+        "all_hard_gates_pass": true,
+        "gates": {
+          "cell_components_equal_baseline": true,
+          "clearance": true,
+          "eikonal_median_within_limit": true,
+          "masks_and_support_preserved": true,
+          "smoothed_volume_band": true
+        },
+        "relative_sharp_volume_change": 0.0,
+        "relative_smoothed_volume_change": -0.04197115156759046
+      },
+      "kernel": "a",
+      "kind": "descriptive",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.00249999999068673,
+      "name": "lowdim02a__prop__s2.5mm",
+      "npz_sha256": "864e40c072a6e9eb84eb72cbb225c53eceb81eede8dfce40f7c3c89189f0d6a7",
+      "phi_c_order_sha256": "b675c882593d74cbf20d1bf6510e9205d647bded5dfbad824f1e0b44f26a237d",
+      "phi_fortran_order_sha256": "ffeb3f6f3726b0c63797072586e7606f1f91a09cfda09223250c4d6996dd3654",
+      "sign": 1,
+      "source_lowdim01_state": "lowdim01__prop__s2.5mm",
+      "state_sha256": "dbbc0fbf0d293243a7aba584867c50592d0debf14bb32fa288c572ef975df92f",
+      "step_mm": 2.5,
+      "zero_level_margin_m": 0.34999999925494196
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "case_dir": "work/stage_s_work_f_v1/baseline/V1",
+  "check_mesh": {
+    "concave_cell_fraction": 0.06125777956233688,
+    "failed_check_lines": [
+      "Concave cells (using face planes) found, number of cells: 2441"
+    ],
+    "profile_id": "stage_v_qualification_v1",
+    "qualified": true,
+    "raw_log": {
+      "path": "work/stage_s_work_f_v1/baseline/V1/log.checkMesh",
+      "sha256": "9122b8f8fc3a39a3732af2b64345650d3150eeece68c33cfc321a36312636c43"
+    },
+    "total_cells": 39848
+  },
+  "claims_not_supported": [
+    "simpleFoam is not started; no solver, force or stationarity claim is made"
+  ],
+  "claims_supported": [
+    "the V1 body-fitted mesh was generated from the registered v16 surface and judged by the registered checkMesh profile"
+  ],
+  "commands": [
+    "#!/usr/bin/env bash",
+    "set -euo pipefail",
+    "blockMesh",
+    "surfaceFeatureExtract || true",
+    "snappyHexMesh -overwrite",
+    "checkMesh -allGeometry -allTopology | tee log.checkMesh"
+  ],
+  "kind": "stage_s_work_f_v1_mesh",
+  "manifest": {
+    "path": "docs/evidence/stage_s_work_f_manifest_2026_09.json",
+    "sha256": "03b109f15e79036fe31a6ec76cd58831f8f834926aee2c0eaf654ea80b47dfdd"
+  },
+  "openfoam_run": {
+    "returncode": 0,
+    "summary_path": "work/stage_s_work_f_v1/baseline/V1/openfoam_run_summary.json",
+    "summary_sha256": "ab5f365013e3bacfb5a02fd410875cea1b3f780abd0d0e5a9633b9a604c97d3c",
+    "timed_out": false
+  },
+  "preflight": {
+    "path": "docs/evidence/stage_s_work_f_v1_preflight_2026_09.json",
+    "sha256": "3f850e20dfff91bef91fb676cc84bdcd55710912fa4cfa899fcaf6d46c350f06"
+  },
+  "schema_version": 1,
+  "summary": {
+    "mesh_profile_qualified": true,
+    "solver_allowed": true,
+    "solver_started": false
+  }
+}

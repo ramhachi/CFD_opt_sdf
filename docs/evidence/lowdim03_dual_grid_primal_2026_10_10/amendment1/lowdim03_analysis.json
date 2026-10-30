@@ -1,0 +1,491 @@
+{
+  "candidates": {
+    "lowdim03__prop__s0.625mm": {
+      "accepted": true,
+      "hard_geometry_gates_pass": true,
+      "per_grid": {
+        "flow_24": {
+          "downforce_change_n": 0.00014055449004901632,
+          "downforce_gain_exceeds_threshold": true,
+          "drag_change_n": -4.893992711135775e-05,
+          "drag_computed_nonincrease": true,
+          "small_computed_drag_margin": false
+        },
+        "flow_32": {
+          "downforce_change_n": 0.0002010550353627183,
+          "downforce_gain_exceeds_threshold": true,
+          "drag_change_n": -3.6075246155897744e-05,
+          "drag_computed_nonincrease": true,
+          "small_computed_drag_margin": false
+        }
+      },
+      "worst_grid_downforce_gain_n": 0.00014055449004901632
+    },
+    "lowdim03__prop__s1.25mm": {
+      "accepted": true,
+      "hard_geometry_gates_pass": true,
+      "per_grid": {
+        "flow_24": {
+          "downforce_change_n": 0.00020921622692704478,
+          "downforce_gain_exceeds_threshold": true,
+          "drag_change_n": -0.00013009360925425595,
+          "drag_computed_nonincrease": true,
+          "small_computed_drag_margin": false
+        },
+        "flow_32": {
+          "downforce_change_n": 0.00038719876313042523,
+          "downforce_gain_exceeds_threshold": true,
+          "drag_change_n": -6.305368199505113e-05,
+          "drag_computed_nonincrease": true,
+          "small_computed_drag_margin": false
+        }
+      },
+      "worst_grid_downforce_gain_n": 0.00020921622692704478
+    },
+    "lowdim03__prop__s2.5mm": {
+      "accepted": true,
+      "hard_geometry_gates_pass": true,
+      "per_grid": {
+        "flow_24": {
+          "downforce_change_n": 0.00011591942669220145,
+          "downforce_gain_exceeds_threshold": true,
+          "drag_change_n": -0.0003886426378180152,
+          "drag_computed_nonincrease": true,
+          "small_computed_drag_margin": false
+        },
+        "flow_32": {
+          "downforce_change_n": 0.0006764761495526295,
+          "downforce_gain_exceeds_threshold": true,
+          "drag_change_n": -0.00020235652841277263,
+          "drag_computed_nonincrease": true,
+          "small_computed_drag_margin": false
+        }
+      },
+      "worst_grid_downforce_gain_n": 0.00011591942669220145
+    }
+  },
+  "evidence_class": "bounded_two_grid_fixed_direction_actual_primal_trial",
+  "fd08_verdict_unchanged": true,
+  "geometry_gates_by_state": {
+    "lowdim03__baseline": null,
+    "lowdim03__ctrl_reverse__s0.625mm": {
+      "all_hard_gates_pass": true,
+      "gates": {
+        "cell_components_equal_baseline": true,
+        "clearance": true,
+        "eikonal_median_within_limit": true,
+        "masks_and_support_preserved": true,
+        "smoothed_volume_band": true
+      },
+      "relative_sharp_volume_change": 0.0,
+      "relative_smoothed_volume_change": 0.005961627448434426
+    },
+    "lowdim03__ctrl_reverse__s1.25mm": {
+      "all_hard_gates_pass": true,
+      "gates": {
+        "cell_components_equal_baseline": true,
+        "clearance": true,
+        "eikonal_median_within_limit": true,
+        "masks_and_support_preserved": true,
+        "smoothed_volume_band": true
+      },
+      "relative_sharp_volume_change": 0.0,
+      "relative_smoothed_volume_change": 0.011951232267260137
+    },
+    "lowdim03__ctrl_reverse__s2.5mm": {
+      "all_hard_gates_pass": true,
+      "gates": {
+        "cell_components_equal_baseline": true,
+        "clearance": true,
+        "eikonal_median_within_limit": true,
+        "masks_and_support_preserved": true,
+        "smoothed_volume_band": true
+      },
+      "relative_sharp_volume_change": 0.0,
+      "relative_smoothed_volume_change": 0.024003549626959275
+    },
+    "lowdim03__prop__s0.625mm": {
+      "all_hard_gates_pass": true,
+      "gates": {
+        "cell_components_equal_baseline": true,
+        "clearance": true,
+        "eikonal_median_within_limit": true,
+        "masks_and_support_preserved": true,
+        "smoothed_volume_band": true
+      },
+      "relative_sharp_volume_change": 0.0,
+      "relative_smoothed_volume_change": -0.0059309929897055635
+    },
+    "lowdim03__prop__s1.25mm": {
+      "all_hard_gates_pass": true,
+      "gates": {
+        "cell_components_equal_baseline": true,
+        "clearance": true,
+        "eikonal_median_within_limit": true,
+        "masks_and_support_preserved": true,
+        "smoothed_volume_band": true
+      },
+      "relative_sharp_volume_change": 0.0,
+      "relative_smoothed_volume_change": -0.011828700475121301
+    },
+    "lowdim03__prop__s2.5mm": {
+      "all_hard_gates_pass": true,
+      "gates": {
+        "cell_components_equal_baseline": true,
+        "clearance": true,
+        "eikonal_median_within_limit": true,
+        "masks_and_support_preserved": true,
+        "smoothed_volume_band": true
+      },
+      "relative_sharp_volume_change": 0.0,
+      "relative_smoothed_volume_change": -0.023513861978858075
+    }
+  },
+  "grad03_verdict": null,
+  "integrity": {
+    "failures": [],
+    "pass": true
+  },
+  "interpretation": "One frozen combined direction (the GRID-01 L1-sensitivity robust proposal; 'robust' means only the registered secant sensitivity, not a measured error bound), three shared positive steps and three paired reverse diagnostics; actual computed forces and geometry decide. A strict computed drag non-increase is a computed sign, not noise-resolved or physical non-increase (the GRID-01 flow_32 drag prediction is inside the nominal 3e-5 N floor, so a flow_32 drag sign is not expected to be noise-resolved). Finite-step model agreement is descriptive, not a trust-region/filter optimizer, gradient or grid qualification. A common step passed every registered condition on both grids: a bounded computed capability for this direction and ladder only.",
+  "kind": "lowdim03_dual_grid_actual_primal_analysis",
+  "no_gradient_claim": true,
+  "not_grid_converged": true,
+  "not_opt01": true,
+  "paired_model_diagnostics": {
+    "0.625": {
+      "flow_24": {
+        "downforce": {
+          "even_part_n": -4.1003118661869786e-05,
+          "forward_change_n": 0.00014055449004901632,
+          "odd_part_n": 0.0001815576087108861,
+          "odd_part_secant_n_per_m_of_max_norm_step": 0.2904921739374178,
+          "prediction_error_n": -3.604279718519515e-05,
+          "raw_linear_secant_n_per_m_of_max_norm_step": 0.2825556595747384,
+          "reverse_change_n": -0.0002225607273727559,
+          "rho_actual_over_raw_linear": 0.7959040155730505,
+          "rho_denominator_usable": true,
+          "rho_reason": "raw_prediction_positive"
+        },
+        "drag": {
+          "even_part_n": -1.895515944771997e-05,
+          "forward_change_n": -4.893992711135775e-05,
+          "odd_part_n": -2.998476766363778e-05,
+          "odd_part_secant_n_per_m_of_max_norm_step": -0.04797562826182045,
+          "prediction_error_n": -1.3746530036762033e-05,
+          "raw_linear_secant_n_per_m_of_max_norm_step": -0.056309435319353146,
+          "reverse_change_n": 1.1029608215917808e-05
+        },
+        "forward_predictions": {
+          "l1_robust_downforce_lower_prediction_n": 0.00017214979823610349,
+          "l1_robust_drag_upper_prediction_n": -3.0745908076487755e-05,
+          "raw_downforce_prediction_n": 0.00017659728723421148,
+          "raw_drag_prediction_n": -3.519339707459572e-05
+        }
+      },
+      "flow_32": {
+        "downforce": {
+          "even_part_n": -4.450466761737881e-05,
+          "forward_change_n": 0.0002010550353627183,
+          "odd_part_n": 0.0002455597029800971,
+          "odd_part_secant_n_per_m_of_max_norm_step": 0.39289552476815537,
+          "prediction_error_n": -3.3244318927280346e-05,
+          "raw_linear_secant_n_per_m_of_max_norm_step": 0.3748789668639978,
+          "reverse_change_n": -0.0002900643705974759,
+          "rho_actual_over_raw_linear": 0.8581117774395018,
+          "rho_denominator_usable": true,
+          "rho_reason": "raw_prediction_positive"
+        },
+        "drag": {
+          "even_part_n": -5.411542956268445e-05,
+          "forward_change_n": -3.6075246155897744e-05,
+          "odd_part_n": 1.8040183406786703e-05,
+          "odd_part_secant_n_per_m_of_max_norm_step": 0.028864293450858725,
+          "prediction_error_n": -3.162775715778976e-05,
+          "raw_linear_secant_n_per_m_of_max_norm_step": -0.007115982396972773,
+          "reverse_change_n": -7.215561296947115e-05
+        },
+        "forward_predictions": {
+          "l1_robust_downforce_lower_prediction_n": 0.00022985186529189068,
+          "l1_robust_drag_upper_prediction_n": -2.3566371700716828e-20,
+          "raw_downforce_prediction_n": 0.00023429935428999864,
+          "raw_drag_prediction_n": -4.4474889981079835e-06
+        }
+      }
+    },
+    "1.25": {
+      "flow_24": {
+        "downforce": {
+          "even_part_n": -0.00015040234217675308,
+          "forward_change_n": 0.00020921622692704478,
+          "odd_part_n": 0.00035961856910379786,
+          "odd_part_secant_n_per_m_of_max_norm_step": 0.2876948552830383,
+          "prediction_error_n": -0.00014397834754137817,
+          "raw_linear_secant_n_per_m_of_max_norm_step": 0.2825556595747384,
+          "reverse_change_n": -0.0005100209112805509,
+          "rho_actual_over_raw_linear": 0.5923540225438814,
+          "rho_denominator_usable": true,
+          "rho_reason": "raw_prediction_positive"
+        },
+        "drag": {
+          "even_part_n": -6.370411861353342e-05,
+          "forward_change_n": -0.00013009360925425595,
+          "odd_part_n": -6.638949064072253e-05,
+          "odd_part_secant_n_per_m_of_max_norm_step": -0.05311159251257802,
+          "prediction_error_n": -5.970681510506451e-05,
+          "raw_linear_secant_n_per_m_of_max_norm_step": -0.056309435319353146,
+          "reverse_change_n": 2.6853720271891035e-06
+        },
+        "forward_predictions": {
+          "l1_robust_downforce_lower_prediction_n": 0.00034429959647220697,
+          "l1_robust_drag_upper_prediction_n": -6.149181615297551e-05,
+          "raw_downforce_prediction_n": 0.00035319457446842295,
+          "raw_drag_prediction_n": -7.038679414919144e-05
+        }
+      },
+      "flow_32": {
+        "downforce": {
+          "even_part_n": -8.096376572444552e-05,
+          "forward_change_n": 0.00038719876313042523,
+          "odd_part_n": 0.00046816252885487075,
+          "odd_part_secant_n_per_m_of_max_norm_step": 0.3745300230838966,
+          "prediction_error_n": -8.139994544957205e-05,
+          "raw_linear_secant_n_per_m_of_max_norm_step": 0.3748789668639978,
+          "reverse_change_n": -0.0005491262945793163,
+          "rho_actual_over_raw_linear": 0.826290717496342,
+          "rho_denominator_usable": true,
+          "rho_reason": "raw_prediction_positive"
+        },
+        "drag": {
+          "even_part_n": -6.581567052740822e-05,
+          "forward_change_n": -6.305368199505113e-05,
+          "odd_part_n": 2.761988532357096e-06,
+          "odd_part_secant_n_per_m_of_max_norm_step": 0.0022095908258856767,
+          "prediction_error_n": -5.415870399883516e-05,
+          "raw_linear_secant_n_per_m_of_max_norm_step": -0.007115982396972773,
+          "reverse_change_n": -6.857765905976532e-05
+        },
+        "forward_predictions": {
+          "l1_robust_downforce_lower_prediction_n": 0.00045970373058378135,
+          "l1_robust_drag_upper_prediction_n": -4.7132743401433655e-20,
+          "raw_downforce_prediction_n": 0.0004685987085799973,
+          "raw_drag_prediction_n": -8.894977996215967e-06
+        }
+      }
+    },
+    "2.5": {
+      "flow_24": {
+        "downforce": {
+          "even_part_n": -0.000595056798083804,
+          "forward_change_n": 0.00011591942669220145,
+          "odd_part_n": 0.0007109762247760054,
+          "odd_part_secant_n_per_m_of_max_norm_step": 0.28439048991040217,
+          "prediction_error_n": -0.0005904697222446444,
+          "raw_linear_secant_n_per_m_of_max_norm_step": 0.2825556595747384,
+          "reverse_change_n": -0.0013060330228598094,
+          "rho_actual_over_raw_linear": 0.1641013694316603,
+          "rho_denominator_usable": true,
+          "rho_reason": "raw_prediction_positive"
+        },
+        "drag": {
+          "even_part_n": -0.0002509875709839626,
+          "forward_change_n": -0.0003886426378180152,
+          "odd_part_n": -0.0001376550668340526,
+          "odd_part_secant_n_per_m_of_max_norm_step": -0.05506202673362104,
+          "prediction_error_n": -0.0002478690495196324,
+          "raw_linear_secant_n_per_m_of_max_norm_step": -0.056309435319353146,
+          "reverse_change_n": -0.00011333250414991003
+        },
+        "forward_predictions": {
+          "l1_robust_downforce_lower_prediction_n": 0.0006885991929444139,
+          "l1_robust_drag_upper_prediction_n": -0.00012298363230595102,
+          "raw_downforce_prediction_n": 0.0007063891489368459,
+          "raw_drag_prediction_n": -0.00014077358829838287
+        }
+      },
+      "flow_32": {
+        "downforce": {
+          "even_part_n": -0.0002534243243188239,
+          "forward_change_n": 0.0006764761495526295,
+          "odd_part_n": 0.0009299004738714534,
+          "odd_part_secant_n_per_m_of_max_norm_step": 0.37196018954858134,
+          "prediction_error_n": -0.0002607212676073651,
+          "raw_linear_secant_n_per_m_of_max_norm_step": 0.3748789668639978,
+          "reverse_change_n": -0.0011833247981902772,
+          "rho_actual_over_raw_linear": 0.7218075265322079,
+          "rho_denominator_usable": true,
+          "rho_reason": "raw_prediction_positive"
+        },
+        "drag": {
+          "even_part_n": -0.00018025120145848117,
+          "forward_change_n": -0.00020235652841277263,
+          "odd_part_n": -2.210532695429146e-05,
+          "odd_part_secant_n_per_m_of_max_norm_step": -0.008842130781716584,
+          "prediction_error_n": -0.0001845665724203407,
+          "raw_linear_secant_n_per_m_of_max_norm_step": -0.007115982396972773,
+          "reverse_change_n": -0.0001581458745041897
+        },
+        "forward_predictions": {
+          "l1_robust_downforce_lower_prediction_n": 0.0009194074611675627,
+          "l1_robust_drag_upper_prediction_n": -9.426548680286731e-20,
+          "raw_downforce_prediction_n": 0.0009371974171599946,
+          "raw_drag_prediction_n": -1.7789955992431934e-05
+        }
+      }
+    }
+  },
+  "provenance": {
+    "analysis_freeze_sha256": "c8b17f6666b66274784a40e825ce17d58c2224e9cc165d6af5abd9e083c7e893",
+    "analysis_source_commit": "b88ea35b6cecf1252afaf873e43153ee58b6e6d9",
+    "analyzer_sha256": "06ac375bcff616226e67dfe4a50642bad96b327d72c1b3f535d3fc5994188a2a",
+    "freeze_sha256": "6009d6b02bd674f78c398b525d6d0319693f12febbb34efae952cb506862b069",
+    "inventory_sha256": "e42cf5e8dd05e58ddc0598b8bdab93b4dba3a6740471c0d2ec701492625f8cd3",
+    "kernel_manifest_sha256": {
+      "a": "458f6c43d48db770b76fa9b87769b7877f340f6847d6efdbd4a9cb1dce7ac342",
+      "b": "ecf1a691fcba1bf10d157b490223d296d7ffcf296cf429dab95a017d8274a4a4"
+    },
+    "measurement_source_commit": "e5386910d8b77decd748fdbd5efaee002803d86c",
+    "source_commit": "e5386910d8b77decd748fdbd5efaee002803d86c"
+  },
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "reinitialization": "none",
+  "rules": {
+    "drag_allowance_n": 0.0,
+    "reverse_controls_eligible": false,
+    "rho_denominator": "raw finite-step linear gain, not sensitivity lower bound",
+    "rho_denominator_floor_n": 0.0,
+    "rho_is_acceptance_gate": false,
+    "small_drag_margin_diagnostic_n": 3e-05,
+    "strict_downforce_gain_greater_than_n": 3e-05
+  },
+  "selected": "lowdim03__prop__s1.25mm",
+  "selected_delta": null,
+  "selected_step_mm": 1.25,
+  "selection_objective": "largest minimum actual downforce gain on both grids; exact ties use smaller step",
+  "shape_update_allowed": false,
+  "state_forces_n": {
+    "flow_24": {
+      "lowdim03__baseline": {
+        "downforce_n": 0.3316344583180616,
+        "drag_n": 0.3239039699743226,
+        "forces_csv_sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3",
+        "julia_summary_wall_seconds": 107.11619901657104,
+        "solver_process_wall_seconds": 173.15278458595276,
+        "summary_sha256": "d7d0eda6a83fdc8d5c8adf50cbfb255ddcec702bd6d6d4990fed306d449ec8d0"
+      },
+      "lowdim03__ctrl_reverse__s0.625mm": {
+        "downforce_n": 0.33141189759068884,
+        "drag_n": 0.3239149995825385,
+        "forces_csv_sha256": "20626d5a05c1b099de5a81df916e274d2965179cd188816c8e741a085989e4bc",
+        "julia_summary_wall_seconds": 110.24240493774414,
+        "solver_process_wall_seconds": 176.6583113670349,
+        "summary_sha256": "8b7f75bf6d11a25ecf432d3348ea00f26fdaaf445defe66592ebba93441b1052"
+      },
+      "lowdim03__ctrl_reverse__s1.25mm": {
+        "downforce_n": 0.33112443740678105,
+        "drag_n": 0.32390665534634977,
+        "forces_csv_sha256": "49820096f6491c6486bc25ae0d3bc18d8dc93104476c919100f7188ecb24075b",
+        "julia_summary_wall_seconds": 110.11288690567017,
+        "solver_process_wall_seconds": 176.36234545707703,
+        "summary_sha256": "6d7cb4410e1b4d1f29dfe86cdededeebd0a1e17da059da63efd70c7f2e71026d"
+      },
+      "lowdim03__ctrl_reverse__s2.5mm": {
+        "downforce_n": 0.3303284252952018,
+        "drag_n": 0.32379063747017267,
+        "forces_csv_sha256": "d0a6505f190fc9b04ac5415614c15374bbd9373c06714fbbff4f3e8f018f13d0",
+        "julia_summary_wall_seconds": 109.87892603874207,
+        "solver_process_wall_seconds": 176.1155035495758,
+        "summary_sha256": "1418ff656c12fea08f057b237fb23adf61533429629d18434a5c87fba4de9925"
+      },
+      "lowdim03__prop__s0.625mm": {
+        "downforce_n": 0.3317750128081106,
+        "drag_n": 0.3238550300472112,
+        "forces_csv_sha256": "6a8a2c46056ef90695f775673483749cee7b779fbba66b667ec966e6c974d16f",
+        "julia_summary_wall_seconds": 109.83826684951782,
+        "solver_process_wall_seconds": 175.710196018219,
+        "summary_sha256": "6a8b4fcb345f15c50e22674b62481bd19d330dd7da19b9d12f9d02bc9f3d7af1"
+      },
+      "lowdim03__prop__s1.25mm": {
+        "downforce_n": 0.33184367454498864,
+        "drag_n": 0.3237738763650683,
+        "forces_csv_sha256": "113eb85bf4b7fbdf7c179b8adf83b46a49834bff9383c472bdbf38d15dd29654",
+        "julia_summary_wall_seconds": 109.868243932724,
+        "solver_process_wall_seconds": 175.54713582992554,
+        "summary_sha256": "61357b0f29096b121078dd8dfc7800f3e18448a4a4c49d035def31fe26e19b80"
+      },
+      "lowdim03__prop__s2.5mm": {
+        "downforce_n": 0.3317503777447538,
+        "drag_n": 0.32351532733650457,
+        "forces_csv_sha256": "d21a45221accff2bc3b87797ae46c601a1de4525a2aebda390aa1c1a5ffe906c",
+        "julia_summary_wall_seconds": 110.23353099822998,
+        "solver_process_wall_seconds": 176.51523184776306,
+        "summary_sha256": "ba05ba6d113a72b54b8bcb6f46a0f366041d004864a6b25dc6979c49cc122e19"
+      }
+    },
+    "flow_32": {
+      "lowdim03__baseline": {
+        "downforce_n": 0.3612783598966907,
+        "drag_n": 0.35002673442739357,
+        "forces_csv_sha256": "032ef1cfae320ada28d05a3ad5785fc1fd770b202d4f0d2e9ed8490c6ab61753",
+        "julia_summary_wall_seconds": 336.7406098842621,
+        "solver_process_wall_seconds": 405.1591124534607,
+        "summary_sha256": "cb010b4ec8a71fa78c649063b92cf858d4f3364fd65b587fdb0f0cd25f587d34"
+      },
+      "lowdim03__ctrl_reverse__s0.625mm": {
+        "downforce_n": 0.36098829552609324,
+        "drag_n": 0.3499545788144241,
+        "forces_csv_sha256": "81000e53a48ac70f00352f6dec3ee573d04cf1cc45462d8c484146b82c8c991d",
+        "julia_summary_wall_seconds": 341.7241258621216,
+        "solver_process_wall_seconds": 408.31255054473877,
+        "summary_sha256": "94521800f712345f14706202bc70b1d3c2e53e064d0a012e717b10ac6be01655"
+      },
+      "lowdim03__ctrl_reverse__s1.25mm": {
+        "downforce_n": 0.3607292336021114,
+        "drag_n": 0.3499581567683338,
+        "forces_csv_sha256": "0870b9a7bceff00b9b8e36866aac8fd63c7801dedf082907f3d704ae1720c386",
+        "julia_summary_wall_seconds": 342.13449907302856,
+        "solver_process_wall_seconds": 409.46856451034546,
+        "summary_sha256": "4bece4acb4d331687c46b90d5dbb86c513b93b706b2d72b3b703f3670c49f7c0"
+      },
+      "lowdim03__ctrl_reverse__s2.5mm": {
+        "downforce_n": 0.36009503509850044,
+        "drag_n": 0.3498685885528894,
+        "forces_csv_sha256": "bef9c9f3ea1e4b51d0f09c6c30e20c19c5e138c8324b527b952a9a6fac77d646",
+        "julia_summary_wall_seconds": 341.99468898773193,
+        "solver_process_wall_seconds": 409.5220136642456,
+        "summary_sha256": "d319f3ca12dc46a964322c66217bd989afc6c6ee9b190526e46c28266cc9a671"
+      },
+      "lowdim03__prop__s0.625mm": {
+        "downforce_n": 0.36147941493205343,
+        "drag_n": 0.3499906591812377,
+        "forces_csv_sha256": "a901a768f418fb5c210b728d1c553d9956cf92937cf7e173d9b2cf312d597708",
+        "julia_summary_wall_seconds": 341.82263684272766,
+        "solver_process_wall_seconds": 408.40184116363525,
+        "summary_sha256": "271f2841b5890691cc2ee907cf3d9a3b30d3120468d98c8289dc1990ae24928c"
+      },
+      "lowdim03__prop__s1.25mm": {
+        "downforce_n": 0.36166555865982114,
+        "drag_n": 0.3499636807453985,
+        "forces_csv_sha256": "4cfedbcbb13560a17190a307e6d1cc0e3cc257622d136a54dd251bb557bf64ff",
+        "julia_summary_wall_seconds": 341.4524049758911,
+        "solver_process_wall_seconds": 408.06026792526245,
+        "summary_sha256": "cf858ec2ea2c6330bda4567c6c53b974b01fb9fd0d744f8f203b6608a278f4db"
+      },
+      "lowdim03__prop__s2.5mm": {
+        "downforce_n": 0.36195483604624334,
+        "drag_n": 0.3498243778989808,
+        "forces_csv_sha256": "674d9708b96c170f35bea7b69cb77782f8bdca345368e2e7f313fd0e3ca797d4",
+        "julia_summary_wall_seconds": 341.858314037323,
+        "solver_process_wall_seconds": 408.7501685619354,
+        "summary_sha256": "2b413e07a4fe6a85c1098042347fe1172d23c3e98c458469865f42d330007f48"
+      }
+    }
+  },
+  "verdict": "LOWDIM03_ACCEPT"
+}

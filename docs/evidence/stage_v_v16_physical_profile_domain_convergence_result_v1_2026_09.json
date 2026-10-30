@@ -1,0 +1,223 @@
+{
+  "analysis_script": {
+    "path": "scripts/evaluate_stage_v16_domain_convergence_v1_2026_09.py",
+    "sha256": "a7bd4dcab26f64b71f04345889243ce8d01ebdad90d16840a63e0f23f9e1fb82"
+  },
+  "claims_not_supported": [
+    "absolute or grid-independent downforce",
+    "high-Reynolds-number or full-vehicle FSAE qualification",
+    "Stage S reduced-basis FD qualification",
+    "a shape update or optimization campaign"
+  ],
+  "evidence_class": "qualification_result",
+  "gates": {
+    "cd_relative_delta": {
+      "name": "cd_relative_delta",
+      "observed": {
+        "child": 1.17036295130137,
+        "delta": 0.0009638097945205981,
+        "parent": 1.1693991415068494,
+        "relative": 0.0008241923226304617
+      },
+      "qualified": true,
+      "rule": "abs(child Cd - parent Cd) / abs(parent Cd) <= threshold",
+      "status": "pass",
+      "threshold": 0.02
+    },
+    "child_physical_profile_qualified": {
+      "name": "child_physical_profile_qualified",
+      "observed": {
+        "qualified": true,
+        "status": "pass"
+      },
+      "qualified": true,
+      "rule": "child outcome must be a qualified physical-profile run",
+      "status": "pass",
+      "threshold": "pass"
+    },
+    "downforce_absolute_delta": {
+      "name": "downforce_absolute_delta",
+      "observed": {
+        "child": 0.7573548684589041,
+        "delta": 0.0008034026780822101,
+        "parent": 0.7565514657808219
+      },
+      "qualified": true,
+      "rule": "abs(child downforce - parent downforce) <= threshold",
+      "status": "pass",
+      "threshold": 0.005
+    },
+    "only_domain_bounds_changed": {
+      "name": "only_domain_bounds_changed",
+      "observed": {
+        "base_domain_bounds_m": {
+          "lower": [
+            -2.5,
+            -1.2,
+            -0.9
+          ],
+          "upper": [
+            2.5,
+            1.2,
+            0.9
+          ]
+        },
+        "base_problem_id": "stage_sv_v2_expanded_domain_v2",
+        "expanded_domain_bounds_m": {
+          "lower": [
+            -2.5,
+            -1.2,
+            -0.9
+          ],
+          "upper": [
+            3.5,
+            1.2,
+            0.9
+          ]
+        },
+        "expanded_problem_id": "stage_sv_v2_expanded_domain_v3",
+        "only_domain_bounds_changed": true
+      },
+      "qualified": true,
+      "rule": "registered ProblemSpecs may differ only in grid domain bounds",
+      "status": "pass",
+      "threshold": true
+    },
+    "parent_physical_profile_qualified": {
+      "name": "parent_physical_profile_qualified",
+      "observed": {
+        "qualified": true,
+        "status": "pass"
+      },
+      "qualified": true,
+      "rule": "parent outcome must be a qualified physical-profile run",
+      "status": "pass",
+      "threshold": "pass"
+    },
+    "parent_run_manifest_identity": {
+      "name": "parent_run_manifest_identity",
+      "observed": "1e419a37c3c0ec51cfdcf8d2ca497faffe4cc0179560d54f927a29b06c76d4b0",
+      "qualified": true,
+      "rule": "parent outcome and registered parent manifest SHA must agree",
+      "status": "pass",
+      "threshold": "1e419a37c3c0ec51cfdcf8d2ca497faffe4cc0179560d54f927a29b06c76d4b0"
+    },
+    "same_candidate": {
+      "name": "same_candidate",
+      "observed": {
+        "child": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+        "parent": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+      },
+      "qualified": true,
+      "rule": "candidate STL SHA must be identical",
+      "status": "pass",
+      "threshold": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+    },
+    "same_physical_profile": {
+      "name": "same_physical_profile",
+      "observed": {
+        "child": "a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca",
+        "parent": "a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca"
+      },
+      "qualified": true,
+      "rule": "physical-profile SHA must be identical",
+      "status": "pass",
+      "threshold": "a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca"
+    }
+  },
+  "kind": "stage_v_v16_physical_profile_domain_convergence_result",
+  "metrics": {
+    "cd_delta": 0.0009638097945205981,
+    "cd_relative_delta": 0.0008241923226304617,
+    "child_cd_mean": 1.17036295130137,
+    "child_downforce_mean": 0.7573548684589041,
+    "downforce_delta": 0.0008034026780822101,
+    "parent_cd_mean": 1.1693991415068494,
+    "parent_downforce_mean": 0.7565514657808219
+  },
+  "next_gate": "freeze the qualified Stage V reference profile and register the K=16 reduced-basis FD preflight",
+  "pair": {
+    "candidate_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "child_domain": {
+      "base_domain_bounds_m": {
+        "lower": [
+          -2.5,
+          -1.2,
+          -0.9
+        ],
+        "upper": [
+          2.5,
+          1.2,
+          0.9
+        ]
+      },
+      "base_problem_id": "stage_sv_v2_expanded_domain_v2",
+      "expanded_domain_bounds_m": {
+        "lower": [
+          -2.5,
+          -1.2,
+          -0.9
+        ],
+        "upper": [
+          3.5,
+          1.2,
+          0.9
+        ]
+      },
+      "expanded_problem_id": "stage_sv_v2_expanded_domain_v3",
+      "only_domain_bounds_changed": true
+    },
+    "child_outcome": {
+      "path": "docs/evidence/stage_v_v16_physical_profile_domain_convergence_v1_2026_09.json",
+      "sha256": "eaaf118718a063e3cadce56cd26ba000b8a203e2515d184275c2d266e17e2581"
+    },
+    "parent_domain": {
+      "base_domain_bounds_m": {
+        "lower": [
+          -1.5,
+          -1.2,
+          -0.9
+        ],
+        "upper": [
+          2.5,
+          1.2,
+          0.9
+        ]
+      },
+      "base_problem_id": "stage_sv_v2_expanded_domain_v1",
+      "expanded_domain_bounds_m": {
+        "lower": [
+          -2.5,
+          -1.2,
+          -0.9
+        ],
+        "upper": [
+          2.5,
+          1.2,
+          0.9
+        ]
+      },
+      "expanded_problem_id": "stage_sv_v2_expanded_domain_v2",
+      "only_domain_bounds_changed": true
+    },
+    "parent_outcome": {
+      "path": "docs/evidence/stage_v_v16_physical_profile_expanded_domain_v2_2026_09.json",
+      "sha256": "8871255838b9666683581a3cb50d949764f6a4b27fb3dab24d6f6f52b4a75e66"
+    },
+    "physical_profile_sha256": "a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca",
+    "run_manifest": {
+      "path": "docs/evidence/stage_v_v16_physical_profile_domain_convergence_v1_run_manifest_2026_09.json",
+      "sha256": "14b46204d9ae238cbb1453c1edd846f3ffd41594556bff53185d37cbe55d60c8"
+    }
+  },
+  "qualified": true,
+  "question": "Does the same v2 physical profile converge when downstream clearance increases?",
+  "registered_thresholds": {
+    "cd_relative_delta_threshold": 0.02,
+    "comparison_denominator": "parent_v2_cd_mean",
+    "downforce_absolute_delta_threshold": 0.005,
+    "requires_both_physical_profile_outcomes_qualified": true
+  },
+  "schema_version": 1,
+  "status": "pass"
+}

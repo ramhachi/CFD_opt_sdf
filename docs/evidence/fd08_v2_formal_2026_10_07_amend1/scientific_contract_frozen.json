@@ -1,0 +1,74 @@
+{
+  "R6_source_commit": "f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9",
+  "kind": "fd08_v2_pre_amendment_scientific_contract",
+  "original_registrar_sha256": "7882195db39b01a3178c9ef1b8bc8c014ba1a579c81c768cf8fdb7df22b5c92c",
+  "scientific_contract": {
+    "T2_parameter_sha256": "c5f3fe1a3875c44d5fd0b87d48fd0bd0c06bdf22fb74581cb399e382dbac95ba",
+    "baseline_count": 1,
+    "coverage": "COV-A",
+    "decision_tree": {
+      "all_24_pass": "formal PASS",
+      "comparison_count": 24,
+      "no_fail_and_one_or_more_unresolved": "formal UNRESOLVED",
+      "no_refit_or_model_switch": true,
+      "one_or_more_fail": "formal FAIL"
+    },
+    "direction_ids": [
+      "D0_interface_offset",
+      "D1_filtered_seed11",
+      "D2_filtered_seed2026",
+      "P1_upstream_lobe"
+    ],
+    "epsilon_formula": "sqrt(e_i*e_(i+1))",
+    "epsilon_mm": [
+      0.6294627058970836,
+      1.5811388300841898,
+      3.971641173621408
+    ],
+    "interval_indices": [
+      0,
+      2,
+      4
+    ],
+    "measurement_caps": {
+      "kernel_execution_allowance_s": 5600,
+      "per_state_timeout_s": 1500,
+      "solver_wall_time_cap_s": 3300
+    },
+    "model": "A",
+    "no_refit": true,
+    "numeric_prediction_rule": {
+      "S_pred": "x.T @ beta_mm",
+      "acceptance_bound": "abs(S_obs-S_pred)<=max(3*sigma_pred,tol_hold*abs(S_pred))",
+      "failure": "finite sign or prediction-error violation is FAIL",
+      "magnitude_rule": "both absolute predicted and observed responses >= k_mag*sigma0_n",
+      "model": "frozen R6 full six-point Model A only",
+      "no_refit": true,
+      "nonzero_same_sign_required": true,
+      "observation": "(host_recomputed R(+epsilon)-R(-epsilon))/2 in N",
+      "sigma_pred_squared": "sigma0_n^2+(rho*S_pred)^2+x.T @ covariance_mm @ x",
+      "unresolved": "insufficient magnitude, unavailable bound, or unresolvable integrity/margin condition",
+      "x": "(epsilon_mm, epsilon_mm^3)"
+    },
+    "parameters": {
+      "k_mag": 5,
+      "nested_drop": 2,
+      "rho": 0.05,
+      "sigma0_n": 3e-06,
+      "tol_hold": 0.15,
+      "tol_model": 0.15,
+      "tol_nested": 0.15,
+      "tol_se": 0.1
+    },
+    "signed_state_count": 24,
+    "state_count": 25
+  },
+  "unchanged_source_sha256": {
+    "campaign": "a7239c1071fae82347f4488cb06d38aabdd58bf25d9ab06ed11daca6a7f0bb91",
+    "formal_analyzer": "47026ff884d396ded1a8b2bb45da1059c093920fc37787767889e7d0c3f1f93a",
+    "formal_prediction_source": "a7239c1071fae82347f4488cb06d38aabdd58bf25d9ab06ed11daca6a7f0bb91",
+    "formal_verifier": "34d370e37772d861f8d4b8f63e3bc81fffb9d3b914559dd35b4e792045ddfc96",
+    "gate": "4e4af8f3d0817b60e58f8d1a00ed382b2d1e6deed03425f398b5eb81040cc582",
+    "params": "c5f3fe1a3875c44d5fd0b87d48fd0bd0c06bdf22fb74581cb399e382dbac95ba"
+  }
+}

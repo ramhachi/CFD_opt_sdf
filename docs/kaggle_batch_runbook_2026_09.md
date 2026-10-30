@@ -1,0 +1,3118 @@
+# Kaggle background GPU runbook (K0, W1g, W2-T4b, W2b, and W3)
+
+This is the execution path for the SDF-native WaterLily GPU line. The
+authoritative order and gate status are in [`phase_plan.md`](phase_plan.md),
+and the numeric K0 contract is
+[`evidence/kaggle_k0_criteria_2026_09.json`](evidence/kaggle_k0_criteria_2026_09.json).
+The existing Colab evidence remains a reference. No sampled-sphere, v16, or
+optimizer result follows from K0 or W1g alone.
+
+Kaggle is an execution substrate for reproducible GPU batches, exact
+source/runtime binding, and evidence capture. It is not a solver or optimizer
+component in the SDF-native architecture. This runbook records operational
+procedures and result history; `phase_plan.md` alone sets the current
+architecture, gate status, and execution order.
+
+K0-A–F passed on 2026-09-27. Version 1 was the GPU inventory smoke; version 2
+ran the Julia environment, analytic sphere and dual-process checks. W1g
+version 3 completed as a diagnostic, but was not accepted because the fixture
+at its pinned source checked only the x components for finiteness. The
+round-2 source checks every CPU/GPU normal component and was registered before
+the next GPU run. The append-only K0 result is
+[`evidence/kaggle_k0_result_2026_09.json`](evidence/kaggle_k0_result_2026_09.json).
+
+## Audit corrections to the migration draft
+
+- The current repository has no `ColabBackend` to swap out. Its
+  `src/cfd_sdf/execution.py` runs OpenFOAM cases. K0 uses a standalone script
+  kernel and the existing Julia job; no solver or OpenFOAM abstraction changes.
+- The machine's installed Kaggle CLI 1.7.4.5 lacks `--accelerator` and
+  `kernels logs`. The commands below use the checked 2.2.4 CLI through `uvx`.
+- Cross-backend acceptance is registered **before** Kaggle measurements:
+  relative window-mean-drag difference at most `1e-4` versus the Colab
+  W2-T4a fixture, and each concurrent GPU process at most `1e-6` versus the
+  single-GPU Kaggle run. A result cannot be used to relax these values.
+- The K0 source fetched by version 2 is the exact public commit
+  `d81d0ccd13379fc86de48d52a797e6e7612658bd`. W1g versions pin their own
+  registered source commits. The Julia binary and Project/Manifest are
+  SHA-256 checked. Internet is enabled on the **private** Kaggle kernel for
+  those downloads. No credential is in the repository or upload folder.
+- GPU UUIDs and driver versions from Colab are machine identities, not
+  portable acceptance criteria. Kaggle records its own identities and
+  requires two Tesla T4 GPUs plus pinned Julia package versions.
+
+Kaggle's official [CLI reference](https://github.com/Kaggle/kaggle-cli/blob/main/docs/kernels.md)
+documents `push`, `status`, `logs`, and version-specific `output`; its
+[metadata reference](https://github.com/Kaggle/kaggle-cli/blob/main/docs/kernels_metadata.md)
+defines private script kernels and `NvidiaTeslaT4`. The Julia 1.12.6 Linux
+binary digest is from the [Julia release archive](https://julialang.org/downloads/oldreleases/).
+
+## K0 historical collection
+
+K0 version 2 has completed. The commands below retrieve that historical run;
+they do not submit another K0 campaign. The kernel directory now carries the
+W1g runner described in the next section. Kaggle credentials stay in the
+user's normal CLI configuration; do not print or upload them.
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-k0/2
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-k0/2
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-k0/2 -p work/kaggle_k0_version2
+python3 scripts/verify_kaggle_k0.py work/kaggle_k0_version2
+```
+
+Replace `2` and the output directory together for a later version. The
+verifier checks all files in the SHA-256 manifest, the immutable local
+criteria and Colab reference, completion/finite/force gates, cross-backend
+drag bound, and distinct overlapping GPU 0/1 process intervals. `DONE` is
+written only after the remote K0-A–E gates pass. Treat `ERROR.txt` or a
+missing `DONE` as a failed diagnostic run, even if the kernel worker finished.
+
+The remote script writes outputs only under `/kaggle/working/k0`; Julia,
+packages, and the fetched source live in temporary storage. Re-submission
+starts a clean Kaggle version. The result folder in `work/` is host-local and
+ignored by Git; any accepted small evidence record must point to its exact
+version and include file hashes.
+
+## K0 to W1g boundary
+
+Once all K0-A–F gates pass, record the outcome in the phase plan and a new
+append-only evidence file. W1g requires a new Kaggle backend identity and its
+own registered criteria; the Colab W0b GPU UUID cannot be reused. Keep
+`shape_update_allowed=false`, `sdf_gradient_qualified=false`, and all
+optimizer work blocked. The existing `scripts/waterlily_w2t4_job.jl`
+supports only `analytic` at this boundary; `gridsdf` is still reserved for
+the later sampled-sphere step.
+
+## W1g: GPU GridSDF contract check
+
+W1g round 2 pins source commit `f01462a44bf8b8cbefb0f5f7977916be94687b6c`
+and criteria SHA-256
+`717053a2e4cb32d16cbbc2e3de2007371c1046f365f76a404cb166322adaadcb`.
+It checks 200,012 registered probes on one selected Tesla T4, while recording
+both T4 UUIDs in the run output. G3 requires every CPU/GPU distance and all
+three components of each CPU/GPU normal to be finite. This is geometry
+contract and numerical agreement evidence only; it does not qualify a solver
+step, force, gradient, topology update, or optimizer.
+
+Submit and collect each round by explicit Kaggle version. For the currently
+registered round, the expected version is 4:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-k0/4
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-k0/4
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-k0/4 -p work/kaggle_w1g_version4
+python3 scripts/verify_kaggle_w1g.py work/kaggle_w1g_version4
+```
+
+Version 4 completed on 2026-09-27. The verifier checked all 11 files against
+the remote SHA-256 manifest and independently recomputed G1–G9. Maximum
+world-distance error was `3.5762787e-7 m` against `1e-5 m`; maximum unit-normal
+error was `2.4211522e-7` against `1e-3`; sign violations were zero over 199,321
+gated probes. The two-T4 inventory, selected UUID, driver/runtime cohort,
+source commit, runner hash, and Project/Manifest hashes matched. The
+append-only outcome is
+[`evidence/kaggle_w1g_round2_result_2026_09.json`](evidence/kaggle_w1g_round2_result_2026_09.json).
+
+Use the version printed by `push` if it is not 4, and change both the output
+reference and directory to match. The verifier checks the output file
+manifest, registered criteria and prerequisite hashes, uploaded runner hash,
+source commit, fixture parameters, runtime/GPU identity, and recomputed G1–G9
+gates. A failed run is retained as diagnostic evidence. Only a fully verified
+round-2 pass opens the next planned slice, W2-T4b.
+
+## W2-T4b: sampled-sphere CUDA primal
+
+W2-T4b is registered in
+[`evidence/kaggle_w2t4b_criteria_2026_09.json`](evidence/kaggle_w2t4b_criteria_2026_09.json)
+(SHA-256 `4617f98ca2cd95e60baba4c86d78f66aa8dff2261ff688e17f06a00ab06fc444`)
+against implementation commit `99c013a089b196975c190d413e4b4103ccbe755e`.
+It runs the canonical sampled sphere on one visible T4 (`CUDA_VISIBLE_DEVICES=0`)
+and records the complete two-T4 inventory. The CPU-to-Kaggle sampled drag
+bound is 1%; the sampled-to-analytic T4 Cd bound is the existing 10% W2a
+cross-geometry bound. The other preregistered checks cover finite fields and
+forces, sign, stationarity, canonical phi/margin and round-trip hash, runtime,
+VRAM, backend identity, and artifact transport. No gradient, reverse mode,
+topology, grid convergence, or optimizer claim follows from this run.
+
+At W2-T4b round 1, after W1g version 4, the expected Kaggle version was 5.
+The commands below collect that now-historical diagnostic:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-k0/5
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-k0/5
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-k0/5 -p work/kaggle_w2t4b_version5
+python3 scripts/verify_kaggle_w2t4b.py work/kaggle_w2t4b_version5
+```
+
+Use the actual version printed by `push` if it differs. The verifier requires
+the exact registered criteria hash, runner/source/Julia environment identity,
+version-specific output manifest, force CSV hash/schema/count, and independently
+recomputed T0–T12 gates. A missing `DONE`, `ERROR.txt`, or a failed gate remains
+diagnostic and does not qualify W2-T4b.
+
+Version 5 completed the sampled-sphere primal, but the Kaggle worker returned
+`ERROR` because only T9 failed. The force, stationarity, CPU agreement,
+sampled-to-analytic Cd, runtime, VRAM, backend and prerequisite gates passed.
+All 14 files in its SHA-256 manifest match the local download under
+`work/kaggle_w2t4b_version5/w2t4b`; there is no `DONE` marker, so the output is
+diagnostic only. See
+[`evidence/kaggle_w2t4b_round1_diagnostic_2026_09.json`](evidence/kaggle_w2t4b_round1_diagnostic_2026_09.json)
+for the version, source, criteria, metrics, gate results, and artifact hashes.
+
+## W2-T4b round 2 retry
+
+The append-only round-2 criteria were
+[`evidence/kaggle_w2t4b_criteria_2026_09_round2.json`](evidence/kaggle_w2t4b_criteria_2026_09_round2.json)
+(SHA-256 `85bd5ba4f6ff0a13c7f0509b1ba86b74cfeb7bc346fc590b27a819ce3f228e66`).
+All numerical thresholds are identical to round 1. The only correction is
+telemetry semantics: `phi_margin_m` is recomputed with
+`zero_level_margin_m(phi, origin, h)`, and `phi_margin_gate_m` separately
+records the constructor's registered `0.15 m` gate. The repaired job is pinned
+to source commit `2da94a92ffb9af55dfc159068ace8f25c55c0e6c`. The retry used
+Kaggle version 6:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-k0/6
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-k0/6
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-k0/6 -p work/kaggle_w2t4b_version6
+python3 scripts/verify_kaggle_w2t4b.py work/kaggle_w2t4b_version6
+```
+
+Use the version actually returned by `push` and keep it matched across
+`status`, `logs`, `output`, and the output directory. A missing `DONE`, an
+`ERROR.txt`, any hash mismatch, or any failed independent gate is diagnostic;
+do not alter round-2 thresholds after seeing the result.
+
+Version 6 completed and passed the round-2 criteria. Host verification checked
+13 manifested files and independently recomputed all gates. Measured margin
+was `0.19999998807907104 m`, distinct from the recorded `0.15 m` gate;
+window-mean drag was `88.2360589943` (relative difference `2.86e-5` from the
+CPU sampled fixture), and `Cd=0.8777003092` (relative difference `0.00215`
+from analytic T4). The append-only result is
+[`evidence/kaggle_w2t4b_round2_result_2026_09.json`](evidence/kaggle_w2t4b_round2_result_2026_09.json).
+It qualifies only the registered sampled-sphere CUDA primal capability and
+agreement gates at 16 cells/D. The next slice is W2b; its separate
+16/24/32 cells/D flow-grid matrix and gates are registered below before the
+first ladder measurement.
+
+## W2b: registered three-resolution flow-grid ladder
+
+The six-case matrix and numerical bounds remain those registered in
+[`evidence/kaggle_w2b_criteria_2026_09_round1.json`](evidence/kaggle_w2b_criteria_2026_09_round1.json)
+(SHA-256 `eab8213461d95a714910a2055a957d3614f1e257dcc79197f6068cd35a04b1bd`).
+Version 7 exposed that round 1's source commit was a mistyped, nonexistent SHA;
+that attempt failed at T0 before any solver case. The immutable diagnostic is
+[`evidence/kaggle_w2b_version7_fetch_diagnostic_2026_09.json`](evidence/kaggle_w2b_version7_fetch_diagnostic_2026_09.json)
+(SHA-256 `5df35a54ea1755ea12cf70b180618fdfc99700c6958334312a2b43e48f38ec91`).
+Round 2 is registered at
+[`evidence/kaggle_w2b_criteria_2026_09_round2.json`](evidence/kaggle_w2b_criteria_2026_09_round2.json)
+(SHA-256 `36c4cc138af4c30e022ddad9993798dfea6c8432cc72c4d216fb4cc569ce4cb5`).
+It corrects only the source commit pin to the actual job commit
+`548231050fc6ca22bc1c0394272564f81571dbbc`; the fixture, input hashes, and
+all numeric bounds equal round 1. Its version 8 run passed source fetch, all
+20 pinned input hashes, and Julia Project/Manifest instantiation. The T4 smoke
+passed `CUDA_FUNCTIONAL`, CuArray, and KernelAbstractions checks, but the
+observed CUDA runtime was 12.8.0 rather than round 2's registered 13.3.0. The
+CUDA driver API value was 13.3.0; the NVIDIA driver from `nvidia-smi` remained
+580.159.04. The no-solver diagnostic is
+[`evidence/kaggle_w2b_version8_runtime_diagnostic_2026_09.json`](evidence/kaggle_w2b_version8_runtime_diagnostic_2026_09.json)
+(SHA-256 `08385ba971be70ad08fa73fa6d5f6587fa89b4137d3fded4c922ab15d6fc000d`).
+
+Round 3 is registered at
+[`evidence/kaggle_w2b_criteria_2026_09_round3.json`](evidence/kaggle_w2b_criteria_2026_09_round3.json)
+(SHA-256 `3573b903c2ff025db62cb184ba328f81c48da70f72d4393e3623bd3bbb58bf1c`).
+It registers the observed CUDA runtime 12.8.0 and records the CUDA driver API
+version separately as 13.3.0. The source pin, fixture, input hashes, Project,
+Manifest, and every numerical bound equal rounds 1 and 2. It compares analytic and canonical GridSDF
+spheres at 16, 24, and 32 cells/D on identical dimensionless domains at
+Re_D=100. The registered bounds require
+each per-rung geometry Cd pair within 1%, the 16-cells/D drag values within 1%
+of the W2-T4a/W2-T4b references, and the 24-to-32 cells/D Cd change within 3%
+for each geometry. The 3% value is a PoC candidate bound, not formal GCI or
+absolute-accuracy evidence; all six cases must also pass the registered
+finiteness, force, stationarity, phi, runtime/VRAM and T4 identity gates.
+
+Rounds 2 and 3 pinned the solver job to
+`548231050fc6ca22bc1c0394272564f81571dbbc`. Version 9 fetched that source,
+verified its inputs, passed T4 smoke, and completed `analytic_16` through
+`t_end=60`. Host recomputation matched its 561-sample force CSV and reported
+time-weighted Cd `0.879587436031`. The Julia script then stopped before case 2:
+top-level `case_count += 1` raised a soft-scope `UndefVarError`, and the
+`W2B_JOB_DONE` marker was absent. The six-case matrix is incomplete; the single
+case is diagnostic only and is not reused for round 4. All 12 retrieved output
+hashes and the kernel-log hash verify. The immutable failure diagnostic is
+[`evidence/kaggle_w2b_version9_partial_failure_diagnostic_2026_09.json`](evidence/kaggle_w2b_version9_partial_failure_diagnostic_2026_09.json)
+(SHA-256 `43ffa63058606638cd70f2bfbd18c68c8521a3fa67c81ad9bf03ebd8f7b3f35e`);
+the kernel log SHA-256 is
+`d12a2e07f65bdfe5c7a8811fa8fd5fbd4d29239a5790014abe045b7322a21ee3`.
+
+The counter-only fix is source commit
+`a29e282982a923e0a93ed31d3643e59c7ec6e42e`; the job hash is
+`cc351f6eb5f8ca8f2bc210100f82b46481335003a818d45466757f588ffd0440`. It removes
+the mutable top-level counter and prints the registered tuple length only
+after all six cases return. Round 4 is registered at
+[`evidence/kaggle_w2b_criteria_2026_09_round4.json`](evidence/kaggle_w2b_criteria_2026_09_round4.json)
+(SHA-256 `4b5789d4dcf2e9b79b10eb5e388d5a56951df5c835f0c993903527463b6a82d0`).
+It updates the source/job pin for the counter fix; runtime identity, fixture,
+all other inputs, and every numerical threshold equal round 3. The round-9
+partial measurement remains diagnostic and the round-4 solver has not started.
+
+Kaggle version 10 fetched the round-4 source, passed the registered T4 smoke,
+and completed `analytic_16` through `t_end=60.0000228882`; host recomputation
+matched its 561-sample force CSV (time-weighted Cd `0.8795874360307699`). The
+next case, `gridsdf_16`, stopped in `build_body` before solver integration:
+`zero_level_margin_m` was defined in `CFDSDFWaterLily.GridSDFBody` but called
+unqualified from `Main`. The exact 12 retrieved output hashes and kernel log
+verify. The immutable partial diagnostic is
+[`evidence/kaggle_w2b_version10_partial_failure_diagnostic_2026_09.json`](evidence/kaggle_w2b_version10_partial_failure_diagnostic_2026_09.json)
+(SHA-256 `b2df282a40d776abeaf3ec63b086c4e297e6ffe1bafdd1de3b44d17a415f7cec`);
+the kernel-log SHA-256 is
+`1ce4d69aec373c4d20e86937b2868b771f8a58390f1209289e2579481ba2ed97`. The
+single analytic case remains diagnostic and is not reused for acceptance.
+
+The source fix qualifies the existing helper as
+`CFDSDFWaterLily.GridSDFBody.zero_level_margin_m`, without changing its
+implementation or any solver parameter. It is committed as
+`65dbb015994e34669ec5d22f671b97128eaf87d2`; the new registered job SHA-256 is
+`eaedc02478ee1b966dce3ecb24bc9b8bb2b41223706f9ea1a71c070619c53e15`. Round 5
+is registered before its first measurement at
+[`evidence/kaggle_w2b_criteria_2026_09_round5.json`](evidence/kaggle_w2b_criteria_2026_09_round5.json)
+(SHA-256 `32c1fb8a80658a9ea37713c477c6ededcc0808d5cbb8bbd07d91a2b83ed1eb47`).
+It changes only the pinned source commit/job hash from round 4; backend, fixture,
+other input hashes, and all numerical thresholds are identical. The round-5
+solver has not started. Before version 11, all 6 focused W2b tests, Python
+`compileall`, diagnostic output/kernel-log hashes, and `git diff --check` pass.
+Full pytest reports 1049 passed, 37 failed, and 4 skipped. Re-running the 37
+failures alone reproduces only `FileNotFoundError` for ignored `work/` evidence
+files absent from this managed worktree; none is a W2b test.
+
+Kaggle version 11 completed the round-5 six-case ladder. The exact-version
+download contains 23 files; the host verifier checked every manifest hash,
+recomputed all force-window metrics from the six raw CSVs, and passed T0-T13.
+The immutable result record is
+[`evidence/kaggle_w2b_round5_result_2026_09.json`](evidence/kaggle_w2b_round5_result_2026_09.json)
+(SHA-256 `8edf0d36cb706e9f6862faf7ea44845b100c3213433e94ae334251c16c94cccc`);
+the downloaded manifest SHA-256 is
+`6c6c940605c76007f171bb8b5ffcf21b50d060ef9ec6b8cfd2514d258fd3bb87`, and
+the Kaggle log SHA-256 is
+`cc65a38d805b74bf920f41371b542cc674ad919c3be9a7d413757796573cc44d`. At each
+resolution, analytic-versus-GridSDF time-weighted Cd differs by 0.209-0.243%.
+The 24-to-32 cells/D response is 1.903% analytic and 1.869% GridSDF, below
+the registered 3% PoC candidate bound; both changes are smaller than their
+16-to-24 changes. This closes only the registered sphere-fixture W2b gates;
+it does not establish formal GCI, asymptotic order, absolute Cd accuracy, or
+target-vehicle physics. The grid-response and shape-update qualification flags
+remain false.
+
+W2b uses its own private Kaggle kernel,
+`ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder`. Version 7 failed at source
+fetch before any solver case began because the round-1 source SHA was mistyped.
+Its exact error and retrieval hashes are recorded in
+[`evidence/kaggle_w2b_version7_fetch_diagnostic_2026_09.json`](evidence/kaggle_w2b_version7_fetch_diagnostic_2026_09.json)
+(SHA-256 `5df35a54ea1755ea12cf70b180618fdfc99700c6958334312a2b43e48f38ec91`).
+The runner fetches the advertised feature branch shallowly, then checks out the
+exact registered source commit and verifies it. This fetch-and-checkout path
+was locally tested against the pinned commit and all 20 registered source,
+Project, and Manifest hashes. The Kaggle CLI
+resolves the kernel slug from the title, so the metadata ID uses that same
+slug. Before version 7, the focused W2b contract test passed (4 tests), the Julia
+parser, Python compilation, criteria/input hashes, and `git diff --check` passed.
+After registering round 2, the focused tests and corrected branch-fetch probe
+passed. Before version 9, round-3 focused tests passed (4 tests); Python
+`compileall`/syntax checks, metadata and criteria JSON parsing, criteria-chain
+and sidecar hashes, all 8 version-8 output hashes, the kernel-log hash, CUDA
+identity binding, the Julia parser, and `git diff --check` also passed. The
+full suite reported 1047 passed, 37 failed, and 4 skipped. Re-running only the
+37 failures confirmed they all depend on ignored `work/` evidence artifacts
+absent from the fresh managed worktree (including an STL load that fails after
+its registered file is missing); the focused W2b tests are not among them.
+Before version 10, round-4 focused tests passed (5 tests), including a
+regression assertion for the top-level completion counter. Python
+`compileall`/syntax checks, metadata and criteria JSON parsing, criteria-chain
+and sidecar hashes, all 12 version-9 output hashes, the kernel-log hash, the
+Julia parser and top-level marker check, and `git diff --check` passed. The
+full suite reported 1048 passed, 37 failed, and 4 skipped. Re-running the 37
+failures confirmed they still depend on ignored `work/` evidence artifacts
+missing from this managed worktree.
+After retrieval,
+the host verifier checks every manifest hash and recomputes the force means,
+time-weighted coefficients, stationarity and all registered gates from the raw
+force CSVs.
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python -m pytest -q tests/test_kaggle_w2b.py
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel_w2b --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/11
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/11
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/11 -p work/kaggle_w2b_version11
+PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w2b.py \
+  work/kaggle_w2b_version11
+```
+
+Use the version actually returned by `push` consistently in all four Kaggle
+commands and the retrieval path. Version 11's exact output passed host
+verification as recorded above. For any later round, a missing `DONE`,
+`ERROR.txt`, hash mismatch, or failed gate remains diagnostic; do not relax
+numerical thresholds after seeing solver results. Rounds 2 through 5 preserve
+round-1 numerical bounds.
+
+## W3: v16 first-primal input-path diagnostic
+
+W3 has its own immutable criteria and private v16 input dataset. Criteria SHA
+`3c54f3867d9eb9a5960b4c153bd1bffbfc4ca3a547456ecd51b340f808476de3` binds
+source commit `b46ef4270df0c76d91922b8f1b2455fabad62418`. The dataset is
+`ramhachi888/cfd-opt-sdf-v16-genesis-state`; the kernel is
+`ramhachi888/cfd-opt-sdf-w3-v16-primal`.
+
+Kaggle version 1 stopped during criteria loading because the registered JSON
+was not present at the runner's expected path under `/kaggle/input`. It did not
+inventory a GPU, fetch source, start Julia, or take a solver step. The failure
+and hashes are preserved in
+[`evidence/kaggle_w3_v16_primal_version1_diagnostic_2026_09.json`](evidence/kaggle_w3_v16_primal_version1_diagnostic_2026_09.json).
+The kernel metadata returned by `kaggle kernels pull` contains the expected
+dataset source, and the dataset status was `ready`; the missing criteria path
+does not establish whether the input mount was empty or differently named.
+Version 2 re-pushes the unchanged kernel after the new private source was
+ready. If a first run immediately after attaching a new Kaggle source fails
+before solver initialization, keep the criteria unchanged and inspect the
+exact version's logs and `ERROR.txt` before deciding whether a retry or a
+path-resolution fix is required.
+
+Version 2 was collected on 2026-09-28 and failed at the same criteria lookup
+as version 1. Its append-only diagnostic records the exact logs/output hashes
+and confirms no GPU inventory or solver step was reached:
+[`evidence/kaggle_w3_v16_primal_version2_diagnostic_2026_09.json`](evidence/kaggle_w3_v16_primal_version2_diagnostic_2026_09.json).
+The dataset API reported `ready` and listed the criteria file, but the runtime
+did not record its `/kaggle/input` mount inventory. The runner now discovers
+the unique criteria file recursively and records top-level mount entries
+before lookup. No threshold or registered criteria was edited.
+
+Static source-review note (not execution evidence): the pinned W3 Julia job
+also used several non-exported `CFDSDFWaterLily` definitions without explicit
+imports. Version 2 failed before reaching Julia, so this was not its observed
+failure. The W3 job now explicitly imports its profile constants and helpers;
+that source change, together with input-path discovery, must be bound to a new
+immutable criteria round before retrying.
+
+Historical W3 version 2 collection commands (completed; do not run the
+success-only host verifier against this ERROR output):
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel_w3 --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/2
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/2
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/2 -p work/kaggle_w3_version2
+PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w3_v16.py \
+  work/kaggle_w3_version2 \
+  --dataset-dir work/kaggle_w3_v16_dataset_registered_3c54f386 \
+  --kernel-version 2
+```
+
+The round-1/round-2 host verifier rechecks registered source and dataset hashes,
+reads the canonical SDF state independently, recomputes its margin and
+force-window metrics, validates the available raw force-component closure, then
+recomputes T0-T9. Those rounds do not gate stationarity. Round 3 below adds the
+full three-axis closure and T10 stationarity gate. W3 remains an explicitly
+non-equivalent WaterLily finite-box approximation; even a round-3 pass does not
+qualify the OpenFOAM physical profile, grid/domain response, gradients,
+topology, or a shape update.
+
+### W3 immutable round 2 and retry workflow
+
+After the source fix is committed and pushed, the working tree must be clean
+before generating a new round. Round 2 is append-only and binds the new runner
+and Julia job hashes without changing any acceptance limit:
+
+```bash
+.venv/bin/python scripts/register_kaggle_w3_v16_primal_2026_09.py \
+  --round 2 --state work/kaggle_w3_v16_dataset_registered_3c54f386/sdf_design_state.npz
+.venv/bin/python scripts/register_kaggle_w3_v16_primal_2026_09.py --round 2 --check
+git add docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round2.json \
+  docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round2.json.sha256
+git commit -m "Register W3 v16 primal criteria round 2"
+git push origin codex/kaggle-batch-migration
+.venv/bin/python scripts/prepare_kaggle_w3_dataset_2026_09.py \
+  work/kaggle_w3_v16_dataset_registered_3c54f386/sdf_design_state.npz \
+  docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round2.json \
+  work/kaggle_w3_v16_dataset_round2
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle datasets version \
+  -p work/kaggle_w3_v16_dataset_round2 \
+  -m "W3 v16 immutable criteria round 2: input mount discovery" --dir-mode zip
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle datasets status \
+  ramhachi888/cfd-opt-sdf-v16-genesis-state
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel_w3 --accelerator NvidiaTeslaT4 --timeout 7200
+```
+
+Use the actual kernel version returned by the push in every status/log/output
+command. If it is version 3:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/3
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/3
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/3 -p work/kaggle_w3_version3
+test ! -e docs/evidence/kaggle_w3_v16_primal_result_round2_2026_09.json
+PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w3_v16.py \
+  work/kaggle_w3_version3 \
+  --criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round2.json \
+  --dataset-dir work/kaggle_w3_v16_dataset_round2 \
+  --kernel-version 3 \
+  > docs/evidence/kaggle_w3_v16_primal_result_round2_2026_09.json
+```
+
+The verifier prints an append-only PASS candidate containing the exact
+criteria/source/version bindings, T0-T9 recomputation and observed backend
+identity, including `waterlily_backend`. Confirm it reports `verdict: PASS`
+and `host_verification_passed: true`, then commit and push that result evidence
+before registering W4.
+
+If version 3 still fails criteria discovery, its downloaded
+`input_mount_inventory.json` distinguishes the visible `/kaggle/input` entries
+from a registered dataset that is absent from the runtime mount.
+
+### W3 round-2 version 3 terminal diagnostic (2026-09-28)
+
+Version 3 used the exact immutable round-2 criteria and source binding above.
+Its Kaggle worker status is `KernelWorkerStatus.ERROR`, but the solver ran
+10,600 steps through `tU/L=120.0103759766` and completed force integration.
+Criteria discovery, dataset/source hashes, Julia setup, CUDA smoke, T4
+inventory, SDF transfer/body/simulation construction, finite fields, runtime,
+and VRAM gates passed. T7 alone failed: the registered `[80,120]` time-weighted
+`+Fx` drag was negative (`-23.45292019493048` solver units,
+`-0.05863230048732621 N`). The raw force CSV and independent host recomputation
+agree; this is a measured registered acceptance failure, not an infrastructure
+or primal-start failure. Do not flip the sign or alter round-2 criteria based
+on this result.
+
+The exact append-only diagnostic is
+[`evidence/kaggle_w3_v16_primal_version3_diagnostic_2026_09.json`](evidence/kaggle_w3_v16_primal_version3_diagnostic_2026_09.json)
+(SHA-256 `fa278d11d7f2dfcde134671fea35580955d542447a51646864fc14ddad2fbe1f`).
+It records all T0-T9 values (T0-T6, T8 and T9 true; T7 false), exact source,
+criteria, backend and output hashes. The downloaded `sha256.json` and all 19
+listed output files were independently rehashed and match. Independent host
+helpers verified registered source and staged dataset identities, CPU-side
+SDF margin (`0.3499999939931499 m` against the `0.15 m` gate), raw force
+recomputation, summary metrics, and recorded x-force closure. The success-only
+formal W3 verifier was not run because the output contains `ERROR.txt` and no
+`DONE`; `formal_host_verification_passed=false`. The W3 CSV records separate
+pressure/viscous x components but not separate y/z components, so y/z component
+closure is not independently verifiable from this output.
+
+The run recorded two Tesla T4 GPUs, selected UUID
+`GPU-208ce4aa-07f3-1e25-2d6e-f1f2e2adbef9`, driver `580.159.04`, CUDA driver
+API `13.3.0`, runtime `12.8.0`, Julia `1.12.6`, CUDA.jl `6.3.1`, WaterLily
+`1.8.0` / `KernelAbstractions`, and `CUDA_VISIBLE_DEVICES=0`. It recorded 441
+force samples in the measurement window, 94.272 seconds wall time, and peak
+VRAM `7,132,408` bytes. The first/second-half force means are diagnostic only;
+they do not establish stationarity. The registered-window diagnostic means
+were approximately drag `-8.73/-37.27` and downforce `-196.19/-254.50` for
+the first/second halves, respectively. This response shows why a positive
+drag-only pass would not be enough for an FD baseline; the round-3 stationarity
+limit comes from W2 registration, not these v3 values.
+
+Exact-version collection commands (completed):
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/3
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/3
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/3 -p work/kaggle_w3_version3
+```
+
+Keep `waterlily_v16_primal_qualified=false`,
+`physical_profile_qualified=false`, `grid_response_qualified=false`,
+`sdf_gradient_qualified=false`, both reverse qualification flags false, and
+`shape_update_allowed=false`. W4 remains implemented only: do not register
+its criteria, stage/upload its dataset, or start measurement until an exact
+W3 run has a passing formal host verification. Investigate the negative
+registered drag against the force convention and physical fixture without
+changing round 2; any justified source or measurement change requires a new
+immutable criteria round before a new run.
+
+### W3 expanded-domain immutable round 3 (prepared, not registered)
+
+The v3 negative `+Fx` drag is a registered T7 failure, not proof of a sign
+implementation bug. Keep `drag=+Fx` and `downforce=-Fz`. Do not rerun the same
+small box by flipping signs. The next round uses the expanded WaterLily
+finite-box fixture because independent Stage V evidence already reports the
+original `[-1,2]x[-0.8,0.8]x[-0.6,0.6] m` OpenFOAM box as failed at
+`outer_patch_backflow_and_pressure_disturbance`, while the expanded
+`[-2.5,2.5]x[-1.2,1.2]x[-0.9,0.9] m` profile passed. A same-candidate
+OpenFOAM parent/child domain check from x-max 2.5 to 3.5 m also passed its
+registered domain gate. Its parent/child `Cd` (`1.16939914/1.17036295`) and
+downforce (`0.75655147/0.75735487`) are fixture-selection evidence only; they
+are not WaterLily targets and establish no OpenFOAM/WaterLily equivalence.
+The W2 round-5 sphere's positive-drag result is a separate precedent for the
+same `+Fx` convention.
+
+Round 3 keeps the canonical design SDF fixed at origin `[-1,-0.8,-0.6] m`,
+spacing `0.05 m`, and point shape `61x33x25`. It separates that origin from the
+flow origin `[-2.5,-1.2,-0.9] m`; flow dims are `100x48x36`, dx `0.05 m`,
+solver length 16, viscosity 0.20 and Re 80. The SDF-to-solver body map uses the
+flow origin while the canonical `GridSDF` retains its original origin. The
+moving-ground plane is solver z=0, which maps to world z=-0.9 m, the bottom of
+the expanded flow domain. The candidate world geometry, canonical phi bytes,
+moving-ground velocity, freestream and force signs remain fixed.
+
+Round-3 raw force output has total, pressure and viscous `Fx/Fy/Fz`, drag and
+downforce. T7 checks positive time-weighted +x drag, all three
+`total=pressure+viscous` components, projections and independent host
+recomputation. It imposes no downforce sign/magnitude gate. T10 is a hard
+stationarity gate for drag and downforce, each using
+`abs(mean_first-mean_second)/max(abs(mean_whole),eps(Float64)) <= 0.02`. Each
+mean uses exact endpoint-clipped trapezoidal integration over `[80,100]`,
+`[100,120]`, or `[80,120]`. The 2% limit is inherited from registered W2
+sphere capability criteria and fixed before W3 round-3 measurement; it was not
+chosen from v3 output.
+
+Before freezing round 3, run the adapter test, syntax parse, focused contracts,
+JSON parsing, Python compilation and diff check:
+
+```bash
+julia --startup-file=no --project=julia/CFDSDFWaterLily \
+  julia/CFDSDFWaterLily/test/test_v16_physical_profile_adapter.jl
+julia --startup-file=no --project=julia/CFDSDFWaterLilyT4 \
+  -e 'Meta.parseall(read("scripts/waterlily_w3_v16_primal_job.jl", String)); println("W3 Julia syntax parsed")'
+.venv/bin/python -m pytest -q tests/test_kaggle_w3.py tests/test_kaggle_w4.py
+.venv/bin/python -m compileall -q src tests scripts infra/kaggle/kernel_w3 infra/kaggle/kernel_w4
+python3 -m json.tool docs/evidence/w4_v16_sensitivity_criteria_draft_2026_09.json >/dev/null
+git diff --check
+```
+
+Only after all source, tests and the mutable W4 draft are final, commit and
+push the source to `codex/kaggle-batch-migration`. On that clean pushed source
+commit, register W3 criteria round 3 and commit/push the criteria plus sidecar:
+
+```bash
+.venv/bin/python scripts/register_kaggle_w3_v16_primal_2026_09.py \
+  --round 3 --state work/sdf_native_genesis_v16/sdf_design_state.npz
+.venv/bin/python scripts/register_kaggle_w3_v16_primal_2026_09.py --round 3 --check
+git add docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json \
+  docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json.sha256
+git commit -m "Register W3 expanded-domain criteria round 3"
+git push origin codex/kaggle-batch-migration
+.venv/bin/python scripts/prepare_kaggle_w3_dataset_2026_09.py \
+  work/sdf_native_genesis_v16/sdf_design_state.npz \
+  docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json \
+  work/kaggle_w3_v16_dataset_round3
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle datasets version \
+  -p work/kaggle_w3_v16_dataset_round3 \
+  -m "W3 v16 expanded-domain immutable criteria round 3" --dir-mode zip
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle datasets download \
+  -d ramhachi888/cfd-opt-sdf-v16-genesis-state \
+  -p work/kaggle_w3_v16_dataset_round3_remote --force --unzip
+```
+
+Before kernel submission, compare the re-downloaded remote dataset's manifest
+and exact file inventory/SHA-256 values against the staged round-3 dataset.
+Then submit the W3 kernel. Use the exact version returned by `push` for every
+subsequent status, log, output and verifier command. Set `KAGGLE_W3_VERSION`
+to that integer:
+
+```bash
+KAGGLE_W3_VERSION=4  # Replace with the exact version returned by push
+KAGGLE_W3_RUN="work/kaggle_w3_version${KAGGLE_W3_VERSION}"
+mkdir -p "$KAGGLE_W3_RUN"
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel_w3 --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  "ramhachi888/cfd-opt-sdf-w3-v16-primal/${KAGGLE_W3_VERSION}"
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  "ramhachi888/cfd-opt-sdf-w3-v16-primal/${KAGGLE_W3_VERSION}" \
+  > "$KAGGLE_W3_RUN/kaggle.log"
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  "ramhachi888/cfd-opt-sdf-w3-v16-primal/${KAGGLE_W3_VERSION}" \
+  -p "$KAGGLE_W3_RUN"
+```
+
+If the exact version reaches `COMPLETE` and contains `DONE`, run the success
+verifier. It independently verifies T0-T10 and writes a unique append-only
+result plus SHA sidecar only if every gate passes:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w3_v16.py \
+  "$KAGGLE_W3_RUN" \
+  --criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json \
+  --dataset-dir work/kaggle_w3_v16_dataset_round3 \
+  --kernel-version "$KAGGLE_W3_VERSION" \
+  --kaggle-log "$KAGGLE_W3_RUN/kaggle.log" \
+  --result-evidence docs/evidence/kaggle_w3_v16_primal_result_round3_2026_09.json
+```
+
+An `ERROR` or failed gate is diagnostic only: preserve the exact log/output,
+record solver start/step count and failure stage, and do not relax criteria or
+proceed to W4. W4 stays unregistered/unmeasured until exact round-3 host
+verification passes.
+
+### Diagnostic-only Enzyme reverse spike version 1 (2026-09-28)
+
+Exact version 1 completed as a Kaggle worker but produced `ERROR.txt` before
+the reverse Julia script. Its append-only diagnostic is
+[`evidence/kaggle_enzyme_reverse_spike_version1_diagnostic_2026_09.json`](evidence/kaggle_enzyme_reverse_spike_version1_diagnostic_2026_09.json)
+(SHA-256 `9d969272bd3730b6d7cd5609a93bd3748d3fe9698dcf5597c3ee8def755e0e67`).
+The runner recorded two Tesla T4 GPUs and downloaded/hash-checked/extracted
+Julia 1.12.6. `Pkg.instantiate()` then tried to write the project manifest
+under `/kaggle/src/julia`, the read-only Kaggle source mount, and failed with
+`EROFS`. This is a Julia setup/project-path failure; package-resolution
+completion is unverified. No CUDA initialization, Enzyme probe, isolated
+Poisson VJP, WaterLily Flow activity analysis, timestep reverse, or
+host/device derivative ran. Do not label it a package-compatibility or
+reverse-mode failure.
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/1
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/1
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/1 \
+  -p work/kaggle_enzyme_reverse_spike_version1
+```
+
+The exact reverse spike v2 result is an earlier source-packaging diagnostic.
+Kaggle reports `KernelWorkerStatus.COMPLETE`, but its output has `ERROR.txt`
+before GPU inventory: the script was at `/kaggle/src/script.py`, while the
+adjacent `julia/Project.toml` was not present in the Kaggle source bundle. The
+append-only record is
+[`evidence/kaggle_enzyme_reverse_spike_version2_diagnostic_2026_09.json`](evidence/kaggle_enzyme_reverse_spike_version2_diagnostic_2026_09.json)
+(SHA-256 `bb57d2db8a1bf4391e5c8dbdb7adb43d5a7a96807a385be4d3fccf24a5a5b656`).
+Its exact CLI log SHA-256 is
+`f6f13b40f46d4852b0aad1e21782806bd4a476a92d187ebebcd24bc28141e828`,
+`ERROR.txt` SHA-256 is
+`f8578e487c1d675eab4d510b6ddacb4375b8beb5efd3bf34502d5216f845fec8`, and
+output-manifest SHA-256 is
+`9b322e174657e1c8701bf7841011a224be1c6948cc35e29028aa4c22de6c6db9`. No
+GPU inventory, Julia setup, Pkg instantiation, CUDA initialization, or reverse
+probe ran. This is not an Enzyme/CUDA or package-resolution failure.
+
+The next diagnostic revision on `exp/w3-enzyme-reverse-spike` fetches the
+scratch Julia project from fixed source commit
+`9b22f719e2f06222dd7f01788154399f0fef441d`, verifies the exact Project,
+Manifest and reverse script SHA-256 values, then copies it to writable
+`/kaggle/working`. The expected pins are Project
+`867d0e3f1846d65322b65c44261d649c43775984d36cbc6bfb43a02285653383` and
+Manifest `f30dacad47411641cbf297c4663e12029de2565ab6d875aa05891127289a8b6e`.
+It logs source archive, source input, pre/post-instantiation copy hashes and
+the exact failure stage. CUDA.jl 6.2.1, Enzyme and WaterLily PR #285 remain
+isolated from W2/W3/W4.
+
+Submit and collect the next reverse diagnostic with Kaggle CLI 2.2.4:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel_enzyme_reverse_spike --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/3
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/3 \
+  > work/kaggle_enzyme_reverse_spike_version3/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/3 \
+  -p work/kaggle_enzyme_reverse_spike_version3
+```
+
+Check that `project_identity.json` reports the pinned commit and input
+Project/Manifest hashes, identical pre-instantiation writable-copy hashes,
+post-instantiation hashes and failure stage. Classify failures separately as
+source fetch, dependency resolution, CUDA initialization, basic Enzyme CUDA
+reverse, isolated Poisson VJP, Flow activity analysis/mutation, timestep
+reverse, or host/device-transfer derivative. This run remains diagnostic-only
+regardless of its per-stage status.
+
+## W4 v16 resolution/domain sensitivity preparation
+
+**Historical note:** The W3-v3 failure and W3-round-3 prerequisite below are
+superseded by the exact W3 round-4 PASS recorded later in this runbook. The
+initial W4 source preparation retained the owner structurally using the
+existing `OwnedV16Run` type for the complete case solve and retained the shared
+canonical device owner across all four cases. Immutable round-1 criteria were
+later registered, then superseded before computation by the preflight
+correction recorded at the end of this file.
+
+- `julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl` defines the four fixed case
+  maps and checks physical-box alignment, dimensions, solver length, and Re=80.
+  The mutable draft separates canonical SDF origin `[-1,-0.8,-0.6] m` from
+  flow origin `[-2.5,-1.2,-0.9] m`. On the unchanged expanded baseline box,
+  `flow_16/24/32` are `100x48x36` at `dx=.05 m`, `150x72x54` at
+  `dx=.033333... m`, and `200x96x72` at `dx=.025 m`, with solver viscosities
+  `.20/.30/.40`. The domain case is
+  `[-2.5,3.5]x[-1.2,1.2]x[-.9,.9] m`, `120x48x36`, extending +x by 1 m to
+  match the existing OpenFOAM parent/child pair. All retain Re=80; the
+  canonical 0.05 m design lattice is not resampled.
+- `scripts/waterlily_w4_v16_sensitivity_job.jl` runs the four T4 cases against
+  the unchanged canonical v16 SDF and writes raw 3-axis pressure, viscous, and
+  total force vectors. It also writes physical-time-weighted solver means,
+  physical N forces, half-window diagnostics, runtime, VRAM, SDF hashes, and
+  backend identity. Sampling is every eight solver steps plus a terminal force
+  sample; host and Julia recomputation linearly interpolate to the exact
+  registered [80,120] endpoints before trapezoidal integration. Stationarity
+  uses exact endpoint-clipped `[80,100]` and `[100,120]` trapezoidal means and
+  the inherited 0.02 relative drift threshold for drag and downforce.
+- `infra/kaggle/kernel_w4/runner.py` discovers the criteria by filename under
+  `/kaggle/input` (not a hard-coded Kaggle mount path), checks criteria,
+  dataset, source commit, input hashes, W3 PASS evidence, canonical state,
+  measured SDF margin, T4 inventory and CUDA smoke, then records stage and
+  solver-step progress with a complete output SHA manifest. It refuses draft
+  criteria.
+- `scripts/verify_kaggle_w4_v16.py` independently checks the version-bound
+  output, inputs, SDF hashes/margin, all raw force rows, component closure,
+  projections, endpoint-clipped time-weighted means, physical N conversion,
+  runtime/VRAM, backend identity and the W3 prerequisite. It recomputes the
+  runner's T0-T10 gates, W3-round-4 versus W4-flow_16 deltas, and the
+  domain-versus-resolution follow-up rule.
+- `tests/test_kaggle_w4.py` covers runner/host gate agreement, 3-axis force
+  closure, exact [80,120] endpoint interpolation, grid identity rejection,
+  the extended-domain rule, the SDF margin definition, staged-file inventory,
+  stationarity interpolation and T10 rejection, structural owner retention,
+  W3 baseline comparison without an unregistered repeatability threshold, and
+  refusal to register W4 from anything other than the exact W3 round-4 PASS.
+- `scripts/register_kaggle_w4_v16_sensitivity_2026_09.py` refuses final
+  criteria without an exact host-verified W3 PASS and complete observed T4
+  backend identity. It binds the W3 criteria/result and W4 source hashes.
+- `scripts/prepare_kaggle_w4_v16_dataset_2026_09.py` accepts only immutable
+  W4 criteria, rechecks pinned source and canonical state/phi identities, and
+  stages the exact private dataset inventory.
+- `infra/kaggle/kernel_w4/kernel-metadata.json` is private T4 metadata pointed
+  at the future W4 dataset. Push only after immutable criteria and the private
+  dataset have been registered and remotely reverified.
+
+The exact W3 round-4 PASS is the only accepted prerequisite. Bind both its
+immutable criteria file and append-only result evidence. The round-4 host
+verifier emits
+`verdict: PASS`,
+`host_verification_passed: true`, the exact W3 criteria SHA, kernel version,
+source commit, and the observed `backend_identity` (including the
+`waterlily_backend` string). Copy that backend identity into the W4 criteria;
+the W4 runner and host verifier require exact equality while recording the
+selected T4 UUID separately for each run. Then bind the exact W4
+runner/job/case module/profile/SDF adapter/owner type, Project/Manifest,
+verifier/test/metadata hashes, criteria, raw phi and canonical state. Register
+the final immutable criteria only after the owner and stationarity changes are
+committed and pushed; then stage the private dataset, validate the hashes, and
+only then push the W4 kernel. Use the W3 round-4 result paths:
+
+```bash
+.venv/bin/python scripts/register_kaggle_w4_v16_sensitivity_2026_09.py \
+  --w3-criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json \
+  --w3-result docs/evidence/kaggle_w3_v16_primal_result_round4_2026_09.json
+.venv/bin/python scripts/register_kaggle_w4_v16_sensitivity_2026_09.py \
+  --w3-criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json \
+  --w3-result docs/evidence/kaggle_w3_v16_primal_result_round4_2026_09.json --check
+git add docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json \
+  docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json.sha256
+git commit -m "Register W4 v16 sensitivity criteria"
+git push origin codex/kaggle-batch-migration
+.venv/bin/python scripts/prepare_kaggle_w4_v16_dataset_2026_09.py \
+  --state work/kaggle_w3_v16_dataset_round4/sdf_design_state.npz \
+  --criteria docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json \
+  --output work/kaggle_w4_v16_dataset
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle datasets create \
+  -p work/kaggle_w4_v16_dataset --dir-mode zip
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle datasets status \
+  ramhachi888/cfd-opt-sdf-v16-w4-sensitivity
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle datasets files \
+  ramhachi888/cfd-opt-sdf-v16-w4-sensitivity
+```
+
+Run this only after the W3 evidence is an exact host-verified PASS. The new
+W4 dataset remains private by default. Once Kaggle reports it ready and its
+file listing matches the staging manifest, submit and retrieve W4:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel_w4 --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/<VERSION>
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/<VERSION>
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/<VERSION> \
+  -p work/kaggle_w4_version<VERSION>
+PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w4_v16.py \
+  work/kaggle_w4_version<VERSION> --criteria docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json \
+  --dataset-dir work/kaggle_w4_v16_dataset --kernel-version <VERSION>
+```
+
+The `<VERSION>` value must be the exact version printed by `push` and kept the
+same for status, logs, output and verification. W3 round-4 `flow_16` values
+must be compared with W4's separately rerun `flow_16`, reporting drag,
+downforce, Cd, stationarity, steps, tU/L, and force sign. No numerical
+repeatability threshold is registered; a force-sign disagreement stops matrix
+interpretation. If either physical-force domain delta is greater than or equal
+to its corresponding 24-to-32 resolution delta, register and run the
+extended-domain fine-grid case before centered FD. W4 reports sensitivity; it
+does not qualify convergence or the physical profile.
+
+Preparation checks (no solver/GPU measurement):
+
+```bash
+julia --startup-file=no -e 'include("julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl"); using .V16W4Sensitivity; foreach(println, V16W4_CASES)'
+julia --startup-file=no --project=julia/CFDSDFWaterLilyT4 -e 'Meta.parseall(read("scripts/waterlily_w4_v16_sensitivity_job.jl", String)); println("W4 Julia syntax parsed")'
+python3 -m json.tool docs/evidence/w4_v16_sensitivity_criteria_draft_2026_09.json >/dev/null
+python3 -m pytest -q tests/test_kaggle_w4.py
+git diff --check
+```
+
+The case builder, Julia parser, JSON parser, focused and full Python tests,
+owner-regression slice, and `git diff --check` must pass before the source
+commit. These checks do not run a solver and do not qualify W4.
+
+### Exact execution checkpoint: W3 round 3, kernel version 4 (2026-09-28)
+
+The round-3 criteria and private dataset are now registered and remotely
+verified. Criteria SHA-256 is
+`f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2`; the
+registered source commit is `5e985fa3395a01228c18910d96e09ecbc5497628`. The
+remote dataset reports `ready`; its downloaded five-file inventory matches
+the staged files and hashes (including manifest SHA-256
+`17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b`).
+
+The exact push returned version 4:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel_w3 --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/4
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/4 > work/kaggle_w3_version4/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/4 -p work/kaggle_w3_version4
+```
+
+At the latest check, exact version 4 is `KernelWorkerStatus.RUNNING`. The
+retrieved `kaggle.log` is 1 byte (newline only; SHA-256
+`01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b`) and no
+output artifact is exposed yet. Thus solver start, steps, and measurements
+remain unobserved. Repeat the exact-version status/log/output commands until
+terminal; use this same `work/kaggle_w3_version4` directory for collection.
+
+Preflight command results before submission: W3 round-3 registrar `--check`
+reproduced the criteria SHA; `tests/test_kaggle_w3.py` and
+`tests/test_kaggle_w4.py` passed (19 tests); Python `compileall` passed; and
+the W3 Julia adapter passed 16 checks without a solver step. On this host, the
+managed worktree has no `.venv`; those Python checks used
+`/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python` from the separate
+project checkout, with the working directory set to the managed worktree.
+The separate checkout's edits were left untouched.
+
+Do not register W4 or start W4/FD measurements unless exact version 4 passes
+the round-3 host verifier. Enzyme reverse spike version 3 is a separate
+diagnostic-only run and was `RUNNING` at this checkpoint; it is never gradient
+qualification evidence.
+
+### W3 round 3, exact kernel version 4: terminal diagnostic (2026-09-28)
+
+This section supersedes the preceding active-run status. Exact W3 version 4 is
+terminal `KernelWorkerStatus.ERROR`. The immutable round-3 criteria and dataset
+were not changed; no force sign or threshold was adjusted after observing the
+run.
+
+The expanded fixture choice is backed by independent Stage V records, not by
+WaterLily/OpenFOAM equivalence: the original small OpenFOAM box failed its
+outer-patch pressure-disturbance gate (inlet normalized mean absolute
+disturbance `0.153719 > 0.05`); the registered expanded box passed, and the
+same-candidate +x outlet-extension pair passed with parent/child Cd
+`1.16939914/1.17036295` and downforce `0.75655147/0.75735487`. The measured
+domain-pair values justify the WaterLily fixture selection only and are not
+WaterLily acceptance targets. W2b's positive sampled-sphere `T4_drag_sign`
+gate remains the independent precedent for keeping `drag=+Fx`.
+
+Collect the exact version with the same version number in every command:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/4
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/4 > work/kaggle_w3_version4/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/4 -p work/kaggle_w3_version4
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  scripts/verify_kaggle_w3_v16.py work/kaggle_w3_version4 \
+  --criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json \
+  --dataset-dir work/kaggle_w3_v16_dataset_round3 --kernel-version 4 \
+  --kaggle-log work/kaggle_w3_version4/kaggle.log
+```
+
+The success-only host verifier refused formal verification with
+`Kaggle W3 completion marker missing`; the output contains `ERROR.txt` and no
+`DONE`. Preserve that as `formal_host_verification_passed=false`. The separate
+host diagnostic recomputation independently checked the registered source and
+dataset hashes, canonical SDF identity/margin, backend, raw CSV schema and
+sampling, 3-axis pressure-plus-viscous closure, exact-window force metrics and
+T0-T10; its gate map matched the runner. This diagnostic recomputation is not
+a PASS result and must not be used to generate W4 criteria.
+
+Recorded exact-run facts:
+
+- Criteria SHA-256: `f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2`;
+  dataset manifest SHA-256:
+  `17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b`.
+- Kaggle status output SHA-256:
+  `368662655f7cc049a9f53b4e73c2db1e674c8d6dc20fd026940603cbe300f115`;
+  exact logs SHA-256:
+  `c1217626c24d099c850c79378c42771ed235ad392393d3b8098e51cee3544ab3`;
+  output-bundled log SHA-256:
+  `ce76ce09ac07ed4c0285144081752401ce5eb2ab6ad74349a53c50b98de3af68`.
+- All 19 output artifacts match the bundled SHA-256 manifest. The T4 run
+  reached 3,841 solver steps and `tU/L=120.015625`, recording 481 force rows
+  (160 in `[80,120]`). Every total, pressure, and viscous component on all
+  three axes is signed zero. The raw force CSV SHA-256 is
+  `cf20d9ccf0c685500819801be9a6925346d15a2c881031a09cba599135ea8d9c`.
+- Runner and host diagnostic gates agree: T0-T6 true, T7 false, T8-T10 true.
+  The numeric T10 drift is zero only because the signal itself is zero, so it
+  is a degenerate stationarity observation. T7's registered positive `+Fx`
+  condition remains unchanged. This does not establish a force-sign bug.
+- Backend: two Tesla T4 GPUs; selected UUID
+  `GPU-3adff65b-4908-2981-c7a1-cfd5b5a5bd3c`; Julia 1.12.6, CUDA.jl 6.3.1,
+  CUDA runtime 12.8.0, WaterLily 1.8.0 / `KernelAbstractions`. Runtime was
+  31.033535 s and peak VRAM 24,741,180 bytes.
+- A follow-up host-only mapping probe found 1,121 negative-distance solver
+  lattice points for the expanded fixture and placed the unchanged interface
+  inside the `100x48x36` box. A 100-step CPU smoke using Julia 1.12.6 and
+  WaterLily 1.8.0 returned nonzero raw WaterLily force by step 20. These
+  probes do not reproduce the T4 path and leave the all-zero T4 history's
+  cause open. Exact probe scripts/logs are under the ignored `work/` paths
+  bound by the follow-up diagnostic evidence; rerun with:
+
+  ```bash
+  julia --project=julia/CFDSDFWaterLily work/w3_v4_grid_occupancy.jl
+  julia --project=julia/CFDSDFWaterLily work/w3_v4_cpu_smoke.jl
+  ```
+
+Append-only records:
+[`W3 version-4 diagnostic`](evidence/kaggle_w3_v16_primal_version4_diagnostic_2026_09.json)
+and
+[`host CPU follow-up diagnostic`](evidence/kaggle_w3_v16_primal_version4_followup_diagnostic_2026_09.json).
+Do not create a W3 PASS record from this output. Keep W4 criteria and dataset
+unregistered, W4 measurements and formal FD unrun, and all physical-profile,
+gradient, reverse, topology and shape-update claims false.
+
+Local validation for this checkpoint:
+
+```bash
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  -m pytest -q tests/test_kaggle_w3.py tests/test_kaggle_w4.py
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  -m compileall src tests
+julia --startup-file=no --project=julia/CFDSDFWaterLily \
+  -e 'Meta.parseall(read("scripts/waterlily_w3_v16_primal_job.jl", String)); Meta.parseall(read("scripts/waterlily_w4_v16_sensitivity_job.jl", String)); println("W3/W4 Julia syntax parsed")'
+julia --startup-file=no --project=julia/CFDSDFWaterLily \
+  julia/CFDSDFWaterLily/test/test_v16_physical_profile_adapter.jl
+git diff --check
+```
+
+The focused W3/W4 tests passed (19); `compileall`, W3/W4 Julia parsing, and
+all 16 no-solver adapter checks passed. The full suite returned 1,068 passed,
+37 failed, and 4 skipped. Its reported failures were `FileNotFoundError` on
+historical host-local fixtures under ignored `work/` directories that are not
+present in this managed worktree; no W3/W4 test failed. This worktree has no
+`.venv`, so Python checks used the compatible environment in the separate
+project checkout; that checkout's source changes were left untouched.
+
+### Enzyme reverse spike, exact kernel version 3: terminal diagnostic
+
+Retrieve the scratch run by exact version:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/3
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/3 \
+  > work/kaggle_enzyme_reverse_spike_version3/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/3 \
+  -p work/kaggle_enzyme_reverse_spike_version3
+```
+
+The worker status is `KernelWorkerStatus.COMPLETE`, but its output includes
+`ERROR.txt`. The Project/Manifest writable copy passed pre/post SHA checks,
+package instantiation completed, CUDA initialized, and the two-T4 inventory
+was recorded. A basic Enzyme CuArray reverse then failed with
+`EnzymeRuntimeActivityError` at `GPUArrays._mapreduce`. The subsequent
+WaterLily `Flow` compilation failed on unsupported
+`llvm.nvvm.shfl.sync.down.f32` before any primal. Poisson VJP and timestep
+reverse were not reached. This is diagnostic-only, not reverse qualification;
+the scratch CUDA.jl 6.2.1 / Enzyme / WaterLily PR #285 environment must remain
+isolated from production W2/W3/W4 dependencies. Exact artifact identities and
+the failure boundary are in
+[`reverse spike version-3 diagnostic`](evidence/kaggle_enzyme_reverse_spike_version3_diagnostic_2026_09.json).
+
+### W3 v4 all-zero force: CPU/T4 implementation diagnostic
+
+W3 round-3 version 4 reached the registered end time with finite fields but
+recorded an exactly zero three-axis force history. That run remains
+unqualified. Preserve its criteria SHA
+`f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2`, force
+projection, and thresholds. The following job is a separate private diagnostic
+kernel; it reuses the exact round-3 W3 input dataset but has no W3 acceptance
+gates and never creates qualification evidence.
+
+The CPU-only reference is reproducible without CUDA:
+
+```bash
+julia --startup-file=no --project=julia/CFDSDFWaterLily \
+  scripts/waterlily_w3_v16_cpu_diagnostic_reference.jl \
+  work/kaggle_w3_v16_dataset_round3/canonical_v16_phi_f4_fortran.raw \
+  work/w3_v4_cuda_diagnostic_cpu_reference
+```
+
+It scans all `100x48x36` WaterLily pressure-cell centers for the candidate and
+candidate-plus-ground SDF, records the combined-body CPU `measure!` fields, and
+advances one CPU step. In the 2026-09-28 run, canonical phi SHA-256 was
+`9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7`, measured
+margin was `0.3499999939931499 m`, candidate negative/support counts were
+`1009/2481`, and combined negative/support counts were `1009/7281` (support
+means `|d|<=1` solver unit). Initial force was zero; after one CPU step at
+`t=0.015625`, raw WaterLily pressure and viscous force vectors were respectively
+`[-3375.1481610226565,-22.193702077892354,4640.059766063432]` and
+`[-109.8979301765703,-0.2722819617444081,-12.88964694003107]`. This is a
+one-step CPU diagnostic, not a sign, stationarity, or physical-profile result.
+The output log and text result are ignored files under `work/`; their recorded
+SHA-256 values at this checkout are `a1036a1e31aef5737ed75584a970f9436cdba88c11d4597c4efd357057c37fb1` and
+`4b8694cf537d37d2decd653f9debfd23f759b4fd94397616222c04d594cdf42e`.
+
+This host has no `nvidia-smi`, and its T4 Julia environment does not have the
+CUDA package instantiated. Do not interpret the CPU reference as a CUDA check.
+Use the private Kaggle T4 diagnostic kernel, which performs: representative
+world-to-solver probes; a complete CPU/CUDA flow-grid scan of candidate,
+ground, and combined distance/normal/velocity; solver-free combined-body
+`measure!`; one v16 CPU and CUDA step; and one-step W2b sphere controls. The
+device owner remains strongly referenced while the non-owning `CuDeviceArray`
+view is used. Stage checkpoints are written before/after each operation so an
+ERROR output identifies the last completed stage.
+
+The diagnostic runner is pinned to source commit
+`ca67673ccff69a0b79243c461f82158ad8e61522`; the Julia job SHA-256 is
+`4c080a72f48754c758ee999a38b7d7b83737dd01d2fe7573f4b164d7f0e1ce4e`. Before
+submitting, commit and push the matching diagnostic runner, host verifier,
+metadata and tests, then use the kernel's version returned by `push` in every
+collection command:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel_w3_cuda_diagnostic \
+  --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/VERSION \
+  > work/kaggle_w3_v16_cuda_diagnostic_versionVERSION/kaggle_status.txt
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/VERSION \
+  > work/kaggle_w3_v16_cuda_diagnostic_versionVERSION/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/VERSION \
+  -p work/kaggle_w3_v16_cuda_diagnostic_versionVERSION
+PYTHONPATH=src:scripts python3 scripts/verify_kaggle_w3_v16_cuda_diagnostic.py \
+  work/kaggle_w3_v16_cuda_diagnostic_versionVERSION \
+  --dataset-dir work/kaggle_w3_v16_dataset_round3 \
+  --kernel-version VERSION --kernel-status COMPLETE_OR_ERROR \
+  --kaggle-status-file work/kaggle_w3_v16_cuda_diagnostic_versionVERSION/kaggle_status.txt \
+  --kaggle-log work/kaggle_w3_v16_cuda_diagnostic_versionVERSION/kaggle.log
+```
+
+Replace both `VERSION` placeholders with the exact positive version number and
+`COMPLETE_OR_ERROR` with its terminal status. The verifier checks the
+version-bound status/log captures and output manifest; criteria/dataset/source
+hashes; the full 172,800-row CSV and WaterLily cell-center coordinate order;
+CPU and CUDA statistics for all three bodies; force component closure and
+projection; and an independent NumPy trilinear SDF value/gradient reference.
+It records CPU/CUDA disagreement as diagnostic output rather than changing a
+W3 threshold. A Kaggle ERROR can still produce a host-verified diagnostic if
+the exact partial output bundle and checkpoints are retrievable. The resulting
+evidence must keep every primal, physical, grid-response, gradient, reverse,
+topology, optimizer, and shape-update flag false. Do not start W4, formal FD,
+or another W3 qualification attempt from this diagnostic alone.
+
+The separate diagnostic kernel version 1 reached the registered input and
+device identity checkpoint on a Tesla T4, then errored while constructing the
+representative probe list, before solver-free body measurement or any solver
+step. The Julia log identified `UndefVarError: f not defined` at
+`v16_representative_probes`: one probe had the malformed Julia literal `0.0f`.
+The smallest correction is `0.0f0`; no W3 source, criteria, threshold, or force
+projection changed. The original host diagnostic and an append-only correction
+record are
+[`version 1`](evidence/kaggle_w3_v16_cuda_diagnostic_version1_2026_09.json)
+and
+[`version 1 classification correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version1_correction_2026_09.json).
+Version 1's artifacts passed host hash/input verification; its failed stage is
+the probe fixture itself, not SDF transfer or WaterLily CUDA measurement.
+
+Diagnostic kernel version 2 also terminated with `KernelWorkerStatus.ERROR`.
+Its T4 smoke completed with Julia 1.12.6, CUDA.jl 6.3.1, CUDA runtime 12.8.0,
+WaterLily 1.8.0, and two Tesla T4 devices. The input/device checkpoint matched
+the registered phi hashes and measured `0.3499999939931499 m` margin. It
+constructed all 10 representative probes and entered the candidate probe
+stage. The CUDA and CPU candidate `WaterLily.measure` calls returned, then
+`compare_rows` failed on the malformed Julia token `1e-5f0` (`f0` was treated
+as an undefined name). Version 2 persisted neither probe-row matrices nor a
+completed comparison, so those numeric values are unavailable. Ground and
+combined representative probes, the full flow-grid scan, simulation
+construction, and solver steps were not reached. Its append-only host record
+and source-identity correction are
+[`version 2`](evidence/kaggle_w3_v16_cuda_diagnostic_version2_2026_09.json)
+and
+[`version 2 identity correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version2_identity_correction_2026_09.json).
+The corrected source uses Julia Float32 scientific literal `1f-5`, checkpoints
+the CPU/CUDA candidate probe matrices before comparison, and writes a pinned
+criteria/dataset/backend/source fingerprint before attempting the measurement.
+
+### W3 all-zero-force CUDA implementation diagnostic, exact kernel version 3
+
+Version 3 of the private diagnostic kernel completed on Kaggle T4 and was
+retrieved and host-verified by exact kernel version. It is diagnostic-only; it
+does not reuse a W3 acceptance decision or qualify any physics/gradient claim.
+The immutable W3 round-3 criteria remain SHA-256
+`f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2`.
+
+Exact local capture paths:
+
+- `work/kaggle_w3_v16_cuda_diagnostic_version3/kaggle_status.txt`
+- `work/kaggle_w3_v16_cuda_diagnostic_version3/kaggle.log`
+- `work/kaggle_w3_v16_cuda_diagnostic_version3/w3_v16_cuda_diagnostic/`
+
+Captured status is `KernelWorkerStatus.COMPLETE`, SHA-256
+`e728d1ce05074fee394cf33e6f060f6a09a02868dbd21c289b90701744c0f763`; exact
+Kaggle log SHA-256 is
+`4113bfa739c118ec231681e27a2fed95388e2b0f25aef1f720f37c35ede2d216`. The
+output manifest SHA-256 is
+`f37511b67b0a08dbf9bbcb05723df4efed39f396fe4b296044079862619c9721`, and the
+raw 172,800-row lattice CSV SHA-256 is
+`7ce428a9b0ede9b76abadb8578930acd9e34e1fc3e499c2e5e553aec8eeed02f`.
+
+Re-run the exact host verification from the repository root:
+
+~~~bash
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  scripts/verify_kaggle_w3_v16_cuda_diagnostic.py \
+  work/kaggle_w3_v16_cuda_diagnostic_version3 \
+  --dataset-dir work/kaggle_w3_v16_dataset_round3 \
+  --kernel-version 3 \
+  --kernel-status KernelWorkerStatus.COMPLETE \
+  --kaggle-status-file work/kaggle_w3_v16_cuda_diagnostic_version3/kaggle_status.txt \
+  --kaggle-log work/kaggle_w3_v16_cuda_diagnostic_version3/kaggle.log
+~~~
+
+The resulting append-only records are
+[`v3 host diagnostic`](evidence/kaggle_w3_v16_cuda_diagnostic_version3_2026_09.json)
+and
+[`v3 interpretation and source audit`](evidence/kaggle_w3_v16_cuda_diagnostic_version3_interpretation_2026_09.json).
+The host diagnostic evidence SHA-256 is
+`e0c9f1ee5bff1f07fb6daf268924b55e6b78fb61863d5620afc93dc11191f3cb`; its
+recorded verifier SHA-256 is
+`e600e8faaa6c7131e68444cfe61b605c9124b3791420c0a2901494ecc240835e`.
+
+The observed runtime was a Tesla T4 (`GPU-d5fd398c-ae72-ef9e-54ae-c229cf2ea025`),
+Julia 1.12.6, CUDA.jl 6.3.1, CUDA runtime 12.8.0, CUDA driver API 13.3.0,
+NVIDIA driver 580.159.04, and WaterLily 1.8.0 / `KernelAbstractions`. The
+unchanged canonical SDF is `61x33x25`, origin `[-1,-0.8,-0.6] m`; the flow
+lattice is `100x48x36`, origin `[-2.5,-1.2,-0.9] m`. CPU/CUDA candidate
+negative-distance counts are 1009 each, support counts at `|d|<=1` solver unit
+are 2481 and 2476, and there are no distance-sign mismatches outside the zero
+band. Candidate distance maximum absolute CPU/CUDA difference is
+`4.76837158203125e-7 m`. The ground field matches its analytic distance,
+normal, and velocity values.
+
+The candidate's initial force snapshot is zero before any step, as expected
+from the initial state. After one step at `t=0.015625`, repository-projected
+CPU/CUDA drag is `3485.046517/3485.132996` solver units and downforce is
+`4627.170260/4627.474695` solver units. Raw force components satisfy
+`total = pressure + viscous` on all axes to floating-point roundoff. This
+one-step response is not a time-window statistic or W3 qualification. The
+independent CUDA normal comparison has a maximum vector error of about 1.338;
+distance agreement does not imply normal or gradient qualification.
+
+Source audit: the pinned full W3 job at
+`5e985fa3395a01228c18910d96e09ecbc5497628` creates `device_owner`, derives the
+kernel-safe view with `kernel_grid(device_owner)`, builds the body/simulation,
+then calls `run_primal` without an explicit `GC.@preserve` for the owner. The
+`DeviceGridSDF` contract documents that this view is non-owning and its
+`DeviceGridSDF`/CuArray owner must outlive every kernel use. Diagnostic v3
+keeps the owner rooted through the CUDA checks and gets nonzero force after a
+step. This makes owner lifetime the leading source-level hypothesis for the
+old all-zero full run, but does not prove that the owner was collected or that
+it caused the zero history. The diagnostic did not force GC in a controlled
+retained-versus-unrooted comparison and did not execute a long horizon.
+
+The full W3 version-4 outcome is unchanged: 3,841 steps, `tU/L=120.015625`,
+and all total/pressure/viscous force components signed zero; T7 failed and W3
+remains unqualified. Do not flip the force sign, relax thresholds, start W4,
+or run formal FD from this diagnostic. The next minimum investigation is a
+diagnostic-only T4 owner-lifetime A/B on the same frozen fixture: retain the
+owner with `GC.@preserve` in one arm, build the view-backed objects in a helper
+scope and force full GC in the other, then record weak-owner collection, fixed
+geometry checks, fields, and force after only a tiny number of steps. Only a
+repeatable difference coincident with actual owner collection would confirm
+the lifetime hypothesis. Preserve all qualification flags as false.
+
+Local checks for the v3 evidence/verifier update:
+
+~~~bash
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  -m pytest -q tests/test_kaggle_w3_cuda_diagnostic.py tests/test_kaggle_w3.py tests/test_kaggle_w4.py
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m compileall src tests
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m py_compile \
+  scripts/verify_kaggle_w3_v16_cuda_diagnostic.py \
+  infra/kaggle/kernel_w3_cuda_diagnostic/runner.py
+julia --startup-file=no --project=julia/CFDSDFWaterLily \
+  -e 'Meta.parseall(read("scripts/waterlily_w3_v16_cuda_diagnostic_job.jl", String)); println("diagnostic Julia syntax parsed")'
+git diff --check
+~~~
+
+The focused slice passed 30 tests. Python compileall/py_compile, Julia syntax
+parsing, JSON plus evidence-sidecar verification, and `git diff --check` passed.
+The full suite command was `PYTHONPATH=src:scripts
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q` and
+reported 1,079 passed, 37 failed, 4 skipped. Failures inspected in that run
+were `FileNotFoundError` for historical inputs under ignored `work/` folders
+not present in this managed worktree; for example, the Stage-S FD test lacks
+`work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv`.
+The changed W3/W4/diagnostic slice had no failures.
+
+### Force projection interpretation for diagnostic snapshots
+
+The diagnostic snapshot saves the direct WaterLily API vectors under
+`waterlily_pressure_force_raw`, `waterlily_viscous_force_raw`, and
+`waterlily_total_force_raw`. The registered W3 job first negates the two raw
+vectors to form force-on-body components, then computes
+`drag=+Fx_body_total` and `downforce=-Fz_body_total`. Thus, when starting from
+the diagnostic's unmodified WaterLily raw vector, the equivalent projections
+are `drag=-Fx_raw` and `downforce=+Fz_raw`. The diagnostic host verifier checks
+this mapping explicitly. W2b's `pressure_force_on_body` and
+`viscous_force_on_body` helpers use the same negation.
+
+The v3 candidate's one-step positive projected drag is therefore consistent
+with the registered W3 body-force convention. It remains a one-step snapshot,
+not the registered `[80,120]` time-weighted force measurement or a qualification
+result. The clarification record is
+[`v3 force-projection correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version3_force_projection_correction_2026_09.json)
+(SHA-256 `8511973f3f6cc4d2b3166e15752072e83891cbc2535f35915116a39ffa8ed58c`).
+This corrects an overly cautious intermediate interpretation; the W3 force
+sign and all acceptance criteria remain untouched.
+
+### Diagnostic-only CUDA owner-lifetime A/B/C, criteria round 2
+
+The purpose of this private T4 run is to test whether the non-owning CUDA SDF
+view changes behavior after its `DeviceGridSDF`/CuArray owner becomes
+unreachable. It is an implementation diagnostic only. It does not execute a
+full horizon and cannot qualify W3, target physics, gradients, reverse mode,
+or a production fix.
+
+Round-2 immutable criteria:
+
+- path: `docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round2.json`
+- SHA-256: `8530e084ed33807b67b175f2234266cae34f74ccf510ea31130a199f30a0bec9`
+- sidecar SHA-256: `ef9df9f54f4408783a243f3b92f014722a3131da7bccc86f5b34b24100538b43`
+- source commit: `885ae7558012da43e6310e2ffb04db4230150f5b`
+- owner job SHA-256: `7fa98a26105f1a2938ab85550931a22cb1020bd27d687d6f4dedb99c1b5572ea`
+
+Round 1 was superseded before measurement because its representative
+positive-phi probe did not use the v3-compatible minimum-positive selection.
+Round 2 changes only that probe selection; fixture, arms, forced-GC procedure,
+tolerances, and causal rules stay fixed. A and C run first. B1 and B2 each run
+in a separate Julia process so an invalid-memory exit cannot remove the A/C or
+first-B evidence.
+
+The reviewed source was pushed, then private kernel version 4 was submitted.
+Its first exact-version status check returned `KernelWorkerStatus.RUNNING`.
+Wait for a terminal state before downloading logs and output. Keep using `/4`
+for status, logs, and output:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/4 \
+  > work/kaggle_w3_v16_cuda_owner_lifetime_version4/kaggle_status.txt
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/4 \
+  > work/kaggle_w3_v16_cuda_owner_lifetime_version4/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/4 \
+  -p work/kaggle_w3_v16_cuda_owner_lifetime_version4
+
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  scripts/verify_kaggle_w3_v16_cuda_diagnostic.py \
+  work/kaggle_w3_v16_cuda_owner_lifetime_version4 \
+  --dataset-dir work/kaggle_w3_v16_dataset_round3 \
+  --kernel-version 4 \
+  --kernel-status KernelWorkerStatus.COMPLETE \
+  --kaggle-status-file work/kaggle_w3_v16_cuda_owner_lifetime_version4/kaggle_status.txt \
+  --kaggle-log work/kaggle_w3_v16_cuda_owner_lifetime_version4/kaggle.log
+```
+
+For a terminal `ERROR`, use `KernelWorkerStatus.ERROR` and still retrieve all
+three exact-version artifacts before classifying the failure.
+
+Verify that `ERROR.txt`, partial
+arm checkpoints, per-arm process logs and `sha256.json` were preserved. The
+host verifier recomputes arm identity, input and backend bindings, geometry
+and field bundle hashes/order, raw pressure/viscous/total closure, body-force
+projections, A/C agreement, both B weak-owner GC brackets, and repeated
+post-GC divergence classes. WeakRef clearing, a CUDA error, or nonzero force
+alone does not support the hypothesis. Append the result to a new evidence
+path; never replace round-1 criteria, round-2 criteria, or earlier Kaggle
+version evidence.
+
+### Exact version 4 terminal error and host-verification correction
+
+Exact version 4 returned `KernelWorkerStatus.ERROR`. Retrieve results as
+above; captured local files are under
+`work/kaggle_w3_v16_cuda_owner_lifetime_version4/`. Kaggle's
+`kernels pull .../4` request returned HTTP 403, so the version-specific runner
+was reconstructed from the commit that had been pushed immediately before
+submission:
+
+```bash
+git show 6fe9752:infra/kaggle/kernel_w3_cuda_diagnostic/runner.py \
+  > work/kaggle_w3_v16_cuda_owner_lifetime_version4/kernel_source/runner.py
+shasum -a 256 work/kaggle_w3_v16_cuda_owner_lifetime_version4/kernel_source/runner.py
+```
+
+The runner hash is
+`609a86f40424a83ab4ed870d1fe2c321c9c0994ff5e27077e821c01457f36378`, matching
+the immutable `fingerprint.json` downloaded from version 4. Pass this exact
+runner file to the host verifier when re-verifying the historical version;
+the current runner will change for the corrected retry:
+
+```bash
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  scripts/verify_kaggle_w3_v16_cuda_diagnostic.py \
+  work/kaggle_w3_v16_cuda_owner_lifetime_version4 \
+  --dataset-dir work/kaggle_w3_v16_dataset_round3 \
+  --kernel-version 4 \
+  --kernel-status KernelWorkerStatus.ERROR \
+  --kaggle-status-file work/kaggle_w3_v16_cuda_owner_lifetime_version4/kaggle_status.txt \
+  --kaggle-log work/kaggle_w3_v16_cuda_owner_lifetime_version4/kaggle.log \
+  --kernel-runner work/kaggle_w3_v16_cuda_owner_lifetime_version4/kernel_source/runner.py \
+  --evidence docs/evidence/kaggle_w3_v16_cuda_diagnostic_version4_runner_correction_2026_09.json
+```
+
+The exact terminal evidence is
+`docs/evidence/kaggle_w3_v16_cuda_diagnostic_version4_2026_09.json` and its
+append-only classification/verification correction is
+`docs/evidence/kaggle_w3_v16_cuda_diagnostic_version4_runner_correction_2026_09.json`.
+Exact status/log/output-manifest/`ERROR.txt` hashes are recorded in the
+correction evidence. Input, source, runtime, device round-trip, full base flow
+lattice, and base one-step artifacts verify. The error happened in the wrapper
+when it tried to spawn owner arm A after the Julia binary's temporary directory
+had already been removed. Thus base v16 CUDA diagnostic reached one step, but
+the owner experiment reached zero arms; this is neither an owner-lifetime
+observation nor evidence against the hypothesis.
+
+The retry runner now validates the base output and runs A/C/B1/B2 before
+leaving the Julia `TemporaryDirectory`. The error-classification test also
+checks the exact missing-executable failure. The owner criteria round 2,
+fixture, tolerances, and arm procedure stay unchanged because version 4 did
+not launch an owner arm or produce an owner measurement. Use the exact new
+kernel version and current runner hash for the retry, preserving version 4 and
+both version-4 evidence files unchanged.
+
+### Corrected retry: exact kernel version 5
+
+The workspace-lifetime fix and host-verifier update were pushed in commit
+`a5022c8`; private T4 kernel version 5 was then submitted. The initial status
+was `KernelWorkerStatus.RUNNING`. Use `/5` for every status, log, and output
+request, then invoke the verifier with the current runner (default) after
+terminal state:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/5 \
+  > work/kaggle_w3_v16_cuda_owner_lifetime_version5/kaggle_status.txt
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/5 \
+  > work/kaggle_w3_v16_cuda_owner_lifetime_version5/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/5 \
+  -p work/kaggle_w3_v16_cuda_owner_lifetime_version5
+
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  scripts/verify_kaggle_w3_v16_cuda_diagnostic.py \
+  work/kaggle_w3_v16_cuda_owner_lifetime_version5 \
+  --dataset-dir work/kaggle_w3_v16_dataset_round3 \
+  --kernel-version 5 \
+  --kernel-status KernelWorkerStatus.COMPLETE \
+  --kaggle-status-file work/kaggle_w3_v16_cuda_owner_lifetime_version5/kaggle_status.txt \
+  --kaggle-log work/kaggle_w3_v16_cuda_owner_lifetime_version5/kaggle.log
+```
+
+For terminal `ERROR`, keep the exact outputs and pass
+`--kernel-status KernelWorkerStatus.ERROR`. Criteria round 2 remains unchanged
+because version 4 launched no owner arm and measured none of the registered
+owner-lifetime outcomes.
+
+### Version 5 exact error and registered round-3 retry
+
+Version 5 terminated as `KernelWorkerStatus.ERROR`. The exact-version output
+was recovered to
+`work/kaggle_w3_v16_cuda_owner_lifetime_version5/`; the initial verifier record
+is `docs/evidence/kaggle_w3_v16_cuda_diagnostic_version5_2026_09.json` and the
+append-only exact-stage correction is
+`docs/evidence/kaggle_w3_v16_cuda_diagnostic_version5_host_correction_2026_09.json`.
+Both output manifests were host-verified. The correction records all four
+arm processes, their identical Julia exception, and the wrapper exception.
+
+Exact hashes:
+
+- log: `500306c3c4e0f7ca31dfe7a3c4191b5180ec7a8ad0fd8a154cb008a5581cb8f3`
+- captured status: `2341886fe14bda95b1cf663ab933c531b25e6cba8b281d9b6fd6c4cd6d8c5f16`
+- output `sha256.json`: `c95d0836fee46c74334599fd7ff00d98559495b19d26224d8cde61ad6525a91e`
+- `ERROR.txt`: `01f5ccc61439cb579aba16c988da9a51381fbf6084d20033b5d0396f74b6eb81`
+- original evidence: `6e125c47a252fcbbf5c2e78c8342cc16e352a1edea7674bf1510d75a0832e19e`
+- host classification correction:
+  `907babecef7f5ee9547e3c74a1f18d4bf751e9187a7a078de9bc67f9dd47a823`
+
+The base v16 CUDA diagnostic reached one primal step and host force/artifact
+checks passed. Each owner arm then stopped at the `v16_physical_profile_bodies`
+lookup with `UndefVarError` in `Main`, before candidate body construction. No
+owner or `WeakRef` was created, no forced-GC bracket ran, and no arm geometry,
+field, force, or owner-step data exists. This is a Julia job import failure,
+not an owner-lifetime or CUDA failure, and it does not explain W3 v4's full-run
+all-zero force history.
+
+Round 3 freezes only the required explicit imports for the two non-exported
+WaterLily helpers and the new owner-job SHA. Criteria file:
+`docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round3.json`;
+criteria SHA:
+`906fda6a3991d7a37ea29f50ccc851f3788cde9a6bb90dfcc5b11279fb3f4274`;
+sidecar SHA:
+`23033b9601f6f38932e08c3c5e994651f71559da6b0966f7e0bc4172fe166c03`; owner
+job SHA:
+`b952aae000f6a2047b050ca5d46bd8fdd1a5c320ebc222bd380b70c0924c8cac`. The
+flow fixture, A/C/B1/B2 order, measurements, tolerances, and causal rules are
+unchanged. Submit only after the source commit pinned in the runner is pushed.
+
+### Exact version 6 result and WeakRef target limitation
+
+Version 6 completed and its exact `/6` artifacts were retrieved under
+`work/kaggle_w3_v16_cuda_owner_lifetime_version6/`. Run the host verifier with
+the exact COMPLETE status and output paths:
+
+```bash
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  scripts/verify_kaggle_w3_v16_cuda_diagnostic.py \
+  work/kaggle_w3_v16_cuda_owner_lifetime_version6 \
+  --dataset-dir work/kaggle_w3_v16_dataset_round3 \
+  --kernel-version 6 \
+  --kernel-status KernelWorkerStatus.COMPLETE \
+  --kaggle-status-file work/kaggle_w3_v16_cuda_owner_lifetime_version6/kaggle_status.txt \
+  --kaggle-log work/kaggle_w3_v16_cuda_owner_lifetime_version6/kaggle.log
+```
+
+The first pass found host-verifier assumptions that had not been exercised by
+completed owner arms: `julia_archive_sha256` is registered under `criteria.inputs`,
+and verified NumPy arrays need to remain internal to comparison rather than be
+serialized into JSON. The append-only host correction records those fixes and
+the exact owner diagnostic limitation. Artifact/source/runtime verification
+passed. The owner experiment itself is incomplete for causal purposes because
+the round-3 Julia code calls `WeakRef(owner)` on immutable `DeviceGridSDF`, not
+on its backing mutable `CuArray` at `owner.grid.phi`.
+
+This correction does not revise the registered measurements. A and C geometry
+arrays and final fields were exactly equal. Candidate geometry counts were 1009
+negative CPU/CUDA cells and CPU/CUDA distance difference at most
+`4.7683716e-7 m`. The normal discrepancy remained `1.3379748`. B1/B2 geometry
+also exactly matched A, and both matched A force through step 1. At step 2,
+the drag/downforce pairs were A/C `707.1370 / 847.9948`, B1
+`720.2276 / 854.9039`, B2 `712.4746 / 853.7397` solver units; final flow-field
+arrays diverged in both B runs. Because the wrapper WeakRef was already clear
+before the registered GC bracket (for C, B1 and B2), those differences do not
+prove owner collection caused the step-2 response. A/C controls match, but the
+owner-lifetime hypothesis remains unresolved.
+
+Exact version-6 hashes:
+
+- runner: `deb12c2b9a9a72993f9a8967f12385d935022306ac25b8c30cd9cd07c3e5bc4e`
+- log: `0e300babad42276fcf18f6d9b11d2b6fd5f05802e906bd9c98c5e0becabf4b95`
+- captured status: `2f547f8fea5f9f2cc6b6c1d9bf11669c39105cb8dc194699c6d6398fc068a2b1`
+- output `sha256.json`: `f4944ddac2b19b6e1ba680964ed587e81c173a3544b8f3a189bd90a6b03b46ac`
+- `DONE`: `c3ae0c1108a07ac153b0ee13893bc731b7e210607850bbb5c7956f02c3fc2525`
+- first result evidence: `68cf588200b84edf056a815e7d7f35683e113e21533a8819f641d7f17354482d`
+- host correction evidence: `ad7e930eda5aa0ade067ed8797cacf03de256c31ddb7390383460e44652b25fb`
+
+The next criteria round must make the WeakRef target explicitly
+`owner.grid.phi` and record its runtime type. Preserve the same v16 input,
+mapping, arms, full geometry, fields, force snapshots, GC sequence, tolerances,
+and causal decision rules. W3 v4 remains unqualified; this scratch result does
+not authorize a production ownership fix.
+
+### Owner-lifetime diagnostic round 4 submitted; version 7 running
+
+Round 4 is registered. Its immutable
+criteria file is
+`docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round4.json`
+(SHA-256
+`58867bf2e68e989200edb39b401f8db2f52df340db2d84534853dad01679530e`; sidecar
+SHA-256
+`0637966ce609c452797241e42498e6503a02dde6ba09298b93e692ac5373f3c0`). The
+registered owner Julia job SHA-256 is
+`3676babc3b7516690a813acb84fa324a46a75e8b98b39c447b755394a80c6212`. The
+kernel runner SHA-256 is
+`5e004a1e32529271b1b45a7f65086e173ca8246b5df57e8ea127b40f834ea710` and pins
+source commit `ffb5cc7edc4d3a598d420ef6c065d10c5c8bbc07`, containing the exact
+job, criteria, and sidecar.
+
+This round corrects only the observation method exposed by exact version 6:
+all arms WeakRef `owner.grid.phi` (the backing `CuArray`) and record its path
+and type. B1/B2 disable automatic GC after constructing the unrooted objects
+and WeakRef, check that automatic GC had been enabled, keep it disabled through
+pre-GC observations, enable it immediately before each registered `GC.gc(true)`,
+disable it between the two forced collections, then leave it enabled. A/C use
+the same two explicit collections while their registered owner retention is
+active. Inputs, arm order, solver work, force and field probes, comparison
+tolerances, and causal decision rules are unchanged. This is diagnostic-only;
+it changes no W3 production code or criterion.
+
+Local preregistration checks completed: 40 focused W3/W4/diagnostic tests
+passed; Python `compileall` and targeted `py_compile` passed; the Julia owner
+job parsed; criteria JSON/sidecar SHA verification and `git diff --check`
+passed. Repository-wide pytest completed with 1,089 passed, 37 failed, and 4
+skipped. The 37 failures are the known historical tests that need ignored
+`work/` checkpoints, logs, and case files absent from this managed checkout;
+the focused W3/W4/diagnostic slice is green. After pushing source-pin commit
+`dec3e2f0728ba03df2d3951d6c5972bdb41c7d1a`, exact private kernel
+`ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/7` was submitted with T4 and
+7200-second timeout. The first exact-version status was
+`KernelWorkerStatus.RUNNING` and is saved as
+`work/kaggle_w3_v16_cuda_owner_lifetime_version7/kaggle_status_initial.txt`
+(SHA-256
+`172bce72b56e63812fe433424e62e85da4677860437b57b598d5db11ec53048c`). No
+round-4 logs/output or measurement has been recovered yet. Continue polling
+only `/7`; at terminal status, save the terminal status, exact logs and output
+to the same version-bound directory and verify them against round-4 criteria
+before interpreting the owner-lifetime hypothesis.
+
+### Owner-lifetime diagnostic version 7 exact recovery and host verification
+
+The exact private kernel
+`ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/7` completed. Its terminal
+status, exact-version logs, and output bundle are retained under
+`work/kaggle_w3_v16_cuda_owner_lifetime_version7/`. Do not mix these with
+versions 5 or 6.
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels status ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/7
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels logs ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/7 \
+  > work/kaggle_w3_v16_cuda_owner_lifetime_version7/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels output ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/7 \
+  -p work/kaggle_w3_v16_cuda_owner_lifetime_version7
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  scripts/verify_kaggle_w3_v16_cuda_diagnostic.py \
+  work/kaggle_w3_v16_cuda_owner_lifetime_version7 \
+  --dataset-dir work/kaggle_w3_v16_dataset_round3 \
+  --kernel-version 7 \
+  --kernel-status KernelWorkerStatus.COMPLETE \
+  --kaggle-status-file work/kaggle_w3_v16_cuda_owner_lifetime_version7/kaggle_status_terminal.txt \
+  --kaggle-log work/kaggle_w3_v16_cuda_owner_lifetime_version7/kaggle.log \
+  --kernel-runner infra/kaggle/kernel_w3_cuda_diagnostic/runner.py
+```
+
+The verifier writes append-only
+[`version-7 primary diagnostic evidence`](evidence/kaggle_w3_v16_cuda_diagnostic_version7_2026_09.json)
+(SHA-256
+`66dd9396967f95ef92cb682b24ed14ac4a56345b12cfb2d38f67d4e5bbbb63c3`) and a
+matching `.sha256` sidecar. Host artifact verification and owner-lifetime
+diagnostic verification pass. A/C retain the backing `owner.grid.phi` WeakRef
+through both full GCs; B1/B2 clear it after registered forced GC and reproduce
+the same step-2 field/force divergence. B step-2 viscous and total raw force
+components are invalid JSON `null` observations, not finite force values; the
+host verifier records them only for this registered collected-owner phase and
+does not claim closure on those axes.
+
+The first host attempt failed before writing evidence because its verifier
+rejected these post-GC B step-2 nulls. The fixed verifier and a separate
+append-only record are covered by
+[`version-7 host correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version7_host_correction_2026_09.json).
+Its SHA-256 is
+`53900176b17b0f91a0513c40b531ad538ae028da0b13034244d7fe6ea939ba6c`.
+No measurement or criterion changed. Also preserve the exact runtime type
+string discrepancy: registered label
+`CuArray{Float32, 3, CUDA.DeviceMemory}` versus observed
+`CuArray{Float32, 3, CUDACore.DeviceMemory}`. The host verifier surfaces this
+and does not assume alias equivalence.
+
+Local correction checks were run with:
+
+```bash
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  -m pytest -q tests/test_kaggle_w3_cuda_diagnostic.py tests/test_kaggle_w3.py tests/test_kaggle_w4.py
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  -m compileall src tests
+git diff --check
+```
+
+The focused slice passed 42 tests; compileall and diff checks passed. Full
+`pytest -q` reported 1,091 passed, 37 failed, and 4 skipped. The failures
+reference ignored historical `work/` artifacts (PQ checkpoints, Stage S/V
+cases, and logs) absent from this managed worktree; no W3/W4 diagnostic test
+failed.
+
+This result supports owner-lifetime sensitivity in the two-step diagnostic
+only. It does not prove the cause of W3 v4's full-horizon zero force history,
+authorize a production ownership change, or qualify W3 primal, physical
+profile, gradient, or any downstream optimization gate. All qualification
+flags remain false.
+
+### Full-horizon owner diagnostic round 3, exact kernel version 2
+
+The current exact private kernel is
+`ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-diagnostic/2`. It completed
+under immutable criteria
+[`round 3`](evidence/kaggle_w3_owner_full_horizon_criteria_2026_09_round3.json),
+SHA-256 `2b28c0284833cdc3b360fe2f55e6babb435394b69ea001fcb677fe94c5b40000`.
+The version-bound status, Kaggle logs and output are stored in
+`work/kaggle_w3_owner_full_horizon_version2/`; do not mix them with version 1
+or any W3 primal kernel version.
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels status ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-diagnostic/2
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels logs ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-diagnostic/2 \
+  > work/kaggle_w3_owner_full_horizon_version2/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels output ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-diagnostic/2 \
+  -p work/kaggle_w3_owner_full_horizon_version2
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  scripts/verify_kaggle_w3_owner_full_horizon.py \
+  work/kaggle_w3_owner_full_horizon_version2/w3_owner_full_horizon \
+  --criteria docs/evidence/kaggle_w3_owner_full_horizon_criteria_2026_09_round3.json \
+  --criteria-dataset-dir work/kaggle_w3_owner_full_horizon_dataset_round3_remote \
+  --w3-dataset-dir work/kaggle_w3_v16_dataset_round3 \
+  --actual-kernel-id ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-diagnostic \
+  --kernel-version 2 \
+  --status work/kaggle_w3_owner_full_horizon_version2/kaggle_status_terminal.txt \
+  --log work/kaggle_w3_owner_full_horizon_version2/kaggle.log \
+  --record-evidence
+```
+
+Exact terminal status is `KernelWorkerStatus.COMPLETE`; status SHA-256
+`b460246279ec24d862be48d472007531d1b16c7e49584c98fe9fc862fdd28c35`, exact
+Kaggle log SHA-256
+`763c53bfd5b5fe234da74e2a475ca8dc1a7b73d7befa46566b9a640e7a4ac239`, and
+output `sha256.json` SHA-256
+`58b7265cfe8f9e53997683e966ec00fadc5d9986ab83201472a03ab5b692324c`. The
+host result evidence is
+[`round-3 result`](evidence/kaggle_w3_owner_full_horizon_result_2026_09_round3.json),
+SHA-256 `72e887e02b406b964bf7b6c617dcf111fc51dc9e1d275fc827689e80e29c9aeb`.
+
+The first host attempt ended with `KeyError: qualification_flags` while
+assembling evidence: the immutable schema places the field at
+`evidence_output.qualification_flags`. No result was written by that attempt.
+The corrected host reader writes the registered output flags and records its
+own hash mismatch against the criteria-bound host verifier. This host-only
+correction did not alter criteria, measurement data, thresholds, or Kaggle
+output. Its append-only evidence is
+[`round-3 host correction`](evidence/kaggle_w3_owner_full_horizon_result_2026_09_round3_host_correction.json),
+SHA-256 `a56590757b46b176102d7c3e92517bbac57d7d9740ca41036c72fd28bbe29ccb`.
+The registered verifier SHA is
+`c38a6547ec75929c131c449a1a0b449a6b1d4d467c2af9696e60c1d1eec6bc84`; the
+corrected local verifier SHA is
+`8e46de364be46b54dc8a52d347a64a45b265e7068ffff653965b48be36b53153`. Keep
+both values visible; they are not the same hash.
+
+The result confirms the registered owner-lifetime production-fix gate, but
+does not reproduce W3 v4's exact all-zero force history. A-natural/A-forced
+retained the owner and completed 4,808 steps with finite, nonzero force; their
+601 samples matched. Both B-natural replicas observed collection at step 1.
+The first sampled non-finite force occurred at step 16 (`tU/L=0.3506548703`)
+and step 128 (`tU/L=3.0178484917`); registered velocity/pressure snapshots
+were finite. Therefore the lifetime contract is a confirmed implementation
+defect, while the exact v4 all-zero root cause remains open. The production
+fix uses `OwnedV16Run` to retain the backing owner and preserve that run bundle
+through `run_primal`; a new immutable W3 round is required before the next
+T4 qualification attempt. W4 and formal FD remain blocked.
+
+### W3 production owner fix: immutable qualification round 4 registered
+
+W3 round 4 applies only the structural `OwnedV16Run` owner-retention fix. Its
+immutable criteria are
+[`kaggle_w3_v16_primal_criteria_2026_09_round4.json`](evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json),
+SHA-256
+`eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb`; the
+sidecar contains the same digest. The source commit is
+`ee6298e843e130b121d918ca9a321b707dcd4ae0`. The criteria preregister the owner
+diagnostic criteria/result/correction identities and preserve round-3 W3
+geometry, force, backend, runtime, thresholds and claims. The drag/downforce
+2% stationarity limit is inherited from the already registered W2 sphere
+capability convention; it was not chosen from W3 v3/v4 measurements. W3 v4's
+all-zero force root cause remains unresolved.
+
+The round-4 registration check passed before any round-4 primal computation:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python \
+  scripts/register_kaggle_w3_v16_primal_2026_09.py --round 4 --check
+python3 -m json.tool \
+  docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json >/dev/null
+shasum -a 256 docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json
+git diff --check
+```
+
+After committing and pushing the exact criteria and documentation, stage the
+canonical state into a new work directory; do not reuse or overwrite the
+round-3 stage or a downloaded version-bound run. The source state remains the
+registered canonical v16 NPZ:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python \
+  scripts/prepare_kaggle_w3_dataset_2026_09.py \
+  work/kaggle_w3_v16_dataset_round3/sdf_design_state.npz \
+  docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json \
+  work/kaggle_w3_v16_dataset_round4
+```
+
+Verify the staged dataset manifest and full staged inventory first. Then use
+the existing private dataset ID and retrieve its just-published version into
+a fresh directory:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets version -p work/kaggle_w3_v16_dataset_round4 \
+  -m "W3 v16 owner lifetime fix immutable criteria round 4" --dir-mode zip
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets download -d ramhachi888/cfd-opt-sdf-v16-genesis-state \
+  -p work/kaggle_w3_v16_dataset_round4_remote --force --unzip
+```
+
+Before submitting a kernel, compare the complete uploaded data-file inventory
+and SHA-256 values from the staged and re-downloaded directories (criteria,
+criteria sidecar, canonical NPZ, Fortran-order phi and dataset manifest). The
+Kaggle metadata endpoint returns a server API envelope rather than the upload
+`dataset-metadata.json` bytes; compare its dataset ID, owner, slug, privacy,
+title and license fields semantically against the staged metadata. Any data
+file mismatch is an infrastructure stop; do not submit until the registered
+bytes are present remotely. Push
+`infra/kaggle/kernel_w3` with `--accelerator NvidiaTeslaT4 --timeout 7200`,
+record the exact version returned by Kaggle, and use only that version for
+status, logs, output and host verification. W3 remains unqualified before that
+exact host verification; W4 measurement and formal FD remain blocked.
+
+### W3 round 4 dataset version 4 verified; exact kernel version 5 submitted
+
+The private input dataset
+`ramhachi888/cfd-opt-sdf-v16-genesis-state` advanced to version 4 and reports
+`ready`. The staged and re-downloaded five-file data inventories matched
+exactly. All five SHA-256 values matched, and each payload listed in the
+dataset manifest passed independently. The canonical NPZ hash is
+`3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe`; C-order
+phi hash is
+`45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785`; and
+Fortran-order phi hash is
+`9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7`. The
+staged dataset manifest SHA-256 is
+`995d3e3aa931f28e8fb4dadcc9cb9e17fe8235d57190a188b75939505d4eacad`; the
+host dataset audit SHA-256 is
+`88733b10c8f62c58ab252e7982c89aa7222990d79a7f8e2a8aeb1cded19f13d0`.
+Kaggle metadata was verified semantically because its API returns a server
+metadata envelope, not the upload configuration file byte-for-byte.
+
+The exact W3 kernel
+`ramhachi888/cfd-opt-sdf-w3-v16-primal/5` was submitted for NvidiaTeslaT4 with
+a 7200-second timeout. Initial status is `KernelWorkerStatus.RUNNING`; captured
+status SHA-256 is
+`7b50a5e1f6646832eca3f3040bc89b9931761c92f83cb599be88fd6ca4487098`. Runner,
+Julia job, host verifier, Project and Manifest hashes equal their round-4
+criteria values and source commit `ee6298e843e130b121d918ca9a321b707dcd4ae0`.
+The run has no terminal output or host-verification verdict yet. Poll only
+version 5, preserve its exact status/log/output under
+`work/kaggle_w3_version5/`, then run the host verifier with round-4 criteria.
+Do not begin W4 or formal FD until this exact run passes host verification.
+
+### W3 round 4 exact version 5: terminal PASS and host verification
+
+Exact kernel
+`ramhachi888/cfd-opt-sdf-w3-v16-primal/5` reached
+`KernelWorkerStatus.COMPLETE`. Its terminal status SHA-256 is
+`59e3f698703e6684b7d9e7acdb92c1c9bc593a0d02e35da6824610547e75d771`; exact
+Kaggle log SHA-256 is
+`011b878cf20ee47c70cfde67e7d636eb0f96dbcdf2fed9a08f9b3f5901f643d4`; output
+manifest SHA-256 is
+`6973f1facb6ba1b8241d97601dc4d74a17e7df91d894dcccdfde2f240391595e`.
+Recover only that exact version:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels status ramhachi888/cfd-opt-sdf-w3-v16-primal/5 \
+  > work/kaggle_w3_version5/kaggle_status_terminal.txt
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels logs ramhachi888/cfd-opt-sdf-w3-v16-primal/5 \
+  > work/kaggle_w3_version5/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels output ramhachi888/cfd-opt-sdf-w3-v16-primal/5 \
+  -p work/kaggle_w3_version5
+```
+
+The ordinary host verifier initially reached evidence assembly but raised
+`NameError: HOST_VERIFIER is not defined`; it wrote no result. The criteria-
+bound verifier itself is unchanged at SHA-256
+`9efb97b9b80dd8fe2f9470353f4dbb3388d282acbcc8eae7fbcd2abcf5e1c9d5`. Use the
+compatibility entrypoint, which supplies only the missing path global and then
+calls that exact verifier code:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python \
+  scripts/verify_kaggle_w3_v16_host_compat.py \
+  work/kaggle_w3_version5/w3_v16 \
+  --criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json \
+  --dataset-dir work/kaggle_w3_v16_dataset_round4_remote \
+  --kernel-version 5 \
+  --kaggle-log work/kaggle_w3_version5/kaggle.log \
+  --result-evidence docs/evidence/kaggle_w3_v16_primal_result_round4_2026_09.json
+```
+
+Append-only PASS result is
+[`round-4 result`](evidence/kaggle_w3_v16_primal_result_round4_2026_09.json),
+SHA-256
+`d00949d0ea2f2ddcd222f0f376449d9d7aba9b634a650cf75822c640b9e6f4a8`; its
+sidecar contains the same digest. All T0-T10 passed. The host independently
+checked all 18 manifested output files, exact input/source/backend identity,
+SDF bytes and margin, raw force CSV, three-axis pressure-plus-viscous closure,
+force projections, exact-window endpoint interpolation and time-weighted
+recomputation, positive +x drag, stationarity, completion, runtime and VRAM.
+The host-only correction is separately recorded at
+[`round-4 host correction`](evidence/kaggle_w3_v16_primal_result_round4_host_correction_2026_09.json),
+SHA-256
+`27f0f60bbfbffd111259ecb988bec9b6e8cb1f9498d3a8ba46c04c8d79bddb9b`; it
+preserves the initial verifier error log SHA and exact wrapper hash. Criteria,
+measurement and thresholds did not change.
+
+The measured exact-window time-weighted drag is `+0.3360177299 N`, downforce
+`+0.3533732402 N`, and `Cd=1.0500554060`. Drag/downforce half-window relative
+drifts are `8.16e-6` and `4.17e-6` against the registered `0.02` maximum.
+The solver ran 4,808 steps to `tU/L=120.0019378662`, taking `35.2219 s` with
+peak VRAM `24,941,544 bytes`. The permitted conclusion is the registered
+finite-box WaterLily primal integrity/force/stationarity contract only. The
+owner-lifetime defect is confirmed but W3 v4's all-zero force root cause is
+unresolved. Physical-profile equivalence, absolute downforce correctness,
+grid/domain response, gradient, reverse mode, topology, optimizer and shape
+update remain unqualified; `shape_update_allowed=false`. W4 is the next
+separate phase but was not started here, and formal FD remains gated on W4.
+Focused W3/W4/owner/reverse-diagnostic pytest passed 56 tests; `compileall`,
+`py_compile`, evidence/sidecar chain checks and `git diff --check` passed. Full
+repository pytest reported 1,109 passed, 37 failed and 4 skipped. The 37
+failures are the known historical tests requiring ignored `work/` checkpoints,
+cases or solver logs absent from this managed worktree; the focused task slice
+is green.
+
+## W4 immutable round 1 retained; round 2 registered
+
+Immutable criteria round 1 is
+[`kaggle_w4_v16_sensitivity_criteria_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json),
+SHA-256 `5bdfb819ff9512dcc3ca85f8919e5cff236de4706240cbdf09a577d56183a9ea`.
+Before upload, local host preflight exposed an implementation defect: criteria
+inputs are identified by logical keys, while the dataset manifest stores the
+registered physical `path` filenames. The runner and host verifier both now
+build their expected inventory from `entry["path"]`; a regression test checks
+both implementations. The existing round-1 stage passed this corrected local
+contract check, but its criteria bind the old source hashes. Preserve round 1
+unchanged and do not upload it. The filename fix is pushed in source commit
+`f69c56e6306d30f6e6590da898088e4af7606c00`. Immutable round 2 is now
+registered at
+[`kaggle_w4_v16_sensitivity_criteria_2026_09_round2.json`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round2.json),
+SHA-256 `5e41ffd790b64638659136bfba5b0abfda7325c3578f15fe4d16fa610a7123da`,
+source commit `97a5bcaedcc8f171cda3710a763a22e6210cfbb5`. Registrar check
+passed against exact W3 round-4 criteria/result. Stage into a new ignored
+directory only:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python \
+  scripts/register_kaggle_w4_v16_sensitivity_2026_09.py \
+  --w3-criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json \
+  --w3-result docs/evidence/kaggle_w3_v16_primal_result_round4_2026_09.json \
+  --round 2 --check
+PYTHONPATH=src:scripts .venv/bin/python \
+  scripts/prepare_kaggle_w4_v16_dataset_2026_09.py \
+  --state work/kaggle_w3_v16_dataset_round4/sdf_design_state.npz \
+  --criteria docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round2.json \
+  --output work/kaggle_w4_v16_dataset_round2
+```
+
+The Kaggle runner contract and independent host verifier passed against the
+fresh round-2 stage before upload. The dataset was then published privately,
+reported `ready`, and downloaded into a fresh directory for complete filename
+and SHA-256 comparison. The old round-1 local manifest SHA-256 is
+`b175b447c35fce94b13de23a73fb98a10dd1be1f499ffe5e8567ff2f26f1bd96`; it is
+not the round-2 dataset manifest. W4 round 2 is registered, and its private
+input dataset version 1 is ready. Exact kernel version 1 was submitted and
+failed before any solver step; no CFD measurement has occurred.
+
+The exact version-1 upload and retrieval were:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets create -p work/kaggle_w4_v16_dataset_round2 --dir-mode zip
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets status ramhachi888/cfd-opt-sdf-v16-w4-sensitivity
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets files ramhachi888/cfd-opt-sdf-v16-w4-sensitivity
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets download -d ramhachi888/cfd-opt-sdf-v16-w4-sensitivity \
+  -p work/kaggle_w4_v16_dataset_round2_remote --force --unzip
+```
+
+Version 1 is private and `ready`. The server listing and downloaded five-file
+inventory match the local manifest exactly. The round-2 manifest SHA-256 is
+`3d505dfa1ee55d935f7123aa30cf8e665471e91105a5ce968f5de6aa509d7f42`; the
+remote inventory audit at
+`work/kaggle_w4_v16_dataset_round2_remote/remote_inventory_audit.json` has
+SHA-256 `20503ff4e6492b1acc23ef46813f1999e42a86f082a93aa45b88ea8934c53b9f`.
+
+Before pushing the kernel, derive the slug from the title and compare it with
+`id` in `infra/kaggle/kernel_w4/kernel-metadata.json`. The metadata is private
+T4 and points to the exact private W4 input dataset. Its title is
+`CFD Opt SDF W4 v16 Sensitivity`, whose normalized slug is
+`cfd-opt-sdf-w4-v16-sensitivity`, matching the ID suffix. This metadata-only
+correction does not change the criteria-bound runner, solver job, verifier,
+environment or registered source inputs.
+The committed metadata SHA-256 is
+`7eab12e8dfe356acdf5feec6ef41f033ff75cd3e6e02ada8b14635d3a6e123e7`.
+
+## W4 round-2 kernel version 1 diagnostic
+
+Exact kernel `ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/1` ended with
+`KernelWorkerStatus.ERROR`. Preserve its exact data under
+`work/kaggle_w4_version1/`; do not overwrite it. Terminal status SHA-256 is
+`f784304d00893b3509b023e2636407faa6cdcb335eebd6a2563c4504c8fc6b82`, the
+`kaggle kernels logs` response SHA-256 is
+`93464d8f48672b3ad98552d87adf9eff400a42bb219842524b7ce74d3e44d329`, and the
+downloaded output kernel log SHA-256 is
+`1079cb67af44cbc9a545d1c13143ff5404eb9085ba196f3a784574638e5cab73`. The
+output `sha256.json` SHA-256 is
+`108c3b1170afb686804bc7b0884a1e62e2fc05c731e5423889c7b01d27d7f1a9`; its 14
+payload hashes were independently checked. `ERROR.txt` SHA-256 is
+`317bba4133f08ecf29ca5fd48ea455f3042cb3ad86ad66e7afd6ccf82f0ba263`.
+
+The W4 runner passed input/source hashes, dataset inventory, Julia
+`Pkg.instantiate`, the registered Julia/CUDA/WaterLily smoke, and two-T4
+inventory. The Julia job stopped at line 300 before canonical SDF loading or
+simulation construction. It compares `tuple(case.case_id for case in
+V16W4_CASES)` with a four-string tuple; Julia's `tuple(generator)` produces a
+single-element tuple containing the generator. The correct materialization is
+`Tuple(case.case_id for case in V16W4_CASES)`. The expected IDs and case matrix
+are correct; this is a source guard implementation bug, not a criteria/input
+or infrastructure failure.
+
+`execution_state.json` reports `stage=julia_job`, empty
+`solver_step_invoked`/`solver_step_returned`, and zero solver steps. SDF/device
+transfer, WaterLily bodies/simulation, forces and all four cases were not
+reached. The host verifier rejects the incomplete output because there is no
+`DONE`, outcome, fingerprint or case data. Append-only diagnostic evidence is
+[`kaggle_w4_v16_sensitivity_version1_diagnostic_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_version1_diagnostic_2026_09.json),
+SHA-256 `30e4a3444e07570cff70ad40feff653ffe9858e30d7eea693213d09b610a8df3`.
+Keep round-2 criteria and thresholds unchanged. The minimal tuple fix and
+regression test are committed and pushed. Focused W4/W3/owner
+pytest passed 39 tests; `compileall`, targeted Python `py_compile`, Julia job
+syntax parsing and an executable case-ID/dimension/Re=80 check passed. The full
+repository pytest reports 1,115 passed, 37 failed and 4 skipped; the 37
+failures are historical tests requiring ignored `work/` artifacts absent from
+this managed worktree. The source fix was committed and pushed as `5d15e72`.
+Immutable round 3 is now registered at SHA-256
+`6cbe15769a8728c4f3ceba165ef75d6d11543c633c6651daafb8d6c901f8dfc6`, binding
+source snapshot `6d4608f39d2937ced96dd934b6be1cf61b4aa150`, exact W3 round-4
+host-PASS, and the observed T4 cohort. Stage a fresh local dataset directory,
+publish a new version of the existing private dataset ID, then download and
+verify its exact inventory/hashes before submitting the next exact kernel
+version. Do not change case definitions, measurement window, force semantics
+or thresholds.
+
+The round-3 dataset stage is
+`work/kaggle_w4_v16_dataset_round3/`; downloaded remote payload and audit are
+under `work/kaggle_w4_v16_dataset_round3_remote/`. Dataset version 2 reports
+`ready`. The exact remote five-file payload matches the local manifest;
+manifest SHA-256 is
+`0215f60cbb9ab567ae2b79d2f03d29b3e1eb532adc060f96af71e289f49e49e7`, and
+remote inventory audit SHA-256 is
+`e281ab7ad3e3025d89f4084b18b5ad900365f608d8a51bfc9109583608271a56`.
+Independent host and runner-mount checks pass, including canonical NPZ and
+C-/Fortran-order phi identities, round-trip raw bytes, sidecar, and CPU margin
+`0.3499999939931499 m`.
+
+Reproduce and recheck the staging with:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python \
+  scripts/prepare_kaggle_w4_v16_dataset_2026_09.py \
+  --state work/kaggle_w3_v16_dataset_registered_3c54f386/sdf_design_state.npz \
+  --criteria docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round3.json \
+  --output work/kaggle_w4_v16_dataset_round3
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets version -p work/kaggle_w4_v16_dataset_round3 \
+  -m "W4 v16 criteria round 3: tuple materialization fix" --dir-mode zip
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets status ramhachi888/cfd-opt-sdf-v16-w4-sensitivity
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets download ramhachi888/cfd-opt-sdf-v16-w4-sensitivity \
+  -p work/kaggle_w4_v16_dataset_round3_remote --force --unzip
+```
+
+Kernel metadata SHA-256 is
+`7eab12e8dfe356acdf5feec6ef41f033ff75cd3e6e02ada8b14635d3a6e123e7`; it is
+private T4, attaches this exact private dataset ID, and its title slug equals
+the kernel ID. Exact kernel
+`ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/2` was submitted with timeout 7200;
+it finished with `KernelWorkerStatus.ERROR` after all four CFD cases and T0-T2,
+T5-T10 passed but T3/T4 failed. Its exact status, logs and output are preserved
+under `work/kaggle_w4_version2/`. The initial queued snapshot remains at
+`status_initial.txt`; terminal status SHA-256 is
+`aa2cd16390695ae2a44ec7b099ae5de585974c2e916d851545ba9e122357988a`.
+The submission command was:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels push -p infra/kaggle/kernel_w4 \
+  --accelerator NvidiaTeslaT4 --timeout 7200
+```
+
+### W4 round-3 kernel version 2: four primal runs, T3/T4 guard diagnostic
+
+Exact kernel `/2` is bound to immutable criteria round 3 SHA-256
+`6cbe15769a8728c4f3ceba165ef75d6d11543c633c6651daafb8d6c901f8dfc6`, source
+commit `6d4608f39d2937ced96dd934b6be1cf61b4aa150`, and private W4 input dataset
+version 2. It ended `KernelWorkerStatus.ERROR`. Exact status SHA-256 is
+`aa2cd16390695ae2a44ec7b099ae5de585974c2e916d851545ba9e122357988a`; exact
+`kaggle kernels logs` response SHA-256 is
+`632ea975d88c85ec0942d0453182350ff8a15a3e1d87dda8d90a58f4908beeb6`; downloaded
+kernel log SHA-256 is
+`76325ce2abf666738faad65fc0f07641c5c76c5c8b92f27519741d13801ac705`.
+Downloaded files and status/log captures are isolated under
+`work/kaggle_w4_version2/`.
+
+`execution_state.json` shows all four `solver_step_invoked` and
+`solver_step_returned` markers. All cases reached at least tU/L=120, for a
+total of 31,893 solver steps and 515.3048713 seconds of summed case runtime.
+The exact output `sha256.json` has SHA-256
+`e9f70c36618c5dda3562dcc9557c390e648718da03404e8c298a580b45b11db9`; all 25
+listed output payload files, including every force CSV and case summary, match
+it. `ERROR.txt` SHA-256 is
+`f65d13aa85d10fa0c1c6eb90013d27595beec4152b390762bcda2f1012d0c36c`.
+
+The host verifier was run with the exact command:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w4_v16.py \
+  work/kaggle_w4_version2/output \
+  --criteria docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round3.json \
+  --dataset-dir work/kaggle_w4_v16_dataset_round3 --kernel-version 2
+```
+
+It rejects the output at the first check because the top-level `DONE` marker is
+absent. The runner deliberately writes `ERROR.txt` instead after T3/T4 fail; the
+Julia `W4_JOB_DONE` marker only indicates its four primal case runs completed.
+The host diagnosis preserved in the append-only evidence confirms the runner's
+force metrics and gates independently. It found:
+
+- **T3 implementation defect:** both Kaggle runner and host verifier compare
+  `physical_box_max_m` with `case["physical_box_m"][1]`, selecting the y-axis
+  interval `[-1.2, 1.2]`. Summaries correctly report the registered xyz maxima
+  `[2.5, 1.2, 0.9]` and `[3.5, 1.2, 0.9]`. Correct the predicate to compare
+  against `[axis[1] for axis in case["physical_box_m"]]`.
+- **T4 report-label mismatch:** each summary describes the moving half-space at
+  world z=-0.9 m on the expanded domain bottom, but the registered descriptor
+  reverses that phrase order. Strict string equality fails. Match the emitted
+  descriptor to the preregistered wording; do not change ground physics or
+  criteria.
+
+Append-only diagnostic evidence is
+[`kaggle_w4_v16_sensitivity_round3_kernel2_diagnostic_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_round3_kernel2_diagnostic_2026_09.json),
+SHA-256 `cde5c72b7a9996bd47933ec76ac3ce9990a57921256d96d6c5341de257458681`
+(sidecar matches). The output manifest, source and dataset identities were
+host-checked; every raw CSV row closes total=pressure+viscous in Fx/Fy/Fz, and
+the host's exact-endpoint trapezoidal recomputation matches the runner. T0-T2,
+T5-T10 pass; T3/T4 fail. The pinned host verifier does not produce a PASS
+result, so W4 and all broader qualification flags remain false.
+
+Diagnostic time-weighted values (physical N, Cd; not qualified):
+
+| Case | Drag (N) | Downforce (N) | Cd | Solver seconds |
+| --- | ---: | ---: | ---: | ---: |
+| `flow_16` | 0.33601773 | 0.35337324 | 1.05005541 | 36.7582 |
+| `flow_24` | 0.35761996 | 0.35674766 | 1.11756237 | 103.4465 |
+| `flow_32` | 0.41030528 | 0.41182016 | 1.28220400 | 342.1265 |
+| `domain_xplus1m_16` | 0.33637522 | 0.35322029 | 1.05117256 | 32.9737 |
+
+Host-recomputed 24→32 resolution deltas are 0.05268532 N drag and 0.05507250 N
+downforce; flow_16→extended-domain deltas are 0.00035749 N drag and 0.00015295
+N downforce. The registered extended-domain fine-grid follow-up condition is
+not triggered by these diagnostic values. FD remains blocked because this
+round has no host PASS.
+
+Keep round-3 criteria and kernel version 2 evidence unchanged. The duplicate
+T3 predicate and report-only T4 ground descriptor are fixed in source commit
+`52a50e488cb01f93c971dc29b5fc29f1670e36a5`, with regression coverage for both
+runner/host parity and rejection of incorrect values. Focused W4/W3/owner tests
+passed 41; `compileall`, targeted Python `py_compile`, Julia `Meta.parseall`,
+and `git diff --check` pass. Full pytest reports 1,117 passed, 37 failed and 4
+skipped; all 37 failures require ignored historical `work/` artifacts absent
+from this managed worktree. Register immutable round 4 and a new private
+dataset version before the next exact kernel measurement.
+
+### W4 immutable criteria round 4 and local dataset stage
+
+Round 3's exact T3/T4 gate failures and kernel version 2 output remain diagnostic
+evidence. Do not edit round-3 criteria. After correcting the box-maximum
+predicate in both runner and host verifier and aligning the job's report-only
+ground descriptor, immutable round 4 was registered before another measurement:
+
+- Criteria:
+  [`kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json),
+  SHA-256
+  `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f`
+  (sidecar matches).
+- Source snapshot:
+  `b9ae43b540a94b52fdb8a05051fba6f250034a6f`.
+- The registrar bound exact W3 round-4 criteria/result and host-PASS. An
+  independent comparison against round 3 confirms cases, geometry,
+  measurement, profile semantics, scope, response analysis, backend and W3
+  prerequisite are unchanged. Only immutable round/source/input hashes
+  advance.
+- Fresh stage:
+  `work/kaggle_w4_v16_dataset_round4/`; the preparer passed host source/state
+  checks, and both host verifier and runner-mount checks passed.
+- Dataset manifest SHA-256:
+  `d5093b23be0a26c5cf5ce1030e42189a71b58f834160bcbd15c272d00561e8a7`.
+- Criteria SHA is `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f`;
+  canonical NPZ and Fortran raw hashes are unchanged from the registered v16
+  state, and CPU measured margin is `0.3499999939931499 m`.
+
+Registration and stage commands:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python scripts/register_kaggle_w4_v16_sensitivity_2026_09.py --w3-criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json --w3-result docs/evidence/kaggle_w3_v16_primal_result_round4_2026_09.json --round 4 --check
+PYTHONPATH=src:scripts .venv/bin/python scripts/prepare_kaggle_w4_v16_dataset_2026_09.py --state work/kaggle_w3_v16_dataset_registered_3c54f386/sdf_design_state.npz --criteria docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json --output work/kaggle_w4_v16_dataset_round4
+```
+
+The immutable round-4 criteria and status update are committed and pushed.
+Private dataset version 3 reports ready; its downloaded five-file payload
+exactly matches manifest SHA-256
+`d5093b23be0a26c5cf5ce1030e42189a71b58f834160bcbd15c272d00561e8a7`, and the
+remote inventory audit SHA-256 is
+`81a477314cf7a34f8f157a703ed11b63f912747e0c82446c61d327044ad687e4`. Host and
+runner-mounted dataset verification pass, including canonical state/phi hashes
+and CPU margin `0.3499999939931499 m`. Submit exact kernel version 3 after
+rechecking private T4 metadata. No W4 round-4 measurement, formal FD, reverse
+qualification or shape update has started.
+
+
+### W4 round-4 kernel version 3: PASS and independent host verification
+
+This entry is the exact-version continuation of W4 round 4. It supersedes the
+prior instruction to submit the next kernel version; immutable criteria and
+round-3 diagnostics remain unchanged.
+
+- **Registered:** criteria
+  [`kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json)
+  SHA-256
+  `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f`,
+  source snapshot `b9ae43b540a94b52fdb8a05051fba6f250034a6f`, exact W3 round-4
+  host-PASS prerequisite. The dataset
+  `ramhachi888/cfd-opt-sdf-v16-w4-sensitivity` version 3 was `ready`. Its
+  five-file content inventory matches the round-4 manifest SHA-256
+  `d5093b23be0a26c5cf5ce1030e42189a71b58f834160bcbd15c272d00561e8a7`; the
+  remote inventory audit SHA-256 is
+  `81a477314cf7a34f8f157a703ed11b63f912747e0c82446c61d327044ad687e4`.
+  Host and runner-mounted dataset checks both passed.
+- **Submitted:** exact private T4 kernel
+  `ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/3`, submitted from committed
+  `infra/kaggle/kernel_w4/kernel-metadata.json` with timeout 7200. It ended
+  `KernelWorkerStatus.COMPLETE`. Terminal status SHA-256
+  `80449770970ace3350548b96005931282c52a791555986628382897e930fb1af`;
+  exact `kaggle kernels logs` JSON response SHA-256
+  `380f53ba8a0ad08c5fdf7c6266ebd63d041d40d6be2ff9e7f56ffa11db7b25fe`;
+  downloaded notebook log
+  `work/kaggle_w4_version3/output/cfd-opt-sdf-w4-v16-sensitivity.log` SHA-256
+  `3f42c3a9041e8baa8c2ee248fc7cc6be71df9dabab4d5e6441b2cee057e38dee`;
+  Julia job log SHA-256
+  `86089fc236218525ec94a063f7a0be8525ddd395829ca2ce09b23015289255ea`.
+- **Exact retrieval commands:**
+
+  ```bash
+  uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+    kaggle kernels status ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/3
+  uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+    kaggle kernels logs ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/3
+  uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+    kaggle kernels output ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/3 \
+    -p work/kaggle_w4_version3/output --force
+  ```
+
+- **Dataset verifier directory:** the fresh Kaggle download and audit are kept
+  intact at `work/kaggle_w4_v16_dataset_round4_remote/`. That folder also
+  contains `remote_inventory_audit.json`, which is audit evidence rather than
+  a Kaggle dataset payload file. Passing that whole directory to the exact
+  inventory verifier correctly returns
+  `ValueError: staged W4 dataset contains unregistered files`. For host
+  verification, only the remote registered five-file content payload plus
+  `dataset-metadata.json` was copied into
+  `work/kaggle_w4_version3/dataset_payload/`; the original remote download and
+  audit remain untouched. The failed preflight stderr SHA-256 is
+  `59089d21e39da8ec4597f3010b5967278d49ef03bc13a26a7197eb0e590b8ee2`.
+  Re-run the passing host check with:
+
+  ```bash
+  PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+    scripts/verify_kaggle_w4_v16.py work/kaggle_w4_version3/output \
+    --criteria docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json \
+    --dataset-dir work/kaggle_w4_version3/dataset_payload \
+    --kernel-version 3
+  ```
+
+  Exit status is 0. Captured host verification JSON SHA-256 is
+  `77e5a2fe93c817b206a0f65a3a02039db1eb8e1fe5a387fdfcc34d12c3e384dd`; the
+  successful verifier stderr is empty. It checked all 24 files in
+  `sha256.json`, whose own SHA-256 is
+  `1a72ab72cf16a35e0828636c03ef86602e35d32589d28c4898aaf9c1a909b710`.
+  Append-only result evidence is
+  [`kaggle_w4_v16_sensitivity_result_round4_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_result_round4_2026_09.json),
+  SHA-256
+  `87a881784dd42ef9c2c43ee78be761e8165e727f01df7d544765006d9c1b2fae`
+  (matching sidecar).
+- **Runtime/backend:** two Tesla T4 GPUs; selected UUID
+  `GPU-85734d21-bc25-4f5b-2d90-2b22393f3dc8`; driver `580.159.04`; CUDA driver
+  API `13.3.0`, CUDA runtime `12.8.0`, CUDA.jl `6.3.1`; Julia `1.12.6`, one
+  Julia thread; WaterLily `1.8.0`, `KernelAbstractions`. The criteria bind
+  `CUDA_VISIBLE_DEVICES=0`; the exact source-bound runner assigns this value to
+  all Julia subprocesses, although the runtime output does not separately echo
+  it. Julia archive SHA-256 is
+  `bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a`.
+- **SDF identity:** canonical NPZ SHA-256
+  `3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe`, state
+  SHA-256 `44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa3c5a611c29f6de8`,
+  C-order phi SHA-256
+  `45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785`, and
+  Fortran-order/GPU-round-trip SHA-256
+  `9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7`.
+  CPU margin is `0.3499999939931499 m`, above the registered `0.15 m` gate.
+- **Measured:** all case force means below are independently recomputed physical
+  N on exact `[80,120]` endpoints; endpoint values use linear interpolation
+  followed by trapezoidal physical-time integration. Stationarity is the
+  exact-window half-split drift against the immutable maximum `0.02`, inherited
+  from the W3 round-4/W2 registered convention.
+
+  | Case | Grid | Steps | `tU/L` | Wall (s) | Peak VRAM (bytes) | Drag (N) | Downforce (N) | Cd | Drag drift | Downforce drift |
+  | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+  | `flow_16` | 100×48×36 | 4,808 | 120.001938 | 35.6669 | 24,934,924 | 0.336017730 | 0.353373240 | 1.050055406 | 8.1636e-6 | 4.1726e-6 |
+  | `flow_24` | 150×72×54 | 8,741 | 120.009331 | 95.8426 | 81,567,020 | 0.357619959 | 0.356747660 | 1.117562371 | 2.0596e-6 | 1.1682e-5 |
+  | `flow_32` | 200×96×72 | 13,536 | 120.005043 | 311.2219 | 184,412,116 | 0.410305278 | 0.411820160 | 1.282203995 | 1.9894e-6 | 1.4091e-6 |
+  | `domain_xplus1m_16` | 120×48×36 | 4,808 | 120.000877 | 29.8522 | 29,631,500 | 0.336375219 | 0.353220289 | 1.051172558 | 1.9810e-5 | 1.0784e-5 |
+
+  Aggregate case wall time is `472.5836008 s`; maximum case VRAM is
+  `184,412,116 bytes` of `15,636,037,632 bytes` total. All cases have finite
+  velocity, pressure and forces; all raw force CSV rows satisfy total =
+  pressure + viscous on x/y/z, and drag/downforce use the registered `+Fx` /
+  `-Fz` projections.
+- **W3 baseline comparison:** W4 `flow_16` vs W3 round 4 has zero observed
+  deltas for drag (`0.3360177299 N`), downforce (`0.3533732402 N`), Cd
+  (`1.0500554060`), both stationarity drifts, steps (`4,808`) and `tU/L`
+  (`120.0019378662`). The criteria explicitly register no numerical
+  repeatability threshold, so this is reported as a comparison only.
+- **Response:** 24→32 resolution deltas are `0.0526853195 N` drag
+  (`0.12840517` relative) and `0.0550725000 N` downforce (`0.13372949`). The
+  baseline→extended-domain deltas are `0.0003574887 N` drag (`0.00106277`
+  relative) and `0.0001529516 N` downforce (`0.00043283` relative). The domain
+  delta is below its corresponding resolution delta for both quantities;
+  extended-domain fine-grid follow-up is `false` under the registered rule.
+- **T0-T10:** all true. The host recomputed force closure, projections,
+  trapezoidal means, Cd, stationarity, response deltas and W3 comparison rather
+  than relying on the runner verdict.
+- **Qualified:** only the registered finite-box WaterLily sensitivity matrix
+  (`w4_sensitivity_matrix_passed=true`). Physical-profile equivalence,
+  absolute downforce, general stationarity qualification, grid/domain
+  convergence, gradient, reverse mode, topology, optimizer and shape update
+  remain false. WaterLily/OpenFOAM boundary equivalence is not claimed.
+- **Open:** FD entry gate is `OPEN`; this only permits separate FD
+  preregistration. Formal centered FD has not started in this work slice. W4 is
+  complete through exact host verification.
+
+#### Local regression and source-syntax validation
+
+The managed worktree has no local `.venv`; commands below used the configured
+project interpreter from `/Users/sota/projects/FomulaTMU/CFD2026_09/.venv` while
+all tested source and working paths resolved in this worktree.
+
+```bash
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  -m pytest -q tests/test_kaggle_w4.py tests/test_kaggle_w3_cuda_diagnostic.py \
+  tests/test_kaggle_w3_owner_type_probe.py
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m compileall src tests
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m py_compile \
+  scripts/register_kaggle_w4_v16_sensitivity_2026_09.py \
+  scripts/prepare_kaggle_w4_v16_dataset_2026_09.py \
+  scripts/verify_kaggle_w4_v16.py infra/kaggle/kernel_w4/runner.py
+julia --startup-file=no -e \
+  'Meta.parseall(read("scripts/waterlily_w4_v16_sensitivity_job.jl", String)); Meta.parseall(read("julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl", String)); println("Julia parse checks passed")'
+julia --startup-file=no -e '
+  include("julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl")
+  cases = V16W4Sensitivity.V16W4_CASES
+  expected = (("flow_16", (100,48,36), 16.0, 0.2, (2.5,1.2,0.9)),
+              ("flow_24", (150,72,54), 24.0, 0.3, (2.5,1.2,0.9)),
+              ("flow_32", (200,96,72), 32.0, 0.4, (2.5,1.2,0.9)),
+              ("domain_xplus1m_16", (120,48,36), 16.0, 0.2, (3.5,1.2,0.9)))
+  @assert length(cases) == 4
+  for (case, item) in zip(cases, expected)
+    @assert (case.case_id, case.flow_dims, case.solver_length,
+             round(case.solver_viscosity,digits=1), case.physical_box_max_m) == item
+    @assert case.flow_origin_m == (-2.5,-1.2,-0.9)
+    @assert case.canonical_design_origin_m == (-1.0,-0.8,-0.6)
+    @assert case.reynolds == 80.0
+  end
+  println("4-case mapping, distinct flow/SDF origins, and Re=80 passed")'
+```
+
+The focused command passed `45` tests. Python compilation, Julia parsing, a
+standalone exact four-case mapping assertion (including distinct flow/SDF
+origins and Re=80), and `git diff --check` passed. The required full command
+was run and its log preserved:
+
+```bash
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q \
+  > work/kaggle_w4_version3/final_pytest.log 2>&1
+```
+
+It exited 1 with `1,117 passed, 37 failed, 4 skipped` in `196.88 s`. Traceback
+review found the 37 failures require ignored historical `work/` artifacts or
+prerequisites absent from this managed worktree; no W4/W3-owner test failed.
+Full pytest log SHA-256 is
+`60bdff0c767d3e043847d04ea072371cffd47f875dabed89c5c5af33284406b8`.
+
+## 2026-09-29: centered directional-FD oracle, implementation not registered
+
+The W3 round-4 and W4 round-4 host-PASS results open the formal FD entry gate.
+The new FD workflow is being prepared against the canonical v16 SDF and the
+registered WaterLily `flow_16` finite-box primal. Its mutable draft is
+`docs/evidence/sdf_directional_fd_v16_criteria_draft_2026_09.json`; it is not
+an immutable criteria file and cannot be used to launch a measurement.
+
+**Implemented locally:** the solver-neutral directional-FD contract, D0
+interface-offset plus D1/D2 filtered seeded directions, five epsilon levels,
+30 frozen perturbations, three interleaved fresh baselines, Julia T4 job,
+Kaggle runner, exact-version host verifier, and dataset preparation/criteria
+registration scripts. Every primal records full x/y/z pressure and viscous
+force components, `drag=+Fx`, `downforce=-Fz`, exact-window time-weighted
+physical forces, and the inherited 2% half-window stationarity gate.
+
+**Validation:** the two focused FD test files passed `22` tests. Python
+`compileall src tests scripts` and runner `py_compile` passed; Julia
+`Meta.parseall` plus the exact flow_16 dims/origin/Re=80 assertion passed;
+both JSON files parsed; the canonical state regenerated the registered three
+direction hashes and all 30 perturbations, with minimum measured margin
+`0.33999999370425943 m`. The full command
+`PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q`
+reported `1,139 passed, 37 failed, 4 skipped` in `206.53 s`; none of the 37
+failures were in either FD test file. The failures are existing Stage T/S/V
+tests blocked by ignored `work/` inputs absent from this managed worktree
+(missing ProblemSpec YAML, STL, checkpoints, meshes and solver artifacts).
+Captured log SHA-256:
+`17bb1c99705602b5c9dd5d499ffa3595d3cdf94cdb859c3b2de64123f0c8fd6f`.
+
+**Current status:**
+
+- Implemented in the worktree; focused validation currently passes 22 tests.
+- Prerequisites read and SHA-checked: W3 round-4 criteria/result
+  `eeae43e8…` / `d00949d0…`; W4 round-4 criteria/result
+  `3efc8133…` / `87a88178…`.
+- Immutable FD criteria: not registered.
+- Private FD dataset: not staged or uploaded.
+- FD kernel: not submitted.
+- FD solver measurement: not started; no `sim_step!` has been invoked for FD.
+- Host FD verification/evidence: not present; directional-oracle and gradient
+  qualification flags remain false.
+
+**Next:** commit and push the validated source/harness first. Run the
+registrar only from a clean, pushed canonical branch. Then stage the
+dataset, upload it privately, wait for `ready`, download the exact remote
+version and verify its full file inventory and hashes. Submit only after that
+comparison passes. Record the exact kernel version returned by Kaggle and use
+that same version for status, logs, and output retrieval; never substitute
+`latest`. Stop after the independent host verifier and append-only evidence.
+
+## 2026-09-29: centered directional-FD round 1 immutable registration
+
+Source/harness commit `167dc992339d8edf9f368cbeff97963cca969deb` and registrar
+repair commit `d0ac7163d86b4f5db5ba99c8113c767669365312` are pushed on
+`codex/kaggle-batch-migration`. The first registrar call stopped before file
+creation on an undefined W4 backend local; the repaired exact registrar was
+rerun from a clean pushed branch, with no solver measurement in between.
+
+- Registered criteria:
+  `docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round1.json`.
+- File/sidecar SHA-256:
+  `ad0bd7dcc6f8e2f0927799fe1c9818e58c43fbc4205312a5ad4c397d61f6fdc6`.
+- Canonical internal criteria SHA-256:
+  `a110132ff6df6859fe4e38b5e4cb634c8ef2ac0015cfb6fbc5562d63c5bc292c`.
+- Source commit: `d0ac7163d86b4f5db5ba99c8113c767669365312`.
+- `immutable=true`, `registered_before_computation=true`,
+  `status=registered_not_run`, `formal_measurement_started=false`.
+- 24 source inputs and 35 data payload inputs are SHA-bound. The three frozen
+  direction hashes are D0 `fb74a1e7…`, D1 `26964bfa…`, and D2 `e6ad0912…`.
+  All 30 perturbation states and exact 33-run order are frozen; the minimum
+  preflight SDF margin is `0.33999999370425943 m`.
+- `--check` revalidated the sidecar, canonical criteria hash, source commit,
+  and every source input hash. The exact round is registered but not measured.
+
+Next, run the dataset preparer to
+`work/kaggle_sdf_directional_fd_dataset_round1/`. Compare every staged file
+against the criteria and dataset manifest, create the private Kaggle dataset,
+wait for its exact status to become `ready`, download that dataset version,
+and compare its complete inventory/hash set to the local manifest. Do not
+submit a kernel until that remote comparison passes. There is still no FD
+dataset version, kernel version, solver measurement, host verification, or
+qualification result.
+
+## 2026-09-29: round-1 FD kernel submission conflict
+
+This checkpoint supersedes only the preceding sentence that the FD dataset is
+not uploaded. Round 1 criteria remain immutable and unmeasured:
+
+- Criteria file/sidecar SHA-256:
+  `ad0bd7dcc6f8e2f0927799fe1c9818e58c43fbc4205312a5ad4c397d61f6fdc6`.
+- Private dataset version 1 is `ready`. Its complete 38-file remote payload was
+  downloaded and matched byte-for-byte against the registered hashes. Remote
+  inventory SHA-256 is
+  `2d96fe73571447415ad184676672a0505beea8123074ae7d0f2f7e7b8c154b2c`; audit
+  SHA-256 is
+  `0b7cc597766a6d95dd262a0bd4f27435d2da5d87ef6aec0e70a66e6a87b5774e`.
+- Kaggle kernel submission returned HTTP 409 five times before creating any
+  version. The exact latest response body is saved at
+  `work/kaggle_sdf_directional_fd_dataset_round1_remote/kernel_push_409_response_body.json`,
+  SHA-256
+  `e4e5bd0dd4f0f27f19783d675a1483c8301817d2f4c9c25fe5676f234e452d7c`. It
+  reports that the requested title is already used by a dataset. The kernel
+ID equals the input dataset ID, so round 1 cannot use this Kaggle slug.
+- Kernel search after the failure returned `Not found`; captured output SHA-256
+  is `493fda53120050f85836032324409be6c6484f90a0755ae0c6a673ba7626818b`.
+- Append-only diagnostic evidence:
+  [`sdf_directional_fd_v16_round1_kernel_submission_diagnostic_2026_09.json`](evidence/sdf_directional_fd_v16_round1_kernel_submission_diagnostic_2026_09.json),
+  SHA-256
+  `3cabf32761785ac1f9cf1bf353b92e80649259a36197ba88e89f644b62edb9b8`.
+
+No solver process, CUDA initialization, `sim_step!`, FD measurement, or host
+result verification began. Do not alter round 1. Next, change only the kernel
+ID/title to a distinct slug, preregister immutable round 2 against the updated
+source commit and the same measurement contract, create a new version of the
+same private dataset ID containing the round-2 criteria, redownload and
+reverify its complete hashes, then submit the exact T4 kernel version.
+
+## 2026-09-29: FD round-2 unique-kernel-slug retry implemented
+
+Kaggle's `SaveKernel` 409 occurs before version creation because round 1's
+kernel slug is identical to its input dataset slug. Preserve the round-1
+criteria SHA and sidecar unchanged. The retry metadata now uses:
+
+```text
+kernel ID: ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel
+title:     CFD Opt SDF v16 Directional FD Oracle Kernel
+dataset:  ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle
+```
+
+The registrar's round-2 path validates the exact round-1 criteria and
+submission-diagnostic hashes, records that diagnostic in its source inputs,
+and rejects any change to the registered measurement contract, including all
+responses, directions, perturbations, order, gates, backend, noise and plateau
+rules. It also requires the new kernel ID to differ from the same private
+dataset ID. This keeps the W3/W4 source and runtime, the FD solver job, and all
+numerical acceptance conditions unchanged.
+
+**Current state:** round 2 is implemented locally but not registered. Focused
+FD tests passed (`24 passed`); `compileall`, `py_compile`, both metadata JSON
+parses and `git diff --check` passed. Full `pytest -q --tb=short` reported
+`1,141 passed, 37 failed, 4 skipped` in `205.73 s`; all 37 failures reference
+ignored historical Stage T/S/V `work/` artifacts absent from this worktree, and
+none are FD tests. The captured log is
+`work/sdf_directional_fd_v16_round2_retry_implementation/full_pytest.log`,
+SHA-256
+`c15194356f71c095af09cac4767fe15fad139c20ec7a5d3ac44c19a8868662f1`. No FD
+solver step has run. Commit and push these source changes. Only then run
+registrar `--round 2` from the clean pushed branch, upload a new version of
+the existing private dataset ID, verify every remote file hash, and submit
+the exact private T4 kernel. Do not modify round 1 or any measurement
+threshold.
+
+## 2026-09-29: FD round 2 immutable criteria registered
+
+This checkpoint supersedes the preceding retry-implementation section's
+`round 2 is implemented locally but not registered` status; it preserves that
+earlier transition for audit history.
+
+Source retry commit `178792e9065df87d87ea1d445baaedace404304e` was pushed and
+clean before registration. The registrar created and rechecked:
+
+```text
+criteria: docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round2.json
+file SHA: 150a60232f1adb413fa7021833943c8effe5b91ef068909d4d9364112c248e1b
+canonical criteria SHA: 91756109ce69fbe7c77cb0f18417f6d48619bb0020585db1aab7f8e891d19bfa
+source commit: 178792e9065df87d87ea1d445baaedace404304e
+kernel ID: ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel
+dataset ID: ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle
+```
+
+Round 2 binds the exact round-1 criteria and HTTP 409 diagnostic. The registrar
+compared these round-1 fields and found no differences: geometry, primary
+responses, direction definitions and hashes, all 30 perturbation identities,
+33-run order, force integration/window, stationarity, noise floor, resolution
+factor, plateau gate, registered backend, gates and dataset payload. The only
+measurement-path identity change is the Kaggle kernel slug/title; round 2 also
+contains the supersedes linkage. Criteria `--check` and sidecar validation
+passed; `formal_measurement_started=false`.
+
+**Status:** implemented/pushed and immutably registered; private dataset v2 is
+not staged/uploaded yet; no round-2 kernel version exists; no solver step or
+measurement ran; no FD or gradient qualification is granted. Round-1 criteria
+and dataset version 1 remain unchanged.
+
+Next, commit/push the round-2 criteria and status docs. Then run:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python \
+  scripts/prepare_kaggle_sdf_directional_fd_v16_dataset_2026_09.py \
+  --criteria docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round2.json \
+  --state work/kaggle_w3_v16_dataset_registered_3c54f386/sdf_design_state.npz \
+  --output work/kaggle_sdf_directional_fd_dataset_round2
+```
+
+Verify the local manifest, add a new private version of the existing dataset
+ID with `kaggle datasets version` (do not delete old versions), wait for that
+exact version to become `ready`, download it, and compare every path/hash to
+the manifest. Only after the remote match, push and execute the exact new
+private T4 kernel slug with the registered 14,400 second timeout. Stop after
+exact-version host verification.
+
+## 2026-09-29: FD round-2 kernel `/1` failed before Julia or CUDA
+
+This entry supersedes the immediately preceding round-2 registered checkpoint
+that said dataset v2 and a kernel did not yet exist. Round 2 remains immutable.
+
+- Dataset version 2 is `ready`; 38 remote files were compared with the
+  round-2 stage and manifest, and every path, size and SHA-256 matched. Remote
+  inventory audit SHA-256:
+  `223876dcef040be82ab80f5e6036220da38d21232efd1a0c134c928126b56e26`.
+- Exact kernel
+  `ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel/1` ended in
+  `KernelWorkerStatus.ERROR`.
+- Kaggle source fetch and checkout succeeded at registered commit
+  `178792e9065df87d87ea1d445baaedace404304e`. Runner verified the dataset
+  manifest then failed at stage `host_input_preflight` while assembling the
+  canonical state identity because `phi_sha256` is not imported in the Python
+  runner. It did not reach GPU inventory, Julia install, CUDA smoke, Julia job
+  or `sim_step!`. `execution_state.json` has `solver_started=false`, no
+  invoked solver steps and that exact stage.
+- Captured hashes:
+  - exact status: `88172e3e7f3b67a7250a9e2621f23f0a57ac32d8d14122897884eb065196cfc9`
+  - Kaggle logs response: `f9dfe268c59efc836d6cd72641b459fca4f69cb538b62f85dc100096b2174563`
+  - downloaded raw kernel log: `00e2811704d8bb560bf938b0b52ffd3e1ee36107f22ab025ecbf247ab76fb710`
+  - `ERROR.txt`: `1311692cc5419f0d4ac45682d1a43bf4514f516942fa32abcff21fd059fb1ca2`
+  - consistent output `sha256.json`:
+    `41bbafba85e9ebea4a8d2726db574d1a45ef67b978c1fb58eb69d5311187812f`
+  - output download capture:
+    `041f94f82ed412b8b91716a737964c50dbeaeb9793d2cda4d4ef2f3b4862ed2e`
+- The host verifier refused to report PASS because the output correctly lacks a
+  `DONE` marker. It wrote append-only diagnostic
+  [`sdf_directional_fd_v16_round2_kernel1_diagnostic_2026_09.json`](evidence/sdf_directional_fd_v16_round2_kernel1_diagnostic_2026_09.json),
+  file/sidecar SHA-256
+  `1c39d56953ef6e15979ea84bd2a5cca209af8689bb491be777d50e6f16a6d06a`.
+
+This is a Python runner integration defect, not a solver measurement. Do not
+change round-2 criteria or thresholds, and do not count `/1` as a measurement.
+Next add the single missing `phi_sha256` import and a regression test, validate
+and commit/push the source fix, preregister round 3 bound to this diagnostic
+and unchanged measurement fields, publish/verify dataset version 3, and submit
+the next exact kernel version. All FD/gradient qualification flags remain
+false.
+
+## 2026-09-29: FD round-3 host-input repair in progress
+
+The preceding round-2 entry is retained as the exact historical diagnosis. The
+repair addresses the whole host-input identity scope, rather than adding only
+the first missing import:
+
+- `verify_canonical_and_preflight()` returns C-order and Fortran-order phi
+  hashes, measured margin, and all four mask hashes as one identity object.
+- `build_state_identity_payload()` assembles that object with the canonical
+  NPZ hash, direction audit, and all 30 perturbation preflight records.
+- A local executable host-input preflight completes criteria, dataset,
+  source, W3/W4 prerequisite, canonical state, direction, perturbation, and
+  JSON-serialization checks before GPU inventory.
+- Regression coverage checks the returned identity payload, the preflight
+  ordering, and unresolved Python global references in the runner.
+
+Validation already completed on the current source changes:
+
+```text
+focused FD tests: 29 passed
+compileall src tests scripts: passed
+targeted Python py_compile: passed
+Julia FD job Meta.parseall: passed
+round-2 exact local dataset/source/prerequisite/host-input preflight: passed
+full pytest: 1,146 passed, 37 failed, 4 skipped
+full pytest log SHA-256: 35b3ad1e7d8e3376679a975b486daa669594c4aefceb4db88ea2d5a5fc916
+```
+
+The 37 full-suite failures are historical Stage T/S/V checks whose ignored
+`work/` meshes, checkpoints, solver logs, or case inputs are absent in this
+worktree; neither FD test failed. See the detailed classification in
+[`phase_plan.md`](phase_plan.md#2026-09-29-fd-round-3-pre-registration-runner-repair).
+
+Round 3 registrar support is implemented locally and binds the exact immutable
+round-2 criteria, its sidecar, and the pre-GPU `/1` diagnostic. It rejects a
+round-2 criteria or diagnostic hash mismatch, requires `solver_started=false`,
+and compares the measurement contract while permitting only source/runner/test
+identity, round identity, and supersession linkage to change. The mutable draft
+has `criteria_round=3` and retains the unique retry kernel slug. No round-2
+artifact or measurement threshold is changed.
+
+Current operational state:
+
+- **Implemented / pushed:** runner scope repair, executable regression,
+  round-3 registrar, and round-3 draft metadata are in source commit
+  `86087b888e7ea42033476bfcee9c8c7e888bb3cb`; immutable criteria and dataset
+  verification were later committed and pushed as separate evidence updates.
+- **Registered:** immutable round 3 is now registered. Its criteria path is
+  `docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round3.json`, file
+  SHA `45fb570bc3628ff083d5cd34f496e352f6ec0834ac93f381909bef1c4d13f6c5`,
+  canonical criteria SHA
+  `fe49a91e5800460dc4560f453b72fd25f12158ecd4a099a1e940cbf434db8d52`, and
+  source commit `9978eb4f19c716b9666c50c18261738edd978e4f`. The sidecar SHA is
+  `517e9f5650f706ccfab84f1d8ca8812918197c158d81e74847e29c2b2edea3b7`.
+  Round 2 remains unchanged; its criteria file/sidecar SHA is
+  `150a60232f1adb413fa7021833943c8effe5b91ef068909d4d9364112c248e1b`,
+  canonical criteria SHA is
+  `91756109ce69fbe7c77cb0f18417f6d48619bb0020585db1aab7f8e891d19bfa`, and
+  exact `/1` diagnostic file/sidecar SHA is
+  `1c39d56953ef6e15979ea84bd2a5cca209af8689bb491be777d50e6f16a6d06a`.
+- **Submitted / measured / verified:** round-2 kernel `/1` is `ERROR` at
+  `host_input_preflight`; `solver_started=false`, with no Julia, CUDA, GPU
+  inventory, or `sim_step!` reached. It is infrastructure diagnostic evidence
+  only, not an FD measurement.
+- **Qualified:** FD oracle, field gradient, reverse, optimizer, topology, and
+  shape update remain false.
+- **Dataset verified:** private dataset version 3 is `ready`. All 37 files in
+  the local registered manifest match the remote files by path, size, and
+  SHA-256; the downloaded mounted inventory has 38 files including the
+  manifest. Remote inventory SHA-256 is
+  `1b74127038a414c39de72a681bc02f44661e27dfcae56e789cadf40091da3466`.
+  Append-only evidence
+  [`sdf_directional_fd_v16_dataset_round3_verification_2026_09.json`](evidence/sdf_directional_fd_v16_dataset_round3_verification_2026_09.json)
+  SHA-256 is
+  `aad6667f391543d78a338d089daf737203222e7ec54b4ffe871ffd740745d48c`.
+  With that exact redownloaded payload, the host-side `read_criteria`,
+  `verify_dataset`, `verify_source`, `verify_prerequisites`, and
+  `host_input_preflight` passed: canonical state SHA
+  `44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8`,
+  canonical C/F hashes, CPU margin `0.3499999939931499 m`, four masks, three
+  directions, and 30 perturbations. `gpu_inventory()` was not called.
+
+- **Submitted:** exact private T4 kernel `/2` was returned successfully and is
+  `KernelWorkerStatus.RUNNING` (submission checkpoint observed at
+  `2026-09-29T07:56:16Z`). Push used the registered 14,400-second timeout.
+  Append-only checkpoint evidence
+  [`sdf_directional_fd_v16_round3_kernel2_submission_2026_09.json`](evidence/sdf_directional_fd_v16_round3_kernel2_submission_2026_09.json)
+  SHA-256 is
+  `379ad6ac7968109bbb7962afbfc03f5a1be8f8e9d6a7e6eed3f15d90c3db4629`.
+- **Open:** keep monitoring only exact `/2`, then collect its terminal status,
+  logs, and output and run the host verifier. The current logs response has no
+  content and the output file list is empty; solver start/progress is unknown.
+  Stop after exact-version host verification and append a round-3 result or
+  diagnostic.
+
+## 2026-09-29: FD round-3 kernel `/2` terminal pre-primal failure
+
+This section supersedes the preceding checkpoint's `RUNNING` status. Exact
+kernel `/2` ended in `ERROR`; the run did not reach a primal step.
+
+- **Execution:** source fetch/checkout to registered commit
+  `9978eb4f19c716b9666c50c18261738edd978e4f`, Julia instantiate, GPU inventory,
+  and the registered no-solver CUDA/T4 smoke completed. CPU canonical identity
+  preflight emitted state SHA
+  `44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8`, C/F
+  phi hashes, margin `0.3499999939931499 m`, four masks, three directions and
+  30 perturbations. Julia validated the 33-row queue before failing.
+- **Failure:** `fd_v16.log` SHA-256
+  `4632902eed4ebc6aad21f0100b4c81a13a7e9c883a5625d8351dbdda1dd2c3f8`
+  reports `ArgumentError: 'src' and 'dst' refer to the same file/dir. This is
+  not supported.` `queue_path` and `run_queue_summary` both resolve to
+  `/kaggle/working/sdf_directional_fd_v16/run_queue.tsv`; the self-copy is at
+  Julia job line 304, before `CUDA.memory_info()` and before the first
+  `sim_step!`. Execution state has `stage=julia_job`,
+  `solver_started=false`, `solver_step_invoked=[]`, and
+  `solver_step_returned=[]`.
+- **Host verifier:** the exact round-3 criteria, dataset version 3, and kernel
+  `/2` were passed to `verify_kaggle_sdf_directional_fd_v16.py`. It returned
+  exit 1 and failed closed before evaluating gates because `DONE` is absent.
+  The output SHA manifest is consistent, contains no force CSVs, and has no
+  `DONE` marker.
+- **Evidence:** main append-only diagnostic
+  [`sdf_directional_fd_v16_round3_kernel2_diagnostic_2026_09.json`](evidence/sdf_directional_fd_v16_round3_kernel2_diagnostic_2026_09.json)
+  SHA-256 `4044e4f01508590f622e89194427af47c599d00959cf721a0f143b136d746fae`;
+  detailed failure analysis
+  [`sdf_directional_fd_v16_round3_kernel2_failure_analysis_2026_09.json`](evidence/sdf_directional_fd_v16_round3_kernel2_failure_analysis_2026_09.json)
+  SHA-256 `faf0f9b8100b02f303b029a3644cbf5c3df4e3e0a18d935014401142936c8596`.
+  `ERROR.txt` SHA-256 is
+  `968da5e0f673790b2c250b60da07025c177525cb52a4ddc48ca868762c9a0dcf`;
+  output `sha256.json` SHA-256 is
+  `51e1d939d4aeee1bb9eb1be6137be113f785252517de27d18ba4b6ba48a7be1f`;
+  downloaded Kaggle log SHA-256 is
+  `b77bf9f207be08236ed90d9b4ed155257b7b936fdbac3cbbd87297ceccbd024d`;
+  status SHA-256 is
+  `87263620a40ab44e2deafcb0d99b5b15a7b0de047373bde7d6402e645d104174`.
+- **Next:** do not retry round 3 or alter its thresholds. Change only the
+  runner's queue input path to a file under its existing temporary `base`
+  directory; retain `OUT/run_queue.tsv` as the Julia job's output snapshot.
+  Add a focused path-separation regression, validate, commit/push, and register
+  immutable round 4 bound to the round-3 `/2` diagnostic. FD/gradient/reverse/
+  optimizer/topology/shape-update flags remain false.
+
+## 2026-09-29: FD round-4 queue-path fix and immutable registration
+
+The round-3 `/2` self-copy failure is closed at source level. The runner writes
+`run_queue.tsv` under the existing temporary `base` directory; the Julia job
+copies it to `OUT/run_queue.tsv` for the retained output snapshot. Queue rows
+and all measurement semantics stay unchanged. A focused executable test checks
+the two paths differ and preserves the baseline/perturbation TSV serialization.
+
+Source and validation:
+
+- Source commit `8bf88756791213ac75b3c36ab6316323653d5c9a` is pushed to
+  `codex/kaggle-batch-migration`.
+- Focused FD tests: `32 passed`.
+- `.venv/bin/python -m compileall src tests scripts`, targeted `py_compile`, Julia
+  `Meta.parseall`, round-3 evidence JSON parsing, and `git diff --check`: pass.
+- Full pytest: `1,149 passed, 37 failed, 4 skipped` in `211.37 s`. The 37
+  failures trace to absent ignored historical `work/` inputs/artifacts in this
+  worktree; the FD tests passed. Captured log:
+  `work/sdf_directional_fd_round4_source_validation/full_pytest.log`, SHA-256
+  `54a56120fbbf9caf0ad84712a65e039027a27f101bda5dcaf186aef29130a805`.
+
+Immutable round-4 criteria are registered at
+[`evidence/sdf_directional_fd_v16_criteria_2026_09_round4.json`](evidence/sdf_directional_fd_v16_criteria_2026_09_round4.json):
+
+- Criteria file SHA-256 and sidecar content:
+  `ace4e53963ee7d37d7806f48ef1ef449380294c0a5216043e50558f1d31192fd`.
+- Sidecar file SHA-256:
+  `8e0ef570cba16e6964bc7d8763b41fe1fed8d2d69dcba841047e16f0b745494a`.
+- Canonical criteria SHA-256:
+  `949d998bb9e5b83ddbb2a24efc25b57754f4db29568e0a0f6e8b062647206db9`.
+- Bound source commit: `8bf88756791213ac75b3c36ab6316323653d5c9a`.
+- `--check --round 4`: passed.
+- Round-3 to round-4 measurement-contract equality: passed, including the 3
+  registered directions, 30 perturbations, 33-run order, response definitions,
+  exact `[80,120]` window, stationarity, force closure, baseline noise,
+  resolution, plateau, backend, and gates. Round 4's `supersedes` record binds
+  round-3 criteria, dataset-verification, `/2` submission, terminal diagnostic,
+  and detailed failure-analysis evidence by exact SHA.
+
+State separation:
+
+- **Implemented / pushed:** one-path run-queue fix, regression, round-4
+  registrar, and mutable draft metadata.
+- **Registered:** immutable round-4 criteria and sidecar are present.
+- **Dataset:** private dataset version 4 has not been staged, uploaded, or
+  remotely verified.
+- **Submitted / measured / verified:** no round-4 kernel has been submitted;
+  no solver step or host verification has run under round 4.
+- **Qualified:** FD oracle, gradient, reverse, optimizer, topology, and shape
+  update remain false.
+- **Open:** stage and upload a new dataset version, redownload and verify its
+  exact inventory, then submit and verify only the returned exact kernel
+  version. Do not edit the immutable criteria or reuse round 3's `/2`.
+
+## 2026-09-29: FD round-5 source-lifetime retry candidate
+
+Round 4's exact T4 kernel `/3` ended in `ERROR` after all 33 primal calls. The
+strict host verifier failed closed because there is no `DONE` marker. The
+registered W4 result was present at source commit
+`8bf88756791213ac75b3c36ab6316323653d5c9a`; the runner read it only after the
+`TemporaryDirectory` containing the source checkout had been removed. See the
+round-4 `/3` diagnostic in `phase_plan.md`. Preserve `/3` as failed evidence
+and run all 33 primals afresh under the fixed source if a successor execution
+is authorized.
+
+The source-lifetime repair retains the verified W4 result object in memory for
+the runner's final recomputation. Round-5 immutable criteria are locally
+registered at
+`docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round5.json`, SHA-256
+`2aad32922b2746d9ee7b170b590673779e60f032b238c29d1bc7ca6b2779ee17`, canonical
+criteria SHA-256
+`afb87dc75538c1970cc332711ae638f33fe417df68e018e61f70824e77b7a4ac`, source
+commit `a07bba2fd1dcf0d3d28b211eef58d91309a24a75`. It preserves round-4's
+3 directions, 30 perturbations, 33-run order, exact T4 backend, force window,
+stationarity, runtime limits, baseline-noise rule, resolution factor, plateau
+and every numeric gate. No prior criteria were edited.
+
+Candidate dataset directory:
+`work/kaggle_sdf_directional_fd_dataset_round5/`. Its manifest SHA-256 is
+`c2aa1360263d04bd8d61d9079b7d3e644fd35e2551d1715d91bf0199e09f003e`. All 35
+physical input files are byte-identical to the verified round-4 staged inputs;
+only the criteria, sidecar and manifest/source identity change. Local source,
+W3/W4 prerequisite, dataset inventory and host-input checks passed without
+GPU discovery. Candidate verification record:
+`docs/evidence/sdf_directional_fd_v16_dataset_round5_candidate_verification_2026_09.json`,
+SHA-256
+`079581ea1f9df6cca37b44223b1f0f1d79f9c961569daf70d29a56ef833235ae`.
+
+**Do not run the following upload or kernel commands until the user's choice
+about creating a new dataset version is explicit.** After approval, first
+reconfirm round-5 criteria and local candidate checks:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python \
+  scripts/register_kaggle_sdf_directional_fd_v16_2026_09.py --round 5 --check
+
+PYTHONPATH=src:scripts .venv/bin/python \
+  scripts/prepare_kaggle_sdf_directional_fd_v16_dataset_2026_09.py \
+  --criteria docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round5.json \
+  --state work/kaggle_sdf_directional_fd_dataset_round4/sdf_design_state.npz \
+  --output work/kaggle_sdf_directional_fd_dataset_round5
+```
+
+Only then create the next version of the existing private input dataset ID;
+preserve versions 1–4 and record the exact returned version:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets version -p work/kaggle_sdf_directional_fd_dataset_round5 \
+  -m "Append round-5 FD criteria; preserve all registered physical inputs" \
+  --dir-mode zip
+```
+
+Wait for the exact dataset version to become `ready`, download that exact
+version, and compare its complete mounted inventory, manifest, path, size and
+SHA-256 values to the local candidate. Require the same source commit and
+unchanged 35 physical input hashes before submitting a kernel. Then push only
+the registered private T4 kernel with the 14,400-second timeout:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels push -p infra/kaggle/kernel_sdf_directional_fd_v16 \
+  --accelerator NvidiaTeslaT4 --timeout 14400
+```
+
+Record the exact kernel version returned by Kaggle and use only that exact
+version for status, logs, output download and host verification. The new run
+must produce fresh outputs for the complete 33-run order. Never reuse `/3`
+outputs or submit a different backend. Stop after exact-version host
+verification; all broader gradient, optimizer, topology and shape-update
+claims remain false unless independently qualified.
+
+## 2026-09-29: FD round-5 dataset v5 verified; exact kernel `/4` failed
+
+This terminal update supersedes the candidate-only and pending-versioning
+instructions above. Dataset v5 was appended to the private input dataset;
+versions 1-4 were preserved. The exact version-qualified remote inventory and
+mounted host-input preflight passed, with 38 downloaded files matching the
+candidate by path, size and SHA-256. The verification record is
+[`sdf_directional_fd_v16_dataset_round5_verification_2026_09.json`](evidence/sdf_directional_fd_v16_dataset_round5_verification_2026_09.json),
+SHA-256 `fe6159799cd23a4b44d83b5b89b616159a9f128cb34c0a373b0d0f4e981af55e`.
+The exact criteria file SHA is
+`2aad32922b2746d9ee7b170b590673779e60f032b238c29d1bc7ca6b2779ee17`; source
+commit is `a07bba2fd1dcf0d3d28b211eef58d91309a24a75`. No numerical criterion
+changed from round 4.
+
+The registered private T4 kernel
+`ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel/4` was submitted
+with the registered 14,400-second timeout. Its submission evidence is
+[`sdf_directional_fd_v16_round5_kernel4_submission_2026_09.json`](evidence/sdf_directional_fd_v16_round5_kernel4_submission_2026_09.json),
+SHA-256 `99821a6dd43fbad74637a3c4db31ed45284f3f9215c57d8c592bff45dfcb03ce`.
+The exact version ended `KernelWorkerStatus.ERROR` after all 33 registered
+primal calls returned at or beyond `tU/L=120`. `FD_JOB_DONE` exists; the
+outer `DONE` marker does not. Aggregate solver wall time was
+`970.7994556427002 s` against `7200 s`.
+
+The runner gates were T0-T5 PASS, T6-T7 FAIL, T8-T9 PASS, T10-T11 FAIL, and
+runner T12 PASS. Strict host verification exited nonzero with
+`ValueError: FD Kaggle output has no DONE marker`; no host PASS or formal FD
+result exists. Preserve the strict diagnostic
+[`sdf_directional_fd_v16_round5_kernel4_diagnostic_2026_09.json`](evidence/sdf_directional_fd_v16_round5_kernel4_diagnostic_2026_09.json),
+SHA-256 `0b49997661d059a23e4a3cde4952d5cc2a8176468bf3726c42758ff7a65322f8`.
+
+The separate diagnostic-only raw CSV postmortem is
+[`sdf_directional_fd_v16_round5_kernel4_postmortem_2026_09.json`](evidence/sdf_directional_fd_v16_round5_kernel4_postmortem_2026_09.json),
+SHA-256 `e17ae5eb9aabd1f29d92638756197dcafe5fd3b44802f84e93605ef7d1e56dcb`.
+It confirms all 87 downloaded output files against the runner SHA manifest,
+all 33 CSV sampling and physics-identity checks, sampled force-component
+closure, and all 660 CSV-recomputed metrics against `outcome.json`. Per-run
+summaries omit six integrated pressure/viscous force fields that the pinned
+runner's `close_summary()` requires, explaining T6/T7. The strict host
+verifier's raw-summary contract has the same schema mismatch, and its later
+`evaluate()` path has a statically identified helper-name shadowing issue;
+neither was reached in the strict round-5 invocation.
+
+The CSV recomputation also confirms all five epsilon pairs were resolved for
+all three directions and both responses, but every selected three-epsilon
+plateau exceeded the unchanged 5% deviation limit. This is an independent
+measured T10/T11 failure, not explained by the summary mismatch. Preserve all
+rounds 1-5 unchanged. Any runner/verifier repair and retry must use a new
+immutable round with fresh 33-run outputs. FD, gradient, reverse, optimizer,
+topology, and shape-update qualification remain false; keep
+`shape_update_allowed=false`.
+
+## FD-08 v2 formal amend1: separate execution lineage (2026-10-07)
+
+The user-authorized [Formal Preregistration Lineage Amendment](issues/46_fd08_v2_formal_lineage_amendment_2026_10_07.md)
+repairs the registrar's set initialization and separates formal execution
+source/identities from immutable R6 provenance. It changes no scientific rule.
+The shared `infra/kaggle/kernel_fd08_v2_r6/runner.py` remains byte-identical.
+Formal uses a dedicated private kernel and dataset, both with slug
+`ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend1`. Do not version/update the R6
+dataset for this round.
+
+After passing tests and two reviews, merge with `--no-ff` and push integration.
+Use that clean pushed integration SHA for `--source-commit`; the registrar
+checks its tree against every source-input SHA and keeps the old R6 source in
+`calibration_binding`. The new criteria/round namespace is
+`docs/evidence/fd08_v2_formal_2026_10_07_amend1/`. Original failed preregistration
+artifacts remain under the old namespace.
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 python \
+  scripts/check_fd08_v2_kaggle_budget.py --phase formal \
+  --output work/formal_lineage_validation/registration_budget_preflight.json
+.venv/bin/python scripts/register_fd08_v2_formal.py \
+  --source-commit <clean-pushed-integration-SHA> \
+  --state work/sdf_native_genesis_v17/sdf_design_state.npz \
+  --budget-evidence work/formal_lineage_validation/registration_budget_preflight.json
+```
+
+Use `--dry-run` for identical in-memory construction without criteria/preflight
+or dataset writes. Actual registration requires clean local HEAD and remote
+integration to equal the supplied commit. The parent R6 dataset defaults to
+`work/r6_parent_v6`, downloaded with the versioned CLI reference
+`ramhachi888/cfd-opt-sdf-fd08-v2-r6/6` and fully hash-checked. The registrar
+requires the exact immutable R6 PASS tuple and independently reviewed amendment
+hash. No R6 analyzer or solver is invoked.
+
+For the first immutable formal payload, create the dedicated private dataset:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle datasets create \
+  -p work/kaggle_fd08_v2_formal_amend1_dataset
+```
+
+Before submit, verify remote readiness, exact file names/sizes, downloaded
+bytes/SHA, criteria SHA, and dataset version. Stage only byte-identical copies
+of the registered shared runner and formal metadata template:
+
+```bash
+mkdir -p work/kaggle_fd08_v2_formal_amend1_kernel
+cp infra/kaggle/kernel_fd08_v2_r6/runner.py \
+  work/kaggle_fd08_v2_formal_amend1_kernel/runner.py
+cp infra/kaggle/kernel_fd08_v2_formal_amend1/kernel-metadata.json \
+  work/kaggle_fd08_v2_formal_amend1_kernel/kernel-metadata.json
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p work/kaggle_fd08_v2_formal_amend1_kernel \
+  --accelerator NvidiaTeslaT4 --timeout 5600
+```
+
+Bind the returned version to status/log/output commands and evidence paths.
+The unchanged runner consumes the formal criteria's amended source commit,
+never the parent R6 execution commit. The dataset contains formal signed states
+and baseline only; R6 responses are not runtime recomputation targets.
+
+After exact 25/25 terminal completion, first run
+`scripts/verify_fd08_v2_formal.py` with explicit criteria, dataset, kernel-version,
+and evidence arguments. Only a complete verified terminal permits one execution
+of `scripts/analyze_fd08_v2_formal.py`, with the exact immutable R6 analysis
+path supplied. Preserve all raw outputs/manifests and SHA sidecars. Partial
+artifacts never produce a scientific verdict. Formal FAIL/UNRESOLVED is terminal;
+no scientific retry, tuning, refit, model switch, or alternative epsilon is allowed.
+
+## FD-08 v2 formal AMEND2: actual pre-solver execution gate (2026-10-07)
+
+AMEND1 stays immutable and unrun. Follow the
+[AMEND2 design](issues/46_fd08_v2_formal_amend2_runner_schema_2026_10_07.md)
+and use `scripts/register_fd08_v2_formal_amend2.py`. Dedicated formal private
+dataset/kernel: `ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2`; separate
+setup-only rehearsal dataset: `ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal`.
+The rehearsal kernel is `ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-pre-solver`.
+Use the pinned CLI and exact dataset/kernel versions. Keep formal publication
+separate from temporary rehearsal inputs. Preserve every attempt and SHA.
+
+Build a dry candidate with the prospective final criteria/preflight paths and
+fresh unchanged 3300/5600 budget evidence. Stage a rehearsal notebook with
+`scripts/prepare_fd08_v2_presolver_kernel.py`; it downloads and SHA-checks the
+exact registered runner, sets `FD08_V2_STOP_BEFORE_SOLVER=1`, and retains real
+upstream GPU/source/Julia/runtime verification. Feature candidate rehearsal
+may set `--source-ref refs/heads/exp/issue46-fd08v2-formal-amend2-runner-schema-2026-10-07`.
+Final-source and registered-byte rehearsals use integration. Require an actual
+25/25 `PASS_PRE_SOLVER_EXECUTION_PATH`, no measured solver process, no force
+history and no scientific verdict. Unit mocks are not this gate.
+
+After clean pushed integration and its exact-source rehearsal, register once:
+
+```bash
+.venv/bin/python scripts/register_fd08_v2_formal_amend2.py \
+  --source-commit <clean-pushed-integration-SHA> \
+  --budget-evidence <exact-candidate-budget-file> \
+  --rehearsal-evidence <actual-exact-candidate-pre-solver-report>
+```
+
+Repeat the actual runner on the registered bytes before publishing the formal
+dataset. A failure preserves criteria and stops: do not patch this instance.
+Only then create the dedicated formal dataset, verify remote version/files/SHA,
+stage byte-identical runner/AMEND2 metadata, and push with
+`--accelerator NvidiaTeslaT4 --timeout 5600`, without the stop flag.
+Use `datasets files --page-size 200` for the full 54-file inventory. If the
+versioned bulk archive endpoint returns 404 while individual files are ready,
+versioned CLI downloads for each file may verify the same immutable version;
+require all names, sizes and SHA, without replacing payload bytes.
+
+After complete 25/25 terminal, use explicit AMEND2 paths with the unchanged
+formal verifier and analyzer. Run the analyzer exactly once after integrity
+PASS. R6 is not rerun/reanalyzed; no formal refit/tuning/scientific retry.
+
+## FD-08 v2 formal AMEND3: kernel identity separation (2026-10-07)
+
+AMEND2 stays immutable, uploaded and unsubmitted (Kaggle HTTP 409: the kernel title
+slugified to its own dataset slug). Follow the
+[AMEND3 design](issues/46_fd08_v2_formal_amend3_kernel_identity_2026_10_07.md) and use
+`scripts/register_fd08_v2_formal_amend3.py`. Formal private dataset
+`ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3`; formal kernel
+`ramhachi888/cfd-opt-sdf-fd08-v2-formal-run-a3` (title "CFD Opt SDF FD08 V2 Formal Run A3").
+Rehearsal dataset `…-formal-amend3-rehearsal`, rehearsal kernel `…-formal-amend3-pre-solver`.
+Kernel and dataset share one Kaggle slug namespace: **a kernel title must never slugify to
+any dataset slug.** Before creating any new dataset, run
+`scripts/check_fd08_v2_kaggle_identity_free.py --slug <each intended slug> --output <new file>`.
+
+Order: budget preflight (`check_fd08_v2_kaggle_budget.py --phase formal`, < 24 h old) → identity-free
+check → exact-source rehearsal (`prepare_fd08_v2_presolver_kernel.py --kernel-id
+ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3-pre-solver --title "CFD Opt SDF FD08 V2 Formal Amend3 Pre Solver"
+--dataset-id ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3-rehearsal`; both flags are required) →
+register once with `--rehearsal-evidence` → registered-byte rehearsal → create the formal dataset and
+verify all 54 remote files → push the formal kernel once with
+`--accelerator NvidiaTeslaT4 --timeout 5600`, no stop flag. The registered formal kernel id itself
+cannot be rehearsed (the stop hook needs a notebook wrapper); the identity gates stand in for it.
+Any Kaggle error is recorded without retry, rename or patch; a new amendment needs a user decision.
+After complete 25/25 terminal use explicit AMEND3 paths with the unchanged verifier and analyzer;
+run the analyzer exactly once after integrity PASS. No R6 rerun, refit, tuning or scientific retry.

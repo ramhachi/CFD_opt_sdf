@@ -1,0 +1,98 @@
+{
+  "schema": "candidate-c-round8-geometry-prep-attempt-v1",
+  "record_status": "append-only geometry-only method attempt; not criteria registration and not CFD evidence",
+  "simulation_constructed": false,
+  "simulation_steps": 0,
+  "inputs": {
+    "sphere": {
+      "manifest_sha256": "c01ac8c3d3ffad2c9d7686a1b876035722982c87a0759ae561b9bc14c01ad4ea",
+      "phi_f32_sha256": "432c45e63734b399f9ba8b9abce7b71ac63dfe45ba4549757b1152c11d75f575",
+      "seed_ply_sha256": "0d436f2e5d4339591fa5d17ac7ead65c14b5f2f70c662166343245f9bbe0dfa0",
+      "vertices_sha256": "7fe6159c654a9e33b768fbefc25fc5f1fc4bef5fd7961ef294f93d4e6aa540a9",
+      "faces_sha256": "057c40c67bb3ba05c6ebb9e6c00d81735317f41486a2d2d87e3a00c72888ef45",
+      "seed_counts": {
+        "vertices": 435,
+        "faces": 866,
+        "watertight": true,
+        "winding_consistent": true,
+        "signed_volume_m3": -0.06387351461622631,
+        "winding": "inward; retained, not flipped"
+      },
+      "method_command": "julia --project=julia/CFDSDFWaterLily scripts/prepare_candidate_c_round8_surface_method.jl sphere work/issue44_round8_prep/sphere-input-v2 work/issue44_round8_prep/sphere-method-v4",
+      "method_outcome": "UNRESOLVED: fail-closed projected triangle 5 has exactly 0.0 m^2 area at level 0; no triangle or sample was dropped",
+      "tool_output_excerpt": "ERROR: LoadError: degenerate or non-finite projected triangle 5 (area=0.0 m^2)",
+      "raw_log_note": "The command output was observed in the tool response and is excerpted above; no complete raw shell log was captured."
+    },
+    "plate_1cell": {
+      "manifest_sha256": "75ac1ab1f87d405fc548a1a0ddf458e13cd193b464c8184f1be31b4a68bb7f2a",
+      "phi_f32_sha256": "067b7728c83d1676b2919efacc3a2b7fed8e90a8e9c05c99472df781a375e72e",
+      "fixed_mask_sha256": "85fc657a72bf5f4dbc74e40a16fbdc0d9c0853006886ef8cdc12b90ab4ad971a",
+      "body_quadrature_csv_sha256": {
+        "level_0": "b475ddfb2b9752e9cfbf5af433db6c18d65183bd2a74d1114693eb1d714145d4",
+        "level_1": "cf5bbe28b04bd7bcff6e4973151cc98a6cfefdd2020933f2544b545e14066564",
+        "level_2": "9decc3e9aa72f0bc7f4442fbffe602a0a7038ce13b0c676dd9e593199cb460fb"
+      },
+      "body_area_m2": [0.5161611916123293, 0.5188715155345858, 0.5198228276299958],
+      "solver_evidence": false
+    },
+    "plate_2cell": {
+      "manifest_sha256": "70984b77a32ec94389e4a33a1faf18248089d609b1e11fe96e721e067fcd9d5a",
+      "phi_f32_sha256": "bed5e090e5518eab0aa8c903668a849cd600212adc6a938655bc86375b2da256",
+      "fixed_mask_sha256": "fe1d8ba5b313caabfe70feb7ee6e36f54fd9450f4fce20b875e0321840f87a48",
+      "body_quadrature_csv_sha256": {
+        "level_0": "b4c58d1cd0bb50d120b8d1bec7045f96921a85f8cd06882b69bb43f935f9b49d",
+        "level_1": "b80a9902b1c6e3504bf06ae477c13d14e3ea155f43f975ca2e534219e3de96a6",
+        "level_2": "7158eaacf4481cd43cddb69c0f9b46b059937760efdf5428f4dd413377c56d09"
+      },
+      "body_area_m2": [0.5807803573199195, 0.6818349082856245, 0.6920044090445139],
+      "solver_evidence": false
+    },
+    "ground_patch": {
+      "bounds_solver": {
+        "x": [2, 97],
+        "y": [2, 45],
+        "z": 8
+      },
+      "quadrature_csv_sha256": {
+        "level_0": "19a624808c5fd5ba9c668e5adaf2fd5ed167d70be645960f02d607f13688c2ee",
+        "level_1": "be7fac4398d71657657d7951b5ff0d7c04bc48800789d3cf359832c84aa3e393",
+        "level_2": "0278e5bea01d8dd89c2a6f144af0a86e821e74b3447723698060ddf006838052"
+      },
+      "area_m2": [10.2125, 10.2125, 10.212499999999997],
+      "scope": "open tangential-moving ground patch; not whole-ground boundary or closed fluid control volume"
+    }
+  },
+  "sphere_local_field_inspection": {
+    "node_world_m": [0.0, 0.0, -0.45],
+    "center_phi_m": -1.1102229584507026e-17,
+    "six_axis_neighbor_phi_m": {
+      "x_minus": 0.004950975533574914,
+      "x_plus": 0.004950975533574863,
+      "y_minus": 0.004950975533574863,
+      "y_plus": 0.004950975533574863,
+      "z_minus": 0.05000000074505808,
+      "z_plus": -0.05000000074505802
+    },
+    "one_sided_gradient_norm_range": [1.0097572760888938, 1.0097572761040852],
+    "interpretation": "The one-sided gradients are nonzero; the evidence does not support an isolated-zero-set claim. The VTK seed contains degenerate apex triangles and exact trilinear projection collapses triangle 5. Geometry coverage remains unresolved."
+  },
+  "sources": {
+    "surface_quadrature_sha256": "4632816e7adeb1583bfd4e5a9575ab51c668a8fd7d18dc658289bf77bbafdddf",
+    "surface_quadrature_test_sha256": "51d13170a664b85eab923b40b75cd9198f2001d584bc093999965fe364cc924e",
+    "input_preparer_sha256": "c6596936dce5079a9569f7729dcb7bdda9a60373b8809b4414f2da831bbdda0a",
+    "method_preparer_sha256": "c7a2e6b3c6b25ca4391e6fbf3b1220fbe9287ceeca018337efc498e5395e6893"
+  },
+  "commands": {
+    "method_unit_test": "julia --project=julia/CFDSDFWaterLily julia/CFDSDFWaterLily/test/test_surface_flux_quadrature.jl",
+    "method_unit_test_result": "18 passed",
+    "simulation_or_solver_command": null
+  },
+  "qualification_flags": {
+    "shape_update_allowed": false,
+    "fd_oracle": false,
+    "field_gradient": false,
+    "reverse": false,
+    "optimizer": false,
+    "topology": false
+  }
+}

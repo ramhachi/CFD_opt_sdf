@@ -1,0 +1,42 @@
+Precompiling packages...
+   1395.9 ms  ✓ CUDA_Driver_jll
+  1 dependency successfully precompiled in 1 seconds. 6 already precompiled.
+   Installed LoggingExtras ──── v1.2.0
+   Installed EllipsisNotation ─ v1.12.0
+   Installed WaterLily ──────── v1.8.0
+Precompiling packages...
+   1245.4 ms  ✓ LoggingExtras
+   1607.1 ms  ✓ LMDB_jll
+   1709.1 ms  ✓ tree_sitter_spirv_jll
+   1605.8 ms  ✓ tree_sitter_llvm_jll
+   1641.8 ms  ✓ tree_sitter_gcn_jll
+   1842.4 ms  ✓ tree_sitter_ptx_jll
+   2277.1 ms  ✓ LMDB
+   5693.9 ms  ✓ CUDA_Driver_jll
+   6395.6 ms  ✓ EllipsisNotation
+   1606.2 ms  ✓ CompilerCaching
+   3883.4 ms  ✓ CUDA_Compiler_jll
+   3312.7 ms  ✓ CUDA_Runtime_jll
+   7776.1 ms  ✓ WaterLily
+  61062.4 ms  ✓ GPUCompiler
+  84970.1 ms  ✓ CUDACore
+   9298.4 ms  ✓ CUDACore → SpecialFunctionsExt
+  11157.6 ms  ✓ cuFFT
+  15148.0 ms  ✓ NVML
+  19172.8 ms  ✓ cuSPARSE
+  10632.2 ms  ✓ cuRAND
+  13529.2 ms  ✓ CUPTI
+  26374.3 ms  ✓ cuBLAS
+  10675.6 ms  ✓ cuSOLVER
+  21580.5 ms  ✓ CUDATools
+   7050.6 ms  ✓ CUDA
+   6994.6 ms  ✓ Atomix → AtomixCUDAExt
+   7408.9 ms  ✓ WaterLily → WaterLilyCUDAExt
+  27 dependencies successfully precompiled in 213 seconds. 102 already precompiled.
+  1 dependency had output during precompilation:
+┌ WaterLily
+│  ┌ Warning: Using WaterLily in serial (ie. JULIA_NUM_THREADS=1) is not recommended because it defaults to serial CPU execution.
+│  │ Use JULIA_NUM_THREADS=auto, or any number of threads greater than 1, to allow multi-threading in CPU backends.
+│  │ For a low-overhead single-threaded CPU only backend set: WaterLily.set_backend("SIMD")
+│  └ @ WaterLily ~/.julia/packages/WaterLily/yOkji/src/WaterLily.jl:206
+└  

@@ -1,0 +1,20 @@
+{
+  "adapter_path": "scripts/run_xfid45_round3_json_adapter.py",
+  "adapter_sha256": "404f7c4f8cc0da4653c8bfc62b451aed55dfd605e7ddd46f663468c23d0b6a89",
+  "change": "JSON default: np.integer -> exact Python int ONLY. All other unsupported types still error.",
+  "evidence_class": "execution_output_serialization_addendum_not_criteria_change",
+  "observed_prefix": "six r1 perturbations FAIL; stored in interrupted_attempt/partial_result.json. Re-run array hashes and gates must agree.",
+  "original_registration_commit": "4a7b8dad21c778029fb719e3df90328deb2b9abc",
+  "original_registration_sha256": "bef16d8b15344654a8bdd36f5181e8c085383f8970f2edc4006bdd7a2f175f26",
+  "preregistration_and_source_immutability": true,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "solver_qualification": false,
+    "topology": false
+  },
+  "reason": "NumPy int64 original node indices cannot be encoded by default JSON encoder; native baseline first diagnostic write stopped. All frozen scientific sources and criteria unchanged."
+}

@@ -1,0 +1,48 @@
+{
+  "all_T0_T10_passed": false,
+  "canonical_state_label": "v17",
+  "claim_scope": "No W4 PASS or qualification claim is established by this fail-closed diagnostic.",
+  "criteria_path": "docs/evidence/w4_v17_criteria.json",
+  "criteria_sha256": "5eceb62c17e347679cdadc88c68266e7fe00b392da40a8029ed3544a002e0f01",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-v17-w4-sensitivity",
+  "dataset_inventory_files": {
+    "canonical_v17_phi_f4_fortran.raw": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "sdf_design_state.npz": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "w4_v17_criteria.json": "5eceb62c17e347679cdadc88c68266e7fe00b392da40a8029ed3544a002e0f01",
+    "w4_v17_criteria.json.sha256": "4d586592207a75a8e1db185f713090e295e31979505e54b577384ce39f4cea54",
+    "w4_v17_dataset_manifest.json": "74835c6e5a0873c621d69fcd5e10afde7a54e5924f8fc5a30afdc3414af84782"
+  },
+  "dataset_inventory_sha256": "d3cbdfb385f443e5f8b413fc07675d79f319250b8e01bb617476041c651bc6fb",
+  "dataset_version": 1,
+  "downloaded_output_files": {},
+  "failure": {
+    "message": "'NoneType' object is not callable",
+    "traceback": "Traceback (most recent call last):\n  File \"/Users/sota/.codex/worktrees/issue-43-w4-v17-verify/CFD2026_09/scripts/verify_kaggle_w4_v16.py\", line 1193, in main\n    result = verify(args.download, criteria_path=args.criteria,\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/sota/.codex/worktrees/issue-43-w4-v17-verify/CFD2026_09/scripts/verify_kaggle_w4_v16.py\", line 892, in verify\n    remote_inventory_sha = remote_inventory_sha256(remote_inventory)\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: 'NoneType' object is not callable\n",
+    "type": "TypeError"
+  },
+  "fd05_execution_authorized": false,
+  "gates": {
+    "host_verification_completed": false,
+    "registered_T0_T10_independently_verified": false
+  },
+  "host_verification_passed": false,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w4-v17-sensitivity",
+  "kernel_version": 1,
+  "kind": "kaggle_w4_v17_host_verification_diagnostic",
+  "qualification_flags": {
+    "absolute_downforce_qualified": false,
+    "grid_or_domain_convergence_qualified": false,
+    "optimizer_qualified": false,
+    "physical_profile_qualified": false,
+    "reverse_mode_qualified": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "stationarity_qualified": false,
+    "topology_birth_qualified": false
+  },
+  "runner_reported_gates_diagnostic_only": null,
+  "source_commit": "4c20787c1ab55ea45f98631e6e78ba6d5502a1a2",
+  "terminal_log_sha256": "f68a2f79c37b8a345270e5629923874db1bfed09310393164e7599c448b1cb44",
+  "terminal_status": "KernelWorkerStatus.COMPLETE",
+  "verdict": "FAIL_CLOSED"
+}

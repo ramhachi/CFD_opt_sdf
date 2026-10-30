@@ -1,0 +1,3 @@
+# Preserve hash-authenticated console/traceback bytes; source whitespace rules stay enabled.
+kernel_output/grid01_a/instantiate.log whitespace=-blank-at-eol
+validation/postrun_full_pytest.* whitespace=-blank-at-eol

@@ -1,0 +1,1464 @@
+{
+  "absolute_geometry": [
+    {
+      "case": "D0_interface_offset_minus",
+      "double": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "r": 1
+    },
+    {
+      "case": "D0_interface_offset_plus",
+      "double": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "r": 1
+    },
+    {
+      "case": "D1_filtered_seed11_minus",
+      "double": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "r": 1
+    },
+    {
+      "case": "D1_filtered_seed11_plus",
+      "double": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "r": 1
+    },
+    {
+      "case": "D2_filtered_seed2026_minus",
+      "double": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "r": 1
+    },
+    {
+      "case": "D2_filtered_seed2026_plus",
+      "double": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "r": 1
+    },
+    {
+      "case": "baseline",
+      "double": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "r": 1
+    },
+    {
+      "case": "heldout_R3_eccentric_void",
+      "double": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "r": 1
+    },
+    {
+      "case": "heldout_R3_torus",
+      "double": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "r": 1
+    },
+    {
+      "case": "heldout_R3_two_ellipsoids",
+      "double": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "r": 1
+    },
+    {
+      "case": "D0_interface_offset_minus",
+      "double": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "r": 2
+    },
+    {
+      "case": "D0_interface_offset_plus",
+      "double": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "r": 2
+    },
+    {
+      "case": "D1_filtered_seed11_minus",
+      "double": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "r": 2
+    },
+    {
+      "case": "D1_filtered_seed11_plus",
+      "double": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "r": 2
+    },
+    {
+      "case": "D2_filtered_seed2026_minus",
+      "double": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "r": 2
+    },
+    {
+      "case": "D2_filtered_seed2026_plus",
+      "double": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "r": 2
+    },
+    {
+      "case": "baseline",
+      "double": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "FAIL",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "FAIL",
+        "round3_gate": false
+      },
+      "r": 2
+    },
+    {
+      "case": "heldout_R3_eccentric_void",
+      "double": {
+        "cert01_classification": "PASS",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "PASS",
+        "round3_gate": true
+      },
+      "float32": {
+        "cert01_classification": "PASS",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "PASS",
+        "round3_gate": true
+      },
+      "r": 2
+    },
+    {
+      "case": "heldout_R3_torus",
+      "double": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "r": 2
+    },
+    {
+      "case": "heldout_R3_two_ellipsoids",
+      "double": {
+        "cert01_classification": "PASS",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "PASS",
+        "round3_gate": true
+      },
+      "float32": {
+        "cert01_classification": "PASS",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "PASS",
+        "round3_gate": true
+      },
+      "r": 2
+    },
+    {
+      "case": "D0_interface_offset_minus",
+      "double": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "r": 4
+    },
+    {
+      "case": "D0_interface_offset_plus",
+      "double": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "r": 4
+    },
+    {
+      "case": "D1_filtered_seed11_minus",
+      "double": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "r": 4
+    },
+    {
+      "case": "D1_filtered_seed11_plus",
+      "double": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "r": 4
+    },
+    {
+      "case": "D2_filtered_seed2026_minus",
+      "double": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "r": 4
+    },
+    {
+      "case": "D2_filtered_seed2026_plus",
+      "double": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "r": 4
+    },
+    {
+      "case": "baseline",
+      "double": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "r": 4
+    },
+    {
+      "case": "heldout_R3_eccentric_void",
+      "double": {
+        "cert01_classification": "PASS",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "PASS",
+        "round3_gate": true
+      },
+      "float32": {
+        "cert01_classification": "PASS",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "PASS",
+        "round3_gate": true
+      },
+      "r": 4
+    },
+    {
+      "case": "heldout_R3_torus",
+      "double": {
+        "cert01_classification": "PASS",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "PASS",
+        "round3_gate": true
+      },
+      "float32": {
+        "cert01_classification": "PASS",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "PASS",
+        "round3_gate": true
+      },
+      "r": 4
+    },
+    {
+      "case": "heldout_R3_two_ellipsoids",
+      "double": {
+        "cert01_classification": "PASS",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "PASS",
+        "round3_gate": true
+      },
+      "float32": {
+        "cert01_classification": "PASS",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "PASS",
+        "round3_gate": true
+      },
+      "r": 4
+    },
+    {
+      "case": "D0_interface_offset_minus",
+      "double": {
+        "cert01_classification": "PASS",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "PASS",
+        "round3_gate": true
+      },
+      "float32": {
+        "cert01_classification": "PASS",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "PASS",
+        "round3_gate": true
+      },
+      "r": 8
+    },
+    {
+      "case": "D0_interface_offset_plus",
+      "double": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "r": 8
+    },
+    {
+      "case": "D1_filtered_seed11_minus",
+      "double": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "r": 8
+    },
+    {
+      "case": "D1_filtered_seed11_plus",
+      "double": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "r": 8
+    },
+    {
+      "case": "D2_filtered_seed2026_minus",
+      "double": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "r": 8
+    },
+    {
+      "case": "D2_filtered_seed2026_plus",
+      "double": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "r": 8
+    },
+    {
+      "case": "baseline",
+      "double": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "float32": {
+        "cert01_classification": "UNRESOLVED",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "UNRESOLVED",
+        "round3_gate": false
+      },
+      "r": 8
+    },
+    {
+      "case": "heldout_R3_eccentric_void",
+      "double": {
+        "cert01_classification": "PASS",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "PASS",
+        "round3_gate": true
+      },
+      "float32": {
+        "cert01_classification": "PASS",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "PASS",
+        "round3_gate": true
+      },
+      "r": 8
+    },
+    {
+      "case": "heldout_R3_torus",
+      "double": {
+        "cert01_classification": "PASS",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "PASS",
+        "round3_gate": true
+      },
+      "float32": {
+        "cert01_classification": "PASS",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "PASS",
+        "round3_gate": true
+      },
+      "r": 8
+    },
+    {
+      "case": "heldout_R3_two_ellipsoids",
+      "double": {
+        "cert01_classification": "PASS",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "PASS",
+        "round3_gate": true
+      },
+      "float32": {
+        "cert01_classification": "PASS",
+        "round3_bounds_exactly_reproduced": true,
+        "round3_classification": "PASS",
+        "round3_gate": true
+      },
+      "r": 8
+    }
+  ],
+  "evidence_class": "immutable_round3_vs_xfid45_cert01_comparison",
+  "normal_correspondence": [
+    {
+      "case": "D0_interface_offset_minus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.07083331553004549,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 140
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.07083331552998473,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 363,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.0708333143641339,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 136
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.0708333143704094,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 343,
+          "within_limit": false
+        }
+      },
+      "r": 1
+    },
+    {
+      "case": "D0_interface_offset_plus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.01863393513876152,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 161
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.028737360478447584,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 545,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.018633942135918544,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 157
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.049999989677681295,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 512,
+          "within_limit": false
+        }
+      },
+      "r": 1
+    },
+    {
+      "case": "D1_filtered_seed11_minus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.02372903897583204,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 148
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05001972075243564,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 394,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.023729042314375306,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 144
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05129971923104527,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 368,
+          "within_limit": false
+        }
+      },
+      "r": 1
+    },
+    {
+      "case": "D1_filtered_seed11_plus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.053580898410574326,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 145
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.053580898400751774,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 422,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.053580901576858846,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 141
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.053580901571129026,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 394,
+          "within_limit": false
+        }
+      },
+      "r": 1
+    },
+    {
+      "case": "D2_filtered_seed2026_minus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.026137579882849652,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 142
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.06430103164424489,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 401,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.026137579384815788,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 138
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05002705695325019,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 386,
+          "within_limit": false
+        }
+      },
+      "r": 1
+    },
+    {
+      "case": "D2_filtered_seed2026_plus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.05116517694751658,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 151
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05116517694469714,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 413,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.05116518080674512,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 147
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.051541753892791635,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 397,
+          "within_limit": false
+        }
+      },
+      "r": 1
+    },
+    {
+      "case": "D0_interface_offset_minus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.024448393618902206,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 134
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05694444341626225,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 420,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.009552844991706853,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 131
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05694444094602868,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 441,
+          "within_limit": false
+        }
+      },
+      "r": 2
+    },
+    {
+      "case": "D0_interface_offset_plus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.024819148996369635,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 190
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.0499999940678688,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 583,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.005926932185357816,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 180
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05166666181178893,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 559,
+          "within_limit": false
+        }
+      },
+      "r": 2
+    },
+    {
+      "case": "D1_filtered_seed11_minus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.02517590516693063,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 136
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05101880498941647,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 465,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.012863494198563929,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 133
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.053092065504004735,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 464,
+          "within_limit": false
+        }
+      },
+      "r": 2
+    },
+    {
+      "case": "D1_filtered_seed11_plus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.024589651412325362,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 136
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.053956806618495536,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 482,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.00896045035104088,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 133
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05395681460221793,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 456,
+          "within_limit": false
+        }
+      },
+      "r": 2
+    },
+    {
+      "case": "D2_filtered_seed2026_minus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.02457284422047499,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 135
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.049999994635393494,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 479,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.013530026440127805,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 132
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05401605941411719,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 465,
+          "within_limit": false
+        }
+      },
+      "r": 2
+    },
+    {
+      "case": "D2_filtered_seed2026_plus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.02519950226396805,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 136
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.050844294001882354,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 474,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.009327776754964366,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 133
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.052983696151754675,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 469,
+          "within_limit": false
+        }
+      },
+      "r": 2
+    },
+    {
+      "case": "D0_interface_offset_minus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.0023714648455849807,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 109
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.054166658165599145,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 427,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.0023714706029701223,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 107
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.06250004067595251,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 426,
+          "within_limit": false
+        }
+      },
+      "r": 4
+    },
+    {
+      "case": "D0_interface_offset_plus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.002647479750770069,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 155
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.04999999328854987,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 611,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.0026474761999400343,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 147
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05041661241056712,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 581,
+          "within_limit": false
+        }
+      },
+      "r": 4
+    },
+    {
+      "case": "D1_filtered_seed11_minus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.00841917445823182,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 102
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.050991334355125206,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 466,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.008418893332784507,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 100
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05099133629184457,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 450,
+          "within_limit": false
+        }
+      },
+      "r": 4
+    },
+    {
+      "case": "D1_filtered_seed11_plus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.005598720215867553,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 101
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05633794415894804,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 508,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.00559861405746436,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 99
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05179112545492343,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 490,
+          "within_limit": false
+        }
+      },
+      "r": 4
+    },
+    {
+      "case": "D2_filtered_seed2026_minus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.002770112182099639,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 103
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.049374898802012644,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 489,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.002770106147014931,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 101
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.050046450633005696,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 466,
+          "within_limit": false
+        }
+      },
+      "r": 4
+    },
+    {
+      "case": "D2_filtered_seed2026_plus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.002737896599846271,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 105
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.052065531997781564,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 496,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.0027378859960524573,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 102
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.052065530010959385,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 475,
+          "within_limit": false
+        }
+      },
+      "r": 4
+    },
+    {
+      "case": "D0_interface_offset_minus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.0013259047327818193,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 127
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.06445307146136145,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 425,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.0013259053184668445,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 128
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.06445306955298037,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 426,
+          "within_limit": false
+        }
+      },
+      "r": 8
+    },
+    {
+      "case": "D0_interface_offset_plus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.0015623805227341669,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 151
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.035546819091439044,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 579,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.0015623623930373035,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 149
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05016735431230582,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 551,
+          "within_limit": false
+        }
+      },
+      "r": 8
+    },
+    {
+      "case": "D1_filtered_seed11_minus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.00126664244588804,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 113
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.04818367926364739,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 450,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.0012666447393292432,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 113
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.0543389531195797,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 451,
+          "within_limit": false
+        }
+      },
+      "r": 8
+    },
+    {
+      "case": "D1_filtered_seed11_plus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.002362208206811293,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 116
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05019157313361432,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 504,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.0023620107061223094,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 117
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05426156961078649,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 469,
+          "within_limit": false
+        }
+      },
+      "r": 8
+    },
+    {
+      "case": "D2_filtered_seed2026_minus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.001287772117819822,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 113
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.0500012424979801,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 480,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.0012877750342838654,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 114
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05399437441231886,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 461,
+          "within_limit": false
+        }
+      },
+      "r": 8
+    },
+    {
+      "case": "D2_filtered_seed2026_plus",
+      "double": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.0011946316820540025,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 112
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05030144603243755,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 477,
+          "within_limit": false
+        }
+      },
+      "float32": {
+        "cert01": {
+          "maximum_normal_displacement_difference_m": 0.001194614068548051,
+          "qualification": "NOT_QUALIFIED_SURFACE_PREREQUISITE",
+          "tolerance_m": 0.0005,
+          "unresolved_samples": 113
+        },
+        "round3_parent": {
+          "maximum_normal_displacement_difference_m": 0.05030142942834486,
+          "pair_reason": "surface prerequisites failed; correspondence diagnostic only",
+          "pair_status": "N/A",
+          "unresolved_samples": 468,
+          "within_limit": false
+        }
+      },
+      "r": 8
+    }
+  ],
+  "round3_result_sha256": "22475cc71fc6bebb8a4159bd8596e8d40db8ee96f2f96792b5707279aebb05e1"
+}

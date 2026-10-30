@@ -1,0 +1,94 @@
+{
+  "compileall": {
+    "command": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m compileall -q src tests scripts/diagnose_fd08_r5_posthoc_p2a.py",
+    "passed": true
+  },
+  "diagnostic_note_sha256": "1e6839d4f85df2d90447ee8830290a1f63767767bbfa95fe26f4064918c66dd9",
+  "diagnostic_result_sha256": "df003b46056c00e609f93550438e088f7a9955147acea81be2cd54e389a743bc",
+  "diagnostic_script_sha256": "a36be71bea2b4ef9f62938f88a885d7ae693e92eae0c1ec9f9b58a7b378d3ac2",
+  "feature_branch": "exp/issue46-p2a-diagnostic",
+  "fixture_correction": {
+    "isolated_recheck": "2 passed",
+    "method": "symlink to byte-identical existing integration-worktree artifact; ignored fixture only",
+    "path": "work/sdf_native_genesis_v17/sdf_design_state.npz",
+    "sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31"
+  },
+  "focused_test_source_sha256": "d6103aa493ae092056ed8289fac1228138daf7551fbd8155167ba014e301e6f9",
+  "focused_tests": {
+    "command": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q tests/test_fd08_calibration.py tests/test_fd08_contract.py tests/test_fd08_p2a_diagnostic.py",
+    "passed": 46
+  },
+  "full_pytest": {
+    "pinned_baseline_failure_ids_path": "docs/evidence/four_track_baseline_2026_10_02/failure_ids.json",
+    "pinned_baseline_failure_ids_sha256": "71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a",
+    "post_change": {
+      "command": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q --junitxml=/tmp/fd08_p2a_postchange_with_canonical_state_20261005.xml",
+      "failed": 37,
+      "failure_id_set_matches_baseline": true,
+      "failure_id_set_matches_pinned": true,
+      "failure_ids_file": "postchange_failure_ids.json",
+      "failure_ids_sha256": "71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a",
+      "junit_artifact_bytes": 42065,
+      "junit_artifact_format": "gzip-compressed exact JUnit XML bytes",
+      "junit_artifact_sha256": "23a8c44ec3a9733b62d5a0a26032b3a4cf4ed478cdd3ee43a4374efff4ea40df",
+      "junit_file": "postchange_junit.xml.gz",
+      "junit_xml_uncompressed_bytes": 309763,
+      "junit_xml_uncompressed_sha256": "f2c36276357fb5ce4878f1af4d4ee8596bc0fe38bf40b3997399b7992b537eca",
+      "new_failure_ids": 0,
+      "passed": 1445,
+      "resolved_failure_ids": 0,
+      "skipped": 9,
+      "tests": 1491
+    },
+    "pre_change": {
+      "command": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q --junitxml=/tmp/fd08_p2a_baseline_20261005.xml",
+      "failed": 37,
+      "failure_ids_match_pinned": true,
+      "junit_artifact_bytes": 41947,
+      "junit_artifact_format": "gzip-compressed exact JUnit XML bytes",
+      "junit_artifact_sha256": "509b2a9598141f1093650b500db0dfc67ba2ac99776273a9f499d7a9c1cab9aa",
+      "junit_file": "baseline_junit.xml.gz",
+      "junit_xml_uncompressed_bytes": 310694,
+      "junit_xml_uncompressed_sha256": "25dfb23321c16a390223b927e56077ea627bb0a75a34dd762f057defb5015f7c",
+      "passed": 1439,
+      "skipped": 9,
+      "tests": 1485
+    }
+  },
+  "git_diff_check": {
+    "command": "git diff --check",
+    "passed": true
+  },
+  "historical_state": {
+    "formal_phase_allowed": false,
+    "fresh33_registered_or_run": false,
+    "qualification_flags_all_false": true,
+    "r5_verdict": "FAIL",
+    "r6_registered": false
+  },
+  "independent_verification_record_path": "docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/post_hoc_p2a/independent_verification/verification_record.json",
+  "independent_verification_record_sha256": "7d744170f5df687472ee784daafa7b017be471be0003afdf062f83a78a8cad4a",
+  "initial_full_pytest_without_feature_worktree_fixture": {
+    "additional_failure_ids": [
+      "tests/test_fd08_calibration.py::test_calibration_retry_registration_uses_append_only_round_paths",
+      "tests/test_kaggle_sdf_directional_fd_v16.py::test_v17_flow24_prerequisites_use_registered_w3_w4_backend_identity"
+    ],
+    "additional_failure_ids_file": "initial_additional_failure_ids.json",
+    "additional_failure_ids_sha256": "3485f59a9706e31dc23d27c8d94c3bdc18fe22da49941d07ffc95cafae5677ae",
+    "cause": "The feature worktree lacked the ignored canonical state NPZ fixture. Both extra failures were FileNotFoundError for work/sdf_native_genesis_v17/sdf_design_state.npz.",
+    "command": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q --junitxml=/tmp/fd08_p2a_postchange_20261005.xml",
+    "failed": 39,
+    "junit_artifact_bytes": 45837,
+    "junit_artifact_format": "gzip-compressed exact JUnit XML bytes",
+    "junit_artifact_sha256": "da60fa5200c6d72e127ce1547d7421fd477330d2d156ec289459695ab8fc7828",
+    "junit_file": "initial_missing_fixture_junit.xml.gz",
+    "junit_xml_uncompressed_bytes": 321699,
+    "junit_xml_uncompressed_sha256": "f3e8800ec20f8d2e0847a86c9b2811f4831b351e41174947ccad5b2016f2d7c5",
+    "passed": 1443,
+    "skipped": 9,
+    "tests": 1491
+  },
+  "schema": "fd08_p2a_validation_record_v1",
+  "scope": "P2a descriptive solver-free diagnostics only; stop at the user decision point B.",
+  "source_commit": "8e736c1f01a617fe5a29eb7945ea1f1042bf45d1"
+}

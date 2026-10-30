@@ -1,0 +1,75 @@
+[{"stream_name":"stdout","time":6.875604692,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 40.0/40.0 MB 47.0 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":12.942073514,"data":"Reading package lists...\n"}
+,{"stream_name":"stdout","time":13.382484026,"data":"Building dependency tree...\n"}
+,{"stream_name":"stdout","time":13.385200813,"data":"Reading state information...\n"}
+,{"stream_name":"stdout","time":13.958853268,"data":"libgl1 is already the newest version (1.7.0-1build1).\n"}
+,{"stream_name":"stdout","time":13.958906509,"data":"libxft2 is already the newest version (2.3.6-1build1).\n"}
+,{"stream_name":"stdout","time":13.958912718,"data":"libxft2 set to manually installed.\n"}
+,{"stream_name":"stdout","time":13.958916612,"data":"libxinerama1 is already the newest version (2:1.1.4-3build1).\n"}
+,{"stream_name":"stdout","time":13.958920178,"data":"libxinerama1 set to manually installed.\n"}
+,{"stream_name":"stdout","time":13.958923858,"data":"libxcursor1 is already the newest version (1:1.2.1-1build1).\n"}
+,{"stream_name":"stdout","time":13.958927386,"data":"libxcursor1 set to manually installed.\n"}
+,{"stream_name":"stdout","time":13.958930774,"data":"libxrender1 is already the newest version (1:0.9.10-1.1build1).\n"}
+,{"stream_name":"stdout","time":13.958934257,"data":"libxfixes3 is already the newest version (1:6.0.0-2build1).\n"}
+,{"stream_name":"stdout","time":13.958937722,"data":"libxfixes3 set to manually installed.\n"}
+,{"stream_name":"stdout","time":13.958941098,"data":"The following NEW packages will be installed:\n"}
+,{"stream_name":"stdout","time":13.961690814,"data":"  libglu1-mesa\n"}
+,{"stream_name":"stdout","time":14.238405598,"data":"0 upgraded, 1 newly installed, 0 to remove and 42 not upgraded.\n"}
+,{"stream_name":"stdout","time":14.238430164,"data":"Need to get 152 kB of archives.\n"}
+,{"stream_name":"stdout","time":14.238433889,"data":"After this operation, 379 kB of additional disk space will be used.\n"}
+,{"stream_name":"stdout","time":14.238436786,"data":"Get:1 http://archive.ubuntu.com/ubuntu noble/main amd64 libglu1-mesa amd64 9.0.2-1.1build1 [152 kB]\n"}
+,{"stream_name":"stdout","time":16.826324494,"data":"Fetched 152 kB in 1s (232 kB/s)\n"}
+,{"stream_name":"stdout","time":16.933326069,"data":"Selecting previously unselected package libglu1-mesa:amd64.\r\n"}
+,{"stream_name":"stdout","time":17.909053392,"data":"(Reading database ... \r(Reading database ... 5%\r(Reading database ... 10%\r(Reading database ... 15%\r(Reading database ... 20%\r(Reading database ... 25%\r(Reading database ... 30%\r(Reading database ... 35%\r(Reading database ... 40%\r(Reading database ... 45%\r(Reading database ... 50%\r(Reading database ... 55%\r(Reading database ... 60%\r(Reading database ... 65%\r(Reading database ... 70%\r(Reading database ... 75%\r(Reading database ... 80%\r(Reading database ... 85%\r(Reading database ... 90%\r(Reading database ... 95%\r(Reading database ... 100%\r(Reading database ... 125659 files and directories currently installed.)\r\n"}
+,{"stream_name":"stdout","time":17.914296707,"data":"Preparing to unpack .../libglu1-mesa_9.0.2-1.1build1_amd64.deb ...\r\n"}
+,{"stream_name":"stdout","time":17.951491843,"data":"Unpacking libglu1-mesa:amd64 (9.0.2-1.1build1) ...\r\n"}
+,{"stream_name":"stdout","time":18.115726337,"data":"Setting up libglu1-mesa:amd64 (9.0.2-1.1build1) ...\r\n"}
+,{"stream_name":"stdout","time":18.158110664,"data":"Processing triggers for libc-bin (2.39-0ubuntu8.9) ...\r\n"}
+,{"stream_name":"stdout","time":18.463352583,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbbbind_2_5.so.3 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.463378665,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.463397634,"data":"/sbin/ldconfig.real: /usr/local/lib/libur_adapter_level_zero.so.0 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.463403069,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.463422592,"data":"/sbin/ldconfig.real: /usr/local/lib/libtcm.so.1 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.463428673,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.463433022,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbbbind.so.3 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.463437357,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.463591009,"data":"/sbin/ldconfig.real: /usr/local/lib/libur_adapter_level_zero_v2.so.0 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.463601495,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.463606857,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbbbind_2_0.so.3 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.463612414,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.463617156,"data":"/sbin/ldconfig.real: /usr/local/lib/libur_loader.so.0 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.46362208,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.463641556,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbb.so.12 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.463646531,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.463752909,"data":"/sbin/ldconfig.real: /usr/local/lib/libumf.so.1 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.463761195,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.463765229,"data":"/sbin/ldconfig.real: /usr/local/lib/libtcm_debug.so.1 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.463769292,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.463773192,"data":"/sbin/ldconfig.real: /usr/local/lib/libur_adapter_opencl.so.0 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.463777188999998,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.463782826,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbbmalloc_proxy.so.2 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.463811068,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.463894413,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbbmalloc.so.2 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.463906725,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.463910936,"data":"/sbin/ldconfig.real: /usr/local/lib/libhwloc.so.15 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.463914945,"data":"\r\n"}
+,{"stream_name":"stderr","time":22.481544001,"data":"FAIL_CLOSED: RuntimeError: no registered OpenCFD v2512 lock for Ubuntu 'noble'; registered: jammy\n"}
+,{"stream_name":"stderr","time":22.482279137,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":22.48309043,"data":"  File \"/kaggle/src/script.py\", line 347, in \u003cmodule\u003e\n"}
+,{"stream_name":"stderr","time":22.483105955,"data":"    main()\n"}
+,{"stream_name":"stderr","time":22.483116826,"data":"    ~~~~^^\n"}
+,{"stream_name":"stderr","time":22.483119703,"data":"  File \"/kaggle/src/script.py\", line 307, in main\n"}
+,{"stream_name":"stderr","time":22.483122612,"data":"    install = install_openfoam(OUTPUT / \"work\", lock)\n"}
+,{"stream_name":"stderr","time":22.483126029,"data":"  File \"/kaggle/src/script.py\", line 156, in install_openfoam\n"}
+,{"stream_name":"stderr","time":22.483129036,"data":"    require(codename == lock[\"suite\"], f\"no registered OpenCFD v2512 lock for Ubuntu {codename!r}; registered: {lock['suite']}\")\n"}
+,{"stream_name":"stderr","time":22.483141184,"data":"    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":22.483144149,"data":"  File \"/kaggle/src/script.py\", line 55, in require\n"}
+,{"stream_name":"stderr","time":22.483147966,"data":"    raise RuntimeError(message)\n"}
+,{"stream_name":"stderr","time":22.483167102,"data":"RuntimeError: no registered OpenCFD v2512 lock for Ubuntu 'noble'; registered: jammy\n"}
+,{"stream_name":"stderr","time":25.19682871,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":25.196870313,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":25.572412895,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":25.572440814,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":26.700597912,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":28.066857192,"data":"[NbConvertApp] Writing 382954 bytes to __results__.html\n"}
+]

@@ -1,0 +1,46 @@
+{
+  "criteria": {
+    "path": "docs/evidence/kaggle_w2b_criteria_2026_09_round1.json",
+    "sha256": "eab8213461d95a714910a2055a957d3614f1e257dcc79197f6068cd35a04b1bd"
+  },
+  "decision": "Retain Kaggle version 7 as an infrastructure diagnostic. The solver did not start. Round 1 contains an invalid source commit SHA; preserve it unchanged and register round 2 with the correct job commit before retrying. All numerical criteria remain unchanged.",
+  "evidence_class": "source_fetch_infrastructure_failure",
+  "generated_on": "2026-09-27",
+  "immutable": true,
+  "kernel": {
+    "id": "ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder",
+    "version": 7
+  },
+  "observed": {
+    "error": "fatal: remote error: upload-pack: not our ref 5482310d9778229fe692cdc6799c2e1c31cc9982",
+    "failure_stage": "T0 source fetch",
+    "git_fetch_exit_code": 128,
+    "solver_started": false,
+    "status": "KernelWorkerStatus.ERROR",
+    "attempted_source_commit": "5482310d9778229fe692cdc6799c2e1c31cc9982",
+    "correct_job_commit": "548231050fc6ca22bc1c0394272564f81571dbbc"
+  },
+  "retrieval": {
+    "artifact_sha256": {
+      "ERROR.txt": "124f1260e9d16b513339be4251a3f22d94bfb08a5dbf36c690c87e1adbd6ef6f",
+      "git_fetch.log": "b336f251be03fb7b6dc47df4504667b5ec4bf6661f59c1dd72b7dd590d658125",
+      "git_init.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nvidia_smi.csv": "6aa9e5314c90e97c67939925ed57f639a4800015508aaf31f390e21d8680a0fb"
+    },
+    "download": "work/kaggle_w2b_version7/w2b",
+    "kernel_log_sha256": "04c766e3d1ffd5466d7bbb4c2495977d7fd9b1f10f74ec8e56b95681a0591637",
+    "manifest_sha256": "2ee8383fd3e427bf2718a4da1d839e650aaa21436c9af04fd04fdd1f2d727dbc",
+    "verified_files": 4
+  },
+  "scope_exclusions": [
+    "no W2b solver case started",
+    "no force, Cd, grid-response, or target-physics result",
+    "no acceptance threshold was changed"
+  ],
+  "source": {
+    "repository": "https://github.com/ramhachi/CFD_opt_sdf.git",
+    "fetch_method": "fetch an advertised branch ref shallowly, then detach at the exact registered commit",
+    "round1_registered_commit": "5482310d9778229fe692cdc6799c2e1c31cc9982",
+    "correct_job_commit": "548231050fc6ca22bc1c0394272564f81571dbbc"
+  }
+}
