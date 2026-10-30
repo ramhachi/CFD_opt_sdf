@@ -13,7 +13,14 @@ Admissibility of a new geometry = Bernoulli(p_adm) (P0 measured fraction), indep
 Procedures: `rev0` = the revision-0 registration (box [-1,1]^3, hull-restricted pool proposals, lower-bound rule, 10 axial incl. twist/sweep);
 `rev1` = this registration (extended camber box, gated refinement `propose()`, point rule, fixed subset).  Variants in `main`.
 
-    python scripts/screen01/screen01_oc.py --reps 2000 --out docs/evidence/screen01_2026_10_30/oc.json   # the recorded run (about 4 min)
+Simplifications against the registered procedure (source review 2026-10-31, Q2-Q4; each tested, none changes a conclusion): `propose` runs on a 41^3 grid
+(registered 81^3; 0.907 vs 0.897 at 400 replicates), the freeze-1 name exclusion is empty and the cloud seed is drawn per replicate, the design pool is
+re-drawn per replicate (the `frozen_design` variant uses the registered 9 design points instead), the drag misfit terms have SD 0.5 s_mis, revision 0 is
+simulated with m_D = 1.5e-3 N (it registered 1.0e-3 N: 0.035 vs 0.033), p_adm = 0.54 is the pooled P0 admissible fraction (60 of 112 Sobol points),
+`P.BOX` is rewritten per replicate (a module global: run this script in its own process).  The `camber_saturated` variants hold every camber term at its
+u = -1 (or -1.25) value for more negative u: the response does not continue to rise in the extension (FID has no fidelity evidence there).
+
+    python scripts/screen01/screen01_oc.py --reps 2000 --out docs/evidence/screen01_2026_10_30/oc.json   # the recorded run (about 10 min, 16 variants)
 """
 from __future__ import annotations
 
@@ -70,9 +77,10 @@ SURR = fit_surrogate()
 
 
 class Truth:
-    """A perturbed surrogate: coefficients x (1 + rel N(0,1)) + random cubic (camber, reflex) and interaction terms; scale multiplies the downforce response."""
-    def __init__(self, rng, s_mis, rel=0.10, scale=1.0, null=False):
-        self.c = {}
+    """A perturbed surrogate: coefficients x (1 + rel N(0,1)) + random cubic (camber, reflex) and interaction terms; scale multiplies the downforce response;
+    sat (a camber u) clamps the camber coordinate at sat from below in every term (the response saturates beyond the last evidenced amplitude)."""
+    def __init__(self, rng, s_mis, rel=0.10, scale=1.0, null=False, sat=None):
+        self.c, self.sat = {}, sat
         for k in ("y", "z"):
             c = {m: np.array(SURR[k][m]) * (1 + rel * rng.standard_normal(len(SURR[k][m]))) for m in P.SUBSET}
             for m in ("camber", "reflex"):
@@ -84,7 +92,9 @@ class Truth:
         self.scale_y = 0.0 if null else scale
 
     def parts(self, U, k):
-        U = np.atleast_2d(U)
+        U = np.array(np.atleast_2d(U), float)
+        if self.sat is not None:
+            U[:, 1] = np.maximum(U[:, 1], self.sat)
         c = self.c[k]
         per = np.stack([np.polyval(np.r_[c[m][::-1], 0.0], U[:, i]) for i, m in enumerate(P.SUBSET)], 1)
         inter = c["c_pc"] * U[:, 0] * U[:, 1] + c["c_pr"] * U[:, 0] * U[:, 2] + c["c_cr"] * U[:, 1] * U[:, 2]
@@ -129,10 +139,10 @@ def hull_inside(points, Q):
         return np.zeros(len(Q), bool)
 
 
-def replicate(rng, rev, truth, p_adm, m_d, targets, noise, n_prop=4, box=None):
+def replicate(rng, rev, truth, p_adm, m_d, targets, noise, n_prop=4, box=None, design_u=None):
     P.BOX = dict(box)
     grid = P.grid_u(41)
-    # pool (frozen before any force): Sobol in the box, Bernoulli admissibility; design = 6 axial + 9 D-optimal
+    # pool (frozen before any force): Sobol in the box, Bernoulli admissibility; design = 6 axial + 9 D-optimal (or the registered 9 points, design_u)
     n_pool = 64
     Upool = P.sobol_u(n_pool, int(rng.integers(1 << 30)))
     adm = rng.random(n_pool) < p_adm
@@ -141,7 +151,7 @@ def replicate(rng, rev, truth, p_adm, m_d, targets, noise, n_prop=4, box=None):
         Upool = np.vstack([Upool, more]); adm = np.r_[adm, rng.random(64) < p_adm]; n_pool += 64
     Uadm = Upool[adm]
     idx, _ = P.d_optimal9(Uadm, 9)
-    Udes = Uadm[idx]
+    Udes = Uadm[idx] if design_u is None else np.asarray(design_u, float)
     axial = P.AXIAL_U
     U1 = np.vstack([axial, Udes])
     if rev == "rev0":   # 4 null-ish twist/sweep axial states (visible: +-1.6e-3, ~1e-4 N) enter the candidate set
@@ -256,9 +266,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--reps", type=int, default=1000)
     ap.add_argument("--out", type=Path, required=True)
-    ap.add_argument("--p-adm", type=float, default=0.42)
+    ap.add_argument("--p-adm", type=float, default=0.54, help="Bernoulli admissibility of a new geometry: the pooled rev. 1 P0 fraction (60 of 112 Sobol points)")
     a = ap.parse_args()
-    base = dict(rev="rev1", s_mis=1e-3, p_adm=a.p_adm, m_d=1.5e-3, targets=(1.0, 1.5, 2.0), noise=1.0, scale=1.0, null=False, box=BOX_REV1)   # registered m_D = 1.5e-3 N
+    design_u = json.loads((ROOT / "docs/evidence/screen01_2026_10_30/pool_prescreen_rev1/design_check.json").read_text())["design_u"]   # the registered 9 design points
+    base = dict(rev="rev1", s_mis=1e-3, p_adm=a.p_adm, m_d=1.5e-3, targets=(1.0, 1.5, 2.0), noise=1.0, scale=1.0, null=False, box=BOX_REV1, sat=None, design_u=None)   # registered m_D = 1.5e-3 N
     variants = {
         "rev0_registered": dict(base, rev="rev0", box=BOX_REV0),
         "rev0_misfit_heavy": dict(base, rev="rev0", box=BOX_REV0, s_mis=3e-3),
@@ -272,6 +283,10 @@ def main():
         "rev1_null_downforce": dict(base, null=True),
         "rev1_space_scaled_0.6": dict(base, scale=0.6),
         "rev1_space_scaled_0.8": dict(base, scale=0.8),
+        "rev1_space_scaled_0.42": dict(base, scale=0.42),                 # ceiling about 1.0 g_min: the threshold case (a GAIN here is a finalist whose true gain is at most g_min)
+        "rev1_frozen_design": dict(base, design_u=design_u),              # the registered 9 design points instead of a re-drawn pool
+        "rev1_camber_saturated_-1.0": dict(base, sat=-1.0),               # the camber response stops rising beyond -19.7 mm (Q2)
+        "rev1_camber_saturated_-1.25": dict(base, sat=-1.25),
     }
     rng = np.random.default_rng(20261031)
     res = {}
@@ -279,8 +294,8 @@ def main():
         t0 = time.time()
         rows = []
         for _ in range(a.reps):
-            truth = Truth(rng, v["s_mis"], scale=v["scale"], null=v["null"])
-            rows.append(replicate(rng, v["rev"], truth, v["p_adm"], v["m_d"], v["targets"], v["noise"], box=v["box"]))
+            truth = Truth(rng, v["s_mis"], scale=v["scale"], null=v["null"], sat=v["sat"])
+            rows.append(replicate(rng, v["rev"], truth, v["p_adm"], v["m_d"], v["targets"], v["noise"], box=v["box"], design_u=v["design_u"]))
         res[name] = {"params": {k: (list(x) if isinstance(x, tuple) else x) for k, x in v.items()}, **summarize(rows), "wall_s": round(time.time() - t0, 1)}
         print(f"{name:26s} P_GAIN {res[name]['P_GAIN']:.3f} pool_limited {res[name]['P_pool_limited_label']:.3f} {res[name]['outcomes']}", flush=True)
     # the surrogate itself: fitted constrained optimum in both boxes

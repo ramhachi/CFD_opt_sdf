@@ -20,7 +20,10 @@ Pools (scrambled Sobol, scipy qmc, u = lo + (hi - lo) x, amplitudes rounded to 1
     python scripts/screen01/screen01_pool.py design                                              # D-optimal 9 + 6 axial, no-intercept rank/cond
     python scripts/screen01/screen01_pool.py selfcheck                                           # propose() on a synthetic surface
 
-Caches (shared with the rev. 0 run): work/screen01_pool_prescreen/rows/<name>.json, work/screen01_pool_prescreen/x1/<name>.json, stl/.
+Caches: work/screen01_pool_prescreen/rows/<name>.json, x1/<name>.json, stl/<name>.stl.  A cached gate row or X1 record is reused only when its `fingerprint`
+equals `fingerprint()` (the SHA-256 over DEPENDENCIES: every repository module the gate stack imports and every data file it reads; source review 2026-10-31, Q1/B5),
+an STL is read only when its SHA-256 equals the record's `stl_sha256`, and a row carrying `error` is never cached (Q7).  The 2026-10-30 caches carry no such key and
+are not reused: the P0 re-validation before freeze 1 recomputes every member (registration §2 P0, §3.4).
 Outputs: docs/evidence/screen01_2026_10_30/pool_prescreen_rev1/{pools.json,rows.jsonl,summary.json,design_check.json}.
 """
 from __future__ import annotations
@@ -45,7 +48,32 @@ OUT = ROOT / "docs/evidence/screen01_2026_10_30/pool_prescreen_rev1"
 WORK = ROOT / "work/screen01_pool_prescreen"
 STL = WORK / "stl"
 D.STL = STL   # module level: spawn workers re-import this module
-REV0_SCRIPT_SHA = "00c04625f7269a43148f2126b341174e43c99253560fd7daea5ee153ae501402"   # rev. 0 cache key = sha256(D.fingerprint() + this)
+# every repository file the admissibility decision depends on: the gate-stack import closure of fid01_designs.work / _x1 (observed on 2026-10-31, asserted by
+# `selfcheck`) and the data files the stack reads; freeze 1 binds every one of them (REUSED of screen01_freeze.py must contain this list)
+DEPENDENCIES = sorted(set(D.DEPENDENCIES) | {
+    "scripts/fid01/fid01_designs.py", "scripts/fid01/fid01_build.py", "scripts/analyze_lowdim02a.py", "scripts/build_grid01_inputs.py", "scripts/build_lowdim01_inputs.py",
+    "scripts/build_lowdim04a_inputs.py", "scripts/fd08_v2_campaign_io.py", "scripts/geom02_gradient_floor_diagnostic.py", "scripts/lowdim01_states.py", "scripts/lowdim04a_states.py",
+    "scripts/prepare_kaggle_xfid_gridphase_x3.py", "scripts/register_geom02_profile.py", "scripts/register_opt01_v1.py", "scripts/step01_states.py", "scripts/unc01_build.py",
+    "scripts/xfid45_round3_export.py", "scripts/xfid45_surface_round2_candidates.py",
+    "src/cfd_sdf/__init__.py", "src/cfd_sdf/analytic_candidate_shapes.py", "src/cfd_sdf/config.py", "src/cfd_sdf/design/__init__.py", "src/cfd_sdf/design/genesis.py",
+    "src/cfd_sdf/design/geometry_gates.py", "src/cfd_sdf/design/geometry_gates_v2.py", "src/cfd_sdf/design/sdf_state.py", "src/cfd_sdf/design/topology_policy.py",
+    "src/cfd_sdf/design/topology_policy_research.py", "src/cfd_sdf/design/volume_semantics.py", "src/cfd_sdf/design/volume_semantics_v2.py", "src/cfd_sdf/design_state.py",
+    "src/cfd_sdf/extraction_qualification.py", "src/cfd_sdf/fixed_grid_contract.py", "src/cfd_sdf/gradients/__init__.py", "src/cfd_sdf/gradients/base.py",
+    "src/cfd_sdf/gradients/directional_comparison.py", "src/cfd_sdf/gradients/directional_fd.py", "src/cfd_sdf/grid.py", "src/cfd_sdf/grid01_contract.py",
+    "src/cfd_sdf/lowdim02a_contract.py", "src/cfd_sdf/lowdim03_contract.py", "src/cfd_sdf/oracles/__init__.py", "src/cfd_sdf/oracles/base.py", "src/cfd_sdf/problem_spec.py",
+    "src/cfd_sdf/runtime/__init__.py", "src/cfd_sdf/runtime/fingerprint.py", "src/cfd_sdf/sdf.py", "src/cfd_sdf/shape_feature_metrics.py",
+    "docs/evidence/v18_genesis_2026_10_19/v18_parent.npz", "docs/evidence/v18_genesis_2026_10_19/v18_parent.phi_f4_fortran.raw", "docs/evidence/v18_genesis_2026_10_19/genesis.json",
+    "docs/evidence/geom02_v17_gates_2026_10_14/geom02_resolved_research_policy.json", "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/v17_baseline.npz",
+    "docs/evidence/opt01a_stage_a_2026_10_15/inputs/opt01_v1_parent.npz"})
+
+
+def fingerprint() -> str:
+    """SHA-256 over DEPENDENCIES (path + file hash); the key of every cached gate row, X1 record and parent record."""
+    h = hashlib.sha256()
+    for rel in DEPENDENCIES:
+        h.update(rel.encode() + hashlib.sha256((ROOT / rel).read_bytes()).digest())
+    return h.hexdigest()
+
 
 SUBSET = ("pitch", "camber", "reflex")
 A_STAR = {"pitch": 3.1, "camber": 19.7, "reflex": 29.3}                        # MODE-01 v18 A* (deg, mm, mm)
@@ -107,12 +135,7 @@ def gen() -> dict:
     return rec
 
 
-# ---- admissibility pipeline (gate stack -> X1 -> chain check), cached per state name -----------------------------------------------------------
-def fingerprints() -> set:
-    fp = D.fingerprint()
-    return {fp, hashlib.sha256((fp + REV0_SCRIPT_SHA).encode()).hexdigest()}
-
-
+# ---- admissibility pipeline (gate stack -> X1 -> chain check), cached per state name under fingerprint() -------------------------------------------
 def _work(task):
     t0 = time.time()
     row = D.work(task)
@@ -120,70 +143,79 @@ def _work(task):
     return row
 
 
-def _load_cache(dirname, ok_fps=None):
+def _load_cache(dirname, fp) -> dict:
+    """name -> cached record of `dirname` carrying this fingerprint and no `error`; everything else is ignored (recomputed)."""
     d = WORK / dirname
     d.mkdir(parents=True, exist_ok=True)
     out = {}
     for f in d.glob("*.json"):
         r = json.loads(f.read_text())
-        if ok_fps is None or r.get("code_fingerprint") in ok_fps or r.get("d_fingerprint") in ok_fps:
+        if r.get("fingerprint") == fp and "error" not in r:
             out[r["name"]] = r
     return out
 
 
 def gate_rows(specs: list, workers: int, log) -> dict:
-    """name -> gate row for every spec (cached under the fid01_designs fingerprint)."""
-    cache, fp = _load_cache("rows", fingerprints()), D.fingerprint()
+    """name -> gate row for every spec; cached under fingerprint(); a row with `error` (the gate stack raised) is returned but never cached."""
+    fp = fingerprint()
+    cache = _load_cache("rows", fp)
     todo = [("p0", i, s) for i, s in enumerate(specs) if D.name(s) not in cache]
     if todo:
         with mp.get_context("spawn").Pool(min(workers, len(todo)), initializer=D._init) as pool:
             for r in pool.imap_unordered(_work, todo):
-                r["d_fingerprint"] = fp
-                (WORK / "rows" / f"{r['name']}.json").write_text(json.dumps(r, sort_keys=True))
+                r["fingerprint"] = fp
+                if "error" not in r:
+                    (WORK / "rows" / f"{r['name']}.json").write_text(json.dumps(r, sort_keys=True))
                 cache[r["name"]] = r
                 log(f"gate {r['name']} {r.get('all_pass', r.get('error'))} {r.get('failed_geom02')} {r.get('eval_wall_s')} s")
     return {D.name(s): cache[D.name(s)] for s in specs}
 
 
-def stl_volume_file(name) -> float | None:
+def stl_volume_file(name, stl_sha256) -> float | None:
+    """Volume of the kept STL, read only when its bytes hash to the record's stl_sha256."""
     import fid01_build as FB
     f = STL / f"{name}.stl"
-    return FB.stl_volume(f.read_bytes()) if f.exists() else None
+    if not f.exists():
+        return None
+    blob = f.read_bytes()
+    return FB.stl_volume(blob) if hashlib.sha256(blob).hexdigest() == stl_sha256 else None
 
 
 def _x1(task):
     n, rec = D._x1(task)
-    rec["stl_volume_m3"] = stl_volume_file(n) if rec["pass"] else None
+    rec["stl_volume_m3"] = stl_volume_file(n, rec["stl_sha256"]) if rec["pass"] else None
     return n, rec
 
 
 def parent_x1() -> dict:
-    f = WORK / "x1" / "v18__parent.json"
+    """The parent's X1 record (STL SHA-256, volume), cached under fingerprint(); recomputed when the key or the STL bytes do not match."""
+    fp, f = fingerprint(), WORK / "x1" / "v18__parent.json"
     if f.exists():
-        return json.loads(f.read_text())
+        rec = json.loads(f.read_text())
+        if rec.get("fingerprint") == fp and stl_volume_file("v18__parent", rec["stl_sha256"]) == rec["stl_volume_m3"] and rec["stl_volume_m3"]:
+            return rec
     import mode01_v18_prescreen as P18
     import unc01_u3_prepare as U
     s, _ = P18.load_parent()
     blob, rec = U.export(s, json.loads(U.PROFILE.read_text()))
     STL.mkdir(parents=True, exist_ok=True)
     (STL / "v18__parent.stl").write_bytes(blob)
-    rec = {"name": "v18__parent", "pass": rec["pass"], "stl_sha256": rec["stl_sha256"], "triangles": rec["triangles"], "stl_volume_m3": stl_volume_file("v18__parent")}
+    rec = {"name": "v18__parent", "pass": rec["pass"], "stl_sha256": rec["stl_sha256"], "triangles": rec["triangles"], "stl_volume_m3": stl_volume_file("v18__parent", rec["stl_sha256"]),
+           "fingerprint": fp}
     f.parent.mkdir(parents=True, exist_ok=True)
     f.write_text(json.dumps(rec, sort_keys=True))
     return rec
 
 
 def x1_rows(items: list, workers: int, log) -> dict:
-    """(name, spec) -> X1 record with the STL volume; cached; rev. 0 records without a volume get it from the kept STL file."""
-    cache = _load_cache("x1")
-    for n, rec in list(cache.items()):
-        if rec.get("pass") and rec.get("stl_volume_m3") is None:
-            rec["stl_volume_m3"] = stl_volume_file(n)
-    todo = [(n, s) for n, s in items if n not in cache or (cache[n].get("pass") and cache[n].get("stl_volume_m3") is None)]
+    """(name, spec) -> X1 record with the STL volume; cached under fingerprint(); a passed record whose STL is missing or does not hash is recomputed."""
+    fp = fingerprint()
+    cache = {n: r for n, r in _load_cache("x1", fp).items() if not r.get("pass") or (r.get("stl_volume_m3") and stl_volume_file(n, r["stl_sha256"]) == r["stl_volume_m3"])}
+    todo = [(n, s) for n, s in items if n not in cache]
     if todo:
         with mp.get_context("spawn").Pool(min(workers, len(todo)), initializer=D._init) as pool:
             for n, rec in pool.imap_unordered(_x1, todo):
-                rec["name"] = n
+                rec.update(name=n, fingerprint=fp)
                 (WORK / "x1" / f"{n}.json").write_text(json.dumps(rec, sort_keys=True))
                 cache[n] = rec
                 log(f"x1 {n} {rec['pass']}")
@@ -209,7 +241,7 @@ def admissible_rows(specs: list, workers: int, log) -> list:
         ch = chain_ok(r, xr, vp)
         out.append({**r, "x1": None if xr is None else {k: xr.get(k) for k in ("pass", "stl_sha256", "triangles", "stl_volume_m3")},
                     "stl_volume_vs_parent": None if not xr or not xr.get("stl_volume_m3") else xr["stl_volume_m3"] / vp - 1.0, "chain_ok": ch,
-                    "admissible": bool(r.get("all_pass") and xr and xr.get("pass") and ch)})
+                    "admissible": bool("error" not in r and r.get("all_pass") and xr and xr.get("pass") and ch)})   # an error row is not admissible and is counted (Q7)
     return out
 
 
@@ -242,8 +274,10 @@ def p0(pool_names: list, workers: int) -> dict:
                 log(f"rand3: {n} evaluated, {len(adm)} admissible")
                 if len(adm) >= K_RAND:
                     break
-            adm = [r["name"] for r in res if r["admissible"]][:K_RAND]
-            extra = {"n_consumed": n, "control_set": adm, "complete": len(adm) >= K_RAND}
+            idx = [i for i, r in enumerate(res) if r["admissible"]][:K_RAND]
+            adm = [res[i]["name"] for i in idx]
+            # n_consumed = sequence points up to and including the K_RAND-th admissible member (registration §3.3); the chunk end is n_evaluated (Q5)
+            extra = {"n_consumed": (idx[-1] + 1) if len(idx) >= K_RAND else n, "control_set": adm, "complete": len(adm) >= K_RAND}
         else:
             res = admissible_rows(specs, workers, log)
             extra = {}
@@ -260,11 +294,12 @@ def p0(pool_names: list, workers: int) -> dict:
                 fails[g] = fails.get(g, 0) + 1
         summ["pools"][p] = {"n_evaluated": len(res), "gate_clean": sum(bool(r.get("all_pass")) for r in res), "x1_pass": sum(bool(r["x1"] and r["x1"]["pass"]) for r in res),
                             "chain_ok": sum(bool(r["chain_ok"]) for r in res), "admissible": sum(r["admissible"] for r in res), "failed_gate_counts": fails,
+                            "error_rows": [r["name"] for r in res if "error" in r],
                             "admissible_names": [r["name"] for r in res if r["admissible"]], "wall_s": round(time.time() - tp, 1),
                             "eval_wall_s_median": float(np.median([r["eval_wall_s"] for r in res if "eval_wall_s" in r])) if res else None, **extra}
         log(f"{p}: {summ['pools'][p]['admissible']}/{len(res)} admissible, {summ['pools'][p]['wall_s']} s")
-    summ.update(wall_s=round(time.time() - t0, 1), finished_utc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), d_fingerprint=D.fingerprint(), workers=workers,
-                parent_stl=parent_x1(), chain_tolerance=CHAIN_TOL, box_u=BOX)
+    summ.update(wall_s=round(time.time() - t0, 1), finished_utc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), fingerprint=fingerprint(), d_fingerprint=D.fingerprint(),
+                dependencies=DEPENDENCIES, workers=workers, parent_stl=parent_x1(), chain_tolerance=CHAIN_TOL, box_u=BOX)
     with (OUT / "rows.jsonl").open("w") as fh:
         for r in rows:
             fh.write(json.dumps(r, sort_keys=True) + "\n")
@@ -454,7 +489,12 @@ def selfcheck() -> dict:
     U = np.vstack([AXIAL_U, sobol_u(12, 5)])
     b, sd, rank, cond = fit9(U, predict9(by, U) + 1e-4 * rng.standard_normal(len(U)))
     assert rank == 9 and np.allclose(b, by, atol=5e-4), "fit9 must recover the surface"
-    return {"ok": True, "n_proposals": len(r1["proposals"]), "n_gated": r1["n_gated"], "targets": [p["target"] for p in r1["proposals"]], "argmax": r1["argmax"]}
+    # the gate stack's import closure is covered by DEPENDENCIES (the cache key and the freeze-1 REUSED list), every dependency exists
+    import fid01_build, mode01_prescreen, mode01_v18_prescreen, sdf_native_genesis_v18_2026_10, unc01_u3_prepare, width_rule_study  # noqa: F401
+    closure = {str(Path(m.__file__).resolve().relative_to(ROOT)) for m in list(sys.modules.values()) if getattr(m, "__file__", None) and Path(m.__file__).resolve().is_relative_to(ROOT)}
+    missing = sorted(f for f in closure if not f.startswith("scripts/screen01/") and f not in DEPENDENCIES)
+    assert not missing and all((ROOT / f).is_file() for f in DEPENDENCIES), f"DEPENDENCIES does not cover the gate stack: {missing}"
+    return {"ok": True, "fingerprint": fingerprint(), "n_dependencies": len(DEPENDENCIES), "n_proposals": len(r1["proposals"]), "n_gated": r1["n_gated"], "targets": [p["target"] for p in r1["proposals"]], "argmax": r1["argmax"]}
 
 
 def main():

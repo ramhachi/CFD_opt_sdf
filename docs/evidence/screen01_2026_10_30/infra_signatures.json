@@ -1,21 +1,35 @@
 {
  "schema": "screen01-infra-signatures-v1",
- "registration": "docs/screen01_registration_2026_10_30.md section 9 (INFRA_LOSS), section 5.11.17, section 10 (freeze 1)",
+ "registration": "docs/screen01_registration_2026_10_30.md section 9 (kernel loss), section 5.11.17, section 10 (freeze 1); revised 2026-10-31 after the source review (R3/B3, adoption.md)",
  "default": "NOT_INFRASTRUCTURE",
- "default_statement": "A kernel that ended with ERROR before its last run, or with no output, and whose evidence matches none of the signatures below is NOT infrastructure: its runs are DATA_LOSS (registration 5.1, 5.9), never a reason to rerun. A kernel that ended DONE and passes harness verify is complete.",
- "rerun_rule": "One identical rerun per INFRA_LOSS kernel; the first valid output is authoritative; both are archived; a kernel lost again is declared to the analyzer as --lost KERNEL=SIGNATURE_ID, citing the id of the signature its failure matched.",
- "evidence": "ERROR.txt of the kernel output directory, the Kaggle log (JSON list of {stream_name, time, data}; plain text is accepted), the text of `kaggle kernels status`, harness_index.json of the output directory.",
- "evaluation_order": ["VERIFY_FAILED", "SESSION_KILL", "JULIA_INSTALL", "GPU_IDENTITY", "PLATFORM_ERROR"],
+ "default_statement": "A formal kernel without a harness-verified table (ended ERROR, no output, or DONE but failing verify) whose evidence matches none of the signatures below is classified NOT_INFRASTRUCTURE (cause not recognised). The classification is a record of the cause; it does not change the rerun rule. A kernel that ended DONE and passes harness verify is complete.",
+ "rerun_rule": "One identical rerun per lost formal kernel, whatever the classification (registration section 9): the campaign, the states, the phase and the pinned runner are the same bytes, the first verified output is authoritative, both attempts are archived, so a rerun cannot select on a force and only spends session wall (section 4.3). `analyze_screen01.py infra --out` writes the classification record of every attempt. A kernel without a verified table after its rerun is declared --lost KERNEL=ID, citing the id of the signature its evidence matched (NOT_INFRASTRUCTURE when none) and the classification record of the failed rerun. No third attempt; a cap is never raised, a state never removed from its kernel.",
+ "classes": {
+  "INFRA_LOSS": "the Kaggle session, the Julia install, the GPU or the platform failed",
+  "RUN_LOSS": "a registered run failed inside the solver or the harness budget (divergence, non-finite output, cap trip, crash); deterministic reproduction expected, rerun once all the same"
+ },
+ "evidence": "ERROR.txt of the kernel output directory, the Kaggle log (JSON list of {stream_name, time, data}; plain text is accepted), the text of `kaggle kernels status`, harness_index.json of the output directory, and the stderr of `scripts/fid01/fid01_harness.py verify` when verify failed (--verify-log).",
+ "evaluation_order": ["NONFINITE", "VERIFY_FAILED", "SESSION_KILL", "JULIA_INSTALL", "GPU_IDENTITY", "PLATFORM_ERROR", "WALL_CAP", "STATE_FAILED"],
  "signatures": [
   {
+   "id": "NONFINITE",
+   "class": "RUN_LOSS",
+   "source": "stderr of harness verify of the kernel output (regex search; only when verify failed)",
+   "pattern": "state fields or forces are not finite|must be a finite number",
+   "condition": "verify failed and its message matches the pattern (a state whose summary flags or forces are non-finite: a divergent run; the harness verify is all-or-nothing, so the kernel has no table)",
+   "meaning": "a run diverged or produced a non-finite force; the kernel is lost whole"
+  },
+  {
    "id": "VERIFY_FAILED",
+   "class": "INFRA_LOSS",
    "source": "harness verify of the kernel output (scripts/fid01/fid01_harness.py verify)",
    "pattern": null,
-   "condition": "the kernel output fails harness verify (checked first, also for a kernel that wrote DONE)",
-   "meaning": "the output cannot be trusted; infrastructure loss of the kernel"
+   "condition": "the kernel output fails harness verify for any other reason (checked before the output-directory signatures, also for a kernel that wrote DONE)",
+   "meaning": "the output cannot be trusted (identity, pins, hashes, GPU, budget bookkeeping); loss of the kernel"
   },
   {
    "id": "SESSION_KILL",
+   "class": "INFRA_LOSS",
    "source": "kernel output directory",
    "pattern": null,
    "condition": "the output directory has neither DONE nor ERROR.txt (the session ended without the runner's terminal marker)",
@@ -23,6 +37,7 @@
   },
   {
    "id": "JULIA_INSTALL",
+   "class": "INFRA_LOSS",
    "source": "ERROR.txt, Kaggle log, status text (regex search)",
    "pattern": "Pkg\\.instantiate failed|Julia archive SHA-256 mismatch|Unsatisfiable requirements|RegistryException|Could not resolve host|Temporary failure in name resolution",
    "before_any_state": true,
@@ -31,6 +46,7 @@
   },
   {
    "id": "GPU_IDENTITY",
+   "class": "INFRA_LOSS",
    "source": "ERROR.txt, Kaggle log, status text (regex search)",
    "pattern": "independent CUDA device UUID probe failed|observed CUDA singleton/default UUID differs|must be a Tesla T4|physical GPU index 0 must occur|nvidia-smi inventory|no CUDA-capable device|CUDA_ERROR_NO_DEVICE",
    "before_any_state": false,
@@ -39,11 +55,30 @@
   },
   {
    "id": "PLATFORM_ERROR",
+   "class": "INFRA_LOSS",
    "source": "ERROR.txt, Kaggle log, status text (regex search)",
    "pattern": "Bad Gateway|Service Unavailable|Gateway Time-?out|Internal Server Error|<!DOCTYPE html>",
    "before_any_state": false,
    "condition": "the pattern matches",
    "meaning": "a Kaggle platform error page or a `kaggle kernels status` error"
+  },
+  {
+   "id": "WALL_CAP",
+   "class": "RUN_LOSS",
+   "source": "ERROR.txt, Kaggle log (regex search; the runner's own message, campaign_runner_template.py)",
+   "pattern": "registered per-state or aggregate solver wall-time budget exceeded",
+   "before_any_state": false,
+   "condition": "the pattern matches",
+   "meaning": "a state exceeded its per-state cap or the kernel its aggregate cap (a slow session or a slow state); the runner stopped and the kernel has no table"
+  },
+  {
+   "id": "STATE_FAILED",
+   "class": "RUN_LOSS",
+   "source": "ERROR.txt, Kaggle log (regex search; the runner's own message)",
+   "pattern": "state did not complete: ",
+   "before_any_state": false,
+   "condition": "the pattern matches",
+   "meaning": "a Julia job exited non-zero or left no CSV / summary / W4_JOB_DONE (a crash or a solver failure of that state); the runner stopped and the kernel has no table"
   }
  ]
 }
