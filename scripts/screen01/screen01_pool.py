@@ -65,7 +65,7 @@ GATE_CAP, N_PER_TARGET, N_PROP, GATE_ROUND = 36, 2, 4, 4
 
 # ---- geometry helpers --------------------------------------------------------------------------------------------------------------------------
 def u_to_spec(u) -> dict:
-    return {m: round(float(x * A_STAR[m]), 3) for m, x in zip(SUBSET, u) if round(float(x * A_STAR[m]), 3) != 0.0}
+    return dict(sorted((m, round(float(x * A_STAR[m]), 3)) for m, x in zip(SUBSET, u) if round(float(x * A_STAR[m]), 3) != 0.0))   # sorted keys = the §3.2 state names
 
 
 def spec_to_u(spec) -> list:
