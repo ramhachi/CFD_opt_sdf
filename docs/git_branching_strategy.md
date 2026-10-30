@@ -50,11 +50,19 @@ This follows the lightweight GitHub Flow guidance and the trunk-based
 development recommendation to use short-lived review branches rather than
 multiple permanent development branches.
 
-## Current practice (as of 2026-10-13)
+## Current practice (as of 2026-10-30)
 
-The rules above are the intended end state. In practice all integration since 2026-09-11 has happened on
-`codex/kaggle-batch-migration`, which is about 840 commits ahead of `main`, merged with `--no-ff` only (no rebase, squash or force-push), with no
-pull request and no CI on it (`.github/workflows/ci.yml` runs on `main` only). Branch experiments from it, record results on it, and read its
-`docs/phase_plan.md` as the current status. `main` is a stale snapshot, so a default-branch search or a new agent reading `main` will see a different
-project state. Whether and when to merge into `main`, or to change the default branch, branch protection or CI triggers, is a separate decision; none of
-those was changed.
+The rules above are the intended end state. Since 2026-09-11 all integration has happened on
+`codex/kaggle-batch-migration`, merged with `--no-ff` only (no rebase, squash or force-push). Branch experiments from it, record results on
+it, and read its `docs/phase_plan.md` and `docs/STATE.md` as the current status. Since PR #71/#72 (2026-10-30) changes may be proposed as pull
+requests whose base is `codex/kaggle-batch-migration`; GitHub creates a merge commit and deletes the head branch on merge.
+
+`main` is a mirror of the integration branch: it is synced by a `--no-ff` merge of `codex/kaggle-batch-migration` into `main` at milestones
+(first sync 2026-10-30, after PR #71/#72), never by rebase or force-push, and nothing is committed to `main` directly. `main` stays the
+default branch, so a default-branch search sees the last synced milestone rather than live work; branch protection was not enabled. The
+Python CI (`.github/workflows/ci.yml`: compileall, `git diff --check`, `pytest -q` on Linux/macOS/Windows) runs on pushes to `main`, so each
+sync is also the first CI run of that milestone on GitHub runners; a CI failure there is recorded, not fixed on `main`.
+
+Cleanup rule (user decision 2026-10-14): after a `--no-ff` merge, delete the local and remote feature branches that are fully contained in the
+integration branch (`git branch -r --merged origin/codex/kaggle-batch-migration`), remove their worktrees, and leave untouched any branch
+that is unmerged, checked out in another worktree, or `main`. The historical 2026-10-13 wording of this section is superseded by this one.
