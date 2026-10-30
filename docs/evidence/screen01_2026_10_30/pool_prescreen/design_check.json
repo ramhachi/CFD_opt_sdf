@@ -1,0 +1,106 @@
+{
+ "kind": "screen01_rs_design_check",
+ "rand5": {
+  "first_22_survivors_reached_at_sequence_index": null,
+  "n_evaluated": 16,
+  "n_gate_clean": 3,
+  "n_survivors": 3,
+  "projected_sequence_length_for_22": 117,
+  "survivors_in_order": [
+   "v18__camber_m13.331_pitch_p0.992_reflex_p17.636_sweep_m7.887_twist_m0.639",
+   "v18__camber_m8.683_pitch_p3.076_reflex_m25.033_sweep_m3.022_twist_p0.081",
+   "v18__camber_m0.434_pitch_p0.189_reflex_m9.599_sweep_p2.615_twist_m0.255"
+  ]
+ },
+ "rule": "base = parent + 6 axial (+-1 e_i); 9 pool survivors added by greedy Bayesian D-optimality (logdet(X'X + 1e-6 I)) on the full-quadratic columns [1, u, u^2, u_i u_j]; survivors = gate-clean AND X1-pass; trust region = convex hull of the design points",
+ "subsets": {
+  "rs_pitch_camber_reflex": {
+   "cond": 7.548477640539404,
+   "design_points": [
+    "v18__camber_m19.077_pitch_m2.918_reflex_p14.25",
+    "v18__camber_p16.831_pitch_p1.042_reflex_p28.057",
+    "v18__camber_p13.207_pitch_m2.041_reflex_p18.258",
+    "v18__camber_m18.127_pitch_p2.493_reflex_p16.254",
+    "v18__camber_p16.257_pitch_m1.812_reflex_m17.01",
+    "v18__camber_m11.007_pitch_m2.494_reflex_m13.689",
+    "v18__camber_p15.947_pitch_p2.043_reflex_m11.687",
+    "v18__camber_m15.541_pitch_m1.594_reflex_p25.062",
+    "v18__camber_m1.628_pitch_p1.884_reflex_p26.847"
+   ],
+   "design_u": [
+    [
+     -0.9412903225806452,
+     -0.9683756345177666,
+     0.48634812286689416
+    ],
+    [
+     0.3361290322580645,
+     0.8543654822335025,
+     0.9575767918088737
+    ],
+    [
+     -0.6583870967741935,
+     0.6704060913705584,
+     0.6231399317406143
+    ],
+    [
+     0.8041935483870967,
+     -0.9201522842639593,
+     0.5547440273037543
+    ],
+    [
+     -0.584516129032258,
+     0.8252284263959392,
+     -0.5805460750853243
+    ],
+    [
+     -0.8045161290322581,
+     -0.5587309644670051,
+     -0.4672013651877133
+    ],
+    [
+     0.6590322580645162,
+     0.809492385786802,
+     -0.39887372013651873
+    ],
+    [
+     -0.5141935483870967,
+     -0.7888832487309645,
+     0.855358361774744
+    ],
+    [
+     0.6077419354838709,
+     -0.08263959390862943,
+     0.9162798634812287
+    ]
+   ],
+   "logdet_xtx": 11.100529498307653,
+   "n_design": 16,
+   "n_gate_clean": 27,
+   "n_gate_clean_x1_unknown": 0,
+   "n_pool": 64,
+   "n_survivors": 27,
+   "rank": 10,
+   "rank_all_survivors_plus_base": 10,
+   "reference_fccd15_cond": 4.397316331888476,
+   "singular_values": [
+    5.0590711480790205,
+    2.930301544132887,
+    2.626375678898712,
+    2.233319342939691,
+    1.6866403299304393,
+    1.5326429936549695,
+    1.5083993923675134,
+    1.2487669345646795,
+    0.9067466056886463,
+    0.6702107880546767
+   ],
+   "trust_region": {
+    "corners_inside_hull": 0,
+    "grid27_inside_hull": 7,
+    "hull_volume_fraction_of_box": 0.44827559122950406,
+    "survivors_inside_hull": 23
+   }
+  }
+ }
+}
