@@ -13,7 +13,7 @@ Admissibility of a new geometry = Bernoulli(p_adm) (P0 measured fraction), indep
 Procedures: `rev0` = the revision-0 registration (box [-1,1]^3, hull-restricted pool proposals, lower-bound rule, 10 axial incl. twist/sweep);
 `rev1` = this registration (extended camber box, gated refinement `propose()`, point rule, fixed subset).  Variants in `main`.
 
-    python scripts/screen01/screen01_oc.py --reps 1000 --out docs/evidence/screen01_2026_10_30/oc.json
+    python scripts/screen01/screen01_oc.py --reps 2000 --out docs/evidence/screen01_2026_10_30/oc.json   # the recorded run (about 4 min)
 """
 from __future__ import annotations
 
