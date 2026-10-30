@@ -1,0 +1,205 @@
+{
+ "box_u": {
+  "camber": [
+   -1.5,
+   1.0
+  ],
+  "pitch": [
+   -1.0,
+   1.0
+  ],
+  "reflex": [
+   -1.0,
+   1.0
+  ]
+ },
+ "chain_tolerance": 0.01,
+ "d_fingerprint": "bc3cb4b2bb9e59a989a4035dc0ecb841fc3e6f69da6b88026acb26f9117547dd",
+ "finished_utc": "2026-10-30T18:58:43Z",
+ "kind": "screen01_p0_rev1",
+ "parent_stl": {
+  "name": "v18__parent",
+  "pass": true,
+  "stl_sha256": "41ceb0c6f75ab465d4d85627c53fe8c5333a36a53baba0515dff535ff80fd626",
+  "stl_volume_m3": 0.11966394220890757,
+  "triangles": 643072
+ },
+ "pools": {
+  "axial": {
+   "admissible": 6,
+   "admissible_names": [
+    "v18__pitch_p3.1",
+    "v18__pitch_m3.1",
+    "v18__camber_p19.7",
+    "v18__camber_m19.7",
+    "v18__reflex_p29.3",
+    "v18__reflex_m29.3"
+   ],
+   "chain_ok": 6,
+   "eval_wall_s_median": 221.65,
+   "failed_gate_counts": {},
+   "gate_clean": 6,
+   "n_evaluated": 6,
+   "wall_s": 198.6,
+   "x1_pass": 6
+  },
+  "manual": {
+   "M_for_m_D_0.001": "v18__camber_m19.7_pitch_m0.33",
+   "M_for_m_D_0.0015": "v18__camber_m19.7_pitch_m0.38",
+   "admissible": 10,
+   "admissible_names": [
+    "v18__camber_m19.7_pitch_m0.33",
+    "v18__camber_m19.7_reflex_p9",
+    "v18__camber_m19.7_pitch_m0.25",
+    "v18__camber_m19.7_pitch_m0.41",
+    "v18__camber_m19.7_pitch_m0.17_reflex_p4.5",
+    "v18__camber_m19.7_pitch_m0.38",
+    "v18__camber_m19.7_reflex_p10.5",
+    "v18__camber_m19.7_pitch_m0.29",
+    "v18__camber_m19.7_pitch_m0.47",
+    "v18__camber_m19.7_pitch_m0.19_reflex_p5.2"
+   ],
+   "chain_ok": 10,
+   "eval_wall_s_median": 242.65,
+   "failed_gate_counts": {},
+   "gate_clean": 10,
+   "n_evaluated": 10,
+   "wall_s": 967.6,
+   "x1_pass": 10
+  },
+  "rand3": {
+   "admissible": 25,
+   "admissible_names": [
+    "v18__camber_m17.304_pitch_m1.056_reflex_m4.377",
+    "v18__camber_m3.701_pitch_m2.29_reflex_p17.406",
+    "v18__camber_m7.817_pitch_m2.417_reflex_p7.656",
+    "v18__camber_p9.129_pitch_m0.554_reflex_m28.934",
+    "v18__camber_m11.14_pitch_m0.003_reflex_p27.435",
+    "v18__camber_m26.303_pitch_m1.751_reflex_m15.958",
+    "v18__camber_m8.416_pitch_p0.028_reflex_m3.18",
+    "v18__camber_p2.982_pitch_m1.486_reflex_p6.097",
+    "v18__camber_p13.023_pitch_m1.611_reflex_p11.039",
+    "v18__camber_p16.454_pitch_p1.64_reflex_m16.946",
+    "v18__camber_m1.442_pitch_m0.263_reflex_m0.534",
+    "v18__camber_m28.656_pitch_m0.68_reflex_p2.727",
+    "v18__camber_p6.88_pitch_m2.543_reflex_m19.455",
+    "v18__camber_m14.935_pitch_m2.041_reflex_m13.167",
+    "v18__camber_m19.007_pitch_p0.706_reflex_m26.059",
+    "v18__camber_p17.017_pitch_m0.807_reflex_p23.478",
+    "v18__camber_m16.263_pitch_m0.962_reflex_p13.18",
+    "v18__camber_m4.576_pitch_p0.673_reflex_m10.721",
+    "v18__camber_p19.106_pitch_m2.002_reflex_m23.47",
+    "v18__camber_m27.577_pitch_m2.71_reflex_m2.746",
+    "v18__camber_p13.886_pitch_p1.17_reflex_p16.955",
+    "v18__camber_p0.652_pitch_m2.935_reflex_p0.518",
+    "v18__camber_m9.092_pitch_m1.657_reflex_p25.462",
+    "v18__camber_p4.038_pitch_p2.909_reflex_m27.581",
+    "v18__camber_p11.172_pitch_m1.198_reflex_m11.03"
+   ],
+   "chain_ok": 25,
+   "complete": true,
+   "control_set": [
+    "v18__camber_m17.304_pitch_m1.056_reflex_m4.377",
+    "v18__camber_m3.701_pitch_m2.29_reflex_p17.406",
+    "v18__camber_m7.817_pitch_m2.417_reflex_p7.656",
+    "v18__camber_p9.129_pitch_m0.554_reflex_m28.934",
+    "v18__camber_m11.14_pitch_m0.003_reflex_p27.435",
+    "v18__camber_m26.303_pitch_m1.751_reflex_m15.958",
+    "v18__camber_m8.416_pitch_p0.028_reflex_m3.18",
+    "v18__camber_p2.982_pitch_m1.486_reflex_p6.097",
+    "v18__camber_p13.023_pitch_m1.611_reflex_p11.039",
+    "v18__camber_p16.454_pitch_p1.64_reflex_m16.946",
+    "v18__camber_m1.442_pitch_m0.263_reflex_m0.534",
+    "v18__camber_m28.656_pitch_m0.68_reflex_p2.727",
+    "v18__camber_p6.88_pitch_m2.543_reflex_m19.455",
+    "v18__camber_m14.935_pitch_m2.041_reflex_m13.167",
+    "v18__camber_m19.007_pitch_p0.706_reflex_m26.059",
+    "v18__camber_p17.017_pitch_m0.807_reflex_p23.478",
+    "v18__camber_m16.263_pitch_m0.962_reflex_p13.18",
+    "v18__camber_m4.576_pitch_p0.673_reflex_m10.721",
+    "v18__camber_p19.106_pitch_m2.002_reflex_m23.47"
+   ],
+   "eval_wall_s_median": 241.05,
+   "failed_gate_counts": {
+    "export_surface_integrity": 2,
+    "min_feature_width": 23,
+    "surface_self_intersection": 2
+   },
+   "gate_clean": 25,
+   "n_consumed": 48,
+   "n_evaluated": 48,
+   "wall_s": 3529.1,
+   "x1_pass": 25
+  },
+  "ref": {
+   "admissible": 1,
+   "admissible_names": [
+    "v18__camber_m11.3_reflex_m11.3"
+   ],
+   "chain_ok": 1,
+   "eval_wall_s_median": 248.7,
+   "failed_gate_counts": {},
+   "gate_clean": 1,
+   "n_evaluated": 1,
+   "wall_s": 62.6,
+   "x1_pass": 1
+  },
+  "rs": {
+   "admissible": 35,
+   "admissible_names": [
+    "v18__camber_p0.507_pitch_m0.744_reflex_p11.354",
+    "v18__camber_m18.684_pitch_m2.494_reflex_m13.689",
+    "v18__camber_p15.396_pitch_m1.812_reflex_m17.01",
+    "v18__camber_m25.466_pitch_p2.31_reflex_p4.633",
+    "v18__camber_m14.568_pitch_m1.223_reflex_p14.671",
+    "v18__camber_p13.368_pitch_m1.043_reflex_m1.458",
+    "v18__camber_m5.821_pitch_m2.019_reflex_p2.756",
+    "v18__camber_p3.261_pitch_m3.085_reflex_p28.738",
+    "v18__camber_p19.01_pitch_m0.295_reflex_p18.527",
+    "v18__camber_m3.01_pitch_m2.14_reflex_m9.895",
+    "v18__camber_m6.961_pitch_p1.884_reflex_p26.847",
+    "v18__camber_m20.758_pitch_m0.777_reflex_p7.652",
+    "v18__camber_p15.009_pitch_p2.043_reflex_m11.687",
+    "v18__camber_p9.478_pitch_m2.663_reflex_p6.637",
+    "v18__camber_m1.456_pitch_p0.004_reflex_p16.677",
+    "v18__camber_p7.406_pitch_m0.451_reflex_m19.545",
+    "v18__camber_m17.91_pitch_p0.174_reflex_p2.533",
+    "v18__camber_m0.162_pitch_p3.088_reflex_m0.293",
+    "v18__camber_m10.245_pitch_m2.59_reflex_p21.794",
+    "v18__camber_p5.369_pitch_m1.716_reflex_p10.693",
+    "v18__camber_p16.113_pitch_p1.042_reflex_p28.057",
+    "v18__camber_m26.132_pitch_m1.516_reflex_m8.441",
+    "v18__camber_m4.308_pitch_m0.946_reflex_p22.582",
+    "v18__camber_m21.959_pitch_m2.307_reflex_m24.023",
+    "v18__camber_m13.595_pitch_m0.271_reflex_p4.382",
+    "v18__camber_p1.287_pitch_m0.005_reflex_m11.925",
+    "v18__camber_m11.693_pitch_p0.524_reflex_p24.355",
+    "v18__camber_m21.608_pitch_p1.594_reflex_m4.049",
+    "v18__camber_m2.417_pitch_p1.395_reflex_p6.388",
+    "v18__camber_p14.199_pitch_m1.298_reflex_p0.876",
+    "v18__camber_m23.394_pitch_p0.776_reflex_m21.432",
+    "v18__camber_m15.862_pitch_m1.885_reflex_m2.178",
+    "v18__camber_m0.502_pitch_m2.372_reflex_m27.474",
+    "v18__camber_p10.108_pitch_p0.295_reflex_m10.104",
+    "v18__camber_m19.789_pitch_m0.621_reflex_p26.168"
+   ],
+   "chain_ok": 35,
+   "eval_wall_s_median": 240.5,
+   "extended": false,
+   "failed_gate_counts": {
+    "export_surface_integrity": 2,
+    "min_feature_width": 29,
+    "surface_self_intersection": 2
+   },
+   "gate_clean": 35,
+   "min_admissible_rule": 12,
+   "n_evaluated": 64,
+   "n_used": 64,
+   "wall_s": 4715.5,
+   "x1_pass": 35
+  }
+ },
+ "started_utc": "2026-10-30T16:20:50Z",
+ "wall_s": 9473.4,
+ "workers": 4
+}
