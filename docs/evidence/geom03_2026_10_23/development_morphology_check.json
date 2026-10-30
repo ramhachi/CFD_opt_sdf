@@ -1,0 +1,86 @@
+{
+  "schema": "geom03_development_method_check_v1",
+  "evidence_class": "known_tiny_development_arrays_only_not_registered_study",
+  "registered_seed_executed": false,
+  "step_m": 0.01,
+  "radius_m": 0.03,
+  "ball": "a^2+b^2+c^2<=9; erosion border1,dilation border0",
+  "rows": [
+    {
+      "id": "interior_block",
+      "shape": [
+        9,
+        11,
+        13
+      ],
+      "input_sha256": "f8313bb019f67989e569012a87a98e06cb0fa3470031fd89b75e814d21d9d507",
+      "source": "inf",
+      "independent": "inf",
+      "agreement": true,
+      "input_formula": "(abs(x-4)<=2)&(abs(y-5)<=3)&(abs(z-6)<=3)"
+    },
+    {
+      "id": "clipped_slab",
+      "shape": [
+        9,
+        11,
+        13
+      ],
+      "input_sha256": "4563cb28f9d2f1313d9f49a0a4a16a104bb84fff3a0cde38618184893f04e405",
+      "source": 0.0,
+      "independent": 0.0,
+      "agreement": true,
+      "input_formula": "x<4"
+    },
+    {
+      "id": "two_points",
+      "shape": [
+        9,
+        11,
+        13
+      ],
+      "input_sha256": "f397e2d3e3fa15778daa1488f5dd15bb441fcb2f13f984e898681504706b409f",
+      "source": "inf",
+      "independent": "inf",
+      "agreement": true,
+      "input_formula": "((x==3)&(y==4)&(z==5))|((x==6)&(y==7)&(z==8))"
+    },
+    {
+      "id": "empty",
+      "shape": [
+        9,
+        11,
+        13
+      ],
+      "input_sha256": "6c8c885c6ecf87095c7b15b7f4bb02242c38beba48fe0614488670eb97337eac",
+      "source": null,
+      "independent": null,
+      "agreement": true,
+      "input_formula": "zeros((9,11,13),bool)"
+    },
+    {
+      "id": "all_true_diagnostic",
+      "shape": [
+        9,
+        11,
+        13
+      ],
+      "input_sha256": "7b576031a21e5fddd887b8b0988851e5925c15ccec41f15adb167d3eb82e223d",
+      "source": 0.0,
+      "independent": 0.0,
+      "agreement": true,
+      "input_formula": "ones((9,11,13),bool)"
+    }
+  ],
+  "input_frame": "x,y,z=np.indices((9,11,13)); no RNG",
+  "source_file": "scripts/width_rule_study.py",
+  "source_sha256": "d56117d9dd3bfd336c40d1e4bb7918182aeedca7564b1816338cf40172230fc7",
+  "independent_algorithm": "binary_erosion(ball,border_value=1); binary_dilation(ball,border_value=0); max EDT(~opened)[body&~opened], None if empty, inf if no erosion",
+  "command_environment": {
+    "python": ".venv/bin/python",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "acceptance_scope": "five known software-method examples; no GEOM K1-K6 tally or scientific verdict"
+}

@@ -1,0 +1,444 @@
+{
+  "schema": "github_and_worktree_catchup_v1",
+  "captured_at_utc": "2026-10-22T18:38:50.314665+00:00",
+  "phase": "before_GEOM_source_commit_and_freeze_no_registered_generation",
+  "refs": {
+    "returncode": 0,
+    "stdout": "73802a5bef333bce63cd8ff34644304371387a37\trefs/heads/chore/roadmap-evidence-review-2026-10-22\n458e2df56e310ed3959fd4c737d3aa9b9071dc69\trefs/heads/codex/kaggle-batch-migration",
+    "stderr": ""
+  },
+  "local_head": "bd088dfc576b78b313dc894423f4e915f5707abf",
+  "worktrees": [
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09",
+      "head": "fa3a42e08ab678a88d209af46a6b01d6d2fda9ef",
+      "branch": "refs/heads/fix/w3-w4-verifier-bugs",
+      "status_returncode": 0,
+      "status": "?? docs/issues/45_xfid_openfoam_environment_gate.md"
+    },
+    {
+      "path": "/Users/sota/.codex/worktrees/625d/CFD2026_09",
+      "head": "fa3a42e08ab678a88d209af46a6b01d6d2fda9ef",
+      "branch": null,
+      "status_returncode": 0,
+      "status": "?? docs/issues/45_xfid_openfoam_environment_gate.md"
+    },
+    {
+      "path": "/Users/sota/.codex/worktrees/issue45-root-certifier-integration",
+      "head": "1ba26684f15d39e622daa35bc29f0cd23f3881fa",
+      "branch": "refs/heads/codex/kaggle-batch-migration",
+      "status_returncode": 0,
+      "status": ""
+    },
+    {
+      "path": "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09",
+      "head": "1c1f5af6c4caa61dc970a9a18d7768c6e6c3bb63",
+      "branch": "refs/heads/exp/srcmap02-deterministic-signer-2026-10-13",
+      "status_returncode": 0,
+      "status": ""
+    },
+    {
+      "path": "/Users/sota/.codex/worktrees/roadmap-review-2026-10-22/CFD2026_09",
+      "head": "bd088dfc576b78b313dc894423f4e915f5707abf",
+      "branch": "refs/heads/chore/roadmap-evidence-review-2026-10-22",
+      "status_returncode": 0,
+      "status": "M  docs/README.md\nM  docs/STATE.md\nA  docs/evidence/geom03_2026_10_23/design_notes.md\nA  docs/evidence/geom03_2026_10_23/development_morphology_check.json\nA  docs/evidence/geom03_2026_10_23/development_pair_check.json\nA  docs/evidence/geom03_2026_10_23/fid01_handoff.json\nA  docs/evidence/geom03_2026_10_23/geometry_review.md\nA  docs/evidence/geom03_2026_10_23/historical_manifest_replay.json\nA  docs/evidence/geom03_2026_10_23/integration_notes.md\nA  docs/evidence/geom03_2026_10_23/known_basis_replay.json\nA  docs/evidence/geom03_2026_10_23/known_inputs.json\nA  docs/evidence/geom03_2026_10_23/plan_review.json\nA  docs/evidence/geom03_2026_10_23/plan_review_go_reports.json\nA  docs/evidence/geom03_2026_10_23/plan_review_snapshot.md\nA  docs/evidence/geom03_2026_10_23/protocol_lineage.json\nA  docs/evidence/geom03_2026_10_23/source_review.json\nA  docs/evidence/geom03_2026_10_23/source_review_report.md\nA  docs/evidence/geom03_2026_10_23/validation.json\nA  docs/evidence/geom03_2026_10_23/validation/compileall.txt\nA  docs/evidence/geom03_2026_10_23/validation/final_compileall.txt\nA  docs/evidence/geom03_2026_10_23/validation/final_targeted_pytest.txt\nA  docs/evidence/geom03_2026_10_23/validation/final_targeted_pytest.xml\nA  docs/evidence/geom03_2026_10_23/validation/initial_full_pytest.txt.gz\nA  docs/evidence/geom03_2026_10_23/validation/initial_full_pytest.xml.gz\nA  docs/evidence/geom03_2026_10_23/validation/targeted_pytest.txt\nA  docs/evidence/geom03_2026_10_23/validation/targeted_pytest.xml\nA  docs/evidence/geom03_2026_10_23/worker_routing.json\nA  docs/fid01_to_screen_xv_handoff_2026_10_23.md\nA  docs/geom03_registration_2026_10_23.md\nA  docs/next_execution_plan_2026_10_23.md\nM  docs/opencode_handoff_2026_09.md\nM  docs/phase_plan.md\nM  docs/problem_register_2026_09.md\nA  docs/screen_xv_preparation_2026_10_23.md\nA  scripts/geom03_check.py\nA  scripts/geom03_run.py\nA  tests/test_geom03.py"
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/awesome-rhodes-094930",
+      "head": "1467af145250043c5faf3762052da110577190de",
+      "branch": null,
+      "status_returncode": 0,
+      "status": ""
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/determined-dewdney-cb54d3",
+      "head": "c2f1ee29154a3351a4ef6f52582d23a57767b815",
+      "branch": null,
+      "status_returncode": 0,
+      "status": ""
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/dreamy-wu-de3512",
+      "head": "b2314d9d2149fd9d3a0bdecf62d48194aee14b5e",
+      "branch": null,
+      "status_returncode": 0,
+      "status": ""
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/fix-test-hygiene-adfb7f",
+      "head": "b4940864204f5f1560c11faa4371acab89a7cba7",
+      "branch": null,
+      "status_returncode": 0,
+      "status": ""
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/job02-per-state-placement-2c40da",
+      "head": "58425e7012c11d15ce4ccc4446c9cb1a0c811e34",
+      "branch": null,
+      "status_returncode": 0,
+      "status": ""
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/local-openfoam-env-3fb438",
+      "head": "b72134f488529d5515fff5a82838816e7bfd93b3",
+      "branch": "refs/heads/claude/local-openfoam-env-3fb438",
+      "status_returncode": 0,
+      "status": ""
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/nifty-swartz-e1c3db",
+      "head": "bdf65333f78948068cf0038ed7f099c2f034edbb",
+      "branch": "refs/heads/claude/nifty-swartz-e1c3db",
+      "status_returncode": 0,
+      "status": ""
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/recursing-jackson-15f62e",
+      "head": "0ac5fbcbaf4585e89ac8f365fd26923275cee469",
+      "branch": null,
+      "status_returncode": 0,
+      "status": ""
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/status-review-parallel-work-67587c",
+      "head": "bdf65333f78948068cf0038ed7f099c2f034edbb",
+      "branch": "refs/heads/claude/status-review-parallel-work-67587c",
+      "status_returncode": 0,
+      "status": ""
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/t20b-registered-feasibility-a6d636",
+      "head": "85674cf055bd8f6100eebe11146274e10ba93736",
+      "branch": "refs/heads/exp/t20b-registered-feasibility",
+      "status_returncode": 0,
+      "status": ""
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/v18-mode01-8a6aa6",
+      "head": "e24e331442ead82ff0a09830dc821339fa349a15",
+      "branch": "refs/heads/claude/v18-mode01-8a6aa6",
+      "status_returncode": 0,
+      "status": ""
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09_review",
+      "head": "65d993fbfb475aa2353f1183e757c4cd48a0c7f7",
+      "branch": null,
+      "status_returncode": 0,
+      "status": ""
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09_w3c_r2",
+      "head": "200cdd352281d09374de000e616fdd2dffea8b06",
+      "branch": "refs/heads/fix/w3c-driver-nongate-round2",
+      "status_returncode": 0,
+      "status": "?? work"
+    }
+  ],
+  "active_claude_opencode_processes": [
+    {
+      "pid": 18826,
+      "ppid": 18754,
+      "cpu_pct": 0.0,
+      "rss_kib": 4128,
+      "elapsed": "02-13:30:34",
+      "executable": "/Applications/Claude.app/Contents/Helpers/chrome-native-host",
+      "cwd": "/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/com.anthropic.claudefordesktop.ShipIt.vPz80jk2/Claude.app/Contents/Helpers"
+    },
+    {
+      "pid": 23653,
+      "ppid": 1,
+      "cpu_pct": 0.0,
+      "rss_kib": 238512,
+      "elapsed": "54:21",
+      "executable": "/Applications/Claude.app/Contents/MacOS/Claude",
+      "cwd": "/"
+    },
+    {
+      "pid": 23666,
+      "ppid": 1,
+      "cpu_pct": 0.0,
+      "rss_kib": 7184,
+      "elapsed": "54:18",
+      "executable": "/Applications/Claude.app/Contents/Frameworks/Electron Framework.framework/Helpers/chrome_crashpad_handler",
+      "cwd": "/"
+    },
+    {
+      "pid": 23676,
+      "ppid": 23653,
+      "cpu_pct": 0.0,
+      "rss_kib": 66368,
+      "elapsed": "54:18",
+      "executable": "/Applications/Claude.app/Contents/Frameworks/Claude Helper.app/Contents/MacOS/Claude Helper",
+      "cwd": "/"
+    },
+    {
+      "pid": 23678,
+      "ppid": 23653,
+      "cpu_pct": 0.0,
+      "rss_kib": 65056,
+      "elapsed": "54:18",
+      "executable": "/Applications/Claude.app/Contents/Frameworks/Claude Helper.app/Contents/MacOS/Claude Helper",
+      "cwd": "/"
+    },
+    {
+      "pid": 23685,
+      "ppid": 23653,
+      "cpu_pct": 0.0,
+      "rss_kib": 80064,
+      "elapsed": "54:18",
+      "executable": "/Applications/Claude.app/Contents/Frameworks/Claude Helper (Renderer).app/Contents/MacOS/Claude Helper (Renderer)",
+      "cwd": "/"
+    },
+    {
+      "pid": 23687,
+      "ppid": 23653,
+      "cpu_pct": 0.0,
+      "rss_kib": 284272,
+      "elapsed": "54:17",
+      "executable": "/Applications/Claude.app/Contents/Frameworks/Claude Helper (Renderer).app/Contents/MacOS/Claude Helper (Renderer)",
+      "cwd": "/"
+    },
+    {
+      "pid": 23706,
+      "ppid": 23653,
+      "cpu_pct": 0.0,
+      "rss_kib": 66560,
+      "elapsed": "54:15",
+      "executable": "/Applications/Claude.app/Contents/Frameworks/Claude Helper.app/Contents/MacOS/Claude Helper",
+      "cwd": "/"
+    },
+    {
+      "pid": 23719,
+      "ppid": 23653,
+      "cpu_pct": 0.0,
+      "rss_kib": 62416,
+      "elapsed": "54:14",
+      "executable": "/Applications/Claude.app/Contents/Frameworks/Claude Helper.app/Contents/MacOS/Claude Helper",
+      "cwd": "/"
+    },
+    {
+      "pid": 23780,
+      "ppid": 23653,
+      "cpu_pct": 0.0,
+      "rss_kib": 56304,
+      "elapsed": "54:13",
+      "executable": "/Applications/Claude.app/Contents/Frameworks/Claude Helper.app/Contents/MacOS/Claude Helper",
+      "cwd": "/"
+    },
+    {
+      "pid": 89055,
+      "ppid": 70046,
+      "cpu_pct": 4.4,
+      "rss_kib": 252928,
+      "elapsed": "02-03:11:20",
+      "executable": "opencode",
+      "cwd": "/Users/sota/projects/life_OS/pendant/lifeos-pendant"
+    },
+    {
+      "pid": 90765,
+      "ppid": 90378,
+      "cpu_pct": 0.1,
+      "rss_kib": 613856,
+      "elapsed": "02-03:10:01",
+      "executable": "opencode",
+      "cwd": "/Users/sota/projects/FomulaTMU/sim_overall"
+    },
+    {
+      "pid": 94620,
+      "ppid": 94338,
+      "cpu_pct": 3.8,
+      "rss_kib": 969232,
+      "elapsed": "02-03:06:50",
+      "executable": "opencode",
+      "cwd": "/Users/sota/projects/FomulaTMU/sim_overall"
+    },
+    {
+      "pid": 97323,
+      "ppid": 97234,
+      "cpu_pct": 1.3,
+      "rss_kib": 700992,
+      "elapsed": "02-03:03:52",
+      "executable": "opencode",
+      "cwd": "/Users/sota/projects/FomulaTMU/sim_overall"
+    },
+    {
+      "pid": 98833,
+      "ppid": 98706,
+      "cpu_pct": 2.6,
+      "rss_kib": 819760,
+      "elapsed": "02-03:02:22",
+      "executable": "opencode",
+      "cwd": "/Users/sota/projects/FomulaTMU/sim_overall"
+    },
+    {
+      "pid": 6528,
+      "ppid": 895,
+      "cpu_pct": 0.7,
+      "rss_kib": 215424,
+      "elapsed": "02-02:53:39",
+      "executable": "opencode",
+      "cwd": "/Users/sota/projects/FomulaTMU/sim_overall"
+    }
+  ],
+  "docker_ps": {
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "uptime": {
+    "returncode": 0,
+    "stdout": "3:38  up 23 days,  2:46, 7 users, load averages: 3.56 3.01 3.14",
+    "stderr": ""
+  },
+  "issues": [
+    {
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/62",
+      "title": "FID-01: fidelity go/no-go of the central hypothesis without an optimizer (M3a)",
+      "issue_number": 62,
+      "state": "open",
+      "user": {
+        "login": "ramhachi",
+        "name": "ramhachi",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/129347513?v=4",
+        "id": 129347513
+      },
+      "assignees": null,
+      "labels": null,
+      "milestone": null,
+      "state_reason": null,
+      "created_at": "2026-10-16T03:00:34Z",
+      "updated_at": "2026-10-22T17:32:09Z",
+      "closed_at": null,
+      "display_url": "https://github.com/ramhachi/CFD_opt_sdf/issues/62",
+      "display_title": "FID-01: fidelity go/no-go of the central hypothesis without an optimizer (M3a)",
+      "body_sha256": "f684c0ae00248a87d842de6f14e4cd41e2612b776b86764283a41a79b5b3a21e"
+    },
+    {
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/63",
+      "title": "ROADMAP: 実用 SDF 最適化システムまでの実行インデックス（権威は docs/phase_plan.md）",
+      "issue_number": 63,
+      "state": "open",
+      "user": {
+        "login": "ramhachi",
+        "name": "ramhachi",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/129347513?v=4",
+        "id": 129347513
+      },
+      "assignees": null,
+      "labels": null,
+      "milestone": null,
+      "state_reason": null,
+      "created_at": "2026-10-18T12:15:34Z",
+      "updated_at": "2026-10-22T13:58:52Z",
+      "closed_at": null,
+      "display_url": "https://github.com/ramhachi/CFD_opt_sdf/issues/63",
+      "display_title": "ROADMAP: 実用 SDF 最適化システムまでの実行インデックス（権威は docs/phase_plan.md）",
+      "body_sha256": "1d604b4f3c77780e88cc92a37d4a9e7e6c300563ebf683b78fb09c15da33af11"
+    },
+    {
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/64",
+      "title": "SCREEN-01 (M3b-1): 固定トポロジーのスクリーニングと応答曲面（L1 Re80 縮約デモ）",
+      "issue_number": 64,
+      "state": "open",
+      "user": {
+        "login": "ramhachi",
+        "name": "ramhachi",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/129347513?v=4",
+        "id": 129347513
+      },
+      "assignees": null,
+      "labels": null,
+      "milestone": null,
+      "state_reason": null,
+      "created_at": "2026-10-18T12:15:35Z",
+      "updated_at": "2026-10-22T17:32:19Z",
+      "closed_at": null,
+      "display_url": "https://github.com/ramhachi/CFD_opt_sdf/issues/64",
+      "display_title": "SCREEN-01 (M3b-1): 固定トポロジーのスクリーニングと応答曲面（L1 Re80 縮約デモ）",
+      "body_sha256": "4ce27249a0131d329e4213f0e5d0b51a1affbe4a5e5a584547c8a9ee23061019"
+    },
+    {
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/65",
+      "title": "XV-01 (M3b-2): 最終候補の独立 body-fitted CFD 検証（L2）",
+      "issue_number": 65,
+      "state": "open",
+      "user": {
+        "login": "ramhachi",
+        "name": "ramhachi",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/129347513?v=4",
+        "id": 129347513
+      },
+      "assignees": null,
+      "labels": null,
+      "milestone": null,
+      "state_reason": null,
+      "created_at": "2026-10-18T12:15:36Z",
+      "updated_at": "2026-10-22T17:32:20Z",
+      "closed_at": null,
+      "display_url": "https://github.com/ramhachi/CFD_opt_sdf/issues/65",
+      "display_title": "XV-01 (M3b-2): 最終候補の独立 body-fitted CFD 検証（L2）",
+      "body_sha256": "d065f2360907b4aec610acad93126f5a289661c2c554ebbce4ead7176ef77a4f"
+    },
+    {
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/66",
+      "title": "M4: 評価器と製品範囲の決定（L3 への入口、または撤退の登録）",
+      "issue_number": 66,
+      "state": "open",
+      "user": {
+        "login": "ramhachi",
+        "name": "ramhachi",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/129347513?v=4",
+        "id": 129347513
+      },
+      "assignees": null,
+      "labels": null,
+      "milestone": null,
+      "state_reason": null,
+      "created_at": "2026-10-18T12:15:38Z",
+      "updated_at": "2026-10-22T13:58:51Z",
+      "closed_at": null,
+      "display_url": "https://github.com/ramhachi/CFD_opt_sdf/issues/66",
+      "display_title": "M4: 評価器と製品範囲の決定（L3 への入口、または撤退の登録）",
+      "body_sha256": "aece3816199e8feafec45b41157ff013d54a5d27ce5c97c23b284379f0a48e05"
+    },
+    {
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/70",
+      "title": "GEOM-03: 表現物体の幅・void・凍結境界の複合ゲートを独立データで検証する",
+      "issue_number": 70,
+      "state": "open",
+      "user": {
+        "login": "ramhachi",
+        "name": "ramhachi",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/129347513?v=4",
+        "id": 129347513
+      },
+      "assignees": null,
+      "labels": null,
+      "milestone": null,
+      "state_reason": null,
+      "created_at": "2026-10-22T08:24:04Z",
+      "updated_at": "2026-10-22T13:58:48Z",
+      "closed_at": null,
+      "display_url": "https://github.com/ramhachi/CFD_opt_sdf/issues/70",
+      "display_title": "GEOM-03: 表現物体の幅・void・凍結境界の複合ゲートを独立データで検証する",
+      "body_sha256": "692e18e2e0b78208ac94630cea50a79da3c17c16c3df0d1b47467b7cbe6e04c5"
+    }
+  ],
+  "owner_FID_manifest_recheck": {
+    "path": "docs/evidence/fid01_2026_10_21/SHA256SUMS",
+    "sha256": "06b4d6258439d1d93ea1fca241dfb9aa9bd961765f35a956cd20444b625a32e0",
+    "entries": 660,
+    "missing": [],
+    "mismatches": []
+  },
+  "registered_GEOM_workdir_exists": false,
+  "other_worktrees_modified_by_this_continuation": false
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "geom03_post_result_reporting_audit_v1",
+  "evidence_class": "read_only_interpretation_and_byte_identity_audit_not_a_new_plan_or_source_review",
+  "reviewer": "native inherited geometry reviewer",
+  "disposition": "CONSISTENT_WITH_REGISTERED_NO_GO",
+  "findings_requiring_result_reclassification": [],
+  "observations": [
+    "W40_th1_q0 matches its saved row, registered40degree wedge/45degree orientation/firstQ2,12thin-tipnegative nodes,validhalo/P1/P2,R3soliddefect0.023385358667337135m<tau0.025m,compositepass; validK2counterexample.",
+    "T1_th0_q0 matches its saved row,pass_or_unmeasured expectation,validhalo/P1/P2,coarse/refined1component,R3solidinf/compositefail; nonempty sampled solid with no eroded point is a measured rule rejection,not missing input; validK4counterexample.",
+    "complete=true,534checked,noincompletereasons imply NO_GO under protocol; passingK1/K3/K5/K6/H0 and28combos cannot override required failures.",
+    "Narrative limits the conclusion to registered sampled geometry and preserves manufacturing/continuous-topology/CFD caveats,noR3adoption,no terminalretry/retuning."
+  ],
+  "checked_paths": [
+    "docs/evidence/geom03_2026_10_23/run/results.json",
+    "docs/evidence/geom03_2026_10_23/run/rows.jsonl",
+    "docs/evidence/geom03_2026_10_23/run/counterexamples.json",
+    "docs/evidence/geom03_2026_10_23/result_receipt.json",
+    "docs/evidence/geom03_2026_10_23/result.md"
+  ],
+  "actions": "read documents, compare saved row dictionaries and SHA256; no array/checker/generator/seed/test/CFD execution or file/git mutation",
+  "source_review_rounds_added": 0,
+  "scientific_attempts_added": 0,
+  "qualification_flags": "all false unchanged",
+  "shape_update_allowed": false
+}

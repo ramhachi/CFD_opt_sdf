@@ -1,0 +1,104 @@
+{
+  "schema": "geom03_formal_plan_review_v1",
+  "round": 1,
+  "source_commit": "73802a5bef333bce63cd8ff34644304371387a37",
+  "reviewed_protocol_sha256": "400c306e66a5a00acd9eb847e8e9370b1d106dfcacdffcfc81be391c945567b0",
+  "reviewed_snapshot": "docs/evidence/geom03_2026_10_23/plan_review_snapshot.md",
+  "outcome": "NEEDS_FIXES_RESOLVED_BY_PARENT_BEFORE_OUTCOMES",
+  "angles": [
+    {
+      "angle": "numerical semantics and independent computation",
+      "worker": "OpenCode Go CLI",
+      "requested_model": "opencode-go/mimo-v2.6-flash",
+      "actual_model": "CLI-selected model; provider internal routing unobserved",
+      "delivered": true,
+      "finding_count": 4
+    },
+    {
+      "angle": "governance, completeness and fail-closed registration",
+      "worker": "OpenCode Go CLI",
+      "requested_model": "opencode-go/glm-5.3-flash",
+      "actual_model": "CLI-selected model; provider internal routing unobserved",
+      "delivered": true,
+      "finding_count": 4
+    },
+    {
+      "angle": "analytic geometry and intended observables",
+      "worker": "native inherited Codex geometry reviewer",
+      "requested_model": "inherited parent model",
+      "actual_model": "inherited parent model",
+      "delivered": true,
+      "finding_count": 1
+    }
+  ],
+  "resolutions": [
+    {
+      "id": "NUM-1",
+      "finding": "R0 cell occupancy arithmetic unspecified",
+      "resolution": "Pin existing float32 corner-addition order, .125 multiplication and strict sign; no float64 mean substitution."
+    },
+    {
+      "id": "NUM-2",
+      "finding": "Noise vector draw ordering ambiguous",
+      "resolution": "Full grid float64 C-order draw, then active mask; left-to-right basis sum and parent addition once."
+    },
+    {
+      "id": "NUM-3",
+      "finding": "Checker morphology boundary could differ",
+      "resolution": "Closed radius-three digital ball, erosion border=1 and dilation border=0, matched finite-array domain."
+    },
+    {
+      "id": "NUM-4",
+      "finding": "K4 quantifiers / positive R0 control not scored",
+      "resolution": "Every registered K4 row; positive margin R0 must pass P1 and composite."
+    },
+    {
+      "id": "GOV-1",
+      "finding": "Global feature-presence rule contradicts intentional lost neck and short fin",
+      "resolution": "Explicit per-family K2 predicates; N2 overlap split observable; F1 analytic/refined control with reported but nonmandatory coarse protruding nodes."
+    },
+    {
+      "id": "GOV-2",
+      "finding": "Resume may bypass terminal one-attempt / budget",
+      "resolution": "Only nonterminal verified interrupted state; terminal artifacts refuse resume; original start includes downtime and resource/dependency gates rechecked."
+    },
+    {
+      "id": "GOV-3",
+      "finding": "Disjointness could be vacuous or depend on missing old hashes",
+      "resolution": "Bind old task stream/source and all99 native phi hashes; reconstruct all250 old combo input identities before new outcomes; no measurement replay or replacement draws."
+    },
+    {
+      "id": "GOV-4",
+      "finding": "P1 boundary cast not fixed",
+      "resolution": "Pin float32 value/bits and float64 comparison threshold; no added tolerance."
+    },
+    {
+      "id": "GEO-1",
+      "finding": "F1 second Q2 theta0 has no represented protrusion at coarse nodes",
+      "resolution": "Treat as declared analytic/refined tolerance control; no overlap-with-parent node can count as protrusion proof. Keep all placements and K3 pass expectation."
+    },
+    {
+      "id": "PARENT-COVERAGE-1",
+      "finding": "Initial168 rows lacked long thin fin and open slot",
+      "resolution": "Before outcomes add F2 and V4/V5 at four placements each;180 total. Keep thresholds and one-attempt budget unchanged."
+    }
+  ],
+  "failed_delivery_attempts": [
+    {
+      "requested_model": "opencode-go/deepseek-v4.1-flash",
+      "actual_model": "CLI-selected model",
+      "reason": "geometry angle exhausted output/reasoning length without delivered review",
+      "attempt_number": 1
+    },
+    {
+      "requested_model": "opencode-go/glm-5.3-flash",
+      "actual_model": "CLI-selected model",
+      "reason": "geometry recovery still undelivered after substantial reasoning; parent terminated own worker and routed same angle to native",
+      "attempt_number": 2
+    }
+  ],
+  "workflow_deviation": "Engineering drafts started while plan reviews were running. No registered array or seed executed. Accepted findings must be integrated before the single source review and freeze. This overlap is not represented as prior review acceptance.",
+  "candidate_thresholds_changed": false,
+  "new_registered_arrays_generated": false,
+  "scientific_verdict": null
+}
