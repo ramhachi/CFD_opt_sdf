@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import importlib.util
+import sys
 from pathlib import Path
 
 import pytest
@@ -35,6 +36,15 @@ _PINNED_SOURCE_REQUIRES_GMSH = {
 }
 _NO_GMSH = importlib.util.find_spec("gmsh") is None
 
+# Pinned runners for Kaggle Linux / local Docker import POSIX-only modules (fcntl, resource); their tests cannot be imported on Windows.
+collect_ignore = ["test_candidate_c_w2a_plan.py", "test_geom03.py", "test_xfid_gridphase_x2.py", "test_xfid_gridphase_x3.py"] if sys.platform == "win32" else []
+
+# Exact replays of records produced on macOS arm64; Linux runners differ in the last float digit (as LOCAL-OF-01 found for the Python stack).
+_PINNED_SOURCE_MACOS_BYTES = {
+    "tests/test_p22_v17_volume_semantics_audit.py::test_reconstruction_and_frozen_comparison_replay",
+    "tests/test_grid02_evidence.py::test_the_analysis_is_the_registered_one_and_reproduces_from_the_kept_output",
+}
+
 
 def pytest_collection_modifyitems(items):
     for item in items:
@@ -42,3 +52,5 @@ def pytest_collection_modifyitems(items):
             item.add_marker(requires_work(path))
         if _NO_GMSH and item.nodeid in _PINNED_SOURCE_REQUIRES_GMSH:
             item.add_marker(pytest.mark.skip(reason="gmsh not installed (not a declared dependency)"))
+        if sys.platform != "darwin" and item.nodeid in _PINNED_SOURCE_MACOS_BYTES:
+            item.add_marker(pytest.mark.skip(reason="byte replay of a macOS-produced record"))
