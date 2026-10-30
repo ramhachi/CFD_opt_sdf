@@ -4,7 +4,8 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
+    branches: [main, codex/kaggle-batch-migration]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -28,6 +29,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # lineage tests read frozen source with `git show <commit>:<path>`
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
