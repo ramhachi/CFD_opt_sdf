@@ -10,7 +10,8 @@ the current production path.
 ## Current checkpoint (2026-10-23)
 
 Read [STATE.md](STATE.md), the [latest roadmap amendment](phase_plan.md#2026-10-23-geom-03-plan-review-and-implementation),
-and the [evidence review and literature comparison](roadmap_review_2026_10_22.md).
+the [evidence review and literature comparison](roadmap_review_2026_10_22.md),
+and the [2026-10-24 status review, literature survey and research-direction proposal](roadmap_review_2026_10_24.md) (subordinate to the roadmap).
 UNC-01 is `M2_COMPLETE`; FID-01 is registered `FID01_GO` (result b2314d9d, integration458e2df5). SCREEN gain2.70% and XV OF gain1.27% come from that record; pure heave is a failed secondary arm.
 The [FID receipt and SCREEN/XV handoff](fid01_to_screen_xv_handoff_2026_10_23.md) binds the exact values, units and secondary labels to the written-once owner analysis.
 T2-0b/c/d are registered NO-GO outcomes and #57 is closed for the completed feasibility investigation.
