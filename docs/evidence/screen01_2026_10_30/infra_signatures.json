@@ -1,0 +1,49 @@
+{
+ "schema": "screen01-infra-signatures-v1",
+ "registration": "docs/screen01_registration_2026_10_30.md section 9 (INFRA_LOSS), section 5.11.17, section 10 (freeze 1)",
+ "default": "NOT_INFRASTRUCTURE",
+ "default_statement": "A kernel that ended with ERROR before its last run, or with no output, and whose evidence matches none of the signatures below is NOT infrastructure: its runs are DATA_LOSS (registration 5.1, 5.9), never a reason to rerun. A kernel that ended DONE and passes harness verify is complete.",
+ "rerun_rule": "One identical rerun per INFRA_LOSS kernel; the first valid output is authoritative; both are archived; a kernel lost again is declared to the analyzer as --lost KERNEL=SIGNATURE_ID, citing the id of the signature its failure matched.",
+ "evidence": "ERROR.txt of the kernel output directory, the Kaggle log (JSON list of {stream_name, time, data}; plain text is accepted), the text of `kaggle kernels status`, harness_index.json of the output directory.",
+ "evaluation_order": ["VERIFY_FAILED", "SESSION_KILL", "JULIA_INSTALL", "GPU_IDENTITY", "PLATFORM_ERROR"],
+ "signatures": [
+  {
+   "id": "VERIFY_FAILED",
+   "source": "harness verify of the kernel output (scripts/fid01/fid01_harness.py verify)",
+   "pattern": null,
+   "condition": "the kernel output fails harness verify (checked first, also for a kernel that wrote DONE)",
+   "meaning": "the output cannot be trusted; infrastructure loss of the kernel"
+  },
+  {
+   "id": "SESSION_KILL",
+   "source": "kernel output directory",
+   "pattern": null,
+   "condition": "the output directory has neither DONE nor ERROR.txt (the session ended without the runner's terminal marker)",
+   "meaning": "a session kill: the runner never reached its DONE or ERROR branch"
+  },
+  {
+   "id": "JULIA_INSTALL",
+   "source": "ERROR.txt, Kaggle log, status text (regex search)",
+   "pattern": "Pkg\\.instantiate failed|Julia archive SHA-256 mismatch|Unsatisfiable requirements|RegistryException|Could not resolve host|Temporary failure in name resolution",
+   "before_any_state": true,
+   "condition": "the pattern matches and harness_index.json lists no complete state",
+   "meaning": "Julia install or Pkg.instantiate failure before any state ran (a failure after a state completed is not this signature)"
+  },
+  {
+   "id": "GPU_IDENTITY",
+   "source": "ERROR.txt, Kaggle log, status text (regex search)",
+   "pattern": "independent CUDA device UUID probe failed|observed CUDA singleton/default UUID differs|must be a Tesla T4|physical GPU index 0 must occur|nvidia-smi inventory|no CUDA-capable device|CUDA_ERROR_NO_DEVICE",
+   "before_any_state": false,
+   "condition": "the pattern matches",
+   "meaning": "GPU identity mismatch in the harness probe (not a Tesla T4, wrong or missing device, UUID differs from the selected GPU)"
+  },
+  {
+   "id": "PLATFORM_ERROR",
+   "source": "ERROR.txt, Kaggle log, status text (regex search)",
+   "pattern": "Bad Gateway|Service Unavailable|Gateway Time-?out|Internal Server Error|<!DOCTYPE html>",
+   "before_any_state": false,
+   "condition": "the pattern matches",
+   "meaning": "a Kaggle platform error page or a `kaggle kernels status` error"
+  }
+ ]
+}

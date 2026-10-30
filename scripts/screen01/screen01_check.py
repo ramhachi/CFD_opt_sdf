@@ -1,18 +1,12 @@
-"""SCREEN-01 (#64) independent second implementation of the decision tables (registration rev. 1 s5; interface: scripts/screen01/INTERFACE.md).
+"""SCREEN-01 (#64) independent second implementation of the decision tables (registration rev. 1 s5, with the s5.2 rewrite and s5.11; interface: scripts/screen01/INTERFACE.md).
 
 check(T) -> the stage's comparable keys; compare(a, b, stage) -> discrepancy paths. numpy/scipy/stdlib only; no code shared with the analyzer.
-Output shapes (nested keys the interface leaves open): fit {downforce:{coef}, drag:{coef}, rank, cond, residual_sd:{downforce,drag}}; targets {"1.0"|"1.5"|"2.0": {u_star,y_pred,z_pred}};
-gated [[target_index(0-based), [u x3 rounded 6]]]; candidates {name: {delta_bar:{downforce,drag}, P, se_eff:{...}, feasible}}; G {decision, GAIN_RESOLVED_ABOVE_MIN};
-D {decision: PASS|VIOLATION, label}; R3 {label, R3_RATIO_IN_BAND, G48_ABOVE_MIN, G48_MARGIN (N), R3_E2_EXCEEDED, R3_DRAG_SAME_SIGN}; NC {g1|f32: {z, label}};
-determinism {g1k11|f32a: {max_abs_diff:{downforce,drag}, nondeterminism}}; generation_drift {max_abs_diff:{...}, drift}; controls {OPT_VS_RANDOM, OPT_VS_MANUAL, RANDOM_FEASIBLE_GAIN, K_MISMATCH};
-selection_bias {b_K:{central,upper}, g_XV_exp:{central,pessimistic}, XV_MARGIN:{central,pessimistic}}; confirmation {f32|f48: {delta_bar, sigma_d, se_eff, P}}.
-`data_loss` entries are `state@kernel-table-key@phase` (g1, g2, f32, f48) for runs PRESENT in T["runs"]; a lost kernel contributes nothing and is not enumerated.
-An extra key `gating_mismatch` (list of paths) is present only when T["gating"] disagrees with the regenerated gating; compare() reports it.
-Interpretive choices (registration silent or ambiguous; each is also commented where it is applied): t = ppf(0.95, dof) one-sided; sample SD (ddof 1); residual SD = sqrt(RSS/(n-9));
-pooled SE_eff = RMS over points, RS_FIT_POOR if either response is poor; cond = 2-norm of the n x 9 matrix (None if rank < 9); grid argmax ties -> first in C order (pitch, camber, reflex ascending);
-cloud = u* + 0.25 (2x - 1), x from Sobol(seed 20261032 + 0-based target index), clipped; evaluated names = amplitudes rounded to 1e-3 of every role with a u; a point already taken by an earlier list in the
-round-robin is skipped; "targets with candidates" = lists non-empty before that dedupe; proposals = per target (target order) the admissible argmax y, then the rest by y; 0.25 bound not applied to parent_repeat;
-search_complete counts only parent/axial/design/proposal phases (R, M, ref, NC losses have no effect: s5.9); determinism and drift compare both responses with the downforce floor; K_opt = all C_opt states.
+Shapes follow INTERFACE.md. Choices the interface leaves open: fit {downforce:{coef}, drag:{coef}, rank, cond, residual_sd:{downforce,drag}}; targets keys "1", "1.5", "2" (%g);
+gated [[0-based owning target index, [u x3 rounded 6]]]; candidates {name: {delta_bar, P, se_eff, feasible}}; determinism {g1k11|f32a: {max_abs_diff, nondeterminism, judged}}.
+`data_loss` entries are `state@kernel-table-key@phase` (g1, g2, f32, f48) of the runs PRESENT in T["runs"] (s5.11.1: uniform for every role; a run without a valid parent run at its phase is unpaired and not listed).
+An extra key `gating_mismatch` (list of paths) is present only when T["gating"] disagrees with the regenerated gating (u, target_index, y_pred, z_pred by position, length, duplicate names, roles.proposals); compare() reports it.
+Readings where the text is still open (see the module's comments): the Delta_bar_DF,48 of the R3 ratio/E2 labels stays the Phi_48 mean (s5.11.11 redefines only the flow_32 side); an `ok = false` repeat is NOT_JUDGED even if its force is
+non-finite; a run whose own result is invalid but whose parent run at that phase is invalid too is not listed; DATA_G2 is not raised by a declared-lost g2 kernel beyond the proposals lacking phases.
 """
 from __future__ import annotations
 
@@ -39,6 +33,7 @@ LO, HI = np.array([-1.0, -1.5, -1.0]), np.array([1.0, 1.0, 1.0])
 N_GRID, N_CLOUD, R_CLOUD, SEED_CLOUD = 81, 256, 0.25, 20261032
 GATE_CAP, GATE_ROUND, N_PER_TARGET, N_PROP = 36, 4, 2, 4
 RESP = ("downforce", "drag")
+FREEZE1 = ("axial", "design", "manual", "ref", "random")
 PHASES = {"g1": (11, 12), "g2": (11, 12), "f32": (13, 14, 15, 16), "f48": (13, 14)}
 KERNELS = {"f32a": ("f32", (13, 14)), "f32b": ("f32", (15, 16)), "f48k13": ("f48", (13,)), "f48k14": ("f48", (14,))}
 
@@ -92,11 +87,13 @@ class _D:
             par = tab.get(s.parent, {})
             for n, ph in tab.items():
                 for k, r in ph.items():
-                    bad = not _valid(r)
-                    # choice: the 0.25 bound is not applied to parent_repeat (judged by the determinism rule, s5.5); ok/null loss still applies
-                    if not bad and s.roles.get(n, {}).get("role") != "parent_repeat":
+                    if n == s.parent:
+                        bad = not _valid(r)
+                    else:  # s5.11.1: uniform for every role (the repeat included); a run with no valid parent run at its phase enters no estimator and is not listed
                         p = par.get(k)
-                        bad = p is not None and _valid(p) and any(abs(r[x] - p[x]) > BOUND * abs(p[x]) for x in RESP)
+                        if p is None or not _valid(p):
+                            continue
+                        bad = not _valid(r) or any(abs(r[x] - p[x]) > BOUND * abs(p[x]) for x in RESP)
                     if bad:
                         s.lost.add((stage, n, k))
 
@@ -147,19 +144,16 @@ def _surface(D):
     rank = int(np.linalg.matrix_rank(X)) if n else 0
     sv = np.linalg.svd(X, compute_uv=False) if n else np.zeros(1)
     cond = float(sv[0] / sv[-1]) if rank == 9 else None  # 2-norm condition number of the n x 9 design matrix; undefined (None) when rank < 9
-    S = {"rank": rank, "cond": cond, "not_fit": rank < 9 or cond > 20, "beta": {}, "sd": {}, "poor": False}
-    for x in RESP:
-        S["sd"][x] = None
-        if rank < 9:
-            S["beta"][x] = None
-            continue
-        y = np.array([e["delta_bar"][x] for _, e in pts])
-        b = np.linalg.lstsq(X, y, rcond=None)[0]
-        S["beta"][x] = b
-        if n > 9:  # residual SD: sqrt(RSS / (n - 9))
-            S["sd"][x] = float(math.sqrt(float(np.sum((y - X @ b) ** 2)) / (n - 9)))
-            pooled = math.sqrt(math.fsum(e["se_eff"][x] ** 2 for _, e in pts) / n)  # pooled per-point SE_eff: root mean square
-            S["poor"] = S["poor"] or S["sd"][x] > 3 * pooled  # choice: POOR if either response is poor
+    S = {"rank": rank, "cond": cond, "not_fit": rank < 9 or cond > 20, "beta": {x: None for x in RESP}, "sd": {x: None for x in RESP}, "poor": None}
+    if not S["not_fit"]:  # on RS_NOT_FIT the coefficients and residual SDs stay null (cond is reported when rank = 9)
+        for x in RESP:
+            y = np.array([e["delta_bar"][x] for _, e in pts])
+            S["beta"][x] = b = np.linalg.lstsq(X, y, rcond=None)[0]
+            if n > 9:  # residual SD: sqrt(RSS / (n - 9)); null if n <= 9
+                S["sd"][x] = float(math.sqrt(float(np.sum((y - X @ b) ** 2)) / (n - 9)))
+        if n > 9:  # RS_FIT_POOR: either response's residual SD > 3 x the RMS of that response's per-point SE_eff; undefined (null) otherwise
+            rms = {x: math.sqrt(math.fsum(e["se_eff"][x] ** 2 for _, e in pts) / n) for x in RESP}
+            S["poor"] = any(S["sd"][x] > 3 * rms[x] for x in RESP)
     S["tg"] = {}
     if not S["not_fit"]:
         U, XG = _grid()
@@ -171,14 +165,14 @@ def _surface(D):
 
 
 def _lists(D, S):  # per-target candidate lists: u*_tau then the Sobol cloud (filtered, y descending), already-evaluated names excluded
-    ev = {_key(r["u"]) for r in D.roles.values() if r.get("u") is not None}
+    ev = {_key(r["u"]) for r in D.roles.values() if r["role"] in FREEZE1 and r.get("u") is not None}  # axial, design, M, ref, R
     out = []
     for ti, tau in enumerate(TARGETS):
-        if S["tg"].get(ti) is None:
+        if S["tg"].get(ti) is None or S["tg"][ti][1] <= 0:  # no feasible grid point, or no predicted gain (y* <= 0): the target contributes nothing (still reported)
             out.append([])
             continue
         us, ys, _ = S["tg"][ti]
-        # choice: cloud = u* + R (2x - 1) for the unit-cube Sobol point x (a max-norm ball of radius R), then clipped to the box; target index is 0-based
+        # cloud = clip(u* + R (2x - 1), lo, hi) for the unit-cube Sobol point x (s5.2); the target index is 0-based
         cu = np.clip(us + R_CLOUD * (2 * qmc.Sobol(d=3, scramble=True, seed=SEED_CLOUD + ti).random(N_CLOUD) - 1), LO, HI)
         Xc = _quad(cu)
         yc, zc = Xc @ S["beta"]["downforce"], Xc @ S["beta"]["drag"]
@@ -208,7 +202,7 @@ def _gate(T, D, S):  # regenerate the gated order; admissibility from T["gating"
             if j < len(L) and _key(L[j]) not in taken:
                 taken.add(_key(L[j]))
                 order.append((ti, L[j]))
-    has, cnt, pos = [bool(L) for L in lists], [0] * len(TARGETS), 0
+    has, cnt, pos = [any(ti == t for ti, _ in order) for t in range(len(TARGETS))], [0] * len(TARGETS), 0  # targets with >= 1 queued point AFTER the cross-list dedup
     while pos < len(order) and len(gated) < GATE_CAP:
         for ti, u in order[pos:pos + GATE_ROUND]:
             i = len(gated)
@@ -233,6 +227,8 @@ def _gate(T, D, S):  # regenerate the gated order; admissibility from T["gating"
             break
     if len(G) > len(gated):
         mism.append(f"gating[{len(gated)}]")
+    names = [g.get("name") for g in G]
+    mism += [f"gating[{i}].name" for i, n in enumerate(names) if n in names[:i]]  # INTERFACE: every name appears at most once
     return gated, items, mism
 
 
@@ -244,10 +240,10 @@ def _rs(T, D, S):
         "fit": {"downforce": {"coef": None if b["downforce"] is None else [float(v) for v in b["downforce"]]},
                 "drag": {"coef": None if b["drag"] is None else [float(v) for v in b["drag"]]},
                 "rank": S["rank"], "cond": S["cond"], "residual_sd": dict(S["sd"])},
-        "rs_fit_poor": bool(S["poor"]), "rs_not_fit": bool(S["not_fit"]),
+        "rs_fit_poor": S["poor"], "rs_not_fit": bool(S["not_fit"]),
         "u_star_1": None if t1 is None else [float(v) for v in t1[0]], "y_star_1": None if t1 is None else t1[1],
         "pool_limited_pre": t1 is not None and t1[1] >= X_STAR,
-        "targets": {repr(float(tau)): ({"u_star": None, "y_pred": None, "z_pred": None} if tg.get(ti) is None else
+        "targets": {f"{tau:g}": ({"u_star": None, "y_pred": None, "z_pred": None} if tg.get(ti) is None else
                                        {"u_star": [float(v) for v in tg[ti][0]], "y_pred": tg[ti][1], "z_pred": tg[ti][2]})
                     for ti, tau in enumerate(TARGETS)},
     }
@@ -318,7 +314,8 @@ def _R3(D, s):
     if not e:
         return None
     d, se = e["delta_bar"]["downforce"], e["se_eff"]["downforce"]
-    b = D.est("f32", s, phases=(13, 14))  # Delta_bar_32(k13, k14): the f32 phases 13 and 14 as available (not restricted to the f48 phase set)
+    common = sorted(set(D.d("f48", s)) & set(D.d("f32", s, (13, 14))))  # Delta_bar_32(k13, k14): the f32 mean over the phases common to Phi_48 and the finalist's f32 phases in {13, 14}
+    b = D.est("f32", s, phases=common) if common else None  # Delta_bar_48 itself stays the mean over Phi_48 (s5.11.11 redefines only the flow_32 side)
     d32 = b["delta_bar"]["downforce"] if b else None
     ratio = d / d32 if d32 else None
     return {"label": "R3_CONFIRMED" if d > 3 * se else "R3_SIGN_SPLIT" if d <= 0 else "R3_UNRESOLVED",
@@ -336,10 +333,14 @@ def _nc(D, stage):
     return {"z": z, "label": "CONSISTENT" if z <= 3.5 else "NOT_CONSISTENT"}
 
 
-def _det(D, stage):  # parent_repeat vs parent in the same kernel; both responses against the downforce floor (literal 'the parent's forces within the downforce floor')
-    d = D.d(stage, D.one("parent_repeat"))
-    m = {x: max(abs(v[i]) for v in d.values()) for i, x in enumerate(RESP)} if d else None
-    return {"max_abs_diff": m, "nondeterminism": bool(m and max(m.values()) > FLOOR["downforce"])}
+def _det(D, stage, k):  # raw parent_repeat vs raw parent of the same kernel and phase k (g1k11: 11; f32a: 13); both responses against the downforce floor, strict
+    r, p = D.tab[stage].get(D.one("parent_repeat"), {}).get(k), D.tab[stage].get(D.parent, {}).get(k)
+    if r is None or not r.get("ok") or p is None or not _valid(p):  # NOT_JUDGED: repeat absent / not ok (or no valid parent run to compare with)
+        return {"max_abs_diff": None, "nondeterminism": False, "judged": False}
+    if not _valid(r):  # ok but a non-finite force against a finite ok parent: not reproduced
+        return {"max_abs_diff": None, "nondeterminism": True, "judged": True}
+    m = {x: abs(r[x] - p[x]) for x in RESP}
+    return {"max_abs_diff": m, "nondeterminism": bool(max(m.values()) > FLOOR["downforce"]), "judged": True}
 
 
 def _ctrl(D, f, o, none, lab):  # per-phase e_k = Delta_f,k - Delta_o,k (downforce), t_{0.95,n-1} interval
@@ -362,10 +363,9 @@ def _passes(D, s):
 def _main(T, D, fin, ex):
     f, rb, M = fin["finalist"], fin["r_best"], D.one("manual")
     NC = {"g1": _nc(D, "g1"), "f32": _nc(D, "f32")}
-    det = {"g1k11": _det(D, "g1"), "f32a": _det(D, "f32")}
+    det = {"g1k11": _det(D, "g1", 11), "f32a": _det(D, "f32", 13)}
     a, b = D.tab["f32"].get(D.parent, {}).get(11), D.tab["g1"].get(D.parent, {}).get(11)  # parent replay (f32 phase 11) vs the g1 parent at phase 11, raw forces
-    ok = a is not None and b is not None and ("f32", D.parent, 11) not in D.lost and ("g1", D.parent, 11) not in D.lost
-    gd = {x: abs(a[x] - b[x]) for x in RESP} if ok else None
+    gd = {x: abs(a[x] - b[x]) for x in RESP} if a is not None and b is not None and _valid(a) and _valid(b) else None
     drift = {"max_abs_diff": gd, "drift": bool(gd and max(gd.values()) > FLOOR["downforce"])}  # both responses against the downforce floor
     e32, e48 = (D.est("f32", f), D.est("f48", f)) if f else (None, None)
     full = bool(e32 and e32["P"] >= 3)
@@ -386,8 +386,9 @@ def _main(T, D, fin, ex):
         ctrl["OPT_VS_RANDOM"] = _ctrl(D, f, rb, "RANDOM_NO_FEASIBLE", ("OPT_BEATS_RANDOM", "RANDOM_BEATS_OPT", "OPT_RANDOM_UNRESOLVED"))
         ctrl["OPT_VS_MANUAL"] = _ctrl(D, f, M, "MANUAL_NONE", ("OPT_BEATS_MANUAL", "MANUAL_BEATS_OPT", "OPT_MANUAL_UNRESOLVED"))
     # ---- s5.8 evaluation order
-    # F not completed (budget): a confirmation kernel that is neither declared lost nor has its parent runs in the table was never run
-    unrun = [k for k, (st, ph) in KERNELS.items() if k not in set(T.get("lost_kernels") or []) and not any(x in D.tab[st].get(D.parent, {}) for x in ph)]
+    # F not completed (budget): a confirmation kernel that is neither declared lost nor has any run row (of any state) at its phases was never run (s5.11.15)
+    lost = set(T.get("lost_kernels") or [])
+    unrun = [k for k, (st, ph) in KERNELS.items() if k not in lost and not any(x in rows for rows in D.tab[st].values() for x in ph)]
     if not (D.parent and D.d("g1", D.parent) and D.est("g1", D.one("nc") or "")):
         oc, cause = "SCREEN01_INCOMPLETE", ["DATA_G1"]                                                                              # 1
     elif NC["g1"]["label"] == "NOT_CONSISTENT" or det["g1k11"]["nondeterminism"]:
@@ -396,7 +397,8 @@ def _main(T, D, fin, ex):
         if ex["g1_ok"] and ex["fit_ok"] and ex["g2_ok"]:
             oc, cause = "SCREEN01_NO_GAIN", [fin["futility"]]
         else:
-            oc, cause = "SCREEN01_INCOMPLETE", ["DATA_REFINE" if not ex["fit_ok"] else "DATA_G1" if not ex["g1_ok"] else "DATA_G2"]
+            oc, cause = "SCREEN01_INCOMPLETE", (["DATA_G1"] if lost & {"g1k11", "g1k12"} or not ex["g1_ok"] else []) + (["DATA_REFINE"] if not ex["fit_ok"] else []) \
+                + (["DATA_G2"] if ex["fit_ok"] and not ex["g2_ok"] else [])  # all that apply, stage order (s5.11.7)
     elif unrun or not full or not e48 or NC["f32"]["label"] is None:                                                                 # 4
         oc, cause = "SCREEN01_INCOMPLETE", ["BUDGET" if unrun else "DATA_F"]
     elif NC["f32"]["label"] == "NOT_CONSISTENT" or det["f32a"]["nondeterminism"]:                                                    # 5

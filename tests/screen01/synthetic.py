@@ -146,9 +146,18 @@ def default_oracle(u) -> bool:
     return sum(sname(u).encode()) % 7 < 4
 
 
-def make(stage="main", *, by=BY, bz=BZ, noise=(0.0, 0.0), n_random=19, manual=True, oracle=None, edits=None, seed=0, n_grid=None) -> dict:
+def retarget(roles, role, order, u) -> None:
+    """Move the state of (role, order) to the point u (its name follows the §3.2 identity of u)."""
+    old = next(n for n, r in roles.items() if r["role"] == role and r["order"] == order)
+    roles[sname(u)] = {**roles.pop(old), "u": [float(x) for x in u]}
+
+
+def make(stage="main", *, by=BY, bz=BZ, noise=(0.0, 0.0), n_random=19, manual=True, oracle=None, edits=None, seed=0, n_grid=None, roles_edit=None) -> dict:
+    """roles_edit(roles, n_grid) may move registered states (retarget) before any force is generated."""
     n_grid, edits, oracle = n_grid or S.GRID_N, edits or {}, oracle or default_oracle
     roles = base_roles(n_random, manual)
+    if roles_edit:
+        roles_edit(roles, n_grid)
     T = {"schema": "screen01-T-v1", "stage": "rs", "roles": roles, "runs": {"g1": {}}, "lost_kernels": [], "gating": []}
     g1 = {s: ["11", "12"] for s in roles if roles[s]["role"] not in ("parent_repeat",)}
     fill(T, "g1", {**g1, REPEAT: ["11"]}, by, bz, noise, seed)
@@ -294,6 +303,71 @@ def _xv_edge(which, eps):
     return f
 
 
+# ---- truths and edits of the reconciliation branches (registration §5.2, §5.11) ---------------------------------------------------------------------
+BY_NO_GAIN_T2 = [1e-2, -2e-3, -1.6e-2, 0, 0, 0, 0, 0, 0]     # target 2 needs reflex >= 0.909, which costs more downforce than pitch and camber give: y*_2 < 0
+BZ_NO_GAIN_T2 = [0, 0, -3.3e-3, 0, 0, 0, 0, 0, 0]
+BY_ALL_NEG, BZ_ALL_NEG = [0, 0, 0, -1e-2, -1e-2, -1e-2, 0, 0, 0], [0, 0, -1e-2, 0, 0, 0, 0, 0, 0]   # downforce below the parent everywhere: y*_tau < 0 for every target
+BY_TIE, BZ_TIE = [1e-2, -1.2e-2, 0, -1e-3, 1e-3, 0, 0, 0, 0], [7e-3, -2e-3, 0, 0, 5e-4, 0, 0, 0, 0]  # no reflex dependence
+UC, K_BOWL = np.array([0.5, -0.5, 0.5]), 4e-3                 # downforce peak and drag minimum at the grid point UC; drag(UC) = -3.001e-3 N: feasible at tau = 2 only inside a ball of radius 0.016
+K_Z = (3e-3 + 1e-6) / 0.75
+BY_BOWL, BZ_BOWL = list(2 * K_BOWL * UC) + [-K_BOWL] * 3 + [0, 0, 0], list(-2 * K_Z * UC) + [K_Z] * 3 + [0, 0, 0]
+KEEP_9_FIT_UNDEFINED = (0, 1, 2, 3, 4, 5, 6, 7, 8)             # 6 axial + design 0-2: rank 9, cond 8.7, n = 9 (residual SD undefined)
+KEEP_9_NOT_FIT_COND = (0, 1, 2, 3, 4, 5, 6, 7, 11)             # 6 axial + design 0, 1, 5: rank 9, cond 139.7 > 20 (RS_NOT_FIT with rank 9)
+
+
+def search_states(roles=None):
+    return [n for n, r in sorted((roles or base_roles()).items(), key=lambda kv: (kv[1]["role"], kv[1]["order"])) if r["role"] in ("axial", "design")]
+
+
+def check_keep_sets():
+    """The two subsets above are what the comments say (computed, not trusted)."""
+    U = np.vstack([a[2] for a in AXIAL_U] + list(DESIGN_U))
+    for keep, ok in ((KEEP_9_FIT_UNDEFINED, lambda r, c: r == 9 and c <= 20), (KEEP_9_NOT_FIT_COND, lambda r, c: r == 9 and 50 < c < 1e6)):
+        X = P.quad9(U[list(keep)])
+        sv = np.linalg.svd(X, compute_uv=False)
+        assert ok(np.linalg.matrix_rank(X), sv[0] / sv[-1]), keep
+
+
+def _keep_only(keep):
+    """DATA_LOSS (ok = false) of both exploration phases of every axial / design state outside the kept indices (0-5 axial, 6-14 design)."""
+    def f(T, al):
+        for i, s in enumerate(al.axial + al.design):
+            if i not in keep:
+                for ph in ("11", "12"):
+                    set_run(T, "g1", s, ph, ok=False)
+    return f
+
+
+def _design_at_ustar1(by=BY, bz=BZ, order=3):
+    """A registered design point placed at u*_1 of the (noise-free) surface: its §3.2 name is then excluded from every candidate list."""
+    def f(roles, n_grid):
+        us = P.constrained_argmax(by, bz, P.M_D, n_grid, S.get_grid(n_grid))[0]
+        retarget(roles, "design", order, us)
+    return f
+
+
+def _random_at_cloud(by=BY, bz=BZ):
+    """A random-control state placed at the best cloud point of target 0 (the second point of its list)."""
+    def f(roles, n_grid):
+        res = P.propose(by, bz, lambda u: True, n_grid=n_grid, grid=S.get_grid(n_grid))
+        retarget(roles, "random", 0, res["gated"][3]["u"])
+    return f
+
+
+def _line_design(roles, n_grid):
+    for i, t in enumerate((-0.8, -0.6, -0.4, -0.2, 0.2, 0.4, 0.6, 0.8, 0.9)):
+        retarget(roles, "design", i, [t, 0.0, 0.0])
+
+
+def _lose_one_phase(k, ph="11"):
+    def f(T, al):
+        for s in (al.axial + al.design)[:k]:
+            set_run(T, "g1", s, ph, ok=False)
+    return f
+
+
+_DUP = dict(by=_weak(0.1), edits=e(g1=_best_design(0.012), g2=_g2_df(0.001)))      # u*_1 = u*_1.5 (a slack drag margin): one point under two targets
+
 BRANCHES = {
     # ---- stage rs ----
     "rs_base": ("rs", {}),
@@ -388,7 +462,33 @@ BRANCHES = {
     "main_d_zero_drag": ("main", dict(edits=e(f=_f(dr32=0.0)))),
     "main_r3_ratio_out_of_band": ("main", dict(edits=e(f=_f(df48=0.014)))),
     "main_r3_e2_exceeded_only": ("main", dict(edits=e(f=_f(df48=0.0175, dr48=2e-3)))),
-    "main_duplicate_target_point": ("main", dict(by=_weak(0.1), edits=e(g1=_best_design(0.012), g2=_g2_df(0.001)))),   # u*_1 = u*_1.5: one point under two targets
+    "main_duplicate_target_point": ("main", _DUP),   # u*_1 = u*_1.5: one point under two targets
+
+    # ---- reconciliation branches (registration §5.2, §5.11; docs/evidence/screen01_2026_10_30/crosscheck_reconciliation.md §3.3) ----
+    "rs_duplicate_target_point": ("rs", _DUP),
+    "fin_duplicate_target_point": ("finalist", _DUP),
+    "rs_target_no_predicted_gain": ("rs", dict(by=BY_NO_GAIN_T2, bz=BZ_NO_GAIN_T2)),
+    "fin_target_no_predicted_gain": ("finalist", dict(by=BY_NO_GAIN_T2, bz=BZ_NO_GAIN_T2)),
+    "rs_all_targets_no_predicted_gain": ("rs", dict(by=BY_ALL_NEG, bz=BZ_ALL_NEG)),
+    "fin_all_targets_no_predicted_gain": ("finalist", dict(by=BY_ALL_NEG, bz=BZ_ALL_NEG)),
+    "main_all_targets_no_predicted_gain": ("main", dict(by=BY_ALL_NEG, bz=BZ_ALL_NEG)),
+    "rs_argmax_tie": ("rs", dict(by=BY_TIE, bz=BZ_TIE)),
+    "rs_cloud_point_already_evaluated": ("rs", dict(roles_edit=_design_at_ustar1())),
+    "rs_cloud_point_as_random_state": ("rs", dict(roles_edit=_random_at_cloud())),
+    "rs_target_list_absorbed": ("rs", dict(by=BY_BOWL, bz=BZ_BOWL)),
+    "fin_target_list_absorbed": ("finalist", dict(by=BY_BOWL, bz=BZ_BOWL)),
+    "rs_fit_undefined": ("rs", dict(edits=e(g1=_keep_only(KEEP_9_FIT_UNDEFINED)))),
+    "rs_not_fit_cond": ("rs", dict(edits=e(g1=_keep_only(KEEP_9_NOT_FIT_COND)))),
+    "main_repeat_implausible_g1": ("main", dict(edits=e(g1=lambda T, al: set_run(T, "g1", al.repeat, "11", downforce=T["runs"]["g1"][al.parent]["11"]["downforce"] * 1.3)))),
+    "main_repeat_nonfinite_g1": ("main", dict(edits=e(g1=lambda T, al: set_run(T, "g1", al.repeat, "11", downforce=None)))),
+    "main_repeat_not_ok_f32a": ("main", dict(edits=e(f=lambda T, al: set_run(T, "f32", al.repeat, "13", ok=False)))),
+    "main_repeat_missing_f32a": ("main", dict(edits=e(f=lambda T, al: drop(T, "f32", al.repeat)))),
+    "main_incomplete_g1_kernel_and_refine": ("main", dict(by=_weak(0.1), edits=e(g1=lambda T, al: (lose(T, "g1k12"), _lose_one_phase(8)(T, al))))),
+    "main_incomplete_g1_phase_and_g2": ("main", dict(by=_weak(0.1), edits=e(g1=lambda T, al: set_run(T, "g1", al.axial[0], "12", ok=False),
+                                                                      g2=lambda T, al: set_run(T, "g2", al.proposals[0], "12", ok=False)))),
+    "main_incomplete_refine_degenerate_design": ("main", dict(by=_weak(0.1), roles_edit=_line_design)),
+    "main_r3_one_f48_phase_paired": ("main", dict(edits=e(f=lambda T, al: (lose(T, "f48k14"), _f(df32=[0.020, 0.030, 0.020, 0.030], dr32=[1e-3, -4e-3, -4e-3, -4e-3], df48=[0.0195], dr48=[1e-3])(T, al))))),
+    "main_budget_f48_not_run": ("main", dict(edits=e(f=lambda T, al: T["runs"].pop("f48")))),
 }
 
 

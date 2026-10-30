@@ -165,7 +165,7 @@ def test_refinement_stops_after_the_round_with_two_admissible_points_per_target(
 
 def test_rs_not_fit_gives_no_proposals_and_none_fields():
     r = res("rs_not_fit")
-    assert r["rs_not_fit"] is True and r["fit"]["rank"] < 9 and r["fit"]["downforce"]["coef"] is None and r["fit"]["cond"] is None and r["rs_fit_poor"] is False
+    assert r["rs_not_fit"] is True and r["fit"]["rank"] < 9 and r["fit"]["downforce"]["coef"] is None and r["fit"]["cond"] is None and r["rs_fit_poor"] is None and r["rs_fit_label"] == "RS_FIT_UNDEFINED"
     assert r["u_star_1"] is None and r["y_star_1"] is None and r["pool_limited_pre"] is False and r["gated"] == [] and r["proposals"] == []
     assert all(t["u_star"] is None for t in r["targets"].values()) and len(r["data_loss"]) == 16
 
@@ -309,7 +309,7 @@ OUTCOMES = {
     "main_no_gain_no_feasible": ("SCREEN01_NO_GAIN", ["NO_FEASIBLE_CANDIDATE"]),
     "main_no_gain_futility_gain": ("SCREEN01_NO_GAIN", ["GAIN_BELOW_MIN_AT_SELECTION"]),
     "main_incomplete_g1_kernel": ("SCREEN01_INCOMPLETE", ["DATA_G1"]),     # §5.9: a G1 kernel lost, NO_GAIN becomes INCOMPLETE
-    "main_incomplete_refine": ("SCREEN01_INCOMPLETE", ["DATA_REFINE"]),    # §5.9: RS_NOT_FIT from state-phase loss
+    "main_incomplete_refine": ("SCREEN01_INCOMPLETE", ["DATA_G1", "DATA_REFINE"]),    # §5.9 / §5.11.7: RS_NOT_FIT from state-phase loss (the lost phases are DATA_G1 too)
     "main_incomplete_g2": ("SCREEN01_INCOMPLETE", ["DATA_G2"]),            # §5.9: G2 lost, no finalist among the measured states
     # step 4
     "main_incomplete_f32_kernel": ("SCREEN01_INCOMPLETE", ["DATA_F"]),     # |Phi_s| = 2
@@ -383,7 +383,7 @@ def test_partial_data_labels_and_blocks():
     assert res("main_rbest_single_phase")["controls"]["OPT_VS_RANDOM"] == "OPT_RANDOM_UNRESOLVED" and res("main_rbest_single_phase")["controls"]["RANDOM_FEASIBLE_GAIN"] is False
     assert res("main_manual_missing_in_f")["controls"]["OPT_VS_MANUAL"] == "OPT_MANUAL_UNRESOLVED"
     assert res("main_drift_drag_only")["generation_drift"]["drift"] is True and res("main_nondeterminism_drag_only_g1")["determinism"]["g1k11"]["nondeterminism"] is True
-    assert res("main_repeat_missing")["determinism"]["g1k11"] == {"max_abs_diff": None, "nondeterminism": False}
+    assert res("main_repeat_missing")["determinism"]["g1k11"] == {"max_abs_diff": None, "nondeterminism": False, "judged": False}
     r = res("main_both_g1_kernels_lost")
     assert r["controls"]["OPT_VS_RANDOM"] is None and r["controls"]["K_MISMATCH"] is True and r["confirmation"] == {"f32": None, "f48": None} and r["NC"]["g1"]["label"] is None
 
@@ -403,7 +403,7 @@ def test_finalist_edge_and_partial_branches():
     r = S.compute(T)
     assert r["candidates"][S.names(T["roles"], "axial")[2]]["P"] == 0 and any("@g1@" in x for x in r["data_loss"]) and r["incomplete_causes"] == ["DATA_G1"]
     r = res("fin_both_g1_kernels_lost")
-    assert r["finalist"] is None and r["futility"] == "NO_FEASIBLE_CANDIDATE" and r["incomplete_causes"] == ["DATA_G1"] and r["search_complete"] is False
+    assert r["finalist"] is None and r["futility"] == "NO_FEASIBLE_CANDIDATE" and r["incomplete_causes"] == ["DATA_G1", "DATA_REFINE"] and r["search_complete"] is False
 
 
 def test_every_registered_branch_computes():
@@ -547,7 +547,7 @@ def test_nondeterminism_and_generation_drift():
     assert r["determinism"]["g1k11"]["nondeterminism"] is True and f"{Y.REPEAT}@g1@11" in r["data_loss"]
     Y.drop(T, "g1", Y.REPEAT)
     r = S.compute(T)
-    assert r["determinism"]["g1k11"] == {"max_abs_diff": None, "nondeterminism": False} and r["outcome"] == "SCREEN01_GAIN"     # not measured: no verdict
+    assert r["determinism"]["g1k11"] == {"max_abs_diff": None, "nondeterminism": False, "judged": False} and r["outcome"] == "SCREEN01_GAIN"   # NOT_JUDGED: no verdict
     d = res("main_gain_drift")
     assert d["generation_drift"]["drift"] is True and d["outcome"] == "SCREEN01_GAIN" and res("main_gain")["generation_drift"]["drift"] is False
     T = Y.branch("main_gain")
@@ -998,3 +998,250 @@ def test_cli_finalist_and_main_write_the_outputs_once(tmp_path, monkeypatch, cap
     monkeypatch.setattr(sys, "argv", ["x", "main", "--workers", "5", "--out", str(out)])
     with pytest.raises(ValueError, match="at most 4 workers"):
         S.main()
+
+
+# ---- the 2026-10-31 reconciliation (registration §5.2, §5.11): branches of crosscheck_reconciliation.md §3.3, each with its expected comparable values ----
+def rs_of(r):
+    return r["rs"] if "rs" in r else r
+
+
+def gate_names(T):
+    return [g["name"] for g in T["gating"]]
+
+
+@pytest.mark.parametrize("name", ["rs_duplicate_target_point", "fin_duplicate_target_point"])
+def test_a_point_shared_by_two_targets_is_gated_once_and_owned_by_the_first(name):
+    T = Y.branch(name)
+    r = S.compute(T)
+    rs = rs_of(r)
+    assert rs["targets"]["1"]["u_star"] == rs["targets"]["1.5"]["u_star"]                    # a slack drag margin: u*_1 = u*_1.5
+    shared = Y.sname(rs["targets"]["1"]["u_star"])
+    names = gate_names(T)
+    assert names.count(shared) == 1 and names[0] == shared and T["gating"][0]["target_index"] == 0 and rs["gated"][0][0] == 0 and len(set(names)) == len(names)
+    props = [T["gating"][i] for i in rs["proposals"]]
+    assert len({p["name"] for p in props}) == len(props) and shared in {p["name"] for p in props}
+    t1 = [p for p in props if p["target_index"] == 1]
+    own = [g for g in T["gating"] if g["target_index"] == 1 and g["admissible"]]
+    assert t1 and t1[0]["name"] != shared and t1[0]["name"] == max(own, key=lambda g: g["y_pred"])["name"]      # target 1: its own best admissible point
+    if name.startswith("fin"):
+        assert r["search_complete"] is True and len(r["proposals_from_gating"]) == len(set(r["proposals_from_gating"]))
+
+
+@pytest.mark.parametrize("name", ["rs_target_no_predicted_gain", "fin_target_no_predicted_gain"])
+def test_a_target_without_predicted_gain_contributes_nothing_but_is_reported(name):
+    T = Y.branch(name)
+    r = S.compute(T)
+    rs = rs_of(r)
+    t = rs["targets"]
+    assert t["1"]["y_pred"] == pytest.approx(0.005, abs=1e-12) and t["1"]["u_star"] == pytest.approx([1.0, -1.5, 0.5])
+    assert t["1.5"]["y_pred"] == pytest.approx(0.0018, abs=1e-12) and t["1.5"]["u_star"] == pytest.approx([1.0, -1.5, 0.7])
+    assert t["2"]["y_pred"] == pytest.approx(-0.0022, abs=1e-12) and t["2"]["u_star"] == pytest.approx([1.0, -1.5, 0.95]) and t["2"]["z_pred"] <= -2 * P.M_D
+    assert {g[0] for g in rs["gated"]} == {0, 1} and {T["gating"][i]["target_index"] for i in rs["proposals"]} <= {0, 1} and rs["proposals"]
+    if name.startswith("fin"):
+        assert r["search_complete"] is True and len(r["proposals_from_gating"]) >= 2
+
+
+def test_no_target_with_predicted_gain_means_no_gating_and_a_complete_search():
+    rs = res("rs_all_targets_no_predicted_gain")
+    assert all(t["y_pred"] < 0 and t["z_pred"] <= -float(k) * P.M_D and t["u_star"] is not None for k, t in rs["targets"].items())
+    assert rs["gated"] == [] and rs["stop_after"] == 0 and rs["proposals"] == [] and rs["pool_limited_pre"] is False and rs["rs_not_fit"] is False
+    f = res("fin_all_targets_no_predicted_gain")
+    assert f["proposals_from_gating"] == [] and f["search_complete"] is True and f["K_opt"] == 15
+    assert f["finalist"] is None and f["futility"] == "GAIN_BELOW_MIN_AT_SELECTION" and f["selected_before_futility"] is not None
+    m = res("main_all_targets_no_predicted_gain")
+    assert (m["outcome"], m["cause"]) == ("SCREEN01_NO_GAIN", ["GAIN_BELOW_MIN_AT_SELECTION"])           # a complete search: NO_GAIN, not INCOMPLETE
+    assert m["G"] is None and m["R3"] is None and m["confirmation"] == {"f32": None, "f48": None}
+
+
+def test_argmax_ties_go_to_the_first_grid_point_in_lexicographic_order():
+    by, bz = np.array(Y.BY_TIE), np.array(Y.BZ_TIE)                                                      # exactly no reflex dependence
+    u, y, z = P.constrained_argmax(by, bz, P.M_D, 41, S.get_grid(41))
+    assert u[2] == -1.0 and z <= -P.M_D
+    r = res("rs_argmax_tie")                                                                              # through the least-squares fit the zeros are ~1e-18: the pick is noise, both implementations must agree
+    assert abs(r["fit"]["downforce"]["coef"][2]) < 1e-15 and abs(r["fit"]["drag"]["coef"][2]) < 1e-15 and r["rs_not_fit"] is False and len(r["proposals"]) >= 1
+
+
+def test_names_registered_at_freeze_1_are_excluded_by_name_not_by_coordinates():
+    T = Y.branch("rs_cloud_point_already_evaluated")
+    r = S.compute(T)
+    ustar = Y.sname(r["targets"]["1"]["u_star"])
+    design = {n: x for n, x in T["roles"].items() if x["role"] == "design"}
+    assert ustar in design and ustar not in gate_names(T)                                              # a design point sits at u*_1: its name is not a candidate
+    assert T["gating"][0]["target_index"] == 0 and T["gating"][0]["name"] != ustar and T["gating"][0]["y_pred"] >= 0.9 * r["targets"]["1"]["y_pred"]   # target 0 starts with its best cloud point
+    T = Y.branch("rs_cloud_point_as_random_state")
+    r = S.compute(T)
+    rnd = next(n for n, x in T["roles"].items() if x["role"] == "random" and x["order"] == 0)
+    assert rnd not in gate_names(T) and T["gating"][0]["u"] == pytest.approx(r["targets"]["1"]["u_star"]) and T["gating"][0]["target_index"] == 0     # u*_1 itself is first; the random state's name is excluded
+
+
+@pytest.mark.parametrize("name", ["rs_target_list_absorbed", "fin_target_list_absorbed"])
+def test_a_target_whose_list_is_absorbed_is_ignored_by_the_stop_rule(name):
+    T = Y.branch(name)
+    r = S.compute(T)
+    rs = rs_of(r)
+    uc = list(Y.UC)
+    assert all(t["u_star"] == pytest.approx(uc) for t in rs["targets"].values())                       # u*_1 = u*_1.5 = u*_2: targets 1 and 2 queue nothing new at position 0
+    names = gate_names(T)
+    assert names[0] == Y.sname(uc) and names.count(Y.sname(uc)) == 1 and {g[0] for g in rs["gated"]} == {0, 1}      # target 2 has no queued point
+    n = rs["stop_after"]
+    adm = lambda k, m: sum(g["admissible"] for g in T["gating"][:m] if g["target_index"] == k)   # noqa: E731
+    assert (adm(0, n) >= 2 and adm(1, n) >= 2) or n == 36                                               # stopped by targets 0 and 1 alone
+    assert not (adm(0, n - 4) >= 2 and adm(1, n - 4) >= 2) or n == 36
+    if name.startswith("fin"):
+        assert r["search_complete"] is True
+
+
+def test_residual_sd_undefined_gives_rs_fit_undefined_and_the_search_goes_on():
+    Y.check_keep_sets()
+    r = res("rs_fit_undefined")
+    assert r["fit"]["rank"] == 9 and r["fit"]["cond"] == pytest.approx(8.742441034795732, rel=1e-9) and r["rs_not_fit"] is False
+    assert r["fit"]["residual_sd"] == {"downforce": None, "drag": None} and r["rs_fit_poor"] is None and r["rs_fit_label"] == "RS_FIT_UNDEFINED"
+    assert np.allclose(r["fit"]["downforce"]["coef"], Y.BY, atol=1e-12) and r["proposals"] and len(r["data_loss"]) == 12
+    assert res("rs_base")["rs_fit_label"] == "RS_FIT_OK" and res("rs_fit_poor")["rs_fit_label"] == "RS_FIT_POOR"
+
+
+def test_rank_nine_with_a_large_condition_number_is_not_fit():
+    r = res("rs_not_fit_cond")
+    assert r["fit"]["rank"] == 9 and r["fit"]["cond"] == pytest.approx(139.74479340064676, rel=1e-9) and r["rs_not_fit"] is True
+    assert r["fit"]["downforce"]["coef"] is None and r["fit"]["drag"]["coef"] is None and r["fit"]["residual_sd"] == {"downforce": None, "drag": None}
+    assert r["u_star_1"] is None and r["y_star_1"] is None and r["pool_limited_pre"] is False and r["gated"] == [] and r["proposals"] == []
+    assert r["rs_fit_poor"] is None and r["rs_fit_label"] == "RS_FIT_UNDEFINED" and all(t["u_star"] is None for t in r["targets"].values())
+
+
+def test_an_implausible_or_nonfinite_repeat_is_nondeterminism_and_a_loss():
+    r = res("main_repeat_implausible_g1")                                                              # 30 % above the parent: NONDETERMINISM, not a removed check
+    assert f"{Y.REPEAT}@g1@11" in r["data_loss"] and (r["outcome"], r["cause"]) == ("SCREEN01_INVALID", ["NONDETERMINISM_G1K11"])
+    d = r["determinism"]["g1k11"]
+    assert d["judged"] is True and d["nondeterminism"] is True and d["max_abs_diff"]["downforce"] == pytest.approx(0.3 * Y.F0["downforce"], rel=1e-9) and d["max_abs_diff"]["drag"] == 0.0
+    r = res("main_repeat_nonfinite_g1")                                                                # same bytes, no force: not reproduced
+    assert r["determinism"]["g1k11"] == {"max_abs_diff": None, "nondeterminism": True, "judged": True}
+    assert f"{Y.REPEAT}@g1@11" in r["data_loss"] and (r["outcome"], r["cause"]) == ("SCREEN01_INVALID", ["NONDETERMINISM_G1K11"])
+
+
+def test_an_absent_or_unfinished_repeat_is_not_judged():
+    for name, listed in (("main_repeat_not_ok_f32a", True), ("main_repeat_missing_f32a", False)):
+        r = res(name)
+        assert r["determinism"]["f32a"] == {"max_abs_diff": None, "nondeterminism": False, "judged": False} and r["determinism"]["g1k11"]["judged"] is True
+        assert (f"{Y.REPEAT}@f32@13" in r["data_loss"]) is listed and (r["outcome"], r["cause"]) == ("SCREEN01_GAIN", [])
+
+
+def test_step_3_causes_are_the_list_of_all_that_apply_in_stage_order():
+    for name, causes in (("main_incomplete_g1_kernel_and_refine", ["DATA_G1", "DATA_REFINE"]), ("main_incomplete_g1_phase_and_g2", ["DATA_G1", "DATA_G2"]),
+                         ("main_incomplete_refine_degenerate_design", ["DATA_REFINE"])):
+        r = res(name)
+        assert (r["outcome"], r["cause"], r["finalist"], r["search_complete"]) == ("SCREEN01_INCOMPLETE", causes, None, False)
+    r = res("main_incomplete_g1_kernel_and_refine")
+    assert Y.branch("main_incomplete_g1_kernel_and_refine")["lost_kernels"] == ["g1k12"] and r["rs"]["rs_not_fit"] is True
+    assert res("main_incomplete_g1_phase_and_g2")["rs"]["rs_not_fit"] is False                          # the fit is OK: DATA_G2 applies
+    r = res("main_incomplete_refine_degenerate_design")
+    assert r["data_loss"] == [] and r["rs"]["rs_not_fit"] is True and r["rs"]["fit"]["rank"] < 9          # no loss at all: the refinement step alone failed
+
+
+def test_r3_paired_labels_use_the_phases_common_to_flow_48_and_flow_32():
+    r = res("main_r3_one_f48_phase_paired")
+    c = r["confirmation"]
+    assert c["f48"]["P"] == 1 and c["f32"]["delta_bar"]["downforce"] == pytest.approx(0.025, abs=1e-9) and c["f32"]["delta_bar"]["drag"] == pytest.approx(-2.75e-3, abs=1e-12)
+    # paired (phase 13 only): d32 = 0.020, d48 = 0.0195 -> ratio 0.975, |diff| 5e-4; the unpaired flow_32 mean (0.025, drag -2.75e-3) would give 0.78, 5.5e-3 and an opposite drag sign
+    assert r["R3"]["R3_RATIO_IN_BAND"] is True and r["R3"]["R3_E2_EXCEEDED"] is False and r["R3"]["R3_DRAG_SAME_SIGN"] is True and r["R3"]["label"] == "R3_CONFIRMED"
+    assert r["R3"]["G48_MARGIN"] == pytest.approx(0.0195 - S.X_STAR, abs=1e-9) and (r["outcome"], r["cause"]) == ("SCREEN01_GAIN", [])
+    assert 0.0195 / 0.025 < S.RATIO_BAND[0]
+    T = Y.branch("main_r3_one_f48_phase_paired")                                                         # no common phase at all: the three labels are null
+    f = S.compute(T)["finalist"]
+    for ph in ("13", "14"):
+        Y.drop(T, "f32", f, ph)
+    Y.set_run(T, "f32", f, "15", ok=True)
+    r = S.compute(T)
+    assert r["R3"]["R3_RATIO_IN_BAND"] is None and r["R3"]["R3_E2_EXCEEDED"] is None and r["R3"]["R3_DRAG_SAME_SIGN"] is None and r["R3"]["label"] == "R3_CONFIRMED"
+
+
+def test_both_flow_48_kernels_never_run_is_a_budget_stop():
+    r = res("main_budget_f48_not_run")
+    assert (r["outcome"], r["cause"]) == ("SCREEN01_INCOMPLETE", ["BUDGET"]) and r["R3"] is None and r["confirmation"]["f48"] is None and r["G"]["decision"] == "PASS"
+    assert Y.branch("main_budget_f48_not_run")["lost_kernels"] == []
+
+
+def test_t_based_labels_with_one_phase_are_null_not_computed():
+    assert S.tcrit(1) is None and S.tcrit(0) is None and S.tcrit(2) == pytest.approx(6.313751514675, rel=1e-9)
+    e = est_dict(S.X_STAR + 1e-3, 1e-4, p=1)
+    assert S.g_rule(e) == {"decision": "PASS", "GAIN_RESOLVED_ABOVE_MIN": None}
+    assert S.d_rule(est_dict(-1e-3, 1e-3, p=1)) == {"decision": "PASS", "label": None} and S.d_rule(est_dict(1e-3, 1e-3, p=1)) == {"decision": "VIOLATION", "label": None}
+    r = res("main_rbest_single_phase")                                                                  # R-best with one flow_32 phase: estimates only, unresolved comparison, no pass
+    rb = r["detail"]["control_estimates"]["r_best"]["f32"]
+    assert rb["P"] == 1 and rb["sigma_d"] == {"downforce": None, "drag": None} and rb["se_eff"]["downforce"] == S.FLOOR["downforce"]
+    assert r["controls"]["OPT_VS_RANDOM"] == "OPT_RANDOM_UNRESOLVED" and r["controls"]["RANDOM_FEASIBLE_GAIN"] is False
+
+
+def test_ref_consistent_label_only():
+    def run_with(df):
+        T = Y.make("finalist", edits={"g1": lambda T, al: Y.set_delta(T, "g1", al.ref, None, ddf=df)}, n_grid=41)
+        return S.compute(T)["REF_CONSISTENT"]
+    w = 3 * math.hypot(S.FLOOR["downforce"] / math.sqrt(2), S.REF_SIGMA)                               # P = 2 equal phases: SE_eff = floor / sqrt(2)
+    assert run_with(S.REF_DF) is True and run_with(S.REF_DF + w - 1e-7) is True and run_with(S.REF_DF + w + 1e-7) is False and run_with(S.REF_DF - w - 1e-7) is False
+    assert res("fin_base")["REF_CONSISTENT"] is False                                                   # the synthetic truth is not the FID C1 value
+
+
+# ---- the INFRA_LOSS signature table (§9, §5.11.17) ----------------------------------------------------------------------------------------------
+def test_signature_table_file_is_the_frozen_table():
+    t = S.infra_table()
+    assert t["default"] == "NOT_INFRASTRUCTURE" and "never a reason to rerun" in t["default_statement"] and [e["id"] for e in t["signatures"]] == t["evaluation_order"]
+    assert {e["id"] for e in t["signatures"]} == {"VERIFY_FAILED", "SESSION_KILL", "JULIA_INSTALL", "GPU_IDENTITY", "PLATFORM_ERROR"}
+    assert all(e["meaning"] and e["source"] and e["condition"] for e in t["signatures"])
+    assert [e["id"] for e in t["signatures"] if e["pattern"] is None] == ["VERIFY_FAILED", "SESSION_KILL"]
+    import re
+    for e in t["signatures"]:
+        if e["pattern"]:
+            re.compile(e["pattern"])
+
+
+def test_classification_reads_its_patterns_from_the_table(tmp_path):
+    t = S.infra_table()
+    t2 = json.loads(json.dumps(t))
+    next(e for e in t2["signatures"] if e["id"] == "PLATFORM_ERROR")["pattern"] = "NEW_PLATFORM_TEXT"
+    d, lg = make_infra(tmp_path, error="NEW_PLATFORM_TEXT happened")
+    assert S.classify_infra(d, lg, table=t2)["signature"] == "PLATFORM_ERROR" and S.classify_infra(d, lg, table=t)["classification"] == "NOT_INFRASTRUCTURE"
+    bad = json.loads(json.dumps(t))
+    bad["signatures"].append(dict(bad["signatures"][0]))
+    p = tmp_path / "t.json"
+    p.write_text(json.dumps(bad))
+    with pytest.raises(ValueError, match="malformed signature table"):
+        S.infra_table(p)
+
+
+def test_every_lost_declaration_cites_a_signature(tmp_path):
+    assert S.parse_lost(["g2=SESSION_KILL", "f48k13=PLATFORM_ERROR"]) == {"g2": "SESSION_KILL", "f48k13": "PLATFORM_ERROR"} and S.parse_lost([]) == {}
+    for bad in ("g2", "g2=", "g2=NOT_A_SIGNATURE", "g9=SESSION_KILL", "=SESSION_KILL"):
+        with pytest.raises(ValueError, match="expected KERNEL=SIGNATURE"):
+            S.parse_lost([bad])
+    fz1 = {"kind": "freeze1", "file_sha256": {f"scripts/screen01/{s}": SC.sha256_path(S.ROOT / "scripts/screen01" / s) for s in S.SOURCES}}
+    a = argparse.Namespace(lost=["g2"], lost_signatures={"g2": "SESSION_KILL"})
+    with pytest.raises(ValueError, match="not the INFRA_LOSS signature table frozen"):
+        S.frozen_sources(fz1, a)                                                                       # the table must be in freeze 1 when a kernel is declared lost
+    fz1["file_sha256"]["docs/evidence/screen01_2026_10_30/infra_signatures.json"] = SC.sha256_path(S.INFRA_FILE)
+    S.frozen_sources(fz1, a)
+    with pytest.raises(ValueError, match="must cite a signature"):
+        S.frozen_sources(fz1, argparse.Namespace(lost=["g2"], lost_signatures={}))
+    S.frozen_sources(fz1, argparse.Namespace(lost=[], lost_signatures={}))                              # no declaration: the table is not needed
+    rec = S.common_record({"lost_kernels": ["g2"]}, {}, {}, S.EV / "states.json" if (S.EV / "states.json").exists() else S.INFRA_FILE, a)
+    assert rec["lost_signatures"] == {"g2": "SESSION_KILL"} and rec["infra_signatures_sha256"] == SC.sha256_path(S.INFRA_FILE)
+
+
+def test_cli_lost_without_a_signature_is_refused(monkeypatch):
+    monkeypatch.setattr(sys, "argv", ["x", "finalist", "--lost", "g2", "--out", "/nonexistent/x.json"])
+    with pytest.raises(ValueError, match="expected KERNEL=SIGNATURE"):
+        S.main()
+
+
+def test_analysis_md_reports_not_judged_and_the_fit_label(tmp_path, monkeypatch):
+    d = Disk(tmp_path, monkeypatch, "main_repeat_missing_f32a")
+    d.stage_rs()
+    d.stage_finalist()
+    out = d.stage_main()
+    md = out[d.args.out.with_suffix(".md")]
+    assert "determinism NOT_JUDGED (repeat absent or not ok): ['f32a']" in md and "rs_fit_label: RS_FIT_OK" in md
+    assert json.loads(out[d.args.out])["determinism"]["f32a"]["judged"] is False
+
+
+def test_rs_json_carries_the_fit_label_and_the_new_shapes(tmp_path, monkeypatch):
+    d = Disk(tmp_path, monkeypatch)
+    rs = d.stage_rs()
+    assert rs["detail"]["rs_fit_label"] == "RS_FIT_OK" and rs["comparable"]["rs_fit_poor"] is False and rs["lost_signatures"] == {} and rs["infra_signatures_sha256"] is None

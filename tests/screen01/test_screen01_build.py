@@ -39,11 +39,14 @@ def env(built, tmp_path, monkeypatch):
 
 
 def rs_fixture(n=4, **kw):
-    """A synthetic rs.json: the first n admissible P0 design-pool members that are not design points, as proposals (sorted names, gated bytes of the P0 row)."""
+    """A synthetic rs.json shaped like the analyzer's: the first n admissible P0 design-pool members that are not design points, as proposals
+    ({name, u, spec, target_index, y_pred, z_pred, rank}) with their gating rows (the P0 gate row plus name, u, target_index, y_pred, z_pred, admissible)."""
     _, rows, _, dc = SB.p0_record()
     sel = [r for r in rows.values() if r["slot"] == "rs" and r["admissible"] and r["name"] not in dc["design_points"]][:max(n, 1)]
-    return {"proposals": [{"name": r["name"], "u": P.spec_to_u(r["spec"])} for r in sel[:n]],
-            "gating": [{"name": r["name"], "admissible": True, "phi_fortran_sha256": r["phi_fortran_sha256"]} for r in sel], **kw}
+    u = {r["name"]: P.spec_to_u(r["spec"]) for r in sel}
+    return {"proposals": [{"name": r["name"], "u": u[r["name"]], "spec": P.u_to_spec(u[r["name"]]), "target_index": i % 3, "y_pred": 1e-2, "z_pred": -2e-3, "rank": i}
+                          for i, r in enumerate(sel[:n])],
+            "gating": [{**r, "name": r["name"], "u": u[r["name"]], "target_index": i % 3, "y_pred": 1e-2, "z_pred": -2e-3, "admissible": True} for i, r in enumerate(sel)], **kw}
 
 
 def write_json(path, obj):
@@ -168,6 +171,11 @@ def test_g2_refusals(env):
         rs["gating"][0].update(bad)
         with pytest.raises(SystemExit, match="admissible gated state"):
             SB.campaign_files("g2", write_json(env / "c.json", rs))
+    for key, val in (("rank", 1), ("spec", {"pitch": 0.5})):                                     # the analyzer's rank / spec must agree with the list position / u
+        rs = json.loads(json.dumps(good))
+        rs["proposals"][0][key] = val
+        with pytest.raises(SystemExit, match="rank / spec differ"):
+            SB.campaign_files("g2", write_json(env / "f.json", rs))
     rs = json.loads(json.dumps(good))
     rs["gating"][0]["phi_fortran_sha256"] = "0" * 64
     with pytest.raises(SystemExit, match="differ from the gated bytes"):
@@ -279,8 +287,21 @@ def fake_repo(monkeypatch, ev):
 
 
 @ON_DISK
+def test_freeze1_refuses_without_the_infra_signature_table(tmp_path, monkeypatch):
+    fake_repo(monkeypatch, tmp_path)
+    monkeypatch.setattr(F, "BOUND_EVIDENCE", ["docs/evidence/screen01_2026_10_30/no_such_infra_signatures.json", *F.BOUND_EVIDENCE[1:]])
+    with pytest.raises(ValueError, match="infra_signatures.json .* is missing"):
+        F.freeze1()
+    assert not (tmp_path / "freeze1.json").exists()
+
+
+@ON_DISK
 def test_freeze1_content(tmp_path, monkeypatch):
     fake_repo(monkeypatch, tmp_path)
+    bound = list(F.BOUND_EVIDENCE)
+    if not (ROOT / bound[0]).exists():                                                           # written by the analyzer author; a stand-in keeps the rest of the record testable
+        bound[0] = "docs/evidence/screen01_2026_10_30/decision_memo.md"
+        monkeypatch.setattr(F, "BOUND_EVIDENCE", bound)
     target = F.freeze1()
     rec = json.loads(target.read_text())
     sha = rec["file_sha256"]
@@ -290,7 +311,8 @@ def test_freeze1_content(tmp_path, monkeypatch):
               "docs/evidence/screen01_2026_10_30/oc.json", "docs/evidence/screen01_2026_10_30/pool_prescreen_rev1/rows.jsonl", "docs/evidence/screen01_2026_10_30/pool_prescreen_rev1/design_check.json",
               "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m19.7_pitch_m0.38.dir_f4_fortran.raw"):
         assert f in sha, f
-    assert sum(f.startswith("docs/evidence/screen01_2026_10_30/inputs/") for f in sha) == 36 and not any(f.endswith("INTERFACE.md") for f in sha)
+    assert all(f in sha for f in bound) and "scripts/screen01/INTERFACE.md" in sha and "docs/evidence/screen01_2026_10_30/crosscheck_reconciliation.md" in sha   # §10 (2026-10-31)
+    assert sum(f.startswith("docs/evidence/screen01_2026_10_30/inputs/") for f in sha) == 36
     p0 = rec["p0"]
     assert len(p0["random_control"]["names"]) == 19 and len(p0["design"]["names"]) == 9 and p0["ladder"]["M"]["M_for_m_D_0.0015"] == "v18__camber_m19.7_pitch_m0.38"
     assert len(p0["stl_sha256"]) >= 6 + 9 + 1 + 1 + 19 and p0["parent_stl"]["stl_volume_m3"] > 0
@@ -318,17 +340,50 @@ def test_campaign_record_checks_the_prerun_freeze(env):
         F.campaign_record("screen01")
 
 
-def test_budget_and_handoff_skeleton(env):
+def budget_record(path, walls, pending, monkeypatch):
+    """A record written by the analyzer's own `budget` function (log reader stubbed: a 'log' is its wall in s), so the freeze validates the real format."""
+    import analyze_screen01 as AN
+    monkeypatch.setattr(AN.A, "log_wall", float)
+    path.write_text(json.dumps(AN.budget([(k, str(v)) for k, v in walls], pending)))
+    return path
+
+
+F_PENDING = [("f48k13", None), ("f48k14", None), ("f32a", None), ("f32b", None)]
+
+
+def test_budget_record_is_validated_against_the_campaigns(env, monkeypatch):
     rows = SB.load_rows()
     fk = SB.f_kernels(rows, "v18__camber_p19.7", SB.by_role(rows, "random")[0])
     finished = {"g1k11", "g1k12"}
-    b = F.budget({"g1k11": 7000.0, "g1k12": 7100.0}, fk, finished)
-    assert b["T_s"] == 14100 + 2 * 7280 + 5240 + 4410 == sum(b["finished_session_wall_s"].values()) + sum(b["unfinished_estimate_s"].values()) and b["cap_s"] == 86400
-    assert set(b["unfinished_estimate_s"]) == {"f48k13", "f48k14", "f32a", "f32b"}
-    with pytest.raises(ValueError, match="exactly the finished"):
-        F.budget({"g1k11": 7000.0}, fk, finished)
-    with pytest.raises(ValueError, match="exceeds the 86400 s cap"):
-        F.budget({"g1k11": 40000.0, "g1k12": 40000.0}, fk, finished)
+    ok = budget_record(env / "ok.json", [("g1k11", 7000.0), ("g1k11", 100.0), ("g1k12", 7100.0)], F_PENDING, monkeypatch)
+    b = F.budget(ok, fk, finished)
+    assert b["T_s"] == 14200 + 2 * 7280 + 5240 + 4410 and b["decision"] == "go" and b["record_sha256"] == SC.sha256_path(ok) and b["finished_session_wall_s"]["g1k11"] == 7100.0
+    with pytest.raises(ValueError, match="budget record missing"):
+        F.budget(env / "none.json", fk, finished)
+    stop = budget_record(env / "stop.json", [("g1k11", 40000.0), ("g1k12", 40000.0)], F_PENDING, monkeypatch)
+    with pytest.raises(ValueError, match="says stop"):
+        F.budget(stop, fk, finished)
+    with pytest.raises(ValueError, match="finished kernels are not exactly"):
+        F.budget(budget_record(env / "a.json", [("g1k11", 7000.0)], F_PENDING, monkeypatch), fk, finished)
+    with pytest.raises(ValueError, match="finished kernels are not exactly"):                    # g2 ran: its wall is required
+        F.budget(ok, fk, finished | {"g2"})
+    for pending in (F_PENDING[:3], F_PENDING + [("g2", None)], [("f48k13", 2), ("f48k14", 3), ("f32a", None), ("f32b", None)]):
+        with pytest.raises(ValueError, match="differ from the campaigns"):
+            F.budget(budget_record(env / "c.json", [("g1k11", 7000.0), ("g1k12", 7100.0)], pending, monkeypatch), fk, finished)
+    dropped = SB.f_kernels(rows, "v18__camber_p19.7", None)                                      # no R-best: 10 / 8 flow_32 and 2 / 2 flow_48 runs
+    with pytest.raises(ValueError, match="differ from the campaigns"):                           # the record of the full 12 / 10 / 3-run kernels does not fit the dropped campaigns
+        F.budget(ok, dropped, finished)
+    assert F.budget(budget_record(env / "d.json", [("g1k11", 7000.0), ("g1k12", 7100.0)], [("f48k13", 2), ("f48k14", 2), ("f32a", 10), ("f32b", 8)], monkeypatch), dropped, finished)["T_s"] == 14100 + 2 * 4940 + 4410 + 3580
+    bad = json.loads(ok.read_text())
+    bad["T_s"] += 1.0
+    with pytest.raises(ValueError, match="not the sum of its parts"):
+        F.budget(write_json(env / "e.json", bad), fk, finished)
+    with pytest.raises(ValueError, match="not the registered"):
+        F.budget(write_json(env / "f.json", {**json.loads(ok.read_text()), "kind": "fid01_budget_decision"}), fk, finished)
+
+
+def test_handoff_skeleton(env):
+    rows = SB.load_rows()
     h = F.handoff_skeleton("v18__camber_p19.7", rows, {"gating": []}, {})
     assert h["finalist"]["admissibility_row"]["admissible"] and h["finalist"]["phi_fortran_order_sha256"] == rows["v18__camber_p19.7"]["phi_fortran_order_sha256"]
     assert h["parent"]["name"] == "v18__parent" and SC.is_sha(h["gate_profile_sha256"])
@@ -364,10 +419,18 @@ def test_freeze2_2_1_and_3_records_in_order(env, monkeypatch, scratch_raws):
     SB.emit(SB.campaign_files("f", finalist_path=fin), False)
     for cid in ("screen01_f", "screen01_f48"):
         prerun_freeze(cid)
-    with pytest.raises(ValueError, match="exactly the finished"):
-        F.freeze3(fin, {"g1k11": 7000.0, "g1k12": 7100.0})                                      # g2 ran (states_g2.json exists): its wall is required
-    rec = json.loads(F.freeze3(fin, {"g1k11": 7000.0, "g1k12": 7100.0, "g2": 3000.0}).read_text())
+    walls = [("g1k11", 7000.0), ("g1k12", 7100.0)]
+    with pytest.raises(ValueError, match="finished kernels are not exactly"):
+        F.freeze3(fin, budget_record(env / "wl_a.json", walls, F_PENDING, monkeypatch))          # g2 ran (states_g2.json exists): its wall is required
+    with pytest.raises(ValueError, match="budget record missing"):
+        F.freeze3(fin, env / "wl_missing.json")
+    with pytest.raises(ValueError, match="says stop"):
+        F.freeze3(fin, budget_record(env / "wl_stop.json", [("g1k11", 60000.0), ("g1k12", 7100.0), ("g2", 3000.0)], F_PENDING, monkeypatch))
+    assert not (env / "freeze3.json").exists()
+    budget = budget_record(env / "wl_b.json", walls + [("g2", 3000.0)], F_PENDING, monkeypatch)
+    rec = json.loads(F.freeze3(fin, budget).read_text())
+    assert rec["file_sha256"][SB.rel(budget)] == SC.sha256_path(budget) and rec["budget"]["record_sha256"] == SC.sha256_path(budget)   # the record is hashed with the freeze
     assert rec["finalist"] == props[1] and rec["budget"]["T_s"] == 17100 + 2 * 7280 + 5240 + 4410 and set(rec["campaigns"]) == {"screen01_f", "screen01_f48"}
     assert rec["handoff_skeleton"]["finalist"]["name"] == props[1] and rec["handoff_skeleton"]["finalist"]["spec"] == dict(sorted(P.u_to_spec(rs["proposals"][1]["u"]).items()))
     with pytest.raises(ValueError, match="no finalist"):
-        F.freeze3(write_json(env / "none.json", {"finalist": None}), {})
+        F.freeze3(write_json(env / "none.json", {"finalist": None}), budget)

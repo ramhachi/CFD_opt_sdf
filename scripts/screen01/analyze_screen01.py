@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """SCREEN-01 (#64, M3b-1) analysis: the rules of docs/screen01_registration_2026_10_30.md §5 (that text governs; a disagreement is a defect here).
 
-    analyze_screen01.py rs       --g1 CAMPAIGN TABLE... --kernel-root D [--lost K...] [--workers N] --out rs.json            # after G1, written once
-    analyze_screen01.py finalist --g1 C T... [--g2 C T...] --rs rs.json --kernel-root D [--lost K...] --out finalist.json     # after G2, written once
-    analyze_screen01.py main     --g1 C T... [--g2 C T...] [--f32 C T...] [--f48 C T...] --rs R --finalist F --kernel-root D [--lost K...]
+    analyze_screen01.py rs       --g1 CAMPAIGN TABLE... --kernel-root D [--lost K=SIG...] [--workers N] --out rs.json            # after G1, written once
+    analyze_screen01.py finalist --g1 C T... [--g2 C T...] --rs rs.json --kernel-root D [--lost K=SIG...] --out finalist.json     # after G2, written once
+    analyze_screen01.py main     --g1 C T... [--g2 C T...] [--f32 C T...] [--f48 C T...] --rs R --finalist F --kernel-root D [--lost K=SIG...]
                                  [--budget-stopped K...] --out analysis.json    # after F: analysis.json, analysis.md and (on GAIN) xv_handoff.json, once
     analyze_screen01.py budget   --finished KERNEL=LOG... --pending KERNEL[=NRUNS]... [--out J]                              # §4.3 go / stop
     analyze_screen01.py infra    --output-dir D --log LOG [--status-file S] [--verify-failed]                                 # §9 INFRA_LOSS signature table
 
+--lost KERNEL=SIGNATURE_ID declares a kernel lost after its one rerun and cites the signature of `docs/evidence/screen01_2026_10_30/infra_signatures.json` (the frozen §9
+table, also read by `infra`) that its failure matched (§5.11.17); the table must be in freeze1.json and the citations are written into the output records.
 Kernels (ids for --lost / --budget-stopped): g1k11, g1k12 (group g1, phases 11, 12), g2 (phases 11, 12), f32a (13, 14 + replay 11), f32b (15, 16),
 f48k13, f48k14.  Every kernel of a required group needs a harness-verified table or a --lost declaration.  The tables are read through the harness
 (`campaign_schema.require_formal_table`), every kernel file is checked against the table hashes, every campaign against the freeze records
@@ -18,18 +20,21 @@ Every decision is a pure function of the normalised input T (scripts/screen01/IN
 `screen01_check.check(T)` through `screen01_check.compare` before anything is written; a discrepancy refuses the write.  Dict keys that look numeric
 are normalised to "%g" before the comparison (1, 1.0 and "1" are one key).
 
-Comparable schema as produced here (keys of INTERFACE.md; the internals below were reconciled with `screen01_check.check`; `canon` hides key spelling only):
-  rs: fit.{downforce,drag}.coef, fit.rank, fit.cond, fit.residual_sd.{downforce,drag}; with RS_NOT_FIT (rank < 9 or cond > 20) coef, residual_sd, cond (rank < 9),
-  u_star_1, y_star_1 and every targets entry are None and rs_fit_poor is False (also if a residual SD does not exist); targets["1"|"1.5"|"2"] = {u_star, y_pred, z_pred};
-  gated = [[target_index, u rounded to 6]] in gating order, proposals = indices into gated.
-  finalist: candidates[name] = {delta_bar, se_eff: {downforce, drag}, P, feasible} for every C_opt state (P = 0 and None fields when no valid common phase), finalist
-  None under futility, search_complete = parent, axial and design states measured at both phases + fit + every proposal at both phases (R, M, ref, NC do not count).
-  main: G = {decision, GAIN_RESOLVED_ABOVE_MIN}; D = {decision PASS|VIOLATION, label}; R3 = {label, R3_RATIO_IN_BAND, G48_ABOVE_MIN, G48_MARGIN, R3_E2_EXCEEDED, R3_DRAG_SAME_SIGN};
-  NC = {g1, f32} each {z, label CONSISTENT|NOT_CONSISTENT|None}; determinism = {g1k11, f32a} and generation_drift each {max_abs_diff: {downforce, drag}, nondeterminism|drift};
-  controls = {OPT_VS_RANDOM, OPT_VS_MANUAL, RANDOM_FEASIBLE_GAIN, K_MISMATCH}; selection_bias = {b_K: {central, upper}, g_XV_exp: {central, pessimistic}, XV_MARGIN: {...}};
-  confirmation = {f32, f48} each {P, delta_bar, sigma_d, se_eff: {downforce, drag}} or None.  cause is a list.  The descriptive blocks are computed whenever their data
-  exist, whatever the outcome path (G, D, selection_bias need |Phi_s| >= 3; R3 needs flow_48 data; controls need a finalist, K_MISMATCH is always given).  BUDGET is
-  derived from T (a confirmation kernel with no run that is not in lost_kernels); --budget-stopped only lets the loader accept the absent tables of such a kernel.
+Comparable schema (INTERFACE.md and registration §5.11 are the authority; shapes as produced here; `canon` hides key spelling only):
+  rs: fit.{downforce,drag}.coef, fit.rank, fit.cond (None if rank < 9), fit.residual_sd.{downforce,drag} (None if n <= 9 or not fit); RS_NOT_FIT (rank < 9 or cond > 20): coef,
+  residual_sd, u_star_1, y_star_1 and every targets entry None; rs_fit_poor None whenever a residual SD is undefined (label RS_FIT_UNDEFINED in `detail.rs_fit_label`);
+  targets["1"|"1.5"|"2"] = {u_star, y_pred, z_pred} for every target with a feasible grid point (also with y_pred <= 0: it then gates nothing); gated = [[target_index of the
+  OWNING target, u rounded to 6]] in gating order (a name once), proposals = indices into gated.
+  finalist: candidates[name] = {delta_bar, se_eff: {downforce, drag}, P, feasible} for every C_opt member (P = 0, None fields, not feasible without a paired phase); finalist None
+  under futility; search_complete = parent, axial, design measured at both phases + fit OK + every proposal at both phases (R, M, ref, NC, repeat do not count).
+  main: G = {decision, GAIN_RESOLVED_ABOVE_MIN}, D = {decision PASS|VIOLATION, label}, both None without |Phi_s| >= 3; R3 = {label, R3_RATIO_IN_BAND, G48_ABOVE_MIN, G48_MARGIN,
+  R3_E2_EXCEEDED, R3_DRAG_SAME_SIGN} (the three paired labels None without a phase common to Phi_48 and the flow_32 phases within {13, 14}), None without flow_48 data;
+  NC = {g1, f32} each {z, label CONSISTENT|NOT_CONSISTENT|None}; determinism = {g1k11, f32a} each {max_abs_diff: {downforce, drag}|None, nondeterminism, judged} (raw runs; repeat
+  absent or not ok: judged False; non-finite repeat against a finite ok parent: judged, nondeterminism); generation_drift = {max_abs_diff, drift}; controls = {OPT_VS_RANDOM,
+  OPT_VS_MANUAL (None without a finalist), RANDOM_FEASIBLE_GAIN, K_MISMATCH}; selection_bias = {b_K, g_XV_exp, XV_MARGIN} or None; confirmation = {f32, f48} each {P, delta_bar,
+  sigma_d, se_eff: {downforce, drag}} or None.  cause: lists in the registered spellings and order (step 3: all of DATA_G1, DATA_REFINE, DATA_G2 that apply; step 4: BUDGET if a
+  confirmation kernel has no run and is not in lost_kernels, else DATA_F).  The descriptive blocks are computed whenever their data exist, whatever the outcome path.
+  --budget-stopped only lets the loader accept the absent tables of a kernel that was never run.
 """
 from __future__ import annotations
 
@@ -54,6 +59,7 @@ from cfd_harness import campaign_schema as SC  # noqa: E402
 EV = ROOT / "docs/evidence/screen01_2026_10_30"
 REGISTRATION, ADOPTION = ROOT / "docs/screen01_registration_2026_10_30.md", EV / "plan_review/adoption.md"
 FID_ANALYSIS, M2_ANALYSIS = ROOT / "docs/evidence/fid01_2026_10_21/analysis.json", ROOT / "docs/evidence/unc01_2026_10_20/analysis.json"
+INFRA_FILE = EV / "infra_signatures.json"
 FID_SHA = "b89203d0c8ec588bfa83a87d67f81e2a731edd37655265d0a3f8cd6f9d863dd1"
 M2_SHA = "ee71c6d6983fee72a171c9188c117a478dafe51e2fd1488f15448321687f8e24"
 SOURCES = ("analyze_screen01.py", "screen01_check.py", "screen01_pool.py")
@@ -67,6 +73,7 @@ S_D, S_D_OF, E2 = 0.003399676556346094, 0.006337479927119433, 1.8071267650359157
 SIGMA_DISC = {"central": 5.61e-4, "upper": 1.4474126675928642e-3}
 RETENTION = {"central": 0.655, "pessimistic": 0.57}
 XV_FLOOR = 0.012674959854238867
+REF_DF, REF_SIGMA = 1.326e-2, 1.0e-4     # §3.5 downforce reference (FID C1) and its model SD
 IMPLAUSIBLE, REPEAT_TOL, RATIO_BAND, AMP_TOL = 0.25, FLOOR["downforce"], (0.8, 1.25), 0.25
 FIT_COND_MAX, MIN_F32 = 20.0, 3
 BUDGET_CAP_S, EST_S, SETUP_S = 86400, {"flow_32": 415, "flow_48": 2340}, 260
@@ -150,8 +157,9 @@ def diffs(V, g, s, par) -> dict:
     return {ph: (v[ph][0] - p[ph][0], v[ph][1] - p[ph][1]) for ph in sorted(set(p) & set(v), key=int)}
 
 
-def tcrit(n) -> float:
-    return A.tq(0.95, max(n - 1, 1))
+def tcrit(n):
+    """One-sided t_{0.95, n-1}; None for n < 2 (a t-based label with one phase is null, §5.11.2)."""
+    return A.tq(0.95, n - 1) if n >= 2 else None
 
 
 def est(d, floor) -> dict:
@@ -244,7 +252,8 @@ def rs_part(T, V, fit) -> dict:
     flat = fit["ok"] and None not in sd.values()
     return {"fit": {"downforce": {"coef": fit["by"].tolist() if fit["ok"] else None}, "drag": {"coef": fit["bz"].tolist() if fit["ok"] else None}, "rank": fit["rank"],
                     "cond": fit["cond"], "residual_sd": {r: (sd[r] if fit["ok"] else None) for r in RESP}},
-            "rs_fit_poor": bool(flat and any(sd[r] > 3 * fit["pooled"][r] for r in RESP)), "rs_not_fit": not fit["ok"],
+            "rs_fit_poor": any(sd[r] > 3 * fit["pooled"][r] for r in RESP) if flat else None, "rs_not_fit": not fit["ok"],
+            "rs_fit_label": "RS_FIT_UNDEFINED" if not flat else "RS_FIT_POOR" if any(sd[r] > 3 * fit["pooled"][r] for r in RESP) else "RS_FIT_OK",
             "u_star_1": tg["1"]["u_star"], "y_star_1": ys, "pool_limited_pre": ys is not None and ys >= X_STAR, "targets": tg, "gated": gated, "stop_after": len(gated),
             "proposals": props, "proposal_states": pstates, "pooled_se_eff": fit["pooled"], "fit_points": fit["points"],
             "lack_of_fit_ratio": {r: (sd[r] / fit["pooled"][r] if flat else None) for r in RESP}}
@@ -284,15 +293,17 @@ def finalist_part(T, V, rs, fit) -> dict:
         futility = "NO_FEASIBLE_CANDIDATE"
     elif c_opt[best]["delta_bar"]["downforce"] < X_STAR - 3 * c_opt[best]["se_eff"]["downforce"]:
         futility = "GAIN_BELOW_MIN_AT_SELECTION"
-    g1_full = all(n in fit["est"] and len(fit["est"][n]["phases"]) == len(PHASES["g1"]) for n in names(roles, "axial") + names(roles, "design"))
+    g1_full = len(V.get("g1", {}).get(par, {})) == len(PHASES["g1"]) and all(n in fit["est"] and len(fit["est"][n]["phases"]) == len(PHASES["g1"])
+                                                                              for n in names(roles, "axial") + names(roles, "design"))
     props_full = all(c_opt[n]["P"] == len(PHASES["g2"]) for n in props)
     g1_kernel = bool(lost & set(KERNELS["g1"]))
-    causes = (["DATA_G1"] if g1_kernel or (not g1_full and fit["ok"]) else []) + (["DATA_REFINE"] if not fit["ok"] and not g1_kernel else []) \
-        + (["DATA_G2"] if fit["ok"] and not props_full else [])
+    causes = (["DATA_G1"] if g1_kernel or not g1_full else []) + (["DATA_REFINE"] if not fit["ok"] else []) + (["DATA_G2"] if fit["ok"] and not props_full else [])    # §5.11.7
     complete = g1_full and fit["ok"] and props_full
     feas_gain = any(c["feasible"] and c["delta_bar"]["downforce"] >= X_STAR for c in c_opt.values())
     r_best = pick({n: cands[n] for n in rnd if n in cands}, roles)
-    return {"candidates": {n: {k: v for k, v in c.items() if k != "phases"} for n, c in c_opt.items()}, "finalist": None if futility else best, "futility": futility,
+    ref = estimates(V, "g1", names(roles, "ref")[0], par) if names(roles, "ref") else None
+    ref_ok = None if not ref else bool(abs(ref["downforce"]["delta_bar"] - REF_DF) <= 3 * math.hypot(ref["downforce"]["se_eff"], REF_SIGMA))   # §3.5, label only
+    return {"REF_CONSISTENT": ref_ok, "ref_estimate": ref, "candidates": {n: {k: v for k, v in c.items() if k != "phases"} for n, c in c_opt.items()}, "finalist": None if futility else best, "futility": futility,
             "search_complete": complete, "pool_limited": bool(rs["pool_limited_pre"] and not feas_gain), "r_best": r_best, "K_opt": len(opt), "K_rand": len(rnd),
             "proposals_from_gating": [p["name"] for p in rs["proposal_states"]], "selected_before_futility": best, "incomplete_causes": [] if complete else causes,
             "random_estimates": {n: cands[n] for n in rnd if n in cands}, "exploration_phases": {n: c["phases"] for n, c in {**cands, **c_opt}.items()},
@@ -319,13 +330,21 @@ def max_diff(a, b):
     return None if a is None or b is None else {r: abs(a[i] - b[i]) for i, r in enumerate(RESP)}
 
 
+REPEAT_PHASE = {"g1": "11", "f32": "13"}   # g1k11 and f32a
+
+
 def repeat_check(T, g) -> dict:
-    """The within-kernel parent_repeat reproduces the parent within the downforce floor (both responses); judged on the finite runs, not on the DATA_LOSS-filtered ones."""
-    par = parent_of(T["roles"])
-    dd = [max_diff(raw(T, g, rep, ph), raw(T, g, par, ph)) for rep in names(T["roles"], "parent_repeat") for ph in T["runs"].get(g, {}).get(rep, {})]
-    dd = [d for d in dd if d]
-    worst = {r: max(d[r] for d in dd) for r in RESP} if dd else None
-    return {"max_abs_diff": worst, "nondeterminism": bool(worst and max(worst.values()) > REPEAT_TOL)}
+    """§5.11.10: the parent_repeat of the kernel reproduces the parent run of the same phase within the downforce floor (both responses, strict), judged on the raw runs.
+    Repeat absent or not ok (or no finite ok parent run): not judged.  A non-finite repeat force against a finite ok parent run: NONDETERMINISM."""
+    par, reps, ph = parent_of(T["roles"]), names(T["roles"], "parent_repeat"), REPEAT_PHASE[g]
+    r = T["runs"].get(g, {}).get(reps[0], {}).get(ph) if reps else None
+    p = T["runs"].get(g, {}).get(par, {}).get(ph)
+    if r is None or not r["ok"] or p is None or not finite_run(p):
+        return {"max_abs_diff": None, "nondeterminism": False, "judged": False}
+    if not finite_run(r):
+        return {"max_abs_diff": None, "nondeterminism": True, "judged": True}
+    d = max_diff(raw(T, g, reps[0], ph), raw(T, g, par, ph))
+    return {"max_abs_diff": d, "nondeterminism": bool(max(d.values()) > REPEAT_TOL), "judged": True}
 
 
 def drift_check(T) -> dict:
@@ -337,12 +356,13 @@ def drift_check(T) -> dict:
 def g_rule(e) -> dict:
     d, se = e["downforce"]["delta_bar"], e["downforce"]["se_eff"]
     return {"decision": "PASS" if d >= X_STAR and d > 3 * se else "UNRESOLVED" if d >= X_STAR else "FAIL",
-            "GAIN_RESOLVED_ABOVE_MIN": bool(d - tcrit(e["downforce"]["P"]) * se >= X_STAR)}
+            "GAIN_RESOLVED_ABOVE_MIN": None if (t := tcrit(e["downforce"]["P"])) is None else bool(d - t * se >= X_STAR)}
 
 
 def d_rule(e) -> dict:
-    d, w = e["drag"]["delta_bar"], tcrit(e["drag"]["P"]) * e["drag"]["se_eff"]
-    lab = ("PASS_RESOLVED" if d + w <= 0 else "PASS_UNRESOLVED") if d <= 0 else ("VIOLATION_UNRESOLVED" if d <= w else "VIOLATION_RESOLVED")
+    d, t = e["drag"]["delta_bar"], tcrit(e["drag"]["P"])
+    w = None if t is None else t * e["drag"]["se_eff"]
+    lab = None if w is None else ("PASS_RESOLVED" if d + w <= 0 else "PASS_UNRESOLVED") if d <= 0 else ("VIOLATION_UNRESOLVED" if d <= w else "VIOLATION_RESOLVED")
     return {"decision": "PASS" if d <= 0 else "VIOLATION", "label": lab}
 
 
@@ -611,21 +631,26 @@ def real_oracle(T, workers, log=print):
     return ask, rows
 
 
-def common_record(T, meta, fz, states):
-    return {"registration": "docs/screen01_registration_2026_10_30.md", "analyzer_sha256": SC.sha256_path(__file__), "coefficients": coefficients(),
+def common_record(T, meta, fz, states, a=None):
+    sigs = getattr(a, "lost_signatures", {})
+    return {"lost_signatures": sigs, "infra_signatures_sha256": SC.sha256_path(INFRA_FILE) if sigs else None, "registration": "docs/screen01_registration_2026_10_30.md", "analyzer_sha256": SC.sha256_path(__file__), "coefficients": coefficients(),
             "states_sha256": SC.sha256_path(states), "freeze_sha256": {n: SC.sha256_path(EV / f"{n}.json") for n in fz}, "groups": meta, "lost_kernels": T["lost_kernels"],
             "qualification_flags": "all false (unchanged)", "shape_update_allowed": False}
 
 
-def frozen_sources(fz1):
+def frozen_sources(fz1, a=None):
+    """The running analyzer, checker and pool are the frozen ones; with --lost the signature table is the frozen one and every declaration cites a signature."""
     for s in SOURCES:
         check_frozen(fz1, ROOT / "scripts/screen01" / s, "source")
+    if a is not None and a.lost:
+        check_frozen(fz1, INFRA_FILE, "INFRA_LOSS signature table")
+        SC.req(set(a.lost) <= set(getattr(a, "lost_signatures", {})), "every --lost declaration must cite a signature (KERNEL=SIGNATURE, registration §5.11.17)")
 
 
 def run_rs(a, oracle=real_oracle):
     """oracle(T, workers) -> (is_admissible, rows): injectable (tests); default = the full admissibility of screen01_pool in parallel rounds."""
     fz = {"freeze1": freeze("freeze1"), "freeze2": freeze("freeze2")}
-    frozen_sources(fz["freeze1"])
+    frozen_sources(fz["freeze1"], a)
     T, meta = stage_input(a, "rs", fz)
     V, _ = valid_runs(T)
     rows = {}
@@ -634,7 +659,7 @@ def run_rs(a, oracle=real_oracle):
         T = rs_gate(T, ask)
     res = compute(T)
     return {"kind": "screen01_rs", "stage": "rs", **split(res, "rs"), "proposals": res["proposal_states"],
-            "gating": [{**rows.get(g["name"], {}), **g} for g in T["gating"]], "cross_check": cross_check(res, T), **common_record(T, meta, fz, a.states)}
+            "gating": [{**rows.get(g["name"], {}), **g} for g in T["gating"]], "cross_check": cross_check(res, T), **common_record(T, meta, fz, a.states, a)}
 
 
 def verify_upstream(T, rs_json=None, fin_json=None):
@@ -647,7 +672,7 @@ def verify_upstream(T, rs_json=None, fin_json=None):
 
 def run_finalist(a):
     fz = {n: freeze(n) for n in ("freeze1", "freeze2", "freeze2_1")}
-    frozen_sources(fz["freeze1"])
+    frozen_sources(fz["freeze1"], a)
     SC.req(SC.sha256_path(a.rs) == fz["freeze2_1"]["rs_json_sha256"], "rs.json is not the one frozen in freeze2_1.json")
     rs = SC.jload(a.rs)
     T, meta = stage_input(a, "finalist", fz, rs=rs)
@@ -655,7 +680,7 @@ def run_finalist(a):
     verify_upstream(T, rs_json=rs)
     res = compute(T)
     return {"kind": "screen01_finalist", "stage": "finalist", "finalist": res["finalist"], "r_best": res["r_best"], **split(res, "finalist"), "cross_check": cross_check(res, T), "rs_json_sha256": SC.sha256_path(a.rs),
-            "groups": meta, **common_record(T, meta, fz, a.states)}
+            "groups": meta, **common_record(T, meta, fz, a.states, a)}
 
 
 def handoff(T, res, fj, rs_json, analysis_sha, a, meta):
@@ -687,13 +712,15 @@ def summary_md(rec) -> str:
     lines = [f"# SCREEN-01 analysis: {rec['outcome']}", "", f"cause: {rec['cause']}", "", "| item | value |", "| --- | --- |"]
     for k in ("finalist", "futility", "search_complete", "pool_limited", "r_best", "K_opt", "K_rand", "G", "D", "R3", "NC", "determinism", "generation_drift", "controls", "selection_bias"):
         lines.append(f"| {k} | {json.dumps(A.clean(rec.get(k)), sort_keys=True)} |")
+    nj = [k for k, v in rec["determinism"].items() if not v["judged"]]
+    lines += ["", f"determinism NOT_JUDGED (repeat absent or not ok): {nj or 'none'}", f"rs_fit_label: {rec['rs_fit_label']}"]
     return "\n".join(lines) + "\n"
 
 
 def run_main(a) -> dict:
     """{path: text} of the outputs, all built (and the write-once check made) before any is written."""
     fz = {n: freeze(n) for n in ("freeze1", "freeze2", "freeze2_1", "freeze3")}
-    frozen_sources(fz["freeze1"])
+    frozen_sources(fz["freeze1"], a)
     SC.req(SC.sha256_path(a.rs) == fz["freeze2_1"]["rs_json_sha256"] and SC.sha256_path(a.finalist) == fz["freeze3"]["finalist_json_sha256"], "rs.json or finalist.json is not the frozen one")
     rs, fj = SC.jload(a.rs), SC.jload(a.finalist)
     T, meta = stage_input(a, "main", fz, rs=rs, fin=fj)
@@ -702,8 +729,8 @@ def run_main(a) -> dict:
     verify_upstream(T, rs, fj)
     res = compute(T)
     sp = split(res, "main")
-    rec = {"kind": "screen01_analysis", "stage": "main", **sp["comparable"], "detail": sp["detail"], "cross_check": cross_check(res, T),
-           "rs_json_sha256": SC.sha256_path(a.rs), "finalist_json_sha256": SC.sha256_path(a.finalist), **common_record(T, meta, fz, a.states)}
+    rec = {"kind": "screen01_analysis", "stage": "main", **sp["comparable"], "detail": sp["detail"], "rs_fit_label": res["rs"]["rs_fit_label"], "cross_check": cross_check(res, T),
+           "rs_json_sha256": SC.sha256_path(a.rs), "finalist_json_sha256": SC.sha256_path(a.finalist), **common_record(T, meta, fz, a.states, a)}
     text = dumps(rec)
     out = {a.out: text, a.out.with_suffix(".md"): summary_md(rec)}
     if res["outcome"] == "SCREEN01_GAIN":
@@ -729,16 +756,18 @@ def budget(finished, pending) -> dict:
             "decision": "go" if t <= BUDGET_CAP_S else "stop", "rule": "registration §4.3"}
 
 
-INFRA_SIGNATURES = (   # frozen §9 table; anything else is NOT infrastructure
-    ("JULIA_INSTALL", re.compile(r"Pkg\.instantiate failed|Julia archive SHA-256 mismatch|Unsatisfiable requirements|RegistryException|Could not resolve host|Temporary failure in name resolution")),
-    ("GPU_IDENTITY", re.compile(r"independent CUDA device UUID probe failed|observed CUDA singleton/default UUID differs|must be a Tesla T4|physical GPU index 0 must occur|nvidia-smi inventory|no CUDA-capable device|CUDA_ERROR_NO_DEVICE")),
-    ("PLATFORM_ERROR", re.compile(r"Bad Gateway|Service Unavailable|Gateway Time-?out|Internal Server Error|<!DOCTYPE html>")))
+def infra_table(path=INFRA_FILE) -> dict:
+    """The frozen §9 signature table (docs/evidence/screen01_2026_10_30/infra_signatures.json): ids, evidence sources, regex patterns; the default is not infrastructure."""
+    t = SC.jload(path)
+    ids = [e["id"] for e in t["signatures"]]
+    SC.req(t.get("schema") == "screen01-infra-signatures-v1" and len(set(ids)) == len(ids) and t["default"] == "NOT_INFRASTRUCTURE" and ids == t["evaluation_order"], f"{path}: malformed signature table")
+    return t
 
 
-def classify_infra(output_dir, log_path, status_text="", verify_failed=False) -> dict:
-    """INFRA_LOSS iff verify failed, or the kernel did not end DONE and its log matches a signature (Julia install failure before any state, GPU identity mismatch,
-    platform error page / status error, session kill without DONE or ERROR.txt); the default is not infrastructure."""
-    d = Path(output_dir)
+def classify_infra(output_dir, log_path, status_text="", verify_failed=False, table=None) -> dict:
+    """INFRA_LOSS iff verify failed, or the kernel did not end DONE and its evidence matches a signature of the table, in its evaluation order (session kill = neither DONE
+    nor ERROR.txt; the others are regex searches of ERROR.txt, the Kaggle log and the status text, JULIA_INSTALL only before any complete state); default NOT_INFRASTRUCTURE."""
+    table, d = table or infra_table(), Path(output_dir)
     if verify_failed:
         return {"classification": "INFRA_LOSS", "signature": "VERIFY_FAILED"}
     if (d / "DONE").exists():
@@ -752,10 +781,21 @@ def classify_infra(output_dir, log_path, status_text="", verify_failed=False) ->
         text += Path(log_path).read_text(errors="replace") if Path(log_path).exists() else ""
     idx = d / "harness_index.json"
     done = sum(1 for e in (json.loads(idx.read_text()).get("states") or []) if e.get("complete")) if idx.exists() else 0
-    for name, rx in INFRA_SIGNATURES:
-        if rx.search(text) and (name != "JULIA_INSTALL" or done == 0):
-            return {"classification": "INFRA_LOSS", "signature": name}
+    for e in table["signatures"]:
+        if e["pattern"] and re.search(e["pattern"], text) and not (e.get("before_any_state") and done):
+            return {"classification": "INFRA_LOSS", "signature": e["id"]}
     return {"classification": "NOT_INFRASTRUCTURE", "signature": None}
+
+
+def parse_lost(items, table=None) -> dict:
+    """--lost KERNEL=SIGNATURE_ID: every declaration cites the signature of infra_signatures.json its failure matched (§5.11.17)."""
+    ids = {e["id"] for e in (table or infra_table())["signatures"]}
+    out = {}
+    for x in items:
+        k, _, sid = x.partition("=")
+        SC.req(k in REG_RUNS and sid in ids, f"--lost {x!r}: expected KERNEL=SIGNATURE with a kernel of {sorted(REG_RUNS)} and a signature of {sorted(ids)}")
+        out[k] = sid
+    return out
 
 
 def main():
@@ -779,6 +819,9 @@ def main():
     ap.add_argument("--out", type=Path)
     a = ap.parse_args()
     SC.req(a.workers <= 4, "at most 4 workers")
+    if a.cmd in ("rs", "finalist", "main"):
+        a.lost_signatures = parse_lost(a.lost)
+        a.lost = sorted(a.lost_signatures)
     if a.cmd == "infra":
         print(json.dumps(classify_infra(a.output_dir, a.log, a.status_file.read_text() if a.status_file else "", a.verify_failed)))
         return

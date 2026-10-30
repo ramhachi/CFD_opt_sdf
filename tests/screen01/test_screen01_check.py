@@ -114,7 +114,8 @@ def test_happy_gain_every_label():
     assert o["R3"]["label"] == "R3_CONFIRMED" and o["R3"]["R3_RATIO_IN_BAND"] and o["R3"]["G48_ABOVE_MIN"] and not o["R3"]["R3_E2_EXCEEDED"]
     assert o["R3"]["R3_DRAG_SAME_SIGN"] and o["R3"]["G48_MARGIN"] == pytest.approx(0.0099 - X_STAR, abs=1e-12)
     assert o["NC"]["g1"] == {"z": pytest.approx(0, abs=1e-9), "label": "CONSISTENT"}
-    assert o["determinism"]["g1k11"]["nondeterminism"] is False and o["determinism"]["f32a"]["nondeterminism"] is False
+    assert o["determinism"] == {k: {"max_abs_diff": {"downforce": 0.0, "drag": 0.0}, "nondeterminism": False, "judged": True} for k in ("g1k11", "f32a")}
+    assert o["generation_drift"] == {"max_abs_diff": {"downforce": 0.0, "drag": 0.0}, "drift": False}
     assert o["generation_drift"]["drift"] is False
     assert o["controls"] == {"OPT_VS_RANDOM": "OPT_BEATS_RANDOM", "OPT_VS_MANUAL": "OPT_BEATS_MANUAL", "RANDOM_FEASIBLE_GAIN": False, "K_MISMATCH": False}
     c = o["confirmation"]["f32"]
@@ -168,21 +169,38 @@ def test_step3_no_finalist_causes():
     T = happy()
     for s in T["runs"]["g1"]:
         T["runs"]["g1"][s].pop("12", None)
-        T["runs"]["g1"][s].get("A0", None)
     delta(T, "g1", "A0", [0.004], [-0.001], (11,))
     o = run(T)
     assert (o["search_complete"], o["outcome"], o["cause"]) == (False, "SCREEN01_INCOMPLETE", ["DATA_G1"])
-    # RS_NOT_FIT (both phases lost for 8 design points) and no finalist -> DATA_REFINE
+    # RS_NOT_FIT (both phases lost for 8 design points) and no finalist: the design points lack phases AND the fit failed -> both causes, stage order (s5.11.7)
     T = base(n_prop=0)
     for i in range(1, 9):
         T["runs"]["g1"].pop(f"D{i}")
     o = run(T)
-    assert (o["search_complete"], o["outcome"], o["cause"]) == (False, "SCREEN01_INCOMPLETE", ["DATA_REFINE"])
+    assert (o["search_complete"], o["outcome"], o["cause"]) == (False, "SCREEN01_INCOMPLETE", ["DATA_G1", "DATA_REFINE"])
     # G2 kernel lost, G1 complete, no feasible candidate -> DATA_G2
     T = base(n_prop=4)
     T["runs"]["g2"] = {}
     o = run(T)
     assert (o["search_complete"], o["outcome"], o["cause"]) == (False, "SCREEN01_INCOMPLETE", ["DATA_G2"])
+    # one G1 kernel lost (phase 12) and the G2 kernel lost, the fit still OK: DATA_G1 then DATA_G2; the first entry is the primary cause
+    T = base(n_prop=4)
+    T["runs"]["g2"] = {}
+    for s_ in T["runs"]["g1"]:
+        T["runs"]["g1"][s_].pop("12", None)
+    T["lost_kernels"] = ["g1k12", "g2"]
+    assert run(T)["cause"] == ["DATA_G1", "DATA_G2"]
+    # DATA_G2 needs the fit OK: with RS_NOT_FIT and lost proposals the list is DATA_G1 (design lost), DATA_REFINE only
+    T = base(n_prop=4)
+    T["runs"]["g2"] = {}
+    for i in range(1, 9):
+        T["runs"]["g1"].pop(f"D{i}")
+    assert run(T)["cause"] == ["DATA_G1", "DATA_REFINE"]
+    # a declared-lost G1 kernel is DATA_G1 even when every search state still has both phases (reported only while search_complete is false)
+    T = base(n_prop=4)
+    T["runs"]["g2"] = {}
+    T["lost_kernels"] = ["g1k11"]
+    assert run(T)["cause"] == ["DATA_G1", "DATA_G2"]
     # G2 lost but a finalist exists among the measured states: the study continues (finalist from measured states)
     T = happy()
     T["runs"]["g2"] = {}
@@ -342,19 +360,38 @@ def test_controls_labels():
     assert run(T)["controls"]["K_MISMATCH"] is True
 
 
-def test_determinism_and_generation_drift():
+def test_determinism_judged_on_raw_runs():
     T = happy()
     setd(T, "g1", "REP", 11, 1.5e-4, 0.0)  # within the downforce floor 2.09e-4
     d = run(T)["determinism"]["g1k11"]
-    assert d["nondeterminism"] is False and d["max_abs_diff"]["downforce"] == pytest.approx(1.5e-4, abs=1e-12)
-    setd(T, "g1", "REP", 11, 2.5e-4, 0.0)
+    assert d["nondeterminism"] is False and d["judged"] is True and d["max_abs_diff"]["downforce"] == pytest.approx(1.5e-4, abs=1e-12)
+    setd(T, "g1", "REP", 11, 2.5e-4, 0.0)  # strictly above the floor
     assert run(T)["determinism"]["g1k11"]["nondeterminism"] is True
-    setd(T, "g1", "REP", 11, 0.3, 0.0)  # 30 %: still NONDETERMINISM (the 0.25 bound does not turn the repeat into DATA_LOSS), not data loss
+    setd(T, "g1", "REP", 11, 0.0, 2.5e-4)  # drag counts, against the same (downforce) floor
+    assert run(T)["determinism"]["g1k11"]["nondeterminism"] is True
+    setd(T, "g1", "REP", 11, 0.3, 0.0)  # 30 % off: DATA_LOSS (listed, uniform rule) AND NONDETERMINISM (raw runs): the check is not removed by the loss
     o = run(T)
-    assert o["determinism"]["g1k11"]["nondeterminism"] is True and o["data_loss"] == []
-    setd(T, "g1", "REP", 11, 0.0, 0.0, ok=False)  # lost repeat: listed as data loss, determinism not judged
+    assert o["determinism"]["g1k11"]["nondeterminism"] is True and o["data_loss"] == ["REP@g1@11"]
+    assert (o["outcome"], o["cause"]) == ("SCREEN01_INVALID", ["NONDETERMINISM_G1K11"])
+    T["runs"]["g1"]["REP"]["11"]["downforce"] = None  # ok, but a non-finite force against a finite ok parent run: not reproduced
     o = run(T)
-    assert o["data_loss"] == ["REP@g1@11"] and o["determinism"]["g1k11"] == {"max_abs_diff": None, "nondeterminism": False}
+    assert o["determinism"]["g1k11"] == {"max_abs_diff": None, "nondeterminism": True, "judged": True} and o["data_loss"] == ["REP@g1@11"]
+    T["runs"]["g1"]["REP"]["11"]["ok"] = False  # not ok: NOT_JUDGED, no outcome effect
+    o = run(T)
+    assert o["determinism"]["g1k11"] == {"max_abs_diff": None, "nondeterminism": False, "judged": False} and o["outcome"] == "SCREEN01_GAIN"
+    del T["runs"]["g1"]["REP"]  # absent: NOT_JUDGED
+    assert run(T)["determinism"]["g1k11"]["judged"] is False
+    T = happy()  # the parent run at that phase is invalid: nothing to compare with
+    T["runs"]["g1"]["P"]["11"]["ok"] = False
+    assert run(T)["determinism"]["g1k11"]["judged"] is False
+    T = happy()  # f32a: the repeat at phase 13 only
+    setd(T, "f32", "REP", 13, 3e-4, 0.0)
+    assert run(T)["determinism"]["f32a"] == {"max_abs_diff": {"downforce": pytest.approx(3e-4, abs=1e-12), "drag": 0.0}, "nondeterminism": True, "judged": True}
+    T["runs"]["f32"]["REP"] = {"14": T["runs"]["f32"]["REP"]["13"]}  # a repeat row at another phase is not the f32a check
+    assert run(T)["determinism"]["f32a"]["judged"] is False
+
+
+def test_generation_drift_raw_and_null():
     T = happy()  # drift: f32 parent at phase 11 against the g1 parent at phase 11, label only
     setd(T, "f32", "P", 11, 3e-4, 0.0)
     o = run(T)
@@ -363,6 +400,11 @@ def test_determinism_and_generation_drift():
     assert run(T)["generation_drift"]["drift"] is False
     setd(T, "f32", "P", 11, 0.0, 3e-4)  # drag differences count against the downforce floor too
     assert run(T)["generation_drift"]["drift"] is True
+    T["runs"]["f32"]["P"]["11"]["downforce"] = None  # either run invalid: null and false
+    assert run(T)["generation_drift"] == {"max_abs_diff": None, "drift": False}
+    T = happy()
+    del T["runs"]["g1"]["P"]["11"]
+    assert run(T)["generation_drift"] == {"max_abs_diff": None, "drift": False}
 
 
 # ---- s5.1 data loss and estimators ------------------------------------------------------------------------------------------------------------------------
@@ -488,18 +530,35 @@ def test_fit_recovers_exact_quadratic_coefficients():
 def test_fit_poor_flag_and_not_fit_flags():
     T = surface_T(BY_FULL, BZ_FULL)
     for k in "11", "12":
-        T["runs"]["g1"]["D2"][k]["downforce"] += 0.02  # a misfit of 0.02 >> 3 x pooled SE_eff (1.5e-4)
+        T["runs"]["g1"]["D2"][k]["downforce"] += 0.02  # a misfit of 0.02 >> 3 x RMS SE_eff (1.5e-4)
     o = C.check(T)
     assert o["rs_fit_poor"] is True and o["fit"]["residual_sd"]["downforce"] > 3 * FL_DF and o["rs_not_fit"] is False
+    T = surface_T(BY_FULL, BZ_FULL)  # drag alone is poor: either response suffices
+    for k in "11", "12":
+        T["runs"]["g1"]["D2"][k]["drag"] += 0.02
+    o = C.check(T)
+    assert o["rs_fit_poor"] is True and o["fit"]["residual_sd"]["drag"] > 3 * FL_DR
+    assert C.check(surface_T(BY_FULL, BZ_FULL))["rs_fit_poor"] is False
     T = surface_T(BY_FULL, BZ_FULL)
-    for i in range(1, 9):  # 6 axial + 1 design point left: rank < 9
+    for i in range(1, 9):  # 6 axial + 1 design point left: rank < 9 -> everything null, rs_fit_poor null
         T["runs"]["g1"].pop(f"D{i}")
     o = C.check(T)
-    assert (o["rs_not_fit"], o["fit"]["rank"], o["fit"]["cond"], o["fit"]["downforce"]["coef"], o["gated"], o["stop_after"], o["proposals"], o["u_star_1"],
-            o["pool_limited_pre"]) == (True, 7, None, None, [], 0, [], None, False)
-    o = C.check(surface_T(BY_FULL, BZ_FULL, scale=0.05))  # rank 9 but cond >> 20: RS_NOT_FIT, coefficients still reported, no optimum
-    assert o["fit"]["rank"] == 9 and o["fit"]["cond"] > 20 and o["rs_not_fit"] is True and o["u_star_1"] is None and o["targets"]["1.0"]["u_star"] is None
-    assert o["fit"]["downforce"]["coef"] is not None
+    assert (o["rs_not_fit"], o["fit"]["rank"], o["fit"]["cond"], o["fit"]["downforce"]["coef"], o["fit"]["drag"]["coef"], o["fit"]["residual_sd"], o["rs_fit_poor"], o["gated"], o["stop_after"],
+            o["proposals"], o["u_star_1"], o["y_star_1"], o["pool_limited_pre"]) == (True, 7, None, None, None, {"downforce": None, "drag": None}, None, [], 0, [], None, None, False)
+    assert all(v == {"u_star": None, "y_pred": None, "z_pred": None} for v in o["targets"].values())
+    # rank 9 but cond > 20: RS_NOT_FIT exactly as for rank < 9 (coefficients, residual SDs, rs_fit_poor, optimum null); cond is reported
+    o = C.check(surface_T(BY_FULL, BZ_FULL, scale=0.05))
+    assert o["fit"]["rank"] == 9 and o["fit"]["cond"] > 20 and o["rs_not_fit"] is True and o["u_star_1"] is None and o["y_star_1"] is None and o["targets"]["1"]["u_star"] is None
+    assert o["fit"]["downforce"]["coef"] is None and o["fit"]["drag"]["coef"] is None and o["fit"]["residual_sd"] == {"downforce": None, "drag": None} and o["rs_fit_poor"] is None
+    assert o["gated"] == [] and o["proposals"] == [] and o["pool_limited_pre"] is False
+    # n = 9 (rank 9, cond <= 20): fit OK, coefficients reported, the residual SD has no dof -> null, rs_fit_poor null (RS_FIT_UNDEFINED)
+    T = surface_T(BY_FULL, BZ_FULL)
+    for i in (0, 1, 2, 4, 7, 8):
+        T["runs"]["g1"].pop(f"D{i}")  # design points D3, D5, D6 stay: cond 9.08
+    o = C.check(T)
+    assert o["fit"]["rank"] == 9 and o["fit"]["cond"] == pytest.approx(9.0823, abs=1e-3) and o["rs_not_fit"] is False
+    assert o["fit"]["downforce"]["coef"] == pytest.approx(list(BY_FULL), abs=1e-10) and o["fit"]["residual_sd"] == {"downforce": None, "drag": None} and o["rs_fit_poor"] is None
+    assert o["u_star_1"] is not None  # the optimum is still reported on a fitted surface
 
 
 def test_g1_kernel_losses():
@@ -529,24 +588,24 @@ def test_a_point_is_dropped_only_if_both_phases_are_lost():
 def test_constrained_optimum_on_the_81_grid():
     o = C.check(surface_T(BY_S, BZ_S))
     # tau = 1: z <= -1.5e-3 needs r >= 0.4839 -> grid 0.5; tau 1.5: r >= 0.7258 -> 0.75; tau 2: r >= 0.9677 -> 0.975; p = 1, c = 0 (camber grid is exact)
-    for tau, r in (("1.0", 0.5), ("1.5", 0.75), ("2.0", 0.975)):
+    for tau, r in (("1", 0.5), ("1.5", 0.75), ("2", 0.975)):
         t = o["targets"][tau]
         assert t["u_star"] == pytest.approx([1.0, 0.0, r], abs=1e-12)
         assert t["y_pred"] == pytest.approx(0.02 - 0.002 * r, abs=1e-12) and t["z_pred"] == pytest.approx(-0.0031 * r, abs=1e-12)
     assert o["u_star_1"] == pytest.approx([1.0, 0.0, 0.5], abs=1e-12) and o["y_star_1"] == pytest.approx(0.019, abs=1e-12) and o["pool_limited_pre"] is True
     # unreachable target: z = -0.0028 r -> tau = 2 needs r >= 1.07: no grid point, contributes nothing; pool_limited_pre false when y* < g_min J
     o = C.check(surface_T(BY_S, np.array([0, 0, -0.0028, 0, 0, 0, 0, 0, 0.0])))
-    assert o["targets"]["2.0"] == {"u_star": None, "y_pred": None, "z_pred": None} and o["targets"]["1.5"]["u_star"][2] == pytest.approx(0.825, abs=1e-12)
+    assert set(o["targets"]) == {"1", "1.5", "2"} and o["targets"]["2"] == {"u_star": None, "y_pred": None, "z_pred": None} and o["targets"]["1.5"]["u_star"][2] == pytest.approx(0.825, abs=1e-12)
     o = C.check(surface_T(BY_S * 0.1, BZ_S))
     assert o["y_star_1"] == pytest.approx(0.0019, abs=1e-12) and o["pool_limited_pre"] is False
 
 
-def gating_for(T, adm):
+def gating_for(T, adm, by=BY_S, bz=BZ_S):
     """Two passes: an all-inadmissible dummy gating reveals the regenerated order (up to the cap); then a real gating with adm(position, target_index), cut at the stop."""
     T = copy.deepcopy(T)
     T["gating"] = [{"name": f"d{i}", "u": [9, 9, 9], "target_index": 0, "y_pred": 0.0, "z_pred": 0.0, "admissible": False} for i in range(40)]
     first = C.check(T)["gated"]
-    T["gating"] = [{"name": f"g{i}", "u": u, "target_index": ti, "y_pred": float(feat(u) @ BY_S), "z_pred": float(feat(u) @ BZ_S), "admissible": adm(i, ti)}
+    T["gating"] = [{"name": f"g{i}", "u": u, "target_index": ti, "y_pred": float(feat(u) @ by), "z_pred": float(feat(u) @ bz), "admissible": adm(i, ti)}
                    for i, (ti, u) in enumerate(first)]
     T["gating"] = T["gating"][:C.check(T)["stop_after"]]
     return T
@@ -562,7 +621,7 @@ def test_gating_regeneration_and_round_robin_stopping():
     assert ts == [0, 1, 2, 0, 1, 2, 0, 1] and o["gated"][0][1] != [1.0, 0.0, 0.5]    # R0 excluded the first candidate of target 0
     assert o["gated"][1][1] == [1.0, 0.0, 0.75] and o["gated"][2][1] == [1.0, 0.0, 0.975]
     for ti, u in o["gated"]:
-        tau, us = (1.0, 1.5, 2.0)[ti], np.array(o["targets"][("1.0", "1.5", "2.0")[ti]]["u_star"])
+        tau, us = (1.0, 1.5, 2.0)[ti], np.array(o["targets"][("1", "1.5", "2")[ti]]["u_star"])
         y, z = float(feat(u) @ BY_S), float(feat(u) @ BZ_S)
         assert max(abs(np.array(u) - us)) <= 0.25 + 1e-6 and z <= -tau * 1.5e-3 + 1e-12 and np.all(np.array(u) >= [-1, -1.5, -1]) and np.all(np.array(u) <= 1)
         assert y >= 0.9 * (0.02 - 0.002 * us[2]) - 1e-9
@@ -583,6 +642,51 @@ def test_gating_regeneration_and_round_robin_stopping():
     keep = (zz <= -1.5e-3) & (yy >= 0.9 * 0.019)
     best = cu[keep][np.argmax(yy[keep])]
     assert o["gated"][0][1] == [round(float(x), 6) for x in best]
+
+
+def test_target_without_predicted_gain_contributes_nothing():
+    # y = 0.01 p - 0.012 r - 0.004 c^2, z = -0.0031 r: y*(tau) = 0.01 - 0.012 r*: 0.004 (r 0.5), 0.001 (r 0.75), -0.0017 (r 0.975)
+    by = np.array([0.01, 0, -0.012, 0, -0.004, 0, 0, 0, 0.0])
+    T = surface_T(by, BZ_S)
+    o = C.check(T)
+    assert o["targets"]["2"]["u_star"] == pytest.approx([1.0, 0.0, 0.975], abs=1e-12) and o["targets"]["2"]["y_pred"] == pytest.approx(-0.0017, abs=1e-12)  # still reported
+    assert o["targets"]["2"]["z_pred"] == pytest.approx(-0.0030225, abs=1e-12) and o["y_star_1"] == pytest.approx(0.004, abs=1e-12) and o["pool_limited_pre"] is False
+    o = C.check(gating_for(T, lambda i, ti: True, by=by))
+    assert [g[0] for g in o["gated"]] == [0, 1, 0, 1] and o["stop_after"] == 4  # target 2 is not queued, so it is not waited for
+    assert o["gated"][0][1] == [1.0, 0.0, 0.5] and o["gated"][1][1] == [1.0, 0.0, 0.75]
+    o = C.check(gating_for(T, lambda i, ti: False, by=by))
+    assert 2 not in {g[0] for g in o["gated"]} and o["proposals"] == []
+    # a target whose argmax has no predicted gain but a feasible grid point is distinct from one with no grid point (both empty lists)
+    o = C.check(surface_T(by, np.array([0, 0, -0.0028, 0, 0, 0, 0, 0, 0.0])))
+    assert o["targets"]["2"] == {"u_star": None, "y_pred": None, "z_pred": None} and o["targets"]["1.5"]["u_star"] is not None
+
+
+def test_shared_point_is_gated_once_and_stop_rule_counts_queued_targets():
+    # bowl: y = 0.05 (2 u.u* - |u|^2), z = -c y with u* = (0.3, 0, 0.3), y* = 0.009, z* = -0.00301: the same u* for all three targets (slack drag margin);
+    # tau = 2 (z <= -0.003) keeps only y >= 0.9967 y*, so its cloud is empty: its list is {u*}, a duplicate of target 0's -> no queued point of its own
+    us, ky = np.array([0.3, 0, 0.3]), 0.05
+    by = np.zeros(9)
+    by[:3], by[3:6] = 2 * ky * us, -ky
+    bz = -(0.00301 / (ky * us @ us)) * by
+    T = surface_T(by, bz)
+    o = C.check(T)
+    assert o["data_loss"] == [] and not o["rs_not_fit"]
+    for k in ("1", "1.5", "2"):
+        assert o["targets"][k]["u_star"] == pytest.approx([0.3, 0.0, 0.3], abs=1e-12) and o["targets"][k]["y_pred"] == pytest.approx(0.009, abs=1e-12)
+        assert o["targets"][k]["z_pred"] == pytest.approx(-0.00301, abs=1e-12)
+    full = C.check(gating_for(T, lambda i, ti: False, by=by, bz=bz))
+    ts = [g[0] for g in full["gated"]]
+    assert full["gated"][0] == [0, [0.3, 0.0, 0.3]] and ts[:3] == [0, 0, 1]      # u* once, owned by target 0; target 1's copy of u* is skipped
+    assert 2 not in ts and len({tuple(g[1]) for g in full["gated"]}) == len(ts) == 36   # nothing gated twice; target 2 queued nothing; no admissible point -> the 36 cap
+    o = C.check(gating_for(T, lambda i, ti: True, by=by, bz=bz))
+    # queue u*(0), c1(0), c1(1), c2(0) | c2(1), c3(0), c3(1), c4(0): counts (3, 1) after round 1, (5, 3) after round 2: stop at 8. Waiting for target 2 (a candidate before the dedup) would never stop.
+    assert [g[0] for g in o["gated"]] == [0, 0, 1, 0, 1, 0, 1, 0] and o["stop_after"] == 8
+    yv = [float(feat(u) @ by) for _, u in o["gated"]]
+    assert o["proposals"][0] == 0 and yv[0] == max(yv)                          # target 0's best is u* itself
+    t1_best = max((i for i, (ti, _) in enumerate(o["gated"]) if ti == 1), key=lambda i: yv[i])
+    assert o["proposals"][1] == t1_best
+    rest = sorted((i for i in range(8) if i not in (0, t1_best)), key=lambda i: -yv[i])
+    assert o["proposals"] == [0, t1_best] + rest[:2]
 
 
 def test_stopping_cap_and_targets_without_candidates():
@@ -614,8 +718,10 @@ def test_gating_mismatch_is_reported():
     T["gating"] = T["gating"][:5]                                                    # shorter than the regenerated record
     assert C.check(T)["gating_mismatch"] == ["gating[5]"]
     T = gating_for(surface_T(BY_S, BZ_S), lambda i, ti: True)
-    T["gating"].append(dict(T["gating"][0]))                                         # longer
+    T["gating"].append(dict(T["gating"][0], name="extra"))                           # longer
     assert C.check(T)["gating_mismatch"] == ["gating[8]"]
+    T["gating"][-1]["name"] = T["gating"][0]["name"]                                 # INTERFACE: every name at most once
+    assert C.check(T)["gating_mismatch"] == ["gating[8]", "gating[8].name"]
 
 
 def test_proposal_selection_from_gating():
@@ -648,6 +754,68 @@ def test_pool_limited():
     assert run(T, "finalist")["pool_limited"] is False
     # without a predicted feasible gain >= x* (flatter surface) the label is false
     assert run(surface_T(by * 0.5, bz), "finalist")["pool_limited"] is False
+
+
+def test_R3_paired_labels_use_the_common_phases():
+    T = happy()  # f48k13 lost: Phi_48 = {14}; the finalist's flow_32 phases 13 / 14 / 15 / 16 are 0.0140 / 0.0099 / 0.0140 / 0.0140
+    for s_ in T["runs"]["f48"]:
+        T["runs"]["f48"][s_].pop("13")
+    T["lost_kernels"] = ["f48k13"]
+    delta(T, "f32", "A0", [0.0140, 0.0099, 0.0140, 0.0140], [-0.002] * 4, (13, 14, 15, 16))
+    delta(T, "f48", "A0", [0.0098], [-0.002], (14,))
+    o = run(T)
+    r = o["R3"]
+    # common = {14}: Delta_bar_32 = 0.0099 (not the 13-14 mean 0.01195 and not the 14-16 mean): ratio 0.99, |48 - 32| = 1e-4 <= 1.807e-3, drag signs equal
+    assert (r["label"], r["R3_RATIO_IN_BAND"], r["R3_E2_EXCEEDED"], r["R3_DRAG_SAME_SIGN"], r["G48_ABOVE_MIN"]) == ("R3_CONFIRMED", True, False, True, True)
+    assert r["G48_MARGIN"] == pytest.approx(0.0098 - X_STAR, abs=1e-12) and o["outcome"] == "SCREEN01_GAIN"
+    assert o["confirmation"]["f48"]["P"] == 1 and o["confirmation"]["f48"]["delta_bar"]["downforce"] == pytest.approx(0.0098, abs=1e-12)
+    delta(T, "f32", "A0", [0.0140, 0.0099, 0.0140, 0.0140], [0.002] * 4, (13, 14, 15, 16))  # f32 drag at the common phase +0.002 vs f48 -0.002: signs differ
+    assert run(T)["R3"]["R3_DRAG_SAME_SIGN"] is False
+    T = happy()  # f48k14 lost (Phi_48 = {13}) and the finalist's flow_32 phase 13 lost: no common phase -> the three labels null, the rest stays
+    for s_ in T["runs"]["f48"]:
+        T["runs"]["f48"][s_].pop("14")
+    T["lost_kernels"] = ["f48k14"]
+    del T["runs"]["f32"]["A0"]["13"]
+    o = run(T)
+    assert o["R3"] == {"label": "R3_CONFIRMED", "R3_RATIO_IN_BAND": None, "G48_ABOVE_MIN": True, "G48_MARGIN": pytest.approx(0.0100 - X_STAR, abs=1e-12),
+                       "R3_E2_EXCEEDED": None, "R3_DRAG_SAME_SIGN": None} and o["outcome"] == "SCREEN01_GAIN"
+    T["runs"]["f48"].pop("A0")  # no flow_48 phase at all for the finalist: R3 null, step 4
+    o = run(T)
+    assert o["R3"] is None and (o["outcome"], o["cause"]) == ("SCREEN01_INCOMPLETE", ["DATA_F"]) and o["confirmation"]["f48"] is None
+
+
+def test_budget_is_any_run_row_of_the_kernel():
+    T = happy()  # f32b's parent rows are missing but A0's rows exist: the kernel was run -> DATA_F (A0 unpaired at 15, 16: |Phi_s| = 2), not BUDGET
+    for k in "15", "16":
+        del T["runs"]["f32"]["P"][k]
+    o = run(T)
+    assert (o["outcome"], o["cause"]) == ("SCREEN01_INCOMPLETE", ["DATA_F"]) and o["data_loss"] == []
+    for s_ in T["runs"]["f32"]:
+        for k in "15", "16":
+            T["runs"]["f32"][s_].pop(k, None)  # now no row at all: never run
+    assert run(T)["cause"] == ["BUDGET"]
+    T["runs"]["f32"]["R0"]["15"] = rn(1.0, 0.5)  # a single row of any state at the kernel's phases is enough
+    assert run(T)["cause"] == ["DATA_F"]
+
+
+def test_data_loss_is_uniform_and_unpaired_runs_are_not_listed():
+    T = happy()
+    T["runs"]["g1"]["NC"]["11"]["downforce"] = 1.3                   # the bound applies to NC, R, M, ref and the repeat like every other run
+    T["runs"]["g1"]["R1"]["12"]["ok"] = False
+    T["runs"]["g1"]["M"]["11"]["drag"] = PAR[1] + 0.13
+    T["runs"]["g1"]["REF"]["12"]["downforce"] = float("nan")
+    setd(T, "g1", "REP", 11, 0.0, 0.2)
+    assert run(T, "rs")["data_loss"] == ["M@g1@11", "NC@g1@11", "R1@g1@12", "REF@g1@12", "REP@g1@11"]
+    T = happy()  # the parent is lost at phase 11: it is listed, the other states' phase-11 runs are unpaired (even an invalid one): not listed
+    T["runs"]["g1"]["P"]["11"]["downforce"] = None
+    T["runs"]["g1"]["A1"]["11"]["ok"] = False
+    T["runs"]["g1"]["A2"]["12"]["ok"] = False                          # paired phase: listed
+    o = run(T, "finalist")
+    assert o["data_loss"] == ["A2@g1@12", "P@g1@11"] and o["candidates"]["A1"]["P"] == 1 and o["candidates"]["A0"]["P"] == 1
+    T = happy()  # no parent row at all at phase 12: every phase-12 run is unpaired, none listed
+    del T["runs"]["g1"]["P"]["12"]
+    T["runs"]["g1"]["A3"]["12"]["downforce"] = None
+    assert run(T, "finalist")["data_loss"] == []
 
 
 # ---- compare ----------------------------------------------------------------------------------------------------------------------------------------

@@ -128,7 +128,8 @@ def states_files() -> dict:
 
 
 def proposal_states(rs: dict) -> tuple:
-    """(rows, {raw path: bytes}) of the proposal states of a written rs.json.  Fields used: proposals[].{name, u}, gating[].{name, admissible, phi_fortran_sha256}."""
+    """(rows, {raw path: bytes}) of the proposal states of a written rs.json.  Fields used: proposals[].{name, u} (rank and spec, when present, must agree with the list
+    position and u), gating[].{name, admissible, phi_fortran_sha256}; the other analyzer fields (target_index, y_pred, z_pred) are not read."""
     import mode01_v18_prescreen as P18
     props = rs["proposals"]
     if len(props) > P.N_PROP:
@@ -143,6 +144,8 @@ def proposal_states(rs: dict) -> tuple:
         g = gating.get(name)
         if pr["name"] != name or name in known or name in order or not (g and g["admissible"] and g.get("phi_fortran_sha256")):
             raise SystemExit(f"proposal {pr['name']!r}: not a new admissible gated state named by its sorted-key spec ({name})")
+        if pr.get("rank", i) != i or pr.get("spec", spec) != spec:
+            raise SystemExit(f"proposal {name}: rank / spec differ from its list position / u (rank {pr.get('rank')}, position {i})")
         items.append((name, spec, g["phi_fortran_sha256"]))
         order[name] = ("proposal", i)
     return candidate_rows(items, order, s, p, S.read_f4(ROOT / B.PARENT_RAW))
