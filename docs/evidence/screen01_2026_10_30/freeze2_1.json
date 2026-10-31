@@ -1,0 +1,518 @@
+{
+ "budget": {
+  "T_s": 60382.419407782,
+  "cap_s": 86400,
+  "decision": "go",
+  "finished_session_wall_s": {
+   "g1k11": 15965.837186676,
+   "g1k12": 15796.582221106
+  },
+  "kind": "screen01_budget_decision",
+  "pending_estimate_s": {
+   "f32a": [
+    5240
+   ],
+   "f32b": [
+    4410
+   ],
+   "f48k13": [
+    7280
+   ],
+   "f48k14": [
+    7280
+   ],
+   "g2": [
+    4410
+   ]
+  },
+  "record_sha256": "ac8b19209849e2605563e986fbd707fc66327a9547f8a7e9f0f3f17f7d4203e7",
+  "rule": "registration \u00a74.3"
+ },
+ "environment": {
+  "numpy": "2.5.2",
+  "python": "3.12.13",
+  "scikit-image": "0.25.2",
+  "scipy": "1.18.1"
+ },
+ "file_sha256": {
+  "docs/evidence/screen01_2026_10_30/freeze2.json": "8e8910c67ba2fb1aca2564337763fdfee80f26d3aea3396fc12777aefb675599",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m0.502_pitch_m2.372_reflex_m27.474.dir_f4_fortran.raw": "701488cf3431feb57b4f12c3b96a6b1d359547825882b4e692b3d1564305567c",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m1.442_pitch_m0.263_reflex_m0.534.dir_f4_fortran.raw": "9369902afdffadea9fa94c947fa7a6ab6d75d2d9bc2647ebbaf8db323bac926a",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m11.14_pitch_m0.003_reflex_p27.435.dir_f4_fortran.raw": "3335e97bbf8213bca3bddb7eeb1ae9ebb65f868cde9c05740062165f706c20fd",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m11.3_reflex_m11.3.dir_f4_fortran.raw": "9774c5d5c32849b1f2cad78b259918c6d6fd3311317139ee66a43b3a29078624",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m14.935_pitch_m2.041_reflex_m13.167.dir_f4_fortran.raw": "a3c73c1703b766c598109176a62776103cb2e9ea9563c88ed5c12c6b5b7c8db3",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m16.263_pitch_m0.962_reflex_p13.18.dir_f4_fortran.raw": "0a0e1a1a4fb18ad86e21ae33bcd01925e37fd3734a4766d4e0de47931d67b97d",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m17.304_pitch_m1.056_reflex_m4.377.dir_f4_fortran.raw": "245741daa9c344536d5498ee337daa77764558a78316e5f37ba3502a6148f7e3",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m19.007_pitch_p0.706_reflex_m26.059.dir_f4_fortran.raw": "2a4cb02b577dd0591f79ad6fbd9b14e9c1c7ba7cd6feead4971339e4c9c9e0ed",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m19.7.dir_f4_fortran.raw": "d103bb0f5e6f366a9a021530b144049415edff65d90c9d79f35477bfa3eac42a",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m19.789_pitch_m0.621_reflex_p26.168.dir_f4_fortran.raw": "62edc0162aabc0aa505c2b19c689e598feda0a7b99a2c130eec6624437024ae8",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m19.7_pitch_m0.38.dir_f4_fortran.raw": "f496d37dbd63e4ca2a66e0a12a8535fdef2629d024d4a46c85511dd12836a57b",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m21.959_pitch_m2.307_reflex_m24.023.dir_f4_fortran.raw": "59bd719205aa63db7330d96d7ab42d56b1afb6fb03c1233378108dcdc74dacf0",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m23.394_pitch_p0.776_reflex_m21.432.dir_f4_fortran.raw": "600b6b2d866a0b9f62885244acd1450ad9db949066383e59eec91f16ffad6290",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m25.466_pitch_p2.31_reflex_p4.633.dir_f4_fortran.raw": "391cde0e288444f55911569ef98b6f878485d1c42e8499a44eb54f8252de68c4",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m26.303_pitch_m1.751_reflex_m15.958.dir_f4_fortran.raw": "b2ea87d50112731f729e58028a81a353ed2e7a44a38f2542913c4ae41a3e0e14",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m28.656_pitch_m0.68_reflex_p2.727.dir_f4_fortran.raw": "91ca81369c628ef2227e357f6b37badb80a5f2102ffed8d532ef2095670ad0e3",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m29.55_pitch_p0.078_reflex_p16.115.dir_f4_fortran.raw": "15cb4fa247767878f2ad34bffee1cec02ada58663bae83240f940ad5c2812527",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m29.55_pitch_p0.078_reflex_p18.312.dir_f4_fortran.raw": "f74d5f983d14f117ac0d439bf39c2f15b60c40fdf9f1b8067fdd8359e0df3bbd",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m29.55_pitch_p0.155_reflex_p16.115.dir_f4_fortran.raw": "27d7b742bd09afdd061204035335650e7fb25c83c6e18470b8172d0afd58d337",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m29.55_pitch_p0.265_reflex_p19.721.dir_f4_fortran.raw": "fbf36df773b49299583c3dac070efa3b410b04a54fcf27a7addf4654f6e6f56c",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m3.701_pitch_m2.29_reflex_p17.406.dir_f4_fortran.raw": "9479b08ae7a0bf0bd11b470502127737bbd12deb48e2df7711368ae42a54d4be",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m4.576_pitch_p0.673_reflex_m10.721.dir_f4_fortran.raw": "6a355d1cdfb4f41629a6e286c53291818426740ada6a45ced5cb855616675a4c",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m7.817_pitch_m2.417_reflex_p7.656.dir_f4_fortran.raw": "084e32fd3ff7df042bb475799c01b47b2c2418851dabf7833044893e28c9c680",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m8.416_pitch_p0.028_reflex_m3.18.dir_f4_fortran.raw": "2f7048c6210fc54292f97819c2f2b5bc42eacf66da80d2fbc40f5f27ef0c1425",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p13.023_pitch_m1.611_reflex_p11.039.dir_f4_fortran.raw": "6ef22ab986ff1abe03a9f63efed56ded28f9f0245c619a677f5458692f03c0b5",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p15.009_pitch_p2.043_reflex_m11.687.dir_f4_fortran.raw": "87fc2a03e7f0bab0f9343c2da4939e664795a75d79f1af2764e51ac1bc03a709",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p15.396_pitch_m1.812_reflex_m17.01.dir_f4_fortran.raw": "337d439012e18f4e4dca783fe55ffa46b295ce64078443bcc705cc6aba200055",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p16.113_pitch_p1.042_reflex_p28.057.dir_f4_fortran.raw": "c0a789b471ffa6cb028622e3c03c4fdfadc40fda8e0ab14325c9dad616420dca",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p16.454_pitch_p1.64_reflex_m16.946.dir_f4_fortran.raw": "3f0b8b2c76d6948750b60024191931f1e4ad9c0fa4a0c869ce8fde17065d71f5",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p17.017_pitch_m0.807_reflex_p23.478.dir_f4_fortran.raw": "6e7c79204f4d990c621eb9b87c7aabc95014427a1539256460238ad0f82fb582",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p19.106_pitch_m2.002_reflex_m23.47.dir_f4_fortran.raw": "43d24727ba7324fc47eabdf6ccc7186f2a15e718b3808aca0fc6e39dab71f73f",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p19.7.dir_f4_fortran.raw": "f99c55afbadbd9fd857a29b16766a410dd0a0d98628a1884e7bd5905a7d51760",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p2.982_pitch_m1.486_reflex_p6.097.dir_f4_fortran.raw": "808aa5a811dae42eff7469521c2ef995d2f66c2515bea4de13a3b03acce43438",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p3.261_pitch_m3.085_reflex_p28.738.dir_f4_fortran.raw": "a949d257bebea2789092b1f12500e99c71e7113919ea6b4ce034d2bc3c1d758d",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p6.88_pitch_m2.543_reflex_m19.455.dir_f4_fortran.raw": "e34cd11927542229b89e59fa01825debfd8e5ddb73f1adc34c927471c4ac7913",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p9.129_pitch_m0.554_reflex_m28.934.dir_f4_fortran.raw": "013c102f0646e7d0144347e0e340108327ff8f368253598e0e6d98041bc54738",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__pitch_m3.1.dir_f4_fortran.raw": "c2532e3fad1d01b8da9012ec89f20886b84d1d0627072bdf2589d7bad6eb46ab",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__pitch_p3.1.dir_f4_fortran.raw": "7e446d7712f04bdc5bf1b1c5f27bf8ceb7b49619f34bdb94c7849232cff9cc9f",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__reflex_m29.3.dir_f4_fortran.raw": "dedd79921bd85d4bd5e4ba1ed4beab91b55d04bb8e3b93ec5a896f6b8de71478",
+  "docs/evidence/screen01_2026_10_30/inputs/v18__reflex_p29.3.dir_f4_fortran.raw": "b37c8f4a0229e2d5c7b48785e3143d0ff598b423418b473a690e66576f090d77",
+  "docs/evidence/screen01_2026_10_30/rs.json": "66f7005d73c2e4c7df2544d6d4e09846822cf466bbc37cfc2c9ade8989fd6395",
+  "docs/evidence/screen01_2026_10_30/states_g2.json": "59a71bde04eea27acb7f88fe2fd1c9ef92099ed65597332a27f6e5a0e4c5a4f2",
+  "docs/evidence/screen01_2026_10_30/wl/budget_g2.json": "ac8b19209849e2605563e986fbd707fc66327a9547f8a7e9f0f3f17f7d4203e7",
+  "docs/evidence/screen01_2026_10_30/wl/smoke_g2/download.txt": "a97757acb9e2a15d105099508abcc88b33433b54a810f0b8145846f851b141c3",
+  "docs/evidence/screen01_2026_10_30/wl/smoke_g2/kernel_output/cfd-opt-sdf-screen01-g2-g2-smoke.log": "082972659f8979759c314e428e8e6e54934a9a4ae68583d7848dae8e381d3f59",
+  "docs/evidence/screen01_2026_10_30/wl/smoke_g2/kernel_output/screen01_g2_g2/DONE": "658091832b1b8b32537b8bc4e7e012095ddc2aba8b513c273090403bfa98e0fe",
+  "docs/evidence/screen01_2026_10_30/wl/smoke_g2/kernel_output/screen01_g2_g2/gpu_device_probe.json": "810ea9dafa10184728a3cbd9402a824af82ee44f2611d3a7dad2a8fffd0b510d",
+  "docs/evidence/screen01_2026_10_30/wl/smoke_g2/kernel_output/screen01_g2_g2/gpu_device_probe.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "docs/evidence/screen01_2026_10_30/wl/smoke_g2/kernel_output/screen01_g2_g2/harness_index.json": "466123d0b4c54fb1f37a9f14eba3c0e138d6ad94ab5ce8bf5024bba40965c325",
+  "docs/evidence/screen01_2026_10_30/wl/smoke_g2/kernel_output/screen01_g2_g2/instantiate.log": "40d025e196cadb3fd52c2d772570ee012c7bbb834fc5e7f5c57a58fe4f65348d",
+  "docs/evidence/screen01_2026_10_30/wl/smoke_g2/kernel_output/screen01_g2_g2/nvidia_smi.csv": "063a807fbfec080533dfe1c36625b2aefa6e447ecedfd575bd2bb8d08e8d0e36",
+  "docs/evidence/screen01_2026_10_30/wl/smoke_g2/kernel_output/screen01_g2_g2/output_manifest.json": "1c878daad11478d102b3ee4d020901552ff4f6bae0cb0ba6e1264b76d79afc68",
+  "docs/evidence/screen01_2026_10_30/wl/smoke_g2/kernel_output/screen01_g2_g2/run_identity.json": "5e45082817c2a1e368afc745f4b12e7b44108f6f40db9c8203a3b57c3f0a78f4",
+  "docs/evidence/screen01_2026_10_30/wl/smoke_g2/kernel_output/screen01_g2_g2/self_test.json": "c91a96240c2336a6ad51d94f8fc357692bce8f8e25e75c179389df0ee1511ad3",
+  "docs/evidence/screen01_2026_10_30/wl/smoke_g2/kernel_output/screen01_g2_g2/states/v18__parent__k11/W4_JOB_DONE": "6a003eaff831e1271cdbe529c64d5564f172d2ea342de1b397b8ed3abea309b3",
+  "docs/evidence/screen01_2026_10_30/wl/smoke_g2/kernel_output/screen01_g2_g2/states/v18__parent__k11/flow_32.forces.csv": "e353cd3205dc792f0e82cf79a7e58cd28518a52e989de1dcacea68468a538efb",
+  "docs/evidence/screen01_2026_10_30/wl/smoke_g2/kernel_output/screen01_g2_g2/states/v18__parent__k11/flow_32.summary.json": "592de54591a9942bc3ef6212df2e048144b491fec48ee4aa7a36da2c512d06c4",
+  "docs/evidence/screen01_2026_10_30/wl/smoke_g2/kernel_output/screen01_g2_g2/states/v18__parent__k11/job.log": "29d252f799f21ba678dddeb10c338179d794c6088c37f121bd7e791443946d75",
+  "docs/evidence/screen01_2026_10_30/wl/smoke_g2/smoke_verify_table.json": "3722b534790e2783748a25c4ab480cd5b1bd0d91e3e5dc50e96153a54631f956",
+  "docs/harness/screen01_g2_campaign.json": "03cc66d9c42c6a457910ead99c0de7bae2faf4513bca4504ed7447fbb7bbb3df",
+  "docs/harness/screen01_g2_campaign.prerun_freeze.json": "e3f301e36370db402dda0cd7f27d2f02b6495f9aa30388481ff9bf7ce13d693e",
+  "docs/harness/screen01_g2_campaign.prerun_freeze.json.sha256": "10c28588ca0670ad1bcd57ded4313657e1106d592ebcd543d8b6caad343358bc",
+  "docs/screen01_registration_2026_10_30.md": "fa3e5f7e5bc8659e3194e24b6c14b32b6eb027df4a420e2dbeeed0aed0dcdc81"
+ },
+ "frozen_utc": "2026-10-31T07:34:35.803337+00:00",
+ "g2": {
+  "campaign_sha256": "03cc66d9c42c6a457910ead99c0de7bae2faf4513bca4504ed7447fbb7bbb3df",
+  "kernels": {
+   "g2": {
+    "estimate_s": 4410,
+    "runs": 10
+   }
+  },
+  "prerun_freeze_sha256": "e3f301e36370db402dda0cd7f27d2f02b6495f9aa30388481ff9bf7ce13d693e",
+  "smoke_kernel": "g2",
+  "smoke_verified_sha256": "3722b534790e2783748a25c4ab480cd5b1bd0d91e3e5dc50e96153a54631f956",
+  "source_commit": "c5d9a0169b7e4af933b36958ca1f1eb227260bd1"
+ },
+ "harness_tool_sha256": {
+  "scripts/harness.py": "e9d036846ffd33fced8a1507a8fb191e49e0179a517c25a393354c83de4655fa",
+  "src/cfd_harness/campaign_build.py": "7e3ee902bc3ed020edd5e37cbd9060490f9c0f5119e72a60448edbdcf0688a68",
+  "src/cfd_harness/campaign_runner_template.py": "d53e2df74af8becc4e512c19e14381c549006a499c38c2cfab2ba89b6ab9ead1",
+  "src/cfd_harness/campaign_schema.py": "4c3c494ed381930d9d1e51b063efbbdcf1fa4586c1ac7e84d2b999a5c984d1b8",
+  "src/cfd_harness/campaign_verify.py": "8db4714799e258e08ce1a2e8ed9de4b5ff90ba3d9fa56513ec6d6997b0e57a2e"
+ },
+ "invalid_at_step_2": false,
+ "kind": "screen01_freeze2_1",
+ "proposals": {
+  "v18__camber_m29.55_pitch_p0.078_reflex_p16.115": {
+   "direction_sha256_fortran_raw": "15cb4fa247767878f2ad34bffee1cec02ada58663bae83240f940ad5c2812527",
+   "gating_row": {
+    "admissible": true,
+    "all_pass": true,
+    "cell_components": 1,
+    "chain_ok": true,
+    "crossing_slope_fail_nodes": 0,
+    "eikonal_band_nodes": 8070,
+    "eikonal_max": 0.5984730061282254,
+    "eikonal_median": 0.001209880102888139,
+    "eikonal_p95": 0.15083967593769457,
+    "eval_wall_s": 169.2,
+    "failed_geom02": [],
+    "fingerprint": "f5a5a95a74e3208a06280f634c405b3e55e578b1a5948c04c7b2bcf15a02473b",
+    "gate_status": {
+     "component_connectivity": "pass",
+     "domain_clearance": "pass",
+     "export_surface_integrity": "pass",
+     "inter_component_gap": "pass",
+     "mask_preservation": "pass",
+     "min_feature_width": "pass",
+     "near_zero_gradient_band": "pass",
+     "sdf_boundary_margin": "pass",
+     "sdf_distance_property": "pass",
+     "sdf_finite_structure": "pass",
+     "surface_self_intersection": "pass",
+     "topology_change_classification": "pass",
+     "volume_semantics": "pass"
+    },
+    "geom02_pass": true,
+    "harness_step_mm": 25.394409894943237,
+    "index": 1,
+    "min_zero_level_z_m": -0.22619632484270452,
+    "name": "v18__camber_m29.55_pitch_p0.078_reflex_p16.115",
+    "p22": {
+     "n_max": 8272,
+     "n_phi": 7444,
+     "pass": true,
+     "slack": 828
+    },
+    "phi_fortran_sha256": "c6d09a8d5f4b3510054eefd875487332f4ddc8a9466d3a098a7960714eced8c0",
+    "r3_descriptive": "pass",
+    "retained": {
+     "clearance_pass": true,
+     "volume_band_pass": true,
+     "volume_vs_gate_base": 0.0025293549346327993,
+     "zero_level_margin_m": 0.3385872639715672
+    },
+    "sharp_volume_vs_parent": -0.013255567338282037,
+    "slot": "p0",
+    "spec": {
+     "camber": -29.55,
+     "pitch": 0.078,
+     "reflex": 16.115
+    },
+    "stl_volume_vs_parent": -6.221614234802608e-05,
+    "support": {
+     "band_nodes": 14318,
+     "fraction": 0.8367788797318061,
+     "max_band_change_m": 0.025356859667226672
+    },
+    "target_index": 1,
+    "u": [
+     0.025000000000000133,
+     -1.5,
+     0.55
+    ],
+    "unmeasured_geom02": [],
+    "volume_vs_parent": 0.0026227760356407614,
+    "x1": {
+     "pass": true,
+     "stl_sha256": "63d68d71b0cd90a5d3e49119bfdae1e2d616c9495777923647c76216e877aab0",
+     "stl_volume_m3": 0.11965649718004517,
+     "triangles": 641920
+    },
+    "y_pred": 0.009008564913713504,
+    "z_pred": -0.0022654947566393482
+   },
+   "npz_sha256": "70721db921f781470c4b2db1269f1fe05d1947ec357c182ad88fef1fb6767be7",
+   "order": 1,
+   "phi_c_order_sha256": "06aa7654f9e4f3802ab90d371542fa186f58b90d3d4e71bcf0a828d29d4adcdd",
+   "phi_fortran_order_sha256": "c6d09a8d5f4b3510054eefd875487332f4ddc8a9466d3a098a7960714eced8c0",
+   "spec": {
+    "camber": -29.55,
+    "pitch": 0.078,
+    "reflex": 16.115
+   },
+   "state_sha256": "6813573d3da209ab37638620ae9acd520d6cef7acb53724a4a94d11bcfab687e",
+   "step_mm": 25.394409894943237,
+   "u": [
+    0.025161290322580646,
+    -1.5,
+    0.5499999999999999
+   ]
+  },
+  "v18__camber_m29.55_pitch_p0.078_reflex_p18.312": {
+   "direction_sha256_fortran_raw": "f74d5f983d14f117ac0d439bf39c2f15b60c40fdf9f1b8067fdd8359e0df3bbd",
+   "gating_row": {
+    "admissible": true,
+    "all_pass": true,
+    "cell_components": 1,
+    "chain_ok": true,
+    "crossing_slope_fail_nodes": 0,
+    "eikonal_band_nodes": 8035,
+    "eikonal_max": 0.6066340995854475,
+    "eikonal_median": 0.0011147546053864588,
+    "eikonal_p95": 0.15359910825292214,
+    "eval_wall_s": 169.3,
+    "failed_geom02": [],
+    "fingerprint": "f5a5a95a74e3208a06280f634c405b3e55e578b1a5948c04c7b2bcf15a02473b",
+    "gate_status": {
+     "component_connectivity": "pass",
+     "domain_clearance": "pass",
+     "export_surface_integrity": "pass",
+     "inter_component_gap": "pass",
+     "mask_preservation": "pass",
+     "min_feature_width": "pass",
+     "near_zero_gradient_band": "pass",
+     "sdf_boundary_margin": "pass",
+     "sdf_distance_property": "pass",
+     "sdf_finite_structure": "pass",
+     "surface_self_intersection": "pass",
+     "topology_change_classification": "pass",
+     "volume_semantics": "pass"
+    },
+    "geom02_pass": true,
+    "harness_step_mm": 26.273205876350403,
+    "index": 2,
+    "min_zero_level_z_m": -0.22536568130231516,
+    "name": "v18__camber_m29.55_pitch_p0.078_reflex_p18.312",
+    "p22": {
+     "n_max": 8272,
+     "n_phi": 7412,
+     "pass": true,
+     "slack": 860
+    },
+    "phi_fortran_sha256": "3d441380124c23c6418ebfa09639f94a7e9c59b6c2d33c70ceb160882c9c0e0f",
+    "r3_descriptive": "pass",
+    "retained": {
+     "clearance_pass": true,
+     "volume_band_pass": true,
+     "volume_vs_gate_base": 0.0024454238238884596,
+     "zero_level_margin_m": 0.3393252179026604
+    },
+    "sharp_volume_vs_parent": -0.017497348886532316,
+    "slot": "p0",
+    "spec": {
+     "camber": -29.55,
+     "pitch": 0.078,
+     "reflex": 18.312
+    },
+    "stl_volume_vs_parent": -5.911065048169739e-05,
+    "support": {
+     "band_nodes": 14318,
+     "fraction": 0.8290264003352423,
+     "max_band_change_m": 0.02623475226573646
+    },
+    "target_index": 2,
+    "u": [
+     0.025000000000000133,
+     -1.5,
+     0.625
+    ],
+    "unmeasured_geom02": [],
+    "volume_vs_parent": 0.002538837103742031,
+    "x1": {
+     "pass": true,
+     "stl_sha256": "fdf01c102ebee865f043940ae08e02b7356221942a232b6c0e267fadfe681eb4",
+     "stl_volume_m3": 0.11965686879544439,
+     "triangles": 641972
+    },
+    "y_pred": 0.007861877137819016,
+    "z_pred": -0.0030254301337794315
+   },
+   "npz_sha256": "08985edf84debaae595ddc47072c9fe115f913de3ccbd76b1694734649b0638c",
+   "order": 2,
+   "phi_c_order_sha256": "f2e4df6b671a62c1d2f999d907d952d7d7464c1908a6b6f945583b7ac9f60e08",
+   "phi_fortran_order_sha256": "3d441380124c23c6418ebfa09639f94a7e9c59b6c2d33c70ceb160882c9c0e0f",
+   "spec": {
+    "camber": -29.55,
+    "pitch": 0.078,
+    "reflex": 18.312
+   },
+   "state_sha256": "f29abf33c7a38f1bf94331b0b8b57f2dea13210d95725d02b3d6bbaf7aed0d59",
+   "step_mm": 26.273205876350403,
+   "u": [
+    0.025161290322580646,
+    -1.5,
+    0.6249829351535836
+   ]
+  },
+  "v18__camber_m29.55_pitch_p0.155_reflex_p16.115": {
+   "direction_sha256_fortran_raw": "27d7b742bd09afdd061204035335650e7fb25c83c6e18470b8172d0afd58d337",
+   "gating_row": {
+    "admissible": true,
+    "all_pass": true,
+    "cell_components": 1,
+    "chain_ok": true,
+    "crossing_slope_fail_nodes": 0,
+    "eikonal_band_nodes": 7932,
+    "eikonal_max": 0.5911079335620217,
+    "eikonal_median": 0.0012057875965099107,
+    "eikonal_p95": 0.15273027377630477,
+    "eval_wall_s": 169.5,
+    "failed_geom02": [],
+    "fingerprint": "f5a5a95a74e3208a06280f634c405b3e55e578b1a5948c04c7b2bcf15a02473b",
+    "gate_status": {
+     "component_connectivity": "pass",
+     "domain_clearance": "pass",
+     "export_surface_integrity": "pass",
+     "inter_component_gap": "pass",
+     "mask_preservation": "pass",
+     "min_feature_width": "pass",
+     "near_zero_gradient_band": "pass",
+     "sdf_boundary_margin": "pass",
+     "sdf_distance_property": "pass",
+     "sdf_finite_structure": "pass",
+     "surface_self_intersection": "pass",
+     "topology_change_classification": "pass",
+     "volume_semantics": "pass"
+    },
+    "geom02_pass": true,
+    "harness_step_mm": 24.65274930000305,
+    "index": 0,
+    "min_zero_level_z_m": -0.22690778156199592,
+    "name": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115",
+    "p22": {
+     "n_max": 8272,
+     "n_phi": 7442,
+     "pass": true,
+     "slack": 830
+    },
+    "phi_fortran_sha256": "a7c1e3b9c38b4784c097f8377882eeaabeec4132bb5fa885194f13d8a64dc6c7",
+    "r3_descriptive": "pass",
+    "retained": {
+     "clearance_pass": true,
+     "volume_band_pass": true,
+     "volume_vs_gate_base": 0.00250081140794034,
+     "zero_level_margin_m": 0.3378497831523419
+    },
+    "sharp_volume_vs_parent": -0.013520678685047693,
+    "slot": "p0",
+    "spec": {
+     "camber": -29.55,
+     "pitch": 0.155,
+     "reflex": 16.115
+    },
+    "stl_volume_vs_parent": -6.490458336882998e-05,
+    "support": {
+     "band_nodes": 14318,
+     "fraction": 0.8435535689342087,
+     "max_band_change_m": 0.024614260299131274
+    },
+    "target_index": 0,
+    "u": [
+     0.050000000000000044,
+     -1.5,
+     0.55
+    ],
+    "unmeasured_geom02": [],
+    "volume_vs_parent": 0.002594229849108176,
+    "x1": {
+     "pass": true,
+     "stl_sha256": "714f6b9846b41b428d0fd582ccbca754afcc313789779d217ea9a0681173233c",
+     "stl_volume_m3": 0.11965617547059422,
+     "triangles": 641956
+    },
+    "y_pred": 0.010107913513761906,
+    "z_pred": -0.0015354403603854963
+   },
+   "npz_sha256": "9e2f4bf7f4bc1d9019916d8b1b5b8d7cb618704a2144b74ddb88db4af29acc93",
+   "order": 0,
+   "phi_c_order_sha256": "06847a80a31ea6c50270b20b29642888d35c4d20b43155c72d93f985eed77073",
+   "phi_fortran_order_sha256": "a7c1e3b9c38b4784c097f8377882eeaabeec4132bb5fa885194f13d8a64dc6c7",
+   "spec": {
+    "camber": -29.55,
+    "pitch": 0.155,
+    "reflex": 16.115
+   },
+   "state_sha256": "da2d2121967128da124dc33343324eeee2c7b7c6b4b0c6d8eaae97b8294ac9ac",
+   "step_mm": 24.65274930000305,
+   "u": [
+    0.049999999999999996,
+    -1.5,
+    0.5499999999999999
+   ]
+  },
+  "v18__camber_m29.55_pitch_p0.265_reflex_p19.721": {
+   "direction_sha256_fortran_raw": "fbf36df773b49299583c3dac070efa3b410b04a54fcf27a7addf4654f6e6f56c",
+   "gating_row": {
+    "admissible": true,
+    "all_pass": true,
+    "cell_components": 1,
+    "chain_ok": true,
+    "crossing_slope_fail_nodes": 0,
+    "eikonal_band_nodes": 7965,
+    "eikonal_max": 0.5949265073631511,
+    "eikonal_median": 0.0010859244734853224,
+    "eikonal_p95": 0.15195679916126092,
+    "eval_wall_s": 167.9,
+    "failed_geom02": [],
+    "fingerprint": "f5a5a95a74e3208a06280f634c405b3e55e578b1a5948c04c7b2bcf15a02473b",
+    "gate_status": {
+     "component_connectivity": "pass",
+     "domain_clearance": "pass",
+     "export_surface_integrity": "pass",
+     "inter_component_gap": "pass",
+     "mask_preservation": "pass",
+     "min_feature_width": "pass",
+     "near_zero_gradient_band": "pass",
+     "sdf_boundary_margin": "pass",
+     "sdf_distance_property": "pass",
+     "sdf_finite_structure": "pass",
+     "surface_self_intersection": "pass",
+     "topology_change_classification": "pass",
+     "volume_semantics": "pass"
+    },
+    "geom02_pass": true,
+    "harness_step_mm": 25.035560131072998,
+    "index": 3,
+    "min_zero_level_z_m": -0.2265641921485645,
+    "name": "v18__camber_m29.55_pitch_p0.265_reflex_p19.721",
+    "p22": {
+     "n_max": 8272,
+     "n_phi": 7440,
+     "pass": true,
+     "slack": 832
+    },
+    "phi_fortran_sha256": "1441193b5a86fa74ffa08c892b36c76abd4dda5ab13dfbccc0a9a769952cf7f2",
+    "r3_descriptive": "pass",
+    "retained": {
+     "clearance_pass": true,
+     "volume_band_pass": true,
+     "volume_vs_gate_base": 0.0024678303145362346,
+     "zero_level_margin_m": 0.33823314253240827
+    },
+    "sharp_volume_vs_parent": -0.013785790031813239,
+    "slot": "p0",
+    "spec": {
+     "camber": -29.55,
+     "pitch": 0.265,
+     "reflex": 19.721
+    },
+    "stl_volume_vs_parent": -7.88215690380456e-05,
+    "support": {
+     "band_nodes": 14318,
+     "fraction": 0.8443916748149183,
+     "max_band_change_m": 0.024994103936478496
+    },
+    "target_index": 0,
+    "u": [
+     0.0853688290342689,
+     -1.5,
+     0.673060361482203
+    ],
+    "unmeasured_geom02": [],
+    "volume_vs_parent": 0.0025612456823476126,
+    "x1": {
+     "pass": true,
+     "stl_sha256": "9438f3c7984442854f7302e7b2be8e30d19ed4a6fdcb4c2e133ea9a701c1c97f",
+     "stl_volume_m3": 0.11965451010922538,
+     "triangles": 641916
+    },
+    "y_pred": 0.009786142435312398,
+    "z_pred": -0.0017518376716095599
+   },
+   "npz_sha256": "2949eaf1676ff896261eef5152095682f96434f01ecb5e31448328733bcd0b57",
+   "order": 3,
+   "phi_c_order_sha256": "7da20c31d12eee6d08dd2e26a226b426a8d8b0313b7ce397f40a8c87a3cd1eee",
+   "phi_fortran_order_sha256": "1441193b5a86fa74ffa08c892b36c76abd4dda5ab13dfbccc0a9a769952cf7f2",
+   "spec": {
+    "camber": -29.55,
+    "pitch": 0.265,
+    "reflex": 19.721
+   },
+   "state_sha256": "98a4060376ae0051fe6fa15320beee9c98729a6fff1f7376fff7d4297e7abdab",
+   "step_mm": 25.035560131072998,
+   "u": [
+    0.08548387096774193,
+    -1.5,
+    0.6730716723549488
+   ]
+  }
+ },
+ "qualification_flags": "all false (unchanged)",
+ "registration": "docs/screen01_registration_2026_10_30.md",
+ "rs_json_sha256": "66f7005d73c2e4c7df2544d6d4e09846822cf466bbc37cfc2c9ade8989fd6395",
+ "shape_update_allowed": false,
+ "source_commit": "ef4b6260cb82a0b1be0625f87ce396bc813e7bf0",
+ "status": "REGISTERED_FROZEN (freeze 2.1)"
+}

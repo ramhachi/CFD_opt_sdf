@@ -1,0 +1,119 @@
+{
+ "parent": "v18__parent",
+ "rs_json_sha256": "66f7005d73c2e4c7df2544d6d4e09846822cf466bbc37cfc2c9ade8989fd6395",
+ "schema": "screen01-states-v1",
+ "states": {
+  "v18__camber_m29.55_pitch_p0.078_reflex_p16.115": {
+   "changed_node_count": 106999,
+   "direction": "v18__camber_m29.55_pitch_p0.078_reflex_p16.115",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m29.55_pitch_p0.078_reflex_p16.115.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "15cb4fa247767878f2ad34bffee1cec02ada58663bae83240f940ad5c2812527",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.025394409894943237,
+   "npz_sha256": "70721db921f781470c4b2db1269f1fe05d1947ec357c182ad88fef1fb6767be7",
+   "order": 1,
+   "phi_c_order_sha256": "06aa7654f9e4f3802ab90d371542fa186f58b90d3d4e71bcf0a828d29d4adcdd",
+   "phi_fortran_order_sha256": "c6d09a8d5f4b3510054eefd875487332f4ddc8a9466d3a098a7960714eced8c0",
+   "role": "proposal",
+   "sign": 1,
+   "spec": {
+    "camber": -29.55,
+    "pitch": 0.078,
+    "reflex": 16.115
+   },
+   "state_sha256": "6813573d3da209ab37638620ae9acd520d6cef7acb53724a4a94d11bcfab687e",
+   "step_mm": 25.394409894943237,
+   "u": [
+    0.025161290322580646,
+    -1.5,
+    0.5499999999999999
+   ],
+   "zero_level_margin_m": 0.3385872639715672
+  },
+  "v18__camber_m29.55_pitch_p0.078_reflex_p18.312": {
+   "changed_node_count": 106999,
+   "direction": "v18__camber_m29.55_pitch_p0.078_reflex_p18.312",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m29.55_pitch_p0.078_reflex_p18.312.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "f74d5f983d14f117ac0d439bf39c2f15b60c40fdf9f1b8067fdd8359e0df3bbd",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.026273205876350403,
+   "npz_sha256": "08985edf84debaae595ddc47072c9fe115f913de3ccbd76b1694734649b0638c",
+   "order": 2,
+   "phi_c_order_sha256": "f2e4df6b671a62c1d2f999d907d952d7d7464c1908a6b6f945583b7ac9f60e08",
+   "phi_fortran_order_sha256": "3d441380124c23c6418ebfa09639f94a7e9c59b6c2d33c70ceb160882c9c0e0f",
+   "role": "proposal",
+   "sign": 1,
+   "spec": {
+    "camber": -29.55,
+    "pitch": 0.078,
+    "reflex": 18.312
+   },
+   "state_sha256": "f29abf33c7a38f1bf94331b0b8b57f2dea13210d95725d02b3d6bbaf7aed0d59",
+   "step_mm": 26.273205876350403,
+   "u": [
+    0.025161290322580646,
+    -1.5,
+    0.6249829351535836
+   ],
+   "zero_level_margin_m": 0.3393252179026604
+  },
+  "v18__camber_m29.55_pitch_p0.155_reflex_p16.115": {
+   "changed_node_count": 106999,
+   "direction": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m29.55_pitch_p0.155_reflex_p16.115.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "27d7b742bd09afdd061204035335650e7fb25c83c6e18470b8172d0afd58d337",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.024652749300003052,
+   "npz_sha256": "9e2f4bf7f4bc1d9019916d8b1b5b8d7cb618704a2144b74ddb88db4af29acc93",
+   "order": 0,
+   "phi_c_order_sha256": "06847a80a31ea6c50270b20b29642888d35c4d20b43155c72d93f985eed77073",
+   "phi_fortran_order_sha256": "a7c1e3b9c38b4784c097f8377882eeaabeec4132bb5fa885194f13d8a64dc6c7",
+   "role": "proposal",
+   "sign": 1,
+   "spec": {
+    "camber": -29.55,
+    "pitch": 0.155,
+    "reflex": 16.115
+   },
+   "state_sha256": "da2d2121967128da124dc33343324eeee2c7b7c6b4b0c6d8eaae97b8294ac9ac",
+   "step_mm": 24.65274930000305,
+   "u": [
+    0.049999999999999996,
+    -1.5,
+    0.5499999999999999
+   ],
+   "zero_level_margin_m": 0.3378497831523419
+  },
+  "v18__camber_m29.55_pitch_p0.265_reflex_p19.721": {
+   "changed_node_count": 106995,
+   "direction": "v18__camber_m29.55_pitch_p0.265_reflex_p19.721",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m29.55_pitch_p0.265_reflex_p19.721.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "fbf36df773b49299583c3dac070efa3b410b04a54fcf27a7addf4654f6e6f56c",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.025035560131072998,
+   "npz_sha256": "2949eaf1676ff896261eef5152095682f96434f01ecb5e31448328733bcd0b57",
+   "order": 3,
+   "phi_c_order_sha256": "7da20c31d12eee6d08dd2e26a226b426a8d8b0313b7ce397f40a8c87a3cd1eee",
+   "phi_fortran_order_sha256": "1441193b5a86fa74ffa08c892b36c76abd4dda5ab13dfbccc0a9a769952cf7f2",
+   "role": "proposal",
+   "sign": 1,
+   "spec": {
+    "camber": -29.55,
+    "pitch": 0.265,
+    "reflex": 19.721
+   },
+   "state_sha256": "98a4060376ae0051fe6fa15320beee9c98729a6fff1f7376fff7d4297e7abdab",
+   "step_mm": 25.035560131072998,
+   "u": [
+    0.08548387096774193,
+    -1.5,
+    0.6730716723549488
+   ],
+   "zero_level_margin_m": 0.33823314253240827
+  }
+ }
+}

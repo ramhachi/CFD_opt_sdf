@@ -7,9 +7,9 @@ order. Earlier density/Brinkman Stage T and B-spline Stage S plans remain
 available as historical capability and evidence context; they do not define
 the current production path.
 
-## Current checkpoint (2026-10-23)
+## Current checkpoint (2026-10-31)
 
-Read [STATE.md](STATE.md), the [latest roadmap amendment](phase_plan.md#2026-10-23-geom-03-plan-review-and-implementation),
+Read [STATE.md](STATE.md), the [latest roadmap amendment](phase_plan.md#2026-10-31-screen-01-64-m3b-1-registered-response-surface-screen-on-three-analytic-modes-screen01_gain),
 the [evidence review and literature comparison](roadmap_review_2026_10_22.md),
 and the [2026-10-24 status review, literature survey and research-direction proposal](roadmap_review_2026_10_24.md) (subordinate to the roadmap).
 UNC-01 is `M2_COMPLETE`; FID-01 is registered `FID01_GO` (result b2314d9d, integration458e2df5). SCREEN gain2.70% and XV OF gain1.27% come from that record; pure heave is a failed secondary arm.
@@ -17,6 +17,7 @@ The [FID receipt and SCREEN/XV handoff](fid01_to_screen_xv_handoff_2026_10_23.md
 T2-0b/c/d are registered NO-GO outcomes and #57 is closed for the completed feasibility investigation.
 There is no adopted high-Re evaluator. M4 prepares the replacement decision; M3b requires FID-01 GO and a registered geometry-admissibility path.
 GEOM-03 completed its one registered attempt: **GEOM03_NO_GO**, all534 records independently verified under their registered checks, K2 wedge and K4 transition counterexamples. R3 is not adopted; next is the predeclared R0-clean fixed-pool/parent path, with the finite pool and SCREEN registration still to be fixed before forces. [Result and all inputs](evidence/geom03_2026_10_23/result.md), [exact180-row protocol](geom03_registration_2026_10_23.md), [freeze](evidence/geom03_2026_10_23/registration.json), [release](evidence/geom03_2026_10_23/execution_release.json). The source passed25 development tests and full regression3117/73skip before freeze. [Execution history](next_execution_plan_2026_10_23.md), [concrete SCREEN/XV registration choices](screen_xv_preparation_2026_10_23.md).
+SCREEN-01 (#64) is registered **`SCREEN01_GAIN`** (2026-10-31): the frozen finalist `v18__camber_m29.55_pitch_p0.155_reflex_p16.115` gains +1.077e-2 N (4.05 % of J_b,48, 1.50 g_min) at drag -1.99e-3 N on fresh flow_32 phases, `R3_CONFIRMED` on flow_48, ahead of the hand-design and random controls. WaterLily Re80, one finalist, in the camber extension without FID fidelity evidence; XV-01 (#65) is now eligible for registration. [Evidence](evidence/screen01_2026_10_30/README.md), [registration](screen01_registration_2026_10_30.md).
 All qualification flags remain false; `shape_update_allowed=false`.
 
 ## Historical checkpoint (2026-10-02)

@@ -1,0 +1,1087 @@
+{
+ "check": "every candidate's Fortran phi SHA equals its P0 gated bytes (rows.jsonl) and step01_states.perturb on the written raw reproduces it; parent and roll = UNC-01 rows; parent_repeat = the parent's bytes under its own name",
+ "p0_sha256": {
+  "design_check.json": "2bccd0f430974775385f7e22c970a17ea14448688cd5b59f6c0461e5904f9e39",
+  "pools.json": "1430daef9cc6d9e394294ee5839d5944e16fcc27544defa6cbedba73dc0cf2e2",
+  "rows.jsonl": "db165ebac26538758cd6c4e692b4454edb9a6ff31f8416cbd145680df40fba00",
+  "summary.json": "dc259ce53ebfff6217dc1b8c84afbf5fc5987bd971f14a5f235b7eca18417629"
+ },
+ "parent": "v18__parent",
+ "parent_record": {
+  "npz": "docs/evidence/v18_genesis_2026_10_19/v18_parent.npz",
+  "raw": "docs/evidence/v18_genesis_2026_10_19/v18_parent.phi_f4_fortran.raw",
+  "source_sha256": "63fe4730ad6216fe4d224ac7f729603f2587bf1b28c507ef3070bbd2aaf30e0e",
+  "state_sha256": "e7376e3576a045daa4c62353052890c43b4ed8b4562033c889cb1a4580d902bd"
+ },
+ "schema": "screen01-states-v1",
+ "states": {
+  "v18__camber_m0.502_pitch_m2.372_reflex_m27.474": {
+   "changed_node_count": 107023,
+   "direction": "v18__camber_m0.502_pitch_m2.372_reflex_m27.474",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m0.502_pitch_m2.372_reflex_m27.474.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "701488cf3431feb57b4f12c3b96a6b1d359547825882b4e692b3d1564305567c",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.018408596515655518,
+   "npz_sha256": "56d20e78df86315d755118d4efd38db04abd00a2e9deb33bb448c9ea601e96af",
+   "order": 4,
+   "phi_c_order_sha256": "a048ff3b79fd531014fa23f026c0f51cf024a387b8187a95ed15a70d46c9c3c7",
+   "phi_fortran_order_sha256": "46547f7d6a27b5b825eeea4e571795fb4b865e1122265803b3f3939879effde5",
+   "role": "design",
+   "sign": 1,
+   "spec": {
+    "camber": -0.502,
+    "pitch": -2.372,
+    "reflex": -27.474
+   },
+   "state_sha256": "172d59ea2e2b06e9ae52216619466b74143bfa4341060d0ca61100b8c7b745ff",
+   "step_mm": 18.408596515655518,
+   "u": [
+    -0.7651612903225806,
+    -0.025482233502538074,
+    -0.937679180887372
+   ],
+   "zero_level_margin_m": 0.3609598185867071
+  },
+  "v18__camber_m1.442_pitch_m0.263_reflex_m0.534": {
+   "changed_node_count": 106935,
+   "direction": "v18__camber_m1.442_pitch_m0.263_reflex_m0.534",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m1.442_pitch_m0.263_reflex_m0.534.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "9369902afdffadea9fa94c947fa7a6ab6d75d2d9bc2647ebbaf8db323bac926a",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.0032811760902404785,
+   "npz_sha256": "081671ad660a56b3df570208ecc72361edf66c9262a7ec3cd8f323877b81fe8f",
+   "order": 10,
+   "phi_c_order_sha256": "168a72ea34c7037bb3a8dc7df26f316ad451b28af4dc20ec238ccf938f05b03e",
+   "phi_fortran_order_sha256": "24d6f180965afbbdb53d23bf4588c823c09976189c84dabde1e64d599c031ba2",
+   "role": "random",
+   "sign": 1,
+   "spec": {
+    "camber": -1.442,
+    "pitch": -0.263,
+    "reflex": -0.534
+   },
+   "state_sha256": "58e7a1bb1177ae724b52c89132b355bd40269e298a6b405671ec7ba957b46dc4",
+   "step_mm": 3.2811760902404785,
+   "u": [
+    -0.08483870967741935,
+    -0.07319796954314721,
+    -0.018225255972696246
+   ],
+   "zero_level_margin_m": 0.35202448815107346
+  },
+  "v18__camber_m11.14_pitch_m0.003_reflex_p27.435": {
+   "changed_node_count": 106965,
+   "direction": "v18__camber_m11.14_pitch_m0.003_reflex_p27.435",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m11.14_pitch_m0.003_reflex_p27.435.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "3335e97bbf8213bca3bddb7eeb1ae9ebb65f868cde9c05740062165f706c20fd",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.01842951774597168,
+   "npz_sha256": "7786f5fae4b132d031fb312de0565166c14ec822cda1bf886a4486d89843cab4",
+   "order": 4,
+   "phi_c_order_sha256": "095a688b94c9133f00b6e563372ee08fedcf708da7d8d4463c0828cc55565c14",
+   "phi_fortran_order_sha256": "8db917e8424e90cf11cbc4ce200a50edc48e078b8d97325b72fdfdd1be3225e1",
+   "role": "random",
+   "sign": 1,
+   "spec": {
+    "camber": -11.14,
+    "pitch": -0.003,
+    "reflex": 27.435
+   },
+   "state_sha256": "501cf506e739e7b4666d32721fc328f1aa812eaa5965a7484f4b17478f9f560a",
+   "step_mm": 18.42951774597168,
+   "u": [
+    -0.000967741935483871,
+    -0.5654822335025381,
+    0.9363481228668942
+   ],
+   "zero_level_margin_m": 0.3539172224700451
+  },
+  "v18__camber_m11.3_reflex_m11.3": {
+   "changed_node_count": 106955,
+   "direction": "v18__camber_m11.3_reflex_m11.3",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m11.3_reflex_m11.3.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "9774c5d5c32849b1f2cad78b259918c6d6fd3311317139ee66a43b3a29078624",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.01205328106880188,
+   "npz_sha256": "3ebf6276d827fc1bbef964e36bd2ec9f9536517262460e563548c74e55ad68e6",
+   "order": 0,
+   "phi_c_order_sha256": "dafd40ed90c3a434f418f11e7ce8ec46b14ae8703c9644d2430b2da195adb02b",
+   "phi_fortran_order_sha256": "2f2aa49773838ebf3e7a94eddc0e87593af61c69122a38ebd40b8ec6eb3b824a",
+   "role": "ref",
+   "sign": 1,
+   "spec": {
+    "camber": -11.3,
+    "reflex": -11.3
+   },
+   "state_sha256": "be76d2b626bb9ff75b069e6d3a662118f978f48ad93f5e285121c2bc7bd8f66b",
+   "step_mm": 12.05328106880188,
+   "u": [
+    0.0,
+    -0.5736040609137056,
+    -0.3856655290102389
+   ],
+   "zero_level_margin_m": 0.34019314441829923
+  },
+  "v18__camber_m14.935_pitch_m2.041_reflex_m13.167": {
+   "changed_node_count": 107005,
+   "direction": "v18__camber_m14.935_pitch_m2.041_reflex_m13.167",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m14.935_pitch_m2.041_reflex_m13.167.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "a3c73c1703b766c598109176a62776103cb2e9ea9563c88ed5c12c6b5b7c8db3",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.024344414472579956,
+   "npz_sha256": "1fd48eb3a1e9b1b5b86405b78f95083a35842de277466911cc19ec9da6c1be72",
+   "order": 13,
+   "phi_c_order_sha256": "d2dfff4a2b73c69aa6a47d34cc08e74d698e39edacc7762af1812e0cfb447668",
+   "phi_fortran_order_sha256": "49a05c0952cef1697fdaf75bee4c7cb6ab8c493474cb7fd6bed911b8ede0efa4",
+   "role": "random",
+   "sign": 1,
+   "spec": {
+    "camber": -14.935,
+    "pitch": -2.041,
+    "reflex": -13.167
+   },
+   "state_sha256": "cd8e5317c1d597fb433f9159f4f1067ef0a12ba5601ad0254071049943f95ee0",
+   "step_mm": 24.344414472579956,
+   "u": [
+    -0.6583870967741935,
+    -0.7581218274111675,
+    -0.4493856655290102
+   ],
+   "zero_level_margin_m": 0.3545722458511591
+  },
+  "v18__camber_m16.263_pitch_m0.962_reflex_p13.18": {
+   "changed_node_count": 106969,
+   "direction": "v18__camber_m16.263_pitch_m0.962_reflex_p13.18",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m16.263_pitch_m0.962_reflex_p13.18.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "0a0e1a1a4fb18ad86e21ae33bcd01925e37fd3734a4766d4e0de47931d67b97d",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.02537858486175537,
+   "npz_sha256": "948d0f244836f7a5e36c58c7d37935e1215c8849ef154692304fcbdcf11f20bf",
+   "order": 16,
+   "phi_c_order_sha256": "bf3d4d324c5fe0eb9b5e8b7530a0bac4e6781199701b0914dd5e31e31177a41f",
+   "phi_fortran_order_sha256": "139185d4c4c04dc44ee8e2e259746c6f1ed7e7406c2b2dbaffc2b14129e523db",
+   "role": "random",
+   "sign": 1,
+   "spec": {
+    "camber": -16.263,
+    "pitch": -0.962,
+    "reflex": 13.18
+   },
+   "state_sha256": "d2077fb7366f16e3cbf891286c5459b3c5b1bc0a1c24f1e351af73405e2a18a4",
+   "step_mm": 25.37858486175537,
+   "u": [
+    -0.3103225806451613,
+    -0.825532994923858,
+    0.44982935153583614
+   ],
+   "zero_level_margin_m": 0.35401385836303234
+  },
+  "v18__camber_m17.304_pitch_m1.056_reflex_m4.377": {
+   "changed_node_count": 106979,
+   "direction": "v18__camber_m17.304_pitch_m1.056_reflex_m4.377",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m17.304_pitch_m1.056_reflex_m4.377.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "245741daa9c344536d5498ee337daa77764558a78316e5f37ba3502a6148f7e3",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.01995578408241272,
+   "npz_sha256": "866ddeb7bdf11f938fb0c6452374c688a2827f05370654436ba5818ffa3680dc",
+   "order": 0,
+   "phi_c_order_sha256": "3936e443c5dd1530f60ffad0448488253cc0a604afa3067a4841fb906dcd3b7e",
+   "phi_fortran_order_sha256": "d526f081679324a4ae2d06425d3a26333d1da1f3e86f08ef5cf10e46aac47282",
+   "role": "random",
+   "sign": 1,
+   "spec": {
+    "camber": -17.304,
+    "pitch": -1.056,
+    "reflex": -4.377
+   },
+   "state_sha256": "fe225dbf21477453df1e98a443d9a4203eaf0dc9f6cc12ed91ca1b0bcf8efdfa",
+   "step_mm": 19.95578408241272,
+   "u": [
+    -0.3406451612903226,
+    -0.8783756345177665,
+    -0.14938566552901023
+   ],
+   "zero_level_margin_m": 0.34770121322944764
+  },
+  "v18__camber_m19.007_pitch_p0.706_reflex_m26.059": {
+   "changed_node_count": 106975,
+   "direction": "v18__camber_m19.007_pitch_p0.706_reflex_m26.059",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m19.007_pitch_p0.706_reflex_m26.059.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "2a4cb02b577dd0591f79ad6fbd9b14e9c1c7ba7cd6feead4971339e4c9c9e0ed",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.0298958420753479,
+   "npz_sha256": "06afd9b139efe22bf5877645c65af8cfa37bfd59ff221728ac9674298f52bcda",
+   "order": 14,
+   "phi_c_order_sha256": "ae27694100373af13910d9caed63dcf13e5828d7b12628a2fed3243e0421f699",
+   "phi_fortran_order_sha256": "d89cbbd42ea06611702fc3a338961dbc3227f21662de06f0b9639b1f07d278e1",
+   "role": "random",
+   "sign": 1,
+   "spec": {
+    "camber": -19.007,
+    "pitch": 0.706,
+    "reflex": -26.059
+   },
+   "state_sha256": "8a13d845d3fd7ffd6e14887cd1ec03aae310564354f2de5f8dd949de96f59901",
+   "step_mm": 29.8958420753479,
+   "u": [
+    0.22774193548387095,
+    -0.9648223350253808,
+    -0.8893856655290102
+   ],
+   "zero_level_margin_m": 0.32249317253008486
+  },
+  "v18__camber_m19.7": {
+   "changed_node_count": 106971,
+   "direction": "v18__camber_m19.7",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m19.7.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "d103bb0f5e6f366a9a021530b144049415edff65d90c9d79f35477bfa3eac42a",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.01313328742980957,
+   "npz_sha256": "2d7a813e6591300250f0e80144b4f66ff134b94cf04ad0f70510280541ee2fc4",
+   "order": 3,
+   "phi_c_order_sha256": "28bd7d8535192d897460de5381b5b19a1ffa4562412ed02430a487c206066cfe",
+   "phi_fortran_order_sha256": "c339770e712e8cac83b926445b77181c5fb9910d8ff52551a3aa5f85bf228dc2",
+   "role": "axial",
+   "sign": 1,
+   "spec": {
+    "camber": -19.7
+   },
+   "state_sha256": "478cb24041555ed28220498534dbae1844368f2be6cf3720854124d238e02d9a",
+   "step_mm": 13.13328742980957,
+   "u": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "zero_level_margin_m": 0.33930964991450313
+  },
+  "v18__camber_m19.789_pitch_m0.621_reflex_p26.168": {
+   "changed_node_count": 106967,
+   "direction": "v18__camber_m19.789_pitch_m0.621_reflex_p26.168",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m19.789_pitch_m0.621_reflex_p26.168.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "62edc0162aabc0aa505c2b19c689e598feda0a7b99a2c130eec6624437024ae8",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.029640674591064453,
+   "npz_sha256": "43f3143fbff1cd30b34daf3bc31df156c2674db9d2d488679a3781e4bc2f76d5",
+   "order": 2,
+   "phi_c_order_sha256": "4dab5e3722ec44ab04184503da5c5e83fed316907d93a5bbe113aeb708f0a4db",
+   "phi_fortran_order_sha256": "c8b62c739e7e5c6250882e00c810685a7be52149e47d46336a01a8595ee46e8f",
+   "role": "design",
+   "sign": 1,
+   "spec": {
+    "camber": -19.789,
+    "pitch": -0.621,
+    "reflex": 26.168
+   },
+   "state_sha256": "4944c5913616e9618201723394d5f63f28e13115d5040a5a206362a6ebf58b9f",
+   "step_mm": 29.640674591064453,
+   "u": [
+    -0.20032258064516129,
+    -1.004517766497462,
+    0.8931058020477816
+   ],
+   "zero_level_margin_m": 0.3536437526345253
+  },
+  "v18__camber_m19.7_pitch_m0.38": {
+   "changed_node_count": 106969,
+   "direction": "v18__camber_m19.7_pitch_m0.38",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m19.7_pitch_m0.38.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "f496d37dbd63e4ca2a66e0a12a8535fdef2629d024d4a46c85511dd12836a57b",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.01679360866546631,
+   "npz_sha256": "5bdcb1d62b5df87a096b0da020aff0dbc1d75587be133e14d8cb7dc2179a1898",
+   "order": 0,
+   "phi_c_order_sha256": "79b5aafcbecf70e150093bb56d9182dd1ec7b22d24d386190fd3a867403a1b62",
+   "phi_fortran_order_sha256": "2629babf9dc064aa23fb2847ad22a9f693a488c7f39ea1e83bf110db1e5ff783",
+   "role": "manual",
+   "sign": 1,
+   "spec": {
+    "camber": -19.7,
+    "pitch": -0.38
+   },
+   "state_sha256": "6234d32561bf2532a97ba4c7c6207fe7b0f35565eda79b6dfc4c166a83ea2cff",
+   "step_mm": 16.79360866546631,
+   "u": [
+    -0.12258064516129032,
+    -1.0,
+    0.0
+   ],
+   "zero_level_margin_m": 0.34229491222649816
+  },
+  "v18__camber_m21.959_pitch_m2.307_reflex_m24.023": {
+   "changed_node_count": 107027,
+   "direction": "v18__camber_m21.959_pitch_m2.307_reflex_m24.023",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m21.959_pitch_m2.307_reflex_m24.023.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "59bd719205aa63db7330d96d7ab42d56b1afb6fb03c1233378108dcdc74dacf0",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.027294188737869263,
+   "npz_sha256": "4fa50c64660ee34c418bcfadb067be8ab1f193f63b979c10248a84801ca58e33",
+   "order": 0,
+   "phi_c_order_sha256": "8e354fca80d771483c16c7aad4147c2035b18603d0f0cd8091d54cbcb1ca41d0",
+   "phi_fortran_order_sha256": "08e5765c0cbce1cf5b7237b6f63d044ac80d4f701d7a7ce4d286434309fae0d6",
+   "role": "design",
+   "sign": 1,
+   "spec": {
+    "camber": -21.959,
+    "pitch": -2.307,
+    "reflex": -24.023
+   },
+   "state_sha256": "7f81868628f57f96b9daac9cc00d5f9ed39d785af97baa889870634d847324f8",
+   "step_mm": 27.294188737869263,
+   "u": [
+    -0.7441935483870967,
+    -1.1146700507614213,
+    -0.8198976109215017
+   ],
+   "zero_level_margin_m": 0.34848338821902874
+  },
+  "v18__camber_m23.394_pitch_p0.776_reflex_m21.432": {
+   "changed_node_count": 106977,
+   "direction": "v18__camber_m23.394_pitch_p0.776_reflex_m21.432",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m23.394_pitch_p0.776_reflex_m21.432.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "600b6b2d866a0b9f62885244acd1450ad9db949066383e59eec91f16ffad6290",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.03164404630661011,
+   "npz_sha256": "776f05008ec4407988e58242c077078a0054acf6bddfa8885b88d41bc338b11f",
+   "order": 7,
+   "phi_c_order_sha256": "7fd3b8e819d3396315151400c1985930ee80cdfd6e1387e6ae8cf1df5bcbebd6",
+   "phi_fortran_order_sha256": "1641885cf03d5a3396d5869cb5a4ac537d5a9d4acb3a103cc2f06a9c921a7ac6",
+   "role": "design",
+   "sign": 1,
+   "spec": {
+    "camber": -23.394,
+    "pitch": 0.776,
+    "reflex": -21.432
+   },
+   "state_sha256": "0749ed9b58f6e75b7e50894d0b769eb0b69312feee02dbc3cebdd4ad0f8f4c61",
+   "step_mm": 31.644046306610107,
+   "u": [
+    0.2503225806451613,
+    -1.18751269035533,
+    -0.7314675767918088
+   ],
+   "zero_level_margin_m": 0.32080770637840034
+  },
+  "v18__camber_m25.466_pitch_p2.31_reflex_p4.633": {
+   "changed_node_count": 107031,
+   "direction": "v18__camber_m25.466_pitch_p2.31_reflex_p4.633",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m25.466_pitch_p2.31_reflex_p4.633.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "391cde0e288444f55911569ef98b6f878485d1c42e8499a44eb54f8252de68c4",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.037369996309280396,
+   "npz_sha256": "07b49f8083dfdfa110c85beb9ba7813acc3c325c8c66346a33707d69765c76ae",
+   "order": 3,
+   "phi_c_order_sha256": "73cff044c8d8a8bb48becf6ae4ec7b3cf0bbab6a8a5d279753d0e8bc6af69423",
+   "phi_fortran_order_sha256": "de782c4bf0ceea7ea64a719d3f49a4b564b6185a7e51b5673ae81315863d3a83",
+   "role": "design",
+   "sign": 1,
+   "spec": {
+    "camber": -25.466,
+    "pitch": 2.31,
+    "reflex": 4.633
+   },
+   "state_sha256": "b0199872be56fbaf1b4e02120d2fb51cb32f0e897834198076afcc365433d97f",
+   "step_mm": 37.369996309280396,
+   "u": [
+    0.7451612903225806,
+    -1.2926903553299494,
+    0.15812286689419794
+   ],
+   "zero_level_margin_m": 0.3154678175225854
+  },
+  "v18__camber_m26.303_pitch_m1.751_reflex_m15.958": {
+   "changed_node_count": 107015,
+   "direction": "v18__camber_m26.303_pitch_m1.751_reflex_m15.958",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m26.303_pitch_m1.751_reflex_m15.958.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "b2ea87d50112731f729e58028a81a353ed2e7a44a38f2542913c4ae41a3e0e14",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.02801227569580078,
+   "npz_sha256": "b12a6b434303d083fee87991ad6b3853cb057511e0f7c2b3433105f17d11f964",
+   "order": 5,
+   "phi_c_order_sha256": "1013fbfb70931c09ab4adefeb78af78d2cac12dc01f7ce53944e2cc73cb803e1",
+   "phi_fortran_order_sha256": "3223e17962d27a35c1c772f4afb05b09372ca40c8058622db45a8ff837206768",
+   "role": "random",
+   "sign": 1,
+   "spec": {
+    "camber": -26.303,
+    "pitch": -1.751,
+    "reflex": -15.958
+   },
+   "state_sha256": "8efec6624e45037ace8ea918b129b137a8fa460c946f7740c6721abf42759d05",
+   "step_mm": 28.01227569580078,
+   "u": [
+    -0.5648387096774193,
+    -1.3351776649746194,
+    -0.544641638225256
+   ],
+   "zero_level_margin_m": 0.34414351535961035
+  },
+  "v18__camber_m28.656_pitch_m0.68_reflex_p2.727": {
+   "changed_node_count": 106983,
+   "direction": "v18__camber_m28.656_pitch_m0.68_reflex_p2.727",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m28.656_pitch_m0.68_reflex_p2.727.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "91ca81369c628ef2227e357f6b37badb80a5f2102ffed8d532ef2095670ad0e3",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.02674388885498047,
+   "npz_sha256": "8f5dda811f72c5815945a6185b6b2da510bcd71684b430e8332f98e351b1b5a3",
+   "order": 11,
+   "phi_c_order_sha256": "4099abaf4ef4480a2d1b9b2782f740f60e8f5c9822b658cfd18fac336518df83",
+   "phi_fortran_order_sha256": "a293b69cf8968d00ce4eefb1d9ed4982e2af2defe39a92920dcf247d14c579fb",
+   "role": "random",
+   "sign": 1,
+   "spec": {
+    "camber": -28.656,
+    "pitch": -0.68,
+    "reflex": 2.727
+   },
+   "state_sha256": "68934c77f76d904b5aad63aaa942323f4a615fc60f0b08bac12cb999407547e0",
+   "step_mm": 26.74388885498047,
+   "u": [
+    -0.21935483870967742,
+    -1.4546192893401015,
+    0.0930716723549488
+   ],
+   "zero_level_margin_m": 0.3405823199078441
+  },
+  "v18__camber_m3.701_pitch_m2.29_reflex_p17.406": {
+   "changed_node_count": 107011,
+   "direction": "v18__camber_m3.701_pitch_m2.29_reflex_p17.406",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m3.701_pitch_m2.29_reflex_p17.406.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "9479b08ae7a0bf0bd11b470502127737bbd12deb48e2df7711368ae42a54d4be",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.03148169070482254,
+   "npz_sha256": "a19cc2ffc8fae989b2669fe63694a7903b28bedb43dc713cf47ba9ff947ef657",
+   "order": 1,
+   "phi_c_order_sha256": "e735d9ece467d19b49069043e658d43869b68b3222be00f1acd225fbea0a906a",
+   "phi_fortran_order_sha256": "6e112d0193f4f4f7d698de9fac224b1783f0ff0383dcdacb19f677d09dcc6814",
+   "role": "random",
+   "sign": 1,
+   "spec": {
+    "camber": -3.701,
+    "pitch": -2.29,
+    "reflex": 17.406
+   },
+   "state_sha256": "8155a72eb803b2d9577486ce5078199f94014605377203c12369eb7562bb6c96",
+   "step_mm": 31.48169070482254,
+   "u": [
+    -0.7387096774193548,
+    -0.18786802030456853,
+    0.5940614334470989
+   ],
+   "zero_level_margin_m": 0.3624999985098839
+  },
+  "v18__camber_m4.576_pitch_p0.673_reflex_m10.721": {
+   "changed_node_count": 106959,
+   "direction": "v18__camber_m4.576_pitch_p0.673_reflex_m10.721",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m4.576_pitch_p0.673_reflex_m10.721.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "6a355d1cdfb4f41629a6e286c53291818426740ada6a45ced5cb855616675a4c",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.013822078704833984,
+   "npz_sha256": "a08ba7c3ed70a40f6ae3d999beb97878cfccb8aaab247972a2546600c2287d18",
+   "order": 17,
+   "phi_c_order_sha256": "161e6df9e2d90afd796826f824ce0ba0f99467acafd11c96614defe38358e618",
+   "phi_fortran_order_sha256": "fa20297458dd6ce8621a292d34648c5baac2e19fa97eaae6cefa4e39bb5acd30",
+   "role": "random",
+   "sign": 1,
+   "spec": {
+    "camber": -4.576,
+    "pitch": 0.673,
+    "reflex": -10.721
+   },
+   "state_sha256": "bfd58ea6b67231048b8f87e6e208457fa742de35ca9a1a86c04ea01227931a86",
+   "step_mm": 13.822078704833984,
+   "u": [
+    0.2170967741935484,
+    -0.23228426395939086,
+    -0.36590443686006824
+   ],
+   "zero_level_margin_m": 0.3387792393565178
+  },
+  "v18__camber_m7.817_pitch_m2.417_reflex_p7.656": {
+   "changed_node_count": 107013,
+   "direction": "v18__camber_m7.817_pitch_m2.417_reflex_p7.656",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m7.817_pitch_m2.417_reflex_p7.656.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "084e32fd3ff7df042bb475799c01b47b2c2418851dabf7833044893e28c9c680",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.03154917061328888,
+   "npz_sha256": "9f01a7d14ce48e6423e1a5a40c9d2a853e4d72efcb2bc7df3a7e3159fa892183",
+   "order": 2,
+   "phi_c_order_sha256": "8eb3a60c0fa21cca5791a2457865deeec5de5a2c9f2e407d09057bbb48024398",
+   "phi_fortran_order_sha256": "aa4804da81bc9510f69f5b2ee7387ef1b909f44f711a9eea22c97eeb7f277627",
+   "role": "random",
+   "sign": 1,
+   "spec": {
+    "camber": -7.817,
+    "pitch": -2.417,
+    "reflex": 7.656
+   },
+   "state_sha256": "eb08ad4511fc50109e3761da2c736384473e48b0b7f6958940afabd3f0c80762",
+   "step_mm": 31.54917061328888,
+   "u": [
+    -0.7796774193548386,
+    -0.3968020304568528,
+    0.26129692832764506
+   ],
+   "zero_level_margin_m": 0.3624999985098839
+  },
+  "v18__camber_m8.416_pitch_p0.028_reflex_m3.18": {
+   "changed_node_count": 106943,
+   "direction": "v18__camber_m8.416_pitch_p0.028_reflex_m3.18",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m8.416_pitch_p0.028_reflex_m3.18.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "2f7048c6210fc54292f97819c2f2b5bc42eacf66da80d2fbc40f5f27ef0c1425",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.007152363657951355,
+   "npz_sha256": "44d376d3d4a710a5b0908107d3f9f843e2ed09fcdb179341c3fc58429ed46a26",
+   "order": 6,
+   "phi_c_order_sha256": "67d76579ead8965bff123550182ba73c861b3699e591f65c4da52654fa9eecf2",
+   "phi_fortran_order_sha256": "4f7ceb6f3d1370bcf721d0ddbcfadd061721432ea5424221fd194e2350d5a681",
+   "role": "random",
+   "sign": 1,
+   "spec": {
+    "camber": -8.416,
+    "pitch": 0.028,
+    "reflex": -3.18
+   },
+   "state_sha256": "575a177ff3d3fce7c34bdbcc8c104616c211bd477ba84434f7b08517d3dd8df4",
+   "step_mm": 7.152363657951355,
+   "u": [
+    0.009032258064516128,
+    -0.4272081218274112,
+    -0.10853242320819113
+   ],
+   "zero_level_margin_m": 0.34429757101461295
+  },
+  "v18__camber_p13.023_pitch_m1.611_reflex_p11.039": {
+   "changed_node_count": 106989,
+   "direction": "v18__camber_p13.023_pitch_m1.611_reflex_p11.039",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p13.023_pitch_m1.611_reflex_p11.039.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "6ef22ab986ff1abe03a9f63efed56ded28f9f0245c619a677f5458692f03c0b5",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.02860969305038452,
+   "npz_sha256": "508e81e4f4e0d5301043492043b799c262f74577fdbc1c5592fe3d05e0045970",
+   "order": 8,
+   "phi_c_order_sha256": "9f8d0b4c576a15a3072c400ec35a85595fb91d8f21763b74ba55b559793eb38c",
+   "phi_fortran_order_sha256": "34f1422440b89901ef1c2c34d1a69c6f3c912947083ea1574173181fc9037b31",
+   "role": "random",
+   "sign": 1,
+   "spec": {
+    "camber": 13.023,
+    "pitch": -1.611,
+    "reflex": 11.039
+   },
+   "state_sha256": "ae9b219c58501c2252f62b847ad43b18359e97fd08636ae46188c24895e2dd47",
+   "step_mm": 28.60969305038452,
+   "u": [
+    -0.5196774193548387,
+    0.6610659898477157,
+    0.3767576791808874
+   ],
+   "zero_level_margin_m": 0.3607499059289694
+  },
+  "v18__camber_p15.009_pitch_p2.043_reflex_m11.687": {
+   "changed_node_count": 107009,
+   "direction": "v18__camber_p15.009_pitch_p2.043_reflex_m11.687",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p15.009_pitch_p2.043_reflex_m11.687.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "87fc2a03e7f0bab0f9343c2da4939e664795a75d79f1af2764e51ac1bc03a709",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.03435608744621277,
+   "npz_sha256": "a245fb551ab023640065b0d2d2fdd9884bd0a8d3001891afd019983ffe7dc168",
+   "order": 6,
+   "phi_c_order_sha256": "801f7660ab7a9d89ca9ae14a791623b8b9747204dd80f5408ebc45998acef4f0",
+   "phi_fortran_order_sha256": "06157d075b6ca4223120c09c00d37cd4a5a6068f3e76f2da8758b7b4d926f7d8",
+   "role": "design",
+   "sign": 1,
+   "spec": {
+    "camber": 15.009,
+    "pitch": 2.043,
+    "reflex": -11.687
+   },
+   "state_sha256": "a52fe77abfb0c334a38e5653d9bd4d9cdd87f966af05b90e0a607d1d2a47ba7e",
+   "step_mm": 34.35608744621277,
+   "u": [
+    0.6590322580645162,
+    0.7618781725888325,
+    -0.39887372013651873
+   ],
+   "zero_level_margin_m": 0.3183140906505287
+  },
+  "v18__camber_p15.396_pitch_m1.812_reflex_m17.01": {
+   "changed_node_count": 107001,
+   "direction": "v18__camber_p15.396_pitch_m1.812_reflex_m17.01",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p15.396_pitch_m1.812_reflex_m17.01.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "337d439012e18f4e4dca783fe55ffa46b295ce64078443bcc705cc6aba200055",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.020934566855430603,
+   "npz_sha256": "cacaedf0b9ce54eefb75c2fb849547bb7893ba71f0e1cf91055aed9308e14bab",
+   "order": 8,
+   "phi_c_order_sha256": "9733a13606ac27aa2977d59e771f61376e0e8f8113cd369e46f76f71dff7b37a",
+   "phi_fortran_order_sha256": "a3e3a9e461acbc4e1af706aef6ee0f776c2c2cd4f0139baa112c8b98a4d3d0ad",
+   "role": "design",
+   "sign": 1,
+   "spec": {
+    "camber": 15.396,
+    "pitch": -1.812,
+    "reflex": -17.01
+   },
+   "state_sha256": "15dd395051ac70923442dbbbc709d14f4cc865f520bb4f2e51ceed9c1469d591",
+   "step_mm": 20.934566855430603,
+   "u": [
+    -0.584516129032258,
+    0.7815228426395939,
+    -0.5805460750853243
+   ],
+   "zero_level_margin_m": 0.35106884501874447
+  },
+  "v18__camber_p16.113_pitch_p1.042_reflex_p28.057": {
+   "changed_node_count": 106981,
+   "direction": "v18__camber_p16.113_pitch_p1.042_reflex_p28.057",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p16.113_pitch_p1.042_reflex_p28.057.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "c0a789b471ffa6cb028622e3c03c4fdfadc40fda8e0ab14325c9dad616420dca",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.012167692184448242,
+   "npz_sha256": "a40064d4c0486fb4c1764df5e86e7dacb9b146d9492f2fb26d94c2a362f09ed0",
+   "order": 5,
+   "phi_c_order_sha256": "fd479d991edd474673bd3b21a17160617e1128591b44d951337971496f08d6a3",
+   "phi_fortran_order_sha256": "221b83aa0d94c3b8667200f7b0846766c99dbb6361c38092eb10e25daf262b59",
+   "role": "design",
+   "sign": 1,
+   "spec": {
+    "camber": 16.113,
+    "pitch": 1.042,
+    "reflex": 28.057
+   },
+   "state_sha256": "d9f4cf626918e5ee303030de470403dbb504a86574f2bc562cff3cad6f26247a",
+   "step_mm": 12.167692184448242,
+   "u": [
+    0.3361290322580645,
+    0.8179187817258883,
+    0.9575767918088737
+   ],
+   "zero_level_margin_m": 0.3423102497123182
+  },
+  "v18__camber_p16.454_pitch_p1.64_reflex_m16.946": {
+   "changed_node_count": 106997,
+   "direction": "v18__camber_p16.454_pitch_p1.64_reflex_m16.946",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p16.454_pitch_p1.64_reflex_m16.946.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "3f0b8b2c76d6948750b60024191931f1e4ad9c0fa4a0c869ce8fde17065d71f5",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.033542096614837646,
+   "npz_sha256": "259abcf00db4c0c7c03505c31e9d03761ef50e94e4c29f4fafec3f1808c7e496",
+   "order": 9,
+   "phi_c_order_sha256": "1548ea76aa079f758d706a468c8e642e1bd37e99857472140040342ccd202f36",
+   "phi_fortran_order_sha256": "a5cae932b58a7532fc8c5ee5cca00c3da302e76c1c43fab8b359c157e37cac98",
+   "role": "random",
+   "sign": 1,
+   "spec": {
+    "camber": 16.454,
+    "pitch": 1.64,
+    "reflex": -16.946
+   },
+   "state_sha256": "be5b74f5eb7d5e8cf2d98777f81f39eb8749992c9588d6a91a8cb42411e420e0",
+   "step_mm": 33.54209661483765,
+   "u": [
+    0.529032258064516,
+    0.8352284263959392,
+    -0.5783617747440274
+   ],
+   "zero_level_margin_m": 0.3190609936602414
+  },
+  "v18__camber_p17.017_pitch_m0.807_reflex_p23.478": {
+   "changed_node_count": 106961,
+   "direction": "v18__camber_p17.017_pitch_m0.807_reflex_p23.478",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p17.017_pitch_m0.807_reflex_p23.478.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "6e7c79204f4d990c621eb9b87c7aabc95014427a1539256460238ad0f82fb582",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.02850767970085144,
+   "npz_sha256": "8cea6a4015945824a6137b30f64355c11fb80f91a7f776906346af0b857d09a5",
+   "order": 15,
+   "phi_c_order_sha256": "2612fee0a3fa29c11b427c069e1b029f598407e878951dccbde8e1ac74c2613a",
+   "phi_fortran_order_sha256": "1afc9babfb0947711532a0b1c4e26db9292ec4acc551821ad1028dac43997aed",
+   "role": "random",
+   "sign": 1,
+   "spec": {
+    "camber": 17.017,
+    "pitch": -0.807,
+    "reflex": 23.478
+   },
+   "state_sha256": "e168591c2a1986eb47a701413766a669c1a27724b49ea8b61f3ccd60b1a7873b",
+   "step_mm": 28.50767970085144,
+   "u": [
+    -0.2603225806451613,
+    0.8638071065989847,
+    0.8012969283276451
+   ],
+   "zero_level_margin_m": 0.3558812625706196
+  },
+  "v18__camber_p19.106_pitch_m2.002_reflex_m23.47": {
+   "changed_node_count": 107017,
+   "direction": "v18__camber_p19.106_pitch_m2.002_reflex_m23.47",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p19.106_pitch_m2.002_reflex_m23.47.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "43d24727ba7324fc47eabdf6ccc7186f2a15e718b3808aca0fc6e39dab71f73f",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.022739917039871216,
+   "npz_sha256": "b5a75bfcbc0659d69dc3b7eee78905de9713a5f95508d055207d49e0d40a10d2",
+   "order": 18,
+   "phi_c_order_sha256": "d852ead7e6c064f9aa2f09d412c397ac5b9a4b44fee32f7d90672e052cc4eb80",
+   "phi_fortran_order_sha256": "dbb1bd90e1839dda684f478294cef95d2edeef4e07619772b9e3dae54d8cf6f0",
+   "role": "random",
+   "sign": 1,
+   "spec": {
+    "camber": 19.106,
+    "pitch": -2.002,
+    "reflex": -23.47
+   },
+   "state_sha256": "e2a4ab8ea3189a5ae7bb54b139aba17d3d8a09c52c20f8a71cdf34127118c3c8",
+   "step_mm": 22.739917039871216,
+   "u": [
+    -0.6458064516129032,
+    0.9698477157360408,
+    -0.8010238907849829
+   ],
+   "zero_level_margin_m": 0.3478093393146992
+  },
+  "v18__camber_p19.7": {
+   "changed_node_count": 106971,
+   "direction": "v18__camber_p19.7",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p19.7.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "f99c55afbadbd9fd857a29b16766a410dd0a0d98628a1884e7bd5905a7d51760",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.01313328742980957,
+   "npz_sha256": "ec969579df95faab60bcb1bf7010e4963d05c9c8ae0c544dbe3e0f734997ec06",
+   "order": 2,
+   "phi_c_order_sha256": "1df339358da1015dc8c07a122de71013cc9ef6460d0e472b257920467250e99f",
+   "phi_fortran_order_sha256": "6cfc5e9cd6b8c759d9c976bb8cb39c58c9888d136024b93dc20591ece1822629",
+   "role": "axial",
+   "sign": 1,
+   "spec": {
+    "camber": 19.7
+   },
+   "state_sha256": "cda6771386f190f9d8f7decb697e9ceb12eb7bd3497a2674a348d758927e6023",
+   "step_mm": 13.13328742980957,
+   "u": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "zero_level_margin_m": 0.33930964991450313
+  },
+  "v18__camber_p2.982_pitch_m1.486_reflex_p6.097": {
+   "changed_node_count": 106983,
+   "direction": "v18__camber_p2.982_pitch_m1.486_reflex_p6.097",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p2.982_pitch_m1.486_reflex_p6.097.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "808aa5a811dae42eff7469521c2ef995d2f66c2515bea4de13a3b03acce43438",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.018738865852355957,
+   "npz_sha256": "ce7c947200d5d1f88d8eef8a6cfecf922df664e01d3fa37b73ab9c7a231e2523",
+   "order": 7,
+   "phi_c_order_sha256": "ed62fe741b1fa75d9c4b1512d085aa693faad5fb17f985441d158a6ff3f49876",
+   "phi_fortran_order_sha256": "df9fe76d419f781ffc4bfa540d0118dc724e3301b33565d855195f623425964b",
+   "role": "random",
+   "sign": 1,
+   "spec": {
+    "camber": 2.982,
+    "pitch": -1.486,
+    "reflex": 6.097
+   },
+   "state_sha256": "ab227de0d6e0af7f73ec42c0435a358c604e322f844f3b683992e1177e0502e8",
+   "step_mm": 18.738865852355957,
+   "u": [
+    -0.4793548387096774,
+    0.15137055837563454,
+    0.2080887372013652
+   ],
+   "zero_level_margin_m": 0.3624999985098839
+  },
+  "v18__camber_p3.261_pitch_m3.085_reflex_p28.738": {
+   "changed_node_count": 107041,
+   "direction": "v18__camber_p3.261_pitch_m3.085_reflex_p28.738",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p3.261_pitch_m3.085_reflex_p28.738.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "a949d257bebea2789092b1f12500e99c71e7113919ea6b4ce034d2bc3c1d758d",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.04335392126813531,
+   "npz_sha256": "4766eb6772f0e1577c59a22de9fb81ecf9c8f808483d9f16e3d32234c4a4570e",
+   "order": 1,
+   "phi_c_order_sha256": "b4792d289eb520b0be4fc02d59fb90e64cdad04deb7be335a6a703f89ca07d77",
+   "phi_fortran_order_sha256": "fe678e5493ea75b53413ba2bd765f6b636bbb39d5e28b35016d21a2db62cfbf1",
+   "role": "design",
+   "sign": 1,
+   "spec": {
+    "camber": 3.261,
+    "pitch": -3.085,
+    "reflex": 28.738
+   },
+   "state_sha256": "534792dc4a1efea9470c5e108563817687b4a951570855016df6b7b990980a06",
+   "step_mm": 43.35392126813531,
+   "u": [
+    -0.9951612903225806,
+    0.16553299492385787,
+    0.9808191126279863
+   ],
+   "zero_level_margin_m": 0.3624999985098839
+  },
+  "v18__camber_p6.88_pitch_m2.543_reflex_m19.455": {
+   "changed_node_count": 107029,
+   "direction": "v18__camber_p6.88_pitch_m2.543_reflex_m19.455",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p6.88_pitch_m2.543_reflex_m19.455.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "e34cd11927542229b89e59fa01825debfd8e5ddb73f1adc34c927471c4ac7913",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.021871253848075867,
+   "npz_sha256": "9bffd63bfbd1da0e38610b521d38088688e8a5ca34ff799a1990e3a3f016ae3e",
+   "order": 12,
+   "phi_c_order_sha256": "ba854479173651b3c6f18be0e6b043e40e7b67b69cb34439d2bbb9ccdeebfd5f",
+   "phi_fortran_order_sha256": "c29ab11699e79a9f7e32fd7715fa940591a295c7aecf3bbf1b1e7f0b6c8c241b",
+   "role": "random",
+   "sign": 1,
+   "spec": {
+    "camber": 6.88,
+    "pitch": -2.543,
+    "reflex": -19.455
+   },
+   "state_sha256": "a2de9e3a1c7ae19336e9b2259acf54415cae867859298d517728d2eaf06fcb72",
+   "step_mm": 21.871253848075867,
+   "u": [
+    -0.8203225806451613,
+    0.349238578680203,
+    -0.6639931740614333
+   ],
+   "zero_level_margin_m": 0.3615030813962221
+  },
+  "v18__camber_p9.129_pitch_m0.554_reflex_m28.934": {
+   "changed_node_count": 106934,
+   "direction": "v18__camber_p9.129_pitch_m0.554_reflex_m28.934",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_p9.129_pitch_m0.554_reflex_m28.934.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "013c102f0646e7d0144347e0e340108327ff8f368253598e0e6d98041bc54738",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.012340158224105835,
+   "npz_sha256": "2ba27e49d362265dab1b29d7dd8549c6aac3257fb3571b5b097b6a591d5ec35c",
+   "order": 3,
+   "phi_c_order_sha256": "2c8d55279e9fa3f2a02680cda6fab5a7c445d3d72479b339a9ad67e6d6da717f",
+   "phi_fortran_order_sha256": "e8e079a8769de85acf98b3587acbb030a8e9658eb612ae44200ede43f3fa757f",
+   "role": "random",
+   "sign": 1,
+   "spec": {
+    "camber": 9.129,
+    "pitch": -0.554,
+    "reflex": -28.934
+   },
+   "state_sha256": "a17296f297285da8e860f2026351d5fdd59dcc666c19d32e424fe05dd03d5f14",
+   "step_mm": 12.340158224105835,
+   "u": [
+    -0.17870967741935484,
+    0.4634010152284264,
+    -0.9875085324232082
+   ],
+   "zero_level_margin_m": 0.3398897968232632
+  },
+  "v18__parent": {
+   "amplitude": 0.0,
+   "changed_node_count": 0,
+   "direction": null,
+   "direction_path": null,
+   "direction_sha256_fortran_raw": null,
+   "kind": "parent",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.0,
+   "mode": "parent",
+   "npz_sha256": "36967c90cb48b7fe3475436098b138d4e7998212defb6dcb61bf8cefc52d5890",
+   "order": 0,
+   "phi_c_order_sha256": "0197e688bf41c87407705e9fee3c78392230fb7edf71b3f58e0aa08c65dceebe",
+   "phi_fortran_order_sha256": "29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a",
+   "prescreen_all_pass": true,
+   "prescreen_phi_fortran_sha256": "29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a",
+   "role": "parent",
+   "sign": 0,
+   "spec": null,
+   "state_sha256": "e7376e3576a045daa4c62353052890c43b4ed8b4562033c889cb1a4580d902bd",
+   "step_mm": 0.0,
+   "u": null,
+   "zero_level_margin_m": 0.35088423639535904
+  },
+  "v18__parent__repeat": {
+   "amplitude": 0.0,
+   "changed_node_count": 0,
+   "direction": null,
+   "direction_path": null,
+   "direction_sha256_fortran_raw": null,
+   "kind": "parent_repeat",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.0,
+   "mode": "parent",
+   "npz_sha256": "36967c90cb48b7fe3475436098b138d4e7998212defb6dcb61bf8cefc52d5890",
+   "order": 0,
+   "phi_c_order_sha256": "0197e688bf41c87407705e9fee3c78392230fb7edf71b3f58e0aa08c65dceebe",
+   "phi_fortran_order_sha256": "29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a",
+   "prescreen_all_pass": true,
+   "prescreen_phi_fortran_sha256": "29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a",
+   "role": "parent_repeat",
+   "sign": 0,
+   "spec": null,
+   "state_sha256": "e7376e3576a045daa4c62353052890c43b4ed8b4562033c889cb1a4580d902bd",
+   "step_mm": 0.0,
+   "u": null,
+   "zero_level_margin_m": 0.35088423639535904
+  },
+  "v18__pitch_m3.1": {
+   "changed_node_count": 107004,
+   "direction": "v18__pitch_m3.1",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__pitch_m3.1.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "c2532e3fad1d01b8da9012ec89f20886b84d1d0627072bdf2589d7bad6eb46ab",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.02984878420829773,
+   "npz_sha256": "3d12228016a43bec417e12e233eeee3b68effc8ad9a406e0a906c12206ec7676",
+   "order": 1,
+   "phi_c_order_sha256": "2df442f01ec8c5e337f54ee99643ca1e55a1e17f003e7c5cf28a058a81edf255",
+   "phi_fortran_order_sha256": "3344401555328c5e729ea1ad98421e677b9121fd00937cee33bbcecdff7205cb",
+   "role": "axial",
+   "sign": 1,
+   "spec": {
+    "pitch": -3.1
+   },
+   "state_sha256": "c27ec7c45afe868ea2cb802b9a6bb8e66b66ea1eb4a8df6870bb9e3817608d66",
+   "step_mm": 29.84878420829773,
+   "u": [
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "zero_level_margin_m": 0.3624999985098839
+  },
+  "v18__pitch_p3.1": {
+   "changed_node_count": 107016,
+   "direction": "v18__pitch_p3.1",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__pitch_p3.1.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "7e446d7712f04bdc5bf1b1c5f27bf8ceb7b49619f34bdb94c7849232cff9cc9f",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.029848579317331314,
+   "npz_sha256": "fe836b3e5f637ed433d591c0c4e384d903300ca6f1ea704c066ccede16518668",
+   "order": 0,
+   "phi_c_order_sha256": "04eec31d6709e57e99b847b32098a01fce2f87566bca1e16e79a57461bc4813e",
+   "phi_fortran_order_sha256": "b4c14e4eaa55d557058d84d6ae38b2b24dbbf33ca7ba56532a9ecc8ba6d863b2",
+   "role": "axial",
+   "sign": 1,
+   "spec": {
+    "pitch": 3.1
+   },
+   "state_sha256": "fea9fa6617cd6530f10e8a013ecfcb1f486a44092fa1955abd06071fef202709",
+   "step_mm": 29.848579317331314,
+   "u": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "zero_level_margin_m": 0.32265141983516515
+  },
+  "v18__reflex_m29.3": {
+   "changed_node_count": 106932,
+   "direction": "v18__reflex_m29.3",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__reflex_m29.3.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "dedd79921bd85d4bd5e4ba1ed4beab91b55d04bb8e3b93ec5a896f6b8de71478",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.011719956994056702,
+   "npz_sha256": "fd17ce9c8588bdd2a6db4418cc73870edbf660dcd2b8e79ea88afebbd5d0d0c1",
+   "order": 5,
+   "phi_c_order_sha256": "eeb11999f58988ece57afd410ab4978bccdec289c308e502d1e8bf5d6563062e",
+   "phi_fortran_order_sha256": "2a47821872ec2aefed7029c005780f6faa8c20c384e337a15a8bfc280773737f",
+   "role": "axial",
+   "sign": 1,
+   "spec": {
+    "reflex": -29.3
+   },
+   "state_sha256": "a4348fcac8ba21d57ace838bb70c5fa685db1a26afd31d08d71c3a1d426cc189",
+   "step_mm": 11.719956994056702,
+   "u": [
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "zero_level_margin_m": 0.34046744685620073
+  },
+  "v18__reflex_p29.3": {
+   "changed_node_count": 106928,
+   "direction": "v18__reflex_p29.3",
+   "direction_path": "docs/evidence/screen01_2026_10_30/inputs/v18__reflex_p29.3.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "b37c8f4a0229e2d5c7b48785e3143d0ff598b423418b473a690e66576f090d77",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.011719956994056702,
+   "npz_sha256": "b8e086432e385dbe0e709cde60a0bdb6eebfdfbc32c2d6fddcd5b82802e08dd0",
+   "order": 4,
+   "phi_c_order_sha256": "6865be1b75f36b71237f36631bedfe30f0e1c758c0a74d7fa0a0f71aaa6cbdcf",
+   "phi_fortran_order_sha256": "44ce69780650b11cca7acb62dbae02358bf25b736a9d2ca91d2211dbd1a20bbb",
+   "role": "axial",
+   "sign": 1,
+   "spec": {
+    "reflex": 29.3
+   },
+   "state_sha256": "ff87b7733589103aceb6c6b38502dd882a20fd4b0efd6b036ad057fa6eeed9db",
+   "step_mm": 11.719956994056702,
+   "u": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "zero_level_margin_m": 0.361130740493536
+  },
+  "v18__roll_p25": {
+   "amplitude": 25.0,
+   "changed_node_count": 106999,
+   "direction": "v18__roll_p25",
+   "direction_path": "docs/evidence/unc01_2026_10_20/inputs/v18__roll_p25.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "2796e8361d4af8eac564e8495b498a202c8000a9e333171299bb06bace4ad040",
+   "kind": "control",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.024999618530273438,
+   "mode": "surge",
+   "npz_sha256": "e1e5e1b4f4060f738d363fcffa754474dbf781211b3b5e42876cdca3c19940a2",
+   "order": 0,
+   "phi_c_order_sha256": "2c95b001de01bfe8a49a009eab241d18b3447325512f562ed5e698c90b0b50c4",
+   "phi_fortran_order_sha256": "355a7ceee5c9e97ec1099336b8a68e134eecaa71d347843daec7f0d4c8099df1",
+   "prescreen_all_pass": null,
+   "prescreen_phi_fortran_sha256": null,
+   "role": "nc",
+   "sign": 1,
+   "spec": null,
+   "state_sha256": "b53c18a9b5f985a9aa8d49b194c58aef8c9bd86d2ce605c3ace24657790be415",
+   "step_mm": 24.999618530273438,
+   "u": null,
+   "zero_level_margin_m": 0.35088423639535904
+  }
+ },
+ "unc01_states_sha256": "8b405fe0f787c2e6afde40e46404729249f4bf412a298f23aa2c9c83290c0501",
+ "v18_plate_sha256": "4641c2f4cc06135825a67cb32a07dcb2a60adb6462a7d0b6149926d3812c6df7"
+}

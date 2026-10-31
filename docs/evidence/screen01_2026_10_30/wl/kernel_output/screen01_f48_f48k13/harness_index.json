@@ -1,0 +1,43 @@
+{
+  "case_id": "flow_48",
+  "kernel": "f48k13",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-screen01-f48-f48k13",
+  "parent_forces_csv_sha256": "30588242f24a9f61a439ca7df096ef30861085f89c2430597657eec2cd1de476",
+  "solver_process_wall_seconds_total": 7434.895941495895,
+  "states": [
+    {
+      "complete": true,
+      "direction": null,
+      "exit_code": 0,
+      "forces_csv_sha256": "30588242f24a9f61a439ca7df096ef30861085f89c2430597657eec2cd1de476",
+      "kind": "parent",
+      "name": "v18__parent__k13",
+      "seconds": 2501.4970281124115,
+      "sign": 0,
+      "step_mm": 0.0
+    },
+    {
+      "complete": true,
+      "direction": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115",
+      "exit_code": 0,
+      "forces_csv_sha256": "ead77b4e50cee25082298998feef2e07dfc4df1834169e5c7fb2d4c5a71179d2",
+      "kind": "candidate",
+      "name": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115__k13",
+      "seconds": 2458.6476340293884,
+      "sign": 1,
+      "step_mm": 24.65274930000305
+    },
+    {
+      "complete": true,
+      "direction": "v18__camber_m28.656_pitch_m0.68_reflex_p2.727",
+      "exit_code": 0,
+      "forces_csv_sha256": "d17d46503544c8887f56cf22594a9471c6c511bb3c93271716d507d4b8ddba2f",
+      "kind": "candidate",
+      "name": "v18__camber_m28.656_pitch_m0.68_reflex_p2.727__k13",
+      "seconds": 2474.7512793540955,
+      "sign": 1,
+      "step_mm": 26.74388885498047
+    }
+  ],
+  "status": "COMPLETE"
+}

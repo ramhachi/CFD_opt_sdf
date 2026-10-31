@@ -1,0 +1,67 @@
+{
+  "campaign_sha256": "f28f29d385909b51340f7fbd7488738799fe07b598e67f486d0ca52bfebf36d0",
+  "campaign_work_root": "/kaggle/working",
+  "case_id": "flow_48",
+  "config": {
+    "gpu_probe_timeout_s": 300,
+    "instantiate_timeout_s": 2400,
+    "kernel_timeout_s": 9300,
+    "per_state_timeout_s": 5990,
+    "reserve_s": 300,
+    "solver_wall_time_cap_s": 5990
+  },
+  "cuda_device_order": "PCI_BUS_ID",
+  "cuda_visible_devices": "0",
+  "direction_files": {
+    "v18__camber_m28.656_pitch_m0.68_reflex_p2.727": "91ca81369c628ef2227e357f6b37badb80a5f2102ffed8d532ef2095670ad0e3",
+    "v18__camber_m29.55_pitch_p0.155_reflex_p16.115": "27d7b742bd09afdd061204035335650e7fb25c83c6e18470b8172d0afd58d337"
+  },
+  "expected_names": [
+    "v18__parent__k20"
+  ],
+  "failure_stage": null,
+  "harness_version": "harness v1.1",
+  "kernel": "f48smk",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-screen01-f48-f48smk-smoke",
+  "numpy_version": "2.1.3",
+  "pins": {
+    "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m28.656_pitch_m0.68_reflex_p2.727.dir_f4_fortran.raw": "91ca81369c628ef2227e357f6b37badb80a5f2102ffed8d532ef2095670ad0e3",
+    "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m29.55_pitch_p0.155_reflex_p16.115.dir_f4_fortran.raw": "27d7b742bd09afdd061204035335650e7fb25c83c6e18470b8172d0afd58d337",
+    "docs/evidence/v18_genesis_2026_10_19/v18_parent.phi_f4_fortran.raw": "29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a",
+    "docs/harness/screen01_f48_campaign.json": "f28f29d385909b51340f7fbd7488738799fe07b598e67f486d0ca52bfebf36d0",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/fd08_v2_campaign_io.py": "dda177cda3c8f02626be7af3f9ae2d2cad984c8eeea6a09c3445e64ac906c3d2",
+    "scripts/grid01_gpu.py": "bfaed961f3136d14bdeb7e4fccfab807f5fb8c257b45cd3ebb875963104fff38",
+    "scripts/grid02_case.jl": "2210d56b51c3facba17b735102f5955c4b0068e19a728dba2f84ace68b0bafe1",
+    "scripts/step01_states.py": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "scripts/waterlily_grid02_job.jl": "4d5a30b04820b5ab2adbe96a129cd0d3d77c3085035a7c3d337154ac6cfcf6ad",
+    "src/cfd_harness/campaign_schema.py": "4c3c494ed381930d9d1e51b063efbbdcf1fa4586c1ac7e84d2b999a5c984d1b8"
+  },
+  "platform": "Linux 114ba907fe69 6.18.55+ #1 SMP Thu Oct 22 16:37:21 UTC 2026 x86_64",
+  "python_version": "3.13.15 (main, Aug  6 2026, 11:06:22) [GCC 13.3.0]",
+  "runner_sha256": "77d17032d8095911390254da40f1b4769046ae4baeb269b58adff305d3d58aab",
+  "selected_gpu": {
+    "index": 0,
+    "name": "Tesla T4",
+    "uuid": "GPU-a63b9896-abd1-fe37-34dd-d4c2d283ff62"
+  },
+  "smoke": true,
+  "source_commit": "88f2c00422f68fc260e423895e82b71306314a18",
+  "verified": {
+    "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m28.656_pitch_m0.68_reflex_p2.727.dir_f4_fortran.raw": "91ca81369c628ef2227e357f6b37badb80a5f2102ffed8d532ef2095670ad0e3",
+    "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m29.55_pitch_p0.155_reflex_p16.115.dir_f4_fortran.raw": "27d7b742bd09afdd061204035335650e7fb25c83c6e18470b8172d0afd58d337",
+    "docs/evidence/v18_genesis_2026_10_19/v18_parent.phi_f4_fortran.raw": "29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a",
+    "docs/harness/screen01_f48_campaign.json": "f28f29d385909b51340f7fbd7488738799fe07b598e67f486d0ca52bfebf36d0",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/fd08_v2_campaign_io.py": "dda177cda3c8f02626be7af3f9ae2d2cad984c8eeea6a09c3445e64ac906c3d2",
+    "scripts/grid01_gpu.py": "bfaed961f3136d14bdeb7e4fccfab807f5fb8c257b45cd3ebb875963104fff38",
+    "scripts/grid02_case.jl": "2210d56b51c3facba17b735102f5955c4b0068e19a728dba2f84ace68b0bafe1",
+    "scripts/step01_states.py": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "scripts/waterlily_grid02_job.jl": "4d5a30b04820b5ab2adbe96a129cd0d3d77c3085035a7c3d337154ac6cfcf6ad",
+    "src/cfd_harness/campaign_schema.py": "4c3c494ed381930d9d1e51b063efbbdcf1fa4586c1ac7e84d2b999a5c984d1b8"
+  }
+}

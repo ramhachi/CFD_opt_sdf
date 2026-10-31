@@ -1,0 +1,57 @@
+{
+  "campaign_id": "screen01_f48",
+  "campaign_sha256": "f28f29d385909b51340f7fbd7488738799fe07b598e67f486d0ca52bfebf36d0",
+  "freeze_sha256": "36dda7c5d9a7f8b80a8f937c789a770fc0acd493f3404ff1af3a1f5fdb04bf2b",
+  "harness_tool_sha256": {
+    "scripts/harness.py": "e9d036846ffd33fced8a1507a8fb191e49e0179a517c25a393354c83de4655fa",
+    "src/cfd_harness/campaign_build.py": "7e3ee902bc3ed020edd5e37cbd9060490f9c0f5119e72a60448edbdcf0688a68",
+    "src/cfd_harness/campaign_runner_template.py": "d53e2df74af8becc4e512c19e14381c549006a499c38c2cfab2ba89b6ab9ead1",
+    "src/cfd_harness/campaign_schema.py": "4c3c494ed381930d9d1e51b063efbbdcf1fa4586c1ac7e84d2b999a5c984d1b8",
+    "src/cfd_harness/campaign_verify.py": "8db4714799e258e08ce1a2e8ed9de4b5ff90ba3d9fa56513ec6d6997b0e57a2e"
+  },
+  "harness_version": "harness v1.1",
+  "integrity": {
+    "failures": [],
+    "pass": true
+  },
+  "kernel_manifest_sha256": {
+    "f48k13": "98c7581e0d8a478227bd21c7e6b237a9e47c687cd60d9af90f36e42d39283fe1"
+  },
+  "kind": "harness_state_force_table",
+  "legacy_replay": false,
+  "per_kernel": true,
+  "smoke": false,
+  "source_commit": "88f2c00422f68fc260e423895e82b71306314a18",
+  "state_forces_n": {
+    "f48k13": {
+      "v18__camber_m28.656_pitch_m0.68_reflex_p2.727__k13": {
+        "downforce_n": 0.2721707240951071,
+        "drag_n": 0.27998029276391995,
+        "forces_csv_sha256": "d17d46503544c8887f56cf22594a9471c6c511bb3c93271716d507d4b8ddba2f",
+        "julia_summary_wall_seconds": 2398.298971891403,
+        "solver_process_wall_seconds": 2474.7512793540955,
+        "summary_sha256": "3ea33c033d5a9b9e5f348e6ba3074126e7421985813f56439ec346accc6e85f5"
+      },
+      "v18__camber_m29.55_pitch_p0.155_reflex_p16.115__k13": {
+        "downforce_n": 0.27628686123326,
+        "drag_n": 0.2829314917851228,
+        "forces_csv_sha256": "ead77b4e50cee25082298998feef2e07dfc4df1834169e5c7fb2d4c5a71179d2",
+        "julia_summary_wall_seconds": 2381.6807379722595,
+        "solver_process_wall_seconds": 2458.6476340293884,
+        "summary_sha256": "5f5299f19a0bc4d53730b978073f733668629893ed4e7211dc07c18bbb734e1c"
+      },
+      "v18__parent__k13": {
+        "downforce_n": 0.26637588087259245,
+        "drag_n": 0.2851731741796772,
+        "forces_csv_sha256": "30588242f24a9f61a439ca7df096ef30861085f89c2430597657eec2cd1de476",
+        "julia_summary_wall_seconds": 2424.3214240074158,
+        "solver_process_wall_seconds": 2501.4970281124115,
+        "summary_sha256": "e08b1c0efef7694c7de1b4d7b9761d57cb163bf8bebe08bfe016ff99f772446f"
+      }
+    }
+  },
+  "verifier": {
+    "script": "scripts/fid01/fid01_harness.py verify (scripts/unc01_verify.verify_one with the placeholder-tolerant listing parser)",
+    "sha256": "f8d7fe45801e15e8b4d6d0fbbbe6b1827a3be9c49209804ac556c8a870d8dfab"
+  }
+}

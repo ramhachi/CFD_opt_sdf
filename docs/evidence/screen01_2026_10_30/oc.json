@@ -1,0 +1,1024 @@
+{
+ "J_n": 0.26577921974115387,
+ "kind": "screen01_operating_characteristics_rev1",
+ "reps": 2000,
+ "seed": 20261031,
+ "surrogate": {
+  "y": {
+   "c_cr": 0.001681094229295431,
+   "c_pc": 0.0,
+   "c_pr": -9.882238564653127e-06,
+   "camber": [
+    -0.011606946921882284,
+    0.001419720823211669
+   ],
+   "pitch": [
+    0.04497557203178844,
+    -0.0005600013183167803,
+    -0.0035941827462022354
+   ],
+   "reflex": [
+    -0.014499999999999999,
+    0.0011500000000000002
+   ]
+  },
+  "z": {
+   "c_cr": 0.0017490370366036883,
+   "c_pc": 0.0,
+   "c_pr": 0.0003017200817602807,
+   "camber": [
+    -0.0010784227380760294,
+    0.0010322988294547782
+   ],
+   "pitch": [
+    0.029989839401660445,
+    0.0008439699604961261,
+    -0.0011457096055238337
+   ],
+   "reflex": [
+    -0.011104999999999997,
+    0.0013649999999999997
+   ]
+  }
+ },
+ "surrogate_check": {
+  "C1_pred": {
+   "downforce": 0.01326,
+   "drag": 0.005831,
+   "measured": [
+    0.01326,
+    0.005831
+   ]
+  },
+  "C4_pred": {
+   "downforce": -0.03204,
+   "drag": -0.02221,
+   "measured": [
+    -0.03204,
+    -0.02221
+   ]
+  }
+ },
+ "surrogate_optimum": {
+  "box_rev0|drag_le_-m_D": {
+   "feasible_fraction_ge_gmin": 0.0008843879188846928,
+   "gain_over_J": 0.03854342092626449,
+   "gain_over_g_min": 1.4259190981333043,
+   "u": [
+    0.27500000000000013,
+    -1.0,
+    1.0
+   ]
+  },
+  "box_rev0|drag_le_0": {
+   "feasible_fraction_ge_gmin": 0.002374675646026558,
+   "gain_over_J": 0.0427661798304138,
+   "gain_over_g_min": 1.5821406379846332,
+   "u": [
+    0.30000000000000004,
+    -0.975,
+    0.9750000000000001
+   ]
+  },
+  "box_rev1|drag_le_-m_D": {
+   "feasible_fraction_ge_gmin": 0.008190937470010783,
+   "gain_over_J": 0.05839511944348018,
+   "gain_over_g_min": 2.160335384125018,
+   "u": [
+    0.2250000000000001,
+    -1.5,
+    0.9500000000000002
+   ]
+  },
+  "box_rev1|drag_le_0": {
+   "feasible_fraction_ge_gmin": 0.012452934568465737,
+   "gain_over_J": 0.06389369993554833,
+   "gain_over_g_min": 2.363756117102055,
+   "u": [
+    0.27500000000000013,
+    -1.5,
+    1.0
+   ]
+  }
+ },
+ "t_seal": 2.3533634348018233,
+ "variants": {
+  "rev0_misfit_heavy": {
+   "P_GAIN": 0.1135,
+   "P_finalist_in_extension": 0.0,
+   "P_finalist_true_drag_positive": 0.02,
+   "P_pool_limited_label": 0.7105,
+   "P_rule_A_given_sealed": 0.891156462585034,
+   "P_rule_B_given_sealed": 0.9183673469387755,
+   "mean_best_true_feasible_gain_over_J": 0.009079385128029504,
+   "mean_finalist_true_gain_over_J": 0.008817844976145494,
+   "mean_n_gated": 0.0,
+   "mean_sealed_minus_true_n": -8.194452992777742e-06,
+   "mean_selection_minus_true_n": 2.010435428373419e-05,
+   "mean_y_star_pred_over_J": 0.04365866029788827,
+   "outcomes": {
+    "GAIN": 0.1135,
+    "INCONCLUSIVE:GAIN_UNRESOLVED": 0.003,
+    "NO_GAIN:DRAG_VIOLATION": 0.0185,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.012,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.853
+   },
+   "params": {
+    "box": {
+     "camber": [
+      -1.0,
+      1.0
+     ],
+     "pitch": [
+      -1.0,
+      1.0
+     ],
+     "reflex": [
+      -1.0,
+      1.0
+     ]
+    },
+    "design_u": null,
+    "m_d": 0.0015,
+    "noise": 1.0,
+    "null": false,
+    "p_adm": 0.54,
+    "rev": "rev0",
+    "s_mis": 0.003,
+    "sat": null,
+    "scale": 1.0,
+    "targets": [
+     1.0,
+     1.5,
+     2.0
+    ]
+   },
+   "random_control": {},
+   "wall_s": 15.2
+  },
+  "rev0_registered": {
+   "P_GAIN": 0.028,
+   "P_finalist_in_extension": 0.0,
+   "P_finalist_true_drag_positive": 0.0075,
+   "P_pool_limited_label": 0.852,
+   "P_rule_A_given_sealed": 0.5981308411214953,
+   "P_rule_B_given_sealed": 0.7102803738317757,
+   "mean_best_true_feasible_gain_over_J": 0.004500775445145576,
+   "mean_finalist_true_gain_over_J": 0.003962347552484452,
+   "mean_n_gated": 0.0,
+   "mean_sealed_minus_true_n": -6.330577644358306e-06,
+   "mean_selection_minus_true_n": 2.284360880165452e-06,
+   "mean_y_star_pred_over_J": 0.03816599403518887,
+   "outcomes": {
+    "GAIN": 0.028,
+    "INCONCLUSIVE:GAIN_UNRESOLVED": 0.006,
+    "NO_GAIN:DRAG_VIOLATION": 0.004,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.0155,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.9465
+   },
+   "params": {
+    "box": {
+     "camber": [
+      -1.0,
+      1.0
+     ],
+     "pitch": [
+      -1.0,
+      1.0
+     ],
+     "reflex": [
+      -1.0,
+      1.0
+     ]
+    },
+    "design_u": null,
+    "m_d": 0.0015,
+    "noise": 1.0,
+    "null": false,
+    "p_adm": 0.54,
+    "rev": "rev0",
+    "s_mis": 0.001,
+    "sat": null,
+    "scale": 1.0,
+    "targets": [
+     1.0,
+     1.5,
+     2.0
+    ]
+   },
+   "random_control": {},
+   "wall_s": 14.6
+  },
+  "rev1_box_unextended": {
+   "P_GAIN": 0.8245,
+   "P_finalist_in_extension": 0.0,
+   "P_finalist_true_drag_positive": 0.019,
+   "P_pool_limited_label": 0.0815,
+   "P_rule_A_given_sealed": 0.8960396039603961,
+   "P_rule_B_given_sealed": 0.9422442244224423,
+   "mean_best_true_feasible_gain_over_J": 0.03924571427715661,
+   "mean_finalist_true_gain_over_J": 0.03897006432740768,
+   "mean_n_gated": 15.4375,
+   "mean_sealed_minus_true_n": -5.410227929940122e-07,
+   "mean_selection_minus_true_n": 0.0001109637582463,
+   "mean_y_star_pred_over_J": 0.03856997700621839,
+   "outcomes": {
+    "GAIN": 0.8245,
+    "NO_GAIN:DRAG_VIOLATION": 0.032,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.0525,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.091
+   },
+   "params": {
+    "box": {
+     "camber": [
+      -1.0,
+      1.0
+     ],
+     "pitch": [
+      -1.0,
+      1.0
+     ],
+     "reflex": [
+      -1.0,
+      1.0
+     ]
+    },
+    "design_u": null,
+    "m_d": 0.0015,
+    "noise": 1.0,
+    "null": false,
+    "p_adm": 0.54,
+    "rev": "rev1",
+    "s_mis": 0.001,
+    "sat": null,
+    "scale": 1.0,
+    "targets": [
+     1.0,
+     1.5,
+     2.0
+    ]
+   },
+   "random_control": {
+    "RANDOM_BELOW_MIN": 0.9385,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.0615
+   },
+   "wall_s": 34.2
+  },
+  "rev1_camber_saturated_-1.0": {
+   "P_GAIN": 0.708,
+   "P_finalist_in_extension": 0.998587570621469,
+   "P_finalist_true_drag_positive": 0.014,
+   "P_pool_limited_label": 0.249,
+   "P_rule_A_given_sealed": 0.8376068376068376,
+   "P_rule_B_given_sealed": 0.8937728937728938,
+   "mean_best_true_feasible_gain_over_J": 0.0364759869610252,
+   "mean_finalist_true_gain_over_J": 0.03622871242454046,
+   "mean_n_gated": 16.1065,
+   "mean_sealed_minus_true_n": -1.3059192310295059e-05,
+   "mean_selection_minus_true_n": 0.00011680923872194502,
+   "mean_y_star_pred_over_J": 0.046817430472762996,
+   "outcomes": {
+    "GAIN": 0.708,
+    "NO_GAIN:DRAG_VIOLATION": 0.024,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.087,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.181
+   },
+   "params": {
+    "box": {
+     "camber": [
+      -1.5,
+      1.0
+     ],
+     "pitch": [
+      -1.0,
+      1.0
+     ],
+     "reflex": [
+      -1.0,
+      1.0
+     ]
+    },
+    "design_u": null,
+    "m_d": 0.0015,
+    "noise": 1.0,
+    "null": false,
+    "p_adm": 0.54,
+    "rev": "rev1",
+    "s_mis": 0.001,
+    "sat": -1.0,
+    "scale": 1.0,
+    "targets": [
+     1.0,
+     1.5,
+     2.0
+    ]
+   },
+   "random_control": {
+    "RANDOM_BELOW_MIN": 0.8355,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.1645
+   },
+   "wall_s": 45.7
+  },
+  "rev1_camber_saturated_-1.25": {
+   "P_GAIN": 0.88,
+   "P_finalist_in_extension": 0.9994318181818181,
+   "P_finalist_true_drag_positive": 0.0125,
+   "P_pool_limited_label": 0.0965,
+   "P_rule_A_given_sealed": 0.9346092503987241,
+   "P_rule_B_given_sealed": 0.9585326953748007,
+   "mean_best_true_feasible_gain_over_J": 0.04733314833211419,
+   "mean_finalist_true_gain_over_J": 0.047044430389963296,
+   "mean_n_gated": 16.288,
+   "mean_sealed_minus_true_n": -4.936164401903176e-06,
+   "mean_selection_minus_true_n": 0.00010803988964224727,
+   "mean_y_star_pred_over_J": 0.05544386474798399,
+   "outcomes": {
+    "GAIN": 0.88,
+    "NO_GAIN:DRAG_VIOLATION": 0.0215,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.039,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.0595
+   },
+   "params": {
+    "box": {
+     "camber": [
+      -1.5,
+      1.0
+     ],
+     "pitch": [
+      -1.0,
+      1.0
+     ],
+     "reflex": [
+      -1.0,
+      1.0
+     ]
+    },
+    "design_u": null,
+    "m_d": 0.0015,
+    "noise": 1.0,
+    "null": false,
+    "p_adm": 0.54,
+    "rev": "rev1",
+    "s_mis": 0.001,
+    "sat": -1.25,
+    "scale": 1.0,
+    "targets": [
+     1.0,
+     1.5,
+     2.0
+    ]
+   },
+   "random_control": {
+    "RANDOM_BELOW_MIN": 0.7785,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.2215
+   },
+   "wall_s": 46.0
+  },
+  "rev1_frozen_design": {
+   "P_GAIN": 0.8875,
+   "P_finalist_in_extension": 1.0,
+   "P_finalist_true_drag_positive": 0.039,
+   "P_pool_limited_label": 0.0985,
+   "P_rule_A_given_sealed": 0.9765747006767309,
+   "P_rule_B_given_sealed": 0.9875065070275898,
+   "mean_best_true_feasible_gain_over_J": 0.058900754365856234,
+   "mean_finalist_true_gain_over_J": 0.05862810606653038,
+   "mean_n_gated": 16.0605,
+   "mean_sealed_minus_true_n": -3.6840747586241115e-07,
+   "mean_selection_minus_true_n": 0.00012117304846078008,
+   "mean_y_star_pred_over_J": 0.05712538654846587,
+   "outcomes": {
+    "GAIN": 0.8875,
+    "NO_GAIN:DRAG_VIOLATION": 0.061,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.012,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.0395
+   },
+   "params": {
+    "box": {
+     "camber": [
+      -1.5,
+      1.0
+     ],
+     "pitch": [
+      -1.0,
+      1.0
+     ],
+     "reflex": [
+      -1.0,
+      1.0
+     ]
+    },
+    "design_u": [
+     [
+      -0.7441935483870967,
+      -1.1146700507614213,
+      -0.8198976109215017
+     ],
+     [
+      -0.9951612903225806,
+      0.16553299492385787,
+      0.9808191126279863
+     ],
+     [
+      -0.20032258064516129,
+      -1.004517766497462,
+      0.8931058020477816
+     ],
+     [
+      0.7451612903225806,
+      -1.2926903553299494,
+      0.15812286689419794
+     ],
+     [
+      -0.7651612903225806,
+      -0.025482233502538074,
+      -0.937679180887372
+     ],
+     [
+      0.3361290322580645,
+      0.8179187817258883,
+      0.9575767918088737
+     ],
+     [
+      0.6590322580645162,
+      0.7618781725888325,
+      -0.39887372013651873
+     ],
+     [
+      0.2503225806451613,
+      -1.18751269035533,
+      -0.7314675767918088
+     ],
+     [
+      -0.584516129032258,
+      0.7815228426395939,
+      -0.5805460750853243
+     ]
+    ],
+    "m_d": 0.0015,
+    "noise": 1.0,
+    "null": false,
+    "p_adm": 0.54,
+    "rev": "rev1",
+    "s_mis": 0.001,
+    "sat": null,
+    "scale": 1.0,
+    "targets": [
+     1.0,
+     1.5,
+     2.0
+    ]
+   },
+   "random_control": {
+    "RANDOM_BELOW_MIN": 0.768,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.232
+   },
+   "wall_s": 45.6
+  },
+  "rev1_m_d_1.0e-3": {
+   "P_GAIN": 0.8655,
+   "P_finalist_in_extension": 0.998844598497978,
+   "P_finalist_true_drag_positive": 0.0565,
+   "P_pool_limited_label": 0.1225,
+   "P_rule_A_given_sealed": 0.9748953974895398,
+   "P_rule_B_given_sealed": 0.9843096234309623,
+   "mean_best_true_feasible_gain_over_J": 0.05913676828029834,
+   "mean_finalist_true_gain_over_J": 0.05908713228878166,
+   "mean_n_gated": 16.1905,
+   "mean_sealed_minus_true_n": 6.1940997898319495e-06,
+   "mean_selection_minus_true_n": 0.00013029074218112022,
+   "mean_y_star_pred_over_J": 0.06116397984068682,
+   "outcomes": {
+    "GAIN": 0.8655,
+    "NO_GAIN:DRAG_VIOLATION": 0.0755,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.015,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.044
+   },
+   "params": {
+    "box": {
+     "camber": [
+      -1.5,
+      1.0
+     ],
+     "pitch": [
+      -1.0,
+      1.0
+     ],
+     "reflex": [
+      -1.0,
+      1.0
+     ]
+    },
+    "design_u": null,
+    "m_d": 0.001,
+    "noise": 1.0,
+    "null": false,
+    "p_adm": 0.54,
+    "rev": "rev1",
+    "s_mis": 0.001,
+    "sat": null,
+    "scale": 1.0,
+    "targets": [
+     1.0,
+     1.5,
+     2.0
+    ]
+   },
+   "random_control": {
+    "RANDOM_BELOW_MIN": 0.768,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.232
+   },
+   "wall_s": 36.3
+  },
+  "rev1_misfit_heavy": {
+   "P_GAIN": 0.729,
+   "P_finalist_in_extension": 0.97599451303155,
+   "P_finalist_true_drag_positive": 0.0585,
+   "P_pool_limited_label": 0.135,
+   "P_rule_A_given_sealed": 0.9582822085889571,
+   "P_rule_B_given_sealed": 0.9711656441717792,
+   "mean_best_true_feasible_gain_over_J": 0.06635487674278691,
+   "mean_finalist_true_gain_over_J": 0.06646768595352902,
+   "mean_n_gated": 15.2305,
+   "mean_sealed_minus_true_n": -1.6647338051592408e-07,
+   "mean_selection_minus_true_n": 0.00013215029682129008,
+   "mean_y_star_pred_over_J": 0.06780153090473479,
+   "outcomes": {
+    "GAIN": 0.729,
+    "NO_GAIN:DRAG_VIOLATION": 0.0625,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.0235,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.185
+   },
+   "params": {
+    "box": {
+     "camber": [
+      -1.5,
+      1.0
+     ],
+     "pitch": [
+      -1.0,
+      1.0
+     ],
+     "reflex": [
+      -1.0,
+      1.0
+     ]
+    },
+    "design_u": null,
+    "m_d": 0.0015,
+    "noise": 1.0,
+    "null": false,
+    "p_adm": 0.54,
+    "rev": "rev1",
+    "s_mis": 0.003,
+    "sat": null,
+    "scale": 1.0,
+    "targets": [
+     1.0,
+     1.5,
+     2.0
+    ]
+   },
+   "random_control": {
+    "RANDOM_BELOW_MIN": 0.721,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.279
+   },
+   "wall_s": 40.3
+  },
+  "rev1_noise_x1.5": {
+   "P_GAIN": 0.8365,
+   "P_finalist_in_extension": 0.9994022713687986,
+   "P_finalist_true_drag_positive": 0.064,
+   "P_pool_limited_label": 0.1425,
+   "P_rule_A_given_sealed": 0.96282722513089,
+   "P_rule_B_given_sealed": 0.974869109947644,
+   "mean_best_true_feasible_gain_over_J": 0.057066138180992834,
+   "mean_finalist_true_gain_over_J": 0.05675419284801469,
+   "mean_n_gated": 16.127,
+   "mean_sealed_minus_true_n": -1.1272509672497081e-05,
+   "mean_selection_minus_true_n": 0.0002043011045879726,
+   "mean_y_star_pred_over_J": 0.058542879881039164,
+   "outcomes": {
+    "GAIN": 0.8365,
+    "NO_GAIN:DRAG_VIOLATION": 0.0945,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.024,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.045
+   },
+   "params": {
+    "box": {
+     "camber": [
+      -1.5,
+      1.0
+     ],
+     "pitch": [
+      -1.0,
+      1.0
+     ],
+     "reflex": [
+      -1.0,
+      1.0
+     ]
+    },
+    "design_u": null,
+    "m_d": 0.0015,
+    "noise": 1.5,
+    "null": false,
+    "p_adm": 0.54,
+    "rev": "rev1",
+    "s_mis": 0.001,
+    "sat": null,
+    "scale": 1.0,
+    "targets": [
+     1.0,
+     1.5,
+     2.0
+    ]
+   },
+   "random_control": {
+    "RANDOM_BELOW_MIN": 0.764,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.236
+   },
+   "wall_s": 36.9
+  },
+  "rev1_null_downforce": {
+   "P_GAIN": 0.0,
+   "P_finalist_in_extension": null,
+   "P_finalist_true_drag_positive": 0.0045,
+   "P_pool_limited_label": 0.0,
+   "P_rule_A_given_sealed": null,
+   "P_rule_B_given_sealed": null,
+   "mean_best_true_feasible_gain_over_J": 0.0,
+   "mean_finalist_true_gain_over_J": 0.0,
+   "mean_n_gated": 16.738,
+   "mean_sealed_minus_true_n": null,
+   "mean_selection_minus_true_n": null,
+   "mean_y_star_pred_over_J": 0.002325370254040807,
+   "outcomes": {
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 1.0
+   },
+   "params": {
+    "box": {
+     "camber": [
+      -1.5,
+      1.0
+     ],
+     "pitch": [
+      -1.0,
+      1.0
+     ],
+     "reflex": [
+      -1.0,
+      1.0
+     ]
+    },
+    "design_u": null,
+    "m_d": 0.0015,
+    "noise": 1.0,
+    "null": true,
+    "p_adm": 0.54,
+    "rev": "rev1",
+    "s_mis": 0.001,
+    "sat": null,
+    "scale": 1.0,
+    "targets": [
+     1.0,
+     1.5,
+     2.0
+    ]
+   },
+   "random_control": {
+    "RANDOM_BELOW_MIN": 1.0
+   },
+   "wall_s": 51.2
+  },
+  "rev1_p_adm_0.25": {
+   "P_GAIN": 0.8925,
+   "P_finalist_in_extension": 0.9988795518207283,
+   "P_finalist_true_drag_positive": 0.037,
+   "P_pool_limited_label": 0.0915,
+   "P_rule_A_given_sealed": 0.9659329140461216,
+   "P_rule_B_given_sealed": 0.9816561844863732,
+   "mean_best_true_feasible_gain_over_J": 0.05677590482750726,
+   "mean_finalist_true_gain_over_J": 0.05668440318207203,
+   "mean_n_gated": 29.0145,
+   "mean_sealed_minus_true_n": 1.6514052767696072e-06,
+   "mean_selection_minus_true_n": 0.00010139026103289805,
+   "mean_y_star_pred_over_J": 0.05901528101038815,
+   "outcomes": {
+    "GAIN": 0.8925,
+    "NO_GAIN:DRAG_VIOLATION": 0.044,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.0175,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.046
+   },
+   "params": {
+    "box": {
+     "camber": [
+      -1.5,
+      1.0
+     ],
+     "pitch": [
+      -1.0,
+      1.0
+     ],
+     "reflex": [
+      -1.0,
+      1.0
+     ]
+    },
+    "design_u": null,
+    "m_d": 0.0015,
+    "noise": 1.0,
+    "null": false,
+    "p_adm": 0.25,
+    "rev": "rev1",
+    "s_mis": 0.001,
+    "sat": null,
+    "scale": 1.0,
+    "targets": [
+     1.0,
+     1.5,
+     2.0
+    ]
+   },
+   "random_control": {
+    "RANDOM_BELOW_MIN": 0.768,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.232
+   },
+   "wall_s": 37.6
+  },
+  "rev1_registered": {
+   "P_GAIN": 0.912,
+   "P_finalist_in_extension": 1.0,
+   "P_finalist_true_drag_positive": 0.026,
+   "P_pool_limited_label": 0.061,
+   "P_rule_A_given_sealed": 0.9760541384695471,
+   "P_rule_B_given_sealed": 0.9854242581988547,
+   "mean_best_true_feasible_gain_over_J": 0.05954868341966854,
+   "mean_finalist_true_gain_over_J": 0.05923068729767866,
+   "mean_n_gated": 15.9395,
+   "mean_sealed_minus_true_n": 3.846095216535813e-06,
+   "mean_selection_minus_true_n": 0.00013422152425364412,
+   "mean_y_star_pred_over_J": 0.059099089987628986,
+   "outcomes": {
+    "GAIN": 0.912,
+    "NO_GAIN:DRAG_VIOLATION": 0.0345,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.014,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.0395
+   },
+   "params": {
+    "box": {
+     "camber": [
+      -1.5,
+      1.0
+     ],
+     "pitch": [
+      -1.0,
+      1.0
+     ],
+     "reflex": [
+      -1.0,
+      1.0
+     ]
+    },
+    "design_u": null,
+    "m_d": 0.0015,
+    "noise": 1.0,
+    "null": false,
+    "p_adm": 0.54,
+    "rev": "rev1",
+    "s_mis": 0.001,
+    "sat": null,
+    "scale": 1.0,
+    "targets": [
+     1.0,
+     1.5,
+     2.0
+    ]
+   },
+   "random_control": {
+    "RANDOM_BELOW_MIN": 0.7605,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.2395
+   },
+   "wall_s": 32.8
+  },
+  "rev1_single_target": {
+   "P_GAIN": 0.8825,
+   "P_finalist_in_extension": 0.9988668555240793,
+   "P_finalist_true_drag_positive": 0.0335,
+   "P_pool_limited_label": 0.092,
+   "P_rule_A_given_sealed": 0.9754797441364605,
+   "P_rule_B_given_sealed": 0.9866737739872068,
+   "mean_best_true_feasible_gain_over_J": 0.055080320864317904,
+   "mean_finalist_true_gain_over_J": 0.055759255801703794,
+   "mean_n_gated": 5.054,
+   "mean_sealed_minus_true_n": -3.7162264931828223e-06,
+   "mean_selection_minus_true_n": 0.00012846677354285058,
+   "mean_y_star_pred_over_J": 0.05796624519857441,
+   "outcomes": {
+    "GAIN": 0.8825,
+    "NO_GAIN:DRAG_VIOLATION": 0.043,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.0125,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.062
+   },
+   "params": {
+    "box": {
+     "camber": [
+      -1.5,
+      1.0
+     ],
+     "pitch": [
+      -1.0,
+      1.0
+     ],
+     "reflex": [
+      -1.0,
+      1.0
+     ]
+    },
+    "design_u": null,
+    "m_d": 0.0015,
+    "noise": 1.0,
+    "null": false,
+    "p_adm": 0.54,
+    "rev": "rev1",
+    "s_mis": 0.001,
+    "sat": null,
+    "scale": 1.0,
+    "targets": [
+     1.0
+    ]
+   },
+   "random_control": {
+    "RANDOM_BELOW_MIN": 0.767,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.233
+   },
+   "wall_s": 23.9
+  },
+  "rev1_space_scaled_0.42": {
+   "P_GAIN": 0.3435,
+   "P_finalist_in_extension": 1.0,
+   "P_finalist_true_drag_positive": 0.028,
+   "P_pool_limited_label": 0.0635,
+   "P_rule_A_given_sealed": 0.5131221719457013,
+   "P_rule_B_given_sealed": 0.6588235294117647,
+   "mean_best_true_feasible_gain_over_J": 0.02466172538544243,
+   "mean_finalist_true_gain_over_J": 0.024363269767996337,
+   "mean_n_gated": 15.9995,
+   "mean_sealed_minus_true_n": 5.001712516128802e-06,
+   "mean_selection_minus_true_n": 0.00022548235373298525,
+   "mean_y_star_pred_over_J": 0.024553485439587297,
+   "outcomes": {
+    "GAIN": 0.3435,
+    "NO_GAIN:DRAG_VIOLATION": 0.0205,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.1885,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.4475
+   },
+   "params": {
+    "box": {
+     "camber": [
+      -1.5,
+      1.0
+     ],
+     "pitch": [
+      -1.0,
+      1.0
+     ],
+     "reflex": [
+      -1.0,
+      1.0
+     ]
+    },
+    "design_u": null,
+    "m_d": 0.0015,
+    "noise": 1.0,
+    "null": false,
+    "p_adm": 0.54,
+    "rev": "rev1",
+    "s_mis": 0.001,
+    "sat": null,
+    "scale": 0.42,
+    "targets": [
+     1.0,
+     1.5,
+     2.0
+    ]
+   },
+   "random_control": {
+    "RANDOM_BELOW_MIN": 0.988,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.012
+   },
+   "wall_s": 45.4
+  },
+  "rev1_space_scaled_0.6": {
+   "P_GAIN": 0.713,
+   "P_finalist_in_extension": 1.0,
+   "P_finalist_true_drag_positive": 0.0275,
+   "P_pool_limited_label": 0.0975,
+   "P_rule_A_given_sealed": 0.8334328358208956,
+   "P_rule_B_given_sealed": 0.8931343283582089,
+   "mean_best_true_feasible_gain_over_J": 0.03520658425737001,
+   "mean_finalist_true_gain_over_J": 0.0349634824432106,
+   "mean_n_gated": 16.1105,
+   "mean_sealed_minus_true_n": 4.198812193923685e-06,
+   "mean_selection_minus_true_n": 0.00017950688684656958,
+   "mean_y_star_pred_over_J": 0.035235409431781335,
+   "outcomes": {
+    "GAIN": 0.713,
+    "NO_GAIN:DRAG_VIOLATION": 0.035,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.0895,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.1625
+   },
+   "params": {
+    "box": {
+     "camber": [
+      -1.5,
+      1.0
+     ],
+     "pitch": [
+      -1.0,
+      1.0
+     ],
+     "reflex": [
+      -1.0,
+      1.0
+     ]
+    },
+    "design_u": null,
+    "m_d": 0.0015,
+    "noise": 1.0,
+    "null": false,
+    "p_adm": 0.54,
+    "rev": "rev1",
+    "s_mis": 0.001,
+    "sat": null,
+    "scale": 0.6,
+    "targets": [
+     1.0,
+     1.5,
+     2.0
+    ]
+   },
+   "random_control": {
+    "RANDOM_BELOW_MIN": 0.938,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.062
+   },
+   "wall_s": 44.7
+  },
+  "rev1_space_scaled_0.8": {
+   "P_GAIN": 0.863,
+   "P_finalist_in_extension": 1.0,
+   "P_finalist_true_drag_positive": 0.025,
+   "P_pool_limited_label": 0.0825,
+   "P_rule_A_given_sealed": 0.9372674109516215,
+   "P_rule_B_given_sealed": 0.9654439128123339,
+   "mean_best_true_feasible_gain_over_J": 0.04718239583385922,
+   "mean_finalist_true_gain_over_J": 0.04669177532230326,
+   "mean_n_gated": 16.2385,
+   "mean_sealed_minus_true_n": -7.835540472293322e-06,
+   "mean_selection_minus_true_n": 0.00014247556459308933,
+   "mean_y_star_pred_over_J": 0.046840323706212925,
+   "outcomes": {
+    "GAIN": 0.863,
+    "NO_GAIN:DRAG_VIOLATION": 0.045,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.0325,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.0595
+   },
+   "params": {
+    "box": {
+     "camber": [
+      -1.5,
+      1.0
+     ],
+     "pitch": [
+      -1.0,
+      1.0
+     ],
+     "reflex": [
+      -1.0,
+      1.0
+     ]
+    },
+    "design_u": null,
+    "m_d": 0.0015,
+    "noise": 1.0,
+    "null": false,
+    "p_adm": 0.54,
+    "rev": "rev1",
+    "s_mis": 0.001,
+    "sat": null,
+    "scale": 0.8,
+    "targets": [
+     1.0,
+     1.5,
+     2.0
+    ]
+   },
+   "random_control": {
+    "RANDOM_BELOW_MIN": 0.85,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.15
+   },
+   "wall_s": 44.6
+  }
+ },
+ "x_star_n": 0.007184166586553256
+}
