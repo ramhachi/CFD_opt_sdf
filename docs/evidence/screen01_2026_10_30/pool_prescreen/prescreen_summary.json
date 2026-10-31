@@ -1,0 +1,103 @@
+{
+ "code_fingerprint": "9a7e02fc93529576c26b2c67d9f4c4c3bfcd82984c1000a6b452ffef389f6727",
+ "evaluated_now": 16,
+ "evidence_tier": "EXPLORATORY (pre-registration geometry only; no solver)",
+ "gate_stack": "fid01_designs.work: 13 GEOM-02 v2 gates incl. R0 min_feature_width (v18 parent as parent_state), P22-v2 N_phi <= 8272, smoothed-volume band 10 % vs the v17 baseline, clearance >= 0.15 m; unmeasured counts as fail; R3 descriptive",
+ "kind": "screen01_pool_prescreen",
+ "per_pool": {
+  "axial": {
+   "eval_wall_s_median": 214.55,
+   "failed_gate_counts": {},
+   "gate_clean": 10,
+   "gate_clean_names": [
+    "v18__pitch_p3.1",
+    "v18__pitch_m3.1",
+    "v18__camber_p19.7",
+    "v18__camber_m19.7",
+    "v18__reflex_p29.3",
+    "v18__reflex_m29.3",
+    "v18__twist_p1.1",
+    "v18__twist_m1.1",
+    "v18__sweep_p11.3",
+    "v18__sweep_m11.3"
+   ],
+   "n": 10,
+   "r3_descriptive_pass": 10
+  },
+  "manual": {
+   "eval_wall_s_median": 248.7,
+   "failed_gate_counts": {},
+   "gate_clean": 1,
+   "gate_clean_names": [
+    "v18__camber_m11.3_reflex_m11.3"
+   ],
+   "n": 1,
+   "r3_descriptive_pass": 1
+  },
+  "rand5": {
+   "eval_wall_s_median": 168.9,
+   "failed_gate_counts": {
+    "export_surface_integrity": 1,
+    "min_feature_width": 13,
+    "surface_self_intersection": 1
+   },
+   "gate_clean": 3,
+   "gate_clean_names": [
+    "v18__camber_m13.331_pitch_p0.992_reflex_p17.636_sweep_m7.887_twist_m0.639",
+    "v18__camber_m8.683_pitch_p3.076_reflex_m25.033_sweep_m3.022_twist_p0.081",
+    "v18__camber_m0.434_pitch_p0.189_reflex_m9.599_sweep_p2.615_twist_m0.255"
+   ],
+   "n": 16,
+   "r3_descriptive_pass": 16
+  },
+  "rs_pitch_camber_reflex": {
+   "eval_wall_s_median": 237.6,
+   "failed_gate_counts": {
+    "export_surface_integrity": 7,
+    "min_feature_width": 37,
+    "surface_self_intersection": 7
+   },
+   "gate_clean": 27,
+   "gate_clean_names": [
+    "v18__camber_m11.007_pitch_m2.494_reflex_m13.689",
+    "v18__camber_p16.257_pitch_m1.812_reflex_m17.01",
+    "v18__camber_m16.433_pitch_p2.31_reflex_p4.633",
+    "v18__camber_m7.715_pitch_m1.223_reflex_p14.671",
+    "v18__camber_p14.634_pitch_m1.043_reflex_m1.458",
+    "v18__camber_p19.148_pitch_m0.295_reflex_p18.527",
+    "v18__camber_m1.628_pitch_p1.884_reflex_p26.847",
+    "v18__camber_m12.667_pitch_m0.777_reflex_p7.652",
+    "v18__camber_m9.256_pitch_p1.067_reflex_p13.128",
+    "v18__camber_p15.947_pitch_p2.043_reflex_m11.687",
+    "v18__camber_m15.541_pitch_m1.594_reflex_p25.062",
+    "v18__camber_p11.523_pitch_m2.663_reflex_p6.637",
+    "v18__camber_m2.675_pitch_m0.526_reflex_m5.187",
+    "v18__camber_p9.865_pitch_m0.451_reflex_m19.545",
+    "v18__camber_m10.388_pitch_p0.174_reflex_p2.533",
+    "v18__camber_p8.236_pitch_m1.716_reflex_p10.693",
+    "v18__camber_p16.831_pitch_p1.042_reflex_p28.057",
+    "v18__camber_m16.966_pitch_m1.516_reflex_m8.441",
+    "v18__camber_p0.494_pitch_m0.946_reflex_p22.582",
+    "v18__camber_m18.127_pitch_p2.493_reflex_p16.254",
+    "v18__camber_p4.97_pitch_m0.005_reflex_m11.925",
+    "v18__camber_m5.414_pitch_p0.524_reflex_p24.355",
+    "v18__camber_m19.077_pitch_m2.918_reflex_p14.25",
+    "v18__camber_p13.207_pitch_m2.041_reflex_p18.258",
+    "v18__camber_p2.007_pitch_p1.395_reflex_p6.388",
+    "v18__camber_m2.221_pitch_m1.067_reflex_m15.928",
+    "v18__camber_p15.299_pitch_m1.298_reflex_p0.876"
+   ],
+   "n": 64,
+   "r3_descriptive_pass": 64
+  }
+ },
+ "pools_evaluated": [
+  "axial",
+  "manual",
+  "rs_pitch_camber_reflex",
+  "rand5"
+ ],
+ "rand5_limit": 16,
+ "wall_s_this_run": 669.0,
+ "workers": 4
+}

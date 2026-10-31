@@ -7673,3 +7673,57 @@ The user requested the next thoroughly planned execution slice. The [concrete co
 **Selected continuation after the finite stop.** Complete/close#70 for the bounded negative validation. R3 is not adopted; no radius/tau/refinement/label/case/seed repair or automatic second attempt follows. #64 proceeds through the previously declared R0-clean fixed-pool/parent path. Register that finite pool's joint-analytic construction/filtering, selection bias, matched manual/random controls, constraints, phase/cost budget and rank/insufficient-pool stopping rules before new force observations. Do not refill the pool based on poor forces or use XV feedback. [Concrete preparation](screen_xv_preparation_2026_10_23.md) retains the five-wide-mode/heave-fixed proposal and single-finalist V2/V3 gaps. FID01_GO and the2.70%/1.27% mappings stay unchanged; all qualification flags and shape_update_allowed=false remain unchanged.
 
 **Publication and issue reconciliation (04:18JST).** Result commitf5d3f990 is pushed with all534 input byte streams, complete registered outputs and a538-member integrity-checked archive. #70 is closed/completed with GEOM03_NO_GO; #63/#64/#65/#66 and PR#71 now point to this terminal result and the R0 continuation. PR#71 remains open against integration458e2df5; no merge or new SCREEN/XV CFD is part of this publication. The [GitHub readback receipt](evidence/geom03_2026_10_23/github_publication_sync.json) records exact bodies/states and publication scope.
+
+## 2026-10-31 SCREEN-01 (#64, M3b-1) registered response-surface screen on three analytic modes: SCREEN01_GAIN
+
+**Procedure.** SCREEN-01 ran under PROC-01 `REGISTERED_FROZEN`. The [registration](screen01_registration_2026_10_30.md) is revision 2 (SHA-256 fa3e5f7e…dcdc81).
+
+- **Reviews.**
+  - One three-angle plan review: 49 findings, decisions in `plan_review/adoption.md`.
+  - One source review: 27 findings, A 19 / AM 8 / R 0.
+  - Two independent implementations of the rules (analyzer and checker) were cross-checked on every written-once step.
+- **Freezes.** Each freeze binds the previous one:
+  - freeze 1: P0 re-run from empty caches, equal in all 129 rows;
+  - freeze 2: before G1;
+  - freeze 2.1: `rs.json`, before G2;
+  - freeze 3: `finalist.json` and the confirmation campaigns, before F.
+- **Design.**
+  - The subset {pitch, camber, reflex} was fixed a priori, with heave 0 and the camber box extended to -29.55 mm.
+  - 6 axial and 9 D-optimal points were fit by a no-intercept quadratic surface. A solver-free gated `propose()` produced 4 proposals.
+  - The finalist rule is the feasible (drag point ≤ 0) maximum downforce among K_opt = 19.
+  - Confirmation used fresh phases: flow_32 phases 13-16 and flow_48 phases 13-14.
+  - Controls: the hand design M, the downforce reference C1, 19 random members, the NC roll and a parent repeat.
+
+**Run.** Seven formal WaterLily kernels ran on Kaggle T4, 61,891 s in total (cap 86,400 s). Every kernel was harness-verified, with no kernel loss and no rerun.
+
+**Result `SCREEN01_GAIN`.** The finalist `v18__camber_m29.55_pitch_p0.155_reflex_p16.115` has:
+
+| grid | Δ̄ downforce (N) | SE_eff (N) | % of J_b,48 | Δ̄ drag (N) |
+| --- | --- | --- | --- | --- |
+| flow_32 | +1.077e-2 | 2.9e-4 | 4.05 (1.50 g_min) | -1.99e-3 |
+| flow_48 | +1.036e-2 | — | 3.90 | -2.79e-3 |
+
+G is `PASS` with `GAIN_RESOLVED_ABOVE_MIN`, D is `PASS_RESOLVED`, and R3 is `R3_CONFIRMED`.
+
+- **Controls.** The hand design M gave +7.71e-3 N; the best random member gave +5.86e-3 N.
+  - The resulting labels are `OPT_BEATS_MANUAL` and `OPT_BEATS_RANDOM`.
+  - The registered hand-design recipe also clears g_min by its point estimate, so the procedure's increment over it is 3.1e-3 N.
+- **Chain controls.** NC is `CONSISTENT` at G1 and F; determinism and generation drift show a difference of 0. `RS_FIT_POOR` is descriptive.
+- **§5.7 projection for XV-01 (planning only).** b_K is 1.03e-3 N (upper 2.67e-3 N). The expected OpenFOAM V1 gain is 2.40 % central and 1.74 % pessimistic, so `XV_MARGIN_ADEQUATE` holds for both against the 1.27 % floor.
+
+**Evidence.** [`docs/evidence/screen01_2026_10_30/`](evidence/screen01_2026_10_30/README.md): analysis.md, analysis.json, xv_handoff.json, freezes, SHA256SUMS; issue #64.
+
+**Claim ceiling (registration §1).** The result covers one finalist's paired same-phase differences against the parent, in WaterLily at Re 80, with in-plane placement phases only and an unphased z systematic.
+
+- The finalist lies in the camber extension (u = -1.5), where FID-01 has no fidelity evidence.
+- Its drag neutrality relies on an untested OpenFOAM camber drag retention.
+- It is not independent verification, and not physical, grid-independent, FSAE or high-Re downforce.
+
+All qualification flags stay false; `shape_update_allowed=false`.
+
+**Next order.** Under registration §7, XV-01 (#65, L2) becomes eligible for registration with the frozen finalist and `xv_handoff.json`.
+
+- XV re-evaluates every constraint on its own arm.
+- Before any OpenFOAM case is funded, XV states its expected pass probability from §5.7.
+- There is no second SCREEN round and no finalist retuning after XV.
+- M4 (#66) keeps its dependency on the applicable M3 outcome.
