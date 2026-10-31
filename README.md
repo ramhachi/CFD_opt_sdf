@@ -24,12 +24,15 @@ the physics is a Re = 80 laminar reduction and no high-Re evaluator is adopted.
   `codex/kaggle-batch-migration`; `main` is a mirror synced from it with
   `--no-ff` merges at milestones (first sync 2026-10-30).
 
-Status as of 2026-10-30 (evidence-scoped; see STATE.md for the records):
-M0-M3a are done. UNC-01 is `M2_COMPLETE`; FID-01 is `FID01_GO` (differences of
+Status as of 2026-10-31 (evidence-scoped; see STATE.md for the records):
+M0-M3b-1 are done. UNC-01 is `M2_COMPLETE`; FID-01 is `FID01_GO` (differences of
 pre-registered wide shape modes persist in body-fitted OpenFOAM on three
 meshes, retention 0.57-0.77; pure heave does not); GEOM-03 is `GEOM03_NO_GO`;
-the T2-0 high-Re evaluator studies are registered NO-GO. Next are SCREEN-01
-(#64), XV-01 (#65) and the M4 evaluator/scope decision (#66). No optimizer-
+the T2-0 high-Re evaluator studies are registered NO-GO. SCREEN-01 (#64) is
+`SCREEN01_GAIN`: one response-surface finalist gains 4.05 % of the parent downforce at no
+drag increase on fresh WaterLily Re80 phases (flow_32, confirmed on flow_48).
+Next are XV-01 (#65, independent OpenFOAM verification of that finalist) and
+the M4 evaluator/scope decision (#66). No optimizer-
 selected shape has yet had its improvement independently confirmed. All
 qualification flags are false and `shape_update_allowed=false`.
 
