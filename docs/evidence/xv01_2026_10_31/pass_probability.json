@@ -1,0 +1,250 @@
+{
+ "assumptions": {
+  "camber_extension_sd": 0.1,
+  "f_parent_of": {
+   "V1": 0.2017,
+   "V2": 0.2062,
+   "V3": 0.2124
+  },
+  "se_plan": {
+   "V1/downforce": 0.00025,
+   "V1/drag": 0.0001,
+   "V2/downforce": 0.0001,
+   "V2/drag": 7e-05,
+   "V3/downforce": 0.0001,
+   "V3/drag": 7e-05
+  },
+  "tau": 0.08,
+  "v1_pair_sd": 0.001
+ },
+ "comp": {
+  "XV01_FAIL": 0.5236,
+  "XV01_PASS": 0.21885,
+  "XV01_UNRESOLVED": 0.25755,
+  "XV_OF_GAIN_CONFIRMED": 0.4358,
+  "median_n": {
+   "V1": {
+    "downforce": 0.007847671320104777,
+    "drag": -0.0011049262275784734
+   },
+   "V2": {
+    "downforce": 0.005918815507256517,
+    "drag": -0.0011019604828190503
+   },
+   "V3": {
+    "downforce": 0.009481423401611505,
+    "drag": -0.00012771708962823548
+   }
+  },
+  "rules": {
+   "DRAG_V1": {
+    "fail": 0.04685,
+    "pass": 0.88655
+   },
+   "DRAG_V2": {
+    "fail": 0.0149,
+    "pass": 0.9457
+   },
+   "DRAG_V3": {
+    "fail": 0.3176,
+    "pass": 0.47575
+   },
+   "G3_V1V2": {
+    "fail": 0.0847,
+    "pass": 0.84355
+   },
+   "G4_V1": {
+    "fail": 0.0199,
+    "pass": 0.9091
+   },
+   "GAIN_V1": {
+    "fail": 0.00045,
+    "pass": 0.99825
+   },
+   "GAIN_V2": {
+    "fail": 0.007,
+    "pass": 0.9866
+   },
+   "GAIN_V3": {
+    "fail": 0.0,
+    "pass": 0.99995
+   },
+   "V3_BAND": {
+    "fail": 0.17645,
+    "pass": 0.68805
+   }
+  }
+ },
+ "comp_minus_bK_central": {
+  "XV01_FAIL": 0.5907,
+  "XV01_PASS": 0.1677,
+  "XV01_UNRESOLVED": 0.2416,
+  "XV_OF_GAIN_CONFIRMED": 0.3993,
+  "median_n": {
+   "V1": {
+    "downforce": 0.007166647058213593,
+    "drag": -0.0011049262275784734
+   },
+   "V2": {
+    "downforce": 0.005237723188143487,
+    "drag": -0.0011019604828190503
+   },
+   "V3": {
+    "downforce": 0.008737959022550614,
+    "drag": -0.00012771708962823548
+   }
+  },
+  "rules": {
+   "DRAG_V1": {
+    "fail": 0.04685,
+    "pass": 0.88655
+   },
+   "DRAG_V2": {
+    "fail": 0.0149,
+    "pass": 0.9457
+   },
+   "DRAG_V3": {
+    "fail": 0.3176,
+    "pass": 0.47575
+   },
+   "G3_V1V2": {
+    "fail": 0.126,
+    "pass": 0.77915
+   },
+   "G4_V1": {
+    "fail": 0.065,
+    "pass": 0.8205
+   },
+   "GAIN_V1": {
+    "fail": 0.00335,
+    "pass": 0.99055
+   },
+   "GAIN_V2": {
+    "fail": 0.0387,
+    "pass": 0.94185
+   },
+   "GAIN_V3": {
+    "fail": 0.00125,
+    "pass": 0.9979
+   },
+   "V3_BAND": {
+    "fail": 0.2151,
+    "pass": 0.63725
+   }
+  }
+ },
+ "comp_minus_bK_upper": {
+  "XV01_FAIL": 0.73755,
+  "XV01_PASS": 0.08295,
+  "XV01_UNRESOLVED": 0.1795,
+  "XV_OF_GAIN_CONFIRMED": 0.2635,
+  "median_n": {
+   "V1": {
+    "downforce": 0.006099328916794389,
+    "drag": -0.0011049262275784734
+   },
+   "V2": {
+    "downforce": 0.0041612609821027515,
+    "drag": -0.0011019604828190503
+   },
+   "V3": {
+    "downforce": 0.007574816410845564,
+    "drag": -0.00012771708962823548
+   }
+  },
+  "rules": {
+   "DRAG_V1": {
+    "fail": 0.04685,
+    "pass": 0.88655
+   },
+   "DRAG_V2": {
+    "fail": 0.0149,
+    "pass": 0.9457
+   },
+   "DRAG_V3": {
+    "fail": 0.3176,
+    "pass": 0.47575
+   },
+   "G3_V1V2": {
+    "fail": 0.2211,
+    "pass": 0.6497
+   },
+   "G4_V1": {
+    "fail": 0.20205,
+    "pass": 0.6294
+   },
+   "GAIN_V1": {
+    "fail": 0.03425,
+    "pass": 0.93385
+   },
+   "GAIN_V2": {
+    "fail": 0.20105,
+    "pass": 0.73965
+   },
+   "GAIN_V3": {
+    "fail": 0.01515,
+    "pass": 0.97665
+   },
+   "V3_BAND": {
+    "fail": 0.2853,
+    "pass": 0.54445
+   }
+  }
+ },
+ "components_n": {
+  "downforce": {
+   "camber": 0.016604751345044327,
+   "cross": -0.0008386520525199125,
+   "pitch": 0.002080725646026912,
+   "reflex": -0.007738911424789422,
+   "rest": 0.0006662769982157674
+  },
+  "drag": {
+   "camber": 0.0030089159156453126,
+   "cross": -4.056942259111467e-05,
+   "pitch": 0.00152061608871451,
+   "reflex": -0.006024402942154204,
+   "rest": -0.0004584266260727072
+  }
+ },
+ "evidence_class": "planning projection, no outcome effect",
+ "kind": "xv01_pass_probability_planning",
+ "replicates": 20000,
+ "retention_sources": {
+  "camber": [
+   "v18__camber_m11.3",
+   "v18__camber_m19.7"
+  ],
+  "cross": "tier-A through-origin slope",
+  "pitch": [
+   "v18__pitch_p0.7",
+   "v18__pitch_m0.7"
+  ],
+  "reflex": [
+   "v18__reflex_m29.3"
+  ],
+  "rest": "tier-A through-origin slope"
+ },
+ "s57": {
+  "central": {
+   "expected_V1_gain_n": 0.006379330831498992,
+   "expected_V1_gain_pct_J48": 2.4002368724356673,
+   "p_clear_x_F_parent_V1": 0.9999999985934769,
+   "p_clear_x_J48": 0.9999985632781567,
+   "sd_n": 0.0006433345219446925
+  },
+  "pessimistic": {
+   "expected_V1_gain_n": 0.004619544825956632,
+   "expected_V1_gain_pct_J48": 1.738113623200366,
+   "p_clear_x_F_parent_V1": 0.9185764003597516,
+   "p_clear_x_J48": 0.801259942035325,
+   "sd_n": 0.001478264087452005
+  }
+ },
+ "seed": 20261031,
+ "x_of_n": {
+  "V1": 0.0033687409403100554,
+  "V2": 0.0033687409403100554,
+  "V3": 0.0033687409403100554
+ }
+}
