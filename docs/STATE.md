@@ -1,7 +1,7 @@
 # STATE — current position in one page
 
-Updated: 2026-10-31 (SCREEN-01 registered result `SCREEN01_GAIN`). Integration: `codex/kaggle-batch-migration` at `4c40407a`; the SCREEN-01 result is on `exp/screen01-registration-2026-10-30` until integrated.
-Roadmap authority: [phase_plan.md, latest amendment](phase_plan.md#2026-10-31-screen-01-64-m3b-1-registered-response-surface-screen-on-three-analytic-modes-screen01_gain).
+Updated: 2026-11-01 (XV-01 registration revision 1, plan-reviewed, not frozen). Integration: `codex/kaggle-batch-migration` at `f8e2e358` (SCREEN-01 `SCREEN01_GAIN` integrated, #76); the XV-01 registration is on `exp/xv01-registration-2026-10-31` until integrated.
+Roadmap authority: [phase_plan.md, latest amendment](phase_plan.md#2026-11-01-xv-01-65-m3b-2-l2-registration-revision-1-plan-reviewed-not-frozen).
 Rationale and primary sources: [2026-10-22 review](roadmap_review_2026_10_22.md). Earlier decisions remain in phase_plan and the [2026-10-16 review](roadmap_review_2026_10_16.md).
 
 ## Goal and claim boundary
@@ -36,7 +36,7 @@ FID-01 tier A retains literal E2 (about 2.0%, 5.363e-3 N); the paired 0.68% is a
 | High-Re validation contract | [EVAL-VALID-01 #68](https://github.com/ramhachi/CFD_opt_sdf/issues/68) | Audit done: original quantitative reference inadequate; source matrix and bounded alternatives return to M4, no evaluator GO |
 | Geometry before M3b | [GEOM-03 #70](https://github.com/ramhachi/CFD_opt_sdf/issues/70) | Completed bounded validation: [GEOM03_NO_GO](evidence/geom03_2026_10_23/result.md),534/534 verified, two counterexamples. No retry/retuning; R3 not adopted. R0-clean fixed-pool/parent route selected |
 | M3b / L1 | #64 | Done: [`SCREEN01_GAIN`](evidence/screen01_2026_10_30/analysis.md), frozen finalist and [`xv_handoff.json`](evidence/screen01_2026_10_30/xv_handoff.json); no second SCREEN round, no finalist retuning |
-| Independent verification / L2 | #65 | **Next.** Eligible for registration (SCREEN §7) with the frozen finalist; [preparation requirements](xv01_registration_requirements_2026_10_22.md): single-finalist uncertainty, constraints re-checked on its own arm, camber-extension fidelity and camber drag retention, expected pass probability from SCREEN §5.7 stated before any case is funded |
+| Independent verification / L2 | #65 | **Next.** [Registration revision 1](xv01_registration_2026_10_31.md) (`DRAFT_REVIEWED_REV1`; one three-angle plan review, 39 findings, all adopted or adopted with modification). Stated before funding: §5.7 implies 1.00 / 0.80 for the V1 gain floor and 0.94 / 0.30 for the binding G4 bound; the composed gate projects P(`XV01_PASS`) about 0.17 (0.00-0.35 over structural scenarios), FAIL more likely, through the V3 drag of a cancellation design, G4 and V3 consistency. No OpenFOAM case funded or run. Next: sources, one source review, revision 2, freeze 1 with the funding decision |
 | High-Re numeric/cost recovery | [EVAL-PT-01 #69](https://github.com/ramhachi/CFD_opt_sdf/issues/69) | Conditional on M4 selecting new work, validation inputs and a registered bounded comparison; not a continuation of #57 |
 | M4 final | #66 | Choose scope/evaluator, new evidence work, or research NO-GO after the applicable M3 outcome |
 | M5 / L3 | #32, #33, #40, #67 | Existing dependencies; L3 blocked on new registered high-Re evaluator GO and M4 scope decision |
