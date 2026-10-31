@@ -1,0 +1,120 @@
+{
+  "case_id": "flow_32",
+  "kernel": "g2",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-screen01-g2-g2",
+  "parent_forces_csv_sha256": "e353cd3205dc792f0e82cf79a7e58cd28518a52e989de1dcacea68468a538efb",
+  "solver_process_wall_seconds_total": 4004.720813035965,
+  "states": [
+    {
+      "complete": true,
+      "direction": null,
+      "exit_code": 0,
+      "forces_csv_sha256": "e353cd3205dc792f0e82cf79a7e58cd28518a52e989de1dcacea68468a538efb",
+      "kind": "parent",
+      "name": "v18__parent__k11",
+      "seconds": 389.03637981414795,
+      "sign": 0,
+      "step_mm": 0.0
+    },
+    {
+      "complete": true,
+      "direction": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115",
+      "exit_code": 0,
+      "forces_csv_sha256": "955f27bbf80179bd295a07dc97a044394277cbaa5c5ea36913ac8db6e841093b",
+      "kind": "candidate",
+      "name": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115__k11",
+      "seconds": 394.6630198955536,
+      "sign": 1,
+      "step_mm": 24.65274930000305
+    },
+    {
+      "complete": true,
+      "direction": "v18__camber_m29.55_pitch_p0.078_reflex_p16.115",
+      "exit_code": 0,
+      "forces_csv_sha256": "9f5e7d95e49b92e9bfb3b1b1daea04792b05635eb4970db6403cd00c4f26274b",
+      "kind": "candidate",
+      "name": "v18__camber_m29.55_pitch_p0.078_reflex_p16.115__k11",
+      "seconds": 400.3067753314972,
+      "sign": 1,
+      "step_mm": 25.394409894943237
+    },
+    {
+      "complete": true,
+      "direction": "v18__camber_m29.55_pitch_p0.078_reflex_p18.312",
+      "exit_code": 0,
+      "forces_csv_sha256": "5979aabd8d9b6ba0daa510a50b217c25023e0810801f021b45935222b2a785d2",
+      "kind": "candidate",
+      "name": "v18__camber_m29.55_pitch_p0.078_reflex_p18.312__k11",
+      "seconds": 399.1428120136261,
+      "sign": 1,
+      "step_mm": 26.273205876350403
+    },
+    {
+      "complete": true,
+      "direction": "v18__camber_m29.55_pitch_p0.265_reflex_p19.721",
+      "exit_code": 0,
+      "forces_csv_sha256": "2fd8a86ce036732662cf1ffcc5f94e1b4e1a6c3e496173cc145e1dc9d12e61f3",
+      "kind": "candidate",
+      "name": "v18__camber_m29.55_pitch_p0.265_reflex_p19.721__k11",
+      "seconds": 401.2826826572418,
+      "sign": 1,
+      "step_mm": 25.035560131072998
+    },
+    {
+      "complete": true,
+      "direction": null,
+      "exit_code": 0,
+      "forces_csv_sha256": "06ac24ce379c33cb008447ef8855b542f5d71967e96d71b2032baa8dcb569b57",
+      "kind": "parent",
+      "name": "v18__parent__k12",
+      "seconds": 406.9658136367798,
+      "sign": 0,
+      "step_mm": 0.0
+    },
+    {
+      "complete": true,
+      "direction": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115",
+      "exit_code": 0,
+      "forces_csv_sha256": "6bbd5d435131051cdb7b0ac9007769469de723b4d2f7de6e50024adf21c7821e",
+      "kind": "candidate",
+      "name": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115__k12",
+      "seconds": 403.30653047561646,
+      "sign": 1,
+      "step_mm": 24.65274930000305
+    },
+    {
+      "complete": true,
+      "direction": "v18__camber_m29.55_pitch_p0.078_reflex_p16.115",
+      "exit_code": 0,
+      "forces_csv_sha256": "5082df0cecd17729ebe1828383f2ed082d40fbff2968b95c74914ad89f15c715",
+      "kind": "candidate",
+      "name": "v18__camber_m29.55_pitch_p0.078_reflex_p16.115__k12",
+      "seconds": 403.7483549118042,
+      "sign": 1,
+      "step_mm": 25.394409894943237
+    },
+    {
+      "complete": true,
+      "direction": "v18__camber_m29.55_pitch_p0.078_reflex_p18.312",
+      "exit_code": 0,
+      "forces_csv_sha256": "b10327c9e0d52e4f5cc0147ae337d5510bd9fde3fbee8a636516f8646f642a7a",
+      "kind": "candidate",
+      "name": "v18__camber_m29.55_pitch_p0.078_reflex_p18.312__k12",
+      "seconds": 402.8959345817566,
+      "sign": 1,
+      "step_mm": 26.273205876350403
+    },
+    {
+      "complete": true,
+      "direction": "v18__camber_m29.55_pitch_p0.265_reflex_p19.721",
+      "exit_code": 0,
+      "forces_csv_sha256": "327c0798ceb273d2ac9047c64089df5ed2dcbfa77bebae23bd1078e745a0249b",
+      "kind": "candidate",
+      "name": "v18__camber_m29.55_pitch_p0.265_reflex_p19.721__k12",
+      "seconds": 403.3725097179413,
+      "sign": 1,
+      "step_mm": 25.035560131072998
+    }
+  ],
+  "status": "COMPLETE"
+}
