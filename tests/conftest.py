@@ -45,6 +45,11 @@ _PINNED_SOURCE_MACOS_BYTES = {
     "tests/test_grid02_evidence.py::test_the_analysis_is_the_registered_one_and_reproduces_from_the_kept_output",
 }
 
+# Re-derives SCREEN-01 freeze 1 from the working tree and counts its 36 G1 raws; the 4 G2 raws registered after freeze 1 share
+# inputs/, so it can only pass before G2. The written freeze1.json (36 raws) stays bound by freeze 2-3 and by `analyze_screen01.py main`.
+_PINNED_SOURCE_PRE_SCREEN01_G2 = {"tests/screen01/test_screen01_build.py::test_freeze1_content"}
+_SCREEN01_G2_DONE = (REPO / "docs/evidence/screen01_2026_10_30/states_g2.json").exists()
+
 
 def pytest_collection_modifyitems(items):
     for item in items:
@@ -54,3 +59,5 @@ def pytest_collection_modifyitems(items):
             item.add_marker(pytest.mark.skip(reason="gmsh not installed (not a declared dependency)"))
         if sys.platform != "darwin" and item.nodeid in _PINNED_SOURCE_MACOS_BYTES:
             item.add_marker(pytest.mark.skip(reason="byte replay of a macOS-produced record"))
+        if _SCREEN01_G2_DONE and item.nodeid in _PINNED_SOURCE_PRE_SCREEN01_G2:
+            item.add_marker(pytest.mark.skip(reason="re-derives SCREEN-01 freeze 1, which predates the registered G2 raws"))
