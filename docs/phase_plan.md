@@ -7727,3 +7727,34 @@ All qualification flags stay false; `shape_update_allowed=false`.
 - Before any OpenFOAM case is funded, XV states its expected pass probability from §5.7.
 - There is no second SCREEN round and no finalist retuning after XV.
 - M4 (#66) keeps its dependency on the applicable M3 outcome.
+
+## 2026-11-01 RE-01 plan (#78): does the Re-80 result hold as Re rises (parallel, off the critical path)
+
+**Request.** The user (2026-11-01) wrote: 「OK,では次の計画をしようか。なお、Reを高くした時の話を確認するのがいいかなと思ってます。次の計画を出して。難しい判断はfableに調査させていい。」
+
+**Plan and review.** The plan is [docs/re01_plan_2026_11_01.md](re01_plan_2026_11_01.md), rev 1. It was drafted by Claude with Fable's analysis and rulings (`evidence/re01_plan_2026_11_01/fable_analysis.md`, `fable_decisions.md`). It went through one three-angle plan review (numerical, governance, strategy; all `GO_AFTER_FIXES`); every finding has a decision in `plan_review/adoption.md`. This is RE-01's only plan review under PROC-01. The registration is written from rev 1, with the Stage-0 numbers filled in mechanically, and still gets its one source review.
+
+**Decision.** Option (c), in reduced form.
+
+- **RE-01 (Reynolds ladder on registered v18 designs).**
+  - Primary estimand: the through-origin retention slope of the flow_32 paired differences of the 8 FID-01 tier-A designs, against their Re-80 values, with a 90 % t-interval.
+  - Rungs: R1 (Re_L 250) is formal. At most two unsteady rungs (800, with 450 as its replacement; 2500 at lowest priority) become formal by a viability rule fixed in a hashed Stage-0 charter.
+  - Secondary designs: the finalist, M and R-best, by sign only.
+  - Controls: positive controls pitch ±3.1 deg, a determinism repeat, a manipulation check, flow_48, domain and Poisson controls.
+  - Labels: an ordered, exhaustive table.
+  - R1-OF: laminar OpenFOAM at Re 250 on FID's shifts 49-64. It is read only after XV-01's written-once analysis exists, with a waiting limit of 2026-12-06.
+- **ATT-00.** An exploratory scan for an attached-regime parent at Re_c about 3e3. It starts now, cap 10 GPU h.
+- **BRIDGE-2D-00.** An exploratory 2D same-mode comparison against T2-0c's Re_c 4.6e5 data. The charter and code are prepared now; it runs only on a trigger, cap 15 GPU h.
+- **M4 option-B documents.** No compute.
+
+**Caps.** GPU: Stage 0 10 h; RE-01 formal 65 h; ATT-00 10 h; BRIDGE 15 h. CPU: Stage 0 3 h; R1-OF 80 h.
+
+**Order and authority.**
+- RE-01 is off the critical path XV-01 → M4 → B → L3.
+- M4 (#66) does not wait for it. M4's start condition stays #66's M3 records, and the RE-01 and ATT-00 records available at that time are inputs.
+- The one pre-declared exception: a tier-A `LOST` or `REVERSED` at R1 triggers a recorded M4 addendum.
+- RE-01's WaterLily work uses the Kaggle GPU and does not compete with XV-01's local CPU.
+
+**PROC-01 reading for Stage 0 (recorded decision).** The PROC-01 rule says an exploratory result "never feeds a qualification flag, a threshold, a gate". Stage 0 is parent-only and exploratory. Its force-derived statistics set only engineering parameters (burn-in, regime, window W_k, cost C_k and the formal-rung selection) through formulas written in the charter before the first run. Every decision threshold (the 0.3 band, the 1.5 % SE target, the 400-CU window limit, the caps, the label table) is fixed before Stage 0. Modifications after Stage 0 may only drop rungs.
+
+**Claim ceiling.** RE-01 covers Re_c ≤ 3.8e3, about 1 % of the FSAE Re of about 5e5. Its result is the Re-dependence of paired differences of registered v18 designs in WaterLily implicit LES, on non-converged grids. It is not physical downforce, not grid independence, not an evaluator GO, not FSAE and not Re ≥ 1e4. The only target-Re data in the repo remain T2-0's descriptive 2D attached-section runs. All qualification flags stay false; `shape_update_allowed=false`.
