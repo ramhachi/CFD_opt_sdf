@@ -1,0 +1,278 @@
+{
+ "baseline": {
+  "path": "docs/evidence/v18_genesis_2026_10_19/v18_parent.phi_f4_fortran.raw",
+  "sha256_fortran_raw": "29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a"
+ },
+ "campaign_id": "screen01_f48",
+ "directions": {
+  "v18__camber_m28.656_pitch_m0.68_reflex_p2.727": {
+   "path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m28.656_pitch_m0.68_reflex_p2.727.dir_f4_fortran.raw",
+   "sha256_fortran_raw": "91ca81369c628ef2227e357f6b37badb80a5f2102ffed8d532ef2095670ad0e3"
+  },
+  "v18__camber_m29.55_pitch_p0.155_reflex_p16.115": {
+   "path": "docs/evidence/screen01_2026_10_30/inputs/v18__camber_m29.55_pitch_p0.155_reflex_p16.115.dir_f4_fortran.raw",
+   "sha256_fortran_raw": "27d7b742bd09afdd061204035335650e7fb25c83c6e18470b8172d0afd58d337"
+  }
+ },
+ "domain": {
+  "flow_origin_m": [
+   -2.5,
+   -1.2,
+   -0.9
+  ],
+  "physical_box_max_m": [
+   2.5,
+   1.2,
+   0.9
+  ]
+ },
+ "harness_version": "harness v1.1",
+ "index_name": "harness_index.json",
+ "job_env_common": {
+  "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+  "W4_CANONICAL_STATE_LABEL": "v18",
+  "W4_CELL_SHAPE": "120,64,48",
+  "W4_MARGIN_GATE_M": "0.15",
+  "W4_MARGIN_TOLERANCE_M": "1e-6",
+  "W4_POINT_SHAPE": "121,65,49",
+  "W4_SOURCE_SURFACE_SHA256": "63fe4730ad6216fe4d224ac7f729603f2587bf1b28c507ef3070bbd2aaf30e0e"
+ },
+ "job_env_keys": [
+  "GRID02_CASE"
+ ],
+ "kernels": {
+  "f48k13": {
+   "case": {
+    "case_id": "flow_48",
+    "density_kg_m3": 1.0,
+    "dynamic_viscosity_pa_s": 0.01,
+    "flow_dims": [
+     300,
+     144,
+     108
+    ],
+    "flow_spacing_m": 0.016666666666666666,
+    "freestream_mps": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "reference_area_m2": 0.64,
+    "reference_length_m": 0.8,
+    "reynolds": 80.0,
+    "solver_length": 48.0,
+    "solver_time_unit_s": 0.016666666666666666,
+    "solver_viscosity": 0.6
+   },
+   "config": {
+    "gpu_probe_timeout_s": 300,
+    "instantiate_timeout_s": 2400,
+    "kernel_timeout_s": 13900,
+    "per_state_timeout_s": 6000,
+    "reserve_s": 300,
+    "solver_wall_time_cap_s": 10600
+   },
+   "job": "scripts/waterlily_grid02_job.jl",
+   "kernel_id": "ramhachi888/cfd-opt-sdf-screen01-f48-f48k13",
+   "pins": [
+    "scripts/grid02_case.jl"
+   ],
+   "runs": [
+    {
+     "env": {
+      "GRID02_CASE": "flow_48",
+      "W4_CANONICAL_ORIGIN_M": "-0.9864431723,-0.7932012703,-0.6"
+     },
+     "name": "v18__parent__k13",
+     "state": "v18__parent"
+    },
+    {
+     "env": {
+      "GRID02_CASE": "flow_48",
+      "W4_CANONICAL_ORIGIN_M": "-0.9864431723,-0.7932012703,-0.6"
+     },
+     "name": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115__k13",
+     "state": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115"
+    },
+    {
+     "env": {
+      "GRID02_CASE": "flow_48",
+      "W4_CANONICAL_ORIGIN_M": "-0.9864431723,-0.7932012703,-0.6"
+     },
+     "name": "v18__camber_m28.656_pitch_m0.68_reflex_p2.727__k13",
+     "state": "v18__camber_m28.656_pitch_m0.68_reflex_p2.727"
+    }
+   ]
+  },
+  "f48k14": {
+   "case": {
+    "case_id": "flow_48",
+    "density_kg_m3": 1.0,
+    "dynamic_viscosity_pa_s": 0.01,
+    "flow_dims": [
+     300,
+     144,
+     108
+    ],
+    "flow_spacing_m": 0.016666666666666666,
+    "freestream_mps": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "reference_area_m2": 0.64,
+    "reference_length_m": 0.8,
+    "reynolds": 80.0,
+    "solver_length": 48.0,
+    "solver_time_unit_s": 0.016666666666666666,
+    "solver_viscosity": 0.6
+   },
+   "config": {
+    "gpu_probe_timeout_s": 300,
+    "instantiate_timeout_s": 2400,
+    "kernel_timeout_s": 13900,
+    "per_state_timeout_s": 6000,
+    "reserve_s": 300,
+    "solver_wall_time_cap_s": 10600
+   },
+   "job": "scripts/waterlily_grid02_job.jl",
+   "kernel_id": "ramhachi888/cfd-opt-sdf-screen01-f48-f48k14",
+   "pins": [
+    "scripts/grid02_case.jl"
+   ],
+   "runs": [
+    {
+     "env": {
+      "GRID02_CASE": "flow_48",
+      "W4_CANONICAL_ORIGIN_M": "-0.9905285446,-0.7837039321,-0.6"
+     },
+     "name": "v18__parent__k14",
+     "state": "v18__parent"
+    },
+    {
+     "env": {
+      "GRID02_CASE": "flow_48",
+      "W4_CANONICAL_ORIGIN_M": "-0.9905285446,-0.7837039321,-0.6"
+     },
+     "name": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115__k14",
+     "state": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115"
+    },
+    {
+     "env": {
+      "GRID02_CASE": "flow_48",
+      "W4_CANONICAL_ORIGIN_M": "-0.9905285446,-0.7837039321,-0.6"
+     },
+     "name": "v18__camber_m28.656_pitch_m0.68_reflex_p2.727__k14",
+     "state": "v18__camber_m28.656_pitch_m0.68_reflex_p2.727"
+    }
+   ]
+  },
+  "f48smk": {
+   "case": {
+    "case_id": "flow_48",
+    "density_kg_m3": 1.0,
+    "dynamic_viscosity_pa_s": 0.01,
+    "flow_dims": [
+     300,
+     144,
+     108
+    ],
+    "flow_spacing_m": 0.016666666666666666,
+    "freestream_mps": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "reference_area_m2": 0.64,
+    "reference_length_m": 0.8,
+    "reynolds": 80.0,
+    "solver_length": 48.0,
+    "solver_time_unit_s": 0.016666666666666666,
+    "solver_viscosity": 0.6
+   },
+   "config": {
+    "gpu_probe_timeout_s": 300,
+    "instantiate_timeout_s": 2400,
+    "kernel_timeout_s": 9300,
+    "per_state_timeout_s": 5990,
+    "reserve_s": 300,
+    "solver_wall_time_cap_s": 5990
+   },
+   "job": "scripts/waterlily_grid02_job.jl",
+   "kernel_id": "ramhachi888/cfd-opt-sdf-screen01-f48-f48smk",
+   "pins": [
+    "scripts/grid02_case.jl"
+   ],
+   "runs": [
+    {
+     "env": {
+      "GRID02_CASE": "flow_48",
+      "W4_CANONICAL_ORIGIN_M": "-0.9983741113,-0.7933865697,-0.6"
+     },
+     "name": "v18__parent__k20",
+     "state": "v18__parent"
+    }
+   ]
+  }
+ },
+ "legacy_replay": false,
+ "measurement": {
+  "candidate_operator": "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))",
+  "time_window_t_u_l": [
+   80.0,
+   120.0
+  ]
+ },
+ "out_prefix": "screen01_f48_",
+ "owner": "ramhachi888",
+ "pins": [],
+ "repo_url": "https://github.com/ramhachi/CFD_opt_sdf.git",
+ "scrub_env": [
+  "GRID02_CASE"
+ ],
+ "sparse": [],
+ "states": {
+  "v18__camber_m28.656_pitch_m0.68_reflex_p2.727": {
+   "changed_node_count": 106983,
+   "direction": "v18__camber_m28.656_pitch_m0.68_reflex_p2.727",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.02674388885498047,
+   "npz_sha256": "8f5dda811f72c5815945a6185b6b2da510bcd71684b430e8332f98e351b1b5a3",
+   "phi_c_order_sha256": "4099abaf4ef4480a2d1b9b2782f740f60e8f5c9822b658cfd18fac336518df83",
+   "phi_fortran_order_sha256": "a293b69cf8968d00ce4eefb1d9ed4982e2af2defe39a92920dcf247d14c579fb",
+   "sign": 1,
+   "state_sha256": "68934c77f76d904b5aad63aaa942323f4a615fc60f0b08bac12cb999407547e0",
+   "step_mm": 26.74388885498047,
+   "zero_level_margin_m": 0.3405823199078441
+  },
+  "v18__camber_m29.55_pitch_p0.155_reflex_p16.115": {
+   "changed_node_count": 106999,
+   "direction": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.024652749300003052,
+   "npz_sha256": "9e2f4bf7f4bc1d9019916d8b1b5b8d7cb618704a2144b74ddb88db4af29acc93",
+   "phi_c_order_sha256": "06847a80a31ea6c50270b20b29642888d35c4d20b43155c72d93f985eed77073",
+   "phi_fortran_order_sha256": "a7c1e3b9c38b4784c097f8377882eeaabeec4132bb5fa885194f13d8a64dc6c7",
+   "sign": 1,
+   "state_sha256": "da2d2121967128da124dc33343324eeee2c7b7c6b4b0c6d8eaae97b8294ac9ac",
+   "step_mm": 24.65274930000305,
+   "zero_level_margin_m": 0.3378497831523419
+  },
+  "v18__parent": {
+   "changed_node_count": 0,
+   "direction": null,
+   "kind": "parent",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.0,
+   "npz_sha256": "36967c90cb48b7fe3475436098b138d4e7998212defb6dcb61bf8cefc52d5890",
+   "phi_c_order_sha256": "0197e688bf41c87407705e9fee3c78392230fb7edf71b3f58e0aa08c65dceebe",
+   "phi_fortran_order_sha256": "29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a",
+   "sign": 0,
+   "state_sha256": "e7376e3576a045daa4c62353052890c43b4ed8b4562033c889cb1a4580d902bd",
+   "step_mm": 0.0,
+   "zero_level_margin_m": 0.35088423639535904
+  }
+ }
+}
