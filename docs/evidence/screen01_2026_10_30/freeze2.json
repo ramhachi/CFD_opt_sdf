@@ -1,0 +1,62 @@
+{
+ "campaign": {
+  "campaign_sha256": "418e0ad8ba9d477c5760e52b9768af822fac732457b507b1863e0721b2c675c9",
+  "kernels": {
+   "g1k11": {
+    "estimate_s": 16445,
+    "runs": 39
+   },
+   "g1k12": {
+    "estimate_s": 16030,
+    "runs": 38
+   }
+  },
+  "prerun_freeze_sha256": "a5e7c8ea3fac819db3ac112afcb9f7b9f71ebaa1bed799b5c657818d5e39c27c",
+  "smoke_kernel": "g1k11",
+  "smoke_verified_sha256": "d66750f0db28cfc565a38a4e2f863a191ad8263ef77d660161b0fdf7def0b7a8",
+  "source_commit": "2e032cd85db1b53a8c2b3e211807d9ab3e8fbabb"
+ },
+ "environment": {
+  "numpy": "2.5.2",
+  "python": "3.12.13",
+  "scikit-image": "0.25.2",
+  "scipy": "1.18.1"
+ },
+ "file_sha256": {
+  "docs/evidence/screen01_2026_10_30/freeze1.json": "615788a64858e60d9d8a0f35f956b210a2d447bdc9ef359d90e9616af56f111c",
+  "docs/evidence/screen01_2026_10_30/wl/smoke/download.txt": "20873527e3fa9e2b554716033cd93d4e38065e60b598669f36067f2291634cbf",
+  "docs/evidence/screen01_2026_10_30/wl/smoke/kernel_output/cfd-opt-sdf-screen01-g1k11-smoke.log": "2eb3794764832d8b80d6eed3a2f1806409e1aa7cbd618501c0262d9e43fdc1e0",
+  "docs/evidence/screen01_2026_10_30/wl/smoke/kernel_output/screen01_g1k11/DONE": "658091832b1b8b32537b8bc4e7e012095ddc2aba8b513c273090403bfa98e0fe",
+  "docs/evidence/screen01_2026_10_30/wl/smoke/kernel_output/screen01_g1k11/gpu_device_probe.json": "19c3f4c7a52c23e873b851a1346b21f19aa0f761a7287f5353ed6859d7b9137b",
+  "docs/evidence/screen01_2026_10_30/wl/smoke/kernel_output/screen01_g1k11/gpu_device_probe.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "docs/evidence/screen01_2026_10_30/wl/smoke/kernel_output/screen01_g1k11/harness_index.json": "33a66c56ee7455938c14c8ee146865a26949616382566d3e490b48b158c90b9c",
+  "docs/evidence/screen01_2026_10_30/wl/smoke/kernel_output/screen01_g1k11/instantiate.log": "c1d033c41a1311f8a6a0c7ab9327b8259a8175c208e9302145dcc0349b1294a3",
+  "docs/evidence/screen01_2026_10_30/wl/smoke/kernel_output/screen01_g1k11/nvidia_smi.csv": "4436aac255695fdf81baa6034831d742ff4c0b5491b42ac71c81e6f9c6e62fae",
+  "docs/evidence/screen01_2026_10_30/wl/smoke/kernel_output/screen01_g1k11/output_manifest.json": "3f7c087a47a2d4cc8a1c93d0942ae22cbbcf898e59a0016bb3e44b0d13a9b6f3",
+  "docs/evidence/screen01_2026_10_30/wl/smoke/kernel_output/screen01_g1k11/run_identity.json": "7ac5ebaf26b88c50cff642629a6282e45b051fa8277bea0312e64696b2a0b5db",
+  "docs/evidence/screen01_2026_10_30/wl/smoke/kernel_output/screen01_g1k11/self_test.json": "c91a96240c2336a6ad51d94f8fc357692bce8f8e25e75c179389df0ee1511ad3",
+  "docs/evidence/screen01_2026_10_30/wl/smoke/kernel_output/screen01_g1k11/states/v18__parent__k11/W4_JOB_DONE": "6a003eaff831e1271cdbe529c64d5564f172d2ea342de1b397b8ed3abea309b3",
+  "docs/evidence/screen01_2026_10_30/wl/smoke/kernel_output/screen01_g1k11/states/v18__parent__k11/flow_32.forces.csv": "e353cd3205dc792f0e82cf79a7e58cd28518a52e989de1dcacea68468a538efb",
+  "docs/evidence/screen01_2026_10_30/wl/smoke/kernel_output/screen01_g1k11/states/v18__parent__k11/flow_32.summary.json": "f35c98750595fcd2bd720ab519f1297fe9fd7f8212172b0cc028be861fff18f3",
+  "docs/evidence/screen01_2026_10_30/wl/smoke/kernel_output/screen01_g1k11/states/v18__parent__k11/job.log": "2126902a668c4bb745f81aa9fd28b51cede39c2b024a7af61f2246b6ef91d79c",
+  "docs/evidence/screen01_2026_10_30/wl/smoke/smoke_verify_table.json": "d66750f0db28cfc565a38a4e2f863a191ad8263ef77d660161b0fdf7def0b7a8",
+  "docs/harness/screen01_campaign.json": "418e0ad8ba9d477c5760e52b9768af822fac732457b507b1863e0721b2c675c9",
+  "docs/harness/screen01_campaign.prerun_freeze.json": "a5e7c8ea3fac819db3ac112afcb9f7b9f71ebaa1bed799b5c657818d5e39c27c",
+  "docs/harness/screen01_campaign.prerun_freeze.json.sha256": "0d93358920cc856c8f25adf62769fe9f859d05e9b117c3db47281edc4a1a87d9",
+  "docs/screen01_registration_2026_10_30.md": "fa3e5f7e5bc8659e3194e24b6c14b32b6eb027df4a420e2dbeeed0aed0dcdc81"
+ },
+ "frozen_utc": "2026-10-31T00:37:17.719861+00:00",
+ "harness_tool_sha256": {
+  "scripts/harness.py": "e9d036846ffd33fced8a1507a8fb191e49e0179a517c25a393354c83de4655fa",
+  "src/cfd_harness/campaign_build.py": "7e3ee902bc3ed020edd5e37cbd9060490f9c0f5119e72a60448edbdcf0688a68",
+  "src/cfd_harness/campaign_runner_template.py": "d53e2df74af8becc4e512c19e14381c549006a499c38c2cfab2ba89b6ab9ead1",
+  "src/cfd_harness/campaign_schema.py": "4c3c494ed381930d9d1e51b063efbbdcf1fa4586c1ac7e84d2b999a5c984d1b8",
+  "src/cfd_harness/campaign_verify.py": "8db4714799e258e08ce1a2e8ed9de4b5ff90ba3d9fa56513ec6d6997b0e57a2e"
+ },
+ "kind": "screen01_freeze2",
+ "qualification_flags": "all false (unchanged)",
+ "registration": "docs/screen01_registration_2026_10_30.md",
+ "shape_update_allowed": false,
+ "source_commit": "a4813ee3a5e972d6d7a7bede3ad55933967d8211",
+ "status": "REGISTERED_FROZEN (freeze 2)"
+}
