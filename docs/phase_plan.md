@@ -7727,3 +7727,13 @@ All qualification flags stay false; `shape_update_allowed=false`.
 - Before any OpenFOAM case is funded, XV states its expected pass probability from §5.7.
 - There is no second SCREEN round and no finalist retuning after XV.
 - M4 (#66) keeps its dependency on the applicable M3 outcome.
+
+## 2026-11-01 XV-01 (#65, M3b-2, L2) registration revision 1: plan-reviewed, not frozen
+
+**Procedure.** XV-01 runs under PROC-01. The [registration](xv01_registration_2026_10_31.md) revision 0 (`02a74312`, SHA-256 `1fb669ff…`) received the one three-angle plan review (numerical 12, governance 18, strategy 9 findings; all `GO_AFTER_FIXES`; decisions in `docs/evidence/xv01_2026_10_31/plan_review/adoption.md`: 30 A, 9 AM, 0 R). Revision 1 implements them. No OpenFOAM case of XV-01 is funded, queued or run.
+
+**Design.** One finalist (`v18__camber_m29.55_pitch_p0.155_reflex_p16.115`) against the v18 parent on local Docker OpenFOAM v2512 (LOCAL-OF-01): V1 16 mirror pairs (Halton 81-96), V2 and V3 4 pairs each (81-84), 481 cases, about 170 CPU h (V3 149 CPU h at about 9.3 h per case). Single-finalist SE from each level's own pairs with the FID V2 pooled SD as a floor. Gain floor `x_OF = g_OF J_b,48 = 3.369e-3 N` on every level; drag confirmed not increased on every level (allowance 0, `DRAG_MATERIALITY` label); FID G1-G5; a single-design V3 consistency rule; EX for the finalist; NC, REF and determinism as chain controls. Every constraint is re-evaluated on XV's arm.
+
+**Stated before funding (registration §7, planning only).** SCREEN §5.7 implies 1.00 central / 0.80 pessimistic for the V1 gain floor, but 0.94 / 0.30 for the binding G4 retention bound. The composed gate projects P(`XV01_PASS`) of about 0.17 (0.00-0.35 over structural scenarios, model uncertainty at least a factor 2); `XV01_FAIL` is more likely, through the V3 drag of the finalist's camber/reflex drag cancellation, G4 under selection attenuation and the V3 band of a camber-extension design. The probability is not a funding criterion; the registrant funds the full run set at freeze 1. A consequence map (§8.1) fixes what each cause class licenses for M4.
+
+**Next order.** Sources (`scripts/xv01/`, independent checker by a separate session), one source review, revision 2, freeze 1 (funding recorded), smokes/replays/V3 probe, freeze 2 (`REGISTERED_FROZEN`), the run set, one written-once analysis. No second SCREEN round, no finalist retuning. All qualification flags stay false; `shape_update_allowed=false`.
