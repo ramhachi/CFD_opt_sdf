@@ -1,10 +1,16 @@
 # SCREEN-01 P0 record, revision 1 (geometry only) — 2026-10-30
 
-**Evidence class: solver-free geometry / lattice-representability of candidate states on the v18 parent; `EXPLORATORY` until freeze 1 re-validates it under the reviewed code fingerprint.** No solver ran, no force exists. Registration: [`docs/screen01_registration_2026_10_30.md`](../../../screen01_registration_2026_10_30.md) rev. 1 §3.3-3.4; decisions D2-D4 and D7 of [`../decision_memo.md`](../decision_memo.md); the rev. 0 record stays in [`../pool_prescreen/`](../pool_prescreen/README.md). Produced in the registration worktree at commit `901a491432a618cf8d584f1212b6fb72405f9cda` (branch `exp/screen01-registration-2026-10-30`); nothing committed by this run.
+**Evidence class: solver-free geometry / lattice-representability of candidate states on the v18 parent.** No solver ran, no force exists. Registration: [`docs/screen01_registration_2026_10_30.md`](../../../screen01_registration_2026_10_30.md) rev. 2 §3.3-3.4 and the P0 row of §2; decisions D2-D4 and D7 of [`../decision_memo.md`](../decision_memo.md); the rev. 0 record stays in [`../pool_prescreen/`](../pool_prescreen/README.md).
+
+Two runs, same states and the same results:
+- **Run 1 (2026-10-30, pre-source-review code)**, in the registration worktree at commit `901a491432a618cf8d584f1212b6fb72405f9cda`; its caches carried no code key (source review Q1). Its files are in git history at `db8732e0b87ab6264c057f2e03dd524e0c22a525` (hashes in the last table).
+- **Run 2 (2026-10-30T21:40:36Z → 2026-10-31T00:16:40Z, the re-validation the registration requires before freeze 1)**, from empty caches (the run-1 cache was moved aside to `work/screen01_pool_prescreen_pre_rev2`) at commit `9b47ae67c6605cd8024899bef901a54a81840b80` (rev. 2; `screen01_pool.py` and its dependencies are unchanged at `db8732e0`), under `screen01_pool.fingerprint()` = `f5a5a95a74e3208a06280f634c405b3e55e578b1a5948c04c7b2bcf15a02473b` (SHA-256 over the 65 `DEPENDENCIES` files, listed in `summary.json`). The current `rows.jsonl`, `summary.json` and `design_check.json` are run 2; `p0.log` holds both runs. **This is the record freeze 1 binds.**
+
+**Run 2 vs run 1, row by row:** 129 rows, same states in the same order; every field equal (admissibility, every gate status, gated phi SHA-256, STL SHA-256, volumes, chain check, P22-v2, support, eikonal statistics) except the code-key fields (run 1 `code_fingerprint` / `d_fingerprint`, run 2 `fingerprint`) and the wall times. `summary.json` differs only in timing, the new `fingerprint` / `dependencies` / `error_rows` (empty in every pool) and `rand3.n_consumed` 48 → 36 (rev. 2 defines it as the sequence index of the 19th admissible member + 1, §3.3; 48 is now `n_evaluated`). `design_check.json` differs only in that `n_consumed`. Chosen design points, control set and M are identical.
 
 ## What was run
 
-Script [`scripts/screen01/screen01_pool.py`](../../../../scripts/screen01/screen01_pool.py) (rev. 1; SHA-256 `819fa1155f8d4c5887925ef7ebfdafd905ace84723580b0b91a2f94f848e1553` at the time of writing this record), which reuses `scripts/fid01/fid01_designs.py` unchanged (`work` = the MODE-01 v18 gate stack, `_x1` = r = 8 STL export + X1 practical gate) and `scripts/fid01/fid01_build.stl_volume`. Admissible = gate stack AND X1 AND the STL chain check `|V_STL/V_STL,parent - 1 - dV_SDF,smoothed/V| <= 0.01` (parent STL volume 0.119664 m^3, SHA-256 `41ceb0c6f75ab465d4d85627c53fe8c5333a36a53baba0515dff535ff80fd626`). Cached rows are keyed by the `fid01_designs` dependency fingerprint `bc3cb4b2bb9e59a989a4035dc0ecb841fc3e6f69da6b88026acb26f9117547dd` (the rev. 0 rows of the axial states and C1 were reused under their rev. 0 key). 4 worker processes on a 10-core machine under other load (load average 4-6).
+Script [`scripts/screen01/screen01_pool.py`](../../../../scripts/screen01/screen01_pool.py) (run 1 SHA-256 `819fa1155f8d4c5887925ef7ebfdafd905ace84723580b0b91a2f94f848e1553`; run 2 `d194b6d55aec6ff12d9b1a0d669f156e7a9f654ad9a5174f48211b40465b1ef7`), which reuses `scripts/fid01/fid01_designs.py` unchanged (`work` = the MODE-01 v18 gate stack, `_x1` = r = 8 STL export + X1 practical gate) and `scripts/fid01/fid01_build.stl_volume`. Admissible = gate stack AND X1 AND the STL chain check `|V_STL/V_STL,parent - 1 - dV_SDF,smoothed/V| <= 0.01` (parent STL volume 0.119664 m^3, SHA-256 `41ceb0c6f75ab465d4d85627c53fe8c5333a36a53baba0515dff535ff80fd626`). Run 1 keyed cached rows by the `fid01_designs` dependency fingerprint `bc3cb4b2bb9e59a989a4035dc0ecb841fc3e6f69da6b88026acb26f9117547dd` (the rev. 0 rows of the axial states and C1 were reused under their rev. 0 key); run 2 evaluated every row afresh and keys rows, STLs and phi caches by `fingerprint()`. 4 worker processes on a 10-core machine under other load (load average 4-6).
 
 Commands (worktree root, `.venv/bin/python`):
 ```
@@ -12,9 +18,12 @@ scripts/screen01/screen01_pool.py selfcheck
 scripts/screen01/screen01_pool.py gen
 scripts/screen01/screen01_pool.py p0 --pools axial ref manual rs rand3 --workers 4
 scripts/screen01/screen01_pool.py design
+scripts/screen01/screen01_build.py states          # after run 2: states.json + ../inputs/*.raw
+scripts/screen01/screen01_build.py states --check  # byte check passed, 37 files
 ```
 
-Run: 2026-10-30T16:20:50Z → 2026-10-30T18:58:43Z (157.9 min wall). Per-pool wall: axial 3.3 min, manual 16.1 min, rand3 58.8 min, ref 1.0 min, rs 78.6 min. Per-member gate evaluation (median per worker, 4 workers): axial 222 s, manual 243 s, rand3 241 s, ref 249 s, rs 240 s; X1 export about 55 s per member alone.
+Run 1: 2026-10-30T16:20:50Z → 2026-10-30T18:58:43Z (157.9 min wall). Per-pool wall: axial 3.3 min, manual 16.1 min, rand3 58.8 min, ref 1.0 min, rs 78.6 min. Per-member gate evaluation (median per worker, 4 workers): axial 222 s, manual 243 s, rand3 241 s, ref 249 s, rs 240 s; X1 export about 55 s per member alone.
+Run 2: 156.1 min wall (axial 10.8 min and ref 3.2 min, now evaluated afresh; manual 16.7, rs 71.4, rand3 53.9 min); medians axial 198 s, manual 278 s, rand3 219 s, ref 138 s, rs 218 s.
 
 ## Space and pools (`pools.json`)
 
@@ -30,7 +39,7 @@ Fixed subset (pitch, camber, reflex), heave 0; box u in [-1.0, 1.0] x [-1.5, 1.0
 | rs | 64 | 35 | 35 | 35 | 35 | export_surface_integrity 2; min_feature_width 29; surface_self_intersection 2 |
 
 - `rs`: 64 points used (no extension needed; rule: at least 12 admissible); 35 of 64 admissible (55 %); in the camber extension (u_camber < -1): 7 of 13 admissible.
-- `rand3`: 48 sequence points consumed for 19 admissible members (complete; 52 % admissible); the registered control set is the first 19 in sequence order (`summary.json: pools.rand3.control_set`).
+- `rand3`: the 19th admissible member is sequence point 36 (`n_consumed` = 36; 48 points evaluated in chunks of 16, 25 admissible = 52 %; complete); the registered control set is the first 19 in sequence order (`summary.json: pools.rand3.control_set`).
 - `manual`: first admissible ladder entry M = `v18__camber_m19.7_pitch_m0.38` for m_D = 1.5e-3 N (registered) and `v18__camber_m19.7_pitch_m0.33` for m_D = 1.0e-3 N; all 10 ladder entries: 10 admissible.
 - `axial` 6/6 and `ref` 1/1 admissible (rev. 0 gate rows reused; X1 volumes and the chain check added).
 - The STL chain check passed for every X1-clean state; R3 (opening defect, descriptive) passes every evaluated state; P22-v2, the smoothed-volume band and the clearance margin pass on all of them. The binding gate is again R0 `min_feature_width` (the one-cell occupancy artefact).
@@ -62,17 +71,18 @@ Chosen design points:
 ## Caveats
 - Admissibility is at the native placement (as FID §3.3) and is not re-evaluated at the exploration or confirmation phases.
 - The subset and box were chosen from visible force values (registration §8); this record is geometry only and says nothing about forces.
-- This run precedes the source review; freeze 1 re-validates every row under the reviewed code fingerprint (cached rows are reused only under an identical `fid01_designs` dependency fingerprint).
-- STL blobs of the X1-clean states are under `work/screen01_pool_prescreen/stl/` (gitignored); their SHA-256 are in `rows.jsonl`.
+- Run 1 preceded the source review; run 2 re-validated every row under the reviewed fingerprint with no difference (above).
+- STL blobs and gated phi of the X1-clean states are under `work/screen01_pool_prescreen/` (gitignored, regenerable by run 2's commands); their SHA-256 are in `rows.jsonl`. The direction raws the harness reads are committed in [`../inputs/`](../inputs/) and listed with their hashes in [`../states.json`](../states.json).
 
 ## Files and hashes (SHA-256)
-| file | sha256 |
-| --- | --- |
-| `pools.json` | `1430daef9cc6d9e394294ee5839d5944e16fcc27544defa6cbedba73dc0cf2e2` |
-| `rows.jsonl` | `f88208b6f71bca16fb4a5cd65a21bceb73a411723ddc5451ef8ca566063bd581` |
-| `summary.json` | `11fa24963df767dd96aebf0b71e0dfa759c43911df5ff68bd21610ca80c49544` |
-| `design_check.json` | `3ce5fffd1119ce6cce06e01a41e9fcd812a1003d3dbbffcd75ee1e7fff9040f6` |
-| `p0.log` | `5b479c55744fb0cea2860ff310684e3e702fe5feba45b354c9966daca9434d2e` |
-| `scripts/screen01/screen01_pool.py` | `819fa1155f8d4c5887925ef7ebfdafd905ace84723580b0b91a2f94f848e1553` |
-| `scripts/screen01/screen01_oc.py` | `ae951e5bcdfb4eaafc5e9c941bad0859b58a2be8fc341784750ac2b2da496366` |
-| `docs/evidence/screen01_2026_10_30/oc.json` | `ad58b5e1a5b0669d2ce2758e605833afa59c0be306691b0fddc62d3eb266220f` |
+| file | run 1 (in history at `db8732e0`) | run 2 (current) |
+| --- | --- | --- |
+| `pools.json` | `1430daef9cc6d9e394294ee5839d5944e16fcc27544defa6cbedba73dc0cf2e2` | same |
+| `rows.jsonl` | `f88208b6f71bca16fb4a5cd65a21bceb73a411723ddc5451ef8ca566063bd581` | `db165ebac26538758cd6c4e692b4454edb9a6ff31f8416cbd145680df40fba00` |
+| `summary.json` | `11fa24963df767dd96aebf0b71e0dfa759c43911df5ff68bd21610ca80c49544` | `dc259ce53ebfff6217dc1b8c84afbf5fc5987bd971f14a5f235b7eca18417629` |
+| `design_check.json` | `3ce5fffd1119ce6cce06e01a41e9fcd812a1003d3dbbffcd75ee1e7fff9040f6` | `2bccd0f430974775385f7e22c970a17ea14448688cd5b59f6c0461e5904f9e39` |
+| `p0.log` | `5b479c55744fb0cea2860ff310684e3e702fe5feba45b354c9966daca9434d2e` | `c0494650de874965234c39c9ae97a47c25ead76c24323732c2022b5bc72ad676` (both runs) |
+| `scripts/screen01/screen01_pool.py` | `819fa1155f8d4c5887925ef7ebfdafd905ace84723580b0b91a2f94f848e1553` | `d194b6d55aec6ff12d9b1a0d669f156e7a9f654ad9a5174f48211b40465b1ef7` |
+| `scripts/screen01/screen01_oc.py` | `ae951e5bcdfb4eaafc5e9c941bad0859b58a2be8fc341784750ac2b2da496366` | `5c9617dcb04502d57753163b92a32daac6f66e0a4641c36aa7c33c760da92ced` |
+| `docs/evidence/screen01_2026_10_30/oc.json` | `ad58b5e1a5b0669d2ce2758e605833afa59c0be306691b0fddc62d3eb266220f` | `d9049976a1b754c59d965226acdc7380a38a58a56752b2b397e2ed1465648f8c` |
+| `docs/evidence/screen01_2026_10_30/states.json` | - | `17011cf5c8a3952e03ad899db2b2cb8ed2f6c429af50b4dd4e838e1edae50dc9` (built from run 2; 36 raws in `../inputs/`) |
