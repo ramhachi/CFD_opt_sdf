@@ -1,0 +1,992 @@
+{
+ "analyzer_sha256": "944696321d960e395321452cc80e517f56c60e2f2abbbd084b82650e364373a1",
+ "coefficients": {
+  "fid_analysis_sha256": "b89203d0c8ec588bfa83a87d67f81e2a731edd37655265d0a3f8cd6f9d863dd1",
+  "m2_analysis_sha256": "ee71c6d6983fee72a171c9188c117a478dafe51e2fd1488f15448321687f8e24",
+  "tier_a_residual_sd_n": 0.0005609773115587048,
+  "tier_a_retention_min": 0.5741264445448893,
+  "tier_a_retention_sd": 0.05788460163761944,
+  "tier_a_slope": 0.6548756047405118
+ },
+ "comparable": {
+  "data_loss": [],
+  "fit": {
+   "cond": 3.5070389808577596,
+   "downforce": {
+    "coef": [
+     0.041635249990578764,
+     -0.010759552528394726,
+     -0.014528861609529334,
+     -0.00041474140081111536,
+     0.00020685446775654972,
+     0.0008329337535593813,
+     -0.0015614986655779724,
+     5.009385100234337e-05,
+     0.0011601721616252424
+    ]
+   },
+   "drag": {
+    "coef": [
+     0.030298098578086154,
+     -0.0005940806091183084,
+     -0.011684096455155085,
+     0.0022844639240803253,
+     0.0009412422230968223,
+     0.0013284301096895634,
+     0.00010089717661266204,
+     -0.002028930467852696,
+     -2.7628428510041416e-05
+    ]
+   },
+   "rank": 9,
+   "residual_sd": {
+    "downforce": 0.0012542833649209922,
+    "drag": 0.00021447914704417258
+   }
+  },
+  "g1_controls": {
+   "NC_g1": {
+    "label": "CONSISTENT",
+    "z": 0.48039721441320915
+   },
+   "determinism_g1k11": {
+    "judged": true,
+    "max_abs_diff": {
+     "downforce": 0.0,
+     "drag": 0.0
+    },
+    "nondeterminism": false
+   },
+   "invalid_at_step_2": false
+  },
+  "gated": [
+   [
+    0,
+    [
+     0.05,
+     -1.5,
+     0.55
+    ]
+   ],
+   [
+    1,
+    [
+     0.025,
+     -1.5,
+     0.55
+    ]
+   ],
+   [
+    2,
+    [
+     0.025,
+     -1.5,
+     0.625
+    ]
+   ],
+   [
+    0,
+    [
+     0.085369,
+     -1.5,
+     0.67306
+    ]
+   ],
+   [
+    1,
+    [
+     -0.025593,
+     -1.5,
+     0.408321
+    ]
+   ],
+   [
+    2,
+    [
+     -0.031035,
+     -1.5,
+     0.46827
+    ]
+   ],
+   [
+    0,
+    [
+     0.101587,
+     -1.5,
+     0.724904
+    ]
+   ],
+   [
+    1,
+    [
+     0.050454,
+     -1.5,
+     0.626978
+    ]
+   ]
+  ],
+  "pool_limited_pre": true,
+  "proposals": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "rs_fit_poor": true,
+  "rs_not_fit": false,
+  "stop_after": 8,
+  "targets": {
+   "1": {
+    "u_star": [
+     0.050000000000000044,
+     -1.5,
+     0.55
+    ],
+    "y_pred": 0.010107913513761906,
+    "z_pred": -0.0015354403603854963
+   },
+   "1.5": {
+    "u_star": [
+     0.025000000000000133,
+     -1.5,
+     0.55
+    ],
+    "y_pred": 0.009008564913713504,
+    "z_pred": -0.0022654947566393482
+   },
+   "2": {
+    "u_star": [
+     0.025000000000000133,
+     -1.5,
+     0.625
+    ],
+    "y_pred": 0.007861877137819016,
+    "z_pred": -0.0030254301337794315
+   }
+  },
+  "u_star_1": [
+   0.050000000000000044,
+   -1.5,
+   0.55
+  ],
+  "y_star_1": 0.010107913513761906
+ },
+ "cross_check": {
+  "checker": "scripts/screen01/screen01_check.py",
+  "checker_sha256": "96f0c6bb96200a56a78728d93c907e2e2473455e552ed15cb78c71ae80267633",
+  "discrepancies": [],
+  "stage": "rs"
+ },
+ "detail": {
+  "fit_points": [
+   "v18__pitch_p3.1",
+   "v18__pitch_m3.1",
+   "v18__camber_p19.7",
+   "v18__camber_m19.7",
+   "v18__reflex_p29.3",
+   "v18__reflex_m29.3",
+   "v18__camber_m21.959_pitch_m2.307_reflex_m24.023",
+   "v18__camber_p3.261_pitch_m3.085_reflex_p28.738",
+   "v18__camber_m19.789_pitch_m0.621_reflex_p26.168",
+   "v18__camber_m25.466_pitch_p2.31_reflex_p4.633",
+   "v18__camber_m0.502_pitch_m2.372_reflex_m27.474",
+   "v18__camber_p16.113_pitch_p1.042_reflex_p28.057",
+   "v18__camber_p15.009_pitch_p2.043_reflex_m11.687",
+   "v18__camber_m23.394_pitch_p0.776_reflex_m21.432",
+   "v18__camber_p15.396_pitch_m1.812_reflex_m17.01"
+  ],
+  "lack_of_fit_ratio": {
+   "downforce": 5.244958136759256,
+   "drag": 0.3146292100785033
+  },
+  "pooled_se_eff": {
+   "downforce": 0.00023914077714564682,
+   "drag": 0.0006816886041529894
+  },
+  "proposal_states": [
+   {
+    "name": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115",
+    "rank": 0,
+    "spec": {
+     "camber": -29.55,
+     "pitch": 0.155,
+     "reflex": 16.115
+    },
+    "target_index": 0,
+    "u": [
+     0.050000000000000044,
+     -1.5,
+     0.55
+    ],
+    "y_pred": 0.010107913513761906,
+    "z_pred": -0.0015354403603854963
+   },
+   {
+    "name": "v18__camber_m29.55_pitch_p0.078_reflex_p16.115",
+    "rank": 1,
+    "spec": {
+     "camber": -29.55,
+     "pitch": 0.078,
+     "reflex": 16.115
+    },
+    "target_index": 1,
+    "u": [
+     0.025000000000000133,
+     -1.5,
+     0.55
+    ],
+    "y_pred": 0.009008564913713504,
+    "z_pred": -0.0022654947566393482
+   },
+   {
+    "name": "v18__camber_m29.55_pitch_p0.078_reflex_p18.312",
+    "rank": 2,
+    "spec": {
+     "camber": -29.55,
+     "pitch": 0.078,
+     "reflex": 18.312
+    },
+    "target_index": 2,
+    "u": [
+     0.025000000000000133,
+     -1.5,
+     0.625
+    ],
+    "y_pred": 0.007861877137819016,
+    "z_pred": -0.0030254301337794315
+   },
+   {
+    "name": "v18__camber_m29.55_pitch_p0.265_reflex_p19.721",
+    "rank": 3,
+    "spec": {
+     "camber": -29.55,
+     "pitch": 0.265,
+     "reflex": 19.721
+    },
+    "target_index": 0,
+    "u": [
+     0.0853688290342689,
+     -1.5,
+     0.673060361482203
+    ],
+    "y_pred": 0.009786142435312398,
+    "z_pred": -0.0017518376716095599
+   }
+  ],
+  "rs_fit_label": "RS_FIT_POOR"
+ },
+ "freeze_sha256": {
+  "freeze1": "615788a64858e60d9d8a0f35f956b210a2d447bdc9ef359d90e9616af56f111c",
+  "freeze2": "8e8910c67ba2fb1aca2564337763fdfee80f26d3aea3396fc12777aefb675599"
+ },
+ "gating": [
+  {
+   "admissible": true,
+   "all_pass": true,
+   "cell_components": 1,
+   "chain_ok": true,
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7932,
+   "eikonal_max": 0.5911079335620217,
+   "eikonal_median": 0.0012057875965099107,
+   "eikonal_p95": 0.15273027377630477,
+   "eval_wall_s": 169.5,
+   "failed_geom02": [],
+   "fingerprint": "f5a5a95a74e3208a06280f634c405b3e55e578b1a5948c04c7b2bcf15a02473b",
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 24.65274930000305,
+   "index": 0,
+   "min_zero_level_z_m": -0.22690778156199592,
+   "name": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7442,
+    "pass": true,
+    "slack": 830
+   },
+   "phi_fortran_sha256": "a7c1e3b9c38b4784c097f8377882eeaabeec4132bb5fa885194f13d8a64dc6c7",
+   "r3_descriptive": "pass",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.00250081140794034,
+    "zero_level_margin_m": 0.3378497831523419
+   },
+   "sharp_volume_vs_parent": -0.013520678685047693,
+   "slot": "p0",
+   "spec": {
+    "camber": -29.55,
+    "pitch": 0.155,
+    "reflex": 16.115
+   },
+   "stl_volume_vs_parent": -6.490458336882998e-05,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8435535689342087,
+    "max_band_change_m": 0.024614260299131274
+   },
+   "target_index": 0,
+   "u": [
+    0.050000000000000044,
+    -1.5,
+    0.55
+   ],
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.002594229849108176,
+   "x1": {
+    "pass": true,
+    "stl_sha256": "714f6b9846b41b428d0fd582ccbca754afcc313789779d217ea9a0681173233c",
+    "stl_volume_m3": 0.11965617547059422,
+    "triangles": 641956
+   },
+   "y_pred": 0.010107913513761906,
+   "z_pred": -0.0015354403603854963
+  },
+  {
+   "admissible": true,
+   "all_pass": true,
+   "cell_components": 1,
+   "chain_ok": true,
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8070,
+   "eikonal_max": 0.5984730061282254,
+   "eikonal_median": 0.001209880102888139,
+   "eikonal_p95": 0.15083967593769457,
+   "eval_wall_s": 169.2,
+   "failed_geom02": [],
+   "fingerprint": "f5a5a95a74e3208a06280f634c405b3e55e578b1a5948c04c7b2bcf15a02473b",
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 25.394409894943237,
+   "index": 1,
+   "min_zero_level_z_m": -0.22619632484270452,
+   "name": "v18__camber_m29.55_pitch_p0.078_reflex_p16.115",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7444,
+    "pass": true,
+    "slack": 828
+   },
+   "phi_fortran_sha256": "c6d09a8d5f4b3510054eefd875487332f4ddc8a9466d3a098a7960714eced8c0",
+   "r3_descriptive": "pass",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0025293549346327993,
+    "zero_level_margin_m": 0.3385872639715672
+   },
+   "sharp_volume_vs_parent": -0.013255567338282037,
+   "slot": "p0",
+   "spec": {
+    "camber": -29.55,
+    "pitch": 0.078,
+    "reflex": 16.115
+   },
+   "stl_volume_vs_parent": -6.221614234802608e-05,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8367788797318061,
+    "max_band_change_m": 0.025356859667226672
+   },
+   "target_index": 1,
+   "u": [
+    0.025000000000000133,
+    -1.5,
+    0.55
+   ],
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0026227760356407614,
+   "x1": {
+    "pass": true,
+    "stl_sha256": "63d68d71b0cd90a5d3e49119bfdae1e2d616c9495777923647c76216e877aab0",
+    "stl_volume_m3": 0.11965649718004517,
+    "triangles": 641920
+   },
+   "y_pred": 0.009008564913713504,
+   "z_pred": -0.0022654947566393482
+  },
+  {
+   "admissible": true,
+   "all_pass": true,
+   "cell_components": 1,
+   "chain_ok": true,
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8035,
+   "eikonal_max": 0.6066340995854475,
+   "eikonal_median": 0.0011147546053864588,
+   "eikonal_p95": 0.15359910825292214,
+   "eval_wall_s": 169.3,
+   "failed_geom02": [],
+   "fingerprint": "f5a5a95a74e3208a06280f634c405b3e55e578b1a5948c04c7b2bcf15a02473b",
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 26.273205876350403,
+   "index": 2,
+   "min_zero_level_z_m": -0.22536568130231516,
+   "name": "v18__camber_m29.55_pitch_p0.078_reflex_p18.312",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7412,
+    "pass": true,
+    "slack": 860
+   },
+   "phi_fortran_sha256": "3d441380124c23c6418ebfa09639f94a7e9c59b6c2d33c70ceb160882c9c0e0f",
+   "r3_descriptive": "pass",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0024454238238884596,
+    "zero_level_margin_m": 0.3393252179026604
+   },
+   "sharp_volume_vs_parent": -0.017497348886532316,
+   "slot": "p0",
+   "spec": {
+    "camber": -29.55,
+    "pitch": 0.078,
+    "reflex": 18.312
+   },
+   "stl_volume_vs_parent": -5.911065048169739e-05,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8290264003352423,
+    "max_band_change_m": 0.02623475226573646
+   },
+   "target_index": 2,
+   "u": [
+    0.025000000000000133,
+    -1.5,
+    0.625
+   ],
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.002538837103742031,
+   "x1": {
+    "pass": true,
+    "stl_sha256": "fdf01c102ebee865f043940ae08e02b7356221942a232b6c0e267fadfe681eb4",
+    "stl_volume_m3": 0.11965686879544439,
+    "triangles": 641972
+   },
+   "y_pred": 0.007861877137819016,
+   "z_pred": -0.0030254301337794315
+  },
+  {
+   "admissible": true,
+   "all_pass": true,
+   "cell_components": 1,
+   "chain_ok": true,
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7965,
+   "eikonal_max": 0.5949265073631511,
+   "eikonal_median": 0.0010859244734853224,
+   "eikonal_p95": 0.15195679916126092,
+   "eval_wall_s": 167.9,
+   "failed_geom02": [],
+   "fingerprint": "f5a5a95a74e3208a06280f634c405b3e55e578b1a5948c04c7b2bcf15a02473b",
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 25.035560131072998,
+   "index": 3,
+   "min_zero_level_z_m": -0.2265641921485645,
+   "name": "v18__camber_m29.55_pitch_p0.265_reflex_p19.721",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7440,
+    "pass": true,
+    "slack": 832
+   },
+   "phi_fortran_sha256": "1441193b5a86fa74ffa08c892b36c76abd4dda5ab13dfbccc0a9a769952cf7f2",
+   "r3_descriptive": "pass",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0024678303145362346,
+    "zero_level_margin_m": 0.33823314253240827
+   },
+   "sharp_volume_vs_parent": -0.013785790031813239,
+   "slot": "p0",
+   "spec": {
+    "camber": -29.55,
+    "pitch": 0.265,
+    "reflex": 19.721
+   },
+   "stl_volume_vs_parent": -7.88215690380456e-05,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8443916748149183,
+    "max_band_change_m": 0.024994103936478496
+   },
+   "target_index": 0,
+   "u": [
+    0.0853688290342689,
+    -1.5,
+    0.673060361482203
+   ],
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0025612456823476126,
+   "x1": {
+    "pass": true,
+    "stl_sha256": "9438f3c7984442854f7302e7b2be8e30d19ed4a6fdcb4c2e133ea9a701c1c97f",
+    "stl_volume_m3": 0.11965451010922538,
+    "triangles": 641916
+   },
+   "y_pred": 0.009786142435312398,
+   "z_pred": -0.0017518376716095599
+  },
+  {
+   "admissible": true,
+   "all_pass": true,
+   "cell_components": 1,
+   "chain_ok": true,
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8066,
+   "eikonal_max": 0.5970701900935134,
+   "eikonal_median": 0.0015287480233967532,
+   "eikonal_p95": 0.15012861828755303,
+   "eval_wall_s": 176.8,
+   "failed_geom02": [],
+   "fingerprint": "f5a5a95a74e3208a06280f634c405b3e55e578b1a5948c04c7b2bcf15a02473b",
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 25.246620178222656,
+   "index": 0,
+   "min_zero_level_z_m": -0.22631322132122933,
+   "name": "v18__camber_m29.55_pitch_m0.079_reflex_p11.964",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7412,
+    "pass": true,
+    "slack": 860
+   },
+   "phi_fortran_sha256": "adea12cde8c810690d5e7fd4d5fc2ecabaaf78771feabb6bed233f094832be7d",
+   "r3_descriptive": "pass",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.002758548274490069,
+    "zero_level_margin_m": 0.3384366123005748
+   },
+   "sharp_volume_vs_parent": -0.017497348886532316,
+   "slot": "p0",
+   "spec": {
+    "camber": -29.55,
+    "pitch": -0.079,
+    "reflex": 11.964
+   },
+   "stl_volume_vs_parent": -5.77831215453628e-05,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8275597150440006,
+    "max_band_change_m": 0.02521215262822807
+   },
+   "target_index": 1,
+   "u": [
+    -0.025592587329447136,
+    -1.5,
+    0.4083214706741274
+   ],
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0028519907329713767,
+   "x1": {
+    "pass": true,
+    "stl_sha256": "6f644e94ed22ab3b13f7c86fb6835be1a7f1b49169f252db686660dfee264be5",
+    "stl_volume_m3": 0.11965702765279031,
+    "triangles": 641872
+   },
+   "y_pred": 0.008974299379945053,
+   "z_pred": -0.0022723800060570234
+  },
+  {
+   "admissible": true,
+   "all_pass": true,
+   "cell_components": 1,
+   "chain_ok": true,
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7998,
+   "eikonal_max": 0.6052201428163428,
+   "eikonal_median": 0.0013494954359571931,
+   "eikonal_p95": 0.1550757716989752,
+   "eval_wall_s": 176.1,
+   "failed_geom02": [],
+   "fingerprint": "f5a5a95a74e3208a06280f634c405b3e55e578b1a5948c04c7b2bcf15a02473b",
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 26.112794876098633,
+   "index": 1,
+   "min_zero_level_z_m": -0.2254919282348069,
+   "name": "v18__camber_m29.55_pitch_m0.096_reflex_p13.72",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7442,
+    "pass": true,
+    "slack": 830
+   },
+   "phi_fortran_sha256": "68bd3869b19e72a4ed67591d1881adbb3bda9f11239c66f4ee37cc02030bc4bd",
+   "r3_descriptive": "pass",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.002703479447228485,
+    "zero_level_margin_m": 0.3391710607334972
+   },
+   "sharp_volume_vs_parent": -0.013520678685047693,
+   "slot": "p0",
+   "spec": {
+    "camber": -29.55,
+    "pitch": -0.096,
+    "reflex": 13.72
+   },
+   "stl_volume_vs_parent": -5.3670862443899736e-05,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8202262885877916,
+    "max_band_change_m": 0.026077818823978305
+   },
+   "target_index": 2,
+   "u": [
+    -0.031035493500530587,
+    -1.5,
+    0.46826961589977145
+   ],
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0027969167740991008,
+   "x1": {
+    "pass": true,
+    "stl_sha256": "b3aec14130b70205a1915919e0a617b2cdb8baf10ea2d3b63a7a73924073608f",
+    "stl_volume_m3": 0.11965751974192577,
+    "triangles": 641936
+   },
+   "y_pred": 0.007803068737929269,
+   "z_pred": -0.0030556242449510168
+  },
+  {
+   "admissible": true,
+   "all_pass": true,
+   "cell_components": 1,
+   "chain_ok": true,
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7932,
+   "eikonal_max": 0.5961559020872748,
+   "eikonal_median": 0.001077929690332935,
+   "eikonal_p95": 0.1555698114431675,
+   "eval_wall_s": 177.3,
+   "failed_geom02": [],
+   "fingerprint": "f5a5a95a74e3208a06280f634c405b3e55e578b1a5948c04c7b2bcf15a02473b",
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 25.16147494316101,
+   "index": 2,
+   "min_zero_level_z_m": -0.2264535460306566,
+   "name": "v18__camber_m29.55_pitch_p0.315_reflex_p21.24",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7442,
+    "pass": true,
+    "slack": 830
+   },
+   "phi_fortran_sha256": "4f0612e584833e5270a436bcf832259a5d9608290bea5558eb14652ac698fd9b",
+   "r3_descriptive": "pass",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0025036498486825653,
+    "zero_level_margin_m": 0.3383594671264291
+   },
+   "sharp_volume_vs_parent": -0.013520678685047693,
+   "slot": "p0",
+   "spec": {
+    "camber": -29.55,
+    "pitch": 0.315,
+    "reflex": 21.24
+   },
+   "stl_volume_vs_parent": -8.07900684097751e-05,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8446710434418215,
+    "max_band_change_m": 0.0251187093090266
+   },
+   "target_index": 0,
+   "u": [
+    0.1015873660333455,
+    -1.5,
+    0.7249037299305201
+   ],
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0025970685543517114,
+   "x1": {
+    "pass": true,
+    "stl_sha256": "0cb2d61ba280617a87f253572d198e0f8953586c80828480cc7bb63d5505d770",
+    "stl_volume_m3": 0.11965427455083033,
+    "triangles": 641900
+   },
+   "y_pred": 0.00971586724446624,
+   "z_pred": -0.0017961243353411312
+  },
+  {
+   "admissible": true,
+   "all_pass": true,
+   "cell_components": 1,
+   "chain_ok": true,
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7932,
+   "eikonal_max": 0.5998984888971326,
+   "eikonal_median": 0.0011150668621069393,
+   "eikonal_p95": 0.15487054254137256,
+   "eval_wall_s": 176.5,
+   "failed_geom02": [],
+   "fingerprint": "f5a5a95a74e3208a06280f634c405b3e55e578b1a5948c04c7b2bcf15a02473b",
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 25.545120239257812,
+   "index": 3,
+   "min_zero_level_z_m": -0.2260660415108774,
+   "name": "v18__camber_m29.55_pitch_p0.156_reflex_p18.37",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7412,
+    "pass": true,
+    "slack": 860
+   },
+   "phi_fortran_sha256": "61d5d9439c00cdaf4d2e8dcf2e71016eddc61900032f58d4d66d460a5d5e15cd",
+   "r3_descriptive": "pass",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0024452043472307228,
+    "zero_level_margin_m": 0.33873880039900545
+   },
+   "sharp_volume_vs_parent": -0.017497348886532316,
+   "slot": "p0",
+   "spec": {
+    "camber": -29.55,
+    "pitch": 0.156,
+    "reflex": 18.37
+   },
+   "stl_volume_vs_parent": -7.134945943043647e-05,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8366391954183545,
+    "max_band_change_m": 0.0255056272726506
+   },
+   "target_index": 1,
+   "u": [
+    0.050454123038798704,
+    -1.5,
+    0.6269779640249908
+   ],
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0025386176066322097,
+   "x1": {
+    "pass": true,
+    "stl_sha256": "a5541ef05c9474c88a9a3834a16445546e139df8557ac8d1dc3a449d3fabe1d0",
+    "stl_volume_m3": 0.11965540425131764,
+    "triangles": 641892
+   },
+   "y_pred": 0.00895117407232592,
+   "z_pred": -0.002305902847762876
+  }
+ ],
+ "groups": {
+  "g1": {
+   "campaign_sha256": "418e0ad8ba9d477c5760e52b9768af822fac732457b507b1863e0721b2c675c9",
+   "kernels_lost": [],
+   "table_sha256": {
+    "docs/evidence/screen01_2026_10_30/wl/verify/table_g1k11.json": "6406fb8a663f00907b0c795d223acef55194b85e09aa2d5a8f267be26788e5ec",
+    "docs/evidence/screen01_2026_10_30/wl/verify/table_g1k12.json": "6822d3bb3fda3982c42957e7cce314d20226eeb16c4c6624b78eb75333b5a680"
+   }
+  }
+ },
+ "infra_signatures_sha256": "1776199e00c057af0f866bf176085ad81abd06b0a83b81c7baa74d552e680cb9",
+ "kind": "screen01_rs",
+ "lost_kernels": [],
+ "lost_records_sha256": {},
+ "lost_signatures": {},
+ "not_pushed": {},
+ "not_pushed_kernels": {},
+ "proposals": [
+  {
+   "name": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115",
+   "rank": 0,
+   "spec": {
+    "camber": -29.55,
+    "pitch": 0.155,
+    "reflex": 16.115
+   },
+   "target_index": 0,
+   "u": [
+    0.050000000000000044,
+    -1.5,
+    0.55
+   ],
+   "y_pred": 0.010107913513761906,
+   "z_pred": -0.0015354403603854963
+  },
+  {
+   "name": "v18__camber_m29.55_pitch_p0.078_reflex_p16.115",
+   "rank": 1,
+   "spec": {
+    "camber": -29.55,
+    "pitch": 0.078,
+    "reflex": 16.115
+   },
+   "target_index": 1,
+   "u": [
+    0.025000000000000133,
+    -1.5,
+    0.55
+   ],
+   "y_pred": 0.009008564913713504,
+   "z_pred": -0.0022654947566393482
+  },
+  {
+   "name": "v18__camber_m29.55_pitch_p0.078_reflex_p18.312",
+   "rank": 2,
+   "spec": {
+    "camber": -29.55,
+    "pitch": 0.078,
+    "reflex": 18.312
+   },
+   "target_index": 2,
+   "u": [
+    0.025000000000000133,
+    -1.5,
+    0.625
+   ],
+   "y_pred": 0.007861877137819016,
+   "z_pred": -0.0030254301337794315
+  },
+  {
+   "name": "v18__camber_m29.55_pitch_p0.265_reflex_p19.721",
+   "rank": 3,
+   "spec": {
+    "camber": -29.55,
+    "pitch": 0.265,
+    "reflex": 19.721
+   },
+   "target_index": 0,
+   "u": [
+    0.0853688290342689,
+    -1.5,
+    0.673060361482203
+   ],
+   "y_pred": 0.009786142435312398,
+   "z_pred": -0.0017518376716095599
+  }
+ ],
+ "qualification_flags": "all false (unchanged)",
+ "registration": "docs/screen01_registration_2026_10_30.md",
+ "shape_update_allowed": false,
+ "stage": "rs",
+ "states_sha256": "17011cf5c8a3952e03ad899db2b2cb8ed2f6c429af50b4dd4e838e1edae50dc9"
+}
