@@ -1,0 +1,120 @@
+{
+  "case_id": "flow_32",
+  "kernel": "f32b",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-screen01-f-f32b",
+  "parent_forces_csv_sha256": "5187ba45c4a49b080765b4c52e1dfa4a43af7262225034ea6899fd20c0111440",
+  "solver_process_wall_seconds_total": 4395.735557794571,
+  "states": [
+    {
+      "complete": true,
+      "direction": null,
+      "exit_code": 0,
+      "forces_csv_sha256": "5187ba45c4a49b080765b4c52e1dfa4a43af7262225034ea6899fd20c0111440",
+      "kind": "parent",
+      "name": "v18__parent__k15",
+      "seconds": 432.5882694721222,
+      "sign": 0,
+      "step_mm": 0.0
+    },
+    {
+      "complete": true,
+      "direction": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115",
+      "exit_code": 0,
+      "forces_csv_sha256": "8e714427b3aec3e76394e810cc78f4420a986d56a6aa1bb49fcbb89a4483b5c7",
+      "kind": "candidate",
+      "name": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115__k15",
+      "seconds": 438.0495924949646,
+      "sign": 1,
+      "step_mm": 24.65274930000305
+    },
+    {
+      "complete": true,
+      "direction": "v18__camber_m28.656_pitch_m0.68_reflex_p2.727",
+      "exit_code": 0,
+      "forces_csv_sha256": "3d624c7ffb9348de876b06deb851591780b676e6239de3be20306ce4ad330b08",
+      "kind": "candidate",
+      "name": "v18__camber_m28.656_pitch_m0.68_reflex_p2.727__k15",
+      "seconds": 439.0938603878021,
+      "sign": 1,
+      "step_mm": 26.74388885498047
+    },
+    {
+      "complete": true,
+      "direction": "v18__camber_m19.7_pitch_m0.38",
+      "exit_code": 0,
+      "forces_csv_sha256": "8087722edf63696f6b7de14622d415497f39f5ed41332785120af1dd625370c7",
+      "kind": "candidate",
+      "name": "v18__camber_m19.7_pitch_m0.38__k15",
+      "seconds": 439.68023800849915,
+      "sign": 1,
+      "step_mm": 16.79360866546631
+    },
+    {
+      "complete": true,
+      "direction": "v18__roll_p25",
+      "exit_code": 0,
+      "forces_csv_sha256": "2c462b4809e602be4ab3557425493234d87627f9aa49416ff546fad283be892f",
+      "kind": "control",
+      "name": "v18__roll_p25__k15",
+      "seconds": 440.4522590637207,
+      "sign": 1,
+      "step_mm": 24.999618530273438
+    },
+    {
+      "complete": true,
+      "direction": null,
+      "exit_code": 0,
+      "forces_csv_sha256": "578b73628e14a6e8529e139bc90f2d00582385f4b5b75a5baee00fb706b11dad",
+      "kind": "parent",
+      "name": "v18__parent__k16",
+      "seconds": 442.3524560928345,
+      "sign": 0,
+      "step_mm": 0.0
+    },
+    {
+      "complete": true,
+      "direction": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115",
+      "exit_code": 0,
+      "forces_csv_sha256": "76ee1b9365773bb721b8768b03fdfbba041af305842bebb880331df530f888b8",
+      "kind": "candidate",
+      "name": "v18__camber_m29.55_pitch_p0.155_reflex_p16.115__k16",
+      "seconds": 437.9918920993805,
+      "sign": 1,
+      "step_mm": 24.65274930000305
+    },
+    {
+      "complete": true,
+      "direction": "v18__camber_m28.656_pitch_m0.68_reflex_p2.727",
+      "exit_code": 0,
+      "forces_csv_sha256": "65c11e79223eb072c3bb1a30cfd5c0b6607cc0fe67aed1088fe96b05f6b5d6ed",
+      "kind": "candidate",
+      "name": "v18__camber_m28.656_pitch_m0.68_reflex_p2.727__k16",
+      "seconds": 440.72488355636597,
+      "sign": 1,
+      "step_mm": 26.74388885498047
+    },
+    {
+      "complete": true,
+      "direction": "v18__camber_m19.7_pitch_m0.38",
+      "exit_code": 0,
+      "forces_csv_sha256": "80f308f7940a3fbdaec1f20dbeed450ed6e53fdcbfbfc0246208875213c8fcc3",
+      "kind": "candidate",
+      "name": "v18__camber_m19.7_pitch_m0.38__k16",
+      "seconds": 440.5967631340027,
+      "sign": 1,
+      "step_mm": 16.79360866546631
+    },
+    {
+      "complete": true,
+      "direction": "v18__roll_p25",
+      "exit_code": 0,
+      "forces_csv_sha256": "90f84509b11b971d10f5d0f3ed066ae1d06a9eec017d264775aa1a0d0754017b",
+      "kind": "control",
+      "name": "v18__roll_p25__k16",
+      "seconds": 444.20534348487854,
+      "sign": 1,
+      "step_mm": 24.999618530273438
+    }
+  ],
+  "status": "COMPLETE"
+}
