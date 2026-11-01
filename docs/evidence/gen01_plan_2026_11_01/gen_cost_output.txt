@@ -1,22 +1,23 @@
-case                                        cells    primal core-h   gradient core-h    campaign core-h nodes(192c)   wall days  USD on-demand
-2D section (LOOP-2D-01, xfine30)          5.0e+04       1..3              5..19             191..708                 1  2.0..7.4         7..27     
-front wing + endplates (WING-3D-01)       3.0e+06      42..100          167..700           6875..25500               1  4.8..17.7      261..969    
-wing + wheel + ground (WW-01)             8.0e+06     111..267          444..1867         18333..68000               1  4.8..17.7      697..2584   
-half car, wall functions (CAR-01)         2.5e+07     463..1111        2546..11111        97222..383333              3  8.1..31.9     3694..14567  
-half car, resolved layers                 6.0e+07    1389..3333        7639..33333       291667..1150000             4 15.8..62.4    11083..43700  
+stage                                       cells OPs nodes(mem)          core-h lo..hi      node-h lo..hi  wall d lo..hi    USD x1.5 lo..hi     cap
+LOOP-3D-00 (coarse wing, exploratory)     1.0e+06   1    1( 1)       2072..5806              41..116          1.7..4.8          448..1254         1500
+WING-3D-01 (rear wing)                    3.0e+06   2    1( 1)      31167..101800           208..679          8.7..28.3        2244..7330         8000
+WW-01 (front wing + wheel)                8.0e+06   2    3( 2)      83111..271467           623..2036         8.7..28.3        6732..21989       15000  <-- cap below the high bound
+CAR-01 (half car)                         2.5e+07   3    7( 7)     628241..2107778         3518..11804       20.9..70.3       37996..127478      60000  <-- cap below the high bound
 
-Memory (GiB) per case: primal / DAFoam explicit-Jacobian adjoint / SU2 (~10x primal); nodes of 768 GiB for the explicit adjoint
-  2D section (LOOP-2D-01, xfine30)              0.3       5.4      3.4   nodes 1
-  front wing + endplates (WING-3D-01)          20.6     323.3    206.0   nodes 1
-  wing + wheel + ground (WW-01)                54.9     862.1    549.3   nodes 2
-  half car, wall functions (CAR-01)           171.7    2694.1   1716.6   nodes 4
-  half car, resolved layers                   412.0    6465.9   4119.9   nodes 9
+Reduced-basis fallback / control arm on the WING-3D-01 case, K=16, 1 OP, 30 iterations: USD 3,231..7,754 (x1.5 dev factor)
+Same with K=30: USD 5,751..13,802
 
-BMW anchor (75 core-h per M cells per iteration): half car 2.5e7 cells x 30 iterations = 56,250 core-h = 2,138 USD; full BMW mesh 30 it = 258,075 core-h
-Local Mac (8 cores): half-car primal 2.5e7 x 4000 at 4e4 = 3.6 days wall; front wing 3e6 x 3000 = 7.8 h wall
-quadratic RS with n=     3 variables needs         10 primals; reduced-basis centred FD needs 2K; adjoint needs 1 + n_resp x (1.5..3)
-quadratic RS with n=    10 variables needs         66 primals; reduced-basis centred FD needs 2K; adjoint needs 1 + n_resp x (1.5..3)
-quadratic RS with n=    30 variables needs        496 primals; reduced-basis centred FD needs 2K; adjoint needs 1 + n_resp x (1.5..3)
-quadratic RS with n=   100 variables needs       5151 primals; reduced-basis centred FD needs 2K; adjoint needs 1 + n_resp x (1.5..3)
-quadratic RS with n=  1000 variables needs     501501 primals; reduced-basis centred FD needs 2K; adjoint needs 1 + n_resp x (1.5..3)
-quadratic RS with n= 10000 variables needs   50015001 primals; reduced-basis centred FD needs 2K; adjoint needs 1 + n_resp x (1.5..3)
+Memory (GiB): primal / adjoint 113 kB/cell / adjoint 200 kB/cell; nodes of 768 GiB at 200 kB/cell
+  LOOP-3D-00 (coarse wing, exploratory)          7      108      191   nodes 1
+  WING-3D-01 (rear wing)                        21      323      572   nodes 1
+  WW-01 (front wing + wheel)                    55      862     1526   nodes 2
+  CAR-01 (half car)                            172     2694     4768   nodes 7
+
+BMW anchor: 2.5e7 cells x 30 it x 75 core-h/Mcell = 56,250 core-h = 2,109 USD on whole nodes (one OP, no verification)
+ADJ-00a/b and CLOUD-ENV-01: 1 node x ~120 node-h = 864 USD per 120 h; cap 3,000 USD = 417 node-h
+quadratic RS with n=     3 variables needs         10 primals; reduced-basis centred FD 2K; adjoint 1 + resp x (1.5..3)
+quadratic RS with n=    10 variables needs         66 primals; reduced-basis centred FD 2K; adjoint 1 + resp x (1.5..3)
+quadratic RS with n=    30 variables needs        496 primals; reduced-basis centred FD 2K; adjoint 1 + resp x (1.5..3)
+quadratic RS with n=   100 variables needs       5151 primals; reduced-basis centred FD 2K; adjoint 1 + resp x (1.5..3)
+quadratic RS with n=  1000 variables needs     501501 primals; reduced-basis centred FD 2K; adjoint 1 + resp x (1.5..3)
+quadratic RS with n= 10000 variables needs   50015001 primals; reduced-basis centred FD 2K; adjoint 1 + resp x (1.5..3)

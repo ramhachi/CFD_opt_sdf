@@ -1,62 +1,104 @@
-"""Back-of-envelope cost model for an adjoint-RANS whole-vehicle optimisation campaign (GEN-01 plan, 2026-11-01).
+"""Cost model for the GEN-01 adjoint-RANS optimisation stages (plan rev 1, 2026-11-01).
 
-Every number is an assumption the plan states; change the dicts and rerun. Sources of the anchors:
-- simpleFoam throughput: SPUMA (arXiv 2512.22215) CPU table gives ~25 core-s per million cells per SIMPLE iteration
-  on Sapphire Rapids (= 4.0e4 cell-iterations/s/core); the range below brackets older hardware and poorer scaling.
-- adjoint/primal runtime: DAFoam 1.7-2.2 at 10.1 M cells (He et al. 2020); continuous adjoint ~1-1.5; SU2 anecdotal ~2-3.
-- memory: DAFoam explicit-Jacobian adjoint 1146 GB vs 73 GB primal at 10.1 M cells (He et al. 2020) = 113 kB/cell vs 7.2 kB/cell;
-  the newer Jacobian-free mode is NOT in that paper and must be measured in ADJ-00. SU2 ~10x primal (forum, anecdotal).
-- BMW M4 GT4 (Antonau et al. 2022): 114.7 M cells, 14 iterations, 120,960 CPU h -> ~75 core-h per M cells per iteration.
-- cloud: AWS hpc7a.96xlarge 192 cores, 768 GiB, ~7.2 USD/h on-demand (0.038 USD/core-h); Azure HBv4 spot ~1.33 USD/h for 176 cores.
+Rev 1 prices NODE-HOURS (nodes rent whole; every hpc7a size costs the same), multiplies by operating points
+and responses, adds the per-iterate Carter check, the noise ensembles, the FD strong-condition test, the
+verification runs and a development factor, and prices the reduced-basis fallback and the control arm.
+Every number is an assumption the plan states. Anchors:
+- simpleFoam throughput ~25 core-s per million cells per SIMPLE iteration (SPUMA, arXiv 2512.22215; = 4.0e4
+  cell-it/s/core); range 2.5e4-6e4.
+- adjoint/primal runtime: DAFoam 1.7-2.2 (He et al. 2020, explicit Jacobian, structured mesh); range 1.5-3.
+- adjoint memory: 113 kB/cell (He 2020 explicit) to 200 kB/cell (DAFoam FAQ sizing rule 2 GB per 10,000 cells);
+  the Jacobian-free default of DAFoam v5 is unmeasured and is an ADJ-00a measurement. Primal 7.2 kB/cell.
+- node: AWS hpc7a.96xlarge, 192 cores, 768 GiB, 7.20 USD/h on-demand (aggregator price; no Spot for hpc7a).
+  Azure HB176rs_v4 Spot ~1.33-1.74 USD/h exists but is evictable.
+- BMW M4 GT4 (Antonau et al. 2022): 114.7 M cells, 14 iterations, 120,960 CPU h (~75 core-h per M cells per iteration).
 """
 from __future__ import annotations
+import math
 
-CASES = {
-    # name: (cells, steady iterations to the force plateau, responses with an adjoint)
-    "2D section (LOOP-2D-01, xfine30)": (5.0e4, 5000, 2),
-    "front wing + endplates (WING-3D-01)": (3.0e6, 3000, 2),
-    "wing + wheel + ground (WW-01)": (8.0e6, 3000, 2),
-    "half car, wall functions (CAR-01)": (2.5e7, 4000, 3),
-    "half car, resolved layers": (6.0e7, 5000, 3),
+NODE_CORES, NODE_GIB, NODE_USD_H = 192, 768, 7.20
+RATE = (2.5e4, 6.0e4)            # cell-iterations / s / core (low = slow, high = fast)
+ADJ = (1.5, 3.0)                 # adjoint solve / primal solve
+MEM_PRIMAL_KB = 7.2
+MEM_ADJ_KB = (113.0, 200.0)      # explicit-Jacobian range; Jacobian-free unmeasured
+CELLS_PER_CORE = 2.0e4           # strong-scaling floor for the wall-clock estimate (DAFoam FAQ 1e4, OHC-1 practical limit ~1e4; efficiency loss is in RATE)
+DEV_FACTOR = 1.5                 # development, debugging and rejected runs on top of the registered campaign
+EXTRA_PRIMALS = 1.5              # line search / rejected trials per optimiser iteration
+CARTER_CHECK_PRIMALS = 2         # central FD along g at every accepted iterate (plan §3.4)
+ENSEMBLE_RUNS = 32               # sigma_claim: 16 remesh realisations of parent + 16 of final
+FD_STRONG_K = 16                 # K Gaussian directions x 2 central primals, once per stage per OP
+URANS_EQUIV = 20                 # one URANS verification ~ 20 primal-equivalents per OP (parent + final)
+OTHER_MODEL_RUNS = 4             # parent + final x 2 models
+OTHER_FAMILY_RUNS = 16           # parent + final x 8 realisations on a second mesh family
+
+STAGES = {
+    # cells, steady iterations, responses with adjoint, operating points, optimiser iterations, DDES verification runs
+    "LOOP-3D-00 (coarse wing, exploratory)": dict(cells=1.0e6, iters=2500, resp=2, ops=1, it=10, ddes=0),
+    "WING-3D-01 (rear wing)": dict(cells=3.0e6, iters=3000, resp=3, ops=2, it=30, ddes=0),
+    "WW-01 (front wing + wheel)": dict(cells=8.0e6, iters=3000, resp=3, ops=2, it=30, ddes=0),
+    "CAR-01 (half car)": dict(cells=2.5e7, iters=4000, resp=4, ops=3, it=30, ddes=2),
 }
-RATE_LOW, RATE_HIGH = 2.5e4, 6.0e4           # cell-iterations / s / core (anchor 4.0e4)
-ADJ_LOW, ADJ_HIGH = 1.5, 3.0                 # one adjoint solve vs one primal
-ITERS_PER_OPT = 30                           # optimiser iterations per campaign (BMW 14, He et al. 21)
-EXTRA_PRIMALS = 1.5                          # line search / rejected steps per iteration
-PRICE = 0.038                                # USD per core-h on-demand (hpc7a); spot ~0.4x
-CELLS_PER_CORE = 5.0e4                       # strong-scaling floor used for wall-clock
-NODE_CORES, NODE_GIB = 192, 768
-MEM_PRIMAL_KB, MEM_ADJ_EXPLICIT_KB, MEM_SU2_FACTOR = 7.2, 113.0, 10.0
+CAPS_USD = {"LOOP-3D-00 (coarse wing, exploratory)": 1500, "WING-3D-01 (rear wing)": 8000, "WW-01 (front wing + wheel)": 15000, "CAR-01 (half car)": 60000}
 
 
-def core_h(cells, iters, rate):
+def primal_core_h(cells, iters, rate):
     return cells * iters / rate / 3600.0
 
 
+def nodes_for(cells, mem_adj_kb):
+    by_compute = math.ceil(cells / CELLS_PER_CORE / NODE_CORES)
+    by_memory = math.ceil(cells * mem_adj_kb / 2**20 / NODE_GIB)
+    return max(1, by_compute, by_memory), by_memory
+
+
+def node_hours(core_h, cells, nodes):
+    # cores actually busy on the solve; the rest of the node is paid for anyway
+    busy = min(cells / CELLS_PER_CORE, nodes * NODE_CORES)
+    return core_h / busy * nodes
+
+
+def stage_cost(s, rate, adj, mem_adj_kb):
+    p = primal_core_h(s["cells"], s["iters"], rate)
+    per_iter = p * (1 + s["resp"] * adj + EXTRA_PRIMALS + CARTER_CHECK_PRIMALS)
+    campaign = s["it"] * per_iter
+    oneoff = p * (ENSEMBLE_RUNS + 2 * FD_STRONG_K + URANS_EQUIV + OTHER_MODEL_RUNS + OTHER_FAMILY_RUNS)
+    ddes = s["ddes"] * 50 * p
+    core_h = s["ops"] * (campaign + oneoff) + ddes
+    nodes, by_mem = nodes_for(s["cells"], mem_adj_kb)
+    nh = node_hours(core_h, s["cells"], nodes)
+    return dict(primal=p, core_h=core_h, nodes=nodes, by_mem=by_mem, node_h=nh, usd=nh * NODE_USD_H * DEV_FACTOR, wall_days=nh / nodes / 24)
+
+
+def fallback_cost(s, rate, K=16):
+    # reduced-basis centred FD: 2K + 1.5 primals per iteration, same one-offs, one OP, primal memory only
+    p = primal_core_h(s["cells"], s["iters"], rate)
+    core_h = s["it"] * p * (2 * K + EXTRA_PRIMALS) + p * (ENSEMBLE_RUNS + URANS_EQUIV + OTHER_MODEL_RUNS + OTHER_FAMILY_RUNS)
+    nodes = max(1, math.ceil(s["cells"] / CELLS_PER_CORE / NODE_CORES))
+    nh = node_hours(core_h, s["cells"], nodes)
+    return nh * NODE_USD_H * DEV_FACTOR
+
+
 def main():
-    hdr = f"{'case':40s} {'cells':>8s} {'primal core-h':>16s} {'gradient core-h':>17s} {'campaign core-h':>18s} {'nodes(192c)':>11s} {'wall days':>11s} {'USD on-demand':>14s}"
-    print(hdr)
-    for name, (cells, iters, n_resp) in CASES.items():
-        p_lo, p_hi = core_h(cells, iters, RATE_HIGH), core_h(cells, iters, RATE_LOW)
-        g_lo, g_hi = p_lo * (1 + n_resp * ADJ_LOW), p_hi * (1 + n_resp * ADJ_HIGH)
-        c_lo, c_hi = ITERS_PER_OPT * (g_lo + EXTRA_PRIMALS * p_lo), ITERS_PER_OPT * (g_hi + EXTRA_PRIMALS * p_hi)
-        cores = min(4 * NODE_CORES, max(4, cells / CELLS_PER_CORE))
-        nodes = max(1, round(cores / NODE_CORES))
-        wall = (c_lo / cores / 24, c_hi / cores / 24)
-        print(f"{name:40s} {cells:8.1e} {p_lo:7.0f}..{p_hi:<8.0f} {g_lo:7.0f}..{g_hi:<9.0f} {c_lo:8.0f}..{c_hi:<9.0f} {nodes:11d} {wall[0]:4.1f}..{wall[1]:<6.1f} {c_lo*PRICE:6.0f}..{c_hi*PRICE:<7.0f}")
+    print(f"{'stage':40s} {'cells':>8s} {'OPs':>3s} {'nodes(mem)':>10s} {'core-h lo..hi':>22s} {'node-h lo..hi':>18s} {'wall d lo..hi':>14s} {'USD x1.5 lo..hi':>18s} {'cap':>7s}")
+    for name, s in STAGES.items():
+        lo = stage_cost(s, RATE[1], ADJ[0], MEM_ADJ_KB[0])
+        hi = stage_cost(s, RATE[0], ADJ[1], MEM_ADJ_KB[1])
+        flag = "" if hi["usd"] <= CAPS_USD[name] else "  <-- cap below the high bound"
+        print(f"{name:40s} {s['cells']:8.1e} {s['ops']:3d} {lo['nodes']:4d}({hi['by_mem']:2d}) {lo['core_h']:10.0f}..{hi['core_h']:<11.0f} {lo['node_h']:8.0f}..{hi['node_h']:<9.0f} {lo['wall_days']:6.1f}..{hi['wall_days']:<7.1f} {lo['usd']:8.0f}..{hi['usd']:<9.0f} {CAPS_USD[name]:7d}{flag}")
     print()
-    print("Memory (GiB) per case: primal / DAFoam explicit-Jacobian adjoint / SU2 (~10x primal); nodes of 768 GiB for the explicit adjoint")
-    for name, (cells, _, _) in CASES.items():
-        p = cells * MEM_PRIMAL_KB / 2**20
-        a = cells * MEM_ADJ_EXPLICIT_KB / 2**20
-        s = p * MEM_SU2_FACTOR
-        print(f"  {name:40s} {p:8.1f} {a:9.1f} {s:8.1f}   nodes {max(1, -(-a // NODE_GIB)):.0f}")
+    w = STAGES["WING-3D-01 (rear wing)"]
+    print(f"Reduced-basis fallback / control arm on the WING-3D-01 case, K=16, 1 OP, 30 iterations: USD {fallback_cost(w, RATE[1]):,.0f}..{fallback_cost(w, RATE[0]):,.0f} (x1.5 dev factor)")
+    print(f"Same with K=30: USD {fallback_cost(w, RATE[1], 30):,.0f}..{fallback_cost(w, RATE[0], 30):,.0f}")
     print()
-    bmw = 114.7e6 / 1e6 * 75 * 30
-    print(f"BMW anchor (75 core-h per M cells per iteration): half car 2.5e7 cells x 30 iterations = {2.5e7/1e6*75*30:,.0f} core-h = {2.5e7/1e6*75*30*PRICE:,.0f} USD; full BMW mesh 30 it = {bmw:,.0f} core-h")
-    print(f"Local Mac (8 cores): half-car primal 2.5e7 x 4000 at 4e4 = {core_h(2.5e7, 4000, 4e4)/8/24:.1f} days wall; front wing 3e6 x 3000 = {core_h(3e6, 3000, 4e4)/8:.1f} h wall")
+    print("Memory (GiB): primal / adjoint 113 kB/cell / adjoint 200 kB/cell; nodes of 768 GiB at 200 kB/cell")
+    for name, s in STAGES.items():
+        c = s["cells"]
+        print(f"  {name:40s} {c*MEM_PRIMAL_KB/2**20:7.0f} {c*MEM_ADJ_KB[0]/2**20:8.0f} {c*MEM_ADJ_KB[1]/2**20:8.0f}   nodes {math.ceil(c*MEM_ADJ_KB[1]/2**20/NODE_GIB)}")
+    print()
+    print(f"BMW anchor: 2.5e7 cells x 30 it x 75 core-h/Mcell = {2.5e7/1e6*75*30:,.0f} core-h = {2.5e7/1e6*75*30/NODE_CORES*NODE_USD_H:,.0f} USD on whole nodes (one OP, no verification)")
+    print(f"ADJ-00a/b and CLOUD-ENV-01: 1 node x ~120 node-h = {120*NODE_USD_H:,.0f} USD per 120 h; cap 3,000 USD = {3000/NODE_USD_H:,.0f} node-h")
     for n in (3, 10, 30, 100, 1000, 10000):
-        print(f"quadratic RS with n={n:6d} variables needs {(n + 1) * (n + 2) // 2:10d} primals; reduced-basis centred FD needs 2K; adjoint needs 1 + n_resp x (1.5..3)")
+        print(f"quadratic RS with n={n:6d} variables needs {(n + 1) * (n + 2) // 2:10d} primals; reduced-basis centred FD 2K; adjoint 1 + resp x (1.5..3)")
 
 
 if __name__ == "__main__":
