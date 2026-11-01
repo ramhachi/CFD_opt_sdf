@@ -22,12 +22,13 @@ Status: **draft rev 0 (2026-11-01), not run.** Class when run: `EXPLORATORY_COMM
 | arm | λ passed to `WaterLily.Simulation(...; λ=λ)` (routing checked as in GRAD-TA1 Amendment 2) | expectation |
 | --- | --- | --- |
 | A `quick` | WaterLily 1.8.0 `quick` | replication control: BLOCKED as in DIAG5 (onset ≈ step 838 for D0) |
-| B `quick_nobound` | `quick_nb(u,c,d) = median((5c+2d−u)/6, c, d)` (the inner bound removed, outer limiter kept; defined in a small file included into `WaterLily` like `quick_tie.jl`) | H1: bounded, agrees with FD |
-| C `cds` | WaterLily 1.8.0 `cds` if exported at tag v1.8.0 (to confirm from the pinned source; otherwise `cds(u,c,d) = (c+d)/2` defined locally) | H1: bounded, agrees with FD; the primal may be less stable (recorded) |
-| D `vanLeer` | only if `vanLeer` exists at tag v1.8.0; otherwise the arm is `NOT_RUN` with the reason | H1 |
-| E (side arm) `quick` on WaterLily 1.10.0 | a separate Julia project `julia/CFDSDFWaterLily110/` with the same job; the 1.10 limiter "no longer branches" (NEWS.md) | descriptive: does the release change the behaviour; feeds user decision (j) on the version pin |
+| B `quick_nobound` | `quick_nobound(u,c,d) = median((5c+2d−u)/6, c, d)` exactly as in issue #358 (the inner `median(10c−9u, c, d)` bound removed, outer limiter kept; defined in `scripts/quick_nobound.jl` and included into `WaterLily` like `quick_tie.jl`) | H1: bounded, agrees with FD (#358, Float64 spinning cylinder: 0.4137 vs 0.4138 at t = 2, 0.4795 vs 0.4796 at t = 4) |
+| C `cds` | WaterLily 1.8.0 `cds(u,c,d) = (c+d)/2` (confirmed present at tag v1.8.0 in `src/Flow.jl`) | H1: bounded, agrees with FD (#358: 0.2437 vs 0.2437); the primal is less dissipative and may be less stable at flow_24 (recorded) |
+| D `vanLeer` | WaterLily 1.8.0 `vanLeer` (confirmed present at tag v1.8.0; it branches on `c ≤ min(u,d) || c ≥ max(u,d)`) | H1 (#358: 0.5101 vs 0.5101) |
+| E (side arm) `quick` on WaterLily 1.10.0 | a separate Julia project `julia/CFDSDFWaterLily110/` with the same job; v1.9.0 made `median` branch-free (`max(min(a,b), min(max(a,b), c))`) and v1.10.0 says "the QUICK limiter no longer branches", but the inner `10c−9u` bound is still present in v1.9.2, v1.10.0 and master | descriptive: does the branch-free median change the behaviour without removing the bound; feeds user decision (j) on the version pin |
+| F (precision arm) | arms A and B in **Float64 on the CPU** (Mac, 10 threads) for directions D0 and D1 only, registered window; issue #358 shows Float32 derivatives move by 20 % under ±10 ulp changes of ν, and #351 runs WaterLily's own AD test in Float64 | separates Float32 round-off noise from the limiter mechanism; cap 60 CPU h on the Mac (a Float64 flow_24 run is estimated at 1-2 h there; the 4070 Ti's FP64 rate is 1/64 of FP32 and is not used for this arm) |
 
-Arm order: A, B, C, D, then E. Arms are independent kernels so a BLOCKED arm does not stop the others.
+Arm order: A, B, C, D, then E and F. Arms are independent kernels so a BLOCKED arm does not stop the others. The project's bodies are static in these runs (placement fixed), so the moving-body pressure-solver source that b-fg suspects in #358 is not in scope.
 
 ## 4. Runs per arm and readouts
 
@@ -51,7 +52,7 @@ Per arm: `BOUNDED_ALL` (4/4 BOUNDED), `PARTIAL`, `BLOCKED_ALL`.
 
 ## 7. Procedure
 
-1. Confirm from the pinned WaterLily 1.8.0 source which schemes exist (`cds`, `vanLeer`); write `scripts/quick_nobound.jl` and the arm script; CPU dry run (`G2_BACKEND=cpu`, 20-step preflight per arm: primal bit-equal to arm A where the scheme is identical, finite tangents).
+1. The pinned WaterLily 1.8.0 `src/Flow.jl` defines exactly three schemes, `quick`, `vanLeer` and `cds`, and `Flow`/`Simulation` take `λ` as a keyword (routing through the constructor as GRAD-TA1 Amendment 2 found); write `scripts/quick_nobound.jl` and the arm script; CPU dry run (`G2_BACKEND=cpu`, 20-step preflight per arm: primal bit-equal to arm A only for arm A's own repeat, finite tangents for every arm).
 2. Exploratory_index rows (one per arm) before pushing; one kernel per arm; download, `verify_grad_g2_terminal.py`, archive under `docs/evidence/grad00_lambda_2026_11/` with `SHA256SUMS`.
 3. Write the result note `docs/issues/23_grad00_result_2026_11.md` once (labels, the section-5 rule applied, what was not tested).
 
