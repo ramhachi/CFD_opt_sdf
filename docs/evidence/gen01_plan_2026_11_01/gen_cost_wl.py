@@ -13,7 +13,8 @@ memory ~1.5 kB/cell. Unsteady laminar (pimpleFoam) same-Re check: ~800 core-h pe
 from __future__ import annotations
 
 T4_RATE = 5.5e7
-GPU = {"T4 (Kaggle, 1 GPU)": 1.0, "T4x2 (Kaggle, both)": 2.0, "RTX 5070Ti/5080": 3.0, "RTX 5090": 6.0}
+GPU = {"T4 (Kaggle, 1 GPU)": 1.0, "RTX 4070 Ti (own, WSL2)": 1.6, "T4x2 (Kaggle, both)": 2.0, "RTX 5070Ti/5080": 3.0, "RTX 5090": 6.0}
+# RTX 4070 Ti: 12 GB GDDR6X, 504 GB/s vs T4 320 GB/s -> ~1.6x by bandwidth (the SUPER variant: 16 GB, 672 GB/s -> ~2.1x). The user owns one (Windows PC).
 RENT_USD_H = {"RTX 4090": (0.30, 0.90), "RTX 5090": (0.35, 1.19), "A100 80GB": (1.2, 1.8)}
 BYTES_PER_CELL = 134
 CFL = 0.5
@@ -61,7 +62,10 @@ def main():
     print()
     lo, hi = PROGRAMME_5090_HOURS
     print(f"Programme total (review W-S6 estimate): {lo}-{hi} RTX-5090-hours = rental {lo*RENT_USD_H['RTX 5090'][0]:.0f}..{hi*RENT_USD_H['RTX 5090'][1]:.0f} USD; "
-          f"on T4x2 {lo*3:.0f}-{hi*3:.0f} quota-hours = {lo*3/30:.0f}-{hi*3/30:.0f} weeks; on a 5080 {lo*2:.0f}-{hi*2:.0f} h = {lo*2/24:.0f}-{hi*2/24:.0f} days 24/7")
+          f"on T4x2 {lo*3:.0f}-{hi*3:.0f} quota-hours = {lo*3/30:.0f}-{hi*3/30:.0f} weeks; on a 5080 {lo*2:.0f}-{hi*2:.0f} h = {lo*2/24:.0f}-{hi*2/24:.0f} days 24/7; "
+          f"on the user's RTX 4070 Ti {lo*6/1.6:.0f}-{hi*6/1.6:.0f} h = {lo*6/1.6/24:.0f}-{hi*6/1.6/24:.0f} days 24/7 (zero rental cost; ~285 W)")
+    h4070 = per[fw]["RTX 4070 Ti (own, WSL2)"]
+    print(f"MW-01 (~740 evaluations) on the RTX 4070 Ti: {740*h4070:.0f} h = {740*h4070/24:.0f} days 24/7; the h 3.3 mm confirmation (32 runs) {32*per['front wing + ground, h 3.3 mm (R3 confirmation, same Re)']['RTX 4070 Ti (own, WSL2)']:.0f} h")
     print("Purchase (JPY, 2026-09/10): 5090 > 1,000k (scarce) | 5080 ~240k | 5070 Ti ~180k | plus host PC with 128 GB RAM; electricity ~17k/month at 24/7.")
     print()
     for cells, iters, label in ((3e6, 3000, "wing RANS primal, 3 M cells"), (8e6, 3000, "wing + wheel RANS, 8 M cells")):
