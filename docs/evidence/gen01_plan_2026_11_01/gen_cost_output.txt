@@ -1,0 +1,22 @@
+case                                        cells    primal core-h   gradient core-h    campaign core-h nodes(192c)   wall days  USD on-demand
+2D section (LOOP-2D-01, xfine30)          5.0e+04       1..3              5..19             191..708                 1  2.0..7.4         7..27     
+front wing + endplates (WING-3D-01)       3.0e+06      42..100          167..700           6875..25500               1  4.8..17.7      261..969    
+wing + wheel + ground (WW-01)             8.0e+06     111..267          444..1867         18333..68000               1  4.8..17.7      697..2584   
+half car, wall functions (CAR-01)         2.5e+07     463..1111        2546..11111        97222..383333              3  8.1..31.9     3694..14567  
+half car, resolved layers                 6.0e+07    1389..3333        7639..33333       291667..1150000             4 15.8..62.4    11083..43700  
+
+Memory (GiB) per case: primal / DAFoam explicit-Jacobian adjoint / SU2 (~10x primal); nodes of 768 GiB for the explicit adjoint
+  2D section (LOOP-2D-01, xfine30)              0.3       5.4      3.4   nodes 1
+  front wing + endplates (WING-3D-01)          20.6     323.3    206.0   nodes 1
+  wing + wheel + ground (WW-01)                54.9     862.1    549.3   nodes 2
+  half car, wall functions (CAR-01)           171.7    2694.1   1716.6   nodes 4
+  half car, resolved layers                   412.0    6465.9   4119.9   nodes 9
+
+BMW anchor (75 core-h per M cells per iteration): half car 2.5e7 cells x 30 iterations = 56,250 core-h = 2,138 USD; full BMW mesh 30 it = 258,075 core-h
+Local Mac (8 cores): half-car primal 2.5e7 x 4000 at 4e4 = 3.6 days wall; front wing 3e6 x 3000 = 7.8 h wall
+quadratic RS with n=     3 variables needs         10 primals; reduced-basis centred FD needs 2K; adjoint needs 1 + n_resp x (1.5..3)
+quadratic RS with n=    10 variables needs         66 primals; reduced-basis centred FD needs 2K; adjoint needs 1 + n_resp x (1.5..3)
+quadratic RS with n=    30 variables needs        496 primals; reduced-basis centred FD needs 2K; adjoint needs 1 + n_resp x (1.5..3)
+quadratic RS with n=   100 variables needs       5151 primals; reduced-basis centred FD needs 2K; adjoint needs 1 + n_resp x (1.5..3)
+quadratic RS with n=  1000 variables needs     501501 primals; reduced-basis centred FD needs 2K; adjoint needs 1 + n_resp x (1.5..3)
+quadratic RS with n= 10000 variables needs   50015001 primals; reduced-basis centred FD needs 2K; adjoint needs 1 + n_resp x (1.5..3)
