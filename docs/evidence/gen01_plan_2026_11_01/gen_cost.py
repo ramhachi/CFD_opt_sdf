@@ -1,6 +1,6 @@
-"""Cost model for the GEN-01 programme (plan rev 2, 2026-11-01).
+"""Cost model for the GEN-01 programme (plan rev 3, 2026-11-01).
 
-Rev 2 models every stage the plan names (round-2 review R-NG7), prices NODE-HOURS, multiplies by operating points
+Rev 2 modelled every stage the plan names (round-2 review R-NG7); rev 3 adds the topology-event epochs (WING-3D-01b, CAR-01 events), prices NODE-HOURS, multiplies by operating points
 (OPs) and responses, and adds: the per-iterate Carter check, the in-study sigma phases, the epsilon ladder of the
 strong-condition test, the second-base-mesh gradient at checkpoints, the other-build and other-code verification
 tiers, the control arm, the held-out genericity geometry, meshing, storage/idle and a development factor.
@@ -67,6 +67,16 @@ def campaign(cells, iters, resp, ops, it, rate, adj):
     return ops * (per_op + meshes)
 
 
+EVENT_LIBRARY = 5          # seeded candidate elements evaluated by CFD per topology event
+EVENT_ENSEMBLE = 32        # 16-vs-16 remesh ensemble to accept or reject one event
+
+
+def topology_events(cells, iters, ops, n_events, rate):
+    """Checkpoint topology events: library candidates + acceptance ensemble + remesh, per OP."""
+    p = p_core_h(cells, iters, rate)
+    return ops * n_events * p * (EVENT_LIBRARY + EVENT_ENSEMBLE + 2 * MESH_FRAC * EVENT_ENSEMBLE)
+
+
 def fd_arm(cells, iters, ops, it, rate, k=K):
     p = p_core_h(cells, iters, rate)
     return ops * (it * p * (2 * k + EXTRA_PRIMALS) + p * (SIGMA_PHASE + ENSEMBLE + URANS_EQ + OTHER_MODEL + OTHER_FAMILY))
@@ -84,11 +94,14 @@ def main():
     rows.append(("LOOP-3D-00 (coarse wing, exploratory)", lambda r, a: (campaign(1e6, 2500, 2, 1, 10, r, a), 1e6, MEM_ADJ_KB[1 if a > 2 else 0])))
     rows.append(("LOOP-CAR-00 (coarse half car 5e6, primal + adjoint + shares)", lambda r, a: (p_core_h(5e6, 3000, r) * (3 + 2 * a), 5e6, MEM_ADJ_KB[1 if a > 2 else 0])))
     rows.append(("WING-3D-01 (rear wing, 2 OPs)", lambda r, a: (campaign(3e6, 3000, 3, 2, 30, r, a), 3e6, MEM_ADJ_KB[1 if a > 2 else 0])))
+    rows.append(("WING-3D-01b (topology-event epochs, rear wing, 2 OPs, 6 events)", lambda r, a: (
+        campaign(3e6, 3000, 3, 2, 30, r, a) + topology_events(3e6, 3000, 2, 6, r), 3e6, MEM_ADJ_KB[1 if a > 2 else 0])))
     rows.append(("WING-3D-01 control arm (LB K=16 FD, 2 OPs)", lambda r, a: (fd_arm(3e6, 3000, 2, 30, r), 3e6, 7.2)))
     rows.append(("WING-3D-01 installed check (half car x 16)", lambda r, a: (16 * p_core_h(2.5e7, 4000, r), 2.5e7, 7.2)))
     rows.append(("GENERICITY (held-out geometry 1e6, 5 iterations)", lambda r, a: (campaign(1e6, 2500, 2, 1, 5, r, a), 1e6, MEM_ADJ_KB[1 if a > 2 else 0])))
     rows.append(("WW-00a/b (parent scan 6 h/c x (steady + LTS + URANS), adjoint probe)", lambda r, a: (p_core_h(8e6, 3000, r) * (6 * (2 + URANS_EQ) + 3 * (1 + 2 * a)), 8e6, MEM_ADJ_KB[1 if a > 2 else 0])))
     rows.append(("WW-01 (front wing + wheel, 2 OPs)", lambda r, a: (campaign(8e6, 3000, 3, 2, 30, r, a), 8e6, MEM_ADJ_KB[1 if a > 2 else 0])))
+    rows.append(("CAR-01 topology events (3 OPs, 4 events)", lambda r, a: (topology_events(2.5e7, 4000, 3, 4, r), 2.5e7, 7.2)))
     rows.append(("CAR-01 (half car, 3 OPs, + DDES pair)", lambda r, a: (campaign(2.5e7, 4000, 4, 3, 30, r, a) + 2 * 50 * p_core_h(2.5e7, 4000, r), 2.5e7, MEM_ADJ_KB[1 if a > 2 else 0])))
 
     print(f"{'stage':68s} {'nodes':>5s} {'node-h lo':>9s} {'node-h hi':>9s} {'USD lo':>8s} {'USD hi':>8s}")
@@ -103,8 +116,9 @@ def main():
         print(f"{name:68s} {n_lo:2d}/{n_hi:<2d} {nh_lo:9.0f} {nh_hi:9.0f} {u_lo:8.0f} {u_hi:8.0f}")
     print(f"{'TOTAL compute (x1.5 dev, +5 % storage/idle)':68s} {'':5s} {'':9s} {'':9s} {tot_lo:8.0f} {tot_hi:8.0f}")
     print(f"{'TOTAL + 20 % reserve':68s} {'':5s} {'':9s} {'':9s} {tot_lo*1.2:8.0f} {tot_hi*1.2:8.0f}")
-    wo_car_lo = tot_lo - usd(rows[-1][1](RATE[1], ADJ[0])[0], 2.5e7, MEM_ADJ_KB[0])[0]
-    wo_car_hi = tot_hi - usd(rows[-1][1](RATE[0], ADJ[1])[0], 2.5e7, MEM_ADJ_KB[1])[0]
+    car_rows = [f for n, f in rows if n.startswith("CAR-01")]
+    wo_car_lo = tot_lo - sum(usd(f(RATE[1], ADJ[0])[0], f(RATE[1], ADJ[0])[1], f(RATE[1], ADJ[0])[2])[0] for f in car_rows)
+    wo_car_hi = tot_hi - sum(usd(f(RATE[0], ADJ[1])[0], f(RATE[0], ADJ[1])[1], f(RATE[0], ADJ[1])[2])[0] for f in car_rows)
     print(f"{'TOTAL without CAR-01':68s} {'':5s} {'':9s} {'':9s} {wo_car_lo:8.0f} {wo_car_hi:8.0f}")
     print()
     print("Per-step noise floor anchor (T2-0c fine30, h/c 0.224, morph sigma_eff 0.00043 Cl = 0.033 %): paired 0.047 %, n=16 upper bound 0.067 %;")

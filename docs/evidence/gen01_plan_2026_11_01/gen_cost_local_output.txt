@@ -1,0 +1,15 @@
+RAM 128 GiB; peak memory = max(snappy 4.0 kB/cell, adjoint 2.0x2.5 kB/cell)
+stage                                                     cells peak GiB fits | primal h (32c) days/OP (32c) days total (32c) | days total (64c)
+LOOP-3D-00 (coarse wing)                                1.0e+06        5  yes |   0.4..0.9         2..5           2..5        |      1..2
+WING-3D-01 rear wing                                    3.0e+06       14  yes |   1.3..3.1        16..46         32..92       |     16..46
+WING-3D-01b topology epochs (+6 events)                 3.0e+06       14  yes |   1.3..3.1        23..63         46..125      |     23..63
+WW-01 front wing + tyre                                 8.0e+06       38  yes |   3.5..8.3        43..123        85..247      |     43..123
+CAR-01 installed component campaigns (3 x 10 M cells)   1.0e+07       48  yes |   5.1..12.2       44..127        44..127      |     22..63
+CAR-01 whole half car 25 M (one OP)                     2.5e+07      119  yes |  14.5..34.7      139..420       139..420      |     69..210
+TOTAL machine-days on 32 cores for every stage that fits (serial): 348..1015  (= 11.6..33.8 months)
+TOTAL machine-days on 64 cores for every stage that fits (serial): 174..507  (= 5.8..16.9 months)
+
+Kaggle CPU offload (free): 5 sessions x 4 cores x 12 h/day = 240 core-h/day; a 3 M-cell primal is ~16-40 core-h,
+  so the verification ensembles of the wing stages (<= ~3 M cells, ~30 GB RAM per session) can run there at ~6-15 primals/day.
+Hardware: a 64-core / 128-256 GB workstation is roughly 1.5-3 M JPY one-time; the Mac (Rosetta) is 3-5x slower per core.
+Control arm (LB K=16 FD, 30 it, 1 OP, 3 M cells) on 32 cores: 54..129 days -> not affordable on one machine; K=8, 15 it: 14..33 days
