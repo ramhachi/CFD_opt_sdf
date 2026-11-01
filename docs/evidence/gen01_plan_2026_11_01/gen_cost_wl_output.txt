@@ -1,18 +1,20 @@
-case                                              cells    steps    GB |  Kaggle T4 (30 h/week) | RTX 5090 32 GB (local, | A100 80 GB (spot, opti
-front wing + ground, h 5 mm (Re_c ~3e3)         7.2e+06    24000   1.0 |               0.87 h/ev |               0.17 h/ev |               0.15 h/ev
-front wing + ground, h 2.5 mm (Re_c ~1e4)       5.8e+07    62400   7.7 |              18.15 h/ev |               3.63 h/ev |               3.03 h/ev
-sidepod + wheel, h 10 mm (Re_L ~3e3)            7.7e+06    20000   1.0 |               0.78 h/ev |               0.16 h/ev |               0.13 h/ev
-coarse half car context, h 25 mm                1.4e+06     4800   0.2 |               0.03 h/ev |               0.01 h/ev |               0.01 h/ev
+case                                                              cells   steps    GB |  T4 (Kaggle, 1 GPU) | T4x2 (Kaggle, both) |     RTX 5070Ti/5080 |            RTX 5090
+TOPO-2D-00: 2D section, 1-3 elements, Re_c 3e3 (h c/120)        7.2e+05   62400   0.1 |           0.23 h/ev |           0.11 h/ev |           0.08 h/ev |           0.04 h/ev
+front wing + ground, h 5 mm (Re_c ~3e3)                         7.2e+06   24000   1.0 |           0.87 h/ev |           0.44 h/ev |           0.29 h/ev |           0.15 h/ev
+front wing + ground, h 3.3 mm (R3 confirmation, same Re)        2.4e+07   36000   3.3 |           4.42 h/ev |           2.21 h/ev |           1.47 h/ev |           0.74 h/ev
+front wing + ground, h 2.5 mm (Re_c ~1e4 probe)                 5.8e+07   62400   7.7 |          18.15 h/ev |           9.08 h/ev |           6.05 h/ev |           3.03 h/ev
+sidepod + wheel, h 10 mm (Re_L ~3e3)                            7.7e+06   20000   1.0 |           0.78 h/ev |           0.39 h/ev |           0.26 h/ev |           0.13 h/ev
+coarse half car context, h 25 mm                                1.4e+06    4800   0.2 |           0.03 h/ev |           0.02 h/ev |           0.01 h/ev |           0.01 h/ev
 
-Campaign GPU-days per budget line, for the two front-wing cases (RTX 5090 local; Kaggle T4 at 30 h/week in weeks):
-  reduced-basis FD, K=15, 30 iterations (+1.5 trials)              945 ev |    6.9 d (5090) /   27.5 wk (T4) |  143.0 d (5090) /  571.8 wk (T4)
-  CMA-ES, 40 variables, 60 generations x 12                        720 ev |    5.2 d (5090) /   20.9 wk (T4) |  108.9 d (5090) /  435.7 wk (T4)
-  SCREEN-type response surface on 8 modes (45 coefficients x 2)     90 ev |    0.7 d (5090) /    2.6 wk (T4) |   13.6 d (5090) /   54.5 wk (T4)
-  topology events: 6 x (5 seeds + 16 paired checks)                126 ev |    0.9 d (5090) /    3.7 wk (T4) |   19.1 d (5090) /   76.2 wk (T4)
-  verification: 2 x 16 phase pairs                                  32 ev |    0.2 d (5090) /    0.9 wk (T4) |    4.8 d (5090) /   19.4 wk (T4)
+MW-01 on the h 5 mm front wing: GPU-hours and calendar per budget line
+  budget line                                                                                  evals |  T4x2 quota-h (weeks @30h) | 5090 hours (days 24/7) | 5090 rental USD
+  SCREEN-type: 8-mode RS 90 + events 6x21 + fixed-count arm 90 + verification 32                 338 |          147 h ( 4.9 wk) |        49 h ( 2.0 d) |    17..59
+  reduced-basis sep-CMA-ES/DE, K=15, 30xD = 450 + events 126 + fixed-count 90 + verification 32   698 |          305 h (10.2 wk) |       102 h ( 4.2 d) |    36..121
+  reduced-basis FD trust region, K=15, 30 iterations (945) + events + arms                      1193 |          521 h (17.4 wk) |       174 h ( 7.2 d) |    61..206
 
-OpenFOAM primal verifier (wing, SA/SST, 3 M cells):     62 core-h =   1.0 h on 64 cores; memory ~  4.5 GB; 32 paired realisations =  1.3 machine-days
-OpenFOAM primal verifier (wing + wheel, 8 M cells):    167 core-h =   2.6 h on 64 cores; memory ~ 12.0 GB; 32 paired realisations =  3.5 machine-days
-OpenFOAM primal verifier (half car, 25 M cells):    694 core-h =  10.9 h on 64 cores; memory ~ 37.5 GB; 32 paired realisations = 14.5 machine-days
+Programme total (review W-S6 estimate): 500-650 RTX-5090-hours = rental 175..774 USD; on T4x2 1500-1950 quota-hours = 50-65 weeks; on a 5080 1000-1300 h = 42-54 days 24/7
+Purchase (JPY, 2026-09/10): 5090 > 1,000k (scarce) | 5080 ~240k | 5070 Ti ~180k | plus host PC with 128 GB RAM; electricity ~17k/month at 24/7.
 
-Hardware: RTX 5090 32 GB ~ 0.4-0.6 M JPY; a 64-core/128 GB CPU box ~ 1.5-3 M JPY (verifier); Kaggle GPU is free at ~30 h/week; no cloud CPU, no DAFoam.
+OpenFOAM verifier (wing RANS primal, 3 M cells):    62 core-h =   6.2 h on the Mac (10 cores) /  1.0 h on 64 cores; 16 pairs =  8.3 Mac-days
+OpenFOAM verifier (wing + wheel RANS, 8 M cells):   167 core-h =  16.7 h on the Mac (10 cores) /  2.6 h on 64 cores; 16 pairs = 22.2 Mac-days
+Same-Re unsteady laminar check (pimpleFoam, ~800 core-h per run): 4 pairs = 26.7 Mac-days /  4.2 days on 64 cores
