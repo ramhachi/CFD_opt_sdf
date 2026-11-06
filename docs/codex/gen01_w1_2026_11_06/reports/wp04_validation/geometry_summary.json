@@ -1,0 +1,1021 @@
+[
+  {
+    "file": "docs/harness/topo2d00_scenes/E1.json",
+    "sha256": "c7180cc38d022c279df61a0ef3312658b9d606cbe7e265f5271a35ece7acbdf9",
+    "ratios": [
+      [
+        "main",
+        4.595431922819374
+      ]
+    ],
+    "thickening": [
+      {
+        "element": "main",
+        "method": "camber-normal-reconstruction-v1",
+        "t_min_mm": 7.446666666666667,
+        "controlled_from_index": 24,
+        "controlled_from_camber_fraction": 0.24980741737476095,
+        "controlled_min_thickness_mm": 7.446666666666662,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+        "paired_projection_min_thickness_mm": 7.446666666666662,
+        "extra_normal_offset_mm": 0.0,
+        "max_tangential_reconstruction_mm": 0.8687608202727318,
+        "source_vertices_only_normal_translated": false,
+        "bdim_core_qualified": false,
+        "preserved_cap_pairs": 3,
+        "cap_radius_claim": "source polygon and three-point curvature proxy only",
+        "ramp": "smoothstep from paired station 2 to original maximum-thickness station",
+        "global_positive_thickness_claim": false,
+        "original_max_thickness_mm": 28.12992484908143,
+        "max_thickness_ratio": 4.595431922819374,
+        "te_midpoint_preserved": true
+      }
+    ],
+    "gates": {
+      "accepted": true,
+      "thickness_required": true,
+      "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded",
+      "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+      "bdim_core_qualified": false,
+      "controlled_minima": [
+        {
+          "element": "main",
+          "thickness_mm": 7.446666666666662
+        }
+      ],
+      "pair_gaps_mm": [],
+      "clearance_mm": 100.0,
+      "self_intersections": false,
+      "overlap": false
+    },
+    "core_probes": {
+      "main": {
+        "included": [
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41
+        ],
+        "excluded": [
+          42,
+          43
+        ]
+      }
+    }
+  },
+  {
+    "file": "docs/harness/topo2d00_scenes/E2.json",
+    "sha256": "9a7811e19cab1fdd673b15e112cb622c3da7186fb56099b13ab1a4d41e2fbd3f",
+    "ratios": [
+      [
+        "main",
+        4.595431922819374
+      ],
+      [
+        "flap1",
+        8.847963506482179
+      ]
+    ],
+    "thickening": [
+      {
+        "element": "main",
+        "method": "camber-normal-reconstruction-v1",
+        "t_min_mm": 7.446666666666667,
+        "controlled_from_index": 24,
+        "controlled_from_camber_fraction": 0.24980741737476095,
+        "controlled_min_thickness_mm": 7.446666666666662,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+        "paired_projection_min_thickness_mm": 7.446666666666662,
+        "extra_normal_offset_mm": 0.0,
+        "max_tangential_reconstruction_mm": 0.8687608202727318,
+        "source_vertices_only_normal_translated": false,
+        "bdim_core_qualified": false,
+        "preserved_cap_pairs": 3,
+        "cap_radius_claim": "source polygon and three-point curvature proxy only",
+        "ramp": "smoothstep from paired station 2 to original maximum-thickness station",
+        "global_positive_thickness_claim": false,
+        "original_max_thickness_mm": 28.12992484908143,
+        "max_thickness_ratio": 4.595431922819374,
+        "te_midpoint_preserved": true
+      },
+      {
+        "element": "flap1",
+        "method": "camber-normal-reconstruction-v1",
+        "t_min_mm": 7.446666666666667,
+        "controlled_from_index": 6,
+        "controlled_from_camber_fraction": 0.14737220857327646,
+        "controlled_min_thickness_mm": 7.446666666666641,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+        "paired_projection_min_thickness_mm": 7.446666666666641,
+        "extra_normal_offset_mm": 0.0,
+        "max_tangential_reconstruction_mm": 3.408355570884214,
+        "source_vertices_only_normal_translated": false,
+        "bdim_core_qualified": false,
+        "preserved_cap_pairs": 3,
+        "cap_radius_claim": "source polygon and three-point curvature proxy only",
+        "ramp": "smoothstep from paired station 2 to original maximum-thickness station",
+        "global_positive_thickness_claim": false,
+        "original_max_thickness_mm": 13.29740187838405,
+        "max_thickness_ratio": 8.847963506482179,
+        "te_midpoint_preserved": true
+      }
+    ],
+    "gates": {
+      "accepted": true,
+      "thickness_required": true,
+      "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded",
+      "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+      "bdim_core_qualified": false,
+      "controlled_minima": [
+        {
+          "element": "main",
+          "thickness_mm": 7.446666666666662
+        },
+        {
+          "element": "flap1",
+          "thickness_mm": 7.4466666666666645
+        }
+      ],
+      "pair_gaps_mm": [
+        {
+          "elements": [
+            "main",
+            "flap1"
+          ],
+          "distance_mm": 8.543868620506741
+        }
+      ],
+      "clearance_mm": 100.0,
+      "self_intersections": false,
+      "overlap": false
+    },
+    "core_probes": {
+      "main": {
+        "included": [
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41
+        ],
+        "excluded": [
+          42,
+          43
+        ]
+      },
+      "flap1": {
+        "included": [
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "excluded": [
+          17
+        ]
+      }
+    }
+  },
+  {
+    "file": "docs/harness/topo2d00_scenes/E3.json",
+    "sha256": "b0c11e9d4c73bd340cffc3ccd77b36d2a8b60f501e1aca956255bf3500c04be4",
+    "ratios": [
+      [
+        "main",
+        4.595431922819374
+      ],
+      [
+        "flap1",
+        17.69975095584109
+      ],
+      [
+        "flap2",
+        17.699750955841154
+      ]
+    ],
+    "thickening": [
+      {
+        "element": "main",
+        "method": "camber-normal-reconstruction-v1",
+        "t_min_mm": 7.446666666666667,
+        "controlled_from_index": 24,
+        "controlled_from_camber_fraction": 0.24980741737476095,
+        "controlled_min_thickness_mm": 7.446666666666662,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+        "paired_projection_min_thickness_mm": 7.446666666666662,
+        "extra_normal_offset_mm": 0.0,
+        "max_tangential_reconstruction_mm": 0.8687608202727318,
+        "source_vertices_only_normal_translated": false,
+        "bdim_core_qualified": false,
+        "preserved_cap_pairs": 3,
+        "cap_radius_claim": "source polygon and three-point curvature proxy only",
+        "ramp": "smoothstep from paired station 2 to original maximum-thickness station",
+        "global_positive_thickness_claim": false,
+        "original_max_thickness_mm": 28.12992484908143,
+        "max_thickness_ratio": 4.595431922819374,
+        "te_midpoint_preserved": true
+      },
+      {
+        "element": "flap1",
+        "method": "camber-normal-reconstruction-v1",
+        "t_min_mm": 7.446666666666667,
+        "controlled_from_index": 6,
+        "controlled_from_camber_fraction": 0.14737220857327651,
+        "controlled_min_thickness_mm": 7.4466666666668875,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+        "paired_projection_min_thickness_mm": 7.448275337158352,
+        "extra_normal_offset_mm": 0.0008045937579345853,
+        "max_tangential_reconstruction_mm": 1.7041777854421056,
+        "source_vertices_only_normal_translated": false,
+        "bdim_core_qualified": false,
+        "preserved_cap_pairs": 3,
+        "cap_radius_claim": "source polygon and three-point curvature proxy only",
+        "ramp": "smoothstep from paired station 2 to original maximum-thickness station",
+        "global_positive_thickness_claim": false,
+        "original_max_thickness_mm": 6.648700939192024,
+        "max_thickness_ratio": 17.69975095584109,
+        "te_midpoint_preserved": true
+      },
+      {
+        "element": "flap2",
+        "method": "camber-normal-reconstruction-v1",
+        "t_min_mm": 7.446666666666667,
+        "controlled_from_index": 6,
+        "controlled_from_camber_fraction": 0.14737220857327651,
+        "controlled_min_thickness_mm": 7.446666666666889,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+        "paired_projection_min_thickness_mm": 7.44827533715835,
+        "extra_normal_offset_mm": 0.0008045937579345853,
+        "max_tangential_reconstruction_mm": 1.7041777854421067,
+        "source_vertices_only_normal_translated": false,
+        "bdim_core_qualified": false,
+        "preserved_cap_pairs": 3,
+        "cap_radius_claim": "source polygon and three-point curvature proxy only",
+        "ramp": "smoothstep from paired station 2 to original maximum-thickness station",
+        "global_positive_thickness_claim": false,
+        "original_max_thickness_mm": 6.648700939192025,
+        "max_thickness_ratio": 17.699750955841154,
+        "te_midpoint_preserved": true
+      }
+    ],
+    "gates": {
+      "accepted": true,
+      "thickness_required": true,
+      "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded",
+      "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+      "bdim_core_qualified": false,
+      "controlled_minima": [
+        {
+          "element": "main",
+          "thickness_mm": 7.446666666666662
+        },
+        {
+          "element": "flap1",
+          "thickness_mm": 7.446666666666898
+        },
+        {
+          "element": "flap2",
+          "thickness_mm": 7.44666666666688
+        }
+      ],
+      "pair_gaps_mm": [
+        {
+          "elements": [
+            "main",
+            "flap1"
+          ],
+          "distance_mm": 8.458894171915299
+        },
+        {
+          "elements": [
+            "main",
+            "flap2"
+          ],
+          "distance_mm": 77.67298944848602
+        },
+        {
+          "elements": [
+            "flap1",
+            "flap2"
+          ],
+          "distance_mm": 8.865851163569094
+        }
+      ],
+      "clearance_mm": 100.0,
+      "self_intersections": false,
+      "overlap": false
+    },
+    "core_probes": {
+      "main": {
+        "included": [
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41
+        ],
+        "excluded": [
+          42,
+          43
+        ]
+      },
+      "flap1": {
+        "included": [
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "excluded": [
+          16,
+          17
+        ]
+      },
+      "flap2": {
+        "included": [
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "excluded": [
+          16,
+          17
+        ]
+      }
+    }
+  },
+  {
+    "file": "docs/harness/topo2d00_scenes/E1_sharp.json",
+    "sha256": "71c506ea8ed9c7872be8a954d727c094a4493f9b44bdf3b3c0029375096318fc",
+    "ratios": [
+      [
+        "main",
+        1.0
+      ]
+    ],
+    "thickening": [
+      {
+        "element": "main",
+        "method": "unthickened-source",
+        "max_thickness_ratio": 1.0,
+        "global_positive_thickness_claim": false
+      }
+    ],
+    "gates": {
+      "accepted": true,
+      "thickness_required": false,
+      "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded",
+      "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+      "bdim_core_qualified": false,
+      "controlled_minima": [],
+      "pair_gaps_mm": [],
+      "clearance_mm": 100.0,
+      "self_intersections": false,
+      "overlap": false
+    },
+    "core_probes": {
+      "main": {
+        "included": null,
+        "excluded": null
+      }
+    }
+  },
+  {
+    "file": "docs/harness/topo2d00_scenes/E2_sharp.json",
+    "sha256": "5a6f29fe9796d75f7325a77a9a7a22a017fc9712b7025a84e1a291ddf25f9c3e",
+    "ratios": [
+      [
+        "main",
+        1.0
+      ],
+      [
+        "flap1",
+        1.0
+      ]
+    ],
+    "thickening": [
+      {
+        "element": "main",
+        "method": "unthickened-source",
+        "max_thickness_ratio": 1.0,
+        "global_positive_thickness_claim": false
+      },
+      {
+        "element": "flap1",
+        "method": "unthickened-source",
+        "max_thickness_ratio": 1.0,
+        "global_positive_thickness_claim": false
+      }
+    ],
+    "gates": {
+      "accepted": true,
+      "thickness_required": false,
+      "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded",
+      "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+      "bdim_core_qualified": false,
+      "controlled_minima": [],
+      "pair_gaps_mm": [
+        {
+          "elements": [
+            "main",
+            "flap1"
+          ],
+          "distance_mm": 11.433330448368125
+        }
+      ],
+      "clearance_mm": 100.0,
+      "self_intersections": false,
+      "overlap": false
+    },
+    "core_probes": {
+      "main": {
+        "included": null,
+        "excluded": null
+      },
+      "flap1": {
+        "included": null,
+        "excluded": null
+      }
+    }
+  },
+  {
+    "file": "docs/harness/topo2d00_scenes/E3_sharp.json",
+    "sha256": "3ceaa4bedb955ab1fd4e417b4162579de95748791475a5aa32716a7f5f4eef99",
+    "ratios": [
+      [
+        "main",
+        1.0
+      ],
+      [
+        "flap1",
+        1.0
+      ],
+      [
+        "flap2",
+        1.0
+      ]
+    ],
+    "thickening": [
+      {
+        "element": "main",
+        "method": "unthickened-source",
+        "max_thickness_ratio": 1.0,
+        "global_positive_thickness_claim": false
+      },
+      {
+        "element": "flap1",
+        "method": "unthickened-source",
+        "max_thickness_ratio": 1.0,
+        "global_positive_thickness_claim": false
+      },
+      {
+        "element": "flap2",
+        "method": "unthickened-source",
+        "max_thickness_ratio": 1.0,
+        "global_positive_thickness_claim": false
+      }
+    ],
+    "gates": {
+      "accepted": true,
+      "thickness_required": false,
+      "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded",
+      "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+      "bdim_core_qualified": false,
+      "controlled_minima": [],
+      "pair_gaps_mm": [
+        {
+          "elements": [
+            "main",
+            "flap1"
+          ],
+          "distance_mm": 11.295219411012784
+        },
+        {
+          "elements": [
+            "main",
+            "flap2"
+          ],
+          "distance_mm": 78.35289669548474
+        },
+        {
+          "elements": [
+            "flap1",
+            "flap2"
+          ],
+          "distance_mm": 12.541199777425938
+        }
+      ],
+      "clearance_mm": 100.0,
+      "self_intersections": false,
+      "overlap": false
+    },
+    "core_probes": {
+      "main": {
+        "included": null,
+        "excluded": null
+      },
+      "flap1": {
+        "included": null,
+        "excluded": null
+      },
+      "flap2": {
+        "included": null,
+        "excluded": null
+      }
+    }
+  },
+  {
+    "file": "docs/harness/topo2d00_scenes/E1_fine.json",
+    "sha256": "43d305e4c38b561f7be60faf365bd87a0f71c1d1c6869b41c326c775abb887e5",
+    "ratios": [
+      [
+        "main",
+        3.0636212818795814
+      ]
+    ],
+    "thickening": [
+      {
+        "element": "main",
+        "method": "camber-normal-reconstruction-v1",
+        "t_min_mm": 4.964444444444444,
+        "controlled_from_index": 24,
+        "controlled_from_camber_fraction": 0.24980741737476095,
+        "controlled_min_thickness_mm": 4.964444444444439,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+        "paired_projection_min_thickness_mm": 4.964444444444439,
+        "extra_normal_offset_mm": 0.0,
+        "max_tangential_reconstruction_mm": 0.8687608202727318,
+        "source_vertices_only_normal_translated": false,
+        "bdim_core_qualified": false,
+        "preserved_cap_pairs": 3,
+        "cap_radius_claim": "source polygon and three-point curvature proxy only",
+        "ramp": "smoothstep from paired station 2 to original maximum-thickness station",
+        "global_positive_thickness_claim": false,
+        "original_max_thickness_mm": 28.12992484908143,
+        "max_thickness_ratio": 3.0636212818795814,
+        "te_midpoint_preserved": true
+      }
+    ],
+    "gates": {
+      "accepted": true,
+      "thickness_required": true,
+      "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded",
+      "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+      "bdim_core_qualified": false,
+      "controlled_minima": [
+        {
+          "element": "main",
+          "thickness_mm": 4.964444444444427
+        }
+      ],
+      "pair_gaps_mm": [],
+      "clearance_mm": 100.0,
+      "self_intersections": false,
+      "overlap": false
+    },
+    "core_probes": {
+      "main": {
+        "included": [
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42
+        ],
+        "excluded": [
+          43
+        ]
+      }
+    }
+  },
+  {
+    "file": "docs/harness/topo2d00_scenes/E2_fine.json",
+    "sha256": "99b1ea1a8628cafafc41905971cd54a6221df52c90694cf387acac69da4c6638",
+    "ratios": [
+      [
+        "main",
+        3.0636212818795814
+      ],
+      [
+        "flap1",
+        5.898642337654818
+      ]
+    ],
+    "thickening": [
+      {
+        "element": "main",
+        "method": "camber-normal-reconstruction-v1",
+        "t_min_mm": 4.964444444444444,
+        "controlled_from_index": 24,
+        "controlled_from_camber_fraction": 0.24980741737476095,
+        "controlled_min_thickness_mm": 4.964444444444439,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+        "paired_projection_min_thickness_mm": 4.964444444444439,
+        "extra_normal_offset_mm": 0.0,
+        "max_tangential_reconstruction_mm": 0.8687608202727318,
+        "source_vertices_only_normal_translated": false,
+        "bdim_core_qualified": false,
+        "preserved_cap_pairs": 3,
+        "cap_radius_claim": "source polygon and three-point curvature proxy only",
+        "ramp": "smoothstep from paired station 2 to original maximum-thickness station",
+        "global_positive_thickness_claim": false,
+        "original_max_thickness_mm": 28.12992484908143,
+        "max_thickness_ratio": 3.0636212818795814,
+        "te_midpoint_preserved": true
+      },
+      {
+        "element": "flap1",
+        "method": "camber-normal-reconstruction-v1",
+        "t_min_mm": 4.964444444444444,
+        "controlled_from_index": 6,
+        "controlled_from_camber_fraction": 0.14737220857327646,
+        "controlled_min_thickness_mm": 4.964444444444444,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+        "paired_projection_min_thickness_mm": 4.964444444444436,
+        "extra_normal_offset_mm": 0.0,
+        "max_tangential_reconstruction_mm": 3.408355570884214,
+        "source_vertices_only_normal_translated": false,
+        "bdim_core_qualified": false,
+        "preserved_cap_pairs": 3,
+        "cap_radius_claim": "source polygon and three-point curvature proxy only",
+        "ramp": "smoothstep from paired station 2 to original maximum-thickness station",
+        "global_positive_thickness_claim": false,
+        "original_max_thickness_mm": 13.29740187838405,
+        "max_thickness_ratio": 5.898642337654818,
+        "te_midpoint_preserved": true
+      }
+    ],
+    "gates": {
+      "accepted": true,
+      "thickness_required": true,
+      "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded",
+      "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+      "bdim_core_qualified": false,
+      "controlled_minima": [
+        {
+          "element": "main",
+          "thickness_mm": 4.964444444444427
+        },
+        {
+          "element": "flap1",
+          "thickness_mm": 4.964444444444444
+        }
+      ],
+      "pair_gaps_mm": [
+        {
+          "elements": [
+            "main",
+            "flap1"
+          ],
+          "distance_mm": 9.779753859967549
+        }
+      ],
+      "clearance_mm": 100.0,
+      "self_intersections": false,
+      "overlap": false
+    },
+    "core_probes": {
+      "main": {
+        "included": [
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42
+        ],
+        "excluded": [
+          43
+        ]
+      },
+      "flap1": {
+        "included": [
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "excluded": [
+          17
+        ]
+      }
+    }
+  },
+  {
+    "file": "docs/harness/topo2d00_scenes/E1_h80.json",
+    "sha256": "a52c5d9cfc849ba6603844cd1d978a70f634427a2faefaf1f9221f1eddd2663a",
+    "ratios": [
+      [
+        "main",
+        4.595431922819374
+      ]
+    ],
+    "thickening": [
+      {
+        "element": "main",
+        "method": "camber-normal-reconstruction-v1",
+        "t_min_mm": 7.446666666666667,
+        "controlled_from_index": 24,
+        "controlled_from_camber_fraction": 0.24980741737476095,
+        "controlled_min_thickness_mm": 7.446666666666662,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+        "paired_projection_min_thickness_mm": 7.446666666666662,
+        "extra_normal_offset_mm": 0.0,
+        "max_tangential_reconstruction_mm": 0.8687608202727318,
+        "source_vertices_only_normal_translated": false,
+        "bdim_core_qualified": false,
+        "preserved_cap_pairs": 3,
+        "cap_radius_claim": "source polygon and three-point curvature proxy only",
+        "ramp": "smoothstep from paired station 2 to original maximum-thickness station",
+        "global_positive_thickness_claim": false,
+        "original_max_thickness_mm": 28.12992484908143,
+        "max_thickness_ratio": 4.595431922819374,
+        "te_midpoint_preserved": true
+      }
+    ],
+    "gates": {
+      "accepted": true,
+      "thickness_required": true,
+      "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded",
+      "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+      "bdim_core_qualified": false,
+      "controlled_minima": [
+        {
+          "element": "main",
+          "thickness_mm": 7.446666666666662
+        }
+      ],
+      "pair_gaps_mm": [],
+      "clearance_mm": 80.0,
+      "self_intersections": false,
+      "overlap": false
+    },
+    "core_probes": {
+      "main": {
+        "included": [
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41
+        ],
+        "excluded": [
+          42,
+          43
+        ]
+      }
+    }
+  },
+  {
+    "file": "docs/harness/topo2d00_scenes/E2_h80.json",
+    "sha256": "181eda7d2c14aa2557667941caa9639800cfe46c5196abaf5b761a1d7436baa0",
+    "ratios": [
+      [
+        "main",
+        4.595431922819374
+      ],
+      [
+        "flap1",
+        8.847963506482179
+      ]
+    ],
+    "thickening": [
+      {
+        "element": "main",
+        "method": "camber-normal-reconstruction-v1",
+        "t_min_mm": 7.446666666666667,
+        "controlled_from_index": 24,
+        "controlled_from_camber_fraction": 0.24980741737476095,
+        "controlled_min_thickness_mm": 7.446666666666662,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+        "paired_projection_min_thickness_mm": 7.446666666666662,
+        "extra_normal_offset_mm": 0.0,
+        "max_tangential_reconstruction_mm": 0.8687608202727318,
+        "source_vertices_only_normal_translated": false,
+        "bdim_core_qualified": false,
+        "preserved_cap_pairs": 3,
+        "cap_radius_claim": "source polygon and three-point curvature proxy only",
+        "ramp": "smoothstep from paired station 2 to original maximum-thickness station",
+        "global_positive_thickness_claim": false,
+        "original_max_thickness_mm": 28.12992484908143,
+        "max_thickness_ratio": 4.595431922819374,
+        "te_midpoint_preserved": true
+      },
+      {
+        "element": "flap1",
+        "method": "camber-normal-reconstruction-v1",
+        "t_min_mm": 7.446666666666667,
+        "controlled_from_index": 6,
+        "controlled_from_camber_fraction": 0.14737220857327646,
+        "controlled_min_thickness_mm": 7.446666666666641,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+        "paired_projection_min_thickness_mm": 7.446666666666641,
+        "extra_normal_offset_mm": 0.0,
+        "max_tangential_reconstruction_mm": 3.408355570884214,
+        "source_vertices_only_normal_translated": false,
+        "bdim_core_qualified": false,
+        "preserved_cap_pairs": 3,
+        "cap_radius_claim": "source polygon and three-point curvature proxy only",
+        "ramp": "smoothstep from paired station 2 to original maximum-thickness station",
+        "global_positive_thickness_claim": false,
+        "original_max_thickness_mm": 13.29740187838405,
+        "max_thickness_ratio": 8.847963506482179,
+        "te_midpoint_preserved": true
+      }
+    ],
+    "gates": {
+      "accepted": true,
+      "thickness_required": true,
+      "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded",
+      "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+      "bdim_core_qualified": false,
+      "controlled_minima": [
+        {
+          "element": "main",
+          "thickness_mm": 7.446666666666662
+        },
+        {
+          "element": "flap1",
+          "thickness_mm": 7.4466666666666645
+        }
+      ],
+      "pair_gaps_mm": [
+        {
+          "elements": [
+            "main",
+            "flap1"
+          ],
+          "distance_mm": 8.543868620506741
+        }
+      ],
+      "clearance_mm": 80.0,
+      "self_intersections": false,
+      "overlap": false
+    },
+    "core_probes": {
+      "main": {
+        "included": [
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41
+        ],
+        "excluded": [
+          42,
+          43
+        ]
+      },
+      "flap1": {
+        "included": [
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "excluded": [
+          17
+        ]
+      }
+    }
+  }
+]

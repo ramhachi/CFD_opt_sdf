@@ -1,0 +1,175 @@
+{
+  "schema": "topo2d-wp4-program-sources-v1",
+  "base_commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+  "full_cpu_suite_commit": "970d8fad90884b1e9bfa1470f4fa3f4f78a3a5ec",
+  "final_program_commit": "b68b3beea15efb10c343442c83ad14f42e19d87f",
+  "files": {
+    "data/zz2003/flap_table4.dat": {
+      "full_cpu_suite": "8dd4c9582f265b5585f926bc98377fea0b1648b0cf9f0e7ceebce27148def89a",
+      "final_program": "8dd4c9582f265b5585f926bc98377fea0b1648b0cf9f0e7ceebce27148def89a"
+    },
+    "data/zz2003/main_element_table3.dat": {
+      "full_cpu_suite": "66bbf8b5caa90f78f52c0851503077b83bab3fd803709858885d8387c05695d8",
+      "final_program": "66bbf8b5caa90f78f52c0851503077b83bab3fd803709858885d8387c05695d8"
+    },
+    "data/zz2003/single_element_table2.dat": {
+      "full_cpu_suite": "04934133a6c085e2f10e0a8e688e91fbd53dc8fc8b999a07433d351d8e152cfe",
+      "final_program": "04934133a6c085e2f10e0a8e688e91fbd53dc8fc8b999a07433d351d8e152cfe"
+    },
+    "docs/codex/gen01_w1_2026_11_06/reports/topo2d00_geometry.png": {
+      "full_cpu_suite": "597d511f788131bc88b200404b830b46dfb36c8d457f67a5e3f35567143068bf",
+      "final_program": "597d511f788131bc88b200404b830b46dfb36c8d457f67a5e3f35567143068bf"
+    },
+    "docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_result_schema.json": {
+      "full_cpu_suite": "04ebcf764568f206071c2d81bf9a32318f0f3283c9cdae596e43f93f0a8016b4",
+      "final_program": "04ebcf764568f206071c2d81bf9a32318f0f3283c9cdae596e43f93f0a8016b4"
+    },
+    "docs/codex/gen01_w1_2026_11_06/reports/topo2d00_source_tables.txt": {
+      "full_cpu_suite": "691793bdf8d5aea96c8c706e6c7197c81b21229f2bc614f9f5778b7d62178734",
+      "final_program": "691793bdf8d5aea96c8c706e6c7197c81b21229f2bc614f9f5778b7d62178734"
+    },
+    "docs/codex/gen01_w1_2026_11_06/reports/wp04_design.md": {
+      "full_cpu_suite": "db7281c195d31fa9fce562bb05c039bf8e114b197fd9023cb6b91316066626b7",
+      "final_program": "13c28a4671d1ade6a872db83039dfd2a373352547ecf55ae77787c4ee378c94a"
+    },
+    "docs/harness/topo2d00_campaign.json": {
+      "full_cpu_suite": "23f6308329d92e6f8759f31257ffb7d2bc2919a7a83c4465d1e666e33a553c4c",
+      "final_program": "23f6308329d92e6f8759f31257ffb7d2bc2919a7a83c4465d1e666e33a553c4c"
+    },
+    "docs/harness/topo2d00_scenes/E1.json": {
+      "full_cpu_suite": "c7180cc38d022c279df61a0ef3312658b9d606cbe7e265f5271a35ece7acbdf9",
+      "final_program": "c7180cc38d022c279df61a0ef3312658b9d606cbe7e265f5271a35ece7acbdf9"
+    },
+    "docs/harness/topo2d00_scenes/E1_fine.json": {
+      "full_cpu_suite": "43d305e4c38b561f7be60faf365bd87a0f71c1d1c6869b41c326c775abb887e5",
+      "final_program": "43d305e4c38b561f7be60faf365bd87a0f71c1d1c6869b41c326c775abb887e5"
+    },
+    "docs/harness/topo2d00_scenes/E1_h80.json": {
+      "full_cpu_suite": "a52c5d9cfc849ba6603844cd1d978a70f634427a2faefaf1f9221f1eddd2663a",
+      "final_program": "a52c5d9cfc849ba6603844cd1d978a70f634427a2faefaf1f9221f1eddd2663a"
+    },
+    "docs/harness/topo2d00_scenes/E1_sharp.json": {
+      "full_cpu_suite": "71c506ea8ed9c7872be8a954d727c094a4493f9b44bdf3b3c0029375096318fc",
+      "final_program": "71c506ea8ed9c7872be8a954d727c094a4493f9b44bdf3b3c0029375096318fc"
+    },
+    "docs/harness/topo2d00_scenes/E2.json": {
+      "full_cpu_suite": "9a7811e19cab1fdd673b15e112cb622c3da7186fb56099b13ab1a4d41e2fbd3f",
+      "final_program": "9a7811e19cab1fdd673b15e112cb622c3da7186fb56099b13ab1a4d41e2fbd3f"
+    },
+    "docs/harness/topo2d00_scenes/E2_fine.json": {
+      "full_cpu_suite": "99b1ea1a8628cafafc41905971cd54a6221df52c90694cf387acac69da4c6638",
+      "final_program": "99b1ea1a8628cafafc41905971cd54a6221df52c90694cf387acac69da4c6638"
+    },
+    "docs/harness/topo2d00_scenes/E2_h80.json": {
+      "full_cpu_suite": "181eda7d2c14aa2557667941caa9639800cfe46c5196abaf5b761a1d7436baa0",
+      "final_program": "181eda7d2c14aa2557667941caa9639800cfe46c5196abaf5b761a1d7436baa0"
+    },
+    "docs/harness/topo2d00_scenes/E2_sharp.json": {
+      "full_cpu_suite": "5a6f29fe9796d75f7325a77a9a7a22a017fc9712b7025a84e1a291ddf25f9c3e",
+      "final_program": "5a6f29fe9796d75f7325a77a9a7a22a017fc9712b7025a84e1a291ddf25f9c3e"
+    },
+    "docs/harness/topo2d00_scenes/E3.json": {
+      "full_cpu_suite": "b0c11e9d4c73bd340cffc3ccd77b36d2a8b60f501e1aca956255bf3500c04be4",
+      "final_program": "b0c11e9d4c73bd340cffc3ccd77b36d2a8b60f501e1aca956255bf3500c04be4"
+    },
+    "docs/harness/topo2d00_scenes/E3_sharp.json": {
+      "full_cpu_suite": "3ceaa4bedb955ab1fd4e417b4162579de95748791475a5aa32716a7f5f4eef99",
+      "final_program": "3ceaa4bedb955ab1fd4e417b4162579de95748791475a5aa32716a7f5f4eef99"
+    },
+    "julia/topo2d/Topo2D.jl": {
+      "full_cpu_suite": "cc03749e2d7be4893927076513c757d6b8c2b4b7c20363c455f0a57030caf0bd",
+      "final_program": "cc03749e2d7be4893927076513c757d6b8c2b4b7c20363c455f0a57030caf0bd"
+    },
+    "scripts/topo2d00/analyze.py": {
+      "full_cpu_suite": "6a05aca09882a9af3a2598ea55e4e406dc6943918426eedc4780b7062c2374a9",
+      "final_program": "4b19f862bc86ba3a97d8f7e444f35f78f787801a617b1a2676e00c6690257d6e"
+    },
+    "scripts/topo2d00/check.py": {
+      "full_cpu_suite": "133ce132b9be490f534b4c15a7444ff7bd32d31bcfdaf05bf08171d908e7ff45",
+      "final_program": "f9f2bf3230afbfc323b206f5d7b7d9e2d74866cfa92b1d6071f83b2ad06344eb"
+    },
+    "scripts/topo2d00/plot_geometry.py": {
+      "full_cpu_suite": "01bfe0114ec8d0c9fd823870010d9d3708cb20cf126cfb1e7d62c0b26bac21a1",
+      "final_program": "01bfe0114ec8d0c9fd823870010d9d3708cb20cf126cfb1e7d62c0b26bac21a1"
+    },
+    "scripts/topo2d_selftest.jl": {
+      "full_cpu_suite": "d8e07d122c34cd4b26f9d161080d34bbd27f6b4aecea49c05c13928e3038970f",
+      "final_program": "d8e07d122c34cd4b26f9d161080d34bbd27f6b4aecea49c05c13928e3038970f"
+    },
+    "scripts/waterlily_topo2d_job.jl": {
+      "full_cpu_suite": "a9208b4d21e73c192d8682bf2a50a38627da0c829941e4d148b524ad950db741",
+      "final_program": "a9208b4d21e73c192d8682bf2a50a38627da0c829941e4d148b524ad950db741"
+    },
+    "src/cfd_harness/scene_campaign.py": {
+      "full_cpu_suite": "633f3ab1c362dfe454ed14f75b1bc0d319520e75fbd9154d1037ed6238c07dd1",
+      "final_program": "633f3ab1c362dfe454ed14f75b1bc0d319520e75fbd9154d1037ed6238c07dd1"
+    },
+    "src/cfd_sdf/topo2d/__init__.py": {
+      "full_cpu_suite": "3b74b60d63b34e84a56d22098a1deca8eaaa410ceb1359b89fa659954673178b",
+      "final_program": "3b74b60d63b34e84a56d22098a1deca8eaaa410ceb1359b89fa659954673178b"
+    },
+    "src/cfd_sdf/topo2d/geometry.py": {
+      "full_cpu_suite": "070df21d45222864ad322167a2706aeb53f64e41496fde57dd404f4edebd6282",
+      "final_program": "070df21d45222864ad322167a2706aeb53f64e41496fde57dd404f4edebd6282"
+    },
+    "tests/topo2d00/synthetic.py": {
+      "full_cpu_suite": "c5121726aef5ba69389679ffb83e00271bf2a5088cbab75005ab4aa77888c233",
+      "final_program": "c5121726aef5ba69389679ffb83e00271bf2a5088cbab75005ab4aa77888c233"
+    },
+    "tests/topo2d00/test_analyze.py": {
+      "full_cpu_suite": "e26688fe55d4963fc6c7f1aa87ed28b3ca92595455ea6e3bf5bc03de9ab18201",
+      "final_program": "d631ff3d465e79d9c7cf86b12d223308a1aa3eb58b367b73033c376ad3aac9f0"
+    },
+    "tests/topo2d00/test_campaign.py": {
+      "full_cpu_suite": "8a0c9608b2644532ad0cb1ab1a29505eee0d5636dc6b1ddd08ae16f93fb48229",
+      "final_program": "8a0c9608b2644532ad0cb1ab1a29505eee0d5636dc6b1ddd08ae16f93fb48229"
+    },
+    "tests/topo2d00/test_check.py": {
+      "full_cpu_suite": "0cb0fb3ca7c610b79b0bbfe59c75d4b655405997f605ceb641cd28b35e80a2ef",
+      "final_program": "b8a1e23026c959ed28b5b25dc6c409a9699faa8db1db3f98a45054cfac95e65d"
+    },
+    "tests/topo2d00/test_geometry.py": {
+      "full_cpu_suite": "19c3b319cfec69ba724402d08fff2c2860692f5f984a3726457d1c54f0533a74",
+      "final_program": "19c3b319cfec69ba724402d08fff2c2860692f5f984a3726457d1c54f0533a74"
+    },
+    "tests/topo2d00/test_source.py": {
+      "full_cpu_suite": "90b20dd9e0aac9529011d7ecfe10c3dce24c290b988e0f149b9354ef9b2d5d04",
+      "final_program": "90b20dd9e0aac9529011d7ecfe10c3dce24c290b988e0f149b9354ef9b2d5d04"
+    }
+  },
+  "git_name_status_from_base": [
+    "A\tdata/zz2003/flap_table4.dat",
+    "A\tdata/zz2003/main_element_table3.dat",
+    "A\tdata/zz2003/single_element_table2.dat",
+    "A\tdocs/codex/gen01_w1_2026_11_06/reports/topo2d00_geometry.png",
+    "A\tdocs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_result_schema.json",
+    "A\tdocs/codex/gen01_w1_2026_11_06/reports/topo2d00_source_tables.txt",
+    "A\tdocs/codex/gen01_w1_2026_11_06/reports/wp04_design.md",
+    "A\tdocs/harness/topo2d00_campaign.json",
+    "A\tdocs/harness/topo2d00_scenes/E1.json",
+    "A\tdocs/harness/topo2d00_scenes/E1_fine.json",
+    "A\tdocs/harness/topo2d00_scenes/E1_h80.json",
+    "A\tdocs/harness/topo2d00_scenes/E1_sharp.json",
+    "A\tdocs/harness/topo2d00_scenes/E2.json",
+    "A\tdocs/harness/topo2d00_scenes/E2_fine.json",
+    "A\tdocs/harness/topo2d00_scenes/E2_h80.json",
+    "A\tdocs/harness/topo2d00_scenes/E2_sharp.json",
+    "A\tdocs/harness/topo2d00_scenes/E3.json",
+    "A\tdocs/harness/topo2d00_scenes/E3_sharp.json",
+    "A\tjulia/topo2d/Topo2D.jl",
+    "A\tscripts/topo2d00/analyze.py",
+    "A\tscripts/topo2d00/check.py",
+    "A\tscripts/topo2d00/plot_geometry.py",
+    "A\tscripts/topo2d_selftest.jl",
+    "A\tscripts/waterlily_topo2d_job.jl",
+    "A\tsrc/cfd_harness/scene_campaign.py",
+    "A\tsrc/cfd_sdf/topo2d/__init__.py",
+    "A\tsrc/cfd_sdf/topo2d/geometry.py",
+    "A\ttests/topo2d00/synthetic.py",
+    "A\ttests/topo2d00/test_analyze.py",
+    "A\ttests/topo2d00/test_campaign.py",
+    "A\ttests/topo2d00/test_check.py",
+    "A\ttests/topo2d00/test_geometry.py",
+    "A\ttests/topo2d00/test_source.py"
+  ]
+}
