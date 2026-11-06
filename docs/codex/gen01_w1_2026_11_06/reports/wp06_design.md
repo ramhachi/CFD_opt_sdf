@@ -1,91 +1,43 @@
-# WP6 GEOM-S1 設計メモ
+# WP6 GEOM-S1 phase A design (Amendment 1)
 
-作成日：2026-11-06。開始点：`e3dcdf6188df6079e197eb28f7fcba1451ec512d`。
-ブランチ：`feat/gen01-w1-06-geom-s1`。開始時の tracked / untracked 差分は空。
+Start: `08e0ea38`; branch: `feat/gen01-w1-06-geom-s1`. Phase B is a separate PR after phase A. The old attempt is preserved byte-for-byte in `wp06_attempt1_blocked/`.
 
-**状態：BLOCKED（距離関数の仕様の選択待ち）。** 本メモは設計と負の再現例の記録であり、フェーズ A の実装完了を表さない。
+## Contract and scope
 
-## 読んだ文書と継承する契約
+Read `00_README.md` first, AGENTS, the requested source/contracts and research F/E, STATE and branching rules; long historical documents were read by the applicable sections allowed by Amendment 1. `phase_plan.md` remains the sole roadmap authority. No existing gate, v2 parser, harness, WaterLily job, pinned source, evidence or author-managed specification is changed. This is solver-free software/contract evidence, never Birth-1 primal qualification or a revision of GEOM03_NO_GO / SRCMAP02_INCONCLUSIVE.
 
-共通 README を最初に読み、AGENTS と指定の五文書、STATE、branching strategy、GEN-01 rev 3.1 全文を確認した。長い履歴文書は read-only worker に分担し、欠落範囲を補って全文の確認を完了した。WP6 が指定する v18、SDFDesignState、geometry_gates v1/v2、volume_semantics_v2、v2 geometry/topology/width 文書、ProblemSpec v2 と例、harness schema/build/template/README、研究 F §2・6、研究 E §1 も確認した。Issue [#32](https://github.com/ramhachi/CFD_opt_sdf/issues/32) は `gh issue view 32` で取得した。
+Negative phi means solid; exact zero is fluid for occupancy. Scene JSON uses SI metres/radians, explicit component IDs and stable ordered lists. Hashes bind canonical JSON, fixed STL bytes and the field algorithm/version. Scene and sampled-state identities are distinct. Design-lattice occupancy/volume is reported with its grid, not as continuum volume or P22-v2's v17-specific cap.
 
-- `phase_plan.md` が状態と実行順序の唯一の authority。今回の source-only 作業は登録、凍結、物理 gate の採用を伴わない。
-- `phi < 0` が solid、exact zero は solid に数えない。node occupancy、八頂点の Float32 平均で判定する cell-centre occupancy、連続体／mesh の体積を区別する。
-- design lattice と flow grid は別物。scene bbox と h から設計格子を作っても、WaterLily の flow domain を決定したことにはならない。
-- v2 gate と ProblemSpec v2、既存 evidence/pin、WaterLily job、author 管理の仕様本文は変更しない。
-- R3 の定義を新しい開発用 scene 検査で再利用しても、既存の `GEOM03_NO_GO` は変わらない。既存 R0 の occupancy alias と R3 の偽陰性を隠さない。
-- P22-v2 の 8272 上限は特定の v17 格子の契約である。任意の scene に移植しない。
-- #32 の正式な Birth-1 は actual primal response と registered improvement / rollback を要求する。WP6 の event 分類テストは、そのソフトウェア準備に限る。
+## Representation
 
-## 先に解決する数式上の不整合
+New files: `src/cfd_sdf/scene/{__init__,primitives,scene,events,gates}.py`; deterministic tests in `tests/scene/`; design/report/validation records here. Reuse NumPy, SciPy, trimesh, `SDFDesignState`, existing occupancy/topology/morphology definitions. No dependencies are added.
 
-WP6 成果物 1 は、非零 camber/reflex、v18 `plate_phi` と同じ式、厳密な SDF を同時に要求する。GEN-01 §3.1 も「各要素はパラメタごとに厳密な SDF」とする。
+`PlateElement(id, x, z, chord, thickness, angle=0, camber=0, reflex=0, span=1, y=0)` shares one x-z section for points with final dimension 2 (x,z) or 3 (x,y,z). Flat tips use the exact extrusion composition. The undeformed stadium uses precisely v18's formula and requires gradient-norm error <=1e-8 away from medial/kink sets.
 
-局所 chord 座標を u、法線座標を v、s=2u/L とする。端の丸みと span tip から離れた `|u| < L/2` の領域では、v18 の式は
+Amendment 1 requires the **v18 zero set**, rather than identical deformed field values. Its permitted raw first approximation fails the new 2%-of-thickness band requirement when camber/reflex attain their limits together: a rational boundary witness at C/c=.06,R/c=.04,t/c=.1,h/c=.025 proves error >.0342t. Consequently deformed distance values will use the same polynomial surfaces with a more accurate closest-surface projection, retaining the zero set. This is an implementation choice within the amended zero-set contract; the original field remains an independent comparison/control, not an acceptance oracle for distance values. The sampling/approximation error must be checked against a dense independently parameterised zero set. Do not relax the requested tolerances or hide this combined-amplitude case.
 
-```text
-f(u) = C (s^2 - 1/3) + R (s^3 - 0.6 s)
-phi  = |v + f(u)| - t/2
-f'(u) = (4 C/L) s + (2 R/L) (3 s^2 - 0.6)
-|grad phi| = sqrt(1 + f'(u)^2)
-```
+`EndplatePlate` is a vertical rectangular plate; `BoxBody` declares centre/radii/exponent and its distance semantics explicitly. `MeshBody` uses triangle unsigned Euclidean distance and solid-angle winding sign (phi<0 inside), rejects non-watertight/inconsistent meshes and ambiguous winding; source STL SHA is mandatory. Document #53's unqualified target signer and the opposite sign of trimesh's signed-distance helper.
 
-である。剛体回転はこのノルムを変えない。C または R が非零なら一般に 1 にならず、滑らかな表面の近傍でも厳密な距離関数ではない。既存 gate の中央値許容差を通ることや AutoBody の局所的な `phi / |grad phi|` 正規化では、この契約を満たせない。
+`Scene(components,fixed,ground)` evaluates min union, labels by deterministic argmin, derives a padded lattice from finite component bounds and caller h/phase, and converts to existing SDFDesignState. Infinite ground is a z half-space, excluded from finite-body bounds. Union sign is correct; overlapping interiors need not be exact signed distance. General overlapping design elements are rejected; intentional endplate joints and explicit merged elements are separately declared.
 
-`wp06_sdf_preflight.py` を本メモの後に追加し、既存関数の直接呼び出し、中央差分、解析勾配、より近い境界点の witness を独立に照合する。既存 source を修正せず、正の基準として camber=reflex=0 も測る。この診断の成功は「矛盾を再現した」という意味であり、scene acceptance の成功ではない。
+## Proposals and gates
 
-再開の選択肢は次の二つである。どちらも黙って選択しない。
+Events return finite deterministic scene proposals with explicit IDs/provenance. They do not run CFD, choose a winner, mutate history, or debit an evaluation budget. Seed libraries/positions, one-element knockout, near-pair merge, consecutive-checkpoint thickness history, and a split-warm-start N=1..N_max sequence have synthetic tests. Primitive identity and sampled solid-component changes are checked separately. Birth-0 checks intended seed identity, occupancy, position, volume and invalid policy examples; Birth-1 is **software preparation only**.
 
-1. 厳密な距離を優先する。v18 の零等位面を保ち、非零 camber/reflex の距離を最近点から求める。最近点の数値解法と許容差を認め、「同じ式」との一致は無変形 stadium に限定する。非零変形の phi 値は変わるため、WP4 比較の基準も明示する。
-2. v18 の値の互換性を優先する。非零 camber/reflex を analytic implicit field と明記し、厳密 SDF 要件とテストを変更する。
+Scene gate reports all failures/unmeasured items and refuses missing required inputs. Thickness/gap defaults 4h are development defaults only; registered values must come from RES-00. R3 uses the documented node-aligned h/4 trilinear body, strict erosion, opening and defect thresholds on both solid and void. This does not adopt or revise the old R3 study. Topology/cavity/joint checks declare their sampling connectivity. Rules envelope is explicit caller/ProblemSpec data with rule-source provenance: the v2 CFD domain is never inferred to be an FSAE box. Ground/domain clearance and forbidden/root masks are distinct checks. Rejection occurs before any solver and costs zero CFD evaluations.
 
-共通 README 最終行の「仕様が矛盾している」場合の停止規則に従い、この選択まで production code を作らない。ゼロ変形だけを実装してフェーズ A 完了とすることもしない。
+## Julia and resolution
 
-## フェーズ A の条件付き設計とインターフェース
+JSON is the phase-A interchange contract; WP4 owns Julia job changes. Julia evaluates the same section expression/projection and extrusion directly in an AutoBody callable, then SetBody(min,...); it must not substitute trilinear design-grid interpolation. Fixed-count polynomial projection operations can be ported to GPU; runtime/parity/performance remain to be checked in WP4. WP4 polygon distance is an independent approximated surface; until available compare the undeformed pair of PlateElements with v18 to 1e-3c (including a stricter equality check).
 
-実装時には以下の新規ファイルを使う。現時点ではこれらの API は提供していない。
+There is no r_c on the WaterLily main line (Amendment 1); B will declare parameter bounds and increments. h sets design sampling and development feature floors, not a displacement filter. RES-00 determines the registered t/h and g/h limits and phase/error behaviour; no CFD or BDIM qualification is claimed here.
 
-| ファイル | 役割と再利用 |
-| --- | --- |
-| `src/cfd_sdf/scene/primitives.py` | frozen な PlateElement / EndplatePlate / BoxBody / MeshBody。点配列を SI 距離へ写像。入力の NaN、非正寸法、未知の型は拒否。BoxBody の超楕円体も単なる implicit 値を距離と呼ばず、距離評価法を定義してから実装する。 |
-| `src/cfd_sdf/scene/scene.py` | `Scene(components, fixed, ground)`、min union、argmin labels、JSON と SHA、bbox/h から `SDFDesignState` を構築。状態 hash は既存型へ委譲。 |
-| `src/cfd_sdf/scene/events.py` | seed / knockout / merge の有限提案、二 checkpoint の履歴検査、N の外側ループ。評価・採否・予算消費を実装しない。primitive の identity と voxel component 数を分けて記録する。 |
-| `src/cfd_sdf/scene/gates.py` | 厚さ、gap、solid/void の R3、連結、cavity、endplate 接合、宣言された包絡と clearance。候補を変更せず理由を列挙。未知／未測定は通さない。 |
-| `tests/scene/` | 距離、符号、hash、Birth と事象、位相、各 gate の合成反例。既存の scientific qualification とは別の開発テスト。 |
+## Validation and delivery
 
-2D と 3D は同じ x-z 断面距離を共有する。無変形 stadium は v18 と同じ断面式を使う。3D の flat-tip extrusion は `dy=abs(y)-span/2` として
+Write tests before each implementation slice; run the relevant tests, then `pytest -q tests/scene`. A detached worktree at `/private/tmp/wp06-base-08e0ea38` runs the full base suite, without stash. After implementation run compileall and the full final suite once, compare exact failing node IDs, and run diff-check. Preserve commands, logs, SHA256 and scope separately from conclusions. Perform independent code/math review and fix material findings.
 
-```text
-min(max(d2, dy), 0) + hypot(max(d2, 0), max(dy, 0))
-```
+OpenCode MCP is absent; CLI 1.19.3 cannot open its sandbox-external log and the writable-XDG model query returns `Provider not found: opencode-go`. Native workers are used without changing credentials/configuration or using paid APIs. The original worktree index.lock remains denied despite the shared git root; `GIT_INDEX_FILE=/private/tmp/wp06-index` permits the requested git-mv using the **same worktree/branch/shared gitdir**, without a clone. Retain intended-path staging isolation for delivery; report any remaining index/ref limitation truthfully.
 
-を使う。d2 が真の断面距離であることが前提である。2D の点列は x-z、3D は x-y-z と明示し、3D 専用の SDFDesignState への 2D 保存規約は別途宣言する。singleton 軸に暗黙の体積を与えない。
+## Validation-discovered source-closure conflict
 
-scene の `min phi_c` は要求どおりの CSG union である。符号と零等位面は正しくても、重なり内部では一般に union 境界までの厳密な負の最短距離ではない。primitive の距離性と scene の union の符号テストを分離する。これは min union 自体を変更する理由ではない。
-
-MeshBody は固定 STL の winding sign と triangle までの unsigned Euclidean distance を分離する。`trimesh.proximity.signed_distance` を使うなら inside-positive を反転する必要があるが、名称だけで winding 法と推定しない。watertightness、winding、非有限／曖昧な符号の失敗を定義し、#53 の signer 未適格を docstring に残す。任意の固定 STL の適格化を合成 fixture から主張しない。
-
-## Julia / WP4 との接続
-
-Python は種類・単位・パラメタ・固定 STL の SHA を含む deterministic JSON を渡す。Julia 側は同じ定義を `AutoBody` の callable として直接評価し、`SetBody(min, ...)` で合成する。field 値と符号、局所／世界座標をテストで合わせる。動く地面は scene と同じ位相を受ける半空間として扱う。GPU 実行や job の変更は WP4 側である。
-
-WP4 の多角形距離は別の幾何 oracle であり、同じ零等位面と離散化誤差の契約が必要である。WP4 が未完の場合は v18 の無変形 stadium を対照にする。非零 camber/reflex に対して真の距離を再定義する選択をした場合、v18 の phi の一致をそのまま acceptance にしない。今回は E2 比較を実行していない。
-
-## h、r_c、gate の長さ
-
-GEN-01 §3.2 が指定する開発時既定値は `t_min=4h`、`g_min=4h`。これは BDIM での物理解像を保証する値ではなく、後の登録梯子で検証する値である。R3 は width-rule 文書の trilinear body、h/4 refinement、erosion/opening、defect 閾値をそのまま再利用し、solid と void の双方を測る。R0 の repeated occupancy にすり替えない。
-
-WP6 が要求する部品ごとの `r_c` と h の関係は、引用された rev 3.1 §3.2 には定義されていない。r_c を曲率半径、filter radius、R3 の erosion radius のいずれかと推定しない。意味・単位・h との関係・出典はフェーズ B までに明示が必要である。FSAE/FSG の箱も規則の版と座標基準を確認してから宣言し、値を推測しない。
-
-## テスト計画と段階
-
-1. 今回は source-bound な負の距離診断だけを追加し、判明した不整合を短い CPU 実行で再現する。src / tests / immutable evidence は変更しない。
-2. 数式の選択後、距離の独立 oracle、符号、位相、gate 反例、Birth の順に TDD。median だけで厳密性を判定せず、非微分点を除いた複数点で調べる。
-3. `pytest -q tests/scene`、compileall、全体 pytest、diff check。baseline の失敗 ID 集合と比較する。受け入れたフェーズ A を commit/push して PR を出す。
-4. その後にだけフェーズ B。v3 は別モジュールとして v2 parser を保持する。harness は version を明示して scene / events / z 位相を追加し、旧 campaign の出力には新規 key や tool hash の変更を混入させない設計にする。旧 verifier の table は tool hash を含むため、byte 同一要件は version 文字列だけを残しても満たせない。
-
-今回の全体 pytest は開始点の無変更コードに対して先に起動したが、仕様矛盾により実装を止めたため、901 passed / 24 skipped、778.01 秒で中断した。code 不変は Git と hash で別に記録し、完走した baseline の代用にはしない。再開時には baseline と最終の完走した失敗 ID 集合の比較が必要である。追加 probe 自体は個別に実行し、出力と SHA を保存する。
-
-## 実行資源
-
-OpenCode Go MCP ツールはこのセッションに存在しなかった。CLI 1.19.3 のモデル確認は通常経路では sandbox 外の log を開けず、writable な一時 XDG directories での再試行は `Provider not found: opencode-go`。provider/model の利用可否を確認できず、native read-only worker へ文書確認と独立数式レビューを分担した。Go への委譲成功や quota 枯渇とは扱わない。global config、認証、追加課金は変更していない。
+The distance amendment is implemented and tested. A NEW, independent integration constraint was observed in the CPU whole-suite run: `scripts/analyze_grid02.py:112-113` dynamically adds every current `src/cfd_sdf/**/*.py`, while `:165-167` requires those names in the immutable historical freeze. The same reader/freeze passes in detached `08e0ea38` and rejects precisely the five required new scene files in this tree. This is independent of their contents. Committing can satisfy the separate committed-at-HEAD test, but cannot add keys to a historical freeze. Do not edit pinned sources/evidence, monkeypatch or skip these checks to claim the base failure set is unchanged. Preserve the implementation for review on Draft PR #82; no phase B/ready until an explicit source-closure compatibility decision. Reproducer: `wp06_source_closure_preflight.py` and JSON.

@@ -1,0 +1,86 @@
+{
+  "artifact_sha256": {
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_design.md": "e02d6ba4d6e718c4d7583c75ecdff9b4e34188bdc24091cc3d5565c5bde07914",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_pytest_interrupted.log": "25db6dc0da20396644212a503b6b76bb92c6222578f7d9d3c5837e7f3e715a79",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_report.md": "a3962e9edb8d49e7ee7be66df77d7f59b847d9486a2ddccbdabadfa3324028e5",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_sdf_preflight.json": "04ab785f2643fe4ddc9fb15210ddfb4768e00cfb46b578854b141f1f033a7bd3",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_sdf_preflight.py": "707c93c89cf6fbdcc5eed748c15ff4a2a7e14ee701a13b637891406323df4029"
+  },
+  "base_commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+  "commands": [
+    {
+      "command": ".venv/bin/python docs/codex/gen01_w1_2026_11_06/reports/wp06_sdf_preflight.py",
+      "exit_code": 0,
+      "independent_review": "PASS",
+      "replay_byte_identical": true,
+      "result": "CONTRACT_CONFLICT_CONFIRMED"
+    },
+    {
+      "command": ".venv/bin/python -m compileall src tests",
+      "exit_code": 0,
+      "log_path": "/private/tmp/wp06-compileall.log",
+      "log_sha256": "5769cbf2c9fd2fc358b87e7cd02c0abb8d80aba1683cbeae16e7d63b0f7ef177"
+    },
+    {
+      "command": ".venv/bin/python -m pytest -q tests/test_v18_plate.py",
+      "exit_code": 0,
+      "log_path": "/private/tmp/wp06-v18-pytest.log",
+      "log_sha256": "f90a3fa0a30744fd1bc3fcb8cfed68fab6966c082cf7ec125488feeb6230e8cf",
+      "passed": 18,
+      "seconds": 9.66
+    },
+    {
+      "baseline_failure_ids": null,
+      "command": ".venv/bin/python -m pytest -q",
+      "exit_code": 2,
+      "failure_ids_complete": false,
+      "failure_sets_identical": null,
+      "final_failure_ids": null,
+      "log_path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_pytest_interrupted.log",
+      "passed_before_interruption": 901,
+      "reason": "stopped on specification conflict; no production implementation",
+      "seconds": 778.01,
+      "skipped_before_interruption": 24,
+      "status": "INTERRUPTED"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --exit-code e3dcdf6188df6079e197eb28f7fcba1451ec512d -- .",
+      "exit_code": 0
+    }
+  ],
+  "evidence_class": "solver_free_development_diagnostic",
+  "feature_branch": "feat/gen01-w1-06-geom-s1",
+  "git_delivery": {
+    "delivery_checkout": "/private/tmp/wp06-review-git-r4igwgo3",
+    "draft_pr": "https://github.com/ramhachi/CFD_opt_sdf/pull/82",
+    "original_feature_ref_updated": false,
+    "original_gitdir_write": "denied: index.lock outside writable roots",
+    "original_reports_status": "5 untracked files; interrupted log ignored"
+  },
+  "kind": "wp06_preflight_validation",
+  "phase_a_complete": false,
+  "phase_b_started": false,
+  "preexisting_tracked_files_unchanged": true,
+  "schema_version": 1,
+  "scientific_scope": {
+    "birth_qualification": false,
+    "cfd_runs": 0,
+    "gate_adoption": false,
+    "gpu_runs": 0,
+    "scene_acceptance": false
+  },
+  "source_and_test_additions": [],
+  "source_sha256": {
+    "scripts/v18_plate.py": "4641c2f4cc06135825a67cb32a07dcb2a60adb6462a7d0b6149926d3812c6df7"
+  },
+  "source_tree_objects": [
+    "100644 blob 2412da509abb5c038f52a811505274dac33cad9d\tpyproject.toml",
+    "040000 tree 68e5b7d472a61ff7c13f91e7f148b6242bafdc75\tscripts",
+    "040000 tree cd2dcb8f429cd756a32d763b298f13a207da565c\tsrc",
+    "040000 tree 770d2260093a8d2c849e9630e795e1e621f0a941\ttests"
+  ]
+}
