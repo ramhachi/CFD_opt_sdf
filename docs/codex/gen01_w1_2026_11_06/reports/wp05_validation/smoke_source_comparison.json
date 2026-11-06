@@ -1,0 +1,45 @@
+{
+  "collector_file_change": "Shared interchange/export and schema paths added after the smoke; runtime helper functions above unchanged.",
+  "evidence_class": "DEVELOPMENT_SOURCE_IDENTITY",
+  "files": {
+    "scripts/t20_case.py": {
+      "final_sha256": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+      "identical": true,
+      "smoke_sha256": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69"
+    },
+    "scripts/t20_foam.py": {
+      "final_sha256": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+      "identical": true,
+      "smoke_sha256": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e"
+    },
+    "scripts/topo2d00/run_rans.py": {
+      "final_sha256": "35d672fc6119e4197ce4a70d6f4cd6a0d518d071fb25b645ad6ec4860226a0d5",
+      "identical": true,
+      "smoke_sha256": "35d672fc6119e4197ce4a70d6f4cd6a0d518d071fb25b645ad6ec4860226a0d5"
+    },
+    "scripts/topo2d00/t2d_foam_case.py": {
+      "final_sha256": "f17ad32dc8b0792f051aa4be4b0838574a54c0a32bb485ab5a87a29dc2567a00",
+      "identical": true,
+      "smoke_sha256": "f17ad32dc8b0792f051aa4be4b0838574a54c0a32bb485ab5a87a29dc2567a00"
+    },
+    "scripts/topo2d00/t2d_multibody_case.py": {
+      "final_sha256": "df39dc6bfd75b8b38a4a8a85f5ce03e450497852af98bf2283cf19e1e521a3c6",
+      "identical": true,
+      "smoke_sha256": "df39dc6bfd75b8b38a4a8a85f5ce03e450497852af98bf2283cf19e1e521a3c6"
+    }
+  },
+  "final_collector_sha256": "4e8c6017c7850315fca9f16afd14bc1a896454930069127e3fa14d656f7c029c",
+  "runtime_helper_constants_ast_identical": {
+    "CONFIGS": true,
+    "FORCE_CONVENTION": true,
+    "KEY_FIELDS": true,
+    "NORMALIZATION": true
+  },
+  "smoke_used_collector_functions_unchanged": {
+    "_finite_json": true,
+    "key_of": true,
+    "read_force_parts": true,
+    "read_history": true,
+    "run_id": true
+  }
+}

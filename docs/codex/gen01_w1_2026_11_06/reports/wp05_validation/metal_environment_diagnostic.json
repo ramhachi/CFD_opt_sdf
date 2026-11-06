@@ -1,0 +1,109 @@
+{
+  "base_commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+  "failure_nodeids": [
+    "tests/test_lbm_metal.py::test_metal_non_float32_is_explicitly_rejected",
+    "tests/test_lbm_metal.py::test_metal_periodic_step_matches_cpu_on_rectangular_grid",
+    "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.0]",
+    "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.5]",
+    "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.6]",
+    "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[bad]"
+  ],
+  "results": {
+    "base": {
+      "source_sha256": "8c00942385c6e7d8597fca9322fda73c352e9803b780e8e521d1ae14a7592874",
+      "tests": [
+        {
+          "log": "/private/tmp/wp05_metal_base_01.log",
+          "no_metal_device": true,
+          "nodeid": "tests/test_lbm_metal.py::test_metal_periodic_step_matches_cpu_on_rectangular_grid",
+          "returncode": 1,
+          "sha256": "0e2fe1548f1071b811e20e0748939194af6e149b997b1ef7864cd1c5f93d77b5"
+        },
+        {
+          "log": "/private/tmp/wp05_metal_base_02.log",
+          "no_metal_device": true,
+          "nodeid": "tests/test_lbm_metal.py::test_metal_non_float32_is_explicitly_rejected",
+          "returncode": 1,
+          "sha256": "f65792012888298a33194a89c3e7023741fcd9a02a5e0712d5bffe5bb25781d8"
+        },
+        {
+          "log": "/private/tmp/wp05_metal_base_03.log",
+          "no_metal_device": true,
+          "nodeid": "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.0]",
+          "returncode": 1,
+          "sha256": "43a3d18c2d80b006cab840904460c254dae7235af645ef1cc2bb20c2056da41f"
+        },
+        {
+          "log": "/private/tmp/wp05_metal_base_04.log",
+          "no_metal_device": true,
+          "nodeid": "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.5]",
+          "returncode": 1,
+          "sha256": "863325848a4ca46aeeb42d26133d203d3e2645847769d40c51ff07a226314794"
+        },
+        {
+          "log": "/private/tmp/wp05_metal_base_05.log",
+          "no_metal_device": true,
+          "nodeid": "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.6]",
+          "returncode": 1,
+          "sha256": "ecbe46025d849039ebf736abb937cb4028eeaff10647aef5d28cd9b384b10e56"
+        },
+        {
+          "log": "/private/tmp/wp05_metal_base_06.log",
+          "no_metal_device": true,
+          "nodeid": "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[bad]",
+          "returncode": 1,
+          "sha256": "6b354352d18e7c4f337fa5c9ba41983b8f6faac6882db93acacf0d56671ddfe8"
+        }
+      ]
+    },
+    "final": {
+      "source_sha256": "8c00942385c6e7d8597fca9322fda73c352e9803b780e8e521d1ae14a7592874",
+      "tests": [
+        {
+          "log": "/private/tmp/wp05_metal_final_01.log",
+          "no_metal_device": true,
+          "nodeid": "tests/test_lbm_metal.py::test_metal_periodic_step_matches_cpu_on_rectangular_grid",
+          "returncode": 1,
+          "sha256": "1d4fa07dc2861d5ad5ce7c60d3c4089aa4561eb06a3bbe0bc2b8d6ac12ab12e8"
+        },
+        {
+          "log": "/private/tmp/wp05_metal_final_02.log",
+          "no_metal_device": true,
+          "nodeid": "tests/test_lbm_metal.py::test_metal_non_float32_is_explicitly_rejected",
+          "returncode": 1,
+          "sha256": "2858d00095bd2916d29fa4136200ccc9b71e25f9e001e1904e20a151fcae4a54"
+        },
+        {
+          "log": "/private/tmp/wp05_metal_final_03.log",
+          "no_metal_device": true,
+          "nodeid": "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.0]",
+          "returncode": 1,
+          "sha256": "cae2ad7cf4163853069bdfd2a033e740010aaa8e5841aef791874425e5b193b7"
+        },
+        {
+          "log": "/private/tmp/wp05_metal_final_04.log",
+          "no_metal_device": true,
+          "nodeid": "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.5]",
+          "returncode": 1,
+          "sha256": "d6418303abb797f9ad9e1185cd5f6d0427a8120e70a1dd72e01917c93027c45a"
+        },
+        {
+          "log": "/private/tmp/wp05_metal_final_05.log",
+          "no_metal_device": true,
+          "nodeid": "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.6]",
+          "returncode": 1,
+          "sha256": "3b5435201f3547f1ffa300a85dff7e694f3c16d24938688fecbd3a73b5939919"
+        },
+        {
+          "log": "/private/tmp/wp05_metal_final_06.log",
+          "no_metal_device": true,
+          "nodeid": "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[bad]",
+          "returncode": 1,
+          "sha256": "5bf86298d79c78f6fcaeb63678ffbd14dd834bb12154ef88a35b62788a2f044b"
+        }
+      ]
+    }
+  },
+  "same_failure_nodeids": true,
+  "scope": "Each existing Metal test run in a fresh pytest process to avoid the native abort after a failed MLX import; remaining full suites run with only this file explicitly ignored. No source/test/backend changes."
+}

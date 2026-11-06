@@ -1,0 +1,178 @@
+{
+  "aggregate_exhaustive_comparison": {
+    "all_nodes_accounted_for": true,
+    "base_nodes": 3562,
+    "final_nodes": 3681,
+    "new_nodes": 119,
+    "same_existing_failure_set": true,
+    "scope": "Non-Metal suite in one process plus each of the six original Metal nodes in fresh processes. The unfiltered one-process command still cannot complete in this sandbox; this is not an unfiltered full-suite pass."
+  },
+  "archive": {
+    "bytes": 226305,
+    "members": 23,
+    "path": "docs/codex/gen01_w1_2026_11_06/reports/wp05_validation/test_logs.tar.gz",
+    "readback_verified": true,
+    "sha256": "8153378fec4c9bfab13c0b8f0cd0100b944bc084dd4d6d5c1f9faafaee7c8cf3"
+  },
+  "base_checkout": "work/wp05/base_validation",
+  "base_commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+  "compileall": {
+    "command": ".venv/bin/python -m compileall src tests",
+    "returncode": 0
+  },
+  "evidence_class": "DEVELOPMENT_TESTS_WITH_KNOWN_BASELINE_METAL_ENVIRONMENT_FAILURES",
+  "focused_final": {
+    "command": ".venv/bin/python -m pytest -q tests/topo2d00",
+    "duration_s": 106.41,
+    "passed": 119,
+    "returncode": 0
+  },
+  "isolated_metal_comparison": {
+    "all_no_metal_device": true,
+    "base_failed": 6,
+    "failure_nodeids": [
+      "tests/test_lbm_metal.py::test_metal_non_float32_is_explicitly_rejected",
+      "tests/test_lbm_metal.py::test_metal_periodic_step_matches_cpu_on_rectangular_grid",
+      "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.0]",
+      "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.5]",
+      "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.6]",
+      "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[bad]"
+    ],
+    "final_failed": 6,
+    "same_failure_nodeids": true,
+    "tests_each": 6
+  },
+  "logs": {
+    "wp05_base_collection.log": {
+      "bytes": 345431,
+      "sha256": "4a05dd3685512ae39d9db31f807429e6e00b57b8927798210f3135eef22b897c"
+    },
+    "wp05_base_nonmetal_pytest.log": {
+      "bytes": 7219,
+      "sha256": "3e4f1dbb8cb3b8443bedf62e20b4ac14f0fdebd0dec70e30388475cb0bde045a"
+    },
+    "wp05_base_nonmetal_pytest.xml": {
+      "bytes": 513399,
+      "sha256": "f4876714117d0ecb4b05ab3234f70065bc8fa4a82f8218aabe8fce4e2606370b"
+    },
+    "wp05_baseline_pytest.log": {
+      "bytes": 11018,
+      "sha256": "858b931e4b09bd3dfcbbae813953a8d1bdce15b74fad85b7faed84df8dfaecc8"
+    },
+    "wp05_compileall_final.log": {
+      "bytes": 354,
+      "sha256": "63a07305511741e93c6fbc4682844669d336b02a48cb3fc215f8f6a9fae46f8a"
+    },
+    "wp05_final_nonmetal_pytest.log": {
+      "bytes": 7353,
+      "sha256": "b6b186e9c9827980ed4ffd28c9a84b0b4f57aa56ee0b60a94970809bf0bd43e3"
+    },
+    "wp05_final_nonmetal_pytest.xml": {
+      "bytes": 527572,
+      "sha256": "597060c7a63ab13095159912528f912f1a6117c63e33e7fb77101e505970a35f"
+    },
+    "wp05_final_preinterop_interrupted_pytest.log": {
+      "bytes": 2621,
+      "sha256": "2ab0e5e4b65a5f50fabed724ba052ac0afbe947e9de980082b9b7b8a67499549"
+    },
+    "wp05_focused_final_pytest.log": {
+      "bytes": 192,
+      "sha256": "61100ca35caf8d72e7ed622c47a6e7fe3ce3f680674ac820fb0f8cfec1f1a110"
+    },
+    "wp05_metal_base_01.log": {
+      "bytes": 1869,
+      "sha256": "0e2fe1548f1071b811e20e0748939194af6e149b997b1ef7864cd1c5f93d77b5"
+    },
+    "wp05_metal_base_02.log": {
+      "bytes": 1847,
+      "sha256": "f65792012888298a33194a89c3e7023741fcd9a02a5e0712d5bffe5bb25781d8"
+    },
+    "wp05_metal_base_03.log": {
+      "bytes": 1907,
+      "sha256": "43a3d18c2d80b006cab840904460c254dae7235af645ef1cc2bb20c2056da41f"
+    },
+    "wp05_metal_base_04.log": {
+      "bytes": 1907,
+      "sha256": "863325848a4ca46aeeb42d26133d203d3e2645847769d40c51ff07a226314794"
+    },
+    "wp05_metal_base_05.log": {
+      "bytes": 1907,
+      "sha256": "ecbe46025d849039ebf736abb937cb4028eeaff10647aef5d28cd9b384b10e56"
+    },
+    "wp05_metal_base_06.log": {
+      "bytes": 1909,
+      "sha256": "6b354352d18e7c4f337fa5c9ba41983b8f6faac6882db93acacf0d56671ddfe8"
+    },
+    "wp05_metal_baseline_diagnostic.log": {
+      "bytes": 1872,
+      "sha256": "696ca91365d3c301fdeb7f1f49b500ced0c7110eb2382a9aee30cf07a431047e"
+    },
+    "wp05_metal_final_01.log": {
+      "bytes": 1869,
+      "sha256": "1d4fa07dc2861d5ad5ce7c60d3c4089aa4561eb06a3bbe0bc2b8d6ac12ab12e8"
+    },
+    "wp05_metal_final_02.log": {
+      "bytes": 1847,
+      "sha256": "2858d00095bd2916d29fa4136200ccc9b71e25f9e001e1904e20a151fcae4a54"
+    },
+    "wp05_metal_final_03.log": {
+      "bytes": 1907,
+      "sha256": "cae2ad7cf4163853069bdfd2a033e740010aaa8e5841aef791874425e5b193b7"
+    },
+    "wp05_metal_final_04.log": {
+      "bytes": 1907,
+      "sha256": "d6418303abb797f9ad9e1185cd5f6d0427a8120e70a1dd72e01917c93027c45a"
+    },
+    "wp05_metal_final_05.log": {
+      "bytes": 1907,
+      "sha256": "3b5435201f3547f1ffa300a85dff7e694f3c16d24938688fecbd3a73b5939919"
+    },
+    "wp05_metal_final_06.log": {
+      "bytes": 1909,
+      "sha256": "5bf86298d79c78f6fcaeb63678ffbd14dd834bb12154ef88a35b62788a2f044b"
+    }
+  },
+  "nonmetal_comparison": {
+    "all_existing_node_ids_equal": true,
+    "all_existing_outcomes_equal": true,
+    "base": {
+      "errors": 0,
+      "failed": 0,
+      "junit_suite_time_s": 3916.811,
+      "passed": 3482,
+      "returncode": 0,
+      "skipped": 74,
+      "tests": 3556
+    },
+    "base_failure_ids": [],
+    "command": ".venv/bin/python -m pytest -q --ignore=tests/test_lbm_metal.py --junitxml=PATH",
+    "failure_sets_equal": true,
+    "final": {
+      "errors": 0,
+      "failed": 0,
+      "junit_suite_time_s": 3976.083,
+      "passed": 3601,
+      "returncode": 0,
+      "skipped": 74,
+      "tests": 3675
+    },
+    "final_existing_failure_ids": [],
+    "new_failed": 0,
+    "new_node_count": 119
+  },
+  "preinterop_final_attempt": {
+    "command": ".venv/bin/python -m pytest -q",
+    "complete": false,
+    "deliberate_interrupt": true,
+    "reason": "WP4 provenance contract changed during run; final source validation restarted after adapter update",
+    "returncode": 2
+  },
+  "unfiltered_baseline": {
+    "command": ".venv/bin/python -m pytest -q",
+    "complete": false,
+    "error": "MLX import raises No Metal device available, subsequent mlx.core import aborts native process",
+    "full_failure_set_available": false,
+    "returncode": 134
+  },
+  "unfiltered_latest_final_completed": false
+}
