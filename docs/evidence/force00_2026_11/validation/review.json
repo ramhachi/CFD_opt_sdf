@@ -1,0 +1,106 @@
+{
+  "actual_gate_written": false,
+  "findings": [
+    {
+      "check": "normal and body-force sign",
+      "evidence": "stored mu0 forward difference points outward; nds body force negates pressure+viscous reaction; CV signs are minus advection, minus pressure, plus viscous, minus storage",
+      "result": "PASS"
+    },
+    {
+      "check": "moment band and artificial boundary jumps",
+      "evidence": "Float64 conversion precedes face subtraction; default buff=2 excludes BC! normal mu0 faces2,size; explicit candidate box encloses d<2+eps support and excludes ground; tests check far interior0 and exterior1",
+      "result": "PASS"
+    },
+    {
+      "check": "CV index and staggered collocation",
+      "evidence": "loc(axis,I) gives face I_axis-2; pressure and all velocity components interpolate there; strain averages adjacent pressure centers; cell-centered current/old velocities define storage",
+      "result": "PASS"
+    },
+    {
+      "check": "completed time-step identity",
+      "evidence": "Flow.mom_step! snapshots u0 before update and pushes next CFL afterwards; delta_t[end-1] is the actual completed step",
+      "result": "PASS"
+    },
+    {
+      "check": "GPU-compatible source structure",
+      "evidence": "all @loop expressions have array first argument and use backend allocations/reductions; WaterLily documents GPU interp usage; no GPU compilation or execution performed",
+      "result": "STATIC_ONLY"
+    },
+    {
+      "check": "observational readouts",
+      "evidence": "legacy cur bytes match -total_force; flow.f restored in finally; next sim_step! agrees exactly with untreated control",
+      "result": "PASS_CPU"
+    },
+    {
+      "check": "analytic fixture adequacy",
+      "evidence": "2D/3D off-grid Float32/64 closure; nonzero affine advection, linear pressure, acceleration storage; quadratic field nonzero viscous balance; candidate/ground enclosure rejection",
+      "result": "PASS_CPU"
+    }
+  ],
+  "gate_validation": {
+    "additional_checks": [
+      "Required three-integer CV box bounds with ordered two-cell physical-domain inset; recorded per run",
+      "Missing, out-of-inset and boolean CV indices rejected",
+      "Serialization rejects nonfinite derived results before exclusive gate creation; no partial gate file",
+      "Existing gate refused before any input read"
+    ],
+    "command": ".venv/bin/python -m pytest -q tests/test_force00_gate.py",
+    "exit_code": 0,
+    "log_capture": "verbatim concatenation of terminal output chunks from completed exec session64831; exit0 confirmed by tool",
+    "log_path": "/private/tmp/force00-independent-gate-tests.log",
+    "log_sha256": "66c2d97d16afe383ff8508156783cede100af2e0313f6ebbe0ad4a019011c848",
+    "package_hash_scope": "five WaterLily filenames and hash formats checked; digests recorded as CPU-reported provenance; Project/Manifest and consumed repository sources independently checked",
+    "portability": "Python plus existing repository dependencies and archived hashes; no Julia install or package depot required",
+    "pytest_seconds": 80.77,
+    "source_sha256": {
+      "scripts/force00_gate.py": "4a6e62d079ba631c97a040a18344f60cbd9ac55fbac1eb78f3d790d434f89c40",
+      "tests/test_force00_gate.py": "02f1778af5129258280a1dad5a3825354ab0421c9ec557e408da48c4eec8358a"
+    },
+    "tests_passed": 33
+  },
+  "limitations": [
+    "GPU compilation, resource cost, F1-F3 regression, actual parent phase SD and C5 have not been measured.",
+    "The #293 7-9 percent built-in/CV offset on this parent is unknown until user GPU execution.",
+    "Face clearance is a sampled SDF check, not a continuum four-cell distance certificate for nonmetric SDFs.",
+    "Moving-body physical momentum corrections are outside this static-parent acceptance scope.",
+    "Cold Julia JIT plus concurrent CPU work took minutes, not the requested few seconds."
+  ],
+  "primary_source": "installed WaterLily1.8.0 yOkji: Metrics.jl, Flow.jl, Body.jl, core.jl, util.jl",
+  "required_reading_completed": [
+    "docs/README.md full",
+    "docs/problem_register_2026_09.md full",
+    "docs/phase_plan.md lines1-2500 full",
+    "FORCE-00 rev0 full",
+    "facts_for_w1_drafts.md sections2-3 full",
+    "W1 00_README.md and AGENTS.md full"
+  ],
+  "reviewer": "native independent gate worker, separate from numeric implementation worker",
+  "role": "read-only independent scientific and source review; no Forces.jl edits",
+  "schema": "force00_independent_source_review_v1",
+  "source_sha256": {
+    "julia/CFDSDFWaterLily/src/Forces.jl": "5ac23a1eab09a076e78dad8d517ee0c776b3812f1695f63e7e2fe8b1260b011e",
+    "scripts/force00_selftest.jl": "6bdb5c1add302f0ae3299dec62e44e08b05fd67e5394b67e563ac6249596538d"
+  },
+  "status": "NO_BLOCKING_SOURCE_FINDINGS",
+  "verification": {
+    "assertions_passed": 78,
+    "backend": "CPU only",
+    "command": "julia --project=julia/CFDSDFWaterLily scripts/force00_selftest.jl",
+    "exit_code": 0,
+    "log_capture": "verbatim concatenation of terminal output chunks from completed exec session37182; exit0 confirmed by tool",
+    "log_path": "/private/tmp/force00-independent-selftest.log",
+    "log_sha256": "b4f24359fb7c153dbf587ea4c01bb7778876ac20815d816e9a6b17d23b5b3d0b",
+    "testset_counts": [
+      28,
+      22,
+      20,
+      8
+    ],
+    "testset_seconds": [
+      68.0,
+      21.1,
+      60.4,
+      11.4
+    ]
+  }
+}

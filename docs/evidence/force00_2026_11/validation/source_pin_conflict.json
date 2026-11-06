@@ -1,0 +1,16 @@
+{
+  "actual_sha256": "5ac23a1eab09a076e78dad8d517ee0c776b3812f1695f63e7e2fe8b1260b011e",
+  "base_commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+  "current_exit_code": 1,
+  "decision": "pending user: new opt-in Force00.jl or explicit allowance for source-pin failures",
+  "expected_sha256": "0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e",
+  "isolated_base_exit_code": 0,
+  "legacy_prefix_byte_identical": true,
+  "legacy_prefix_bytes": 1527,
+  "path": "julia/CFDSDFWaterLily/src/Forces.jl",
+  "proposal": "docs/codex/gen01_w1_2026_11_06/reports/wp02_preserve_pins.proposed.diff",
+  "proposal_applied": false,
+  "schema": "force00_source_pin_conflict_v1",
+  "status": "BLOCKED",
+  "test": "tests/test_candidate_c_w2a_plan.py::test_candidate_c_w2a_source_manifest_and_criteria_hashes_resolve"
+}

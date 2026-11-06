@@ -1,0 +1,38 @@
+{
+  "claim_scope": "CPU numerical/software capability only; no GPU regression/adoption/physical qualification",
+  "compileall_exit_code": 0,
+  "diff_check_exit_code": 0,
+  "gate_json_written": false,
+  "gpu_executed": false,
+  "isolated_base_full_suite": {
+    "base_commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+    "base_forces_sha256": "0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e",
+    "log": "/private/tmp/force00-base-isolated-pytest.log",
+    "session_id": 55100,
+    "snapshot": "/private/tmp/force00-base-e3dcdf61",
+    "status": "RUNNING_AT_RECORD_TIME"
+  },
+  "julia_selftest": {
+    "assertions": 78,
+    "cold_checkset_seconds_independent": 160.9,
+    "exit_code": 0,
+    "log": "validation/selftest.log.gz",
+    "seconds_goal_met": false
+  },
+  "new_python_tests": {
+    "failed": 0,
+    "log": "validation/focused-tests.log.gz",
+    "passed": 35,
+    "seconds": 23.04
+  },
+  "proposed_patch_applied": false,
+  "py_compile_exit_code": 0,
+  "schema": "force00_cpu_validation_v1",
+  "source_pin_resolution": "pending user: opt-in Force00.jl layout or explicit allowance for pin-test failures",
+  "status": "BLOCKED_SOURCE_PIN_DECISION",
+  "uniform_deterministic": true,
+  "uniform_rows": 104,
+  "uniform_sha256": "dab15c1c39ad1c0bb223115d1eed357cdf0f1ebaa861935abca3369d94c1bb87",
+  "whole_suite_failure_set_equal_to_base": false,
+  "whole_suite_note": "Confirmed new frozen-source pin failure; exhaustive comparison not complete. Initial in-place and review runs interrupted and excluded."
+}
