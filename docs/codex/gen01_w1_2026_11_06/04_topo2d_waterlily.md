@@ -1,0 +1,50 @@
+# WP4：TOPO-2D-00 の WaterLily 側（幾何系列、厚くする生成器、2D job、campaign、analyzer）
+
+最初に `docs/codex/gen01_w1_2026_11_06/00_README.md` を読み、その規則に従うこと。仕様は `docs/topo2d00_registration_2026_11_01.md`（TOPO-2D-00 ＋ TR-00、registration draft rev 0）。RANS 側は WP5 が別に作る。
+
+## 目的
+
+Zhang & Zerihan（2003）の 2 要素の地面効果翼から 1／2／3 要素の 2D 系列（E1、E2、E3）を作り、要素を BDIM の下限以上に厚くし、WaterLily の 2D で配置位相 16 個の対評価を回す job と campaign、そして一致規則を計算する analyzer（と独立の checker）を作る。**GPU は回さない**。CPU の小さい格子で job が通ることまで。
+
+## 必ず読む（全文）
+
+- `docs/topo2d00_registration_2026_11_01.md`（特に §2 幾何、§3 solver、§5 統計と一致規則、§8 対照、§10 未解決）
+- `docs/evidence/gen01_plan_2026_11_01/research/facts_for_w1_drafts.md` §1（幾何の数値、座標の出所：Zerihan 2001 thesis Tables 2〜4、OCR の注意）、§2（1.8.0 の `AutoBody`、`SetBody(min, …)`、`measure!` の μ₀、2D の設定）、§6（BDIM の厚さの下限）
+- `scripts/v18_plate.py`（解析 SDF の書き方。stadium 板、`raw_mode`）、`scripts/t20_case.py` の `airfoil_points`（座標の読み方と迎角の約束。編集しない）、`data/t20/tyrrell026s_genua2009.dat`
+- `scripts/waterlily_lowdim02_flow32_job.jl`（編集しない。窓、力、位相、ハッシュ検査の約束）、`julia/CFDSDFWaterLily/src/*.jl`（特に `V16PhysicalProfile.jl` の境界条件、`WaterLilyNormalFloorBody.jl`、`Forces.jl`）
+- `src/cfd_harness/campaign_schema.py`、`campaign_build.py`、`docs/harness/README.md`、`docs/harness/screen01_campaign.json`（campaign の形。baseline＋direction の state モデル）
+- `scripts/screen01/analyze_screen01.py` と `screen01_check.py`、`docs/evidence/screen01_2026_10_30/INTERFACE.md`（analyzer と独立 checker の分け方、written-once、σ_d、片側検定）
+- `docs/re01_plan_2026_11_01.md` §3.4（推定量 A／B、窓の式）
+- WP1 の `Checkpoint.jl`（インターフェースは WP1 の設計メモ。無ければ `save_checkpoint(path, sim, step, rows)`／`load_checkpoint(path)` を仮定し、報告に書く）と WP2 の `force_readouts(sim, box)`（同様）
+
+## 成果物
+
+1. **幾何** `src/cfd_sdf/topo2d/geometry.py`：
+   - Zerihan（2001）の Table 3（主翼素、14.1° の基準姿勢）と Table 4（フラップ）の座標を `data/zz2003/main_element_table3.dat`、`data/zz2003/flap_table4.dat` に **出所と取得方法を記した header 付き**で置く。取得は、thesis の PDF（`https://eprints.soton.ac.uk/426058/1/00192634.pdf`）を取れるなら OCR テキストから転記し、図と照合できない値は `# UNVERIFIED` を付ける。**取れなければ BLOCKED で止める**（推測で座標を作らない）。主翼素は `data/t20/tyrrell026s_genua2009.dat` と同じ断面のはずなので、両者の差を報告に数値で書く。
+   - E1／E2／E3 を生成する関数：E2 は overlap 9 mm、gap 12 mm、datum flap、回転中心 x/c 0.567・y/c 0.076、c = 380 mm（仕様 §2 の定義どおり。overlap と gap の符号の定義を docstring に書く）。E3 は仕様の構成規則（弦の等分、総たわみ角の等分、同じ gap/overlap 規則）。高さ h は mm で受け、両方の正規化（c₁ = 223.4、c = 380）を返す。
+   - **厚くする生成器**：要素ごとに `t_min`（Δx の倍数で指定、既定 4Δx）を満たすように、キャンバー線の法線 offset で厚さを増やす（前縁半径と後縁位置は保つ）。元の厚さ分布との比（要素ごとの最大）を返す。鋭い後縁の原形も出力する（`*_sharp`）。
+   - 解析 SDF：各要素を **閉じた多角形の符号付き距離**（点–線分距離の最小と winding による符号。NumPy、決定的）で表し、`scene_sdf(points) = min_c sdf_c(points)`。Julia 側で同じ関数を評価できるよう、要素の多角形を `.npz`／JSON で渡す。
+   - gate：厚さ ≥ t_min、間隙 ≥ g_min（既定 4Δx）、要素の重なりなし（E3 の構成で起きないこと）、地面との clearance、閉じた多角形の自己交差なし。拒否は CFD の前。
+2. **2D job** `scripts/waterlily_topo2d_job.jl`（新規。既存 job から窓・力・ハッシュ検査の部分を流用）：
+   - `Simulation((n, m), (U, 0), L; ν, body=SetBody(min, …), exitBC=true, λ=quick)`。要素は `AutoBody` で、多角形 SDF を Julia で評価（面での解析評価。三線形格子を通さない）。地面は **動く BDIM の半空間**（`V = U`）で、領域の壁にしない。
+   - 配置位相は (x, z) の sub-cell shift を環境変数で受け（JOB-02 と同じ変数名の 2D 版）、scene 全体（地面を含む）を一緒に動かす。
+   - 力の読み出し：WP2 の `force_readouts` が使えるならそれ（cur／nds／cv の 3 組）、無ければ `cur` のみで列を予約。要素ごとの力も出す（`SetBody` では難しければ、要素ごとの `AutoBody` で別に積分する）。
+   - 窓、burn-in、サンプリング、端点補間の time-weighted mean、drift は既存 job と同じ定義。Checkpoint（WP1）の保存・再開に対応。
+   - 出力は既存の force CSV の形式に列を足したもの（列名は設計メモで固定）。
+3. **campaign** `docs/harness/topo2d00_campaign.json`：harness v1.1 の schema に収まるように、state ＝「E_k ＋ 高さ ＋ Re ＋ 位相」を表す。baseline＋direction の state モデルに収まらなければ、`src/cfd_harness/` に **最小の拡張**（state の `kind: "scene"` と、scene ファイルの SHA）を足し、既存 campaign の検証が変わらないことをテストで示す。kernel は 2 つ（Re 1e3、Re 3e3）＋確認格子 1 つ。
+4. **analyzer** `scripts/topo2d00/analyze.py` と独立の `scripts/topo2d00/check.py`：
+   - 入力：WaterLily の force table（harness verify の形式）、RANS の結果（WP5 の形式。JSON の schema を WP5 と合わせるため、本 WP で `docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_result_schema.json` を書いて報告に載せる）、freeze の記録。
+   - 計算：対差分 Δ_W(1→2)、Δ_W(2→3)（downforce と drag）、σ_d（推定量 A と B の大きい方、上側信頼限界）、90 % 区間、RANS 側の (model, family) ごとの区間と最悪値、TR-00 の判定（`TR00_PASS_RATIO`／`TR00_PASS_SIGN`／不合格）、一致規則（`SIGN_AGREE_12`、`RANK_AGREE`、`DRAG_SIGN_AGREE_12`、`RETENTION_12` の Fieller 区間）、順序付きラベル（仕様 §5 の表。`INVALID` → … → `CONCORDANT`）、対照（決定性、DOMAIN、readout、manipulation）。
+   - `analysis.json`／`analysis.md` を 1 回だけ書く（存在すれば拒否）。checker は analyzer のコードを import せずに同じ数値を再計算し、不一致を列挙する。
+5. **テスト**：`tests/topo2d00/test_geometry.py`（E2 の overlap/gap が定義どおり、厚くした後の最小厚さ、gate の拒否、SDF の距離性質（勾配の大きさ ≈ 1）、決定性）、`tests/topo2d00/test_analyze.py`（合成データで全ラベル、Fieller 区間、TR-00 の両規則、書き込み拒否、checker の一致）、`scripts/topo2d_selftest.jl`（CPU、小さい格子（例 192×96、Re 200、短い窓）で E1 と E2 が走り、力が有限で、地面が動いていること（地面近傍の速度が U）、位相 shift で scene が一緒に動くこと、checkpoint 再開で窓統計が一致すること）。
+
+## 受け入れ条件
+
+- 座標が転記され（または BLOCKED）、E1〜E3 の図（PNG、`docs/codex/gen01_w1_2026_11_06/reports/topo2d00_geometry.png`）が報告に添えられる。
+- CPU の自己テストが通る（数分以内）。
+- `pytest -q tests/topo2d00` が通り、全体の失敗集合が base と同一。
+- 報告に、厚くした比（要素ごと）、c₁/120 と c₁/180 でのセル数、仕様 §10 の未解決点への回答（分かった範囲）、WP5 との JSON schema を書く。
+
+## やらないこと
+
+- GPU 実行、Kaggle、RANS 側（WP5）、仕様の閾値の変更（4Δx、[0.5, 2]、α 0.05 は仕様の値）、既存 job の編集。
