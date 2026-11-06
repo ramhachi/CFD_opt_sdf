@@ -37,7 +37,7 @@ def render_namespace(monkeypatch, arm="quick", configured=True):
     return module, namespace
 
 
-@pytest.mark.parametrize("arm", ["quick", "quick_nobound", "cds", "vanLeer"])
+@pytest.mark.parametrize("arm", ["quick", "quick_nobound", "cds", "vanLeer", "vanLeer_safe"])
 def test_render_routes_each_arm_and_preserves_frozen_template(monkeypatch, arm):
     template = (ROOT / "scripts/grad_ta1_runner_template.py").read_bytes()
     module, ns = render_namespace(monkeypatch, arm)
@@ -75,8 +75,9 @@ def test_unconfigured_runner_stops_before_gpu_inventory(monkeypatch, tmp_path):
 
 @pytest.mark.parametrize("code,done,terminal", [(0, True, "COMPLETE"), (3, True, "BLOCKED"), (1, False, None),
                                                (0, False, None), (0, False, "BLOCKED"), (3, False, "COMPLETE")])
-def test_runner_exit_propagation_and_measurement_env(monkeypatch, tmp_path, code, done, terminal):
-    module, ns = render_namespace(monkeypatch, "quick_nobound")
+@pytest.mark.parametrize("arm", ["quick_nobound", "vanLeer_safe"])
+def test_runner_exit_propagation_and_measurement_env(monkeypatch, tmp_path, code, done, terminal, arm):
+    module, ns = render_namespace(monkeypatch, arm)
     ns["OUT"] = tmp_path / f"run_{code}"
     ns["PINS"] = {f"{ns['PROJECT']}/{name}": "a" * 64 for name in ("Project.toml", "Manifest.toml")}
     ns["sha256"] = lambda _: "a" * 64
@@ -101,7 +102,7 @@ def test_runner_exit_propagation_and_measurement_env(monkeypatch, tmp_path, code
                                                   for suffix in ("", "__plus", "__minus")}}
             if terminal == "BLOCKED":
                 statuses[module.DIRECTIONS[0]] = "BLOCKED"
-            index = {"status": terminal, "arm": "quick_nobound", "real_type": "Float32", "backend": "cuda",
+            index = {"status": terminal, "arm": arm, "real_type": "Float32", "backend": "cuda",
                      "preflight": {"pass": True}, "runs": {name: 0.0 for name in statuses}, "run_status": statuses}
             for filename in ("g2_run_index.json", "grad00_index.json"):
                 (ns["OUT"] / filename).write_text(json.dumps(index))
@@ -117,14 +118,14 @@ def test_runner_exit_propagation_and_measurement_env(monkeypatch, tmp_path, code
     assert (ns["OUT"] / "DONE").exists() is done
     assert (ns["OUT"] / "ERROR.txt").exists() is not done
     args, env, _ = calls[-1]
-    assert env["GRAD00_ARM"] == "quick_nobound"
+    assert env["GRAD00_ARM"] == arm
     assert env["GRAD00_T"] == "Float32"
     assert env["G2_BACKEND"] == "cuda"
     assert all(key not in env for key in ns["DRYRUN_SWITCHES"])
     assert args[-4:] == [str((i + 1) * 1e-3) for i in range(4)]
     assert len(args) == 18  # julia/project/job + the 15 explicitly required job arguments
     identity = json.loads((ns["OUT"] / "run_identity.json").read_text())
-    assert identity["arm"] == "quick_nobound"
+    assert identity["arm"] == arm
     assert identity["reference"]["definition"] == "synthetic renderer fixture"
     assert identity["spike_exit_code"] == code
     assert set(identity["verified"]) == set(ns["PINS"])
@@ -168,6 +169,8 @@ def test_builder_pins_source_and_writes_timeout(monkeypatch, tmp_path):
     assert len(verified) == 1
     assert module.SCRIPT in verified[0][1]
     assert "scripts/quick_nobound.jl" in verified[0][1]
+    assert "scripts/vanleer_safe.jl" in verified[0][1]
+    assert "scripts/grad00_reference_from_fd08.py" in verified[0][1]
     assert "scripts/grad_ta1_runner_template.py" in verified[0][1]
     assert {"scripts/analyze_grad00.py", "scripts/grad_g2_window.py", "scripts/verify_grad_g2_terminal.py"} <= verified[0][1]
     for arm in module.ARMS:
@@ -186,11 +189,9 @@ def test_reference_requires_repo_local_provenance(monkeypatch, tmp_path):
         module.reference_config(tmp_path / "outside.json")
 
 
-def test_reference_config_uses_shared_provenance_loader(monkeypatch, tmp_path):
-    module = builder()
-    monkeypatch.setattr(module, "ROOT", tmp_path)
+def write_reference(module, tmp_path):
     source = tmp_path / "docs/synthetic_source.json"
-    source.parent.mkdir()
+    source.parent.mkdir(exist_ok=True)
     source.write_text('{"synthetic": true}\n')
     reference = {"schema_version": 1, "kind": "grad00_fd08_reference", "definition": "synthetic renderer schema fixture",
                  "sources": {"docs/synthetic_source.json": module.sha(source)},
@@ -198,8 +199,142 @@ def test_reference_config_uses_shared_provenance_loader(monkeypatch, tmp_path):
                                 for name in module.DIRECTIONS}}
     path = tmp_path / "reference.json"
     path.write_text(json.dumps(reference))
+    return path, reference
+
+
+def test_reference_config_uses_shared_provenance_loader(monkeypatch, tmp_path):
+    module = builder()
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    path, reference = write_reference(module, tmp_path)
     configured = module.reference_config(path)
     assert configured["path"] == "reference.json"
     assert configured["sha256"] == module.sha(path)
     assert configured["directions"] == reference["directions"]
     assert {"reference.json", "docs/synthetic_source.json"} <= module.pin_paths(configured)
+
+
+@pytest.mark.parametrize("initially_configured", [True, False])
+def test_configured_default_render_overwrites_all_five_workers_and_preserves_extras(monkeypatch, tmp_path, initially_configured):
+    module = builder()
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    path, _ = write_reference(module, tmp_path)
+    reference = module.reference_config(path)
+    verified = []
+    monkeypatch.setattr(module, "verify_source", lambda commit, paths: verified.append((commit, paths)))
+    monkeypatch.setattr(module, "render", lambda commit, arm, reference: f"ARM = {arm!r}\nREFERENCE = {reference!r}\n")
+    module.build("a" * 40, reference=reference if initially_configured else None)
+    assert module.ARMS == ("quick", "quick_nobound", "cds", "vanLeer", "vanLeer_safe")
+    output_root = tmp_path / "infra/kaggle"
+    for arm in module.ARMS:
+        directory = output_root / f"kernel_grad00_{arm}"
+        (directory / "notes").mkdir()
+        (directory / "notes/keep.txt").write_text("preserve")
+        for name in ("runner.py", "kernel-metadata.json", "timeout"):
+            (directory / name).write_text("old generated bytes\n")
+    for _ in range(2):
+        module.build("a" * 40, reference=reference)
+        for arm in module.ARMS:
+            directory = output_root / f"kernel_grad00_{arm}"
+            assert (directory / "runner.py").read_text() == module.render("a" * 40, arm, reference)
+            assert json.loads((directory / "kernel-metadata.json").read_text()) == module.metadata(arm)
+            assert (directory / "timeout").read_text() == "10800\n"
+            assert (directory / "notes/keep.txt").read_text() == "preserve"
+    assert len(verified) == 3
+    assert {reference["path"], *reference["sources"], "scripts/vanleer_safe.jl"} <= verified[-1][1]
+
+
+@pytest.mark.parametrize("failure", ["reference_source", "reference_config", "source", "render", "metadata"])
+def test_configured_build_validates_and_renders_every_arm_before_overwrite(monkeypatch, tmp_path, failure):
+    module = builder()
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    path, _ = write_reference(module, tmp_path)
+    reference = module.reference_config(path)
+    output_root = tmp_path / "infra/kaggle"
+    for arm in ("quick", "quick_nobound", "cds", "vanLeer", "vanLeer_safe"):
+        directory = output_root / f"kernel_grad00_{arm}"
+        directory.mkdir(parents=True)
+        for name in ("runner.py", "kernel-metadata.json", "timeout", "keep.txt"):
+            (directory / name).write_text(f"original {arm} {name}\n")
+    before = {p: p.read_bytes() for p in output_root.rglob("*") if p.is_file()}
+
+    def check_unchanged():
+        assert {p: p.read_bytes() for p in output_root.rglob("*") if p.is_file()} == before
+
+    def verify(commit, paths):
+        check_unchanged()
+        assert commit == "a" * 40
+        assert {reference["path"], *reference["sources"], "scripts/vanleer_safe.jl"} <= paths
+        if failure == "source":
+            raise ValueError("synthetic source verification failure")
+
+    rendered = []
+
+    def render(commit, arm, config):
+        check_unchanged()
+        assert config == reference
+        rendered.append(arm)
+        if failure == "render" and arm == "vanLeer_safe":
+            raise ValueError("synthetic render failure")
+        return f"ARM = {arm!r}\n"
+
+    original_metadata = module.metadata
+
+    def metadata(arm):
+        check_unchanged()
+        if failure == "metadata" and arm == "vanLeer_safe":
+            raise ValueError("synthetic metadata failure")
+        return original_metadata(arm)
+
+    monkeypatch.setattr(module, "verify_source", verify)
+    monkeypatch.setattr(module, "render", render)
+    monkeypatch.setattr(module, "metadata", metadata)
+    if failure == "reference_source":
+        source = tmp_path / "docs/synthetic_source.json"
+        source.write_bytes(source.read_bytes() + b" ")
+    elif failure == "reference_config":
+        reference["definition"] = "stale preloaded reference configuration"
+    with pytest.raises(ValueError):
+        module.build("a" * 40, reference=reference)
+    check_unchanged()
+    if failure in ("render", "metadata"):
+        assert rendered == list(module.ARMS)
+
+
+def test_reference_free_default_render_refuses_configured_worker_without_writes(monkeypatch, tmp_path):
+    module = builder()
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    directory = tmp_path / "infra/kaggle/kernel_grad00_vanLeer_safe"
+    directory.mkdir(parents=True)
+    for name in ("runner.py", "kernel-metadata.json", "timeout", "keep.txt"):
+        (directory / name).write_text(f"configured {name}\n")
+    before = {p: p.read_bytes() for p in directory.iterdir()}
+    monkeypatch.setattr(module, "verify_source", lambda *_: pytest.fail("refuse before source checks"))
+    with pytest.raises(FileExistsError, match="refusing to overwrite"):
+        module.build("a" * 40)
+    assert {p: p.read_bytes() for p in directory.iterdir()} == before
+    assert sorted(p.name for p in directory.parent.iterdir()) == [directory.name]
+
+
+@pytest.mark.parametrize("damaged", ["reference.json", "scripts/vanleer_safe.jl"])
+def test_build_uses_committed_byte_verifier_before_render(monkeypatch, tmp_path, damaged):
+    module = builder()
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    # Exercise the reused verifier against synthetic committed blobs, without Git mutations.
+    monkeypatch.setitem(module.verify_source.__globals__, "ROOT", tmp_path)
+    committed = {"reference.json": b"committed reference\n", "scripts/vanleer_safe.jl": b"committed D-prime\n"}
+    for name, content in committed.items():
+        path = tmp_path / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(content + (b" " if name == damaged else b""))
+
+    def git_show(args, **kwargs):
+        assert args[:4] == ["git", "-C", str(tmp_path), "show"]
+        name = args[4].removeprefix("a" * 40 + ":")
+        return module.subprocess.CompletedProcess(args, 0, stdout=committed[name])
+
+    monkeypatch.setattr(module.subprocess, "run", git_show)
+    monkeypatch.setattr(module, "pin_paths", lambda _: set(committed))
+    monkeypatch.setattr(module, "render", lambda *_: pytest.fail("source must verify before rendering"))
+    with pytest.raises(ValueError, match=f"committed source differs: {damaged}"):
+        module.build("a" * 40)
+    assert not (tmp_path / "infra").exists()

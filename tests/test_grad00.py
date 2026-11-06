@@ -105,16 +105,21 @@ def fixture(out, arm="quick", real_type="Float32", waterlily="1.8.0", *, blocked
     for d in dirs:
         by_direction[d] = {"plain": "plain", "dual": d, "plus": d + "__plus", "minus": d + "__minus", "epsilon_m": 0.001}
     status = "BLOCKED" if blocked else "COMPLETE"
+    preflight_names = (("quick", "selected_dual", "selected_plain") if arm == "quick" else
+                       ("selected_dual", "selected_plain", "vanLeer_plain") if arm == "vanLeer_safe" else
+                       ("selected_dual", "selected_plain"))
     index = {"schema_version": 1, "tier": "GRAD-00", "arm": arm, "real_type": real_type, "backend": "cpu" if real_type == "Float64" else "cuda",
              "julia": "1.12.6", "waterlily": waterlily, "forwarddiff": "1.4.5", "cuda_jl": "6.3.1", "gpu_name": "Tesla T4", "lambda_type": lam, "window_t_u_l": [80.0, 120.0],
              "sample_every": 8, "dual_width": 1, "block_limit": 1e30, "wall_factor": 8.0, "directions": list(dirs),
              "input_sha256": A.INPUT_SHA256,
              "epsilon_m": {d: 0.001 for d in A.DIRECTIONS}, "preflight": {"pass": True, "steps": 20, "primal_u_bit_equal": True, "primal_p_bit_equal": True,
-                 "arms": {name: {"lambda_type": A.LAMBDA_TYPES["quick"] if name == "quick" else lam,
+                 "arms": {name: {"lambda_type": A.LAMBDA_TYPES["quick"] if name == "quick" else A.LAMBDA_TYPES["vanLeer"] if name == "vanLeer_plain" else lam,
                                   "primal_finite": True, "tangent_u_finite": True, "tangent_p_finite": True, "max_abs_tangent_u": 1.0, "max_abs_tangent_p": 1.0,
-                                  "primal_u_sha256": "1" * 64, "primal_p_sha256": "2" * 64} for name in (("quick", "selected_dual", "selected_plain") if arm == "quick" else ("selected_dual", "selected_plain"))}},
+                                  "primal_u_sha256": "1" * 64, "primal_p_sha256": "2" * 64} for name in preflight_names}},
              "runs": runs, "by_direction": by_direction, "status": status, "qualification_flags": {k: False for k in A.FLAGS},
              "evidence_class": "SYNTHETIC_TEST_FIXTURE"}
+    if arm == "vanLeer_safe":
+        index["preflight"].update(vanLeer_primal_u_bit_equal=True, vanLeer_primal_p_bit_equal=True)
     dump(out / "grad00_index.json", index)
     dump(out / "preflight.json", index["preflight"])
     dump(out / "g2_run_index.json", {**index, "run_order": order, "run_status": {k: v["status"] for k, v in runs.items()}})
@@ -193,10 +198,11 @@ def test_ratio_nextafter_endpoints_do_not_widen_tolerance():
 
 
 def test_lambda_types_match_actual_julia_export_visibility():
-    # WaterLily 1.8.0 exports quick/cds; the other two names stay qualified.
+    # WaterLily 1.8.0 exports quick/cds; the other three names stay qualified.
     # Explicit literals keep this regression independent of fixture generation.
     assert A.LAMBDA_TYPES == {"quick": "typeof(quick)", "cds": "typeof(cds)",
-                              "quick_nobound": "typeof(WaterLily.quick_nobound)", "vanLeer": "typeof(WaterLily.vanLeer)"}
+                              "quick_nobound": "typeof(WaterLily.quick_nobound)", "vanLeer": "typeof(WaterLily.vanLeer)",
+                              "vanLeer_safe": "typeof(WaterLily.vanLeer_safe)"}
 
 
 def test_exported_cds_type_passes_full_output_verification(tmp_path):
@@ -466,6 +472,106 @@ def test_final_analysis_requires_all_four_primary_arms(tmp_path):
     fixture(tmp_path / "quick")
     with pytest.raises(ValueError, match="all four primary"):
         A.analyze_campaign(tmp_path, reference())
+
+
+def test_optional_safe_arm_is_not_run_when_its_directory_is_absent(tmp_path):
+    for arm in ("quick", "quick_nobound", "cds", "vanLeer"):
+        fixture(tmp_path / arm, arm)
+    result = A.analyze_campaign(tmp_path, reference())
+    safe = result["arms"]["vanLeer_safe"]
+    assert safe["arm"] == "vanLeer_safe" and safe["label"] == "NOT_RUN"
+    assert safe["direction_count"] == 0 and safe["directions"] == {}
+    assert safe["next_step_eligible"] is False
+
+
+@pytest.mark.parametrize("damage", ["empty", "missing_index", "bad_hash"])
+def test_present_safe_output_is_verified_and_never_treated_as_not_run(tmp_path, damage):
+    for arm in ("quick", "quick_nobound", "cds", "vanLeer"):
+        fixture(tmp_path / arm, arm)
+    safe = tmp_path / "vanLeer_safe"
+    if damage == "empty":
+        safe.mkdir()
+    else:
+        fixture(safe, "vanLeer_safe")
+        if damage == "missing_index":
+            (safe / "grad00_index.json").unlink()
+            manifest(safe)
+        else:
+            (safe / "plain.history.csv").write_text("tamper")
+    with pytest.raises(ValueError):
+        A.analyze_campaign(tmp_path, reference())
+
+
+def test_safe_arm_does_not_replace_a_missing_primary_arm(tmp_path):
+    for arm in ("quick", "quick_nobound", "cds", "vanLeer_safe"):
+        fixture(tmp_path / arm, arm)
+    with pytest.raises(ValueError, match="all four primary"):
+        A.analyze_campaign(tmp_path, reference())
+
+
+def test_safe_arm_results_are_labeled_without_changing_fixed_next_step_candidates(tmp_path):
+    # Amendment 2 adds D′ but does not amend rev 0 §5's fixed B-D rule.
+    for arm in ("quick", "quick_nobound", "cds", "vanLeer"):
+        fixture(tmp_path / arm, arm, blocked=A.DIRECTIONS)
+    fixture(tmp_path / "vanLeer_safe", "vanLeer_safe")
+    result = A.analyze_campaign(tmp_path, reference())
+    safe = result["arms"]["vanLeer_safe"]
+    assert safe["label"] == "BOUNDED_ALL" and safe["agree_count"] == 4
+    assert all(row["agreement"] == "AGREE" for row in safe["directions"].values())
+    assert safe["next_step_eligible"] is False
+    assert result["next_step"] == "GRAD01_DRAFT_NOT_ALLOWED"
+    assert result["rules"]["next_step_arms"] == ["quick_nobound", "cds", "vanLeer"]
+
+
+@pytest.mark.parametrize("damage", ["u_gate", "p_gate", "missing_gate", "missing_control", "control_lambda", "control_u_sha", "control_p_sha", "dual_nonfinite"])
+def test_safe_preflight_requires_plain_parity_and_finite_dual(tmp_path, damage):
+    out = tmp_path / "vanLeer_safe"
+    fixture(out, "vanLeer_safe")
+    index = json.loads((out / "grad00_index.json").read_text())
+    preflight = index["preflight"]
+    if damage in ("u_gate", "p_gate"):
+        preflight[f"vanLeer_primal_{damage[0]}_bit_equal"] = False
+    elif damage == "missing_gate":
+        del preflight["vanLeer_primal_u_bit_equal"]
+    elif damage == "missing_control":
+        del preflight["arms"]["vanLeer_plain"]
+    elif damage == "control_lambda":
+        preflight["arms"]["vanLeer_plain"]["lambda_type"] = A.LAMBDA_TYPES["vanLeer_safe"]
+    elif damage in ("control_u_sha", "control_p_sha"):
+        preflight["arms"]["vanLeer_plain"][f"primal_{damage[8]}_sha256"] = "0" * 64
+    else:
+        preflight["arms"]["selected_dual"]["tangent_u_finite"] = False
+    dump(out / "grad00_index.json", index)
+    dump(out / "preflight.json", preflight)
+    manifest(out)
+    with pytest.raises(ValueError):
+        A.verify_output(out, reference())
+
+
+def test_safe_helper_source_pin_is_required_for_output_verification(tmp_path):
+    out = tmp_path / "vanLeer_safe"
+    fixture(out, "vanLeer_safe")
+    path = out / "run_identity.json"
+    identity = json.loads(path.read_text())
+    for key in ("pins", "verified"):
+        identity[key].pop("scripts/vanleer_safe.jl", None)
+    dump(path, identity)
+    manifest(out)
+    with pytest.raises(ValueError, match="vanleer_safe"):
+        A.verify_output(out, reference())
+
+
+def test_safe_plain_parity_does_not_require_dual_primal_bit_identity(tmp_path):
+    out = tmp_path / "vanLeer_safe"
+    fixture(out, "vanLeer_safe")
+    index = json.loads((out / "grad00_index.json").read_text())
+    # D′ promises plain D/D′ parity and finite Dual partials. Floating-point
+    # Dual evaluation need not reproduce every plain bit.
+    index["preflight"]["arms"]["selected_dual"].update(primal_u_sha256="3" * 64, primal_p_sha256="4" * 64)
+    dump(out / "grad00_index.json", index)
+    dump(out / "preflight.json", index["preflight"])
+    manifest(out)
+    assert A.verify_output(out, reference())["index"]["preflight"]["pass"] is True
 
 
 def test_synthetic_and_measured_classes_cannot_be_mixed(tmp_path):

@@ -2,8 +2,8 @@
 """Check GRAD-00 output and apply its exploratory labels once.
 
 The same-scheme ±epsilon primals supply FD. Historical FD-08 Model-A slopes
-are descriptive only. rev 0 does not define a selected plateau or its spread;
-an explicit, source-authenticated reference is therefore required.
+are descriptive only. Amendment 1 fixes epsilon/spread in the committed,
+source-authenticated reference, which remains an explicit input.
 
     python scripts/analyze_grad00.py OUTPUT_ROOT --reference REF.json --check
     python scripts/analyze_grad00.py OUTPUT_ROOT --reference REF.json --write OUTPUT_ROOT/analysis.json
@@ -27,11 +27,16 @@ import grad_g2_window as W  # noqa: E402
 import verify_grad_g2_terminal as V  # noqa: E402
 
 DIRECTIONS = V.DIRECTIONS
-ARMS = ("quick", "quick_nobound", "cds", "vanLeer")
+PRIMARY_ARMS = ("quick", "quick_nobound", "cds", "vanLeer")
+ARMS = (*PRIMARY_ARMS, "vanLeer_safe")
+# rev 0 §5 fixes B-D as the candidates; Amendment 2 adds optional D′ without
+# changing that pre-written rule or automatically deciding when D′ should run.
+NEXT_STEP_ARMS = PRIMARY_ARMS[1:]
 # quick/cds are exported; Julia prints their imported names without a module.
 # vanLeer and the included quick_nobound helper are not exported.
 LAMBDA_TYPES = {"quick": "typeof(quick)", "quick_nobound": "typeof(WaterLily.quick_nobound)",
-                "cds": "typeof(cds)", "vanLeer": "typeof(WaterLily.vanLeer)"}
+                "cds": "typeof(cds)", "vanLeer": "typeof(WaterLily.vanLeer)",
+                "vanLeer_safe": "typeof(WaterLily.vanLeer_safe)"}
 FLAGS = ("fd_oracle", "field_gradient", "reverse", "optimizer", "topology", "shape_update_allowed")
 WINDOW = (80.0, 120.0)
 RELATIVE_ERROR = 0.1  # GRAD-00 rev 0 §5; never inferred from measured results.
@@ -55,7 +60,7 @@ INPUT_SHA256 = {
 }
 SCOPE_RECORD = ROOT / "docs/evidence/fd08_v2_oracle_scope_record_2026_10_08/record.json"
 SCOPE_RECORD_SHA256 = "3f8b7d3e43f32633aa67106ba57f36e5be16f3e74e655bc54f862e463cc608d0"
-REQUIRED_SOURCE_PINS = frozenset(("scripts/waterlily_grad00_lambda_2026_11.jl", "scripts/quick_nobound.jl", "scripts/analyze_grad00.py",
+REQUIRED_SOURCE_PINS = frozenset(("scripts/waterlily_grad00_lambda_2026_11.jl", "scripts/quick_nobound.jl", "scripts/vanleer_safe.jl", "scripts/analyze_grad00.py",
                                   "scripts/grad_g2_window.py", "scripts/verify_grad_g2_terminal.py", "julia/CFDSDFWaterLily/src"))
 
 
@@ -320,6 +325,8 @@ def verify_output(out_dir: Path, reference: dict) -> dict:
     _require(isinstance(preflight, dict) and preflight.get("pass") is True and preflight.get("steps") == 20, "preflight failed or absent")
     if arm == "quick":
         _require(preflight.get("primal_u_bit_equal") is True and preflight.get("primal_p_bit_equal") is True, "quick preflight is not primal bit-equal")
+    if arm == "vanLeer_safe":
+        _require(all(preflight.get(f"vanLeer_primal_{c}_bit_equal") is True for c in ("u", "p")), "vanLeer_safe preflight is not primal bit-equal to vanLeer")
     expected_lambda = LAMBDA_TYPES[arm]
     _require(index["lambda_type"] == expected_lambda, "lambda_type is not the selected convection scheme")
     _require(index["input_sha256"] == INPUT_SHA256, "registered input_sha256 mismatch")
@@ -328,16 +335,19 @@ def verify_output(out_dir: Path, reference: dict) -> dict:
         epsilon = _number(index["epsilon_m"][direction], f"{direction} epsilon_m", positive=True)
         _require(epsilon <= 5e-3 and epsilon == reference["directions"][direction]["epsilon_m"], f"{direction}: epsilon differs from reference or exceeds 5 mm")
     preflight_arms = preflight.get("arms")
-    expected_preflight = {"selected_dual", "selected_plain"} | ({"quick"} if arm == "quick" else set())
+    expected_preflight = {"selected_dual", "selected_plain"} | ({"quick"} if arm == "quick" else {"vanLeer_plain"} if arm == "vanLeer_safe" else set())
     _require(isinstance(preflight_arms, dict) and set(preflight_arms) == expected_preflight, "preflight arm inventory missing")
     for label, values in preflight_arms.items():
-        _require(values.get("lambda_type") == (LAMBDA_TYPES["quick"] if label == "quick" else expected_lambda), "preflight lambda routing mismatch")
+        _require(values.get("lambda_type") == (LAMBDA_TYPES["quick"] if label == "quick" else LAMBDA_TYPES["vanLeer"] if label == "vanLeer_plain" else expected_lambda), "preflight lambda routing mismatch")
         _require(all(values.get(k) is True for k in ("primal_finite", "tangent_u_finite", "tangent_p_finite")), "preflight primal/tangent not finite")
         for component in ("u", "p"):
             _require(re.fullmatch(r"[a-f0-9]{64}", str(values.get(f"primal_{component}_sha256", ""))) is not None, "preflight primal field SHA missing")
             _number(values.get(f"max_abs_tangent_{component}"), "preflight maximum tangent", minimum=0)
             if arm == "quick":
                 _require(preflight_arms["quick"][f"primal_{component}_sha256"] == preflight_arms["selected_dual"][f"primal_{component}_sha256"], "quick preflight bit hashes disagree")
+    if arm == "vanLeer_safe":
+        for component in ("u", "p"):
+            _require(preflight_arms["vanLeer_plain"][f"primal_{component}_sha256"] == preflight_arms["selected_plain"][f"primal_{component}_sha256"], "vanLeer_safe/vanLeer plain preflight bit hashes disagree")
     _require("preflight.json" in inventory and _read_json(out_dir / "preflight.json") == preflight, "preflight index/artifact mismatch")
     order = ["plain", *(label for d in dirs for label in (d, d + "__plus", d + "__minus"))]
     g2 = _read_json(out_dir / "g2_run_index.json")
@@ -450,12 +460,17 @@ def _runtime(checked):
 def analyze_campaign(root: Path, reference: dict) -> dict:
     validate_reference(reference)
     root = Path(root)
-    outputs = sorted(p.parent for p in root.glob("*/grad00_index.json"))
+    _require(root.is_dir(), "campaign output root is missing")
+    _require(not (root / "vanLeer_safe").exists() or (root / "vanLeer_safe").is_dir(), "vanLeer_safe output must be a directory")
+    # A present output directory is evidence to authenticate, even without an
+    # index. In particular an empty/failed D′ directory must not become NOT_RUN.
+    outputs = sorted(p for p in root.iterdir() if p.is_dir())
     _require(outputs, "no arm grad00_index.json outputs found")
     verified = {out.name: verify_output(out, reference) for out in outputs}
+    _require("vanLeer_safe" not in verified or verified["vanLeer_safe"]["index"]["arm"] == "vanLeer_safe", "vanLeer_safe output directory contains a different arm")
     identities = [_identity(v) for v in verified.values()]
     _require(len(set(identities)) == len(identities), "duplicate arm/precision/version/backend identity")
-    _require({(arm, "Float32", "1.8.0", "cuda") for arm in ARMS}.issubset(identities), "all four primary CUDA/T4 A-D arms are required before final analysis")
+    _require({(arm, "Float32", "1.8.0", "cuda") for arm in PRIMARY_ARMS}.issubset(identities), "all four primary CUDA/T4 A-D arms are required before final analysis")
     classes = {v["index"]["evidence_class"] for v in verified.values()}
     _require(len(classes) == 1, "synthetic and measured evidence classes cannot be mixed")
     control = next(v for v in verified.values() if _identity(v) == ("quick", "Float32", "1.8.0", "cuda"))
@@ -485,7 +500,7 @@ def analyze_campaign(root: Path, reference: dict) -> dict:
         count = sum(v["boundedness"] == "BOUNDED" for v in directions.values())
         label = "BOUNDED_ALL" if count == len(directions) else "BLOCKED_ALL" if not count else "PARTIAL"
         agree_count = sum(v["agreement"] == "AGREE" for v in directions.values())
-        eligible = index["arm"] in ARMS[1:] and index["real_type"] == "Float32" and index["waterlily"] == "1.8.0" and index["backend"] == "cuda" and len(directions) == 4
+        eligible = index["arm"] in NEXT_STEP_ARMS and index["real_type"] == "Float32" and index["waterlily"] == "1.8.0" and index["backend"] == "cuda" and len(directions) == 4
         if eligible and label == "BOUNDED_ALL" and agree_count >= 3:
             allowed.append(name)
         arms[name] = {"arm": index["arm"], "real_type": index["real_type"], "waterlily": index["waterlily"], "label": label,
@@ -495,6 +510,9 @@ def analyze_campaign(root: Path, reference: dict) -> dict:
                       "plain_comparison_arm_a_source_commit": control["source_commit"], "plain_comparison_same_runtime": _runtime(checked) == _runtime(control),
                       "index_sha256": checked["index_sha256"], "source_commit": checked["source_commit"],
                       "wall_seconds_all_runs": sum(r["total_seconds"] for r in runs.values()), "peak_vram_bytes": max(r["peak_vram_bytes"] for r in runs.values())}
+    if not any(v["index"]["arm"] == "vanLeer_safe" for v in verified.values()):
+        arms["vanLeer_safe"] = {"arm": "vanLeer_safe", "label": "NOT_RUN", "reason": "output_directory_absent",
+                               "agree_count": 0, "direction_count": 0, "directions": {}, "next_step_eligible": False}
     precision_differences = {}
     for arm in ARMS[:2]:
         f32 = next((v for v in verified.values() if _identity(v) == (arm, "Float32", "1.8.0", "cpu")), None)
@@ -517,7 +535,7 @@ def analyze_campaign(root: Path, reference: dict) -> dict:
             "next_step": "GRAD01_DRAFT_ALLOWED" if allowed else "GRAD01_DRAFT_NOT_ALLOWED", "eligible_arms_passing_next_rule": allowed,
             "reference": reference, "historical_fd08_model_a_scope_record_sha256": SCOPE_RECORD_SHA256,
             "rules": {"relative_error": RELATIVE_ERROR, "spread_multiple": SPREAD_MULTIPLE, "block_limit": BLOCK_LIMIT, "blocks_strictly_above_limit": True,
-                      "window_t_u_l": list(WINDOW), "same_arm_primal_gate": V.PRIMAL_GATE, "next_step_arms": list(ARMS[1:])},
+                      "window_t_u_l": list(WINDOW), "same_arm_primal_gate": V.PRIMAL_GATE, "next_step_arms": list(NEXT_STEP_ARMS)},
             "units": {"force": "N", "tangent_and_fd_and_spread": "N/m", "fz": "raw force on body; downforce=-fz"},
             "meaning": "exploratory sampled-watchdog boundedness and same-scheme central difference; not grid/physical/gradient qualification",
             "qualification_flags": {k: False for k in FLAGS}}

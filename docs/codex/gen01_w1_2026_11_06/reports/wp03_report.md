@@ -1,131 +1,244 @@
-# WP3 GRAD-00 報告
+# WP3 GRAD-00 報告（Amendment 2）
 
 ## 状態
 
-**PARTIAL。実装と4 kernel のローカル生成は完了。個別 CPU 検証には数値失敗があり、全体の受け入れ条件は未達。**
+**PARTIAL。Amendment 2 の実装と個別検証は完了。元の受け入れ条件「A–D の全4腕の preflight PASS」は stock vanLeer の非有限により未達。**
 
-対象は登録済み v17／flow_24、FD-08 の4方向、窓 [80,120] の探索用 kernel と analyzer。
+開始 HEAD は `0b226184`（直下に `383e37e9`、`ae978d5d`）、branch は `feat/gen01-w1-03-grad00`、開始時の作業ツリーはクリーンだった。Claude が commit 済みの reference を変更せず、D′ `vanLeer_safe`、reference の実ファイルテスト、analyzer、builder の上書き経路を追加した。
 
-WaterLily 1.8.0 の quick・quick_nobound・cds は 20-step CPU preflight を通過した。vanLeer は plain が有限、Dual の primal と partials が非有限となり、`preflight.pass=false`、index は `INCOMPLETE`、exit 2 で停止した。式・閾値・preflight 条件は変更していない。1.10.0 の quick と Float64 の quick／quick_nobound は通過した。
+A/B/C/D′、1.10 quick、Float64 A/B の20-step CPU preflight は通過した。D は plain が有限、Dual の値と partials が非有限となり、`INCOMPLETE`、exit 2 を保持した。D′ は plain の u/p が D の plain 対照と bit-equal、Dual は有限。quick は同じ型・経路の凍結 TA1 と通常 plain／Dual の値成分の両方で u/p が bit-equal だった。
 
-FD-08 amend3 には方向別に選択済みの plateau ε と spread の定義が見つからなかった。Model A の SE を spread に代用せず、明示 reference を必須にした。生成済み runner は `UNCONFIGURED` で、reference がなければ GPU inventory の前に停止する。本測定用 `analysis.json`、登録窓の BOUNDED／AGREE、GRAD01 の判定は作っていない。全体 pytest の失敗集合同一も、Metal abort と CPU base の30分 cap のため未確認。
+結果側の全体 pytest は **3657 passed、74 skipped、7295 warnings、exit 0**、1428.66 s（23分48秒）で完走した。失敗 node 集合は **空 `[]`**。実行中の対象 source の SHA は不変。base は指示どおり取り直しておらず、Claude の host baseline との同一性は host 側で照合する。
 
-GitHub: [draft PR #86](https://github.com/ramhachi/CFD_opt_sdf/pull/86)、commit・push 済み。feature branch は `feat/gen01-w1-03-grad00`、PR の base は `codex/kaggle-batch-migration`。Kaggle への push と GRAD-00 の GPU 測定は実施していない。
+今回の呼び出しでは commit/push、PR #86 の更新、Kaggle、GPU、本測定用 `analysis.json`、`infra/kaggle/kernel_grad00_*/` の変更を行っていない。実装後に Claude が host で commit/push し、その commit に pin して5 kernelを再生成する二段階の手順に従う。
 
-## 作ったもの（パス、1 行ずつ）
+## 作ったもの（今回 commit すべきファイルの完全な一覧）
 
-- `scripts/quick_nobound.jl`
-- `scripts/waterlily_grad00_lambda_2026_11.jl`
-- `scripts/waterlily_grad00_lambda_2026_11.diff`
-- `scripts/grad00_selftest.jl`
-- `scripts/grad00_orchestration_selftest.jl`
-- `scripts/analyze_grad00.py`
-- `scripts/build_grad00_kernels.py`
-- `scripts/run_grad00_cpu.py`
-- `julia/CFDSDFWaterLily110/Project.toml`
-- `julia/CFDSDFWaterLily110/Manifest.toml`
-- `infra/kaggle/kernel_grad00_quick/`
-- `infra/kaggle/kernel_grad00_quick_nobound/`
-- `infra/kaggle/kernel_grad00_cds/`
-- `infra/kaggle/kernel_grad00_vanLeer/`
-- `tests/test_grad00.py`
-- `tests/test_grad00_kernels.py`
-- `tests/test_grad00_cpu.py`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp03_design.md`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp03_report.md`
+以下は開始 HEAD からの今回の変更・追加のみ。既存の `quick_nobound.jl`、CPU launcher、WaterLily 1.10 project はそのまま再利用して検証した。既存4 kernelは古い UNCONFIGURED bytes のままで、今回の commit 対象には含めない。
 
-各 kernel ディレクトリは `runner.py`、`kernel-metadata.json`、`timeout` を含む。最終 runner の source commit は `282ffc51ee44424038e2a2d8d50a97fe5e37b9d4`、timeout は TA1 と同じ 10800 s。実装は既存 helper と標準ライブラリを再利用し、既存の凍結 source、既存 evidence、旧 Project／Manifest、authority 文書は変更していない。
+今回の commit 対象は **92ファイル**。同じ一覧を `wp03_validation/amendment2/COMMIT_FILES.txt` に保存した。
+
+```text
+docs/codex/gen01_w1_2026_11_06/reports/wp03_design.md
+docs/codex/gen01_w1_2026_11_06/reports/wp03_report.md
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily110_quick_Float32/execution.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily110_quick_Float32/g2_run_index.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily110_quick_Float32/grad00_index.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily110_quick_Float32/output.txt
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily110_quick_Float32/preflight.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily110_quick_Float32/preflight.progress.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_cds_Float32/execution.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_cds_Float32/g2_run_index.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_cds_Float32/grad00_index.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_cds_Float32/output.txt
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_cds_Float32/preflight.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_cds_Float32/preflight.progress.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_Float32/execution.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_Float32/g2_run_index.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_Float32/grad00_index.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_Float32/output.txt
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_Float32/preflight.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_Float32/preflight.progress.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_Float64/execution.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_Float64/g2_run_index.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_Float64/grad00_index.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_Float64/output.txt
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_Float64/preflight.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_Float64/preflight.progress.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_nobound_Float32/execution.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_nobound_Float32/g2_run_index.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_nobound_Float32/grad00_index.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_nobound_Float32/output.txt
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_nobound_Float32/preflight.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_nobound_Float32/preflight.progress.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_nobound_Float64/execution.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_nobound_Float64/g2_run_index.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_nobound_Float64/grad00_index.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_nobound_Float64/output.txt
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_nobound_Float64/preflight.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_nobound_Float64/preflight.progress.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_vanLeer_Float32/execution.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_vanLeer_Float32/g2_run_index.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_vanLeer_Float32/grad00_index.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_vanLeer_Float32/output.txt
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_vanLeer_Float32/preflight.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_vanLeer_Float32/preflight.progress.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_vanLeer_safe_Float32/execution.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_vanLeer_safe_Float32/g2_run_index.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_vanLeer_safe_Float32/grad00_index.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_vanLeer_safe_Float32/output.txt
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_vanLeer_safe_Float32/preflight.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_vanLeer_safe_Float32/preflight.progress.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/COMMIT_FILES.txt
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/README.md
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/SHA256SUMS
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/compileall.txt
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/cpu_launcher.txt
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/cpu_results.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/cpu_summary.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/focused.txt
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/focused_checks.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/frozen_semantics_audit.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/instantiate110.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/protected_after.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/protected_before.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/pytest_focused.xml
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/pytest_full.txt
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/pytest_full.xml
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/pytest_full_command.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/pytest_full_result.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/reference_audit.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/run_cpu_validation.py
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/selftest110.txt
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/selftest180.txt
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/ta1_bit_comparison.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/ta1_capture_execution/execution.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/ta1_capture_execution/output.txt
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/ta1_plain_capture_execution/execution.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/ta1_plain_capture_execution/output.txt
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/ta1_plain_reference/quick_plain_control.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/ta1_plain_reference_capture.jl
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/ta1_reference/quick_control.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/ta1_reference_capture.jl
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/validation_summary.json
+docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/waterlily_source_audit.json
+scripts/analyze_grad00.py
+scripts/build_grad00_kernels.py
+scripts/grad00_selftest.jl
+scripts/vanleer_safe.jl
+scripts/waterlily_grad00_lambda_2026_11.diff
+scripts/waterlily_grad00_lambda_2026_11.jl
+tests/test_grad00.py
+tests/test_grad00_kernels.py
+tests/test_grad00_reference.py
+```
+
+`wp03_validation/amendment2/` は software/input-integrity/短時間CPU検証の記録である。各プロセスのコマンド、環境、exit、wall、source と artifact の SHA、失敗も含む index と raw log を保持する。過去の capped 試行は旧ディレクトリに残した。
 
 ## インターフェース（他 WP が使う関数・CLI・ファイル形式）
 
-`quick_nobound(u,c,d) = median((5c+2d-u)/6,c,d)` を `Base.include(WaterLily, path)` で読み込む。Float32／Float64／Dual で同じ式を使う。job は `GRAD00_ARM=quick|quick_nobound|cds|vanLeer` を constructor の `λ` に渡し、`typeof(sim.flow.λ)` を検査する。実際の型名は quick と cds が無修飾、quick_nobound と vanLeer が `WaterLily.` 修飾だったため、analyzer はこの対応を明示して検証する。
+`quick_nobound` は元の単一式 `median((5c+2d-u)/6,c,d)` のまま。新しい `scripts/vanleer_safe.jl` は次の式を `Base.include(WaterLily, path)` で読み込む。
 
-job の引数は TA1 の 11 引数に `D0,D1,D2,P1` の ε [m] を順に 4 個追加した 15 引数。Float32 は共通 plain 1 本＋各方向の Dual／+ε／−ε、計 13 run。`GRAD00_T=Float64` は CPU の A/B、D0/D1、計 7 run。登録窓 [80,120]、8-step sampling、100-step watchdog、strict >1e30、8× wall abort、力の符号、endpoint-clipped mean を保持した。`g2_run_index.json` の名前も保持し、`grad00_index.json` に各 run の窓平均、summary/history/watchdog の SHA、入力 field の SHA、onset、wall、VRAM、runtime と方向対応を書く。
-
-reference JSON は `schema_version=1`、`kind="grad00_fd08_reference"`、定義を記述する `definition`、出典の repository-relative path→SHA を持つ `sources`、4 方向すべての `epsilon_m` と `spread_n_per_m={fx,fz}` を必須とする。renderer と analyzer が同じ loader を使い、reference 自体と出典を source commit に結び付ける。
-
-```bash
-.venv/bin/python scripts/analyze_grad00.py OUTPUT_ROOT --reference REF.json --check
-.venv/bin/python scripts/analyze_grad00.py OUTPUT_ROOT --reference REF.json --write OUTPUT_ROOT/analysis.json
+```julia
+vanLeer_safe(u,c,d) = ForwardDiff.value(d) == ForwardDiff.value(u) ? c : vanLeer(u,c,d)
 ```
 
-各腕の出力ディレクトリを `OUTPUT_ROOT/<arm>/` に置く。analyzer は 13/7 run の inventory、DONE、transport manifest、source/runtime/input/artifact SHA、実 history からの窓平均、同じ λ の Dual/plain primal を検証する。fx・fz の両方で符号と比率 0.9–1.1、|FD| < 3×spread の NOT_EVALUABLE、方向・腕の全ラベル、plain の A 差、F32/F64 差を出す。歴史的 FD-08 Model A は記述的参照として区別する。A–D の CUDA/T4 cohort が揃ってから一度だけ書き、既存の analysis／SHA sidecar を拒否する。次段の規則は仕様 §5 の B–D のみを対象とし、E/F と CPU dryrun を含めない。
+job は `GRAD00_ARM=quick|quick_nobound|cds|vanLeer|vanLeer_safe` を constructor の `λ` に渡し、`typeof(sim.flow.λ)` を検査する。D′ の型文字列は `typeof(WaterLily.vanLeer_safe)`。TA1 の11引数に D0/D1/D2/P1 の ε [m] を4個加えた15引数、Float32 は shared plain 1本＋4方向の Dual/plus/minus、計13 run。Float64 は CPU の A/B、D0/D1、計7 run。`g2_run_index.json` と `grad00_index.json` の名前と、run ごとの窓平均・SHA・watchdog・onset・wall・VRAM の記録方法を保持した。
 
-`run_grad00_cpu.py` は、将来の F または E CPU 出力に analyzer 用の identity／DONE／output manifest を付ける。`--source-commit --reference --output-dir --arm --real-type --timeout-s` を必須とし、必要なら `--project julia/CFDSDFWaterLily110` を選ぶ。10 Julia threads を強制・記録し、source/ref を検証してから同じ job を起動する。今回は fake subprocess で検証し、full-window CPU 測定には使っていない。
+D′ の20-step preflight は `selected_dual`、`selected_plain`、stock の `vanLeer_plain`。`vanLeer_primal_u_bit_equal` / `vanLeer_primal_p_bit_equal` は selected plain と stock plain の SHA 比較を記録し、pass 条件にする。Dual と plain 同士の bit identity は追加の条件にしていない。すべての経路に有限性を要求する。
 
-## テスト（コマンドと結果。全体 pytest の失敗集合が base と同一か）
+reference は `docs/evidence/grad00_lambda_2026_11/reference.json` を必須入力とする。ε は4方向共通 `0.003971641173621408 m`、spread は Model A の `se_g_n_per_m`（fx=drag、fz=downforce）。analyzer 内の fz は raw force on body、downforce は −fz。SE の大きさには符号反転を要しない。比較の主対象は各 λ の ±ε で求める中心差分で、旧 FD-08 Model A の方向微分は記述的参照として別に保持する。
 
-- `.venv/bin/python -m compileall src tests`: **PASS**。
-- `.venv/bin/python -m pytest -q tests/test_grad00.py`: **88 passed**（9.80 s）。全ラベル、閾値の境界、必須キー、改変・欠落、1 回書き込み、reference/source binding を検証。
-- `.venv/bin/python -m pytest -q tests/test_grad00_kernels.py tests/test_grad00_cpu.py`: **49 passed**（1.69 s）。新規 Python テストは同じ code commit `9aedf41d` で計 **137/137 PASS**。
-- `git diff --check` と base→実装の diff check: **PASS**。26 個の実装／render ファイルはすべて追加で、既存 tracked ファイルの diff は空。TA1 との差分ファイルは再生成した内容と byte-for-byte 一致した。
-- 元の `.venv/bin/python -m pytest -q`: base が既存 Metal 初期化で **native abort、shell exit 134**。有効な最終 JUnit がなく、失敗集合は取得できなかった。以前の実装後 full-suite 試行も collection 中断であり、結果には数えていない。
-- GPU を避けた base の `.venv/bin/python -m pytest -q --ignore=tests/test_lbm_metal.py`: **1800 s cap、exit 124、約46%で未完了**。そのため予定していた実装後の同じ全体 CPU run は開始せず、**全体の失敗集合同一は NOT_ESTABLISHED**。親 pytest は終了したが、終了後の OS process 一覧取得は sysmon unavailable で失敗し、子プロセス不存在までは確認できていない。
+```bash
+.venv/bin/python scripts/analyze_grad00.py OUTPUT_ROOT \
+  --reference docs/evidence/grad00_lambda_2026_11/reference.json --check
+.venv/bin/python scripts/analyze_grad00.py OUTPUT_ROOT \
+  --reference docs/evidence/grad00_lambda_2026_11/reference.json \
+  --write OUTPUT_ROOT/analysis.json
+```
 
-Julia の実 preflight は `julia -O2 -t 10`、`G2_BACKEND=cpu`、`G2_DRYRUN_T_END=0.4`、`TA1_PREFLIGHT_ONLY=1`、BLAS/OpenMP 各 1 thread、各 phase 20 steps。各プロセスの cap は 480 s。ε 引数の 0.001 m ×4 は合成 fixture で、FD-08 の plateau 選択値ではない。正確な 15 引数、環境、exit、SHA は validation の command JSON に保存した。
+各出力を `OUTPUT_ROOT/<arm>/` に置く。A–D は引き続き必須。D′ が無い場合は `NOT_RUN` とし、存在するが空・破損・未完了の場合は拒否する。D′ の実行条件は analyzer に入れていない。方向の `BOUNDED/BLOCKED`、`AGREE/DISAGREE/NOT_EVALUABLE`、腕の `BOUNDED_ALL/PARTIAL/BLOCKED_ALL`、Aとの差、F32/F64差、write-once を保持する。閾値は `0.1`、`3×spread`、strict `>1e30` のまま。
 
-| 対象 | 20-step preflight | wall |
-| --- | --- | ---: |
-| 1.8.0 / quick / Float32 | PASS | 202.36 s |
-| 1.8.0 / quick_nobound / Float32 | PASS | 183.39 s |
-| 1.8.0 / cds / Float32 | PASS | 243.12 s |
-| 1.8.0 / vanLeer / Float32 | FAIL、INCOMPLETE、exit 2 | 219.72 s |
-| 1.10.0 / quick / Float32 | PASS | 122.70 s |
-| 1.8.0 / quick / Float64 | PASS | 224.68 s |
-| 1.8.0 / quick_nobound / Float64 | PASS | 156.42 s |
+次段候補は仕様 §5 が明示する **B–D のまま**。D′ の追加だけを理由に候補集合を拡大しない。D′ は同じラベルを集計するが `next_step_eligible=false`。D′ を次段候補に含める意図なら、Claude／ユーザーが仕様の候補範囲を明記する必要がある。
 
-凍結 TA1 を変更せず、その実際の `build()` による quick-Dual 20-step capture を別プロセスで実行した（90.06 s）。コピーの quick-control／selected-Dual の値成分は u・p とも bit-equal。u SHA は `fac0ca3c6f84ec2672456c01695a2f6c39f74984abb2f2c8a4dbffbcc92f790a`、p SHA は `99223b6bfc23d49ae8e1965865e25765e65c3ff2a23c1d86f9d06743a499400e`。通常の Float32 plain も別の TA1 capture（94.21 s）で比較し、コピーの selected_plain と u・p とも SHA が一致した。比較は同じ型・経路同士で行い、2 種類の比較 JSON と通常 plain の full SHA も保存した。
+builder は5腕を扱い、新 helper と reference generator を source pin に追加した。reference 付きなら既存ディレクトリ内の `runner.py`、`kernel-metadata.json`、`timeout` を上書きでき、UNCONFIGURED からの更新も許す。他のファイルは保持する。reference を再検証し、committed source bytes を照合し、全5腕の runner／metadata を生成してから書く。reference 無しの render は既存ディレクトリを拒否する。default は `infra/kaggle/`。今回のテストでは ROOT を tmp_path に差し替え、実 infra は変更していない。
 
-`julia --project=julia/CFDSDFWaterLily scripts/grad00_selftest.jl` と 1.10 project での同じ selftest は各 **34/34 PASS**。`Pkg.instantiate(;allow_autoprecomp=false)` は最終 1.10 project で exit 0、8.15 s、Project／Manifest の実行前後 SHA が一致した。
+## テスト（コマンドと結果、base との比較の扱い）
 
-`scripts/grad00_orchestration_selftest.jl` は **PASS、31.36 s、solver_steps=0**。実際の main／save_run!／index／窓平均 helper を使い、preflight と run_one だけを合成 stub にした。13 run、方向対応、±ε の Float64 演算後の cast、入力と artifact の SHA、必須キーを独立した Python 読み取りで確認した。実 flow preflight の代わりには扱っていない。
+- `.venv/bin/python -m pytest -q tests/test_grad00.py tests/test_grad00_reference.py tests/test_grad00_kernels.py tests/test_grad00_cpu.py -p no:cacheprovider`：**175 passed**、9.36 s。`test_grad00.py` 104件、reference 5件、builder 37件、CPU wrapper 29件。実際の command/JUnit は `amendment2/focused_checks.json` / `pytest_focused.xml`。
+- reference の実ファイル受理、generator `--check` exit 0、両出典それぞれ1 byte の改変拒否、全方向共通の正の ε ≤5 mm を検証した。凍結出典は変更せず、改変テストは tmp_path のコピーで行った。
+- builder の default 出力先での configured／UNCONFIGURED 上書き、繰り返し、余分なファイルの保持、reference/source/5番目のrender/metadataの失敗前無書き込み、source commit 検証を合成データで確認した。
+- `julia --startup-file=no --project=julia/CFDSDFWaterLily scripts/grad00_selftest.jl` と 1.10 project の同じコマンド：ともに **120/120 PASS**。等値端点の Dual は c 本体と partial を返し、Float32/64 の seeded plain 入力でも stock vanLeer と bit identity を確認した。
+- `julia --startup-file=no --project=julia/CFDSDFWaterLily110 -e 'using Pkg; Pkg.instantiate(;allow_autoprecomp=false)'`：**exit 0**、Project／Manifest の SHA 不変。wall は採取していない。
+- `.venv/bin/python -m compileall src tests`：**exit 0**。`git diff --check`：**exit 0**。
+- TA1 の `load_raw/sample_row/window_mean/summarize/tangent_max/history_header`、測定定数、CPU-only window hook、BLOCK_LIMIT の bytes を照合した。コピー元との差分ファイルは stable labels・zero-context unified diff の再生成と完全一致した（`frozen_semantics_audit.json`）。
+- FD-08 の4 direction raw は Fortran-order SHA と、正式 criteria の C-order SHA の双方が一致した。選択 ε の plus/minus、計8個の生成 Float32 field も正式記録の SHA と一致した（`reference_audit.json`）。
+- 保護対象24ファイルは開始時から SHA 不変。T4 の Project／Manifest と凍結 TA1 builder/template も HEAD と byte-equal。authority 本文、凍結 source/evidence、既存生成 infra は変更していない（`protected_before.json` / `protected_after.json`）。
 
-vanLeer の追加 scalar 再現では、Float32／Float64 の双方で `Dual(1,1), Dual(1,2), Dual(1,3)` から値・partial が NaN、plain `(1,1,1)` は 1 だった。値が等しいとき partials まで使う ForwardDiff の比較により extremum 条件が false となり、値が 0 の `d-u` で割る分岐に入った。この scalar 機構と、登録格子で最初に非有限になった場所・step の同定は区別する。後者は未追跡。Flow.jl と dual.jl の実際の source path、SHA、該当行を記録した。
+CPU コマンドは `amendment2/run_cpu_validation.py` で再現可能。`julia --startup-file=no -O2 -t 10`、`G2_BACKEND=cpu G2_DRYRUN_T_END=0.4 TA1_PREFLIGHT_ONLY=1`、BLAS/OpenMP 各1 thread、全 ε は committed reference の値、各 phase 20 steps。各プロセスは480 s safety limit、実時間は62–145 sだった。全体 pytest にはこの limit を付けていない。
 
-validation は `wp03_validation/julia_validation_final.json`、`pytest/comparison.json`、各 raw log／index／preflight と `SHA256SUMS` にまとめた。途中の外部 timeout も別ディレクトリに保存し、PASS には数えていない。
+| 対象 | 20-step preflight | exit | wall |
+| --- | --- | ---: | ---: |
+| A / 1.8 quick / Float32 | PASS | 0 | 98.88 s |
+| B / 1.8 quick_nobound / Float32 | PASS | 0 | 69.85 s |
+| C / 1.8 cds / Float32 | PASS | 0 | 86.93 s |
+| D / 1.8 vanLeer / Float32 | FAIL / INCOMPLETE | 2 | 96.44 s |
+| D′ / 1.8 vanLeer_safe / Float32 | PASS | 0 | 121.05 s |
+| E / 1.10 quick / Float32 | PASS | 0 | 62.20 s |
+| F-A / 1.8 quick / Float64 | PASS | 0 | 145.26 s |
+| F-B / 1.8 quick_nobound / Float64 | PASS | 0 | 75.37 s |
+
+D′ の plain/control u SHA は `9f3bdc221029a4d0a0c9400458c772c3e15233e6753d3e0b310fe6184efc2783`、p SHA は `235a774656ec82a5d757256cacc5a47206ff1af20c95356d4150799df7a5f072`。Dual の最大 |tangent| は u=24.481000900268555、p=32.0726432800293。これらは20-step preflightの値であり、登録窓での有界性ではない。
+
+凍結 TA1 を編集せず、既存 capture wrapper の出力先だけを今回の記録先へ替え、実際の build と20 stepsを別プロセスで走らせた。quick-Dual の値成分と通常 Float32 plain を、それぞれコピー側の同じ経路と比較し、u/p の全 SHA が一致した。capture wall は Dual 52.94 s、plain 43.14 s。wrapper/source/runtime と比較の SHA は `ta1_bit_comparison.json` に保存した。
+
+全体 pytest は次のコマンドに JUnit 出力だけを加え、時間 cap 無しで実行した。
+
+```bash
+.venv/bin/python -m pytest --ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider
+```
+
+失敗 node 集合：`[]`（failures=0、errors=0）。結果は **3657 passed、74 skipped、7295 warnings**。`pytest_full.txt`、`pytest_full.xml`、`pytest_full_command.json`、`pytest_full_result.json` を保存した。base は実行していないため、失敗集合の host baseline との一致を今回の結果だけからは断定していない。
 
 ## 仕様からの逸脱と理由
 
-- 4 腕すべての preflight PASS は達成できなかった。vanLeer の実数値失敗を記録し、上流の λ、分岐、閾値の修正は行わなかった。
-- FD-08 amend3 は六点 Model A と formal interior ε を記録するが、方向別 plateau 選択と spread の定義を記録していない。問い合わせの回答待ちのため、本測定用 reference と analysis は未作成、kernel は未設定として生成した。
-- 短時間 CPU の範囲を守るため、13 本の実 flow による短窓測定は行わず、実 preflight と solver を使わない producer-contract test を分けた。
-- 元の全体 pytest が既存 Metal 初期化で abort したため、そのログを保全し、同じ Metal test file を除外する base/final 比較を試みたが、base が30分で未完了のため比較は成立していない。GRAD-00 の GPU job は動かしていないが、最初の全体テストで既存 GPU 初期化を試みた点は実行前確認の不足だった。
-- OpenCode Go MCP は利用できず、CLI の provider 照会も `Provider not found: opencode-go` だったため native worker を分担に使用した。グローバル設定・追加課金は変更していない。
-- 元 worktree の Git metadata が許可領域外で書き込めなかったため、`/tmp/grad00-publication` の隔離 clone に意図したファイルだけを取り込み、同じ feature branch から commit/push した。元 worktree の HEAD は base のまま、新規ファイルは untracked として保持されている。公開したコードとの byte 一致を確認した。
+- A–D 全腕の preflight PASS は未達。D の plain は有限でも Dual は非有限になる。式・閾値・失敗伝播を変更せず記録し、D′ の成功で D の結果を置換していない。D の preflight 失敗は登録窓の `BLOCKED` 測定ではなく、`INCOMPLETE`。
+- 今回の既存実装ファイルへの変更は Amendment 2 が指定した追加・修正に限定した。新たな依存、既存 Manifest の変更、凍結 source の編集はない。
+- Amendment 2 の指定により、base pytest は取り直さず、結果側だけを Metal test file 除外・cacheprovider 無効・cap 無しで完走させる。base との同一性は host baseline との照合を Claude に渡す。
+- kernel の実 render と commit/push は今回の作業外。既存 UNCONFIGURED 生成物を変更せず、builder の機能とテストを完成させた。これは二段階手順への変更である。
+- OpenCode Go MCP は公開ツールに無く、CLI のモデル照会も通常ログの sandbox 書き込み失敗後、一時 XDG_DATA_HOME で `Provider not found: opencode-go`。global 設定や追加課金は変更せず、native worker に調査・実装を分担し、親が差分と実検証を確認した。
 
-## 未確認の仮定（実行して初めて分かること、PDF から読めなかった値など）
+## 未確認の仮定（本測定で初めて分かること）
 
-CUDA 上での各 λ の compile／有限性／登録窓の tangent、FD 一致、実 wall と VRAM は未測定。CPU の 20-step 有限性は登録窓での BOUNDED_ALL を意味しない。将来の BOUNDED も登録した sampling/watchdog に基づくラベルで、時間全域の数学的な有界性の証明ではない。vanLeer の CPU 失敗から T4 の結果も断定しない。
+GPU 上の compile・20-step有限性・登録窓の tangent・同じ λ の FD 一致・wall・VRAM は未測定。CPU preflight や合成ラベルテストは `BOUNDED_ALL/AGREE` の測定結果ではない。将来の `BOUNDED` も登録した sampling/watchdog に基づく記述的ラベルで、時間全域の数学的有界性の証明ではない。全 qualification flags は false のまま。
 
-1.10 の job は `uλ/u0` と `mom_project!` を直接触らないため adapter は不要だった。1.10 の stock quick も inner bound `10c−9u` を保持する。ただし API の `uλ→u0`、projection weight の表現、Poisson の既定 tol と停止条件、source／BC、force reduction が異なる。E は版全体の記述的比較となり、median だけの効果を分離できない。CPU 1.8 の ForwardDiff は 1.4.6、登録 T4 と新 1.10 は 1.4.5。F の比較はできれば CPU Float32 対照も採り、analyzer に backend/runtime の交絡を残す。full-window の 1.10 force 読み出しと F の精度差は未検証。
+1.10 job は `uλ/u0`、Poisson tol、`mom_project!` を直接呼ばないため adapter は不要だった。ただし `sim_step!` 経由で Poisson の既定 tol（1e-4→2e-3）、停止条件、projection weight/BC/source、force reduction が変わる。1.10 の `ic_kwarg(u0,uλ)` には deprecated alias も残っている。両版の stock QUICK は `10c−9u` bound を保持する。E は median だけの因果分離にはならない（`waterlily_source_audit.json`）。
 
-## Claude／ユーザーへの提案する追記（phase_plan、STATE、exploratory_index、仕様 rev 0 への修正点）
+既存1.8 CPU の ForwardDiff は1.4.6、T4と1.10は1.4.5。CPU F32/F64 の対照でも runtimeを記録し、GPUとの比較を精度だけの効果として扱わない。Fの登録窓・Eの本測定は今回行っていない。既存 CPU launcher は source/reference を pin する A/B precision・E 用の interface として保持した。
 
-1. rev 0 に、各方向の plateau ε [m] と fx/fz spread [N/m] の定義・値・参照 artifact／SHA を記載する。Model A の SE とは区別する。
-2. exploratory entry に「CPU software preflight: A/B/C pass、D vanLeer Dual nonfinite、E/F pass」を evidence class 付きで記載する。GPU の BOUNDED/AGREE として登録しない。GPU でも preflight が非有限の場合、その腕を最終分析でどう扱うかは新しい仕様で決める。
-3. E の版変更による交絡、F の backend／依存版差、古い 5-run terminal verifier が 13-run 全腕には直接適用できない点を明記する。authority 本文と qualification flags は今回変更していない。
+## Claude／ユーザーへの提案する追記
 
-## 次に要るもの（GPU 実行、Kaggle、ユーザーの判断）
+1. 仕様実ファイルは現在 rev 0 で、今回の prompt が参照する Amendment 1 本文は未収録。reference の ε/spread と D′ の式・実行条件を authority 側へ反映する際、D′ を次段候補に含めるかも明記する。今回の analyzer は明示された §5 の B–D を維持する。
+2. GEN-01 plan の GRAD-00 の v18 記述は、今回の v17/flow_24 仕様と不一致。今回の実装・入力は v17 の登録済み bytes に統一した。authority の修正は Claude／ユーザーが行う。
+3. exploratory record へ書くなら「20-step CPU software preflight: A/B/C/D′/E/F pass、D nonfinite」と evidence class を付ける。GPU BOUNDED/AGREE として登録しない。GPU でも D が preflight 失敗した場合の扱いは実行・解析前に判断する（現在の analyzer は A–D の完備した terminal evidence を要求する）。
 
-まず Claude／ユーザーが plateau reference と exploratory run identity を確定する。その reference と出典を commit した feature checkout で、source commit を origin の feature branch に通常 push して GitHub から取得可能にする。runner はその commit を GitHub から fetch する。既存の生成ディレクトリを上書きせず ready kernel を再生成する。
+## 次に要るもの（Claude の host 作業、ユーザー向け実行手順）
+
+Claude が上記の意図した全ファイルを確認し、reference と D′ の実装を含む commit を通常 push する。その後、同じ source bytes の checkout で以下を実行する。source commit は remote から取得可能な40桁 SHA。今回の未コミット実装を含まない `0b226184` での render は source pin 検証を通らない。
 
 ```bash
+.venv/bin/python scripts/grad00_reference_from_fd08.py --check
+GRAD00_SOURCE_COMMIT=$(git rev-parse HEAD)
 .venv/bin/python scripts/build_grad00_kernels.py \
-  --source-commit <referenceと実装を含む40桁commit> \
-  --reference <repository-relative-reference.json> \
-  --output-root work/grad00_ready
+  --source-commit "$GRAD00_SOURCE_COMMIT" \
+  --reference docs/evidence/grad00_lambda_2026_11/reference.json
 ```
 
-以降はユーザーが行う手順。生成物の source/pins、reference、T4 設定と `timeout=10800` を確認し、各腕を順番に push する。
+Claude が `infra/kaggle/kernel_grad00_*/` の5 kernel の source/ref/pins/metadata/timeoutを確認し、生成物を別 commit にする。PR #86 の本文更新も Claude が行う。default 出力先の既存 UNCONFIGURED 3ファイルは、この configured render で上書きされる。
+
+以降の Kaggle 操作はユーザー向けの手順であり、Codex は実行していない。必要な exploratory identity と実行判断を先に記録し、A/B/C/D を順に走らせる。D′ は指定の「B・C がともに全方向 BOUNDED かつ AGREE でない」という実行条件を人が判断する。
 
 ```bash
-kaggle kernels push -p work/grad00_ready/kernel_grad00_quick --timeout 10800
-kaggle kernels push -p work/grad00_ready/kernel_grad00_quick_nobound --timeout 10800
-kaggle kernels push -p work/grad00_ready/kernel_grad00_cds --timeout 10800
-kaggle kernels push -p work/grad00_ready/kernel_grad00_vanLeer --timeout 10800
+kaggle kernels push -p infra/kaggle/kernel_grad00_quick --timeout 10800
+kaggle kernels push -p infra/kaggle/kernel_grad00_quick_nobound --timeout 10800
+kaggle kernels push -p infra/kaggle/kernel_grad00_cds --timeout 10800
+kaggle kernels push -p infra/kaggle/kernel_grad00_vanLeer --timeout 10800
+# D′ は人が実行条件を判断した場合のみ
+kaggle kernels push -p infra/kaggle/kernel_grad00_vanLeer_safe --timeout 10800
 ```
 
-terminal 出力を回収し、`grad00_index.json` のある実ディレクトリを `docs/evidence/grad00_lambda_2026_11/<arm>/` に置く。解析には runner に pin された analyzer／helper と同一 bytes の checkout を使う。全必要腕と reference の整合を `--check` で確認してから、未作成の `analysis.json` に `--write` を一度だけ行う。preflight ERROR/INCOMPLETE を DONE や BLOCKED に読み替えない。E/F の本測定は未実行で、E は 1.10 project、F は CPU launcher と CPU Float32 対照を使う。
+terminal 出力の実ディレクトリを `docs/evidence/grad00_lambda_2026_11/<arm>/` に回収し、source pin と同じ bytes の analyzer で `--check`、次に未作成の `analysis.json` へ `--write` を一度だけ行う。preflight INCOMPLETE/ERROR を BLOCKED/DONE に読み替えない。E は1.10 project、F は CPU 10 threads の別測定であり、上の5 primary kernelには含まない。
 
-TA1 の plain 実績 138.857970953 s を基に、9 primal＋4 bounded Dual（plain の2–3倍と仮定）は **各腕39–49分＋setup/JIT、予算は約1 T4時間/腕**。A–D は約4時間、E を加えて約5時間、仕様の集計 cap は10 GPU時間。各 kernel の10800 s は TA1 と同じ余裕込みの上限であり、目標実時間ではない。TA1 の早期 BLOCKED Dual は full-window の速度実績ではなく、この見積もりは未検証。F は GPU を使わない。
+TA1 の実測 plain は `138.85797095298767 s`（loop `106.64248299598694 s`）。9 plain＋4 bounded Dual を plain の2–3倍と仮定すると39.3–48.6分＋setup/JITになる。これは予測であり、TA1の早期BLOCKED Dualをfull-windowの速度実績として使っていない。
+
+| 腕 | GPU時間の予測 | 予算 |
+| --- | --- | --- |
+| A quick | 39–49分＋setup/JIT | 約1 T4 h |
+| B quick_nobound | 39–49分＋setup/JIT | 約1 T4 h |
+| C cds | 39–49分＋setup/JIT | 約1 T4 h |
+| D vanLeer | full-windowなら39–49分＋setup/JIT。preflight失敗時は測定へ進まない | 約1 T4 h |
+| D′ vanLeer_safe | 39–49分＋setup/JIT、条件付き実行 | 約1 T4 h |
+| E 1.10 quick | 記述的な同じ予測。版差による実時間は未測定 | 約1 T4 h |
+| F Float64 A/B | GPUを使わない | 元の60 CPU h cap |
+
+A–D は約4 T4 h、D′ も実行すれば約5 h、Eも含めた最大構成は約6 hの予算で、元の10 GPU h capは延長しない。各kernelの `10800 s` はTA1と同じsetup/JIT込みの余裕上限で、目標実時間ではない。

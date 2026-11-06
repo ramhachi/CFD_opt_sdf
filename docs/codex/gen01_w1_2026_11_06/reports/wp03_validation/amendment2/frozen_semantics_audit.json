@@ -1,0 +1,94 @@
+{
+  "checks": {
+    "BLOCK_LIMIT": {
+      "byte_equal": true,
+      "production": 1e+30,
+      "strict_comparison": ">"
+    },
+    "WINDOW_and_PREFLIGHT_ONLY": {
+      "byte_equal": true
+    },
+    "const BURN_IN": {
+      "byte_equal": true,
+      "value": "const BURN_IN = 80.0"
+    },
+    "const DIRECTIONS": {
+      "byte_equal": true,
+      "value": "const DIRECTIONS = (\"D0_interface_offset\", \"D1_filtered_seed11\", \"D2_filtered_seed2026\", \"P1_upstream_lobe\")"
+    },
+    "const ORIGIN": {
+      "byte_equal": true,
+      "value": "const ORIGIN = (-1.0, -0.8, -0.6)"
+    },
+    "const PREFLIGHT_STEPS": {
+      "byte_equal": true,
+      "value": "const PREFLIGHT_STEPS = 20"
+    },
+    "const SAMPLE_EVERY": {
+      "byte_equal": true,
+      "value": "const SAMPLE_EVERY = 8"
+    },
+    "const SERIES": {
+      "byte_equal": true,
+      "value": "const SERIES = (\"fx\", \"fy\", \"fz\", \"pfx\", \"pfy\", \"pfz\", \"vfx\", \"vfy\", \"vfz\")"
+    },
+    "const SHAPE": {
+      "byte_equal": true,
+      "value": "const SHAPE = (121, 65, 49)"
+    },
+    "const SPACING": {
+      "byte_equal": true,
+      "value": "const SPACING = 0.025"
+    },
+    "const TRANSITION": {
+      "byte_equal": true,
+      "value": "const TRANSITION = Float32(1.1444091796875e-4)"
+    },
+    "const T_END": {
+      "byte_equal": true,
+      "value": "const T_END = 120.0"
+    },
+    "const WALL_FACTOR": {
+      "byte_equal": true,
+      "value": "const WALL_FACTOR = 8.0                # a Dual run longer than WALL_FACTOR x the plain run's total seconds aborts the whole kernel (plan C5, Amendment 2)"
+    },
+    "const WATCH_EVERY": {
+      "byte_equal": true,
+      "value": "const WATCH_EVERY = 100"
+    },
+    "const WATCH_HEADER": {
+      "byte_equal": true,
+      "value": "const WATCH_HEADER = [\"step\", \"t_u_l\", \"tan_max_u\", \"tan_argmax_u\", \"tan_max_p\", \"tan_argmax_p\", \"last_sample_step\", \"fx\", \"fx_tan\", \"fz\", \"fz_tan\", \"elapsed_s\", \"vram_bytes\"]"
+    },
+    "diff_artifact": {
+      "byte_equal_to_regeneration": true,
+      "sha256": "193500f6b90e95d7a70bfe84aa50b1051f37ee9b950ddcf1c586c0d3a3fcea60"
+    },
+    "history_header": {
+      "byte_equal": true,
+      "sha256": "81b55d181a5b7ec2a8ad0a681050718e84fa75a9638b376a729797246110b87d"
+    },
+    "load_raw": {
+      "byte_equal": true,
+      "sha256": "472352fd39fdf88c7bed42e4a39c76b1b3744e8bb028437d98fceef965d70f4f"
+    },
+    "sample_row": {
+      "byte_equal": true,
+      "sha256": "c14770dfa9731cf15d4b987988cbe823d60a3a8163c85dadaa7bff4672e2c7e5"
+    },
+    "summarize": {
+      "byte_equal": true,
+      "sha256": "dd9b20061e3384f8328d59edad778642b8ccffef4cd545615a03fa2d33a22363"
+    },
+    "tangent_max": {
+      "byte_equal": true,
+      "sha256": "4511a3446315cdd3e5f655ae1b2df06462ddde887051377b6c2dfc3f92296e48"
+    },
+    "window_mean": {
+      "byte_equal": true,
+      "sha256": "7cc274e440e94b1eedf66519224c0fc3c8c1dd1944a1d1ef27392ccf3ce74c35"
+    }
+  },
+  "evidence_class": "software_source_comparison",
+  "scope": "unchanged helper/constant/window bytes and reproducible copied-source diff; not a CFD or AD qualification"
+}

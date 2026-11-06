@@ -1,0 +1,158 @@
+{
+  "evidence_class": "installed_pinned_source_inspection",
+  "versions": {
+    "1.8.0": {
+      "Flow.jl": {
+        "path": "/Users/sota/.julia/packages/WaterLily/yOkji/src/Flow.jl",
+        "sha256": "6138c88f48b04db7ed6861f1f1bec9c450e04214160caef177d85bdad326b7f0",
+        "observations": [
+          {
+            "line": 4,
+            "text": "@fastmath quick(u,c,d) = median((5c+2d-u)/6,c,median(10c-9u,c,d))"
+          },
+          {
+            "line": 27,
+            "text": "function median(a,b,c)"
+          },
+          {
+            "line": 134,
+            "text": "            u0=nothing, u\u03bb=nothing, perdir=(), exitBC=false, \u03bb=quick, T=Float32) where D"
+          },
+          {
+            "line": 161,
+            "text": "    mom_project!(a,b,1,t\u2081)"
+          },
+          {
+            "line": 165,
+            "text": "    mom_project!(a,b,0.5,t\u2081)"
+          },
+          {
+            "line": 223,
+            "text": "function mom_project!(a::AbstractFlow{D,T}, b::AbstractPoisson, w, t) where {D,T}"
+          }
+        ]
+      },
+      "Poisson.jl": {
+        "path": "/Users/sota/.julia/packages/WaterLily/yOkji/src/Poisson.jl",
+        "sha256": "a77c631c88a7637fa5ffdd80d52610acad9aba7346904cb4a90df55c3d0077fb",
+        "observations": [
+          {
+            "line": 204,
+            "text": "function solver!(p::Poisson;tol=1e-4,itmx=1e3)"
+          }
+        ]
+      },
+      "Metrics.jl": {
+        "path": "/Users/sota/.julia/packages/WaterLily/yOkji/src/Metrics.jl",
+        "sha256": "58f9cbe34c4f5de05423d18143ee4a2fbb3f990f9b2be1911d478599d0362c00",
+        "observations": [
+          {
+            "line": 104,
+            "text": "    Tp = eltype(p); To = promote_type(Float64,Tp)"
+          },
+          {
+            "line": 126,
+            "text": "    Tu = eltype(u); To = promote_type(Float64,Tu)"
+          },
+          {
+            "line": 148,
+            "text": "    Tp = eltype(p); To = promote_type(Float64,Tp)"
+          },
+          {
+            "line": 162,
+            "text": "    Tu = eltype(u); To = promote_type(Float64,Tu)"
+          }
+        ]
+      }
+    },
+    "1.10.0": {
+      "Flow.jl": {
+        "path": "/Users/sota/.julia/packages/WaterLily/V6kyE/src/Flow.jl",
+        "sha256": "978218e83176311841f65a940b954d97a8d5ad5c121825c08ab1ef41960f9627",
+        "observations": [
+          {
+            "line": 4,
+            "text": "@fastmath quick(u,c,d) = median((5c+2d-u)/6,c,median(10c-9u,c,d))"
+          },
+          {
+            "line": 27,
+            "text": "@fastmath median(a,b,c) = max(min(a,b),min(max(a,b),c))"
+          },
+          {
+            "line": 131,
+            "text": "            u0=nothing, u\u03bb=nothing, perdir=(), exitBC=false, \u03bb=quick, T=Float32) where D"
+          },
+          {
+            "line": 164,
+            "text": "    mom_project!(a,b,1,t\u2081)"
+          },
+          {
+            "line": 168,
+            "text": "    mom_project!(a,b,2,t\u2081)"
+          },
+          {
+            "line": 220,
+            "text": "function mom_project!(a::AbstractFlow, b::AbstractPoisson, w::Int, t)"
+          },
+          {
+            "line": 225,
+            "text": "    @inside b.z[I] = div(I,a.u)-\u03b4v(Dp,I)*div(I,a.V) # flow divergence, not BDIM-\u03f5 stretching"
+          }
+        ]
+      },
+      "Poisson.jl": {
+        "path": "/Users/sota/.julia/packages/WaterLily/V6kyE/src/Poisson.jl",
+        "sha256": "ba38a698e20955ec7043765ee198170337e343fa01b1a62a2648bbb36d08c847",
+        "observations": [
+          {
+            "line": 224,
+            "text": "function solver!(p::Poisson;tol=2e-3,itmx=1e3)"
+          }
+        ]
+      },
+      "Metrics.jl": {
+        "path": "/Users/sota/.julia/packages/WaterLily/V6kyE/src/Metrics.jl",
+        "sha256": "838b7c658aafa3b93cbb3cc595280d42ae576657a8933a5fc7a43b26d8fa6166",
+        "observations": [
+          {
+            "line": 133,
+            "text": "    sumdims(df)"
+          },
+          {
+            "line": 137,
+            "text": "sumdims(df) = sum(df,dims=ntuple(i->i,ndims(df)-1))[:] |> Array"
+          },
+          {
+            "line": 149,
+            "text": "    sumdims(df)"
+          },
+          {
+            "line": 170,
+            "text": "    sumdims(df)"
+          },
+          {
+            "line": 191,
+            "text": "    sumdims(df)"
+          },
+          {
+            "line": 206,
+            "text": "    sumdims(df)"
+          },
+          {
+            "line": 220,
+            "text": "    sumdims(df)"
+          },
+          {
+            "line": 233,
+            "text": "    sumdims(df)"
+          },
+          {
+            "line": 247,
+            "text": "    sumdims(df), sumdims(dm)"
+          }
+        ]
+      }
+    }
+  },
+  "interpretation": "Version arm E changes projection/Poisson/force-reduction semantics as well as median; no isolated median causal claim."
+}

@@ -6,7 +6,7 @@
 # One shared plain + four (Dual,+epsilon,-epsilon) groups = 13 runs, matching GRAD-00 spec section 4.
 # Precision F: GRAD00_T=Float64, CPU quick/quick_nobound only, D0/D1 (7 runs); all raw source inputs remain canonical Float32.
 # CLI: TA1's 11 arguments followed by D0,D1,D2,P1 epsilon_m (required, no plateau values inferred).
-# env: GRAD00_ARM=quick|quick_nobound|cds|vanLeer, GRAD00_T=Float32|Float64, G2_BACKEND=cpu|cuda.
+# env: GRAD00_ARM=quick|quick_nobound|cds|vanLeer|vanLeer_safe, GRAD00_T=Float32|Float64, G2_BACKEND=cpu|cuda.
 # Existing CPU-only G2_DRYRUN_T_END, TA1_PREFLIGHT_ONLY and TA1_BLOCK_LIMIT hooks are unchanged.
 # g2_run_index.json retains its name; frozen five-run terminal verifier is not directly compatible with these 13 runs.
 
@@ -33,6 +33,7 @@ end
 using .CFDSDFWaterLily: V16MovingGroundBody, v16_native_far_field_uBC, NormalFloorWaterLilyBody, CandidateCWaterLilyBody
 using .CFDSDFWaterLily.V16W4Sensitivity
 Base.include(WaterLily, joinpath(@__DIR__, "quick_nobound.jl"))
+Base.include(WaterLily, joinpath(@__DIR__, "vanleer_safe.jl"))
 
 const SHAPE = (121, 65, 49)
 const ORIGIN = (-1.0, -0.8, -0.6)
@@ -44,7 +45,7 @@ const BURN_IN = 80.0
 const T_END = 120.0
 const SERIES = ("fx", "fy", "fz", "pfx", "pfy", "pfz", "vfx", "vfy", "vfz")
 const ARM = get(ENV, "GRAD00_ARM", "")
-ARM in ("quick", "quick_nobound", "cds", "vanLeer") || error("GRAD00_ARM must be quick, quick_nobound, cds or vanLeer")
+ARM in ("quick", "quick_nobound", "cds", "vanLeer", "vanLeer_safe") || error("GRAD00_ARM must be quick, quick_nobound, cds, vanLeer or vanLeer_safe")
 const REAL_TYPE_NAME = get(ENV, "GRAD00_T", "Float32")
 REAL_TYPE_NAME in ("Float32", "Float64") || error("GRAD00_T must be Float32 or Float64")
 const RT = REAL_TYPE_NAME == "Float32" ? Float32 : Float64
@@ -281,13 +282,14 @@ function run_one(label, phi_host::AbstractArray, ::Type{T}, case, λ, outdir; wa
     end
 end
 
-# ---- 20-step preflight: selected plain/Dual finite, quick-control bit identity for A only ------------------------------
+# ---- 20-step preflight: selected plain/Dual finite, A quick control and D' stock-vanLeer plain control -----------------
 array_sha(a) = bytes2hex(sha256(reinterpret(UInt8, vec(a))))
 
 function preflight(phi32, d32, case, DT, outdir)
     out = Dict{String,Any}("steps" => PREFLIGHT_STEPS, "arm" => ARM, "arms" => Dict{String,Any}())
-    arms = ARM == "quick" ? (("quick", WaterLily.quick, DT), ("selected_dual", LAMBDA, DT), ("selected_plain", LAMBDA, RT)) :
-                             (("selected_dual", LAMBDA, DT), ("selected_plain", LAMBDA, RT))
+    arms = (("selected_dual", LAMBDA, DT), ("selected_plain", LAMBDA, RT))
+    ARM == "quick" && (arms = (("quick", WaterLily.quick, DT), arms...))
+    ARM == "vanLeer_safe" && (arms = (arms..., ("vanLeer_plain", WaterLily.vanLeer, RT)))
     for (name, λ, T) in arms
         started = time()
         println("GRAD00_PREFLIGHT_BEGIN ", name, " lambda=", typeof(λ), " steps=", PREFLIGHT_STEPS); flush(stdout)
@@ -320,7 +322,11 @@ function preflight(phi32, d32, case, DT, outdir)
     out["quick_control_note"] = ARM == "quick" ?
         "same build and 20-step quick-Dual path as frozen TA1; cross-script hashes are checked by the CPU validation capture" :
         "not applicable to this arm; preflight checks the selected plain and Dual paths"
+    plain = out["arms"]["selected_plain"]
+    out["vanLeer_primal_u_bit_equal"] = ARM == "vanLeer_safe" ? out["arms"]["vanLeer_plain"]["primal_u_sha256"] == plain["primal_u_sha256"] : nothing
+    out["vanLeer_primal_p_bit_equal"] = ARM == "vanLeer_safe" ? out["arms"]["vanLeer_plain"]["primal_p_sha256"] == plain["primal_p_sha256"] : nothing
     out["pass"] = (ARM != "quick" || (out["primal_u_bit_equal"] && out["primal_p_bit_equal"])) &&
+                  (ARM != "vanLeer_safe" || (out["vanLeer_primal_u_bit_equal"] && out["vanLeer_primal_p_bit_equal"])) &&
                   all(a -> a["primal_finite"] && a["tangent_u_finite"] && a["tangent_p_finite"], values(out["arms"]))
     return out
 end
@@ -441,7 +447,7 @@ function main()
         write_json(joinpath(outdir, "preflight.json"), pre)
         if !pre["pass"]
             index["status"] = "INCOMPLETE"
-            index["error"] = "preflight failed: non-finite selected primal/tangent or quick-control primal bit mismatch"
+            index["error"] = "preflight failed: non-finite selected primal/tangent or control primal bit mismatch"
         elseif PREFLIGHT_ONLY
             index["status"] = "PREFLIGHT_ONLY"; exit_code = 0
         else

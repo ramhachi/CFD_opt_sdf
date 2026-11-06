@@ -2,9 +2,9 @@
 """Render local GRAD-00 kernels from committed inputs; this command never contacts Kaggle.
 
 Without --reference, the rendered workers are deliberately unconfigured and stop
-before GPU inventory. A ready worker needs an explicit provenance-bearing FD-08
-epsilon/spread JSON accepted by analyze_grad00.load_reference. Neither a formal
-interior epsilon nor a Model-A standard error is silently treated as a plateau.
+before GPU inventory. Configured renders use the committed, provenance-bearing
+FD-08 epsilon/spread reference and may replace generated files in existing
+directories. Reference-free renders never overwrite an existing directory.
 """
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ from build_grad_ta1_kernel import (  # noqa: E402
     DIRECTIONS, INPUT_DIR, PHI_RAW, PROJECT, TEMPLATE, metadata as ta1_metadata,
 )
 
-ARMS = ("quick", "quick_nobound", "cds", "vanLeer")
+ARMS = ("quick", "quick_nobound", "cds", "vanLeer", "vanLeer_safe")
 SCRIPT = "scripts/waterlily_grad00_lambda_2026_11.jl"
 # TA1 used 10800 s, including install/JIT margin. GRAD-00 rev 0 budgets
 # one hour per arm; the published TA1 138.9 s plain run predicts 39–49 min
@@ -30,10 +30,10 @@ SCRIPT = "scripts/waterlily_grad00_lambda_2026_11.jl"
 TIMEOUT_S = 10800
 PIN_PATHS = (
     f"{PROJECT}/Project.toml", f"{PROJECT}/Manifest.toml", SCRIPT,
-    "scripts/quick_nobound.jl", "julia/CFDSDFWaterLily/src", PHI_RAW,
+    "scripts/quick_nobound.jl", "scripts/vanleer_safe.jl", "julia/CFDSDFWaterLily/src", PHI_RAW,
     *(f"{INPUT_DIR}/{direction}.dir_f4_fortran.raw" for direction in DIRECTIONS),
     # Renderer provenance, plus the frozen control sources used for CPU review.
-    "scripts/build_grad00_kernels.py", "scripts/build_lowdim04a_kernel.py",
+    "scripts/build_grad00_kernels.py", "scripts/grad00_reference_from_fd08.py", "scripts/build_lowdim04a_kernel.py",
     "scripts/build_grad_ta1_kernel.py", str(TEMPLATE.relative_to(ROOT)),
     "scripts/waterlily_grad_ta1_2026_10_15.jl", "scripts/quick_tie.jl",
     # Consumer byte provenance; this does not freeze or register a study.
@@ -171,22 +171,28 @@ def build(source_commit: str, *, output_root: Path | None = None, reference: dic
     output_root = ROOT / "infra/kaggle" if output_root is None else Path(output_root)
     destinations = {arm: output_root / f"kernel_grad00_{arm}" for arm in ARMS}
     for directory in destinations.values():
-        if directory.exists():
+        if reference is None and directory.exists():
             raise FileExistsError(f"refusing to overwrite rendered worker: {directory}")
+    if reference is not None and reference_config(ROOT / reference["path"]) != reference:
+        raise ValueError("reference configuration differs from repository bytes")
     verify_source(source_commit, pin_paths(reference))
-    rendered = {arm: render(source_commit, arm, reference) for arm in ARMS}
+    # Validate every runner and metadata payload before replacing any old render.
+    rendered = {arm: {
+        "runner.py": render(source_commit, arm, reference),
+        "kernel-metadata.json": json.dumps(metadata(arm), sort_keys=True, indent=2) + "\n",
+        "timeout": f"{TIMEOUT_S}\n",
+    } for arm in ARMS}
     for arm, directory in destinations.items():
-        directory.mkdir(parents=True)
-        (directory / "runner.py").write_text(rendered[arm])
-        (directory / "kernel-metadata.json").write_text(json.dumps(metadata(arm), sort_keys=True, indent=2) + "\n")
-        (directory / "timeout").write_text(f"{TIMEOUT_S}\n")
+        directory.mkdir(parents=True, exist_ok=reference is not None)
+        for name, content in rendered[arm].items():
+            (directory / name).write_text(content)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-commit", required=True)
-    parser.add_argument("--reference", type=Path, help="committed FD-08 epsilon/spread reference JSON")
-    parser.add_argument("--output-root", type=Path, help="parent for the four new kernel directories (never overwritten)")
+    parser.add_argument("--reference", type=Path, help="committed FD-08 reference JSON; permits replacing generated files")
+    parser.add_argument("--output-root", type=Path, help="parent for the five kernel directories (default: infra/kaggle)")
     args = parser.parse_args()
     reference = reference_config(args.reference)
     build(args.source_commit, output_root=args.output_root, reference=reference)

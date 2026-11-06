@@ -1,5 +1,23 @@
 # WP3 GRAD-00 設計メモ
 
+## Amendment 2 実装前メモ（2026-11-06）
+
+今回の開始 HEAD は `0b226184`。直下は `383e37e9`、`ae978d5d` で、作業ツリーはクリーンだった。
+以下の追記が下の初回記録を上書きする。登録・凍結・ロードマップは変更しない。
+
+- 指定 README、AGENTS と5文書、STATE、branching strategy、GEN-01、GRAD-00 rev 0、facts、TA1 source/plan/result、renderer/builder、terminal verifier、FD-08 reference/generator、現実装とテストを再確認した。長文の authority は3 workerが分担し全文を読んだ。GEN-01 plan の v18 記述より、今回のユーザー指示とGRAD-00仕様の v17 を優先する。
+- OpenCode Go MCP は公開ツールに無い。CLI の通常ログ書き込みが sandbox で失敗し、一時 XDG_DATA_HOME でのモデル照会も `Provider not found: opencode-go` だった。グローバル設定・追加課金を変更せず native worker に分担する。
+- reference は Claude が定義済みの `docs/evidence/grad00_lambda_2026_11/reference.json` をそのまま用いる。ε は全方向 `0.003971641173621408 m`、spread は Model A の `se_g_n_per_m`（fx=drag、fz=downforce）。実ファイル受理、generator `--check`、source 1 byte 改変拒否、4方向同一で ≤5 mm を新規テストで確認する。既存 evidence と generator は編集しない。
+- D′ `vanLeer_safe` は `ForwardDiff.value(d) == ForwardDiff.value(u) ? c : vanLeer(u,c,d)` のみを WaterLily に include する。plain に対する式は D と同じで、Dual の等値退化だけを避ける。job の constructor routing と λ 型検査を保持する。20-step preflight に D の plain 対照を追加し、u/p の SHA による bit equality と D′ Dual の有限性を gate にする。A の TA1 との比較方法、sampling/window/watchdog/error/BLOCKED 閾値は保持する。
+- analyzer に D′ と型 identity を追加する。A–D の必須条件は維持し、D′ 未実行は `NOT_RUN` とする。存在するが壊れた D′ 出力は欠落として扱わず拒否する。D′ の実行条件は人が判断し、analyzer は自動判定しない。次段規則への D′ の扱いは仕様 §5 の候補範囲との整合を確認して記録する。
+- builder は5腕を扱い、新 helper を source pin に含める。reference 付きの render は既存の生成3ファイルを上書きできるようにし、既存 UNCONFIGURED ディレクトリからの更新も許す。reference 無しで既存出力を壊すことはしない。commit/source/reference を検証し、全腕を render してから書く。テストは tmp_path 内で default `infra/kaggle/` を模倣するだけで、今回実ディレクトリは触らない。
+- 実装は Julia helper/job/selftest、Python analyzer/reference tests、builder/tests を分担する。最初に必要なテストを追加し、既存 helper と標準ライブラリを再利用する。root が差分・CPU preflight・統合結果を検証する。
+- CPU は同じ20 steps、`G2_BACKEND=cpu G2_DRYRUN_T_END=0.4 TA1_PREFLIGHT_ONLY=1`、Julia 10 threadsで短い preflight のみ。A/B/C/D/D′、1.10 quick、Float64 A/B を確認する。D は初回の非有限を保持して報告し、D′ の成功で D 自体の結果を書き換えない。1.10 の instantiate と manifest 不変性も確認する。
+- 結果側全体 pytest は `.venv/bin/python -m pytest --ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` を時間 cap 無しで完走する。base は再採取しない。失敗 node 集合を保存し、host baseline との同一性判定は Claude に渡す。
+- 今回は `infra/kaggle/kernel_grad00_*/`、commit/push、PR本文、GPU/Kaggle に触らない。Claude が reference と D′ を含む実装を commit/push した後、指定コマンドで5 kernelを再生成して別 commit にする。最終報告には今回 commit すべき全パスを列挙する。
+
+以下は初回試行時の設計記録として保持する。
+
 作業開始: 2026-11-06。base: `e3dcdf61`、branch: `feat/gen01-w1-03-grad00`。
 この文書は実装の設計記録であり、登録、凍結、ロードマップの変更ではない。
 
