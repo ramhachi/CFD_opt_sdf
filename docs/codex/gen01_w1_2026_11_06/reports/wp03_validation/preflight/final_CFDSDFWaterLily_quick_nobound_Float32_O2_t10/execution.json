@@ -1,0 +1,42 @@
+{
+  "source_sha256": "e498968a72fe1689cdc4ff7cc54b44f77bd61ff770bec7a982aa5c82451685eb",
+  "project_sha256": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+  "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+  "command": [
+    "julia",
+    "-O2",
+    "-t",
+    "10",
+    "--project=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/julia/CFDSDFWaterLily",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/scripts/waterlily_grad00_lambda_2026_11.jl",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw",
+    "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "/tmp/grad00-validation/final_CFDSDFWaterLily_quick_nobound_Float32_O2_t10",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D0_interface_offset.dir_f4_fortran.raw",
+    "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D1_filtered_seed11.dir_f4_fortran.raw",
+    "96fe6e62c5fcb7ad0108dd64d6fac68cc488ee49deb188be742530f828037a87",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D2_filtered_seed2026.dir_f4_fortran.raw",
+    "2a22eb09407a14755f495fa07d4df8dee2d4632db41a0b75d1bf744fd3d1d5de",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/P1_upstream_lobe.dir_f4_fortran.raw",
+    "24cc06aeb18e2a5729e560636f13ce78f8f19746268699783e8498921aec5dcc",
+    "0.001",
+    "0.001",
+    "0.001",
+    "0.001"
+  ],
+  "env": {
+    "G2_BACKEND": "cpu",
+    "GRAD00_ARM": "quick_nobound",
+    "GRAD00_T": "Float32",
+    "G2_DRYRUN_T_END": "0.4",
+    "TA1_PREFLIGHT_ONLY": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "exit_code": 0,
+  "wall_s": 183.387802,
+  "output": "/tmp/grad00-validation/final_CFDSDFWaterLily_quick_nobound_Float32_O2_t10",
+  "log": "/tmp/grad00-validation/final_CFDSDFWaterLily_quick_nobound_Float32_O2_t10.log",
+  "evidence_class": "cpu_synthetic_epsilon_code_path"
+}

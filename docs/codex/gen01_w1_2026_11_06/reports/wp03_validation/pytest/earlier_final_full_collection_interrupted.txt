@@ -1,0 +1,11 @@
+
+=============================== warnings summary ===============================
+scripts/screen01/screen01_pool.py:110
+  /Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/scripts/screen01/screen01_pool.py:110: UserWarning: The balance properties of Sobol' points require n to be a power of 2.
+    return x_to_u(qmc.Sobol(d=3, scramble=True, seed=seed).random(n))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! KeyboardInterrupt !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py:1196: KeyboardInterrupt
+(to show a full traceback on KeyboardInterrupt use --full-trace)
+1 warning in 203.40s (0:03:23)

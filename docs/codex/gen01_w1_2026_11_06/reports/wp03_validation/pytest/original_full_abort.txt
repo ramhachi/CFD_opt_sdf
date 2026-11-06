@@ -1,0 +1,74 @@
+........................................................................ [  2%]
+........................................................................ [  4%]
+.........................................................s.............. [  6%]
+........................................................................ [  8%]
+........................................................................ [ 10%]
+........................................................................ [ 12%]
+..........................................s............................. [ 14%]
+........................................................................ [ 16%]
+..........................................s............................. [ 18%]
+s.....................sss.s...............................sss........sss [ 20%]
+ss........................................sssssss.....s................. [ 22%]
+........................................................................ [ 24%]
+........................................................................ [ 26%]
+........................................................................ [ 28%]
+........................................................................ [ 30%]
+........................................................................ [ 32%]
+........................................................................ [ 34%]
+........................................................................ [ 36%]
+........................................................................ [ 38%]
+........................................................................ [ 40%]
+........................................................................ [ 42%]
+........................................................................ [ 44%]
+........................................................................ [ 46%]
+........................................................................ [ 48%]
+........................................................................ [ 50%]
+........................................................................ [ 52%]
+............................................s........s.................. [ 54%]
+................................................................FFatal Python error: Aborted
+
+Current thread 0x00000001f9213100 (most recent call first):
+  File "<frozen importlib._bootstrap>", line 488 in _call_with_frames_removed
+  File "<frozen importlib._bootstrap_external>", line 1301 in exec_module
+  File "<frozen importlib._bootstrap>", line 935 in _load_unlocked
+  File "<frozen importlib._bootstrap>", line 1331 in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 1360 in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1387 in _gcd_import
+  File "/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py", line 90 in import_module
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/_pytest/outcomes.py", line 264 in importorskip
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/tests/test_lbm_metal.py", line 10 in _metal
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/tests/test_lbm_metal.py", line 32 in test_metal_non_float32_is_explicitly_rejected
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/_pytest/python.py", line 167 in pytest_pyfunc_call
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/pluggy/_callers.py", line 121 in _multicall
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/pluggy/_manager.py", line 120 in _hookexec
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/pluggy/_hooks.py", line 512 in __call__
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/_pytest/python.py", line 1707 in runtest
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/_pytest/runner.py", line 184 in pytest_runtest_call
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/pluggy/_callers.py", line 121 in _multicall
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/pluggy/_manager.py", line 120 in _hookexec
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/pluggy/_hooks.py", line 512 in __call__
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/_pytest/runner.py", line 250 in <lambda>
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/_pytest/runner.py", line 361 in from_call
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/_pytest/runner.py", line 249 in call_and_report
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/_pytest/runner.py", line 139 in runtestprotocol
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/_pytest/runner.py", line 118 in pytest_runtest_protocol
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/pluggy/_callers.py", line 121 in _multicall
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/pluggy/_manager.py", line 120 in _hookexec
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/pluggy/_hooks.py", line 512 in __call__
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/_pytest/main.py", line 408 in pytest_runtestloop
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/pluggy/_callers.py", line 121 in _multicall
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/pluggy/_manager.py", line 120 in _hookexec
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/pluggy/_hooks.py", line 512 in __call__
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/_pytest/main.py", line 384 in _main
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/_pytest/main.py", line 330 in wrap_session
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/_pytest/main.py", line 377 in pytest_cmdline_main
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/pluggy/_callers.py", line 121 in _multicall
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/pluggy/_manager.py", line 120 in _hookexec
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/pluggy/_hooks.py", line 512 in __call__
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/_pytest/config/__init__.py", line 229 in _main
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/_pytest/config/__init__.py", line 253 in _console_main
+  File "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/pytest/__main__.py", line 9 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 198 in _run_module_as_main
+
+Extension modules: numpy._core._multiarray_umath, numpy.linalg._umath_linalg, _cyutility, scipy._cyutility, scipy._lib._ccallback_c, numpy.random._common, numpy.random.bit_generator, numpy.random._bounded_integers, numpy.random._pcg64, numpy.random._generator, numpy.random._mt19937, numpy.random._philox, numpy.random._sfc64, numpy.random.mtrand, charset_normalizer.md, charset_normalizer.cd, scipy.ndimage._nd_image, scipy.ndimage._rank_filter_1d, scipy.special._ufuncs_cxx, scipy.linalg._fblas, scipy.linalg._flapack, scipy.linalg._batched_linalg, scipy.linalg._cythonized_array_utils, scipy.linalg._solve_toeplitz, scipy.linalg._internal_matfuncs, scipy.linalg._linalg_pythran, scipy.linalg.cython_blas, scipy.linalg.cython_lapack, scipy.linalg._decomp_update, scipy.special._ellip_harm_2, scipy.special._special_ufuncs, scipy.special._gufuncs, scipy.special._ufuncs, scipy.special._specfun, scipy.special._comb, _ni_label, scipy.ndimage._ni_label, yaml._yaml, scipy.sparse._sparsetools, _csparsetools, scipy.sparse._csparsetools, scipy.spatial._ckdtree, scipy.spatial._hausdorff, scipy.spatial._distance_wrap, scipy._lib.messagestream, scipy.spatial._qhull, scipy.spatial._voronoi, scipy.spatial.transform._rotation_cy, scipy.spatial.transform._rigid_transform_cy, scipy.sparse.linalg._dsolve._superlu, scipy.sparse.linalg._eigen.arpack._arpacklib, scipy.sparse.linalg._propack, scipy.optimize._group_columns, scipy.optimize._trlib._trlib, scipy.optimize._lbfgsb, _moduleTNC, scipy.optimize._moduleTNC, scipy.optimize._slsqplib, scipy.optimize._minpack, scipy.optimize._lsq.givens_elimination, scipy.optimize._zeros, scipy._lib._uarray._uarray, scipy.linalg._decomp_interpolative, scipy.optimize._bglu_dense, scipy.optimize._lsap, scipy.optimize._direct, scipy.integrate._odepack, scipy.integrate._quadpack, scipy.integrate._vode, scipy.integrate._dop, scipy.interpolate._fitpack, scipy.interpolate._dierckx, scipy.interpolate._ppoly, scipy.interpolate._interpnd, scipy.interpolate._rbfinterp_pythran, scipy.interpolate._rgi_cython, scipy.special.cython_special, scipy.stats._stats, scipy.stats._biasedurn, scipy.stats._levy_stable.levyst, scipy.stats._stats_pythran, scipy.stats._ansari_swilk_statistics, scipy.sparse.csgraph._tools, scipy.sparse.csgraph._shortest_path, scipy.sparse.csgraph._traversal, scipy.sparse.csgraph._min_spanning_tree, scipy.sparse.csgraph._flow, scipy.sparse.csgraph._matching, scipy.sparse.csgraph._reordering, scipy.stats._sobol, scipy.stats._qmc_cy, scipy.stats._rcont.rcont, scipy.stats._qmvnt_cy, PIL._imaging, PIL._imagingft, vtkmodules.vtkCommonCore, vtkmodules.vtkCommonMath, vtkmodules.vtkCommonTransforms, vtkmodules.vtkCommonSystem, vtkmodules.vtkParallelCore, vtkmodules.vtkCommonDataModel, vtkmodules.vtkCommonExecutionModel, vtkmodules.vtkFiltersSources, vtkmodules.vtkImagingSources, vtkmodules.vtkCommonMisc, vtkmodules.vtkFiltersCore, vtkmodules.vtkRenderingCore, vtkmodules.vtkRenderingFreeType, vtkmodules.vtkRenderingMatplotlib, kiwisolver._cext, vtkmodules.vtkCommonColor, vtkmodules.vtkRenderingContext2D, vtkmodules.vtkFiltersGeneral, vtkmodules.vtkChartsCore, vtkmodules.vtkPythonContext2D, vtkmodules.vtkFiltersPython, vtkmodules.vtkRenderingVolume, vtkmodules.vtkImagingCore, vtkmodules.vtkImagingMath, vtkmodules.vtkIOCore, vtkmodules.vtkIOImage, vtkmodules.vtkRenderingHyperTreeGrid, vtkmodules.vtkRenderingUI, vtkmodules.vtkRenderingOpenGL2, vtkmodules.vtkRenderingVolumeOpenGL2, vtkmodules.vtkRenderingAnnotation, vtkmodules.vtkInteractionStyle, vtkmodules.vtkIOXMLParser, vtkmodules.vtkIOXML, vtkmodules.vtkFiltersCellGrid, vtkmodules.vtkIOCellGrid, vtkmodules.vtkIOLegacy, vtkmodules.vtkIOGeometry, vtkmodules.vtkIOPLY, skimage.measure._marching_cubes_lewiner_cy (total: 135)
