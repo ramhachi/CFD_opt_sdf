@@ -54,3 +54,12 @@ WaterLily 1.8.0 の `pressure_force`（`∮ p n ds` を `nds = n·kern(clamp(d,�
 - `measure!` が μ₀ を書くのは band の中だけ（`d[I]^2 < (2+ε)^2`）で、外は 1、内は 0。telescoping はこれを前提にしてよいが、テストで確認する。
 - 浮動小数点の和は Float64 で（1.8.0 の `promote_type(Float64, Tp)` と同じ）。
 - 報告には、#293 の「組み込みと control volume は 7〜9 % ずれる」が本プロジェクトの親でどうかは **GPU 実行まで分からない**と明記する。
+
+## Amendment 2（2026-11-06。2 回目の試み（未 commit、Draft PR #84 の head は `21d1e8e7` のまま）への回答。この節が本文と Amendment 1 より優先する）
+
+1. **配置の例外は認めるが、場所は `julia/CFDSDFWaterLily/gen01/Force00.jl`**（Codex 案の `force00/` ではない）。`julia/CFDSDFWaterLily/src` は `campaign_build.BASE_PINS` の directory pin で、WP1 の `Checkpoint.jl`、WP4 の `Topo2D.jl` も `gen01/` に置く規則にした（README §2 の追記）。用意済みの `reports/wp02_tree_pin.proposed.diff` を **パスを `gen01/` に変えて**適用し（`src/Force00.jl` は残さない）、各 entrypoint の `Base.include(CFDSDFWaterLily, joinpath(…, "gen01", "Force00.jl"))` と provenance の参照先を直す。`gen01/README.md` が無ければ WP1 と同じ 2〜3 行で作る。`Forces.jl` は e3dcdf61 の bytes のまま（2 回目で復元済み。`git diff e3dcdf61 -- julia/CFDSDFWaterLily/src` が空であることを報告に書く）。
+2. **記録の置き場所。** `docs/evidence/force00_2026_11/` は F1〜F3 の GPU 出力と `gate.json` の登録先なので、CPU 検証の記録（`amendment1/validation/*`）は **`docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/`** に移す（`docs/evidence/force00_2026_11/` は空のまま＝存在しない状態に戻す）。gate の入力探索がこの subdir に反応しないことをテストで確認する。
+3. `reports/wp02_complete_working_tree.patch`（作業ツリー全体の binary patch）と `wp02_tree_pin.proposed.diff` は **適用後に削除**する（commit は Claude が host で行うので patch は不要）。
+4. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。base は Claude の host 実行（e3dcdf61、3482 passed / 74 skipped / 0 failed）。一時 CPU 環境や `.venv` の付け替えはしない。
+5. **commit／push は Claude が host で行う。** GitHub API の blob 作成や `/tmp` clone は使わない。報告の「作ったもの」に commit すべきファイルの完全な一覧（移動元→移動先、変更、戻したもの、新規、削除）を書く。worktree の HEAD は `21d1e8e7`、未 commit の 2 回目の変更の上で続ける。PR #84 の本文は Claude が更新する。
+6. 受け入れ条件（Julia 自己テスト、U1/U2 の決定性、R_nds の閉包 1e-12、job の cur 列の byte 回帰、gate テスト、全体の失敗集合が base と同一）を満たしたら状態を DONE にする。GPU（F1〜F3）は user が後で回す。
