@@ -45,6 +45,10 @@ PR は `gh pr create` で作る（GitHub の MCP connector は承認が要るの
 - Kaggle（`kaggle kernels push` を含む一切）、クラウド、課金、GPU の長時間実行。**Codex が走らせてよいのは、ローカル CPU の短いテストとドライランだけ**（Julia の CPU モード、小さい格子、数分以内）。GPU が手元にあっても使わない（LOCAL-GPU-01 の gate の前なので）。
 - `git push --force`、`git reset --hard`、他 branch の checkout、`git stash` の pop（AGENTS.md）。
 
+**Julia の追加モジュールの置き場所（2026-11-06 追記）。** `julia/CFDSDFWaterLily/src` は `campaign_build.BASE_PINS` の directory pin で、歴史 freeze（DIAG5／GRID01／GRID02／LOWDIM／STEP01）がその hash を bind している。src/ にはファイルを足さず、GEN-01 の新しい Julia module は `julia/CFDSDFWaterLily/gen01/` に置き、job から `Base.include(CFDSDFWaterLily, …)` で読む。
+
+**commit／push（2026-11-06 追記）。** Codex の sandbox は `.git` 配下を書けない（`--add-dir` でも不可）。Codex は commit・push・`/tmp` の clone 経由の push をせず、報告に commit すべきファイルの完全な一覧を書く。commit・push・PR 作成は Claude が host で行う。
+
 **書き方。**
 - 最小で動くものを書く（YAGNI）。既存の helper・パターン・型を再利用する（`src/cfd_harness/`、`src/cfd_sdf/`、`scripts/local_openfoam.py`、`scripts/harness.py`、`julia/CFDSDFWaterLily/src/`）。新しい依存は、標準ライブラリ・既存依存で書けないときだけ足し、`pyproject.toml` に理由をコメントで書く。
 - 非自明なロジックには必ずテストを付ける（`tests/` の慣習に合わせる。合成データで決定的に）。Julia 側は `julia/CFDSDFWaterLily/test/` の慣習に合わせる（無ければ `scripts/*_selftest.jl` を置く）。
