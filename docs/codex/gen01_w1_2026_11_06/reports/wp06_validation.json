@@ -4,7 +4,7 @@
     "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.py": "f387606885319b48eab57c50655d8c64005819030e4dc8e7b68ceda7e486aee4",
     "docs/codex/gen01_w1_2026_11_06/reports/wp06_cpu_only_pytest.py": "ace18973554f64720a3df1bd5ea0aab1dc593a097f9bdc23ebfe8211d4734d18",
     "docs/codex/gen01_w1_2026_11_06/reports/wp06_design.md": "589cc0c4c780c7e55c2b7e38ab2067ebe6396973ec0a4f346c0e600eb8c529d4",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp06_report.md": "52b0545ef40e989f0ffc87f401697b95c392ed88c618e1f3703d8c9c0b94fb59",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_report.md": "f15f2ff4662a661246975dbb779da702603876e08cad8297c8a24ac5a3986a54",
     "docs/codex/gen01_w1_2026_11_06/reports/wp06_source_closure_preflight.json": "efa957735d29e2b0a7677792a2f858fc4eb284695df35ecdc75fbbb1af2c7df6",
     "docs/codex/gen01_w1_2026_11_06/reports/wp06_source_closure_preflight.py": "13571ed20b28ba0743f8369dedb5ce8fa42e2988b055df98f8ed9ae58b514ad0",
     "src/cfd_sdf/scene/__init__.py": "4c041ba31a842626864404f27bb800591a0fe06ddb856a55f228de585751dcaa",
@@ -112,6 +112,18 @@
       "sha256": "b50c3bfb36413951364a5215776b53404f0059b08523d0bceedfc3b43e5ecf16",
       "uncompressed_bytes": 201968,
       "uncompressed_sha256": "361653a5be9bfccf0587572452bf7ee5a8365e3c6436c2a348d1c5d30a6de70a"
+    },
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-post-commit-recheck.log.gz": {
+      "encoding": "gzip",
+      "sha256": "d88b67a0c71fdb3486731c9709de30ace4966ffa2f9f3bb1c01e39088f1f4233",
+      "uncompressed_bytes": 4877,
+      "uncompressed_sha256": "7ed0986850a002345b495ac338efeb00e65890899334d9427cfe46cc717328cb"
+    },
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-post-commit-recheck.xml.gz": {
+      "encoding": "gzip",
+      "sha256": "a0fa9c37d10514545ae18a06c667f15e9c2d7b6d5c1d8a52217438c1ed075380",
+      "uncompressed_bytes": 5325,
+      "uncompressed_sha256": "a4f0599b1027972b93d54e52fa5689fec7a022c019358d7fc2839a99e2989209"
     },
     "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-scene-tests.log.gz": {
       "encoding": "gzip",
@@ -323,6 +335,7 @@
         "tests/test_stage_v_domain_preflight.py::test_recorded_wrong_candidate_is_rejected_before_meshing",
         "tests/test_stage_v_qualification.py::test_real_historical_run_without_residual_control_is_not_called_converged"
       ],
+      "source_bytes_bound_to_commit": "248255ce6d3be04d23d6061d7d9ceee6894bffe1",
       "summary": "4 failed, 3564 passed, 80 skipped, 7295 warnings in 3304.66s (0:55:04)"
     },
     "metal_ids_skipped": 6,
@@ -356,25 +369,102 @@
   },
   "git_delivery": {
     "PR": "https://github.com/ramhachi/CFD_opt_sdf/pull/82",
+    "PR_body_matches_final_report": true,
+    "PR_readback_after_source_push": {
+      "autoMergeRequest": null,
+      "baseRefName": "codex/kaggle-batch-migration",
+      "body_matches_report": true,
+      "body_sha256_without_trailing_newlines": "af8dcc680b23428322a8d553210d8563065257a4705d8985b122d1dd3ac9a832",
+      "headRefName": "feat/gen01-w1-06-geom-s1",
+      "headRefOid": "248255ce6d3be04d23d6061d7d9ceee6894bffe1",
+      "isDraft": true,
+      "state": "OPEN",
+      "title": "WP6 phase A: scenes and geometry gates (historical closure blocker)",
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/pull/82"
+    },
     "PR_ready": false,
+    "auto_merge_enabled": false,
     "default_index_lock": "denied",
+    "default_index_sync": {
+      "exit_code": 128,
+      "paths": [
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_attempt1_blocked/wp06_design.md",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_attempt1_blocked/wp06_pytest_interrupted.log",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_attempt1_blocked/wp06_report.md",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_attempt1_blocked/wp06_sdf_preflight.json",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_attempt1_blocked/wp06_sdf_preflight.py",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_attempt1_blocked/wp06_validation.json",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.json",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.py",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_cpu_only_pytest.py",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_design.md",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_pytest_interrupted.log",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_report.md",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_sdf_preflight.json",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_sdf_preflight.py",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_source_closure_preflight.json",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_source_closure_preflight.py",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-base-cpu-pytest.log.gz",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-base-cpu-pytest.xml.gz",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-base-pytest.log.gz",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-compileall.log.gz",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-cpu-pytest.log.gz",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-cpu-pytest.xml.gz",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-pytest.log.gz",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-pytest.xml.gz",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-scene-tests.log.gz",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-scene-tests.xml.gz",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp06_validation.json",
+        "src/cfd_sdf/scene/__init__.py",
+        "src/cfd_sdf/scene/events.py",
+        "src/cfd_sdf/scene/gates.py",
+        "src/cfd_sdf/scene/primitives.py",
+        "src/cfd_sdf/scene/scene.py",
+        "tests/scene/test_birth.py",
+        "tests/scene/test_events.py",
+        "tests/scene/test_gates.py",
+        "tests/scene/test_primitives.py",
+        "tests/scene/test_scene.py"
+      ],
+      "stderr": "fatal: Unable to create '/Users/sota/projects/FomulaTMU/CFD2026_09/.git/worktrees/CFD2026_09-wp-06-geom-s1/index.lock': Operation not permitted\n",
+      "stdout": ""
+    },
+    "default_index_synchronized": false,
+    "method": "git write-tree, git commit-tree, git update-ref with exact expected old ref and verified ancestor, fast-forward git push",
     "new_clone_used": false,
+    "normal_commit_error": "COMMIT_EDITMSG: Operation not permitted",
     "shared_gitdir": "/Users/sota/projects/FomulaTMU/CFD2026_09/.git/worktrees/CFD2026_09-wp-06-geom-s1",
-    "status": "preparing same-worktree branch commit; PR remains draft",
-    "temporary_index": "/private/tmp/wp06-index"
+    "source_commit": "248255ce6d3be04d23d6061d7d9ceee6894bffe1",
+    "source_commit_parent": "08e0ea3823168c330b3023aeb508734584a57edb",
+    "source_commit_pushed": true,
+    "source_remote_readback": "248255ce6d3be04d23d6061d7d9ceee6894bffe1",
+    "status": "source pushed; Draft PR body read back equal to final report; post-commit diagnostics recorded",
+    "temporary_index": "/private/tmp/wp06-index",
+    "temporary_index_clean_after_source_commit": true
   },
   "kind": "wp06_phase_a_validation",
   "phase_a_acceptance_complete": false,
   "phase_a_implementation_complete": true,
   "phase_b_started": false,
   "post_commit_targeted_recheck": {
-    "node_ids": [
+    "commit": "248255ce6d3be04d23d6061d7d9ceee6894bffe1",
+    "exit_code": 1,
+    "failed": 2,
+    "failure_node_ids": [
       "tests/test_grid02_evidence.py::test_the_analysis_is_the_registered_one_and_reproduces_from_the_kept_output",
+      "tests/test_grid02_prereg.py::test_the_real_freeze_validates_with_the_analyzer_and_is_sidecar_bound"
+    ],
+    "junit": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-post-commit-recheck.xml.gz",
+    "log": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-post-commit-recheck.log.gz",
+    "passed": 2,
+    "passed_node_ids": [
       "tests/test_grid02_prereg.py::test_every_file_the_freeze_binds_is_committed_at_head_once_it_exists",
-      "tests/test_grid02_prereg.py::test_the_real_freeze_validates_with_the_analyzer_and_is_sidecar_bound",
       "tests/test_lowdim03_prereg.py::test_every_file_the_freeze_binds_is_committed_at_head_and_the_runner_constants_are_pinned"
     ],
-    "status": "pending"
+    "reason": "same tested source; only HEAD membership changed; both intrinsic historical source-closure failures remain",
+    "seconds": 16.93,
+    "status": "complete",
+    "whole_suite_repeated": false
   },
   "review": {
     "archived_attempt1_bytes_equal_base": true,
@@ -459,5 +549,6 @@
       "seconds": 1754.81,
       "skipped": 24
     }
-  }
+  },
+  "validated_source_commit": "248255ce6d3be04d23d6061d7d9ceee6894bffe1"
 }

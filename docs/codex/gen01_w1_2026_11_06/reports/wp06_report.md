@@ -77,7 +77,14 @@ tests/test_grid02_prereg.py::test_the_real_freeze_validates_with_the_analyzer_an
 tests/test_lowdim03_prereg.py::test_every_file_the_freeze_binds_is_committed_at_head_and_the_runner_constants_are_pinned
 ```
 
-GRID-02 の `test_every_file_the_freeze_binds...` と LOWDIM-03 の同名検査は、どちらも `not committed: src/cfd_sdf/scene/__init__.py`。commit 後の再検証対象で、数値・scene の失敗ではない。残る GRID-02 の二件は過去の freeze の source-closure であり、commit だけでは解消しない。第三者レビューでも同じ base PASS / 新五 source 不足を再現した。既存テストは変更していない。
+GRID-02 の `test_every_file_the_freeze_binds...` と LOWDIM-03 の同名検査は、どちらも `not committed: src/cfd_sdf/scene/__init__.py`。source commit `248255ce6d3be04d23d6061d7d9ceee6894bffe1` の後に上記 4 ID を再検証し、**2 passed / 2 failed（16.93 秒）**。二つの HEAD 所属検査は pass になり、次の二件だけが同じ source-closure 原因で fail のまま残った：
+
+```text
+tests/test_grid02_evidence.py::test_the_analysis_is_the_registered_one_and_reproduces_from_the_kept_output
+tests/test_grid02_prereg.py::test_the_real_freeze_validates_with_the_analyzer_and_is_sidecar_bound
+```
+
+全体テストは commit 前の 4 failed の結果を保存し、commit 後は対象 4 件だけの再検証である。全体を二度完走した、あるいは失敗集合が同一になったとは主張しない。第三者レビューでも同じ base PASS / 新五 source 不足を再現した。既存テストは変更していない。
 
 `wp06_test_artifacts/` に無条件 run の abort/中断ログ、CPU 完走ログ/JUnit、新 scene ログ/JUnit、compileall ログを gzip（mtime=0）で保存。圧縮 bytes と展開 bytes の SHA256 は `wp06_validation.json` に列挙する。全体 run は legacy CPU preflight を含み約 55 分を要した。新 scene の個別検証は約 14 秒で、新しい CFD campaign は行っていない。
 
@@ -131,7 +138,11 @@ SDFDesignState の既存型を保つため、2D は singleton y に格納し、�
 
 OpenCode Go MCP がなく、CLI 1.19.3 のモデル一覧確認は通常経路の log 書き込み制限と、一時 XDG 経路の Provider not found: opencode-go で失敗。native worker にプリミティブ・gate・独立レビューを分担し、親が差分と検証を確認した。global config、認証、追加課金は変更していない。
 
-Git の worktree index.lock は共有 gitdir の明示パスでも書き込み拒否のため、同じ worktree/branch/shared gitdir と GIT_INDEX_FILE=/private/tmp/wp06-index を使い git mv と意図したパスの staging を行う。前回の sparse clone は使用しない。意図した source/テスト/記録をこの branch に commit し、HEAD 所属検査を再実行してから同じ branch に push する。PR は Draft を維持する。配達後の readback を追記する。
+Git の worktree index.lock は共有 gitdir の明示パスでも書き込み拒否のため、同じ worktree/branch/shared gitdir と `GIT_INDEX_FILE=/private/tmp/wp06-index` を使い git mv と意図したパスの staging を行った。通常の `git commit` は `COMMIT_EDITMSG: Operation not permitted` で停止し、HEAD は変わらなかった。active hook がないことを確認し、同じ共有 Git dir で `write-tree` / `commit-tree` を用い、親が開始点 `08e0ea38` であることを確認した上で `update-ref <new> <expected-old>` で feature ref を進めた。別 checkout/clone、force/reset は使っていない。
+
+source commit は `248255ce6d3be04d23d6061d7d9ceee6894bffe1`。`feat/gen01-w1-06-geom-s1` に fast-forward push 済みで、`ls-remote` と PR #82 の head SHA が一致することを readback した。最終報告・再検証記録は同じ branch に後続 commit として保存する。PR は Draft、向き先 `codex/kaggle-batch-migration`、auto-merge は無効を維持する。
+
+通常 index を意図した 37 パスだけ `git restore --staged --source=HEAD -- <paths>` で同期する試みも index.lock の同じ制限で拒否された。**通常 index は開始点のままであり、通常の git status は古い staging 状態を示す。一時 index では source commit と一致し、作業ファイルを巻き戻していない。** sandbox 制約として記録し、共有メタデータを直接書き換えて回避していない。
 
 ## 未確認の仮定（実行して初めて分かること、PDF から読めなかった値など）
 
