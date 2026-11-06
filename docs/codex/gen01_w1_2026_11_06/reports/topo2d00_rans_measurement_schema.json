@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cfd2026:topo2d00:rans:v1",
+  "title": "WP4/WP5 TOPO-2D-00 RANS measurements (common c1 normalization)",
+  "description": "Collection is not a TR-00 verdict. Only complete, usable settled production measurements may enter qualification. A limit cycle is in SIMPLE iteration coordinates; it is not physical URANS evidence. Missing runs have no invented coefficient values.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "evidence_class", "normalization", "force_convention", "complete", "expected_runs", "missing_runs", "results"],
+  "properties": {
+    "schema_version": {"const": "topo2d00-rans-v1"},
+    "evidence_class": {"const": "RANS_MEASUREMENT_UNQUALIFIED"},
+    "normalization": {"$ref": "#/$defs/normalization"},
+    "force_convention": {"$ref": "#/$defs/force_convention"},
+    "complete": {"type": "boolean", "description": "All expected run keys have records; this does not mean that the runs settled or passed TR-00."},
+    "expected_runs": {"type": "integer", "minimum": 1},
+    "missing_runs": {"type": "array", "items": {"$ref": "#/$defs/key"}, "uniqueItems": true},
+    "results": {"type": "array", "items": {"$ref": "#/$defs/result"}}
+  },
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "nullable_sha": {"anyOf": [{"$ref": "#/$defs/sha"}, {"type": "null"}]},
+    "normalization": {
+      "type": "object", "additionalProperties": false,
+      "required": ["reference_chord_m", "extrusion_span_m", "reference_area_m2", "U_inf_m_s", "rho_kg_m3"],
+      "properties": {
+        "reference_chord_m": {"const": 0.2234},
+        "extrusion_span_m": {"const": 0.002},
+        "reference_area_m2": {"const": 0.0004468},
+        "U_inf_m_s": {"const": 30.0},
+        "rho_kg_m3": {"const": 1.0}
+      }
+    },
+    "force_convention": {
+      "type": "object", "additionalProperties": false,
+      "required": ["Cl", "Cd", "lift_direction", "drag_direction"],
+      "properties": {
+        "Cl": {"const": "downforce"}, "Cd": {"const": "drag"},
+        "lift_direction": {"const": [0, -1, 0]}, "drag_direction": {"const": [1, 0, 0]}
+      }
+    },
+    "key": {
+      "type": "object", "additionalProperties": false,
+      "required": ["config", "model", "family", "realisation"],
+      "properties": {
+        "config": {"enum": ["E1_sharp", "E2_sharp", "E1", "E2", "E3"]},
+        "model": {"enum": ["sa-wf", "sst-wf"]},
+        "family": {"enum": ["fine30", "med30"]},
+        "realisation": {"type": "integer", "minimum": 0, "maximum": 7}
+      }
+    },
+    "coefficient": {
+      "type": "object", "additionalProperties": false,
+      "required": ["Cl", "Cd"],
+      "properties": {"Cl": {"type": "number"}, "Cd": {"type": "number"}}
+    },
+    "element": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "patch", "Cl", "Cd"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "patch": {"enum": ["airfoil", "airfoil_2", "airfoil_3"]},
+        "Cl": {"type": ["number", "null"]}, "Cd": {"type": ["number", "null"]}
+      }
+    },
+    "result": {
+      "type": "object", "additionalProperties": false,
+      "required": ["config", "model", "family", "realisation", "status", "mesh_msh_sha256", "geometry_sha256", "observable", "coefficients", "pressure_coefficients", "viscous_coefficients", "convergence", "pressure_convergence", "usable", "provenance"],
+      "properties": {
+        "config": {"enum": ["E1_sharp", "E2_sharp", "E1", "E2", "E3"]},
+        "model": {"enum": ["sa-wf", "sst-wf"]}, "family": {"enum": ["fine30", "med30"]},
+        "realisation": {"type": "integer", "minimum": 0, "maximum": 7},
+        "status": {"type": "string", "minLength": 1},
+        "mesh_msh_sha256": {"$ref": "#/$defs/nullable_sha"},
+        "geometry_sha256": {"$ref": "#/$defs/sha"},
+        "observable": {"const": "pressure_plus_viscous", "description": "For TR-00 comparison to Cp-integrated data use pressure_coefficients.Cl, never silently compare that reference to the pressure-plus-viscous total."},
+        "coefficients": {
+          "type": "object", "additionalProperties": false, "required": ["total", "elements"],
+          "properties": {
+            "total": {"anyOf": [{"$ref": "#/$defs/coefficient"}, {"type": "null"}]},
+            "elements": {"type": "array", "minItems": 1, "maxItems": 3, "items": {"$ref": "#/$defs/element"}}
+          }
+        },
+        "pressure_coefficients": {"$ref": "#/$defs/components", "description": "Pressure-only Cl/Cd from forces pressure vectors, comparable to pressure-integrated Cp reference after matching axes and common c1 normalization."},
+        "viscous_coefficients": {"$ref": "#/$defs/components"},
+        "convergence": {
+          "type": "object", "additionalProperties": false,
+          "required": ["state", "raw_class", "coordinate", "statistics", "reason"],
+          "properties": {
+            "state": {"enum": ["settled", "limit_cycle", "diverged", "not_settled", "unavailable"]},
+            "raw_class": {"type": "string"},
+            "coordinate": {"const": "SIMPLE iteration (not physical time)"},
+            "statistics": {"type": "object"}, "reason": {"type": "string"}
+          }
+        },
+        "pressure_convergence": {"$ref": "#/$defs/convergence", "description": "Independent pressure-only Cl convergence. A settled total can mask cancellation between unsettled pressure and viscous contributions."},
+        "usable": {"type": "boolean"},
+        "provenance": {
+          "type": "object", "additionalProperties": false,
+          "required": ["case_result", "case_result_sha256", "coefficient_files", "force_files"],
+          "properties": {
+            "case_result": {"type": "string"}, "case_result_sha256": {"$ref": "#/$defs/sha"},
+            "coefficient_files": {"type": "object", "additionalProperties": {"type": "array", "items": {"$ref": "#/$defs/artifact"}}},
+            "force_files": {"type": "object", "additionalProperties": {"type": "array", "items": {"$ref": "#/$defs/artifact"}}}
+          }
+        }
+      },
+      "allOf": [{"if": {"properties": {"usable": {"const": true}}}, "then": {
+        "properties": {"status": {"const": "COMPLETED"}, "mesh_msh_sha256": {"$ref": "#/$defs/sha"},
+          "convergence": {"properties": {"state": {"const": "settled"}}},
+          "pressure_convergence": {"properties": {"state": {"const": "settled"}}},
+          "coefficients": {"properties": {"total": {"$ref": "#/$defs/coefficient"}}}}
+      }}]
+    },
+    "artifact": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"$ref": "#/$defs/sha"}}
+    },
+    "components": {
+      "type": "object", "additionalProperties": false, "required": ["total", "elements"],
+      "properties": {
+        "total": {"anyOf": [{"$ref": "#/$defs/coefficient"}, {"type": "null"}]},
+        "elements": {"type": "array", "minItems": 1, "maxItems": 3, "items": {"$ref": "#/$defs/element"}}
+      }
+    },
+    "convergence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["state", "raw_class", "coordinate", "statistics", "reason"],
+      "properties": {
+        "state": {"enum": ["settled", "limit_cycle", "diverged", "not_settled", "unavailable"]},
+        "raw_class": {"type": "string"}, "coordinate": {"const": "SIMPLE iteration (not physical time)"},
+        "statistics": {"type": "object"}, "reason": {"type": "string"}
+      }
+    }
+  }
+}
