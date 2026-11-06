@@ -16,10 +16,16 @@ done
 ```
 
 ```bash
-# 1 つの WP を回す（例：WP1）。トークンは制限しない。終わったら Codex の最終報告をそのまま保存する。
-cd ../CFD2026_09-wp-01-local-gpu
-codex exec --full-auto "$(cat docs/codex/gen01_w1_2026_11_06/01_local_gpu_01.md)" | tee ../codex_report_wp01.md
+# 1 つの WP を回す（例：WP1）。トークンは制限しない。最終報告は -o のファイルに落ちる。
+# worktree は共有の .git（主リポジトリの .git）に commit するので、その dir を書き込み可にする（--add-dir）。
+# ~/.julia も Pkg.instantiate のために書き込み可にする。ネットワークは git push / gh / PDF 取得のために許可する。
+W=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu
+codex exec -C "$W" -s workspace-write -c 'approval_policy="never"' -c 'sandbox_workspace_write.network_access=true' \
+  --add-dir /Users/sota/.julia --add-dir /Users/sota/projects/FomulaTMU/CFD2026_09/.git \
+  -o ../codex_runs/wp01_last.md "$(cat "$W/docs/codex/gen01_w1_2026_11_06/01_local_gpu_01.md")" > ../codex_runs/wp01.log 2>&1
 ```
+
+PR は `gh pr create` で作る（GitHub の MCP connector は承認が要るので使わない）。
 
 並列に回してよい組：WP1・WP2・WP3・WP5・WP6 は互いに独立。WP4 は WP2（Forces.jl の新しい読み出し）と WP1（checkpoint モジュール）の **インターフェースだけ**に依存するので、WP2／WP1 と同時に始めてよいが、統合は WP2・WP1 の後にする。
 
@@ -51,7 +57,7 @@ codex exec --full-auto "$(cat docs/codex/gen01_w1_2026_11_06/01_local_gpu_01.md)
 2. 最初に `docs/codex/gen01_w1_2026_11_06/reports/<wp>_design.md` に **設計メモ**（読んだ文書の要点、インターフェース、ファイル一覧、テスト計画、未確認の仮定）を書いてから実装する。
 3. TDD で進める。各ステップで `.venv/bin/python -m pytest -q tests/<新規>` を回し、最後に全体：`.venv/bin/python -m compileall src tests`、`.venv/bin/python -m pytest -q`、`git diff --check`。全体の失敗集合が base と同一であること（base の失敗は最初に記録しておく）。
 4. **自己レビュー**（別の視点で、チェックリスト：仕様の各項目に対応するコード・テスト・記録があるか、fail-closed か、既存の pin を壊していないか、ハードコードした数値に出典コメントがあるか、報告に未確認の仮定を列挙したか）。見つけた問題は直す。
-5. 意図したファイルだけ `git add` して commit（`Co-Authored-By` は付けない。メッセージは英語、何をなぜ）。branch を push し、PR を `codex/kaggle-batch-migration` 向けに作る（本文は §3 の形式）。**auto-merge は有効にしない。**
+5. 意図したファイルだけ `git add` して commit（`Co-Authored-By` は付けない。メッセージは英語、何をなぜ）。branch を push し、PR を **`gh pr create`** で `codex/kaggle-batch-migration` 向けに作る（本文は §3 の形式。GitHub の MCP connector は使わない）。**auto-merge は有効にしない。** worktree の `.git` は主リポジトリの `.git` を指すファイルなので、`index.lock` の書き込みが拒否されたら、それは sandbox の設定（`--add-dir` に主リポジトリの `.git` が無い）であり、作業は未追跡のまま残して報告に書く。
 6. **最終報告**を `docs/codex/gen01_w1_2026_11_06/reports/<wp>_report.md` に書いて commit し、同じ内容を標準出力に出して終わる。
 
 ## 3. 報告の形式（PR 本文と `<wp>_report.md` に同じものを書く）
