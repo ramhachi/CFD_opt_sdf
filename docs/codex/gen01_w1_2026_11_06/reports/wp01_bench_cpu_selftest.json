@@ -1,0 +1,64 @@
+{
+  "captured_utc": "2026-11-06T07:22:21.775Z",
+  "cases": [
+    {
+      "cell_steps_per_second": 456332.2308089653,
+      "cells": 4096,
+      "dtype": "Float32",
+      "final_t_u_l": 0.13599315285682678,
+      "finite_p": true,
+      "finite_u": true,
+      "flow_dims": [
+        16,
+        16,
+        16
+      ],
+      "initial_t_u_l": 0.015625,
+      "name": "tgv",
+      "ns_per_cell_step": 2191.3858642578125,
+      "steps": 2,
+      "wall_seconds": 0.017951833,
+      "warmup_steps": 1,
+      "warmup_wall_seconds": 12.648255042
+    },
+    {
+      "cell_steps_per_second": 581763.1457024094,
+      "cells": 2048,
+      "dtype": "Float32",
+      "final_t_u_l": 0.22975414991378784,
+      "finite_p": true,
+      "finite_u": true,
+      "flow_dims": [
+        64,
+        32
+      ],
+      "initial_t_u_l": 0.03125,
+      "name": "plate_2d",
+      "ns_per_cell_step": 1718.91259765625,
+      "steps": 2,
+      "wall_seconds": 0.007040666,
+      "warmup_steps": 1,
+      "warmup_wall_seconds": 13.126391583
+    }
+  ],
+  "cuda_visible_devices": "not-applicable",
+  "evidence_class": "CPU_BENCH_SELFTEST",
+  "gpu_identity": {
+    "name": "CPU selftest; no GPU invoked",
+    "uuid": "not-applicable"
+  },
+  "host_label": "cpu_selftest",
+  "julia_version": "1.12.6",
+  "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+  "measured_steps": 2,
+  "plate_definition": {
+    "angle_degrees": 10,
+    "chord_cells": 8,
+    "reynolds": 1000,
+    "thickness_cells": 1
+  },
+  "schema_version": 1,
+  "used_gpu_count": 0,
+  "warmup_steps": 1,
+  "waterlily_version": "1.8.0"
+}

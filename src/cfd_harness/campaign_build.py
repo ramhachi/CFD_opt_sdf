@@ -73,6 +73,8 @@ def pins(c, rel, k, repo=REPO):
     kernel = c["kernels"][k]
     raws = [c["baseline"]] + list(c["directions"].values())
     paths = set(BASE_PINS) | {rel, kernel["job"]} | {d["path"] for d in raws} | set(c["pins"]) | set(kernel.get("pins", []))
+    if c.get("backend_profile") == "local_rtx4070ti":
+        paths.add("src/cfd_harness/backend_profiles.py")
     check_include_closure(repo, paths)
     out = {p: SC.sha256_path(Path(repo) / p) for p in sorted(paths)}
     for d in raws:
@@ -129,6 +131,9 @@ def render(campaign_path, source_commit, k, smoke=False, repo=REPO):
     text = (Path(repo) / TEMPLATE_REL).read_text()
     SC.req(text.count(SC.PIN_BEGIN) == 1 and text.count(SC.PIN_END) == 1 and text.count("\nPIN_BLOCK\n") == 1, "runner template pin markers differ")
     text = text.replace("PIN_BLOCK", pin_block(c, rel, k, source_commit, smoke, pins(c, rel, k, repo)))
+    if c.get("backend_profile") == "local_rtx4070ti":
+        from cfd_harness.backend_profiles import adapt_runner
+        text = adapt_runner(text)
     compile(text, "runner.py", "exec")
     return text
 
@@ -168,6 +173,7 @@ def write_kernel(c, k, text, smoke, repo=REPO):
 
 def refuse_legacy(c):
     SC.req(not c["legacy_replay"], "a legacy_replay campaign describes pre-harness outputs for verification only; it cannot be built, smoked or frozen")
+    SC.req(c.get("backend_profile", "kaggle_t4") == "kaggle_t4", "a local backend uses scripts/local_gpu.py render, not Kaggle build/smoke/freeze")
 
 
 def build(campaign_path, source_commit, repo=REPO):

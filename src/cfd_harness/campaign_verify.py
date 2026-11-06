@@ -12,8 +12,8 @@ from pathlib import Path
 
 from cfd_harness import campaign_build as B
 from cfd_harness import campaign_schema as SC
+from cfd_harness import backend_profiles as BP
 from cfd_harness.campaign_build import BASE_PINS
-from grid01_gpu import select_worker_gpu  # scripts/ is on the path once campaign_schema is imported
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -43,6 +43,8 @@ def validate_freeze(freeze, freeze_path, campaign, campaign_sha, campaign_rel):
         SC.req(freeze["runtime"][k].get("kernel_id") == kernel["kernel_id"] and SC.is_sha(freeze["runtime"][k].get("runner_sha256")), f"freeze runtime of {k}")
         pinned = freeze["pins"][k]
         needed = {kernel["job"], *campaign["pins"], *kernel.get("pins", []), *(d["path"] for d in raws)} | (set() if legacy else {campaign_rel, *BASE_PINS})
+        if BP.profile_name(campaign) == BP.LOCAL:
+            needed.add(BP.MODULE_REL)
         SC.req(isinstance(pinned, dict) and needed <= set(pinned) and all(SC.is_sha(h) for h in pinned.values()), f"freeze pins of {k} do not cover the campaign's bound files")
         SC.req(all(pinned[d["path"]] == d["sha256_fortran_raw"] for d in raws) and (legacy or pinned[campaign_rel] == campaign_sha), f"freeze pins of {k} differ from the campaign's declared hashes")
 
@@ -81,11 +83,15 @@ def check_kernel(out, c, campaign_sha, campaign_rel, freeze, smoke=False, smoke_
     SC.equal(identity["config"], cfg, "run identity kernel configuration")
     SC.equal(identity["expected_names"], names, "run identity state plan")
     SC.equal(identity["direction_files"], {n: identity["pins"][d["path"]] for n, d in c["directions"].items()}, "run identity direction files")
-    selected = select_worker_gpu((out / SC.SMI_NAME).read_text())
+    profile = BP.profile_name(c)
+    selected = BP.select_worker_gpu((out / SC.SMI_NAME).read_text(), profile)
     SC.equal(identity["selected_gpu"], selected, "physical GPU selection")
+    if profile == BP.LOCAL:
+        SC.req(identity.get("backend_profile") == profile, "run identity backend profile differs")
+        SC.req(type(identity.get("used_gpu_count")) is int and identity["used_gpu_count"] == 1, "local used_gpu_count must be 1")
     for key, want in (("cuda_device_order", "PCI_BUS_ID"), ("cuda_visible_devices", "0")):
         SC.req(identity[key] == want, "run identity CUDA environment differs")
-    SC.equal(SC.jload(out / SC.PROBE_NAME), dict(SC.GPU_EXPECTED, visible_gpu_uuids=[selected["uuid"]], default_device_uuid=selected["uuid"]), "observed CUDA singleton/default identity")
+    gpu_uuid = BP.check_probe(profile, selected, SC.jload(out / SC.PROBE_NAME))
     if harness:
         SC.equal(SC.jload(out / SC.SELF_TEST_NAME), {"harness_version": SC.HARNESS_VERSION, "imports": True, "schema_dry_write": True, "phi_identities_verified": len(names), "gpu_probe": True}, "self-test record")
     entries = index["states"]
@@ -105,7 +111,7 @@ def check_kernel(out, c, campaign_sha, campaign_rel, freeze, smoke=False, smoke_
         csv, summary_path = directory / SC.forces_name(case_id), directory / SC.summary_name(case_id)
         SC.req(entry.get("forces_csv_sha256") == SC.sha256_path(csv), "state force CSV differs from index")
         summary = SC.jload(summary_path)
-        wall = SC.check_summary(summary, c, kernel, runs[name], row, selected["uuid"])
+        wall = SC.check_summary(summary, c, kernel, runs[name], row, gpu_uuid)
         summary_total += wall
         host = SC.host_forces(csv, c, kernel, summary)
         states[name] = {"drag_n": host["drag_n"], "downforce_n": host["downforce_n"], "forces_csv_sha256": SC.sha256_path(csv), "summary_sha256": SC.sha256_path(summary_path),
@@ -137,6 +143,8 @@ def verify(campaign_path, kernel_dirs, freeze_path=None, smoke=False, repo=REPO,
         SC.req(k not in kernels, f"kernel {k} given twice")
         kernels[k], manifests[k] = states, SC.sha256_path(Path(d) / SC.MANIFEST_NAME)
     SC.req(len(kernels) == 1 if smoke else set(kernels) == set(c["kernels"]), "a formal verification needs exactly the campaign's kernel directories; a smoke one exactly one")
-    return {"kind": SC.TABLE_KIND, "harness_version": SC.HARNESS_VERSION, "campaign_id": c["campaign_id"], "campaign_sha256": campaign_sha, "smoke": smoke, "legacy_replay": c["legacy_replay"],
-            "source_commit": source_commit if smoke else freeze["source_commit"], "freeze_sha256": None if freeze_path is None else SC.sha256_path(freeze_path), "harness_tool_sha256": SC.tool_hashes(),
+    return {**({"backend_profile": BP.LOCAL, "used_gpu_count": 1} if BP.profile_name(c) == BP.LOCAL else {}),
+            "kind": SC.TABLE_KIND, "harness_version": SC.HARNESS_VERSION, "campaign_id": c["campaign_id"], "campaign_sha256": campaign_sha, "smoke": smoke, "legacy_replay": c["legacy_replay"],
+            "source_commit": source_commit if smoke else freeze["source_commit"], "freeze_sha256": None if freeze_path is None else SC.sha256_path(freeze_path),
+            "harness_tool_sha256": {**SC.tool_hashes(), **({BP.MODULE_REL: SC.sha256_path(REPO / BP.MODULE_REL)} if BP.profile_name(c) == BP.LOCAL else {})},
             "integrity": {"pass": True, "failures": []}, "kernel_manifest_sha256": manifests, "state_forces_n": kernels}
