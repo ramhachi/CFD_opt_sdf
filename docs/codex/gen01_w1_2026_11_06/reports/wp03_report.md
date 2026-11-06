@@ -2,7 +2,9 @@
 
 ## 状態
 
-**PARTIAL。実装、4 kernel のローカル生成、CPU 検証を完了したが、全受け入れ条件は満たしていない。**
+**PARTIAL。実装と4 kernel のローカル生成は完了。個別 CPU 検証には数値失敗があり、全体の受け入れ条件は未達。**
+
+対象は登録済み v17／flow_24、FD-08 の4方向、窓 [80,120] の探索用 kernel と analyzer。
 
 WaterLily 1.8.0 の quick・quick_nobound・cds は 20-step CPU preflight を通過した。vanLeer は plain が有限、Dual の primal と partials が非有限となり、`preflight.pass=false`、index は `INCOMPLETE`、exit 2 で停止した。式・閾値・preflight 条件は変更していない。1.10.0 の quick と Float64 の quick／quick_nobound は通過した。
 
