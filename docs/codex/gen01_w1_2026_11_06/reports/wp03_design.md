@@ -28,17 +28,23 @@ OpenCode Go MCP は公開ツールにない。CLI 1.19.3 のモデル照会は�
 - analyzer の reference JSON は方向別 epsilon_m と fx/fz の spread [N/m]、出典 path/SHA、定義を保持する。比較は同じ λ の中心差分が主で、歴史的 FD-08 Model A は別に記述する。符号・0.1・3×は仕様のまま。次段の規則は B–D だけが対象で、A/E/F は対象外。既存 `analysis.json` は exclusive create で拒否する。
 - builder は TA1 builder の `sha` / `verify_source` と凍結 runner template を再利用し、新規 4 kernel ディレクトリだけを作る。source commit/tree、全 imported/read bytes を pin する。未設定 reference の runner は測定前に停止する。GPU runtime から CPU dryrun/Float64 の環境を除去する。timeout は TA1 同様 10800 s、ローカル生成のみ。
 - 新規 `julia/CFDSDFWaterLily110/Project.toml` と `Manifest.toml` で WaterLily 1.10.0 を厳密に pin。既存 src を include し、旧 project/Manifest は変えない。
+- F の実出力を analyzer に渡すため、`scripts/run_grad00_cpu.py` を追加する。job 単体が作らない runner identity、DONE、output manifest を、既存 builder の source/reference pin 検証を再利用して作る。A/B の CPU Float32/64 と 1.10 quick Float32 だけを扱い、GPU/Kaggle/instantiate は呼ばない。source commit・reference・output・timeout を明示し、CPU project の pins に置き換えて同じ 15 引数の job を起動する。検証は fake subprocess のテストに限定し、今回 full-window CPU 測定は行わない。
+- CPU wrapper は仕様 F の 10 Julia threads を強制し、identity に記録する。Float32 の比較対照にも同じ設定を使う。
+
+既存 CPU Manifest の ForwardDiff は 1.4.6、登録 T4 は 1.4.5 だった。新しい 1.10 project は T4 と同じ ForwardDiff 1.4.5 に固定する。CPU と CUDA の差、または CPU と 1.10 の依存版の差を精度・median だけの効果として解釈しない。
 
 ## WaterLily 1.10 の差の扱い
 
 job は `Simulation`、`sim_step!`、body measurement、force API を使う。`uλ`/`u0` と `mom_project!` を直接呼ばないため、ローカル adapter は想定しない。
 ただし 1.10 の side E は median だけの比較にはならない。`mom_project!(w::Int)` の dt=Δt/w（corrector は 2）、境界処理と body-velocity の発散を含む source、Poisson の既定 tol=2e-3 と L∞/normalized L1 の条件が旧版と異なる。ground に velocity があるため不活性とも仮定しない。E の結果は版全体の記述的な差とする。
+インストール済み両版の `Metrics.jl` でも、旧版の `promote_type(Float64, field_type)` による力の reduction が 1.10 の `sumdims(df)` に変わることを確認した。job が実際に呼ぶ force readout にもこの差が含まれる。
 
 ## テスト計画
 
 変更前の `.venv/bin/python -m pytest -q --junitxml=/tmp/grad00-baseline-pytest.xml` を実行して失敗集合を保存する。
 先に合成 test を置き、analyzer の全ラベル、境界、SHA 改変、必須キー、overwrite 拒否、A/E/F の規則除外を検証する。renderer は pin、commit、dryrun leakage、未設定 reference の停止、timeout、成功/BLOCKED/ERROR をローカル fake 実行で確認する。
 Julia selftest は式の値、一致・不一致点、Float32/64 と幅1 Dual の finite partials、cds/vanLeer の存在を確認する。実データで 20-step CPU preflight を四腕と Float64 A/B、1.10 quick に行い、quick は凍結 TA1 の quick control の u/p の bit hash と比較する。短い CPU window で 13-run index と analyzer への接続も確認する。
+実際の 20-step 計算が各腕で数分かかるため、13-run の orchestration は別の synthetic selftest で確認する。実際の job を module に読み込み、preflight と run_one のみを solver を呼ばない stub に置き換え、main/save_run!/write_indices と窓平均 helper、実 raw の perturbed/cast/hash 処理は実装を実行する。出力には SYNTHETIC_TEST_FIXTURE、solver_steps=0 を明示する。実 preflight と同一の証拠には扱わない。
 最後に compileall、全体 pytest の baseline との失敗集合比較、diff --check、凍結対象の diff/hash を確認する。実装を commit してから kernel をその commit に pin して render、記録と一緒に commit/push、integration branch 向け PR を作る。Kaggle、GPU、freeze、登録、auto-merge は行わない。
 
 ## 時間の見積もり
