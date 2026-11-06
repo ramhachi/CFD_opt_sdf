@@ -54,3 +54,13 @@ Zhang & Zerihan（2003）の 2 要素の地面効果翼から 1／2／3 要素�
 1. **幾何の密度。** 要素の多角形は、Zerihan の表の座標を補間 spline で **弧長 ≤ 1 mm** に再標本化したもの（T2-0 の `t20_case.airfoil_points` と同じ規則。可能ならその関数を import して使う）。WP5 の kernel に入った開発 snapshot はフラップが 36 頂点で前縁に 55° の折れがあり、RANS（Re 4.6e5）でも BDIM でも許容できない。cap 以外の頂点の折れ角 ≤ 5° をテストで確認する。幾何ファイル（JSON、SHA-256）が W と R の唯一の出所。
 2. **observable。** 共有結果形式と analyzer に `observable`（`pressure_cl`：sharp 腕、Cp 積分との比較／`total_cl`：thick 腕、WaterLily との比較）を足し、analyzer は observable をまたぐ差分を拒否する。h は h/c₁ と h/c（c = 380 mm）の両方。
 3. 登録文書の Amendment 1（`docs/topo2d00_registration_2026_11_01.md`、follow-ups branch）を読む。
+
+## Amendment 2（2026-11-06。1 回目の試み（PARTIAL、Draft PR #89、`88fea06e`）への回答。Amendment 1 と合わせて適用する。この節が本文より優先する）
+
+1. **`src/cfd_sdf/` は登録済みの source closure**（`scripts/analyze_grid02.py` と `analyze_lowdim03.py` が現在の tree から `src/cfd_sdf/**/*.py` を列挙して凍結 `file_hashes` に含まれることを要求する。1 回目の残り 2 件はこれ）。歴史テストの例外は不要・不許可。**`src/cfd_sdf/topo2d/` を `src/cfd_gen/topo2d/` に移す**（WP6 も `src/cfd_gen/scene/` を使う。`src/cfd_gen/__init__.py` と `README.md` は WP6 が作るので、存在しなければ同じ 2〜3 行の README を作る）。`src/cfd_sdf/` に 1 byte も残さない。
+2. **Julia の置き場所**：`julia/topo2d/Topo2D.jl` を **`julia/CFDSDFWaterLily/gen01/Topo2D.jl`** に移す（README の規則。WP1 の `gen01/Checkpoint.jl` と同じ場所。job から `Base.include(CFDSDFWaterLily, …)` で読む）。
+3. **Amendment 1 を適用する**：表の座標を補間 spline で弧長 ≤ 1 mm に再標本化（`t20_case.airfoil_points` と同じ規則。import できればそれを使う）。厚くする生成器は頂点番号ではなく **弧長**で書き直す（前縁 cap は LE から弧長 2 % c、smoothstep で最大厚さ位置へ、以後 4Δx）。cap 以外の頂点の折れ角 ≤ 5° をテストする。scene JSON を再生成し、図も更新する。
+4. **datum の判断は登録文書の Amendment 2**（`.../github-local-status-review-66bea1/docs/topo2d00_registration_2026_11_01.md`、Amendment 1 と 2 を読む）。1 回目の解釈（公称 9／12 mm の後配置、TE 中点基準、c と迎角の記録、`mathematically_sharp=false`）はそのまま採用された。
+5. **observable**：共有 RANS 形式に `observable`（`pressure_cl`／`total_cl`）を足し、analyzer は observable をまたぐ差分を拒否する。WP5 の 2 回目が同じ登録文（Amendment 1 §5）から同じ schema を更新中なので、WP4 の schema ファイルは登録文の定義だけに従い、WP5 との byte 一致は Claude が統合時に揃える。
+6. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。base は Claude の host 実行（e3dcdf61、3482 passed / 74 skipped / 0 failed）。
+7. **commit／push は Claude が host で行う。** `/tmp` の clone は使わない。報告に commit すべきファイルの完全な一覧（移動元→移動先、変更、新規）を書く。worktree は `88fea06e` に同期済み。PR #89 の本文は Claude が更新する。
