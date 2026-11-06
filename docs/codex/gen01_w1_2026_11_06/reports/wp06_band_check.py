@@ -20,7 +20,7 @@ from scipy.spatial import cKDTree
 
 ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0,str(ROOT/"src"))
-from cfd_sdf.scene.primitives import PlateElement  # noqa: E402
+from cfd_gen.scene.primitives import PlateElement  # noqa: E402
 
 
 def main():
@@ -49,7 +49,7 @@ def main():
                 raise RuntimeError("band contract failed")
             rows.append({"camber_over_c":camber,"reflex_over_c":reflex,"dimension":dimension,
                 "band_points":len(points),"max_error_over_t":max_error,"median_gradient_error":median_gradient})
-    source_paths = ["src/cfd_sdf/scene/primitives.py","tests/scene/test_primitives.py",
+    source_paths = ["src/cfd_gen/scene/primitives.py","tests/scene/test_primitives.py",
         "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.py"]
     print(json.dumps({"evidence_class":"solver_free_development_diagnostic","seed":610,
         "c_m":1.,"t_m":.1,"h_m":.025,"queries_per_case":1700,

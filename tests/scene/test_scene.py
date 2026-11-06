@@ -8,8 +8,8 @@ import pytest
 from scipy import ndimage
 
 from cfd_sdf.design.sdf_state import SDFDesignState
-from cfd_sdf.scene.primitives import PlateElement
-from cfd_sdf.scene.scene import MergedElement, Scene
+from cfd_gen.scene.primitives import PlateElement
+from cfd_gen.scene.scene import MergedElement, Scene
 
 
 def plate(id="main", **kw):

@@ -24,8 +24,8 @@ from typing import Any
 import numpy as np
 from scipy import ndimage
 
-from ..design.geometry_gates import LENGTH_TOLERANCE_M, _gate
-from ..design.sdf_state import SDFDesignState
+from cfd_sdf.design.geometry_gates import LENGTH_TOLERANCE_M, _gate
+from cfd_sdf.design.sdf_state import SDFDesignState
 from .primitives import BoxBody, EndplatePlate, MeshBody, PlateElement
 
 _DEFAULT_SOURCE = "development_default_4h_not_RES00_registered"

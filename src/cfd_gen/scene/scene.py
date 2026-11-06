@@ -14,7 +14,7 @@ import json
 
 import numpy as np
 
-from ..design.sdf_state import SDFDesignState
+from cfd_sdf.design.sdf_state import SDFDesignState
 from .primitives import BoxBody, EndplatePlate, MeshBody, PlateElement, _points, _number, _dimension
 
 FIELD_CONTRACT = "geom_s1_amendment1_v1"

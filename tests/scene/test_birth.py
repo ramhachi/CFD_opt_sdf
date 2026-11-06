@@ -9,10 +9,10 @@ import numpy as np
 import pytest
 from scipy import ndimage
 
-from cfd_sdf.scene.events import seed_candidates, knockout_candidates, merge_candidates, classify_change
-from cfd_sdf.scene.gates import SceneGatePolicy, evaluate_scene_gates
-from cfd_sdf.scene.primitives import PlateElement
-from cfd_sdf.scene.scene import Scene
+from cfd_gen.scene.events import seed_candidates, knockout_candidates, merge_candidates, classify_change
+from cfd_gen.scene.gates import SceneGatePolicy, evaluate_scene_gates
+from cfd_gen.scene.primitives import PlateElement
+from cfd_gen.scene.scene import Scene
 
 
 def count(scene,dimension=2):

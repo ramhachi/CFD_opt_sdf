@@ -11,9 +11,9 @@ import pytest
 import trimesh
 
 from cfd_sdf.design.sdf_state import SDFDesignState
-from cfd_sdf.scene.gates import SceneGatePolicy, evaluate_scene_gates, opening_defect_gate
-from cfd_sdf.scene.primitives import BoxBody, EndplatePlate, MeshBody, PlateElement
-from cfd_sdf.scene.scene import Scene
+from cfd_gen.scene.gates import SceneGatePolicy, evaluate_scene_gates, opening_defect_gate
+from cfd_gen.scene.primitives import BoxBody, EndplatePlate, MeshBody, PlateElement
+from cfd_gen.scene.scene import Scene
 
 
 def policy(**kwargs):

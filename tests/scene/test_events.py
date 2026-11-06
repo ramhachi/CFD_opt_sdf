@@ -4,12 +4,12 @@ from dataclasses import replace
 import pytest
 import numpy as np
 
-from cfd_sdf.scene.events import (
+from cfd_gen.scene.events import (
     downstream_seed_positions, seed_candidates, knockout_candidates,
     merge_candidates, thickness_knockout_ids, element_count_designs, classify_change,
 )
-from cfd_sdf.scene.primitives import PlateElement
-from cfd_sdf.scene.scene import Scene, MergedElement
+from cfd_gen.scene.primitives import PlateElement
+from cfd_gen.scene.scene import Scene, MergedElement
 
 
 def parent():

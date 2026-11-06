@@ -8,7 +8,7 @@ import pytest
 import trimesh
 from scipy.spatial import cKDTree
 
-from cfd_sdf.scene.primitives import BoxBody, EndplatePlate, MeshBody, PlateElement
+from cfd_gen.scene.primitives import BoxBody, EndplatePlate, MeshBody, PlateElement
 
 
 def gradient(body, points, epsilon=1e-6):
