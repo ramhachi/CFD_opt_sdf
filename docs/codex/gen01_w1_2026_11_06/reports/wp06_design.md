@@ -84,7 +84,7 @@ WP6 が要求する部品ごとの `r_c` と h の関係は、引用された re
 3. `pytest -q tests/scene`、compileall、全体 pytest、diff check。baseline の失敗 ID 集合と比較する。受け入れたフェーズ A を commit/push して PR を出す。
 4. その後にだけフェーズ B。v3 は別モジュールとして v2 parser を保持する。harness は version を明示して scene / events / z 位相を追加し、旧 campaign の出力には新規 key や tool hash の変更を混入させない設計にする。旧 verifier の table は tool hash を含むため、byte 同一要件は version 文字列だけを残しても満たせない。
 
-今回の全体 pytest は開始点の無変更コードに対して先に起動した。src/tests を変更しない限り、同じテスト invocation を baseline と最終の検証に用い、code 不変を Git と hash で併記する。追加 probe 自体は個別に実行し、出力と SHA を保存する。
+今回の全体 pytest は開始点の無変更コードに対して先に起動したが、仕様矛盾により実装を止めたため、901 passed / 24 skipped、778.01 秒で中断した。code 不変は Git と hash で別に記録し、完走した baseline の代用にはしない。再開時には baseline と最終の完走した失敗 ID 集合の比較が必要である。追加 probe 自体は個別に実行し、出力と SHA を保存する。
 
 ## 実行資源
 
