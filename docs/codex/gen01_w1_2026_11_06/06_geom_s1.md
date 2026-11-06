@@ -69,3 +69,23 @@ WaterLily の固定格子に乗せる **部品プリミティブの SDF の unio
 3. **commit／push は Claude が host で行う。** 2 回目の `GIT_INDEX_FILE`＋`commit-tree`＋`update-ref` の経路は今後使わない。Codex は `git mv` も `git add` もせず、ファイルシステム上で移動（`mv`）と編集だけを行い、報告の「作ったもの」に commit すべきファイルの完全な一覧（移動元→移動先、変更、新規）を書く。worktree の通常 index は Claude が `9aa93169` に同期済み（`git status` は clean から始まる）。
 4. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で **完走**させ、失敗 node 集合（期待：空）を報告に書く。base は Claude が host で取得済み（e3dcdf61、3482 passed / 74 skipped / 0 failed、`tests/test_lbm_metal.py` を ignore）。Codex は base を取り直さない。2 回目の CPU profile plugin（`wp06_cpu_only_pytest.py`）は使わず、`--ignore` で揃える。
 5. **記録**：`reports/wp06_report.md`・`wp06_validation.json` を更新し（2 回目の表と検証結果は残してよい）、状態を DONE（フェーズ A）にできるか判断する。Draft PR #82 の本文は Claude が更新する。新たな矛盾が見つかった場合だけ、その箇所を具体的に示して止める。
+
+## Amendment 3（2026-11-06。3 回目（フェーズ A DONE、PR #82、`6536cbf0`）への Opus source review の回答。この節が本文と Amendment 1・2 より優先する。フェーズ B はまだ始めない）
+
+review 全文：`/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/codex/gen01_w1_2026_11_06/reviews/wp06_review_1_opus.md`（読む。再現スクリプトの説明も含む）。計画本文の更新は同じ worktree の `docs/gen_system_plan_2026_11_01.md` §3.1 の「距離の契約の実装形（2026-11-06 b）」（読む）。verdict は INTEGRATE_AFTER_FIXES（MAJOR 4）。次を直す。
+
+1. **M1。** envelope・clearance・forbidden mask・root の gate は **可動部品（`scene.components`）だけ**に適用する。fixed（タイヤ、ボディ、地面）は対象外。可動 vs fixed の対 gap 検査はそのまま。fixed のタイヤ stand-in（z=0 に接する）を含む scene で翼が通るテストを足す。
+2. **M2。** `merge_candidates` は b を a の中央へ丸ごと移動しない。**最近点方向への最小移動**（gap ＋ 宣言した重なり δ）で接合する（または bridging 規則）。同一でない main＋flap の merge が scene gate を通るテストを足す（現在のテストは同一パラメタの 2 枚で退化している）。
+3. **M3。** `element_count_designs` の分割は親の footprint を保つ（子の弦 = (L − t − gap)/2）。4h 既定で N=1..5 が全部 gate を通るテストを足す。
+4. **m1。** gap の guard は片側（標本化した d は真の gap の上界なので、d < g_min なら確定 fail）。
+5. **m3。** 厚さの床は要素ごと（`_normal_width` から導く）に取り、knock-out 判定と gate で同じ床を使う。
+6. **m7。** 正の対照（Birth-0 の有効な seed が `evaluate_scene_gates` を通る）、限界位相（t=4h、gap=4h、16 位相）、fixed 付き、N≥3、非同一 merge のテストを足す。
+7. **M4（記録と最小の修正）。** `Scene.sample` の 2,000,000 node 超は例外ではなく gate の `unmeasured` 記録（理由付き）にする。R3 の 8M node cap（3D の MW-01 規模では常に unmeasured）、`MeshBody.phi` の O(点 × 三角形) と毎回の STL 再 hash は **既知の限界**として `src/cfd_gen/README.md` と報告に数値付きで書く（修正は MW-01 の前の別 WP）。
+8. **m2。** `MergedElement` は band 内の距離契約の例外であることを gate の記録（`distance_contract_exemptions: [ids]`）に明示する（計画本文にも書いた）。
+9. **m4。** joint 規則と endplate の knock-out は `PlateElement`／`MergedElement` に限る（BoxBody は対象外）。
+10. **m5。** hash の正規化：`-0.0` を `0.0` に正規化、STL の path 文字列は hash に含めない（STL SHA だけ）、`MergedElement` の id も ID regex に通す、拒否理由の区切りを `:` 以外（例 `|`）にして ID と曖昧にならないようにする。
+11. **m6／n6。** BoxBody の内部 continuation の docstring を実態（連続だが ray 単調ではない、球は厳密）に直す。`_finite` の alias を消し、ID validator を 1 つにし、空 scene の早期 return にも `scene_sha256`／`state_sha256` を入れる。
+12. **n3。** `downstream_seed_positions` は符号付き offset（後縁の下流かつ上／下の両方）を取り、policy が許す象限を宣言する（既定：両方）。
+13. **n2。** 報告の「v18 と 1e-3c 以内」は無変形板だけの話と明記する。
+14. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。
+15. **commit／push は Claude が host で行う。** worktree は `6536cbf0`。報告に commit すべきファイルの完全な一覧を書く。
