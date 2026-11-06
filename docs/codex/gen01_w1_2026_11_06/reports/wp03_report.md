@@ -8,7 +8,7 @@ WaterLily 1.8.0 の quick・quick_nobound・cds は 20-step CPU preflight を通
 
 FD-08 amend3 には方向別に選択済みの plateau ε と spread の定義が見つからなかった。Model A の SE を spread に代用せず、明示 reference を必須にした。生成済み runner は `UNCONFIGURED` で、reference がなければ GPU inventory の前に停止する。本測定用 `analysis.json`、登録窓の BOUNDED／AGREE、GRAD01 の判定は作っていない。全体 pytest の失敗集合同一も、Metal abort と CPU base の30分 cap のため未確認。
 
-GitHub: draft PR は feature push 後に作成する。feature branch は `feat/gen01-w1-03-grad00`、PR の base は `codex/kaggle-batch-migration`。Kaggle への push と GRAD-00 の GPU 測定は実施していない。
+GitHub: [draft PR #86](https://github.com/ramhachi/CFD_opt_sdf/pull/86)、commit・push 済み。feature branch は `feat/gen01-w1-03-grad00`、PR の base は `codex/kaggle-batch-migration`。Kaggle への push と GRAD-00 の GPU 測定は実施していない。
 
 ## 作ったもの（パス、1 行ずつ）
 
