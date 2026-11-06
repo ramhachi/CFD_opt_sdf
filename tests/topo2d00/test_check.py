@@ -115,6 +115,33 @@ def test_fieller_covariance_validity_is_independent_of_coefficient_units():
                      covariance=1e-12)["kind"] == "bounded"
 
 
+@pytest.mark.parametrize("zero_side", ["waterlily", "rans", "both"])
+def test_zero_baseline_does_not_block_reported_only_retention(zero_side):
+    data = planted()
+    if zero_side in ("waterlily", "both"):
+        for row in data["waterlily"]:
+            if row["configuration"] == "E1":
+                row["readouts"]["cur"]["downforce"] = 0.
+                for batch in row["readouts"]["cur"]["batches"]:
+                    batch["downforce"] = 0.
+    if zero_side in ("rans", "both"):
+        for cell in data["rans"]["cells"]:
+            for row in cell["realisations"]:
+                row["forces"]["E1"]["downforce"] = 0.
+    result = C.check(data)
+    assert result["label"] == "CONCORDANT"
+    retention = result["agreement"]["1000"]["cells"]["SA/fine30"]["RETENTION_12"]
+    assert retention["fieller"] == {"kind": "undefined_zero_baseline", "intervals": []}
+    assert (retention["relative_w"] is None) == (zero_side in ("waterlily", "both"))
+    assert (retention["relative_r"] is None) == (zero_side in ("rans", "both"))
+    # Both calculations stay independent; compare only their public output.
+    spec = importlib.util.spec_from_file_location(
+        "topo_zero_baseline_comparison", ROOT / "scripts/topo2d00/analyze.py")
+    analyzer = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(analyzer)
+    assert C.compare(analyzer.analyze_input(data), result) == []
+
+
 @pytest.mark.parametrize("case,expected", [
     ("concordant", "CONCORDANT"), ("invalid", "INVALID"),
     ("incomplete", "INCOMPLETE"), ("tr_unqualified", "TR_UNQUALIFIED"),

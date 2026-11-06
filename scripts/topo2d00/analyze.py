@@ -273,7 +273,8 @@ def relative_w(base, candidate, readout):
     p = len(base)
     b = np.asarray([r["readouts"][readout]["downforce"] for r in base])
     c = np.asarray([r["readouts"][readout]["downforce"] for r in candidate])
-    require(float(b.mean()) != 0, "relative increment has zero parent mean")
+    if float(b.mean()) == 0:
+        return None, None
     ratio = float((c - b).mean() / b.mean())
     influence = ((c - b) - ratio * b) / b.mean()
     a = float(influence.var(ddof=1)) / p * (p - 1) / float(chi2.ppf(0.025, p - 1))
@@ -285,7 +286,8 @@ def relative_w(base, candidate, readout):
 
 def relative_r(cell):
     b, c = rarrays(cell, "E1", "downforce"), rarrays(cell, "E2", "downforce")
-    require(float(b.mean()) != 0, "relative RANS increment has zero parent mean")
+    if float(b.mean()) == 0:
+        return None, None
     ratio = float((c - b).mean() / b.mean())
     return ratio, float((((c - b) - ratio * b) / b.mean()).var(ddof=1)) / len(b)
 
@@ -353,7 +355,7 @@ def analyze_input(data):
                       "RANK_AGREE": resolved and r_rank[name][1] and order == r_rank[name][0],
                       "DRAG_SIGN_AGREE_12": sign(estimates["12"]["drag"]["ci90"]) != 0 and sign(estimates["12"]["drag"]["ci90"]) == sign(result["rans"][name]["12"]["drag"]["ci90"]),
                       "RETENTION_12": {"relative_w": wr, "variance_w": wv, "relative_r": rr, "variance_r": rv,
-                                       "fieller": fieller(wr, rr, wv, rv)}}
+                                       "fieller": {"kind": "undefined_zero_baseline", "intervals": []} if wr is None or rr is None else fieller(wr, rr, wv, rv)}}
             agreement["cells"][name] = record
             for key in ("SIGN_AGREE_12", "RANK_AGREE", "DRAG_SIGN_AGREE_12"):
                 agreement[key] = agreement[key] and record[key]

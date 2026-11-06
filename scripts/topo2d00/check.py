@@ -88,7 +88,8 @@ def relative_w(left, right, readout="cur"):
     a = np.array([number(row["readouts"][readout]["downforce"]) for row in left])
     b = np.array([number(row["readouts"][readout]["downforce"]) for row in right])
     baseline = float(a.mean())
-    need(baseline != 0, "relative increment has zero W baseline")
+    if baseline == 0:
+        return None, None
     r = float((b - a).mean() / baseline)
     influence = ((b - a) - r * a) / baseline
     va = float(np.var(influence, ddof=1)) / n
@@ -102,7 +103,8 @@ def relative_w(left, right, readout="cur"):
 def relative_r(realizations):
     a = np.array([number(r["forces"]["E1"]["downforce"]) for r in realizations])
     b = np.array([number(r["forces"]["E2"]["downforce"]) for r in realizations])
-    need(float(a.mean()) != 0, "relative increment has zero R baseline")
+    if float(a.mean()) == 0:
+        return None, None
     r = float((b - a).mean() / a.mean())
     influence = ((b - a) - r * a) / a.mean()
     return r, float(np.var(influence, ddof=1)) / len(a)
@@ -304,7 +306,9 @@ def check(payload):
                 "RANK_AGREE": wranks[re][1] and rranks[key][1] and wranks[re][0] == rranks[key][0],
                 "DRAG_SIGN_AGREE_12": same_sign(wstats["12"]["drag"], rstats["12"]["drag"]),
                 "RETENTION_12": dict(relative_w=u, variance_w=vu, relative_r=v, variance_r=vv,
-                                     fieller=fieller(u, v, vu, vv, 7)),
+                                     fieller=(dict(kind="undefined_zero_baseline", intervals=[])
+                                              if u is None or v is None
+                                              else fieller(u, v, vu, vv, 7))),
             }
         result["agreement"][str(re)] = {
             field: all(c[field] for c in per_cell.values())

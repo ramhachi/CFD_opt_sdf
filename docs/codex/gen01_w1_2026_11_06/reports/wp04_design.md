@@ -61,6 +61,9 @@ V=Uの地面半空間の SetBody(min,...) を使う。scene/ground を同じ sub
 
 最初の13 CSV列は既存 FORCE_COLUMNS の順序を保ち、cur/nds/cv と element ごとの
 Cartesian/drag/downforce を追加する。2D の第2成分を既存zへ写し、yは0。
+固定した追加列名は `{readout}_{axis}_solver`：readoutはcur, nds, cvの順、axisは
+fx, fy, fz, drag, downforceの順。続いてJSONの要素順main, flap1, flap2（存在するものだけ）で
+`element_{name}_{axis}_solver` を同じaxis順に置く。E1/E2/E3は計33/38/43列となる。
 実装開始時、この checkout にはWP2 `force_readouts` とWP1 Checkpoint がなく、cur fallback と
 unavailable nds/cv 列、Julia Serialization のCPU fallbackを設計した。以下の最終interface追補が
 この初期仮定に優先する。fallback は全simとrowsを保持し、source/scene/runtime/contract一致を
@@ -145,6 +148,10 @@ retentionは(relative W increment)/(relative R increment)。各relative incremen
 paired mean covarianceのdelta法（WのBは保守的な対角上側項）を明記し、その二量にFiellerを
 適用する。有限・非有界・分離・全実数・空集合をJSONで表現し、無限端点はnullとする。
 これは入れ子の比の厳密なfinite-sample区間という主張ではない。
+baselineの平均downforceが厳密に0ならその側のrelative increment/varianceはnullとし、
+相手側が定義できればその値を保持する。どちらかが未定義ならRETENTIONのFieller recordは
+`{kind: "undefined_zero_baseline", intervals: []}` とする。RETENTIONは報告用なので、
+この未定義だけを理由に符号・順位の解析やラベル計算を中断しない。near-zero閾値は設けない。
 共分散のPSD検査は単位依存の絶対許容誤差を使わず、両分散が正なら
 `abs(cov)/sqrt(var_num)/sqrt(var_den) <= 1/sqrt(1-64*machine_epsilon)`、
 どちらかの分散が0ならcovも0を要求する。積のunderflow/overflowを避けた数学的な

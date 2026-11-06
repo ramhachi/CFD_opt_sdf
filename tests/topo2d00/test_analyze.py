@@ -36,6 +36,33 @@ def test_paired_statistics_and_bounded_retention():
     assert result["controls"]["determinism"] == {"judged": True, "pass": True}
 
 
+@pytest.mark.parametrize("zero_side", ["waterlily", "rans", "both"])
+def test_zero_baseline_only_undefines_descriptive_retention(zero_side):
+    payload = S.input_table()
+    if zero_side in ("waterlily", "both"):
+        for config, downforce in (("E1", 0.0), ("E2", 1.0), ("E3", 2.0)):
+            S.set_force(payload, config, downforce)
+    if zero_side in ("rans", "both"):
+        for cell in payload["rans"]["cells"]:
+            for row in cell["realisations"]:
+                for config, downforce in (("E1", 0.0), ("E2", 1.0), ("E3", 2.0)):
+                    row["forces"][config]["downforce"] = downforce
+    result = A.analyze_input(payload)
+    assert result["label"] == "CONCORDANT"
+    for reynolds in ("1000", "3000"):
+        for cell in result["agreement"][reynolds]["cells"].values():
+            retention = cell["RETENTION_12"]
+            assert retention["fieller"] == {"kind": "undefined_zero_baseline", "intervals": []}
+            for side, key in (("waterlily", "w"), ("rans", "r")):
+                if zero_side in (side, "both"):
+                    assert retention["relative_" + key] is None
+                    assert retention["variance_" + key] is None
+                else:
+                    assert np.isfinite(retention["relative_" + key])
+                    assert np.isfinite(retention["variance_" + key])
+    json.dumps(result, allow_nan=False)
+
+
 @pytest.mark.parametrize("label", ["INVALID", "TR_UNQUALIFIED", "NUMERICAL", "INCOMPLETE", "RESOLUTION_LIMITED", "UNRESOLVED", "DISCORDANT", "CONCORDANT"])
 def test_all_reachable_labels(label):
     payload = S.input_table()
