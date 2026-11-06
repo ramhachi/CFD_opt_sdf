@@ -192,6 +192,20 @@ def test_ratio_nextafter_endpoints_do_not_widen_tolerance():
     assert A.compare_row(0.9, 1.0, 0.0)["label"] == "AGREE"
 
 
+def test_lambda_types_match_actual_julia_export_visibility():
+    # WaterLily 1.8.0 exports quick/cds; the other two names stay qualified.
+    # Explicit literals keep this regression independent of fixture generation.
+    assert A.LAMBDA_TYPES == {"quick": "typeof(quick)", "cds": "typeof(cds)",
+                              "quick_nobound": "typeof(WaterLily.quick_nobound)", "vanLeer": "typeof(WaterLily.vanLeer)"}
+
+
+def test_exported_cds_type_passes_full_output_verification(tmp_path):
+    out = tmp_path / "cds"
+    fixture(out, "cds")
+    checked = A.verify_output(out, reference())
+    assert checked["index"]["lambda_type"] == "typeof(cds)"
+
+
 def test_finite_ratio_overflow_is_disagree_and_json_safe():
     row = A.compare_row(1e27, 1e-300, 0.0)
     assert row["label"] == "DISAGREE" and row["ratio"] is None

@@ -28,7 +28,10 @@ import verify_grad_g2_terminal as V  # noqa: E402
 
 DIRECTIONS = V.DIRECTIONS
 ARMS = ("quick", "quick_nobound", "cds", "vanLeer")
-LAMBDA_TYPES = {arm: f"typeof({'' if arm == 'quick' else 'WaterLily.'}{arm})" for arm in ARMS}
+# quick/cds are exported; Julia prints their imported names without a module.
+# vanLeer and the included quick_nobound helper are not exported.
+LAMBDA_TYPES = {"quick": "typeof(quick)", "quick_nobound": "typeof(WaterLily.quick_nobound)",
+                "cds": "typeof(cds)", "vanLeer": "typeof(WaterLily.vanLeer)"}
 FLAGS = ("fd_oracle", "field_gradient", "reverse", "optimizer", "topology", "shape_update_allowed")
 WINDOW = (80.0, 120.0)
 RELATIVE_ERROR = 0.1  # GRAD-00 rev 0 §5; never inferred from measured results.
