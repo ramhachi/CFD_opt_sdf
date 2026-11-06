@@ -34,3 +34,20 @@ T2-0 の 2D RANS パイプライン（gmsh → OpenFOAM v2512、`scripts/t20_cas
 ## やらないこと
 
 - `t20_case.py`／`t20_foam.py` の編集、Kaggle への push、5000 反復の本番、Cp 図のデジタイズそのもの、参照の帯の変更（[0.5, 2]、5 % は仕様の値）。
+
+## Amendment 1（2026-11-06。1 回目の試み（PARTIAL、Draft PR #87、`cb4df650`）への Opus source review の回答。この節が本文より優先する）
+
+review 全文：`/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/codex/gen01_w1_2026_11_06/reviews/wp05_review_1_opus.md`（読む。別 worktree なので読み取りのみ）。登録文書の判断は `docs/topo2d00_registration_2026_11_01.md` の **Amendment 1**（同じ場所の worktree で読む：`.../github-local-status-review-66bea1/docs/topo2d00_registration_2026_11_01.md`）。verdict は INTEGRATE_AFTER_FIXES。次を直す。
+
+1. **幾何の guard（A1）。** `load_geometry` は、cap 以外の頂点の折れ角が 5° を超える多角形、または線分長が family の `ds` を超える多角形を拒否する（理由付き例外）。密な多角形は WP4 が spline 再標本化（≤ 1 mm、`t20_case.airfoil_points` と同じ規則）で作るので、WP5 は再標本化しない。**kernel は再生成しない**（WP4 の密な幾何が来てから Claude が指示する）。既存の `infra`／`work` の render は「開発 render」と明記し、`ready_for_execution` は 7 項の規則を満たすまで false にする。
+2. **収束分類（A2）。** T2-0c の規則（登録 §3：block plateau、raw-tail 相対 std 0.5 % 超だけ UNSTEADY、非収束は NUMERICAL）に揃える。T2-0d の `urans_stats`／`steady_stats`（1e-3）は使わない。`limit_cycle` ラベルを廃止する。manifest と collector の閾値を一致させ、review の 3 つの反例（周期 2 の交互、周期 7 の正弦、0.2 % の白色雑音、いずれも 0.3 % 以下）が T2-0c どおり settled になるテストを足す。
+3. **BL 層数（A3）。** family ごとの層数を、宣言した構成集合（E1／E2／E3 の thick と sharp）の最小 gap から **1 回だけ**計算して plan に記録し、全構成・ground block に同じ値を使う。collector は集計する run の `n_layers` が等しいことを assert する。
+4. **realisation（A4）。** collector は cell の 8 mesh SHA が pairwise distinct であることを要求し、重複があれば cell を `DEGENERATE_REALISATIONS`（点推定は出す、区間は出さない、ratio test は INCOMPLETE）にする。
+5. **observable と h（A5）。** 共有形式に `observable`（`pressure_cl`／`total_cl`）を足し、WP4 の schema と合わせる（schema ファイルを更新し、WP4 側に伝える差分を報告に書く）。h は h/c₁ と h/c（c = 380 mm）の両方を出す。E*_sharp と E* の差（thickening alone）を記述量として出力する。
+6. **Cp 入力（C1、C2）。** 2 読み取りの CSV は SHA が異なることを要求（同一なら拒否）。各要素の積分 Cl が downforce 正でなければ拒否。10 点未満の面は拒否。不確かさの推定量は要素ごとの |d1 − d2| の和（現行のまま、登録 Amendment 1 §6）。
+7. **render の規則（B3）。** `ready` は clean tree かつ freeze 1 に束縛された commit からのみ。dirty tree や `UNVERIFIED_OCR` の幾何からの render は `development` と記録し、push 用の plan に含めない。
+8. **結果とインフラの区別（B1、B2）。** gmsh の品質 proxy は情報のみ（T2-0 の意味）で、checkMesh が mesh の採否を決める。非有限の係数行は `diverged`（結果）であり、`RUNNER_EXCEPTION`／INFRA_LOSS にしない。生成器・mesh の失敗は `MESH_FAILED` として `NUMERICAL` と区別する。
+9. **出典コメント（B4）。** `.012`／`.03`／`ds/3`／wake 0.2／`0.4·gap`／`MAX_RUNS=12`／`223.4`／`460000`／`100` に出典（T2-0 の該当行、登録文書の節）を書く。壁 `Distance` の標本化は T2-0 の spline 200 点相当に戻す（密な多角形の頂点を使う）。
+10. **報告（E1）。** `merge-tree` の主張は artifact を付けるか削る。A1／A3／A2 の相違点を報告に明記する。
+11. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。base は Claude の host 実行（e3dcdf61、3482 passed / 74 skipped / 0 failed）。
+12. **commit／push は Claude が host で行う。** `work/wp05/publication.git` の経路は使わない。報告に commit すべきファイルの完全な一覧を書く。worktree は `cb4df650` に同期済み。PR #87 の本文は Claude が更新する。

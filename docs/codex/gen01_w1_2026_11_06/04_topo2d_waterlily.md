@@ -48,3 +48,9 @@ Zhang & Zerihan（2003）の 2 要素の地面効果翼から 1／2／3 要素�
 ## やらないこと
 
 - GPU 実行、Kaggle、RANS 側（WP5）、仕様の閾値の変更（4Δx、[0.5, 2]、α 0.05 は仕様の値）、既存 job の編集。
+
+## Amendment 1（2026-11-06。WP5 の Opus review（`docs/codex/gen01_w1_2026_11_06/reviews/wp05_review_1_opus.md`、follow-ups branch）から先回りで決めた点。1 回目の試みが終わった後の 2 回目に適用する。この節が本文より優先する）
+
+1. **幾何の密度。** 要素の多角形は、Zerihan の表の座標を補間 spline で **弧長 ≤ 1 mm** に再標本化したもの（T2-0 の `t20_case.airfoil_points` と同じ規則。可能ならその関数を import して使う）。WP5 の kernel に入った開発 snapshot はフラップが 36 頂点で前縁に 55° の折れがあり、RANS（Re 4.6e5）でも BDIM でも許容できない。cap 以外の頂点の折れ角 ≤ 5° をテストで確認する。幾何ファイル（JSON、SHA-256）が W と R の唯一の出所。
+2. **observable。** 共有結果形式と analyzer に `observable`（`pressure_cl`：sharp 腕、Cp 積分との比較／`total_cl`：thick 腕、WaterLily との比較）を足し、analyzer は observable をまたぐ差分を拒否する。h は h/c₁ と h/c（c = 380 mm）の両方。
+3. 登録文書の Amendment 1（`docs/topo2d00_registration_2026_11_01.md`、follow-ups branch）を読む。
