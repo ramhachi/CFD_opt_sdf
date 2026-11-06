@@ -79,7 +79,7 @@ run item は `run`, `phase_id`, `state`, `grid`, `forces_csv`, `summary_json`。
 - 元の CSV と先頭 13 列投影の SHA-256 はともに `c48e92cbd81c144df121087f82c2d364870390399238655773ec034ead7df78a`。
 - `.venv/bin/python -m pytest -q tests/test_force00_gate.py tests/test_force00_uniform_inputs.py`：**35 passed in 23.04s**。内訳は gate 33、入力 2。
 - `.venv/bin/python -m compileall src tests`、Python scripts の py_compile、`git diff --check`：PASS。
-- **全体 pytest の失敗集合の一致は未達・未確認。** Forces の追加だけで既存 source-pin テストが FAIL、独立した未変更 base では同じテストが PASS。最初の baseline 実行は途中で編集後の source を読んだため比較証拠から除外し、旧 full-suite 試行も中断した。clean base は独立コピーで検証する。局所 PASS を全体 PASS として扱っていない。
+- **全体 pytest の失敗集合の一致は未達・未確認。** Forces の追加だけで既存 source-pin テストが FAIL、独立した未変更 base では同じテストが PASS。最初の baseline 実行は途中で編集後の source を読んだため比較証拠から除外し、旧 full-suite 試行も中断した。clean base の独立コピーでの全体実行は、要件衝突への回答待ちで中断（exit 2、1,348 passed／24 skipped、1590.10 秒）。局所 PASS や中断時点の件数を全体 PASS として扱っていない。
 
 一様圧力での最大力ベクトル norm（solver units、CPU Float64）：
 
