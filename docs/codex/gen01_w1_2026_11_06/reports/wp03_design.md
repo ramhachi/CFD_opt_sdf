@@ -1,0 +1,46 @@
+# WP3 GRAD-00 設計メモ
+
+作業開始: 2026-11-06。base: `e3dcdf61`、branch: `feat/gen01-w1-03-grad00`。
+この文書は実装の設計記録であり、登録、凍結、ロードマップの変更ではない。
+
+## 読んだ文書と適用範囲
+
+W1 `00_README.md`、root `AGENTS.md` と指定の 5 文書、`STATE.md`、branching strategy、GEN-01 rev 3.1、GRAD-00 rev 0、facts for W1、TA1 のスクリプト・plan・result・QuickTie、TA1 rendered runner・metadata・builder、G2 terminal verifier、既存 Julia Project/Manifest と共有 src を確認した。
+大きい `phase_plan.md` は担当を 1–2500、2501–5000、5001–7782 行に分けて全文を読んだ。
+`phase_plan.md` だけが順序・状態の権威。#23 は主線外、すべての qualification flags は false のまま。今回の CPU 実行は software/code-path evidence であり、登録窓の測定結果ではない。
+
+OpenCode Go MCP は公開ツールにない。CLI 1.19.3 のモデル照会は通常領域のログ書き込みに失敗し、一時 XDG 領域での再試行も `Provider not found: opencode-go`。グローバル設定や追加課金は変更せず、Codex の worker に Julia、analyzer、renderer を分担する。ponytail の順に既存 helper と標準ライブラリを再利用する。
+
+## 未定義の入力を推測しない
+
+指定された FD-08 amend3 の `formal_criteria.json` と `formal_analysis.json` に plateau または spread の定義はない。
+記録された共通の formal interior ε は 0.6294627058970836、1.5811388300841898、3.971641173621408 mm で、六点 Model A の内挿検証用である。方向別に選ばれた plateau ε ではない。Model A の SE を spread に置換しない。
+ユーザーに方向別 ε と spread の定義・参照先を照会した。回答まで、job は ε を必須の引数として受け取り、analyzer は provenance 付きの明示 reference JSON を必須にする。CPU code-path test の ε は合成 fixture と明記する。本測定用 reference がない renderer は未設定状態で生成し、実行時に fail closed とする。勝手な ε の選択や科学的ラベルの生成はしない。
+
+## 実装とインターフェース
+
+- `scripts/quick_nobound.jl`: `Base.include(WaterLily, ...)` で読み込む単一式。Float32、Float64、Dual で同じ median 式を使う。
+- `scripts/waterlily_grad00_lambda_2026_11.jl`: TA1 のコピー。既存 build、sample、window mean、watchdog、BLOCKED 1e30、8× wall abort と error propagation を保持する。`GRAD00_ARM` を constructor の λ に渡し型検査する。
+- CLI は TA1 の 11 引数に D0/D1/D2/P1 の ε [m] を 4 個追加する。各腕に共通の alpha=0 plain 1 本と各方向の Dual/plus/minus、計 13 run。仕様の「各方向で plain」は同じ plain の参照と解釈する（§4 の明示した 1+4×3 に従う）。
+- `GRAD00_T=Float64` は CPU の精度腕のみ。仕様 F の A/B、D0/D1 を扱う。production は既存の flow_24、[80,120]、8-step sampling、Dual width 1 のまま。既存の CPU-only dryrun hooks を維持する。
+- `g2_run_index.json` を保存し、`grad00_index.json` に schema_version=1、arm、real_type、lambda_type、runtime、window、sampling、directions、input_sha256、epsilon_m、preflight、runs、by_direction、status、flags を書く。run record は summary/history/watchdog の相対パスと SHA、窓平均、wall、VRAM、BLOCKED onset を保持する。
+- 各 direction は plain/dual/plus/minus の run label を参照する。13-run inventory を隠さない。既存 terminal verifier は 5-run・T4・Float32・元 quick baseline 専用であり、名前を保存しても全腕に直接適用できない。新 analyzer は既存の `grad_g2_window` を使い、各 run の hash、window mean、同じ λ の Dual/plain の整合性を検証する。凍結 verifier を編集しない。
+- analyzer の reference JSON は方向別 epsilon_m と fx/fz の spread [N/m]、出典 path/SHA、定義を保持する。比較は同じ λ の中心差分が主で、歴史的 FD-08 Model A は別に記述する。符号・0.1・3×は仕様のまま。次段の規則は B–D だけが対象で、A/E/F は対象外。既存 `analysis.json` は exclusive create で拒否する。
+- builder は TA1 builder の `sha` / `verify_source` と凍結 runner template を再利用し、新規 4 kernel ディレクトリだけを作る。source commit/tree、全 imported/read bytes を pin する。未設定 reference の runner は測定前に停止する。GPU runtime から CPU dryrun/Float64 の環境を除去する。timeout は TA1 同様 10800 s、ローカル生成のみ。
+- 新規 `julia/CFDSDFWaterLily110/Project.toml` と `Manifest.toml` で WaterLily 1.10.0 を厳密に pin。既存 src を include し、旧 project/Manifest は変えない。
+
+## WaterLily 1.10 の差の扱い
+
+job は `Simulation`、`sim_step!`、body measurement、force API を使う。`uλ`/`u0` と `mom_project!` を直接呼ばないため、ローカル adapter は想定しない。
+ただし 1.10 の side E は median だけの比較にはならない。`mom_project!(w::Int)` の dt=Δt/w（corrector は 2）、境界処理と body-velocity の発散を含む source、Poisson の既定 tol=2e-3 と L∞/normalized L1 の条件が旧版と異なる。ground に velocity があるため不活性とも仮定しない。E の結果は版全体の記述的な差とする。
+
+## テスト計画
+
+変更前の `.venv/bin/python -m pytest -q --junitxml=/tmp/grad00-baseline-pytest.xml` を実行して失敗集合を保存する。
+先に合成 test を置き、analyzer の全ラベル、境界、SHA 改変、必須キー、overwrite 拒否、A/E/F の規則除外を検証する。renderer は pin、commit、dryrun leakage、未設定 reference の停止、timeout、成功/BLOCKED/ERROR をローカル fake 実行で確認する。
+Julia selftest は式の値、一致・不一致点、Float32/64 と幅1 Dual の finite partials、cds/vanLeer の存在を確認する。実データで 20-step CPU preflight を四腕と Float64 A/B、1.10 quick に行い、quick は凍結 TA1 の quick control の u/p の bit hash と比較する。短い CPU window で 13-run index と analyzer への接続も確認する。
+最後に compileall、全体 pytest の baseline との失敗集合比較、diff --check、凍結対象の diff/hash を確認する。実装を commit してから kernel をその commit に pin して render、記録と一緒に commit/push、integration branch 向け PR を作る。Kaggle、GPU、freeze、登録、auto-merge は行わない。
+
+## 時間の見積もり
+
+TA1 の実測 plain は 138.857970953 s（loop 106.6 s）。9 plain と bounded Dual 4 本を plain の 2–3 倍と仮定すると 39–49 分に setup/JIT を加える。A–D 各 1 T4 時間を予算とし、4 腕は約 4 GPU 時間、E を加えて約 5 時間（仕様 cap 10 GPU 時間）。TA1 の早期 BLOCKED Dual は full-window の速度測定ではない。各 λ と 1.10 の実時間は未測定。精度 F は GPU を使わず、今回は数分以内の CPU 検証に限定する。

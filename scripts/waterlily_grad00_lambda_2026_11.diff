@@ -1,0 +1,267 @@
+--- scripts/waterlily_grad_ta1_2026_10_15.jl
++++ scripts/waterlily_grad00_lambda_2026_11.jl
+@@ -1,24 +1,11 @@
+-# GRAD-TA1 (#23): the G2 full-window forward-AD bridge (scripts/waterlily_grad_g2_full_window_bridge_2026_10_08.jl, frozen by the G2 freeze and not edited)
+-# with the convective scheme lambda = QuickTie(1f-5) (scripts/quick_tie.jl: values bit for bit `quick`, partials tie-averaged within tau; a surrogate, NOT the
+-# derivative of the implemented map at ties).  Measurement semantics, window, directions, Dual width 1, Float32 and the sampling are the G2 bridge's:
+-# flow_24, sim_step!(sim) with default remeasure, one warm-up step that counts as step 1, a force sample every 8 steps (and at the end), candidate-only
+-# force -(pressure+viscous), drag = Fx, downforce = -Fz, [80,120] tU/L window, phi(alpha) = phi0 + alpha*d with alpha in metres.
+-#
+-# Additions to the G2 bridge (docs/grad_ta1_plan_2026_10_15.md, Amendment 1):
+-#   λ ROUTING (Amendment 2): in WaterLily 1.8.0 `sim_step!(sim; λ)` IGNORES λ (kwargs only reach udf!; mom_predict!/mom_correct! use the Flow field `flow.λ` fixed at
+-#       construction).  So λ is passed to `WaterLily.Simulation(...; λ=λ)` in build(), for the plain run (`quick`), the Dual runs (`QuickTie(1f-5)`) and each preflight arm, and
+-#       `typeof(sim.flow.λ) === typeof(λ)` is a hard error in build() (called by run_one and preflight); the type string is recorded in every summary, the preflight and the index.
+-#   C6  kernel-first 20-step Dual preflight, `quick` vs `QuickTie`: primal u and p must be bit-equal and the tangents finite, else status INCOMPLETE (exit 2).  The tangent
+-#       difference u/p between the arms is reported; it is 0 iff no tie within tau occurred in the 20 steps (CPU dry run: NOT 0, u 1.43 / p 1.89, ties occur), which then says nothing about
+-#       QuickTie's effect; the preflight gates on routing, bit-equal primal and finiteness only, never on the size of the difference.
+-#   C5  watchdog (Dual runs): every 100 steps max |tangent| over u and p and its argmax cell, written and flushed to <label>.watchdog.csv together with the last
+-#       force sample; the force history <label>.history.csv is flushed per sample.  BLOCKED = a non-finite or > 1e30 tangent (onset step and cell recorded, also when it is
+-#       detected from a force sample; that run stops, the next direction still runs).  A Dual run longer than 8x the plain run's total time raises an error, and ANY error
+-#       (wall abort included) propagates out of main(): the whole kernel stops, status ERROR => INCOMPLETE; there is no per-direction continue after an error.
+-#       The BLOCKED path is judged by the analyzer WITHOUT the full verifier (no plain-baseline gate, no history checks).
+-#   status / exit code: COMPLETE 0, BLOCKED 3, anything else 2.  The index keeps the G2 name `g2_run_index.json` so scripts/verify_grad_g2_terminal.py applies unchanged.
+-#
+-# usage: julia --project=julia/CFDSDFWaterLilyT4 scripts/waterlily_grad_ta1_2026_10_15.jl \
+-#          <phi_raw> <phi_sha> <outdir> <D0_raw> <D0_sha> <D1_raw> <D1_sha> <D2_raw> <D2_sha> <P1_raw> <P1_sha>
+-# env:   G2_BACKEND (cuda | cpu; cpu is a code-path dry run only), G2_DRYRUN_T_END (cpu only; shortens the window),
+-#        TA1_PREFLIGHT_ONLY=1 (cpu only; run the preflight and stop), TA1_BLOCK_LIMIT (cpu only; lowers the BLOCKED threshold to test that path)
++# GRAD-00: a copy of frozen GRAD-TA1 with a constructor-routed convection scheme and same-scheme FD primals.
++# Frozen measurement semantics: v17/flow_24, default remeasure, warm-up counts as step 1, force every 8 steps,
++# candidate force -(pressure+viscous), Fx drag/-Fz downforce, endpoint-clipped time-weighted [80,120], Dual width 1.
++# Watchdog every 100 steps; BLOCKED at non-finite or >1e30 tangent; only BLOCKED continues, errors abort the job;
++# Dual wall abort remains 8x selected-lambda plain time. Additional terminal tangent maxima are report-only.
++# One shared plain + four (Dual,+epsilon,-epsilon) groups = 13 runs, matching GRAD-00 spec section 4.
++# Precision F: GRAD00_T=Float64, CPU quick/quick_nobound only, D0/D1 (7 runs); all raw source inputs remain canonical Float32.
++# CLI: TA1's 11 arguments followed by D0,D1,D2,P1 epsilon_m (required, no plateau values inferred).
++# env: GRAD00_ARM=quick|quick_nobound|cds|vanLeer, GRAD00_T=Float32|Float64, G2_BACKEND=cpu|cuda.
++# Existing CPU-only G2_DRYRUN_T_END, TA1_PREFLIGHT_ONLY and TA1_BLOCK_LIMIT hooks are unchanged.
++# g2_run_index.json retains its name; frozen five-run terminal verifier is not directly compatible with these 13 runs.
+@@ -48 +35 @@
+-Base.include(WaterLily, joinpath(@__DIR__, "quick_tie.jl"))     # QuickTie lives next to `quick` (it needs WaterLily's quick / median / ForwardDiff)
++Base.include(WaterLily, joinpath(@__DIR__, "quick_nobound.jl"))
+@@ -59,2 +46,9 @@
+-const TAU = 1f-5                       # absolute, velocity units (U = 1); Float32 literal (plan C4)
+-const LAMBDA = WaterLily.QuickTie(TAU)
++const ARM = get(ENV, "GRAD00_ARM", "")
++ARM in ("quick", "quick_nobound", "cds", "vanLeer") || error("GRAD00_ARM must be quick, quick_nobound, cds or vanLeer")
++const REAL_TYPE_NAME = get(ENV, "GRAD00_T", "Float32")
++REAL_TYPE_NAME in ("Float32", "Float64") || error("GRAD00_T must be Float32 or Float64")
++const RT = REAL_TYPE_NAME == "Float32" ? Float32 : Float64
++RT === Float64 && (BACKEND != "cpu" || !(ARM in ("quick", "quick_nobound"))) &&
++    error("the Float64 precision arm is CPU-only and restricted to quick/quick_nobound")
++const ACTIVE_DIRECTIONS = RT === Float64 ? DIRECTIONS[1:2] : DIRECTIONS
++const LAMBDA = getfield(WaterLily, Symbol(ARM))
+@@ -101 +95 @@
+-        owner = CFDSDFWaterLily.DeviceGridSDF.DeviceGridSDF(grid, "ta1-bridge")
++        owner = CFDSDFWaterLily.DeviceGridSDF.DeviceGridSDF(grid, "grad00-bridge")
+@@ -216,0 +211 @@
++    max_tangent_u_finite = 0.0; max_tangent_p_finite = 0.0
+@@ -235,0 +231,2 @@
++                        isfinite(mu) && (max_tangent_u_finite = max(max_tangent_u_finite, abs(mu)))
++                        isfinite(mp) && (max_tangent_p_finite = max(max_tangent_p_finite, abs(mp)))
+@@ -243,0 +241,2 @@
++                    isfinite(mu) && (max_tangent_u_finite = max(max_tangent_u_finite, abs(mu)))
++                    isfinite(mp) && (max_tangent_p_finite = max(max_tangent_p_finite, abs(mp)))
+@@ -266,0 +266,10 @@
++            if dual
++                # Report the terminal state as well; scheduled watchdog/gates above are unchanged from TA1.
++                mu, au = tangent_max(sim.flow.u); mp, ap = tangent_max(sim.flow.p)
++                isfinite(mu) && (max_tangent_u_finite = max(max_tangent_u_finite, abs(mu)))
++                isfinite(mp) && (max_tangent_p_finite = max(max_tangent_p_finite, abs(mp)))
++                summary["watchdog_max_abs_tangent_u_finite"] = max_tangent_u_finite
++                summary["watchdog_max_abs_tangent_p_finite"] = max_tangent_p_finite
++                summary["terminal_tangent"] = Dict("tan_max_u" => mu, "tan_argmax_u" => au, "tan_max_p" => mp, "tan_argmax_p" => ap)
++                summary["watchdog_onset"] = blocked
++            end
+@@ -275,7 +284,13 @@
+-# ---- C6: 20-step Dual preflight, quick vs QuickTie ------------------------------------------------------------------------
+-function preflight(phi32, d32, case, DT)
+-    out = Dict{String,Any}("steps" => PREFLIGHT_STEPS, "tau" => Float64(TAU), "arms" => Dict{String,Any}())
+-    state = Dict{String,Any}()
+-    for (name, λ) in (("quick", WaterLily.quick), ("quick_tie", LAMBDA))
+-        phi_dev = to_device(DT.(phi32, FD.Partials.(tuple.(d32))))
+-        sim, bodies, owner = build(phi_dev, DT, case, λ)
++# ---- 20-step preflight: selected plain/Dual finite, quick-control bit identity for A only ------------------------------
++array_sha(a) = bytes2hex(sha256(reinterpret(UInt8, vec(a))))
++
++function preflight(phi32, d32, case, DT, outdir)
++    out = Dict{String,Any}("steps" => PREFLIGHT_STEPS, "arm" => ARM, "arms" => Dict{String,Any}())
++    arms = ARM == "quick" ? (("quick", WaterLily.quick, DT), ("selected_dual", LAMBDA, DT), ("selected_plain", LAMBDA, RT)) :
++                             (("selected_dual", LAMBDA, DT), ("selected_plain", LAMBDA, RT))
++    for (name, λ, T) in arms
++        started = time()
++        println("GRAD00_PREFLIGHT_BEGIN ", name, " lambda=", typeof(λ), " steps=", PREFLIGHT_STEPS); flush(stdout)
++        phi = T <: FD.Dual ? DT.(RT.(phi32), FD.Partials.(tuple.(RT.(d32)))) : RT.(phi32)
++        phi_dev = to_device(phi)
++        sim, bodies, owner = build(phi_dev, T, case, λ)
+@@ -291,5 +306,9 @@
+-        tu, tp = FD.partials.(u, 1), FD.partials.(p, 1)
+-        state[name] = (FD.value.(u), FD.value.(p), tu, tp)
+-        out["arms"][name] = Dict("lambda_type" => lambda_type, "primal_finite" => all(isfinite, state[name][1]) && all(isfinite, state[name][2]),
+-                                 "tangent_u_finite" => all(isfinite, tu), "tangent_p_finite" => all(isfinite, tp),
+-                                 "max_abs_tangent_u" => maximum(abs, tu), "max_abs_tangent_p" => maximum(abs, tp))
++        vu, vp_ = FD.value.(u), FD.value.(p)
++        tu, tp = last.(vp.(u)), last.(vp.(p))
++        out["arms"][name] = Dict("lambda_type" => lambda_type,
++            "primal_finite" => all(isfinite, vu) && all(isfinite, vp_),
++            "tangent_u_finite" => all(isfinite, tu), "tangent_p_finite" => all(isfinite, tp),
++            "max_abs_tangent_u" => maximum(abs, tu), "max_abs_tangent_p" => maximum(abs, tp),
++            "primal_u_sha256" => array_sha(vu), "primal_p_sha256" => array_sha(vp_), "total_seconds" => time() - started)
++        println("GRAD00_PREFLIGHT_END ", name, " seconds=", out["arms"][name]["total_seconds"]); flush(stdout)
++        write_json(joinpath(outdir, "preflight.progress.json"), out)  # partial readouts survive an external timeout; this has no pass label
+@@ -298,10 +317,7 @@
+-    biteq(a, b) = reinterpret(UInt32, a) == reinterpret(UInt32, b)
+-    out["primal_u_bit_equal"] = biteq(state["quick"][1], state["quick_tie"][1])
+-    out["primal_p_bit_equal"] = biteq(state["quick"][2], state["quick_tie"][2])
+-    du = maximum(abs, state["quick"][3] .- state["quick_tie"][3]); nu = maximum(abs, state["quick"][3])
+-    out["tangent_u_max_abs_difference_report_only"] = du
+-    out["tangent_u_relative_difference_report_only"] = du / max(nu, floatmin(Float32))
+-    out["tangent_p_max_abs_difference_report_only"] = maximum(abs, state["quick"][4] .- state["quick_tie"][4])
+-    out["tangent_arms_identical"] = du == 0 && out["tangent_p_max_abs_difference_report_only"] == 0
+-    out["tangent_difference_note"] = "report only, never gated; exactly 0 would mean no tie within tau occurred in these 20 steps (then the preflight shows only routing, bit-equal primal and finiteness, not QuickTie's effect)"
+-    out["pass"] = out["primal_u_bit_equal"] && out["primal_p_bit_equal"] &&
++    selected = out["arms"]["selected_dual"]
++    out["primal_u_bit_equal"] = ARM == "quick" ? out["arms"]["quick"]["primal_u_sha256"] == selected["primal_u_sha256"] : nothing
++    out["primal_p_bit_equal"] = ARM == "quick" ? out["arms"]["quick"]["primal_p_sha256"] == selected["primal_p_sha256"] : nothing
++    out["quick_control_note"] = ARM == "quick" ?
++        "same build and 20-step quick-Dual path as frozen TA1; cross-script hashes are checked by the CPU validation capture" :
++        "not applicable to this arm; preflight checks the selected plain and Dual paths"
++    out["pass"] = (ARM != "quick" || (out["primal_u_bit_equal"] && out["primal_p_bit_equal"])) &&
+@@ -321,0 +338,41 @@
++function write_indices(outdir, index, records)
++    write_json(joinpath(outdir, "g2_run_index.json"), index)
++    grad = copy(index)
++    grad["runs"] = records
++    write_json(joinpath(outdir, "grad00_index.json"), grad)
++end
++
++function save_run!(index, records, label, phi, T, case, outdir; wall_limit=Inf)
++    index["active_run"] = label
++    write_indices(outdir, index, records)
++    _, summary, blocked = run_one(label, phi, T, case, LAMBDA, outdir; wall_limit)
++    summary["input_phi_sha256"] = array_sha(FD.value.(phi))
++    summary["input_phi_storage_type"] = REAL_TYPE_NAME
++    T <: FD.Dual && (summary["input_tangent_sha256"] = array_sha(FD.partials.(phi, 1)))
++    summary_path = "$label.summary.json"
++    write_json(joinpath(outdir, summary_path), summary)
++    record = copy(summary)
++    for (kind, path) in (("summary", summary_path), ("history", "$label.history.csv"))
++        record[kind * "_path"] = path
++        record[kind * "_sha256"] = bytes2hex(sha256(read(joinpath(outdir, path))))
++    end
++    if T <: FD.Dual
++        path = "$label.watchdog.csv"
++        record["watchdog_path"] = path
++        record["watchdog_sha256"] = bytes2hex(sha256(read(joinpath(outdir, path))))
++    end
++    if blocked !== nothing
++        path = "$label.blocked.json"
++        write_json(joinpath(outdir, path), blocked)
++        record["blocked_path"] = path
++        record["blocked_sha256"] = bytes2hex(sha256(read(joinpath(outdir, path))))
++    end
++    records[label] = record
++    index["runs"][label] = summary["total_seconds"]
++    index["run_status"][label] = summary["status"]
++    index["lambda_types"][label] = summary["lambda_type"]
++    write_indices(outdir, index, records)
++    reclaim()
++    return summary, blocked
++end
++
+@@ -323 +380 @@
+-    length(ARGS) == 11 || error("usage: <phi_raw> <phi_sha> <outdir> <D0_raw> <D0_sha> <D1_raw> <D1_sha> <D2_raw> <D2_sha> <P1_raw> <P1_sha>")
++    length(ARGS) == 15 || error("usage: <phi_raw> <phi_sha> <outdir> <D0_raw> <D0_sha> <D1_raw> <D1_sha> <D2_raw> <D2_sha> <P1_raw> <P1_sha> <D0_epsilon_m> <D1_epsilon_m> <D2_epsilon_m> <P1_epsilon_m>")
+@@ -326,2 +383,14 @@
+-    isfile(joinpath(outdir, "g2_run_index.json")) && error("refusing to overwrite $outdir")
+-    index = Dict{String,Any}("tier" => "GRAD-TA1", "backend" => BACKEND, "julia" => string(VERSION), "waterlily" => string(pkgversion(WaterLily)),
++    for path in ("g2_run_index.json", "grad00_index.json", "preflight.json", "preflight.progress.json")
++        isfile(joinpath(outdir, path)) && error("refusing to overwrite $outdir/$path")
++    end
++    run_order = ["plain"]
++    by_direction = Dict{String,Any}()
++    for name in ACTIVE_DIRECTIONS
++        append!(run_order, [name, name * "__plus", name * "__minus"])
++        by_direction[name] = Dict{String,Any}("plain" => "plain", "dual" => name, "plus" => name * "__plus", "minus" => name * "__minus")
++    end
++    for label in run_order, suffix in (".history.csv", ".watchdog.csv", ".summary.json", ".blocked.json")
++        isfile(joinpath(outdir, label * suffix)) && error("refusing to overwrite $outdir/$label$suffix")
++    end
++    index = Dict{String,Any}("schema_version" => 1, "tier" => "GRAD-00", "arm" => ARM, "real_type" => REAL_TYPE_NAME,
++        "backend" => BACKEND, "julia" => string(VERSION), "waterlily" => string(pkgversion(WaterLily)),
+@@ -329,4 +398,8 @@
+-        "lambda_types" => Dict{String,Any}(), "tau" => Float64(TAU), "dual_width" => 1,
+-        "run_order" => collect(("plain",) ∪ DIRECTIONS), "runs" => Dict{String,Any}(), "run_status" => Dict{String,Any}(), "status" => "RUNNING",
+-        "evidence_class" => "gpu_full_window_tie_averaged_forward_ad_surrogate_measurement",
+-        "claim_limit" => "tie-averaged surrogate derivative of the implemented primal vs FD-08 slopes on flow_24 v17, four directions, Re 80; not the derivative of the implemented map, not a gradient qualification",
++        "lambda_type" => string(typeof(LAMBDA)), "lambda_types" => Dict{String,Any}(), "dual_width" => 1,
++        "block_limit" => BLOCK_LIMIT, "wall_factor" => WALL_FACTOR, "watch_every" => WATCH_EVERY,
++        "directions" => collect(ACTIVE_DIRECTIONS), "by_direction" => by_direction,
++        "input_sha256" => Dict("phi" => phi_sha, "directions" => Dict(name => ARGS[3 + 2k] for (k, name) in enumerate(DIRECTIONS))),
++        "epsilon_m" => Dict{String,Any}(), "run_order" => run_order,
++        "runs" => Dict{String,Any}(), "run_status" => Dict{String,Any}(), "status" => "RUNNING",
++        "evidence_class" => BACKEND == "cpu" && (PREFLIGHT_ONLY || haskey(ENV, "G2_DRYRUN_T_END")) ? "cpu_code_path_dryrun" : "exploratory_lambda_swap_forward_ad_measurement",
++        "claim_limit" => "flow_24 v17 Re80 lambda/precision/version comparison; CPU dry runs do not measure the registered window; no gradient qualification",
+@@ -333,0 +407 @@
++    records = Dict{String,Any}()
+@@ -335,0 +410,6 @@
++        for (k, name) in enumerate(DIRECTIONS)
++            epsilon = parse(Float64, ARGS[11 + k])
++            isfinite(epsilon) && 0 < epsilon <= 5e-3 || error("$name: epsilon_m must be finite, positive and <= 5e-3 m (FD-08 maximum clearance amplitude)")
++            index["epsilon_m"][name] = epsilon
++            haskey(by_direction, name) && (by_direction[name]["epsilon_m"] = epsilon)
++        end
+@@ -349 +429 @@
+-            for s in (-1.0, 1.0)  # clearance gate on the primal phi +- alpha d for the largest FD-08 amplitude (5 mm)
++            for s in (-1.0, 1.0)  # unchanged clearance gate at the largest FD-08 amplitude (5 mm)
+@@ -355,5 +435,5 @@
+-        tag = FD.Tag(run_one, Float32)
+-        DT = FD.Dual{typeof(tag),Float32,1}
+-
+-        # C6: the kernel's first action, before any long run
+-        pre = preflight(phi32, dirs[DIRECTIONS[1]], case, DT)
++        tag = FD.Tag(run_one, RT)
++        DT = FD.Dual{typeof(tag),RT,1}
++
++        write_indices(outdir, index, records)
++        pre = preflight(phi32, dirs[DIRECTIONS[1]], case, DT, outdir)
+@@ -363 +443,2 @@
+-            index["status"] = "INCOMPLETE"; index["error"] = "preflight failed: QuickTie-Dual vs quick-Dual primal not bit-equal, or a non-finite value/tangent"
++            index["status"] = "INCOMPLETE"
++            index["error"] = "preflight failed: non-finite selected primal/tangent or quick-control primal bit mismatch"
+@@ -367,4 +448,2 @@
+-            rows, summary, _ = run_one("plain", phi32, Float32, case, WaterLily.quick, outdir)
+-            index["lambda_types"]["plain"] = summary["lambda_type"]
+-            write_json(joinpath(outdir, "plain.summary.json"), summary)
+-            index["runs"]["plain"] = summary["total_seconds"]; index["run_status"]["plain"] = summary["status"]
++            phi = RT.(phi32)
++            summary, _ = save_run!(index, records, "plain", phi, RT, case, outdir)
+@@ -373 +451,0 @@
+-            write_json(joinpath(outdir, "g2_run_index.json"), index)
+@@ -375,8 +453,10 @@
+-            for name in DIRECTIONS
+-                phi_dual = DT.(phi32, FD.Partials.(tuple.(dirs[name])))   # alpha = 0 primal, seed 1, alpha in metres
+-                rows, summary, blocked = run_one(name, phi_dual, DT, case, LAMBDA, outdir; wall_limit)
+-                write_json(joinpath(outdir, "$name.summary.json"), summary)
+-                index["runs"][name] = summary["total_seconds"]; index["run_status"][name] = summary["status"]; index["lambda_types"][name] = summary["lambda_type"]
+-                blocked === nothing || (push!(blocked_runs, name); write_json(joinpath(outdir, "$name.blocked.json"), blocked))
+-                write_json(joinpath(outdir, "g2_run_index.json"), index)
+-                reclaim()
++            for name in ACTIVE_DIRECTIONS
++                phi_dual = DT.(phi, FD.Partials.(tuple.(RT.(dirs[name]))))
++                _, blocked = save_run!(index, records, name, phi_dual, DT, case, outdir; wall_limit)
++                blocked === nothing || push!(blocked_runs, name)
++                # FD-08 casts only AFTER phi0 +/- epsilon*d in Float64. F keeps that Float64 field.
++                for (suffix, sign) in (("__plus", 1.0), ("__minus", -1.0))
++                    perturbed = RT.(Float64.(phi32) .+ sign * index["epsilon_m"][name] .* Float64.(dirs[name]))
++                    array_sha(perturbed) != array_sha(phi) || error("$name$suffix: epsilon does not change the stored field")
++                    save_run!(index, records, name * suffix, perturbed, RT, case, outdir)
++                end
+@@ -393,2 +473,2 @@
+-    write_json(joinpath(outdir, "g2_run_index.json"), index)
+-    println("TA1_RESULT ", index["status"], " ", outdir)
++    write_indices(outdir, index, records)
++    println("GRAD00_RESULT ", index["status"], " ", outdir)
+@@ -398 +478 @@
+-main()
++abspath(PROGRAM_FILE) == (@__FILE__) && main()
