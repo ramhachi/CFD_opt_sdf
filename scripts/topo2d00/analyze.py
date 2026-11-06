@@ -1,0 +1,654 @@
+#!/usr/bin/env python3
+"""TOPO-2D-00 draft arithmetic and fail-closed, written-once analysis.
+
+``analyze_input`` accepts the design memo's normalized tables for synthetic tests.
+The CLI additionally re-verifies raw harness outputs and all frozen input/source
+hashes. No registration, solver execution, or qualification flag is produced here.
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+
+import numpy as np
+from scipy.stats import chi2, t
+
+REPO = Path(__file__).resolve().parents[2]
+CONFIGS = ("E1", "E2", "E3")
+RCONFIGS = CONFIGS + ("E1_sharp", "E2_sharp")
+READOUTS = ("cur", "nds", "cv")
+RESPONSES = ("downforce", "drag")
+REYNOLDS = (1000, 3000)
+SHA = re.compile(r"[0-9a-f]{64}\Z")
+LIMITATIONS = [
+    "No physical, grid-independent, FSAE or 3D qualification is implied.",
+    "CONCORDANT_PARTIAL is shadowed by DISCORDANT under global-AND resolved ranking.",
+    "RETENTION_12 uses delta-method relative-increment variances followed by Fieller; it is not an exact nested-ratio interval.",
+    "The uncertainty model treats placement phases and equal-duration batches as sampling units; iid adequacy requires registration review.",
+]
+
+
+def require(condition, message):
+    if not condition:
+        raise ValueError(message)
+
+
+def finite(value, name="number"):
+    require(isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value), f"{name} must be finite")
+    return float(value)
+
+
+def is_sha(value):
+    return isinstance(value, str) and SHA.fullmatch(value) is not None
+
+
+def validate_input(data):
+    require(isinstance(data, dict) and data.get("schema") == "topo2d00-input-v1", "unknown normalized input schema")
+    for key in ("identity_valid", "cap_hit"):
+        require(type(data.get(key)) is bool, f"{key} must be a declared boolean")
+    require(isinstance(data.get("controls"), dict), "controls must be an object")
+    require(data["controls"].get("primary_readout", "cur") in READOUTS, "unknown primary readout")
+    require(isinstance(data.get("waterlily"), list), "waterlily must be an array")
+    seen = set()
+    for row in data["waterlily"]:
+        require(isinstance(row, dict), "WaterLily row must be an object")
+        require(row.get("configuration") in CONFIGS, "unknown WaterLily configuration")
+        require(row.get("reynolds") in REYNOLDS, "unknown WaterLily Reynolds number")
+        require(row.get("grid") in ("main", "confirmation"), "unknown WaterLily grid")
+        require(row.get("role") in ("primary", "confirmation", "secondary", "domain", "determinism"), "unknown WaterLily role")
+        require(finite(row.get("height_mm"), "height_mm") > 0, "positive height required")
+        require(isinstance(row.get("phase"), (str, int)) and not isinstance(row.get("phase"), bool) and str(row["phase"]), "phase identity missing")
+        require(is_sha(row.get("scene_sha256")), "scene SHA missing or invalid")
+        for key in ("ok", "finite", "complete"):
+            require(type(row.get(key)) is bool, f"WaterLily {key} status missing")
+        identity = tuple(str(row[k]) for k in ("configuration", "height_mm", "reynolds", "grid", "phase", "role"))
+        require(identity not in seen, "duplicate WaterLily phase identity")
+        seen.add(identity)
+        require(isinstance(row.get("readouts"), dict) and set(row["readouts"]) == set(READOUTS), "readout availability must be explicit")
+        for name, value in row["readouts"].items():
+            if value is None:
+                continue
+            require(isinstance(value, dict), f"{name} readout must be an object or null")
+            for response in RESPONSES:
+                finite(value.get(response), f"{name} {response}")
+            batches = value.get("batches")
+            require(isinstance(batches, list) and len(batches) >= 4, "at least 4 equal-duration batch means required")
+            for batch in batches:
+                require(isinstance(batch, dict), "batch must be an object")
+                for response in RESPONSES:
+                    finite(batch.get(response), f"{name} batch {response}")
+            for response in RESPONSES:
+                whole = value[response]
+                batch_mean = math.fsum(batch[response] for batch in batches) / len(batches)
+                require(abs(whole - batch_mean) <= 1e-9 * max(1, abs(whole), abs(batch_mean)),
+                        f"{name} {response} whole mean differs from equal-duration batch mean")
+        if "force_csv_sha256" in row:
+            require(is_sha(row["force_csv_sha256"]), "invalid raw force CSV SHA")
+    rans = data.get("rans")
+    require(isinstance(rans, dict) and rans.get("schema") == "topo2d00-rans-results-v1", "unknown RANS schema")
+    reference = rans.get("coefficient_reference", {})
+    require(reference.get("chord_mm") == 223.4, "RANS coefficients must use common c1 = 223.4 mm")
+    if "units" in reference:
+        require(reference["units"] == "dimensionless", "RANS force coefficients must be dimensionless")
+    ref = rans.get("reference", {})
+    require(finite(ref.get("delta_cl"), "reference delta_cl") != 0, "reference increment must be nonzero")
+    require(finite(ref.get("digitizing_uncertainty"), "digitizing uncertainty") >= 0, "negative digitizing uncertainty")
+    require(isinstance(rans.get("cells"), list) and bool(rans["cells"]), "RANS model/family matrix missing")
+    cells = set()
+    for cell in rans["cells"]:
+        for key in ("model", "family"):
+            require(isinstance(cell.get(key), str) and cell[key] and "/" not in cell[key], f"invalid RANS {key}")
+        name = cell_id(cell)
+        require(name not in cells, "duplicate RANS model/family cell")
+        cells.add(name)
+        rows = cell.get("realisations")
+        require(isinstance(rows, list) and len(rows) == 8, "each RANS cell needs exactly 8 realisations")
+        ids = set()
+        for row in rows:
+            require(isinstance(row.get("id"), str) and row["id"] and row["id"] not in ids, "duplicate or missing RANS realisation id")
+            ids.add(row["id"])
+            for field in ("status", "mesh_sha256", "forces"):
+                require(isinstance(row.get(field), dict) and set(row[field]) == set(RCONFIGS), f"RANS {field} must cover exactly E1/E2/E3 and E1_sharp/E2_sharp")
+            for config in RCONFIGS:
+                status = row["status"][config]
+                require(status in ("SETTLED", "NUMERICAL", "INCOMPLETE"), "unknown RANS status")
+                mesh = row["mesh_sha256"][config]
+                require(is_sha(mesh) or (status != "SETTLED" and mesh is None), "RANS mesh SHA missing")
+                force = row["forces"][config]
+                if status == "SETTLED":
+                    require(isinstance(force, dict), "settled RANS force missing")
+                    for response in RESPONSES:
+                        finite(force.get(response), f"RANS {response}")
+                else:
+                    require(force is None or (isinstance(force, dict) and all(math.isfinite(finite(force.get(q))) for q in RESPONSES)), "failed RANS force must be null or finite diagnostics")
+
+
+def cell_id(cell):
+    return cell["model"] + "/" + cell["family"]
+
+
+def rstat(values):
+    x = np.asarray(values, dtype=float)
+    require(x.ndim == 1 and len(x) >= 2 and np.isfinite(x).all(), "at least two finite samples required")
+    n = len(x)
+    mean, sd = float(x.mean()), float(x.std(ddof=1))
+    se = sd / math.sqrt(n)
+    margin = float(t.ppf(0.95, n - 1)) * se
+    return {"n": n, "mean": mean, "sd": sd, "se": se, "df": n - 1, "ci90": [mean - margin, mean + margin]}
+
+
+def batch_variance(row, readout, response, upper_tail=None):
+    values = np.asarray([b[response] for b in row["readouts"][readout]["batches"]], dtype=float)
+    var = float(values.var(ddof=1)) / len(values)
+    return var if upper_tail is None else var * (len(values) - 1) / float(chi2.ppf(upper_tail, len(values) - 1))
+
+
+def wstat(base, candidate, readout="cur", response="downforce"):
+    require(len(base) == len(candidate) and len(base) >= 2, "paired phases required")
+    p = len(base)
+    b = np.asarray([r["readouts"][readout][response] for r in base])
+    c = np.asarray([r["readouts"][readout][response] for r in candidate])
+    d = c - b
+    a = float(d.std(ddof=1))
+    vb = [batch_variance(r, readout, response) for r in base]
+    vc = [batch_variance(r, readout, response) for r in candidate]
+    sigma_b = math.sqrt(float(np.mean(np.asarray(vb) + vc)))
+    # alpha=.05 split equally between A and B; B split across its 2P runs.
+    a_upper = a * math.sqrt((p - 1) / float(chi2.ppf(0.025, p - 1)))
+    tail = 0.025 / (2 * p)
+    bu = [batch_variance(r, readout, response, tail) for r in base]
+    cu = [batch_variance(r, readout, response, tail) for r in candidate]
+    b_upper = math.sqrt(float(np.mean(np.asarray(bu) + cu)))
+    upper = max(a_upper, b_upper)
+    se = upper / math.sqrt(p)
+    mean = float(d.mean())
+    margin = float(t.ppf(0.95, p - 1)) * se
+    return {"n": p, "mean": mean, "sigma_a": a, "sigma_b": sigma_b, "sigma": max(a, sigma_b),
+            "sigma_a_upper": a_upper, "sigma_b_upper": b_upper, "sigma_upper": upper,
+            "se": se, "df": p - 1, "ci90": [mean - margin, mean + margin]}
+
+
+def fieller(numerator, denominator, variance_num, variance_den, covariance=0.0, df=7):
+    """Confidence set for a ratio of approximately normal estimates (90%).
+
+    Infinity is serialized as null. The relative increments supplied by this
+    study already use a delta approximation; this is not an exact nested ratio.
+    """
+    values = [finite(v) for v in (numerator, denominator, variance_num, variance_den, covariance)]
+    n, d, vn, vd, cov = values
+    require(vn >= 0 and vd >= 0, "invalid Fieller variance/covariance")
+    if vn == 0 or vd == 0:
+        require(cov == 0, "invalid Fieller variance/covariance")
+    else:
+        # Dimensionless PSD check avoids squared-product under/overflow. This
+        # is the 64-epsilon relative squared-PSD bound without an absolute floor.
+        correlation = (abs(cov) / math.sqrt(vn)) / math.sqrt(vd)
+        limit = 1 / math.sqrt(1 - 64 * np.finfo(float).eps)
+        require(correlation <= limit, "invalid Fieller variance/covariance")
+    require(isinstance(df, (int, float)) and df > 0, "positive Fieller degrees of freedom required")
+    q = float(t.ppf(0.95, df)) ** 2
+    a, b, c = d * d - q * vd, -2 * (n * d - q * cov), n * n - q * vn
+    scale = 64 * np.finfo(float).eps
+    atol = scale * max(abs(d * d), abs(q * vd), 1e-300)
+    btol = scale * max(2 * abs(n * d), 2 * abs(q * cov), 1e-300)
+    ctol = scale * max(abs(n * n), abs(q * vn), 1e-300)
+    if abs(a) <= atol:
+        if abs(b) <= btol:
+            return {"kind": "all_real" if c <= ctol else "empty", "intervals": [[None, None]] if c <= ctol else []}
+        root = -c / b
+        return {"kind": "half_line", "intervals": [[None, root]] if b > 0 else [[root, None]]}
+    discriminant = b * b - 4 * a * c
+    dtol = scale * max(b * b, abs(4 * a * c), 1e-300)
+    if discriminant < -dtol:
+        return {"kind": "all_real" if a < 0 else "empty", "intervals": [[None, None]] if a < 0 else []}
+    root = math.sqrt(max(discriminant, 0.0))
+    # Cancellation-safe quadratic roots (important for a narrow ratio interval).
+    qr = -0.5 * (b + math.copysign(root, b))
+    roots = sorted([qr / a, c / qr] if qr else [-b / (2 * a)] * 2)
+    if a > 0:
+        return {"kind": "bounded", "intervals": [[roots[0], roots[-1]]]}
+    if discriminant <= dtol:
+        return {"kind": "all_real", "intervals": [[None, None]]}
+    return {"kind": "disjoint", "intervals": [[None, roots[0]], [roots[-1], None]]}
+
+
+def sign(interval):
+    return 1 if interval[0] > 0 else -1 if interval[1] < 0 else 0
+
+
+def zvalue(mean, se):
+    return abs(mean) / se if se else (0.0 if mean == 0 else None)
+
+
+def rarrays(cell, config, response):
+    return np.asarray([r["forces"][config][response] for r in cell["realisations"]], dtype=float)
+
+
+def tr00(rans):
+    ref = rans["reference"]["delta_cl"]
+    sign_only = rans["reference"]["digitizing_uncertainty"] > 0.05 * abs(ref)
+    result = {"cells": {}, "qualified_cells": []}
+    for cell in rans["cells"]:
+        name = cell_id(cell)
+        statuses = [r["status"][c] for r in cell["realisations"] for c in ("E1_sharp", "E2_sharp")]
+        record = {"label": "NUMERICAL" if "NUMERICAL" in statuses else "INCOMPLETE", "delta": None, "ratio_ci90": None}
+        if set(statuses) == {"SETTLED"}:
+            stat = rstat(rarrays(cell, "E2_sharp", "downforce") - rarrays(cell, "E1_sharp", "downforce"))
+            ratio = sorted(x / ref for x in stat["ci90"])
+            agrees = sign(stat["ci90"]) == (1 if ref > 0 else -1)
+            passed = agrees and (sign_only or (ratio[0] >= 0.5 and ratio[1] <= 2))
+            label = ("TR00_PASS_SIGN" if sign_only else "TR00_PASS_RATIO") if passed else "TR00_FAIL"
+            record = {"label": label, "delta": stat, "ratio_ci90": ratio}
+            if passed:
+                result["qualified_cells"].append(name)
+        result["cells"][name] = record
+    result["qualified_cells"].sort()
+    return result
+
+
+def select_runs(data, re, grid="main", role="primary", count=None, readout="cur"):
+    groups = {}
+    for config in CONFIGS if role == "primary" else CONFIGS[:2]:
+        rows = [r for r in data["waterlily"] if r["reynolds"] == re and r["configuration"] == config
+                and r["grid"] == grid and r["role"] == role and r["height_mm"] == 100]
+        groups[config] = {str(r["phase"]): r for r in rows}
+        if count is not None:
+            require(len(rows) == count, f"{re}/{grid}/{config} requires exactly {count} phases")
+        for row in rows:
+            require(row["readouts"][readout] is not None, "selected force readout unavailable")
+    active = CONFIGS if role == "primary" else CONFIGS[:2]
+    require(all(set(groups[c]) == set(groups[active[0]]) for c in active), "paired phase sets differ")
+    phases = sorted(groups[active[0]])
+    return {c: [groups[c][p] for p in phases] for c in active}, phases
+
+
+def relative_w(base, candidate, readout):
+    p = len(base)
+    b = np.asarray([r["readouts"][readout]["downforce"] for r in base])
+    c = np.asarray([r["readouts"][readout]["downforce"] for r in candidate])
+    require(float(b.mean()) != 0, "relative increment has zero parent mean")
+    ratio = float((c - b).mean() / b.mean())
+    influence = ((c - b) - ratio * b) / b.mean()
+    a = float(influence.var(ddof=1)) / p * (p - 1) / float(chi2.ppf(0.025, p - 1))
+    tail = 0.025 / (2 * p)
+    v = sum(batch_variance(cr, readout, "downforce", tail) + (1 + ratio) ** 2 * batch_variance(br, readout, "downforce", tail)
+            for br, cr in zip(base, candidate)) / (p * p * float(b.mean()) ** 2)
+    return ratio, max(a, v)
+
+
+def relative_r(cell):
+    b, c = rarrays(cell, "E1", "downforce"), rarrays(cell, "E2", "downforce")
+    require(float(b.mean()) != 0, "relative RANS increment has zero parent mean")
+    ratio = float((c - b).mean() / b.mean())
+    return ratio, float((((c - b) - ratio * b) / b.mean()).var(ddof=1)) / len(b)
+
+
+def ranking(arrays, statistic):
+    order = sorted(CONFIGS, key=lambda c: (float(np.mean(arrays[c])), c))
+    adjacent = [statistic(a, b) for a, b in zip(order, order[1:])]
+    return order, all(sign(s["ci90"]) != 0 for s in adjacent)
+
+
+def empty_result():
+    return {"schema": "topo2d00-analysis-v1", "label": None, "tr00": {"cells": {}, "qualified_cells": []},
+            "waterlily": {}, "rans": {}, "agreement": {}, "resolution": {"status": "NOT_JUDGED", "downforce": None},
+            "controls": {"determinism": {"judged": False, "pass": None}, "domain": {"status": "NOT_JUDGED", "z": None},
+                         "readout": {}, "manipulation": {}}, "limitations": list(LIMITATIONS)}
+
+
+def analyze_input(data):
+    validate_input(data)
+    result = empty_result()
+    if not data["identity_valid"]:
+        result["label"] = "INVALID"
+        return result
+    result["tr00"] = tr00(data["rans"])
+    qualified = [c for c in data["rans"]["cells"] if cell_id(c) in result["tr00"]["qualified_cells"]]
+    if not qualified:
+        result["label"] = "TR_UNQUALIFIED"
+        return result
+    required_w = [r for r in data["waterlily"] if r["height_mm"] == 100 and r["role"] in ("primary", "confirmation")]
+    statuses = [r["status"][c] for cell in qualified for r in cell["realisations"] for c in CONFIGS]
+    if ("NUMERICAL" in statuses or any(not r["finite"] for r in data["waterlily"])
+            or any(r["complete"] and not r["ok"] for r in required_w)):
+        result["label"] = "NUMERICAL"
+        return result
+    if data["cap_hit"] or "INCOMPLETE" in statuses or any(not r["complete"] for r in required_w):
+        result["label"] = "INCOMPLETE"
+        return result
+    readout = data["controls"].get("primary_readout", "cur")
+    groups = {re: select_runs(data, re, count=16, readout=readout)[0] for re in REYNOLDS}
+    r_rank = {}
+    required_intervals = []
+    for cell in qualified:
+        name = cell_id(cell)
+        result["rans"][name] = {f"{a}{b}": {q: rstat(rarrays(cell, f"E{b}", q) - rarrays(cell, f"E{a}", q)) for q in RESPONSES}
+                                for a, b in ((1, 2), (2, 3))}
+        r_rank[name] = ranking({c: rarrays(cell, c, "downforce") for c in CONFIGS},
+                               lambda a, b: rstat(rarrays(cell, b, "downforce") - rarrays(cell, a, "downforce")))
+        required_intervals.extend(result["rans"][name][c]["downforce"]["ci90"] for c in ("12", "23"))
+        stat = result["rans"][name]["12"]["downforce"]
+        result["controls"]["manipulation"]["R/" + name] = {"z": zvalue(stat["mean"], stat["se"]), "pass": abs(stat["mean"]) > 3 * stat["se"]}
+    rank_resolved = all(v[1] for v in r_rank.values())
+    for re in REYNOLDS:
+        w = groups[re]
+        estimates = {f"{a}{b}": {q: wstat(w[f"E{a}"], w[f"E{b}"], readout, q) for q in RESPONSES} for a, b in ((1, 2), (2, 3))}
+        result["waterlily"][str(re)] = estimates
+        required_intervals.extend(estimates[c]["downforce"]["ci90"] for c in ("12", "23"))
+        order, resolved = ranking({c: [r["readouts"][readout]["downforce"] for r in w[c]] for c in CONFIGS}, lambda a, b: wstat(w[a], w[b], readout))
+        rank_resolved = rank_resolved and resolved
+        wr, wv = relative_w(w["E1"], w["E2"], readout)
+        agreement = {"SIGN_AGREE_12": True, "RANK_AGREE": True, "DRAG_SIGN_AGREE_12": True, "cells": {}}
+        for cell in qualified:
+            name = cell_id(cell)
+            rr, rv = relative_r(cell)
+            record = {"SIGN_AGREE_12": sign(estimates["12"]["downforce"]["ci90"]) != 0 and sign(estimates["12"]["downforce"]["ci90"]) == sign(result["rans"][name]["12"]["downforce"]["ci90"]),
+                      "RANK_AGREE": resolved and r_rank[name][1] and order == r_rank[name][0],
+                      "DRAG_SIGN_AGREE_12": sign(estimates["12"]["drag"]["ci90"]) != 0 and sign(estimates["12"]["drag"]["ci90"]) == sign(result["rans"][name]["12"]["drag"]["ci90"]),
+                      "RETENTION_12": {"relative_w": wr, "variance_w": wv, "relative_r": rr, "variance_r": rv,
+                                       "fieller": fieller(wr, rr, wv, rv)}}
+            agreement["cells"][name] = record
+            for key in ("SIGN_AGREE_12", "RANK_AGREE", "DRAG_SIGN_AGREE_12"):
+                agreement[key] = agreement[key] and record[key]
+        result["agreement"][str(re)] = agreement
+        stat = estimates["12"]["downforce"]
+        result["controls"]["manipulation"][f"W/{re}"] = {"z": zvalue(stat["mean"], stat["se"]), "pass": abs(stat["mean"]) > 3 * stat["se"]}
+        result["controls"]["readout"][str(re)] = {}
+        for alternative in READOUTS:
+            available = all(r["readouts"][alternative] is not None for c in ("E1", "E2") for r in w[c])
+            result["controls"]["readout"][str(re)][alternative] = ({q: float(np.mean([c["readouts"][alternative][q] - b["readouts"][alternative][q] for b, c in zip(w["E1"], w["E2"])])) for q in RESPONSES} if available else None)
+    fine, phases = select_runs(data, 3000, "confirmation", "confirmation", 4, readout)
+    main = {c: {str(r["phase"]): r for r in groups[3000][c]} for c in ("E1", "E2")}
+    require(set(phases) <= set(main["E1"]), "confirmation phases must match primary phases")
+    matched = {c: [main[c][p] for p in phases] for c in ("E1", "E2")}
+    coarse_stat, fine_stat = wstat(matched["E1"], matched["E2"], readout), wstat(fine["E1"], fine["E2"], readout)
+    differences = lambda g: np.asarray([b["readouts"][readout]["downforce"] - a["readouts"][readout]["downforce"] for a, b in zip(g["E1"], g["E2"])])
+    covariance = float(np.cov(differences(fine), differences(matched), ddof=1)[0, 1]) / 4
+    ratio = fieller(fine_stat["mean"], coarse_stat["mean"], fine_stat["se"] ** 2, coarse_stat["se"] ** 2, covariance, 3)
+    retained = ratio["kind"] == "bounded" and ratio["intervals"][0][0] >= 0.5 and ratio["intervals"][0][1] <= 2
+    resolution_limited = np.sign(fine_stat["mean"]) != np.sign(coarse_stat["mean"]) or not retained
+    result["resolution"] = {"status": "RESOLUTION_LIMITED" if resolution_limited else "PASS", "downforce": {"main": coarse_stat, "confirmation": fine_stat, "ratio": ratio}}
+    repeats = [r for r in data["waterlily"] if r["role"] == "determinism"]
+    if repeats:
+        passes = []
+        for row in repeats:
+            matches = [r for r in data["waterlily"] if r["role"] == "primary" and all(str(r[k]) == str(row[k]) for k in ("configuration", "height_mm", "reynolds", "grid", "phase"))]
+            require(len(matches) == 1, "determinism repeat has no unique primary")
+            base = matches[0]
+            require(("force_csv_sha256" in row) == ("force_csv_sha256" in base), "determinism raw SHA availability differs")
+            passes.append(all(r[k] for r in (row, base) for k in ("complete", "finite", "ok"))
+                          and row["readouts"] == base["readouts"] and row["scene_sha256"] == base["scene_sha256"]
+                          and row.get("force_csv_sha256") == base.get("force_csv_sha256"))
+        result["controls"]["determinism"] = {"judged": True, "pass": all(passes)}
+    domain_rows = [r for r in data["waterlily"] if r["role"] == "domain" and r["reynolds"] == 3000 and r["height_mm"] == 100]
+    if domain_rows and {r["configuration"] for r in domain_rows} == {"E1", "E2"}:
+        domain, dp = select_runs(data, 3000, "main", "domain", readout=readout)
+        require(len(dp) >= 2 and set(dp) <= set(main["E1"]), "DOMAIN needs matched primary phase pairs")
+        native = {c: [main[c][p] for p in dp] for c in ("E1", "E2")}
+        ds, ns = wstat(domain["E1"], domain["E2"], readout), wstat(native["E1"], native["E2"], readout)
+        difference = abs(ds["mean"] - ns["mean"])
+        pooled = math.hypot(ds["se"], ns["se"])
+        result["controls"]["domain"] = {"status": "DOMAIN_SENSITIVE" if difference > 3 * pooled else "CONSISTENT", "z": zvalue(difference, pooled)}
+    unresolved = not rank_resolved or any(sign(interval) == 0 for interval in required_intervals) or not all(r["pass"] for r in result["controls"]["manipulation"].values())
+    agreement = [result["agreement"][str(re)] for re in REYNOLDS]
+    if resolution_limited:
+        label = "RESOLUTION_LIMITED"
+    elif unresolved:
+        label = "UNRESOLVED"
+    elif (not any(r["SIGN_AGREE_12"] for r in agreement)) or not all(r["RANK_AGREE"] for r in agreement):
+        label = "DISCORDANT"
+    elif (all(r["SIGN_AGREE_12"] for r in agreement) and not all(r["RANK_AGREE"] for r in agreement)) or (sum(r["SIGN_AGREE_12"] for r in agreement) == 1):
+        # Literal rev-0 precedence makes this branch unreachable for consistent
+        # fully resolved raw data. Retain the policy rather than inventing one.
+        label = "CONCORDANT_PARTIAL"
+    else:
+        label = "CONCORDANT"
+    result["label"] = label
+    return result
+
+
+def sha256(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def load_json(path):
+    def pairs(items):
+        keys = [key for key, _ in items]
+        require(len(keys) == len(set(keys)), f"duplicate JSON key in {path}")
+        return dict(items)
+    return json.loads(Path(path).read_text(), object_pairs_hook=pairs,
+                      parse_constant=lambda text: (_ for _ in ()).throw(ValueError(f"non-finite JSON constant {text}")))
+
+
+def write_analysis(out, record):
+    out = Path(out)
+    targets = (out / "analysis.json", out / "analysis.md")
+    for path in targets:
+        if path.exists():
+            raise FileExistsError(f"written-once analysis exists: {path}")
+    payload = json.dumps(record, indent=2, sort_keys=True, allow_nan=False) + "\n"
+    result = record.get("result", {})
+    markdown = summary_markdown(record)
+    out.mkdir(parents=True, exist_ok=True)
+    created = []
+    try:
+        # Reserve both paths before writing either: no silent overwrite even
+        # under concurrent invocations. Roll back our own incomplete reservations.
+        handles = []
+        try:
+            for path in targets:
+                handles.append(path.open("x"))
+                created.append(path)
+            for handle, content in zip(handles, (payload, markdown)):
+                handle.write(content)
+                handle.flush()
+                os.fsync(handle.fileno())
+        finally:
+            for handle in handles:
+                handle.close()
+    except BaseException:
+        for path in created:
+            path.unlink(missing_ok=True)
+        raise
+    return record
+
+
+def summary_markdown(record):
+    result = record.get("result", {})
+    text = "# TOPO-2D-00 analysis\n\nStatus: **" + str(result.get("label", "INVALID")) + "**.\n\n"
+    text += "\n".join("- " + item for item in result.get("limitations", [])) + "\n\n"
+    text += "All forces below are dimensionless coefficients on c1 = 223.4 mm. Differences are candidate minus baseline; positive downforce is -Cz and positive drag is +Cx.\n\n"
+    text += "## TR-00 qualification\n\n| model/family | result | sharp increment | 90% interval | ratio 90% interval |\n| --- | --- | ---: | --- | --- |\n"
+    for name, cell in result.get("tr00", {}).get("cells", {}).items():
+        stat = cell["delta"]
+        text += f"| {name} | {cell['label']} | {stat['mean'] if stat else 'N/A'} | {stat['ci90'] if stat else 'N/A'} | {cell['ratio_ci90']} |\n"
+    text += "\n## WaterLily paired estimates\n\n| Re | contrast | response | mean | sigma A | sigma B | sigma upper | 90% interval |\n| --- | --- | --- | ---: | ---: | ---: | ---: | --- |\n"
+    for reynolds, contrasts in result.get("waterlily", {}).items():
+        for contrast, responses in contrasts.items():
+            for response, stat in responses.items():
+                text += f"| {reynolds} | {contrast} | {response} | {stat['mean']:.10g} | {stat['sigma_a']:.8g} | {stat['sigma_b']:.8g} | {stat['sigma_upper']:.8g} | {stat['ci90']} |\n"
+    text += "\n## Qualified RANS cells and worst-case interval envelope\n\n| model/family | contrast | response | mean | 90% interval |\n| --- | --- | --- | ---: | --- |\n"
+    for name, contrasts in result.get("rans", {}).items():
+        for contrast, responses in contrasts.items():
+            for response, stat in responses.items():
+                text += f"| {name} | {contrast} | {response} | {stat['mean']:.10g} | {stat['ci90']} |\n"
+    if result.get("rans"):
+        text += "\nWorst-case envelopes retain every qualified model/family; they are descriptive envelopes, not pooled confidence intervals. Agreement requires every qualified cell to agree.\n\n"
+        for contrast in ("12", "23"):
+            for response in RESPONSES:
+                intervals = [cell[contrast][response]["ci90"] for cell in result["rans"].values()]
+                text += f"- {contrast} {response}: [{min(i[0] for i in intervals):.10g}, {max(i[1] for i in intervals):.10g}].\n"
+    text += "\n## Agreement, resolution and controls\n\n```json\n" + json.dumps({k: result.get(k) for k in ("agreement", "resolution", "controls")}, indent=2, sort_keys=True, allow_nan=False) + "\n```\n"
+    text += "\n## Provenance\n\n```json\n" + json.dumps(record.get("provenance", {}), indent=2, sort_keys=True, allow_nan=False) + "\n```\n"
+    return text
+
+
+def load_formal_inputs(table_paths, rans_path, freeze_path):
+    """Re-run the source-bound harness verifier; a success flag is insufficient."""
+    sys.path.insert(0, str(REPO / "src"))
+    from cfd_harness import campaign_schema as schema
+    freeze = load_json(freeze_path)
+    require(freeze.get("schema") == "topo2d00-analysis-freeze-v1", "unknown analysis freeze schema")
+    require(re.fullmatch(r"[0-9a-f]{40}", freeze.get("source_commit", "")) is not None, "freeze source commit missing")
+    require(type(freeze.get("cap_hit")) is bool and freeze.get("primary_readout") in READOUTS and freeze.get("height_mm") == 100, "freeze analysis settings missing")
+    require(isinstance(freeze.get("sources"), dict) and bool(freeze["sources"]) and isinstance(freeze.get("inputs"), dict), "freeze source/input hashes missing")
+    sidecar = Path(str(freeze_path) + ".sha256")
+    require(sidecar.is_file(), "analysis freeze SHA sidecar missing")
+    paths = [Path(p).resolve() for p in table_paths]
+    require(len(paths) == len(set(paths)), "duplicate force table")
+    supplied = {str(p): schema.require_formal_table(load_json(p)) for p in paths}
+    require(all(table.get("force_unit") == "N/m" for table in supplied.values()), "TOPO force tables must explicitly carry 2D physical N/m units")
+    identities_valid = sidecar.read_text().strip() == sha256(freeze_path)
+    errors = [] if identities_valid else ["analysis freeze SHA sidecar mismatch"]
+    required_sources = {"scripts/topo2d00/analyze.py", "scripts/topo2d00/check.py", "scripts/waterlily_topo2d_job.jl", "src/cfd_sdf/topo2d/geometry.py"}
+    require(required_sources <= set(freeze["sources"]), "freeze omits required analyzer/checker/job/geometry source")
+    for rel, expected in freeze["sources"].items():
+        require(is_sha(expected) and not Path(rel).is_absolute() and ".." not in Path(rel).parts, "invalid frozen source path/hash")
+        try:
+            committed = subprocess.check_output(["git", "show", freeze["source_commit"] + ":" + rel], cwd=REPO, stderr=subprocess.DEVNULL)
+            valid = hashlib.sha256(committed).hexdigest() == expected and (REPO / rel).is_file() and sha256(REPO / rel) == expected
+        except subprocess.CalledProcessError:
+            valid = False
+        if not valid:
+            identities_valid = False
+            errors.append("source mismatch: " + rel)
+    def frozen_path(path):
+        require(isinstance(path, str) and bool(path), "frozen input path must be a nonempty string")
+        return str((REPO / path).resolve())
+    required_paths = {str(p) for p in paths} | {str(Path(rans_path).resolve())}
+    bound = {frozen_path(p): digest for p, digest in freeze["inputs"].items()}
+    require(len(bound) == len(freeze["inputs"]), "duplicate resolved input identity in freeze")
+    require(required_paths <= set(bound), "table/RANS input missing from freeze")
+    for path, expected in bound.items():
+        require(is_sha(expected), "invalid frozen input SHA")
+        require(Path(path).is_file(), "missing frozen input: " + path)
+        if sha256(path) != expected:
+            identities_valid = False
+            errors.append("input mismatch: " + path)
+    geometry = freeze.get("geometry_sha256")
+    require(isinstance(geometry, dict) and set(geometry) == set(RCONFIGS) and all(is_sha(h) for h in geometry.values()), "study freeze must bind all five main/sharp geometry JSON hashes")
+    require(set(geometry.values()) <= set(bound.values()), "frozen geometry artifacts missing from input inventory")
+    rans = load_json(rans_path)
+    reference_source = rans.get("reference", {}).get("source")
+    require(isinstance(reference_source, dict) and reference_source.get("observable") == "centre-section pressure-integrated Cl", "formal TR-00 needs centre-section pressure-integrated reference provenance")
+    require(all(isinstance(reference_source.get(k), str) and reference_source[k].strip() for k in ("title", "url", "pages", "method")), "formal TR-00 reference source metadata incomplete")
+    digitizations = reference_source.get("digitization_records")
+    require(isinstance(digitizations, list) and len(digitizations) >= 2, "formal TR-00 needs two independent digitization records")
+    digitization_paths = []
+    for digitization in digitizations:
+        require(isinstance(digitization, dict) and is_sha(digitization.get("sha256")) and isinstance(digitization.get("method"), str) and digitization["method"].strip(), "invalid TR-00 digitization record")
+        path = frozen_path(digitization.get("path"))
+        require(path in bound, "TR-00 digitization record missing from freeze inputs")
+        digitization_paths.append(path)
+        if digitization["sha256"] != bound[path]:
+            identities_valid = False
+            errors.append("TR-00 digitization SHA differs from frozen input: " + path)
+    require(len(set(digitization_paths)) == len(digitization_paths), "TR-00 digitization records must be distinct artifacts")
+    require(isinstance(rans.get("provenance"), dict) and isinstance(rans["provenance"].get("geometry_sha256"), dict), "formal RANS results need geometry provenance")
+    components = {config: "pressure_only" if config.endswith("_sharp") else "pressure_plus_viscous" for config in RCONFIGS}
+    require(rans["provenance"].get("component_by_config") == components, "formal RANS component_by_config must declare pressure-only sharp arms and pressure-plus-viscous main arms")
+    if rans["provenance"]["geometry_sha256"] != geometry:
+        identities_valid = False
+        errors.append("RANS geometry identity differs from main/sharp study geometry")
+    entries = freeze.get("harness")
+    require(isinstance(entries, list) and all(isinstance(e, dict) and isinstance(e.get("outputs"), list) and e["outputs"] for e in entries), "freeze harness entries/outputs missing")
+    require(len(entries) == len(supplied) and {frozen_path(e["table"]) for e in entries} == set(supplied), "freeze harness entries do not cover exactly the tables")
+    normalized, numerical_failures, skipped_numerical = [], [], []
+    cap_receipts, unmeasured_cap = [], []
+    cap_hit = freeze["cap_hit"]
+    for entry in entries:
+        table_path = frozen_path(entry["table"])
+        table = supplied[table_path]
+        for key in ("campaign", "freeze"):
+            require(frozen_path(entry[key]) in bound, f"harness {key} missing from freeze inputs")
+        # Scene verifier is a separate harness boundary. It re-reads manifests,
+        # histories and scene SHA, and rejects CPU smoke as formal evidence.
+        from cfd_harness import scene_campaign
+        verified = False
+        try:
+            actual = scene_campaign.verify(frozen_path(entry["campaign"]), [frozen_path(p) for p in entry["outputs"]],
+                                           frozen_path(entry["freeze"]), smoke=False, repo=REPO,
+                                           source_commit=freeze["source_commit"])
+            verified = True
+        except ValueError as exc:
+            identities_valid = False
+            errors.append("raw harness verification failed: " + str(exc))
+            actual = table
+        if actual != table:
+            identities_valid = False
+            errors.append("reverified force table differs: " + table_path)
+        if table.get("source_commit") != freeze["source_commit"]:
+            identities_valid = False
+            errors.append("force-table source commit differs from study freeze")
+        if not verified:
+            # Claimed failure/skip flags are not normalized as scientific inputs
+            # after raw admission failed. Identity-invalid data ends INVALID.
+            continue
+        require(type(actual.get("cap_hit", False)) is bool and isinstance(actual.get("cap_receipts", {}), dict), "verified cap transport malformed")
+        receipts = actual.get("cap_receipts", {})
+        require(actual.get("cap_hit", False) == bool(receipts), "verified cap flag and receipts disagree")
+        for kernel, receipt in receipts.items():
+            require(isinstance(receipt, dict) and is_sha(receipt.get("sha256")) and isinstance(receipt.get("record"), dict), "verified cap receipt malformed")
+            cap_receipts.append({"table": table_path, "kernel": kernel, **receipt})
+        cap_hit = cap_hit or actual.get("cap_hit", False)
+        for kernel, runs in actual["state_forces_n"].items():
+            for run, row in runs.items():
+                topo = row.get("topo2d")
+                require(isinstance(topo, dict), "force table has no TOPO identity")
+                identity = {"kernel": kernel, "run": run, "topo2d": topo, "scene_sha256": row["scene_sha256"]}
+                if topo.get("role") == "primary" and topo.get("height_mm") == 100 and row.get("scene_sha256") != geometry.get(topo.get("configuration")):
+                    identities_valid = False
+                    errors.append("WaterLily primary geometry differs from RANS main geometry")
+                if row.get("status") in ("INCOMPLETE_TIMEOUT", "UNRUN_CAP"):
+                    require(kernel in receipts and row.get("cap_receipt_sha256") == receipts[kernel]["sha256"], "unmeasured cap row lacks authenticated receipt")
+                    unmeasured_cap.append({**identity, "status": row["status"], "cap_receipt_sha256": row["cap_receipt_sha256"]})
+                    continue
+                if row.get("status") == "SKIPPED_NUMERICAL":
+                    require(is_sha(row.get("prior_failure_sha256")), "authenticated numerical skip lacks prior failure SHA")
+                    skipped_numerical.append({**identity, "prior_failure_sha256": row["prior_failure_sha256"]})
+                    continue
+                if row.get("status") == "NUMERICAL":
+                    require(is_sha(row.get("failure_sha256")) and row["finite"] is False and row["ok"] is False and row["complete"] is False
+                            and row["readouts"] == {name: None for name in READOUTS}, "authenticated numerical failure row is inconsistent")
+                    numerical_failures.append({**identity, "failure_sha256": row["failure_sha256"]})
+                normalized.append({**topo, "ok": row["ok"], "finite": row["finite"], "complete": row["complete"],
+                                   "scene_sha256": row["scene_sha256"], "readouts": row["readouts"],
+                                   **({"force_csv_sha256": row["forces_csv_sha256"]} if "forces_csv_sha256" in row else {})})
+    data = {"schema": "topo2d00-input-v1", "identity_valid": identities_valid, "cap_hit": cap_hit,
+            "waterlily": normalized, "rans": rans, "controls": {"primary_readout": freeze["primary_readout"]}}
+    provenance = {"source_commit": freeze["source_commit"], "freeze_sha256": sha256(freeze_path),
+                  "input_sha256": {path: sha256(path) for path in sorted(bound)}, "identity_errors": errors,
+                  "sources": freeze["sources"], "numerical_failures": numerical_failures, "skipped_numerical": skipped_numerical,
+                  "cap_receipts": cap_receipts, "unmeasured_cap": unmeasured_cap,
+                  "evidence_class": "software_contract_no_physical_qualification"}
+    return data, provenance
+
+
+def run_analysis(table_paths, rans_path, freeze_path, out):
+    for name in ("analysis.json", "analysis.md"):
+        if (Path(out) / name).exists():
+            raise FileExistsError(f"written-once analysis exists: {Path(out) / name}")
+    data, provenance = load_formal_inputs(table_paths, rans_path, freeze_path)
+    return write_analysis(out, {"input": data, "result": analyze_input(data), "provenance": provenance})
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--table", action="append", required=True, type=Path)
+    parser.add_argument("--rans", required=True, type=Path)
+    parser.add_argument("--freeze", required=True, type=Path)
+    parser.add_argument("--out", required=True, type=Path)
+    args = parser.parse_args()
+    record = run_analysis(args.table, args.rans, args.freeze, args.out)
+    print(record["result"]["label"])
+
+
+if __name__ == "__main__":
+    main()
