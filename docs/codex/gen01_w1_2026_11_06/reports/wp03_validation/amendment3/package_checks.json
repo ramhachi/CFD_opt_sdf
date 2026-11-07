@@ -1,0 +1,98 @@
+{
+  "checks": [
+    {
+      "command": [
+        "julia",
+        "--project=julia/CFDSDFWaterLily110",
+        "--threads=1",
+        "-e",
+        "using Pkg; Pkg.instantiate(;allow_autoprecomp=false, update_registry=false); using WaterLily; println(\"WaterLily \", pkgversion(WaterLily)); println(\"ForwardDiff \", pkgversion(WaterLily.ForwardDiff))"
+      ],
+      "evidence_class": "software_capability_no_flow",
+      "exit_code": 0,
+      "files_after": {
+        "julia/CFDSDFWaterLily/Manifest.toml": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+        "julia/CFDSDFWaterLily/Project.toml": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+        "julia/CFDSDFWaterLily110/Manifest.toml": "48b2fb4f83619a9599d69b4f9cb846332a26e702cfea79cae56c3b089ff62388",
+        "julia/CFDSDFWaterLily110/Project.toml": "c4e838eba03286938e60aec8fd690f275b056a39e1b6be0f3e0e22c0334e3448",
+        "scripts/grad00_selftest.jl": "05228976561157f53a800fca50b0b2952f38cd897b5d2ce11500f16585c7066d",
+        "scripts/waterlily_grad00_lambda_2026_11.jl": "bba320e88553bfa026afb715572166c936c763be81a537c601fe59300d15cdbe"
+      },
+      "files_before": {
+        "julia/CFDSDFWaterLily/Manifest.toml": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+        "julia/CFDSDFWaterLily/Project.toml": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+        "julia/CFDSDFWaterLily110/Manifest.toml": "48b2fb4f83619a9599d69b4f9cb846332a26e702cfea79cae56c3b089ff62388",
+        "julia/CFDSDFWaterLily110/Project.toml": "c4e838eba03286938e60aec8fd690f275b056a39e1b6be0f3e0e22c0334e3448",
+        "scripts/grad00_selftest.jl": "05228976561157f53a800fca50b0b2952f38cd897b5d2ce11500f16585c7066d",
+        "scripts/waterlily_grad00_lambda_2026_11.jl": "bba320e88553bfa026afb715572166c936c763be81a537c601fe59300d15cdbe"
+      },
+      "files_unchanged": true,
+      "solver_steps": 0,
+      "stdout_path": "docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment3/instantiate110.txt",
+      "stdout_sha256": "f141ef785828e146c77de327281cce7c4ae541d52e14edf2200386a155fe095b",
+      "wall_seconds": 6.922595125040971
+    },
+    {
+      "command": [
+        "julia",
+        "--project=julia/CFDSDFWaterLily",
+        "--threads=1",
+        "scripts/grad00_selftest.jl"
+      ],
+      "evidence_class": "software_capability_no_flow",
+      "exit_code": 0,
+      "files_after": {
+        "julia/CFDSDFWaterLily/Manifest.toml": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+        "julia/CFDSDFWaterLily/Project.toml": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+        "julia/CFDSDFWaterLily110/Manifest.toml": "48b2fb4f83619a9599d69b4f9cb846332a26e702cfea79cae56c3b089ff62388",
+        "julia/CFDSDFWaterLily110/Project.toml": "c4e838eba03286938e60aec8fd690f275b056a39e1b6be0f3e0e22c0334e3448",
+        "scripts/grad00_selftest.jl": "05228976561157f53a800fca50b0b2952f38cd897b5d2ce11500f16585c7066d",
+        "scripts/waterlily_grad00_lambda_2026_11.jl": "bba320e88553bfa026afb715572166c936c763be81a537c601fe59300d15cdbe"
+      },
+      "files_before": {
+        "julia/CFDSDFWaterLily/Manifest.toml": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+        "julia/CFDSDFWaterLily/Project.toml": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+        "julia/CFDSDFWaterLily110/Manifest.toml": "48b2fb4f83619a9599d69b4f9cb846332a26e702cfea79cae56c3b089ff62388",
+        "julia/CFDSDFWaterLily110/Project.toml": "c4e838eba03286938e60aec8fd690f275b056a39e1b6be0f3e0e22c0334e3448",
+        "scripts/grad00_selftest.jl": "05228976561157f53a800fca50b0b2952f38cd897b5d2ce11500f16585c7066d",
+        "scripts/waterlily_grad00_lambda_2026_11.jl": "bba320e88553bfa026afb715572166c936c763be81a537c601fe59300d15cdbe"
+      },
+      "files_unchanged": true,
+      "solver_steps": 0,
+      "stdout_path": "docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment3/selftest180.txt",
+      "stdout_sha256": "4a649ad4adadadff1f791c9507e261e0d3223cfb18b87306cc7150be7c4a73b6",
+      "wall_seconds": 1.6367633750196546
+    },
+    {
+      "command": [
+        "julia",
+        "--project=julia/CFDSDFWaterLily110",
+        "--threads=1",
+        "scripts/grad00_selftest.jl"
+      ],
+      "evidence_class": "software_capability_no_flow",
+      "exit_code": 0,
+      "files_after": {
+        "julia/CFDSDFWaterLily/Manifest.toml": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+        "julia/CFDSDFWaterLily/Project.toml": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+        "julia/CFDSDFWaterLily110/Manifest.toml": "48b2fb4f83619a9599d69b4f9cb846332a26e702cfea79cae56c3b089ff62388",
+        "julia/CFDSDFWaterLily110/Project.toml": "c4e838eba03286938e60aec8fd690f275b056a39e1b6be0f3e0e22c0334e3448",
+        "scripts/grad00_selftest.jl": "05228976561157f53a800fca50b0b2952f38cd897b5d2ce11500f16585c7066d",
+        "scripts/waterlily_grad00_lambda_2026_11.jl": "bba320e88553bfa026afb715572166c936c763be81a537c601fe59300d15cdbe"
+      },
+      "files_before": {
+        "julia/CFDSDFWaterLily/Manifest.toml": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+        "julia/CFDSDFWaterLily/Project.toml": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+        "julia/CFDSDFWaterLily110/Manifest.toml": "48b2fb4f83619a9599d69b4f9cb846332a26e702cfea79cae56c3b089ff62388",
+        "julia/CFDSDFWaterLily110/Project.toml": "c4e838eba03286938e60aec8fd690f275b056a39e1b6be0f3e0e22c0334e3448",
+        "scripts/grad00_selftest.jl": "05228976561157f53a800fca50b0b2952f38cd897b5d2ce11500f16585c7066d",
+        "scripts/waterlily_grad00_lambda_2026_11.jl": "bba320e88553bfa026afb715572166c936c763be81a537c601fe59300d15cdbe"
+      },
+      "files_unchanged": true,
+      "solver_steps": 0,
+      "stdout_path": "docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment3/selftest110.txt",
+      "stdout_sha256": "0d935b32a8d3b25c2a42bf02c74f796d91051608ca8f92d5f41b9ce464778d29",
+      "wall_seconds": 6.381420375080779
+    }
+  ]
+}

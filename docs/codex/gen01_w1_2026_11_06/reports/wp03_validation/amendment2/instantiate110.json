@@ -1,0 +1,22 @@
+{
+  "evidence_class": "cpu_environment_instantiation",
+  "command": [
+    "julia",
+    "--startup-file=no",
+    "--project=julia/CFDSDFWaterLily110",
+    "-e",
+    "using Pkg; Pkg.instantiate(;allow_autoprecomp=false)"
+  ],
+  "exit_code": 0,
+  "stdout_stderr": "",
+  "wall_seconds": null,
+  "before_sha256": {
+    "julia/CFDSDFWaterLily110/Project.toml": "c4e838eba03286938e60aec8fd690f275b056a39e1b6be0f3e0e22c0334e3448",
+    "julia/CFDSDFWaterLily110/Manifest.toml": "48b2fb4f83619a9599d69b4f9cb846332a26e702cfea79cae56c3b089ff62388"
+  },
+  "after_sha256": {
+    "julia/CFDSDFWaterLily110/Project.toml": "c4e838eba03286938e60aec8fd690f275b056a39e1b6be0f3e0e22c0334e3448",
+    "julia/CFDSDFWaterLily110/Manifest.toml": "48b2fb4f83619a9599d69b4f9cb846332a26e702cfea79cae56c3b089ff62388"
+  },
+  "manifest_and_project_unchanged": true
+}

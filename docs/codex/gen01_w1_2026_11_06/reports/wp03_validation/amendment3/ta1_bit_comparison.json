@@ -1,0 +1,43 @@
+{
+  "claim_limit": "Cross-script CPU comparison only, distinct from same-build determinism fields",
+  "comparisons": {
+    "dual": {
+      "bit_equal": {
+        "primal_p_sha256": true,
+        "primal_u_sha256": true
+      },
+      "capture": "docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment3/ta1_reference/quick_control.json",
+      "capture_sha256": "cd846d9b939cbe4ce572ab2ad616f551b46d4f2451c22c820808bd71002daa26",
+      "copy_preflight_sha256": "6125d62d04a8cf3b57f6e23f2b7ef0a35fcb4d0434c95c09a7490aa507056c9a",
+      "forwarddiff": "1.4.6",
+      "hashes": {
+        "primal_p_sha256": "99223b6bfc23d49ae8e1965865e25765e65c3ff2a23c1d86f9d06743a499400e",
+        "primal_u_sha256": "fac0ca3c6f84ec2672456c01695a2f6c39f74984abb2f2c8a4dbffbcc92f790a"
+      },
+      "julia": "1.12.6",
+      "pass": true,
+      "steps": 20,
+      "waterlily": "1.8.0"
+    },
+    "plain": {
+      "bit_equal": {
+        "primal_p_sha256": true,
+        "primal_u_sha256": true
+      },
+      "capture": "docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment3/ta1_plain_reference/quick_plain_control.json",
+      "capture_sha256": "287d8183aabdf1e8ca65ddd1a550850144ebedfd5e108f71f80796c66d99d0dc",
+      "copy_preflight_sha256": "6125d62d04a8cf3b57f6e23f2b7ef0a35fcb4d0434c95c09a7490aa507056c9a",
+      "forwarddiff": "1.4.6",
+      "hashes": {
+        "primal_p_sha256": "9578cc8ea16f00d8f7e0396a65a73226005e6d49de921743c75470bde8bcda22",
+        "primal_u_sha256": "bbfa47bbf98e046f00dfb0acc9a5a52fe4847e7cde7132faea163e23e1ed5396"
+      },
+      "julia": "1.12.6",
+      "pass": true,
+      "steps": 20,
+      "waterlily": "1.8.0"
+    }
+  },
+  "evidence_class": "cpu_frozen_ta1_20_step_plain_and_dual_value_bit_comparison",
+  "pass": true
+}

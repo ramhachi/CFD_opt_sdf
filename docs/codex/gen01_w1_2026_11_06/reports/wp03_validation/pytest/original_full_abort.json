@@ -1,0 +1,18 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--junitxml=/tmp/grad00-baseline-pytest.xml"
+  ],
+  "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00",
+  "base_commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+  "shell_exit_code": 134,
+  "terminal": "native_abort",
+  "test": "tests/test_lbm_metal.py::test_metal_non_float32_is_explicitly_rejected",
+  "boundary": "existing Metal initialization attempted; not a GRAD-00 GPU run; no repeated GPU initialization",
+  "completed_junit": false,
+  "failure_set_comparison": "NOT_AVAILABLE",
+  "evidence_class": "software_validation_failure"
+}

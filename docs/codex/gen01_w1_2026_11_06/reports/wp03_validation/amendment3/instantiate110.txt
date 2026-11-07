@@ -1,0 +1,9 @@
+Precompiling packages...
+   3775.6 ms  ✓ WaterLily
+  1 dependency successfully precompiled in 4 seconds. 42 already precompiled.
+┌ Warning: Using WaterLily in serial (ie. JULIA_NUM_THREADS=1) is not recommended because it defaults to serial CPU execution.
+│ Use JULIA_NUM_THREADS=auto, or any number of threads greater than 1, to allow multi-threading in CPU backends.
+│ For a low-overhead single-threaded CPU only backend set: WaterLily.set_backend("SIMD")
+└ @ WaterLily ~/.julia/packages/WaterLily/V6kyE/src/WaterLily.jl:218
+WaterLily 1.10.0
+ForwardDiff 1.4.5

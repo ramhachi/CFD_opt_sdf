@@ -1,0 +1,38 @@
+{
+  "name": "final_frozen_ta1_plain_quick20_O2_t10",
+  "command": [
+    "julia",
+    "-O2",
+    "-t",
+    "10",
+    "--project=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/julia/CFDSDFWaterLily",
+    "/tmp/grad00-validation/ta1_plain_reference_capture.jl"
+  ],
+  "env": {
+    "G2_BACKEND": "cpu",
+    "G2_DRYRUN_T_END": "0.4",
+    "TA1_PREFLIGHT_ONLY": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "process_cap_s": 300,
+  "exit_code": 0,
+  "wall_s": 94.20630508300383,
+  "wrapper_sha256": "93c0ad55466340f01034a484f79df96839b552be62ebc73649b9e8c2b6ddfdf3",
+  "launcher_sha256": "99edc33d1bcae023811efc25ac595a637f03a4d6541f514c85241257c5b72c61",
+  "before_sha256": {
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/scripts/waterlily_grad_ta1_2026_10_15.jl": "3fe08e42054cef3821a01240d5a7d5beb1c781b0939e7f8d974b03527faa1b15",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/julia/CFDSDFWaterLily/Project.toml": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/julia/CFDSDFWaterLily/Manifest.toml": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c"
+  },
+  "after_sha256": {
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/scripts/waterlily_grad_ta1_2026_10_15.jl": "3fe08e42054cef3821a01240d5a7d5beb1c781b0939e7f8d974b03527faa1b15",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/julia/CFDSDFWaterLily/Project.toml": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/julia/CFDSDFWaterLily/Manifest.toml": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c"
+  },
+  "frozen_source_and_environment_unchanged": true,
+  "log": "/tmp/grad00-validation/final_frozen_ta1_plain_quick20_O2_t10.log",
+  "log_sha256": "5a7b426f482ef23d224c91f912fcc4eb1c133bb199ef95e575ec453a6dd86550",
+  "wrapper": "/tmp/grad00-validation/ta1_plain_reference_capture.jl",
+  "launcher": "/tmp/grad00-validation/run_ta1_plain_reference.py"
+}

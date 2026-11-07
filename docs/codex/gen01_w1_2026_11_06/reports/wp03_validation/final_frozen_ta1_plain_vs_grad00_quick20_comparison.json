@@ -1,0 +1,29 @@
+{
+  "evidence_class": "cpu_matched_frozen_ta1_plain_quick20_bit_comparison",
+  "julia_flags": [
+    "-O2",
+    "-t",
+    "10"
+  ],
+  "steps": 20,
+  "command_file": "/tmp/grad00-validation/final_frozen_ta1_plain_quick20_O2_t10.command.json",
+  "command_file_sha256": "a6c2f531994d36ca9f0f3e5f48f754d21aaee4686cae999f758c7a739fc0247d",
+  "pass": true,
+  "claim_scope": "Ordinary Float32 primal u/p after 20 steps of the actual frozen TA1 build versus the saved GRAD00 selected_plain preflight. No full-window or target-physics claim.",
+  "capture": "/tmp/grad00-validation/ta1_plain_reference/quick_plain_control.json",
+  "capture_sha256": "63f202536a8dbdb170b254b44bd42ba2c6b8d4afd6b2514fdd8c3121494874ab",
+  "copy_preflight": "/tmp/grad00-validation/final_CFDSDFWaterLily_quick_Float32_O2_t10/preflight.json",
+  "copy_preflight_sha256": "4999eca65afd7c6482bd310ce3a7bcfe37bd36075227ce62de68bc8a88394c07",
+  "comparison": {
+    "primal_u_sha256": true,
+    "primal_p_sha256": true
+  },
+  "reference_hashes": {
+    "primal_u_sha256": "bbfa47bbf98e046f00dfb0acc9a5a52fe4847e7cde7132faea163e23e1ed5396",
+    "primal_p_sha256": "9578cc8ea16f00d8f7e0396a65a73226005e6d49de921743c75470bde8bcda22"
+  },
+  "fields_finite": true,
+  "julia": "1.12.6",
+  "waterlily": "1.8.0",
+  "forwarddiff": "1.4.6"
+}
