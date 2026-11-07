@@ -79,3 +79,15 @@ review 全文：`/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/git
 6. **初回実行前の identity（m1／m2／m3／m4／m5／m9／m10／N1／m8）**：§11 Amendment 2 §5 のとおり。`Checkpoint.jl` の identity は必須（`identity=""` の既定を外し、`restore_checkpoint!` で照合）。`sim_step!(sim, t_end)` では `length(Δt)==step+1` が成り立たないことを docstring に書く（WP4 向け）。UUID fallback は LOCAL だけ。bench は lock SHA と VRAM を記録し、TGV が WaterLily の benchmark suite ではない旨を書く。
 7. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。3 つの tool file の `git diff e3dcdf61 --stat -- src/cfd_harness/campaign_*.py` が空であることも報告に書く。
 8. **commit／push は Claude が host で行う。** worktree は `e6c57e7b`（PR #88）。報告に commit すべきファイルの完全な一覧（戻したもの・変更・新規）を書く。
+
+## Amendment 4（2026-11-07。4 回目（PR #88、`ab801695`）への 2 回目の Opus review の回答。round-1 の BLOCKER／MAJOR は全部 closed。この節が本文と Amendment 1〜3 より優先する。小さな修正だけ）
+
+review 全文：`/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/codex/gen01_w1_2026_11_06/reviews/wp01_review_2_opus.md`。仕様の判断は同じ worktree の `docs/local_gpu_env_gate_2026_11_01.md` **§11.7 Amendment 3**（読む）。
+
+1. **n1。** `WSL_INTEROP` を C1／C5 の identity 比較から除外する（記録は残す。除外した名前を `gate.json` に列挙）。
+2. **n2。** C6 の VRAM 規則は「最初の 60 秒の後に 2 サンプル以上ある solver-active 区間」だけに適用し、repeat ごとに 1 区間以上を要求、短い group は記録して skip（INCOMPLETE にしない）。テストを足す。
+3. **n3。** C6 の必須 telemetry は `memory.used`・`utilization.gpu`・`clocks.sm`。`power.draw`・`temperature.gpu` は記録のみ。identity UUID は NVML が無ければ CUDA probe の UUID（記録付き）。
+4. **n4。** watchdog CSV の schema 検査を set equality に戻す。
+5. **n5。** `finished_utc` を `written_utc` に改名（full-pytest と source-stability の record）。
+6. 重点テスト（5 ファイル）と `tests/test_harness_registered_reverify.py` を回す。全体 pytest は **不要**（変更は gate script・backend_profiles・テスト・記録だけ。`git diff e3dcdf61 -- src/cfd_harness/campaign_*.py` が空のままであることだけ報告する）。
+7. **commit／push は Claude が host で行う。** worktree は `ab801695`。報告に commit すべきファイルの一覧を書く。
