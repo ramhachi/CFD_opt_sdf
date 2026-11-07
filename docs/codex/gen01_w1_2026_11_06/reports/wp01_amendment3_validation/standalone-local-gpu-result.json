@@ -1,0 +1,31 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_local_gpu.py",
+    "-p",
+    "no:cacheprovider",
+    "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.xml"
+  ],
+  "complete": true,
+  "counts": {
+    "errors": 0,
+    "failures": 0,
+    "passed": 25,
+    "skipped": 0,
+    "tests": 25
+  },
+  "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu",
+  "failed_nodes": [],
+  "finished_utc": "2026-11-06T09:00:07.643879+00:00",
+  "junit_path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.xml",
+  "junit_sha256": "05732ebabc4bff4d6ac8b454e76e431bb381f35d8e59e645e69de264c55ccdd5",
+  "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.txt",
+  "log_sha256": "731dbfa1fa267685446c70612091eab35243ac5eeb2d27d867974d5496d05e8a",
+  "returncode": 0,
+  "started_utc": "2026-11-06T09:00:04.853511+00:00",
+  "summary": ".........................                                                [100%]\n25 passed in 2.19s",
+  "wall_seconds": 2.7903375839814544
+}

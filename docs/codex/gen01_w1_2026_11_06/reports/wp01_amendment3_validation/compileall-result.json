@@ -1,0 +1,19 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "-m",
+    "compileall",
+    "src",
+    "tests"
+  ],
+  "complete": true,
+  "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu",
+  "failed_nodes": [],
+  "finished_utc": "2026-11-06T09:00:07.969275+00:00",
+  "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/compileall.txt",
+  "log_sha256": "daac1411f93c89479b52d0b5c0065ff3749ddec9b05a33f7c66ff00e1d367c3a",
+  "returncode": 0,
+  "started_utc": "2026-11-06T09:00:07.646190+00:00",
+  "summary": "Compiling 'tests/test_local_gpu_backend.py'...\nCompiling 'tests/test_local_gpu_gate.py'...",
+  "wall_seconds": 0.3230934999883175
+}

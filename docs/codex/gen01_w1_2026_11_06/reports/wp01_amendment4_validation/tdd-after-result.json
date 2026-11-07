@@ -1,0 +1,24 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_local_gpu_gate.py",
+    "-p",
+    "no:cacheprovider",
+    "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.xml"
+  ],
+  "complete": true,
+  "evidence_class": "synthetic regression tests after the Amendment 4 implementation; no GPU",
+  "failed_nodes": [],
+  "finished_utc": "2026-11-07T09:29:52.028770+00:00",
+  "junit_path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.xml",
+  "junit_sha256": "912b81225f6aad52e610354944ad2a3ebc3e3c2ef6e7d6f631de8c81b28a8f8b",
+  "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.txt",
+  "log_sha256": "bba76196fb359610be20fe1e76166ce5792d7f9326882a737736852952559954",
+  "returncode": 0,
+  "started_utc": "2026-11-07T09:29:43.009201+00:00",
+  "tests": 108,
+  "wall_seconds": 9.01953504094854
+}
