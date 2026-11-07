@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""Run an explicitly configured GRAD-00 CPU side arm and retain analyzer-compatible artifacts.
+"""Run a GRAD-00 D0/D1 CPU side arm and retain analyzer-compatible artifacts.
 
 This wrapper never installs packages or changes manifests. It requires committed
 source bytes, an authenticated epsilon/spread reference, and an existing Julia
 environment. A complete or intact BLOCKED Julia job returns wrapper exit 0;
-failures retain identity/log/ERROR.txt but never DONE or an output manifest.
+E uses WaterLily 1.10.0 quick Float32; F and its Float32 controls use 1.8.0
+quick/quick_nobound. All use seven runs, within the shared 60 CPU hour cap.
+Failures retain identity/log/ERROR.txt and an authenticated inventory, without
+DONE. An inventory-write failure remains unauthenticated and fails closed.
 No full CPU measurement is authorized by creating or testing this wrapper.
 """
 from __future__ import annotations
@@ -26,7 +29,7 @@ from analyze_grad00 import INPUT_SHA256  # noqa: E402
 
 PROJECTS = ("julia/CFDSDFWaterLily", "julia/CFDSDFWaterLily110")
 DRYRUN_SWITCHES = ("G2_DRYRUN_T_END", "TA1_PREFLIGHT_ONLY", "TA1_BLOCK_LIMIT", "GRAD00_PREFLIGHT_ONLY")
-MAX_TIMEOUT_S = 60 * 3600  # GRAD-00 rev 0 arm F CPU budget; never extended here.
+MAX_TIMEOUT_S = 60 * 3600  # Shared E/F CPU cap (spec Amendment 2); never extended here.
 CPU_THREADS = 10  # GRAD-00 rev 0 arm F: Mac with ten Julia threads; match Float32 controls.
 
 
@@ -34,10 +37,15 @@ def write_json(path: Path, value) -> None:
     path.write_text(json.dumps(value, indent=2, sort_keys=True, allow_nan=False) + "\n")
 
 
+def write_manifest(out: Path) -> None:
+    write_json(out / "output_manifest.json", {"files": {str(p.relative_to(out)): B.sha(p)
+               for p in sorted(out.rglob("*")) if p.is_file() and p.name != "output_manifest.json"}})
+
+
 def verify_terminal(out: Path, code: int, arm: str, real_type: str, project: str) -> None:
-    """Check the CPU 7/13-run terminal before publishing transport artifacts."""
+    """Check the CPU D0/D1 seven-run terminal before publishing DONE."""
     expected_status = {0: "COMPLETE", 3: "BLOCKED"}[code]
-    directions = B.DIRECTIONS[:2] if real_type == "Float64" else B.DIRECTIONS
+    directions = B.DIRECTIONS[:2]
     order = ["plain", *(d + suffix for d in directions for suffix in ("", "__plus", "__minus"))]
     for filename in ("g2_run_index.json", "grad00_index.json"):
         index = json.loads((out / filename).read_text())
@@ -115,15 +123,18 @@ def run_cpu(*, source_commit: str, reference_path: Path, output_dir: Path, arm: 
         identity["status"] = "COMPLETE" if result.returncode == 0 else "BLOCKED"
         write_json(output_dir / "run_identity.json", identity)
         (output_dir / "DONE").write_text("GRAD-00 CPU terminal verified; run the campaign analyzer once after all required arms exist.\n")
-        write_json(output_dir / "output_manifest.json", {"files": {str(p.relative_to(output_dir)): B.sha(p)
-                   for p in sorted(output_dir.rglob("*")) if p.is_file() and p.name != "output_manifest.json"}})
+        write_manifest(output_dir)
         return 0
-    except BaseException:
+    except BaseException as error:
         (output_dir / "DONE").unlink(missing_ok=True)
         (output_dir / "output_manifest.json").unlink(missing_ok=True)
-        identity.update(failure_stage=stage, status="ERROR")
+        identity.update(failure_stage=stage, status="ERROR", error_reason=str(error))
         write_json(output_dir / "run_identity.json", identity)
         (output_dir / "ERROR.txt").write_text(traceback.format_exc())
+        try:
+            write_manifest(output_dir)
+        except OSError:
+            (output_dir / "output_manifest.json").unlink(missing_ok=True)
         return 1
 
 

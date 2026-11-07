@@ -3,8 +3,9 @@
 # candidate force -(pressure+viscous), Fx drag/-Fz downforce, endpoint-clipped time-weighted [80,120], Dual width 1.
 # Watchdog every 100 steps; BLOCKED at non-finite or >1e30 tangent; only BLOCKED continues, errors abort the job;
 # Dual wall abort remains 8x selected-lambda plain time. Additional terminal tangent maxima are report-only.
-# One shared plain + four (Dual,+epsilon,-epsilon) groups = 13 runs, matching GRAD-00 spec section 4.
-# Precision F: GRAD00_T=Float64, CPU quick/quick_nobound only, D0/D1 (7 runs); all raw source inputs remain canonical Float32.
+# One shared plain + four (Dual,+epsilon,-epsilon) groups = 13 CUDA runs, matching GRAD-00 spec section 4.
+# CPU E/F and Float32 controls use D0/D1 (7 runs), per spec Amendment 2; all raw source inputs remain canonical Float32.
+# Precision F: GRAD00_T=Float64 is CPU quick/quick_nobound only. Preflight argmax locations are report-only.
 # CLI: TA1's 11 arguments followed by D0,D1,D2,P1 epsilon_m (required, no plateau values inferred).
 # env: GRAD00_ARM=quick|quick_nobound|cds|vanLeer|vanLeer_safe, GRAD00_T=Float32|Float64, G2_BACKEND=cpu|cuda.
 # Existing CPU-only G2_DRYRUN_T_END, TA1_PREFLIGHT_ONLY and TA1_BLOCK_LIMIT hooks are unchanged.
@@ -51,7 +52,7 @@ REAL_TYPE_NAME in ("Float32", "Float64") || error("GRAD00_T must be Float32 or F
 const RT = REAL_TYPE_NAME == "Float32" ? Float32 : Float64
 RT === Float64 && (BACKEND != "cpu" || !(ARM in ("quick", "quick_nobound"))) &&
     error("the Float64 precision arm is CPU-only and restricted to quick/quick_nobound")
-const ACTIVE_DIRECTIONS = RT === Float64 ? DIRECTIONS[1:2] : DIRECTIONS
+const ACTIVE_DIRECTIONS = BACKEND == "cpu" ? DIRECTIONS[1:2] : DIRECTIONS
 const LAMBDA = getfield(WaterLily, Symbol(ARM))
 const PREFLIGHT_STEPS = 20
 const WATCH_EVERY = 100
@@ -285,8 +286,33 @@ end
 # ---- 20-step preflight: selected plain/Dual finite, A quick control and D' stock-vanLeer plain control -----------------
 array_sha(a) = bytes2hex(sha256(reinterpret(UInt8, vec(a))))
 
+# Host-only description of the 20-step state. This does not change the frozen watchdog or its gates.
+function preflight_tangent_location(tangents, case, grid)
+    k = findfirst(!isfinite, tangents)
+    finite = k === nothing
+    finite && ((_, k) = findmax(abs.(tangents)))
+    indices = Tuple(k)
+    component = ndims(tangents) == 4 ? indices[4] : 0
+    x = WaterLily.loc(component, CartesianIndex(indices[1:3]), RT)
+    world = ntuple(d -> RT(case.flow_origin_m[d]) + RT(case.flow_spacing_m) * x[d], 3)
+    candidate = Float64(CFDSDFWaterLily.GridSDFBody.sdf_at_world(grid, world))
+    ground = Float64(RT(case.flow_spacing_m) * x[3])  # V16MovingGroundBody has z_plane=0.
+    outside_design = any(d -> world[d] < grid.origin[d] || world[d] > grid.origin[d] + (grid.shape[d] - 1) * grid.h[d], 1:3)
+    value = Float64(tangents[k])
+    return Dict{String,Any}("selection" => finite ? "max_abs_tangent" : "first_non_finite",
+        "index" => collect(indices), "value" => value, "abs_value" => abs(value), "finite" => finite,
+        "solver_position" => collect(x), "world_position_m" => collect(world),
+        "candidate_sdf_m" => candidate, "candidate_sdf_is_fluid_extension" => outside_design,
+        "ground_distance_m" => ground, "combined_sdf_m" => min(candidate, ground),
+        "inside_solid" => min(candidate, ground) < 0,
+        "halo_cell" => any(d -> indices[d] == 1 || indices[d] == case.flow_dims[d] + 2, 1:3),
+        "domain_boundary_clearance_m" => [Float64(min(x[d], case.flow_dims[d] - x[d]) * RT(case.flow_spacing_m)) for d in 1:3])
+end
+
 function preflight(phi32, d32, case, DT, outdir)
-    out = Dict{String,Any}("steps" => PREFLIGHT_STEPS, "arm" => ARM, "arms" => Dict{String,Any}())
+    out = Dict{String,Any}("steps" => PREFLIGHT_STEPS, "arm" => ARM, "arms" => Dict{String,Any}(),
+        "localization_note" => "report only; 1-based array index (u includes component), WaterLily.loc staggered coordinates and canonical primal GridSDF; outside design box candidate SDF is the registered positive fluid extension, not a geometric distance")
+    grid = GridSDF(RT.(phi32), RT.(ORIGIN), RT.((SPACING, SPACING, SPACING)), SHAPE, RT(3), RT(0.15))
     arms = (("selected_dual", LAMBDA, DT), ("selected_plain", LAMBDA, RT))
     ARM == "quick" && (arms = (("quick", WaterLily.quick, DT), arms...))
     ARM == "vanLeer_safe" && (arms = (arms..., ("vanLeer_plain", WaterLily.vanLeer, RT)))
@@ -311,21 +337,23 @@ function preflight(phi32, d32, case, DT, outdir)
             "primal_finite" => all(isfinite, vu) && all(isfinite, vp_),
             "tangent_u_finite" => all(isfinite, tu), "tangent_p_finite" => all(isfinite, tp),
             "max_abs_tangent_u" => maximum(abs, tu), "max_abs_tangent_p" => maximum(abs, tp),
+            "tangent_argmax_u" => preflight_tangent_location(tu, case, grid),
+            "tangent_argmax_p" => preflight_tangent_location(tp, case, grid),
             "primal_u_sha256" => array_sha(vu), "primal_p_sha256" => array_sha(vp_), "total_seconds" => time() - started)
         println("GRAD00_PREFLIGHT_END ", name, " seconds=", out["arms"][name]["total_seconds"]); flush(stdout)
         write_json(joinpath(outdir, "preflight.progress.json"), out)  # partial readouts survive an external timeout; this has no pass label
         sim = bodies = owner = phi_dev = nothing; reclaim()
     end
     selected = out["arms"]["selected_dual"]
-    out["primal_u_bit_equal"] = ARM == "quick" ? out["arms"]["quick"]["primal_u_sha256"] == selected["primal_u_sha256"] : nothing
-    out["primal_p_bit_equal"] = ARM == "quick" ? out["arms"]["quick"]["primal_p_sha256"] == selected["primal_p_sha256"] : nothing
-    out["quick_control_note"] = ARM == "quick" ?
-        "same build and 20-step quick-Dual path as frozen TA1; cross-script hashes are checked by the CPU validation capture" :
+    out["determinism_primal_u_bit_equal"] = ARM == "quick" ? out["arms"]["quick"]["primal_u_sha256"] == selected["primal_u_sha256"] : nothing
+    out["determinism_primal_p_bit_equal"] = ARM == "quick" ? out["arms"]["quick"]["primal_p_sha256"] == selected["primal_p_sha256"] : nothing
+    out["determinism_control_note"] = ARM == "quick" ?
+        "same-build repeated quick-Dual path: determinism only; the separate CPU ta1_bit_comparison.json checks the frozen TA1 cross-script hashes" :
         "not applicable to this arm; preflight checks the selected plain and Dual paths"
     plain = out["arms"]["selected_plain"]
     out["vanLeer_primal_u_bit_equal"] = ARM == "vanLeer_safe" ? out["arms"]["vanLeer_plain"]["primal_u_sha256"] == plain["primal_u_sha256"] : nothing
     out["vanLeer_primal_p_bit_equal"] = ARM == "vanLeer_safe" ? out["arms"]["vanLeer_plain"]["primal_p_sha256"] == plain["primal_p_sha256"] : nothing
-    out["pass"] = (ARM != "quick" || (out["primal_u_bit_equal"] && out["primal_p_bit_equal"])) &&
+    out["pass"] = (ARM != "quick" || (out["determinism_primal_u_bit_equal"] && out["determinism_primal_p_bit_equal"])) &&
                   (ARM != "vanLeer_safe" || (out["vanLeer_primal_u_bit_equal"] && out["vanLeer_primal_p_bit_equal"])) &&
                   all(a -> a["primal_finite"] && a["tangent_u_finite"] && a["tangent_p_finite"], values(out["arms"]))
     return out

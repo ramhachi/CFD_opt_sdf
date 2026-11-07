@@ -45,10 +45,11 @@ def manifest(out):
     dump(out / "output_manifest.json", {"files": {p.name: A.sha256(p) for p in out.iterdir() if p.is_file() and p.name != "output_manifest.json"}})
 
 
-def fixture(out, arm="quick", real_type="Float32", waterlily="1.8.0", *, blocked=(), errors=None, plain_offset=0.0):
+def fixture(out, arm="quick", real_type="Float32", waterlily="1.8.0", *, backend=None, blocked=(), errors=None, plain_offset=0.0):
     """Four constant-force samples bracket the real window; no solver is run."""
     out.mkdir(parents=True)
-    dirs = A.DIRECTIONS[:2] if real_type == "Float64" else A.DIRECTIONS
+    backend = backend or ("cpu" if real_type == "Float64" or waterlily == "1.10.0" else "cuda")
+    dirs = A.DIRECTIONS[:2] if backend == "cpu" else A.DIRECTIONS
     lam = A.LAMBDA_TYPES[arm]
     runs, by_direction = {}, {}
     order = ["plain", *(label for d in dirs for label in (d, d + "__plus", d + "__minus"))]
@@ -108,11 +109,11 @@ def fixture(out, arm="quick", real_type="Float32", waterlily="1.8.0", *, blocked
     preflight_names = (("quick", "selected_dual", "selected_plain") if arm == "quick" else
                        ("selected_dual", "selected_plain", "vanLeer_plain") if arm == "vanLeer_safe" else
                        ("selected_dual", "selected_plain"))
-    index = {"schema_version": 1, "tier": "GRAD-00", "arm": arm, "real_type": real_type, "backend": "cpu" if real_type == "Float64" else "cuda",
+    index = {"schema_version": 1, "tier": "GRAD-00", "arm": arm, "real_type": real_type, "backend": backend,
              "julia": "1.12.6", "waterlily": waterlily, "forwarddiff": "1.4.5", "cuda_jl": "6.3.1", "gpu_name": "Tesla T4", "lambda_type": lam, "window_t_u_l": [80.0, 120.0],
              "sample_every": 8, "dual_width": 1, "block_limit": 1e30, "wall_factor": 8.0, "directions": list(dirs),
              "input_sha256": A.INPUT_SHA256,
-             "epsilon_m": {d: 0.001 for d in A.DIRECTIONS}, "preflight": {"pass": True, "steps": 20, "primal_u_bit_equal": True, "primal_p_bit_equal": True,
+             "epsilon_m": {d: 0.001 for d in A.DIRECTIONS}, "preflight": {"pass": True, "steps": 20, "determinism_primal_u_bit_equal": True, "determinism_primal_p_bit_equal": True,
                  "arms": {name: {"lambda_type": A.LAMBDA_TYPES["quick"] if name == "quick" else A.LAMBDA_TYPES["vanLeer"] if name == "vanLeer_plain" else lam,
                                   "primal_finite": True, "tangent_u_finite": True, "tangent_p_finite": True, "max_abs_tangent_u": 1.0, "max_abs_tangent_p": 1.0,
                                   "primal_u_sha256": "1" * 64, "primal_p_sha256": "2" * 64} for name in preflight_names}},
@@ -124,14 +125,16 @@ def fixture(out, arm="quick", real_type="Float32", waterlily="1.8.0", *, blocked
     dump(out / "preflight.json", index["preflight"])
     dump(out / "g2_run_index.json", {**index, "run_order": order, "run_status": {k: v["status"] for k, v in runs.items()}})
     commit = A._git_output("rev-parse", "HEAD").decode().strip()
-    project = "julia/CFDSDFWaterLily110" if waterlily == "1.10.0" else "julia/CFDSDFWaterLily" if real_type == "Float64" else "julia/CFDSDFWaterLilyT4"
+    project = "julia/CFDSDFWaterLily110" if waterlily == "1.10.0" else "julia/CFDSDFWaterLily" if backend == "cpu" else "julia/CFDSDFWaterLilyT4"
     pins = {name: synthetic_pin(name) for name in A.REQUIRED_SOURCE_PINS | {f"{project}/Project.toml", f"{project}/Manifest.toml"}}
     reference_name = f"synthetic/{out.name}_reference.json"
     SYNTHETIC_REFERENCES[reference_name] = reference()
     pins[reference_name] = synthetic_pin(reference_name)
     dump(out / "run_identity.json", {"source_commit": commit, "source_tree_id": A._git_output("rev-parse", f"{commit}^{{tree}}").decode().strip(),
                                     "failure_stage": None, "spike_exit_code": 3 if blocked else 0, "pins": pins, "verified": pins,
-                                    "arm": arm, "reference": {**reference(), "path": reference_name, "sha256": pins[reference_name]},
+                                    "arm": arm, "backend": backend, "real_type": real_type, "project": project,
+                                    "evidence_class": "SYNTHETIC_TEST_FIXTURE",
+                                    "reference": {**reference(), "path": reference_name, "sha256": pins[reference_name]},
                                     "phi_sha256": A.INPUT_SHA256["phi"], "direction_sha256": A.INPUT_SHA256["directions"]})
     (out / "DONE").write_text("synthetic\n")
     manifest(out)
@@ -170,6 +173,64 @@ def change_run(out, label, change):
             index["runs"][label][kind + "_sha256"] = A.sha256(out / index["runs"][label][kind + "_path"])
     dump(out / "grad00_index.json", index)
     manifest(out)
+
+
+def failed_fixture(out, arm="vanLeer", *, kind="preflight", keep=(), no_index=False):
+    """Reproduce the runner's authenticated ERROR transport, never a CFD result.
+
+    D's preflight payload is the actual attempt-2 CPU output: the plain path is
+    finite but both the values and partials of the Dual path are contaminated.
+    The fixture changes only metadata names renamed by Amendment 3.
+    """
+    index = fixture(out, arm)
+    if kind == "preflight":
+        recorded = ROOT / "docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_vanLeer_Float32/preflight.json"
+        preflight = json.loads(recorded.read_text())
+        for component in ("u", "p"):
+            preflight[f"determinism_primal_{component}_bit_equal"] = preflight.pop(f"primal_{component}_bit_equal")
+        index["preflight"] = preflight
+        index.update(status="INCOMPLETE", error="preflight failed: non-finite selected primal/tangent or control primal bit mismatch")
+    else:
+        index.update(status="ERROR", error={"primal": "non-finite primal force", "wall": "Dual run exceeded 8x plain wall limit", "partial": "interrupted partial run"}[kind])
+    index["runs"] = {name: entry for name, entry in index["runs"].items() if name in keep}
+    order = ["plain", *(d + suffix for d in index["directions"] for suffix in ("", "__plus", "__minus"))]
+    if kind != "preflight":
+        index["active_run"] = order[len(keep)]
+    allowed = {"grad00_index.json", "g2_run_index.json", "preflight.json", "run_identity.json", "output_manifest.json"}
+    allowed.update(name + suffix for name in keep for suffix in (".history.csv", ".summary.json", ".watchdog.csv", ".blocked.json"))
+    for path in out.iterdir():
+        if path.name not in allowed:
+            path.unlink()
+    if kind != "preflight":
+        # run_one closes these files before propagating an exception, without
+        # producing a summary for the unfinished primal or Dual run.
+        active = index["active_run"]
+        (out / f"{active}.history.csv").write_text(",".join(W.HEADER) + "\n")
+        if kind == "primal":
+            row = {key: 0.0 for key in W.HEADER}
+            row.update(step=8.0, t_u_l=0.1, fx=float("nan"))
+            G.write_history(out / f"{active}.history.csv", [row])
+        if active in index["directions"]:
+            (out / f"{active}.watchdog.csv").write_text("step,t_u_l,tan_max_u,tan_max_p,tan_argmax_u,tan_argmax_p\n")
+    dump(out / "grad00_index.json", index)
+    dump(out / "preflight.json", index["preflight"])
+    dump(out / "g2_run_index.json", {**index, "run_order": order, "run_status": {k: v["status"] for k, v in index["runs"].items()}})
+    identity = json.loads((out / "run_identity.json").read_text())
+    identity.update(failure_stage="measurement", spike_exit_code=2, status="ERROR")
+    dump(out / "run_identity.json", identity)
+    (out / "ERROR.txt").write_text(f"Traceback (synthetic transport)\nRuntimeError: measurement script exited 2\n{index['error']}\n")
+    if no_index:
+        for name in ("grad00_index.json", "g2_run_index.json", "preflight.json"):
+            (out / name).unlink()
+    manifest(out)
+    return index
+
+
+def campaign_with_failed_d(root, *, candidates_blocked=False):
+    fixture(root / "quick")
+    for arm in ("quick_nobound", "cds"):
+        fixture(root / arm, arm, blocked=A.DIRECTIONS if candidates_blocked else ())
+    failed_fixture(root / "vanLeer")
 
 
 @pytest.mark.parametrize(("tangent", "fd", "spread", "label"), [
@@ -509,8 +570,8 @@ def test_safe_arm_does_not_replace_a_missing_primary_arm(tmp_path):
         A.analyze_campaign(tmp_path, reference())
 
 
-def test_safe_arm_results_are_labeled_without_changing_fixed_next_step_candidates(tmp_path):
-    # Amendment 2 adds D′ but does not amend rev 0 §5's fixed B-D rule.
+def test_safe_arm_can_allow_the_next_step_when_all_original_candidates_block(tmp_path):
+    # Specification Amendment 1 section 2 and Amendment 2 section 2 include D′.
     for arm in ("quick", "quick_nobound", "cds", "vanLeer"):
         fixture(tmp_path / arm, arm, blocked=A.DIRECTIONS)
     fixture(tmp_path / "vanLeer_safe", "vanLeer_safe")
@@ -518,9 +579,216 @@ def test_safe_arm_results_are_labeled_without_changing_fixed_next_step_candidate
     safe = result["arms"]["vanLeer_safe"]
     assert safe["label"] == "BOUNDED_ALL" and safe["agree_count"] == 4
     assert all(row["agreement"] == "AGREE" for row in safe["directions"].values())
-    assert safe["next_step_eligible"] is False
+    assert safe["next_step_eligible"] is True
+    assert result["next_step"] == "GRAD01_DRAFT_ALLOWED"
+    assert result["rules"]["next_step_arms"] == ["quick_nobound", "cds", "vanLeer", "vanLeer_safe"]
+
+
+def test_real_d_preflight_failure_is_a_terminal_label_and_does_not_stop_campaign(tmp_path):
+    campaign_with_failed_d(tmp_path)
+    checked = A.verify_output(tmp_path / "vanLeer", reference())
+    assert checked["terminal_state"] == "PREFLIGHT_BLOCKED"
+    result = A.analyze_campaign(tmp_path, reference())
+    arm = result["arms"]["vanLeer"]
+    assert arm["label"] == "PREFLIGHT_BLOCKED" and not arm["next_step_eligible"]
+    assert arm["directions"] == {} and arm["direction_count"] == 0
+    assert arm["preflight"]["arms"]["selected_plain"]["primal_finite"] is True
+    assert arm["preflight"]["arms"]["selected_dual"]["primal_finite"] is False
+    assert arm["terminal_reason"]["spike_exit_code"] == 2
+    assert "preflight failed" in arm["terminal_reason"]["index_error"]
+    assert result["next_step"] == "GRAD01_DRAFT_ALLOWED"
+    assert result["arms"]["quick_110"]["label"] == "NOT_RUN"
+    json.dumps(result, allow_nan=False)
+
+
+@pytest.mark.parametrize(("arm", "kind", "keep"), [
+    ("cds", "primal", ()),
+    ("quick_nobound", "wall", ("plain",)),
+    ("vanLeer_safe", "partial", ("plain", A.DIRECTIONS[0])),
+])
+def test_authenticated_primal_wall_and_partial_safe_failures_are_arm_errors(tmp_path, arm, kind, keep):
+    for name in A.PRIMARY_ARMS:
+        if name != arm:
+            fixture(tmp_path / name, name, blocked=A.DIRECTIONS)
+    failed_fixture(tmp_path / arm, arm, kind=kind, keep=keep)
+    result = A.analyze_campaign(tmp_path, reference())
+    failed = result["arms"][arm]
+    assert failed["label"] == "ARM_ERROR" and not failed["next_step_eligible"]
+    assert failed["directions"] == {} and failed["agree_count"] == 0
+    assert failed["terminal_reason"]["error_text"]
+    assert failed["terminal_reason"]["error_sha256"] == A.sha256(tmp_path / arm / "ERROR.txt")
     assert result["next_step"] == "GRAD01_DRAFT_NOT_ALLOWED"
-    assert result["rules"]["next_step_arms"] == ["quick_nobound", "cds", "vanLeer"]
+
+
+def test_failed_plain_preflight_is_arm_error_not_a_tangent_block(tmp_path):
+    out = tmp_path / "vanLeer"
+    index = failed_fixture(out)
+    index["preflight"]["arms"]["selected_plain"]["primal_finite"] = False
+    dump(out / "grad00_index.json", index)
+    dump(out / "preflight.json", index["preflight"])
+    g2 = json.loads((out / "g2_run_index.json").read_text())
+    g2["preflight"] = index["preflight"]
+    dump(out / "g2_run_index.json", g2)
+    manifest(out)
+    assert A.verify_output(out, reference())["terminal_state"] == "ARM_ERROR"
+
+
+def test_authenticated_startup_failure_has_no_invented_runtime_or_scientific_data(tmp_path):
+    out = tmp_path / "cds"
+    failed_fixture(out, "cds", kind="primal", no_index=True)
+    result = A.verify_output(out, reference())
+    assert result["terminal_state"] == "ARM_ERROR" and result["runs"] == {}
+    assert result["index_sha256"] is None
+    assert result["index"]["julia"] is None and result["index"]["forwarddiff"] is None
+
+
+def test_startup_failure_can_finish_a_campaign_and_never_fabricates_plain_delta(tmp_path):
+    for arm in A.PRIMARY_ARMS[1:]:
+        fixture(tmp_path / arm, arm)
+    failed_fixture(tmp_path / "quick", "quick", kind="primal", no_index=True)
+    result = A.analyze_campaign(tmp_path, reference())
+    assert result["arms"]["quick"]["label"] == "ARM_ERROR"
+    assert all(arm.get("plain_minus_arm_a_n", {"fx": None})["fx"] is None for arm in result["arms"].values())
+    assert result["arms"]["quick"]["plain_comparison_same_runtime"] is None
+
+
+def test_startup_failure_rejects_a_contradictory_precision_declaration(tmp_path):
+    out = tmp_path / "cds"
+    failed_fixture(out, "cds", kind="primal", no_index=True)
+    path = out / "run_identity.json"
+    identity = json.loads(path.read_text())
+    identity["real_type"] = "Float64"
+    dump(path, identity)
+    manifest(out)
+    with pytest.raises(ValueError, match="declaration mismatch"):
+        A.verify_output(out, reference())
+
+
+@pytest.mark.parametrize("damage", ["error_sha", "missing_manifest", "missing_identity", "unverified", "exit", "done", "status", "routing", "run_summary", "unexpected_run"])
+def test_failed_arm_authentication_remains_fail_closed(tmp_path, damage):
+    out = tmp_path / "vanLeer"
+    index = failed_fixture(out, kind="wall", keep=("plain",)) if damage == "run_summary" else failed_fixture(out)
+    if damage == "error_sha":
+        (out / "ERROR.txt").write_text("tampered")
+    elif damage in ("missing_manifest", "missing_identity"):
+        (out / ("output_manifest.json" if damage == "missing_manifest" else "run_identity.json")).unlink()
+    elif damage in ("unverified", "exit"):
+        path = out / "run_identity.json"
+        identity = json.loads(path.read_text())
+        identity.update(verified={} if damage == "unverified" else identity["verified"], spike_exit_code=0 if damage == "exit" else 2)
+        dump(path, identity)
+        manifest(out)
+    elif damage == "done":
+        (out / "DONE").write_text("contradiction")
+        manifest(out)
+    elif damage == "run_summary":
+        summary = json.loads((out / "plain.summary.json").read_text())
+        summary["lambda_type"] = A.LAMBDA_TYPES["quick"]
+        dump(out / "plain.summary.json", summary)
+        manifest(out)
+    elif damage == "unexpected_run":
+        patch(out, lambda i: i["runs"].update(unexpected={}))
+    else:
+        if damage == "status":
+            index["status"] = "UNKNOWN"
+        else:
+            index["preflight"]["arms"]["selected_dual"]["lambda_type"] = A.LAMBDA_TYPES["quick"]
+            dump(out / "preflight.json", index["preflight"])
+        dump(out / "grad00_index.json", index)
+        manifest(out)
+    with pytest.raises(ValueError):
+        A.verify_output(out, reference())
+
+
+def test_disagree_component_precedes_an_unresolved_other_component(tmp_path):
+    campaign_with_failed_d(tmp_path)
+    out = tmp_path / "quick_nobound"
+    # fx disagrees while fz is below its declared three-spread threshold.
+    change_run(out, A.DIRECTIONS[0], lambda s: s["window_mean_fx_dual_time"].update(tangent=2.4))
+    rows = W.read_history(out / f"{A.DIRECTIONS[0]}.history.csv")
+    for row in rows:
+        row["fx_tan"] = row["pfx_tan"] = 2.4
+    G.write_history(out / f"{A.DIRECTIONS[0]}.history.csv", rows)
+    change_run(out, A.DIRECTIONS[0], lambda s: s["window_mean_fx_frozen_time"].update(tangent=2.4))
+    ref = reference()
+    ref["directions"][A.DIRECTIONS[0]]["spread_n_per_m"]["fz"] = 10.0
+    for path in tmp_path.glob("*/run_identity.json"):
+        identity = json.loads(path.read_text())
+        name = identity["reference"]["path"]
+        SYNTHETIC_REFERENCES[name] = ref
+        digest = synthetic_pin(name)
+        identity["reference"] = {**ref, "path": name, "sha256": digest}
+        identity["pins"][name] = identity["verified"][name] = digest
+        dump(path, identity)
+        manifest(path.parent)
+    direction = A.analyze_campaign(tmp_path, ref)["arms"]["quick_nobound"]["directions"][A.DIRECTIONS[0]]
+    assert direction["rows"]["fx"]["label"] == "DISAGREE"
+    assert direction["rows"]["fz"]["label"] == "NOT_EVALUABLE"
+    assert direction["agreement"] == "DISAGREE"
+
+
+@pytest.mark.parametrize("successful", [None, "quick_nobound", "cds"])
+def test_check_calculates_safe_run_condition_without_writing(tmp_path, monkeypatch, capsys, successful):
+    campaign_with_failed_d(tmp_path, candidates_blocked=True)
+    if successful:
+        import shutil
+        shutil.rmtree(tmp_path / successful)
+        fixture(tmp_path / successful, successful)
+    path = tmp_path / "reference.json"
+    dump(path, reference())
+    before = {str(p.relative_to(tmp_path)): A.sha256(p) for p in tmp_path.rglob("*") if p.is_file()}
+    monkeypatch.setattr(sys, "argv", ["analyze_grad00.py", str(tmp_path), "--reference", str(path), "--check"])
+    A.main()
+    result = json.loads(capsys.readouterr().out)
+    condition = result["vanLeer_safe_run_condition"]
+    assert condition["met"] is (successful is None)
+    assert condition["human_run_decision_required"] is True
+    assert not (tmp_path / "analysis.json").exists()
+    assert not (tmp_path / "analysis.json.sha256").exists()
+    assert before == {str(p.relative_to(tmp_path)): A.sha256(p) for p in tmp_path.rglob("*") if p.is_file()}
+
+
+def test_three_of_four_next_step_pass_does_not_hide_the_optional_safe_run_condition(tmp_path):
+    campaign_with_failed_d(tmp_path, candidates_blocked=True)
+    import shutil
+    shutil.rmtree(tmp_path / "quick_nobound")
+    fixture(tmp_path / "quick_nobound", "quick_nobound", errors={A.DIRECTIONS[3]: 1.2})
+    result = A.analyze_campaign(tmp_path, reference())
+    assert result["next_step"] == "GRAD01_DRAFT_ALLOWED"
+    assert result["vanLeer_safe_run_condition"]["met"] is True
+
+
+def test_final_write_accepts_authenticated_failure_and_remains_exclusive(tmp_path, monkeypatch, capsys):
+    campaign_with_failed_d(tmp_path)
+    path = tmp_path / "reference.json"
+    dump(path, reference())
+    target = tmp_path / "analysis.json"
+    monkeypatch.setattr(sys, "argv", ["analyze_grad00.py", str(tmp_path), "--reference", str(path), "--write", str(target)])
+    A.main()
+    capsys.readouterr()
+    original = target.read_bytes()
+    assert json.loads(original)["arms"]["vanLeer"]["label"] == "PREFLIGHT_BLOCKED"
+    with pytest.raises(SystemExit, match="1"):
+        A.main()
+    assert target.read_bytes() == original
+
+
+@pytest.mark.parametrize("arm", ["quick", "quick_nobound"])
+def test_float32_cpu_precision_controls_have_exactly_seven_runs(tmp_path, arm):
+    out = tmp_path / arm
+    fixture(out, arm, backend="cpu")
+    index = A.verify_output(out, reference())["index"]
+    assert index["directions"] == list(A.DIRECTIONS[:2])
+    assert len(index["runs"]) == 7
+
+
+@pytest.mark.parametrize("field", ["determinism_primal_u_bit_equal", "determinism_primal_p_bit_equal"])
+def test_quick_requires_named_determinism_gates(tmp_path, field):
+    out = tmp_path / "quick"
+    fixture(out)
+    patch(out, lambda i: i["preflight"].pop(field))
+    with pytest.raises(ValueError, match="determinism"):
+        A.verify_output(out, reference())
 
 
 @pytest.mark.parametrize("damage", ["u_gate", "p_gate", "missing_gate", "missing_control", "control_lambda", "control_u_sha", "control_p_sha", "dual_nonfinite"])

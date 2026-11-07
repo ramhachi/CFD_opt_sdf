@@ -2,13 +2,14 @@
 # Replaces only preflight/run_one inside a test module; main/save_run!/indices are the actual job.
 # julia --project=julia/CFDSDFWaterLily --threads=1 scripts/grad00_orchestration_selftest.jl [OUTPUT_DIR]
 using SHA
+using Test
 
 const TEST_ROOT = normpath(joinpath(@__DIR__, ".."))
 const TEST_OUTPUT = isempty(ARGS) ? joinpath(mktempdir(; prefix="grad00_synthetic_"), "out") : abspath(only(ARGS))
 ispath(TEST_OUTPUT) && error("refusing to overwrite synthetic output: $TEST_OUTPUT")
 ENV["G2_BACKEND"] = "cpu"
-ENV["GRAD00_ARM"] = "quick_nobound"
-ENV["GRAD00_T"] = "Float32"
+ENV["GRAD00_ARM"] = get(ENV, "GRAD00_ARM", "quick_nobound")
+ENV["GRAD00_T"] = get(ENV, "GRAD00_T", "Float32")
 ENV["G2_DRYRUN_T_END"] = "1.0"
 ENV["TA1_PREFLIGHT_ONLY"] = "0"
 pop!(ENV, "TA1_BLOCK_LIMIT", nothing)
@@ -76,6 +77,38 @@ for (name, digest) in zip(SyntheticProducer.DIRECTIONS, DIRECTION_SHAS)
     append!(SyntheticProducer.ARGS, (path, digest))
 end
 append!(SyntheticProducer.ARGS, fill("0.001", 4))
+
+@testset "report-only preflight tangent localization" begin
+    P = SyntheticProducer
+    case = only(c for c in P.w4_cases(P.ORIGIN, P.SPACING) if c.case_id == "flow_24")
+    phi = P.RT.(P.load_raw(PHI_RAW, PHI_SHA))
+    grid = P.GridSDF(phi, P.RT.(P.ORIGIN), P.RT.((P.SPACING, P.SPACING, P.SPACING)), P.SHAPE, P.RT(3), P.RT(0.15))
+    tu = zeros(Float64, 5, 5, 5, 3)
+    tu[3, 4, 2, 2] = -7.0
+    u = P.preflight_tangent_location(tu, case, grid)
+    @test u["selection"] == "max_abs_tangent"
+    @test u["index"] == [3, 4, 2, 2]
+    @test u["value"] == -7.0 && u["abs_value"] == 7.0 && u["finite"]
+    @test u["solver_position"] == [1.5, 2.0, 0.5]  # WaterLily.loc at the y face, not the pressure center.
+    @test !u["halo_cell"] && !u["inside_solid"]
+    @test u["candidate_sdf_is_fluid_extension"] && u["candidate_sdf_m"] == 3.0
+    @test u["ground_distance_m"] ≈ 0.5case.flow_spacing_m rtol=1e-6
+    @test u["world_position_m"] ≈ collect(case.flow_origin_m) .+ case.flow_spacing_m .* u["solver_position"] rtol=1e-6
+    tp = zeros(Float64, 5, 5, 5)
+    tp[1, 2, 3] = NaN
+    p = P.preflight_tangent_location(tp, case, grid)
+    @test p["selection"] == "first_non_finite" && !p["finite"]
+    @test p["index"] == [1, 2, 3] && isnan(p["value"])
+    @test p["solver_position"] == [-0.5, 0.5, 1.5] && p["halo_cell"]
+    @test occursin("\"value\":null", P.json(p))
+    # A synthetic negative SDF at the same positive-ground point exercises
+    # solid membership independently of the canonical geometry's thin edges.
+    solid_grid = P.GridSDF(fill(P.RT(-1), 2, 2, 2), Tuple(P.RT.(u["world_position_m"])),
+                           (P.RT(1), P.RT(1), P.RT(1)), (2, 2, 2), P.RT(3), P.RT(0))
+    solid = P.preflight_tangent_location(tu, case, solid_grid)
+    @test solid["inside_solid"] && solid["combined_sdf_m"] == -1
+end
+
 println("SYNTHETIC_NO_FLOW_BEGIN job_sha256=", bytes2hex(sha256(read(joinpath(@__DIR__, "waterlily_grad00_lambda_2026_11.jl")))))
 SyntheticProducer.main()
 
@@ -89,13 +122,15 @@ sys.path.insert(0, str(root))
 from scripts.analyze_grad00 import DIRECTIONS, INPUT_SHA256, REQUIRED_INDEX_KEYS
 g2 = json.loads((out/'g2_run_index.json').read_text())
 index = json.loads((out/'grad00_index.json').read_text())
-expected = ['plain', *(label for d in DIRECTIONS for label in (d, d+'__plus', d+'__minus'))]
+directions = DIRECTIONS[:2]
+expected = ['plain', *(label for d in directions for label in (d, d+'__plus', d+'__minus'))]
 assert not (REQUIRED_INDEX_KEYS - index.keys())
 assert index['status'] == g2['status'] == 'COMPLETE'
-assert index['backend'] == 'cpu' and index['real_type'] == 'Float32'
+assert index['backend'] == 'cpu' and index['real_type'] in ('Float32','Float64')
+assert index['directions'] == list(directions)
 assert index['evidence_class'] == 'cpu_code_path_dryrun'
 assert index['run_order'] == g2['run_order'] == expected
-assert len(index['runs']) == len(g2['runs']) == 13
+assert len(index['runs']) == len(g2['runs']) == 7
 assert set(index['runs']) == set(expected)
 assert index['input_sha256'] == INPUT_SHA256
 assert all(value is False for value in index['qualification_flags'].values())
@@ -104,25 +139,26 @@ assert index['wall_limit_s'] == 8*index['runs']['plain']['total_seconds']
 base = np.fromfile(root/'docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw', dtype='<f4')
 dirs = {d: np.fromfile(root/'docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs'/f'{d}.dir_f4_fortran.raw', dtype='<f4') for d in DIRECTIONS}
 digest = lambda data: hashlib.sha256(data).hexdigest()
-for d in DIRECTIONS:
+dtype = '<f4' if index['real_type'] == 'Float32' else '<f8'
+for d in directions:
     assert index['by_direction'][d] == {'plain':'plain', 'dual':d, 'plus':d+'__plus', 'minus':d+'__minus', 'epsilon_m':0.001}
 for label in expected:
     run = index['runs'][label]
     assert run['synthetic_no_flow'] is True and run['evidence_class'] == 'SYNTHETIC_TEST_FIXTURE'
     assert run['lambda_type'] == index['lambda_type']
-    assert run['input_phi_storage_type'] == 'Float32'
-    direction = next((d for d in DIRECTIONS if label.startswith(d)), None)
+    assert run['input_phi_storage_type'] == index['real_type']
+    direction = next((d for d in directions if label.startswith(d)), None)
     sign = 1 if label.endswith('__plus') else -1 if label.endswith('__minus') else 0
-    wanted = (base.astype('<f8') + sign*0.001*dirs[direction].astype('<f8')).astype('<f4') if sign else base
+    wanted = (base.astype('<f8') + sign*0.001*dirs[direction].astype('<f8')).astype(dtype) if sign else base.astype(dtype)
     assert run['input_phi_sha256'] == digest(wanted.tobytes()), label
-    if label in DIRECTIONS:
-        assert run['input_tangent_sha256'] == digest(dirs[label].tobytes())
-    for kind in ('summary', 'history', 'watchdog') if label in DIRECTIONS else ('summary', 'history'):
+    if label in directions:
+        assert run['input_tangent_sha256'] == digest(dirs[label].astype(dtype).tobytes())
+    for kind in ('summary', 'history', 'watchdog') if label in directions else ('summary', 'history'):
         assert run[kind+'_sha256'] == digest((out/run[kind+'_path']).read_bytes())
     for component in ('fx','fz'):
         for variant in ('dual_time','frozen_time'):
             assert all(math.isfinite(v) for v in run[f'window_mean_{component}_{variant}'].values())
-    if label not in DIRECTIONS:
+    if label not in directions:
         assert 'watchdog_path' not in run
 for document in (g2, index):
     document['producer_evidence_class'] = document['evidence_class']
@@ -131,10 +167,10 @@ for document in (g2, index):
 for name, document in (('g2_run_index.json',g2), ('grad00_index.json',index)):
     (out/name).write_text(json.dumps(document, indent=2, sort_keys=True)+'\n')
 (out/'SYNTHETIC_NO_FLOW').write_text('Real main/save_run!/metadata; preflight and run_one were synthetic. No simulation or scientific labels.\n')
-manifest = {'evidence_class':'SYNTHETIC_TEST_FIXTURE', 'solver_steps':0, 'run_count':13,
+manifest = {'evidence_class':'SYNTHETIC_TEST_FIXTURE', 'solver_steps':0, 'run_count':7,
             'files':{p.name:digest(p.read_bytes()) for p in out.iterdir() if p.is_file()}}
 (out/'synthetic_manifest.json').write_text(json.dumps(manifest, indent=2, sort_keys=True)+'\n')
-print('SYNTHETIC_ORCHESTRATION_PASS runs=13 solver_steps=0 inputs_and_indices_verified')
+print('SYNTHETIC_ORCHESTRATION_PASS runs=7 solver_steps=0 inputs_and_indices_verified')
 """
 run(`$(joinpath(TEST_ROOT, ".venv", "bin", "python")) -c $CHECK $TEST_ROOT $TEST_OUTPUT`)
 println("SYNTHETIC_NO_FLOW_OUTPUT ", TEST_OUTPUT)

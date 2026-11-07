@@ -47,7 +47,7 @@ def setup(monkeypatch, tmp_path, *, arm="quick", real_type="Float64", project="j
         if error is not None:
             raise error
         status = terminal if terminal is not None else "COMPLETE" if code == 0 else "BLOCKED" if code == 3 else "ERROR"
-        dirs = module.B.DIRECTIONS[:2] if real_type == "Float64" else module.B.DIRECTIONS
+        dirs = module.B.DIRECTIONS[:2]
         order = ["plain", *(d + suffix for d in dirs for suffix in ("", "__plus", "__minus"))]
         statuses = {label: "COMPLETE" for label in order}
         if status == "BLOCKED":
@@ -72,11 +72,11 @@ def setup(monkeypatch, tmp_path, *, arm="quick", real_type="Float64", project="j
 
 
 @pytest.mark.parametrize("arm,real_type,project,count", [
-    ("quick", "Float32", "julia/CFDSDFWaterLily", 13),
-    ("quick_nobound", "Float32", "julia/CFDSDFWaterLily", 13),
+    ("quick", "Float32", "julia/CFDSDFWaterLily", 7),
+    ("quick_nobound", "Float32", "julia/CFDSDFWaterLily", 7),
     ("quick", "Float64", "julia/CFDSDFWaterLily", 7),
     ("quick_nobound", "Float64", "julia/CFDSDFWaterLily", 7),
-    ("quick", "Float32", "julia/CFDSDFWaterLily110", 13),
+    ("quick", "Float32", "julia/CFDSDFWaterLily110", 7),
 ])
 def test_cpu_routing_provenance_and_analyzer_identity(monkeypatch, tmp_path, arm, real_type, project, count):
     module, kwargs, verified, calls, config, ref = setup(monkeypatch, tmp_path, arm=arm, real_type=real_type, project=project)
@@ -120,11 +120,16 @@ def test_exit_and_terminal_status_must_agree(monkeypatch, tmp_path, code, termin
     assert module.run_cpu(**kwargs) == (0 if ok else 1)
     output = kwargs["output_dir"]
     assert (output / "DONE").exists() is ok
-    assert (output / "output_manifest.json").exists() is ok
+    assert (output / "output_manifest.json").is_file()
     assert (output / "ERROR.txt").exists() is not ok
     identity = json.loads((output / "run_identity.json").read_text())
     assert identity["spike_exit_code"] == code
     assert (identity["failure_stage"] is None) is ok
+    if not ok:
+        assert identity["error_reason"]
+    manifest = json.loads((output / "output_manifest.json").read_text())["files"]
+    assert set(manifest) == {p.name for p in output.iterdir() if p.name != "output_manifest.json"}
+    assert all(module.B.sha(output / name) == digest for name, digest in manifest.items())
 
 
 @pytest.mark.parametrize("error", [subprocess.TimeoutExpired("synthetic Julia", 60), OSError("synthetic executable missing")])
@@ -132,7 +137,8 @@ def test_timeout_and_process_error_fail_closed(monkeypatch, tmp_path, error):
     module, kwargs, _, _, _, _ = setup(monkeypatch, tmp_path, error=error)
     assert module.run_cpu(**kwargs) == 1
     output = kwargs["output_dir"]
-    assert (output / "ERROR.txt").is_file() and not (output / "DONE").exists() and not (output / "output_manifest.json").exists()
+    assert (output / "ERROR.txt").is_file() and not (output / "DONE").exists()
+    assert (output / "output_manifest.json").is_file()
     assert json.loads((output / "run_identity.json").read_text())["failure_stage"] == "measurement"
 
 
@@ -141,7 +147,7 @@ def test_missing_or_invalid_terminal_is_not_published(monkeypatch, tmp_path, dam
     module, kwargs, _, _, _, _ = setup(monkeypatch, tmp_path, damage=damage)
     assert module.run_cpu(**kwargs) == 1
     output = kwargs["output_dir"]
-    assert not (output / "DONE").exists() and not (output / "output_manifest.json").exists()
+    assert not (output / "DONE").exists() and (output / "output_manifest.json").is_file()
     assert json.loads((output / "run_identity.json").read_text())["failure_stage"] == "terminal_verification"
 
 

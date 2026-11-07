@@ -1,0 +1,21 @@
+{
+  "command": [
+    "julia",
+    "--project=julia/CFDSDFWaterLily",
+    "--threads=1",
+    "scripts/grad00_orchestration_selftest.jl",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment3/synthetic/CFDSDFWaterLily_quick_nobound_Float32"
+  ],
+  "environment": {
+    "GRAD00_ARM": "quick_nobound",
+    "GRAD00_T": "Float32"
+  },
+  "evidence_class": "SYNTHETIC_TEST_FIXTURE",
+  "exit_code": 0,
+  "solver_steps": 0,
+  "source_path": "scripts/waterlily_grad00_lambda_2026_11.jl",
+  "source_sha256_after": "bba320e88553bfa026afb715572166c936c763be81a537c601fe59300d15cdbe",
+  "source_sha256_before": "bba320e88553bfa026afb715572166c936c763be81a537c601fe59300d15cdbe",
+  "synthetic_run_count": 7,
+  "wall_seconds": 12.112136083072983
+}

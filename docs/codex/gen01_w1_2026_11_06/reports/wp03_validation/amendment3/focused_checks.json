@@ -1,0 +1,39 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_grad00.py",
+    "tests/test_grad00_reference.py",
+    "tests/test_grad00_kernels.py",
+    "tests/test_grad00_cpu.py",
+    "-p",
+    "no:cacheprovider",
+    "--junitxml=docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment3/pytest_focused.xml"
+  ],
+  "counts": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 203
+  },
+  "exit_code": 0,
+  "log_sha256": "b790ed76f48788b4314fc6c579081b1595b46b8247085411a9768a039c79833f",
+  "source_sha256_after": {
+    "scripts/analyze_grad00.py": "da28523625ff3899645684b5919dd52f2789013d8568ecf2326bb714875aa474",
+    "scripts/run_grad00_cpu.py": "6efe0958ae100f0d57c170b25bbf1726a71d53785302deefd0daa115a3f2dd33",
+    "scripts/waterlily_grad00_lambda_2026_11.jl": "bba320e88553bfa026afb715572166c936c763be81a537c601fe59300d15cdbe",
+    "tests/test_grad00.py": "8cb5099ecdf8aea91ac4a854309f62c6035ae96f7a4559b39e4c0ccd5f7d74b4",
+    "tests/test_grad00_cpu.py": "c820c7d6c26433878ccc6c07417b093da74f33979a44b5f5c2ecfab86ec3b5b7"
+  },
+  "source_sha256_before": {
+    "scripts/analyze_grad00.py": "da28523625ff3899645684b5919dd52f2789013d8568ecf2326bb714875aa474",
+    "scripts/run_grad00_cpu.py": "6efe0958ae100f0d57c170b25bbf1726a71d53785302deefd0daa115a3f2dd33",
+    "scripts/waterlily_grad00_lambda_2026_11.jl": "bba320e88553bfa026afb715572166c936c763be81a537c601fe59300d15cdbe",
+    "tests/test_grad00.py": "8cb5099ecdf8aea91ac4a854309f62c6035ae96f7a4559b39e4c0ccd5f7d74b4",
+    "tests/test_grad00_cpu.py": "c820c7d6c26433878ccc6c07417b093da74f33979a44b5f5c2ecfab86ec3b5b7"
+  },
+  "sources_unchanged_during_run": true,
+  "wall_seconds": 8.655078792013228
+}

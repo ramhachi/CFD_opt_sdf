@@ -1,0 +1,44 @@
+{
+  "baseline_rerun": false,
+  "command": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "--ignore=tests/test_lbm_metal.py",
+    "-q",
+    "-rf",
+    "-p",
+    "no:cacheprovider",
+    "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment3/pytest_full.xml"
+  ],
+  "exit_code": 0,
+  "source_sha256_after": {
+    "scripts/analyze_grad00.py": "da28523625ff3899645684b5919dd52f2789013d8568ecf2326bb714875aa474",
+    "scripts/build_grad00_kernels.py": "fff40ee0b881bbc4ecf005c033fd4ae902a5d85f6c4b95f0153d024dce2f933f",
+    "scripts/grad00_orchestration_selftest.jl": "beafbe29b3daac918ab1d8a6e029ac9b9561ae74fcea7f52d9014559d7f97c02",
+    "scripts/grad00_selftest.jl": "05228976561157f53a800fca50b0b2952f38cd897b5d2ce11500f16585c7066d",
+    "scripts/run_grad00_cpu.py": "6efe0958ae100f0d57c170b25bbf1726a71d53785302deefd0daa115a3f2dd33",
+    "scripts/vanleer_safe.jl": "2a964c56415c32ad6bf58c739fdcc3ec5cd4c5490b77f73749858ae2b86ab56b",
+    "scripts/waterlily_grad00_lambda_2026_11.jl": "bba320e88553bfa026afb715572166c936c763be81a537c601fe59300d15cdbe",
+    "tests/test_grad00.py": "8cb5099ecdf8aea91ac4a854309f62c6035ae96f7a4559b39e4c0ccd5f7d74b4",
+    "tests/test_grad00_cpu.py": "c820c7d6c26433878ccc6c07417b093da74f33979a44b5f5c2ecfab86ec3b5b7",
+    "tests/test_grad00_kernels.py": "950bc63c5d9d0823593c69fd60e996d8ad10903aeb2860982297e4587ea2e21a",
+    "tests/test_grad00_reference.py": "73bbe328e26e4b7c5d656f6a6fa1f366a955995faf3c4b9ba7510899ed8b7b82"
+  },
+  "source_sha256_before": {
+    "scripts/analyze_grad00.py": "da28523625ff3899645684b5919dd52f2789013d8568ecf2326bb714875aa474",
+    "scripts/build_grad00_kernels.py": "fff40ee0b881bbc4ecf005c033fd4ae902a5d85f6c4b95f0153d024dce2f933f",
+    "scripts/grad00_orchestration_selftest.jl": "beafbe29b3daac918ab1d8a6e029ac9b9561ae74fcea7f52d9014559d7f97c02",
+    "scripts/grad00_selftest.jl": "05228976561157f53a800fca50b0b2952f38cd897b5d2ce11500f16585c7066d",
+    "scripts/run_grad00_cpu.py": "6efe0958ae100f0d57c170b25bbf1726a71d53785302deefd0daa115a3f2dd33",
+    "scripts/vanleer_safe.jl": "2a964c56415c32ad6bf58c739fdcc3ec5cd4c5490b77f73749858ae2b86ab56b",
+    "scripts/waterlily_grad00_lambda_2026_11.jl": "bba320e88553bfa026afb715572166c936c763be81a537c601fe59300d15cdbe",
+    "tests/test_grad00.py": "8cb5099ecdf8aea91ac4a854309f62c6035ae96f7a4559b39e4c0ccd5f7d74b4",
+    "tests/test_grad00_cpu.py": "c820c7d6c26433878ccc6c07417b093da74f33979a44b5f5c2ecfab86ec3b5b7",
+    "tests/test_grad00_kernels.py": "950bc63c5d9d0823593c69fd60e996d8ad10903aeb2860982297e4587ea2e21a",
+    "tests/test_grad00_reference.py": "73bbe328e26e4b7c5d656f6a6fa1f366a955995faf3c4b9ba7510899ed8b7b82"
+  },
+  "sources_unchanged_during_run": true,
+  "timeout_s": null,
+  "wall_seconds": 1188.3082943750778
+}

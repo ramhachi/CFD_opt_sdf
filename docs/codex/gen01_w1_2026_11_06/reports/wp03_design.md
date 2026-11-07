@@ -1,5 +1,21 @@
 # WP3 GRAD-00 設計メモ
 
+## Amendment 3 実装前メモ（2026-11-06）
+
+開始 HEAD は指定どおり `e2dddf06`（直下 `05138c72`、`0b226184`）。開始時の worktree はクリーン。
+今回の指示と、review worktree の `wp03_review_1_opus.md` および仕様 Amendment 1・2 を優先する。
+下の初回・2回目の記録は履歴として保持し、この節が今回の設計を定める。
+
+- 入口 README、AGENTS と5文書、STATE、branching strategy、GEN-01、rev 0、facts、外部 review と仕様 Amendment 1・2を全文確認した。長文 authority は3 workerが分担し、出力が切れた範囲も再読した。TA1 source/QuickTie/plan/result、rendered runner/metadata、builder、verifier、FD-08 raw/SHA/reference、Julia projects/manifests と既存実装も担当ごとに確認する。v17/flow_24 が今回の契約で、GEN-01 本文の v18 を持ち込まない。
+- OpenCode Go MCP は公開ツールに無く、CLI は通常ログ書き込み失敗、一時 `XDG_DATA_HOME` での再照会も `Provider not found: opencode-go`。設定・認証・追加課金は変えず、native workerへ analyzer/tests、Julia job/CPU wrapper/tests、read-only contract/evidence確認を分担する。親は差分・実検証・報告を統合する。
+- B1: exact output inventory/SHA、commit/tree/pins/reference identity を検証した終端 `ERROR.txt` を結果として扱う。通常 primal が有限、λ routing が正しく、selected Dual tangent が非有限なら `PREFLIGHT_BLOCKED`、その他は理由付き `ARM_ERROR`。実際の D の Dual 値成分も非有限であることを隠さず保持する。未認証・破損・まだ実行中の出力は拒否する。失敗した腕に方向の科学的ラベルは付けない。A–D は終端 identity を要求し、方向ラベルの完備は要求しない。D′/E が無いときだけ `NOT_RUN`、存在する未認証ディレクトリは拒否する。
+- M1/m1/m5: 次段候補は B/C/D/D′。方向ラベルは `DISAGREE > NOT_EVALUABLE > AGREE`。`--check` は B と C の両方が4/4 BOUNDEDかつAGREEでない条件を計算・表示し、何も書かない。D′/E/F の実行判断が済んだ終端 campaign に `--write` を1回だけ行う。自動で測定を開始しない。
+- m2/m3: CPU の `ACTIVE_DIRECTIONS` を Float32/64 とも D0/D1 に揃える。E は1.10.0/quick/Float32、F とその Float32 対照は1.8.0/A・B、各7 run。T4 は4方向13 runを維持する。CPU wrapper の失敗にも manifest を残し、analyzer が認証可能な `ARM_ERROR` として扱えるようにする。CPU/GPU の追加環境変数は導入しない。
+- m4/n1: preflight の u/p tangent に argmax index と符号付き値を追加し、可能な範囲で物理座標と body/ground に対する位置を記録する。watchdog/`tangent_max`/閾値は変えない。自己比較は `determinism_primal_u_bit_equal` / `determinism_primal_p_bit_equal` に改名する。D′ と stock D の比較は別の実比較のまま。凍結 TA1 との独立20-step plain/Dual比較は別の artifact として維持する。
+- TDD: 本物のDの preflight payload を使う ERROR/exit2 fixture、primal blow-up、wall abort、部分 D′、認証改変拒否、D′の次段採用、ラベル優先順位、CPU7-run inventoryを確認する。Julia scalar/selftest、実20-step CPU preflight、1.10 instantiate、TA1とのhash比較、diff再適用も行う。
+- 検証は `wp03_validation/amendment3/` にコマンド、exit、wall、source/artifact SHA、失敗node集合を保存する。CPU preflight は逐次実行し、full-window CPU/GPU測定は行わない。hostのprocess一覧はsandboxが `operation not permitted` で拒否したため確認不能と記録する。結果側全体 pytest は `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` でcap無しに完走し、baseは再採取しない。
+- 今回変更する実装は analyzer、Julia jobと差分、CPU wrapper、関連テストと synthetic orchestration。既存 report/design を更新し、新しいvalidation記録を追加する。必要性がないbuilderの変更はしない。凍結source/evidence、authority本文、全Manifest、既存 `infra/kaggle/kernel_grad00_*/` は変更しない。commit/push/PR本文と5 kernelの再生成はClaudeのhost作業であり、今回は行わない。報告に完全なcommit対象一覧とrunbookを付ける。
+
 ## Amendment 2 実装前メモ（2026-11-06）
 
 今回の開始 HEAD は `0b226184`。直下は `383e37e9`、`ae978d5d` で、作業ツリーはクリーンだった。

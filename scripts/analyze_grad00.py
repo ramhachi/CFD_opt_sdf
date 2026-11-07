@@ -29,9 +29,8 @@ import verify_grad_g2_terminal as V  # noqa: E402
 DIRECTIONS = V.DIRECTIONS
 PRIMARY_ARMS = ("quick", "quick_nobound", "cds", "vanLeer")
 ARMS = (*PRIMARY_ARMS, "vanLeer_safe")
-# rev 0 §5 fixes B-D as the candidates; Amendment 2 adds optional D′ without
-# changing that pre-written rule or automatically deciding when D′ should run.
-NEXT_STEP_ARMS = PRIMARY_ARMS[1:]
+# Specification Amendment 1 §2 and Amendment 2 §2 include optional D′.
+NEXT_STEP_ARMS = ("quick_nobound", "cds", "vanLeer", "vanLeer_safe")
 # quick/cds are exported; Julia prints their imported names without a module.
 # vanLeer and the included quick_nobound helper are not exported.
 LAMBDA_TYPES = {"quick": "typeof(quick)", "quick_nobound": "typeof(WaterLily.quick_nobound)",
@@ -273,28 +272,165 @@ def _history(path: Path, summary: dict, *, blocked: bool) -> list[dict]:
     return rows
 
 
+def _declared_failure_index(identity: dict) -> dict:
+    """Recover only a runner's declared arm when startup produced no index.
+
+    Actual runtime versions, preflight and forces stay unavailable. A source
+    checkout failure with incomplete verified pins still fails authentication.
+    """
+    pins = identity.get("pins", {})
+    projects = [p for p in ("julia/CFDSDFWaterLily", "julia/CFDSDFWaterLily110", "julia/CFDSDFWaterLilyT4")
+                if all(f"{p}/{name}" in pins for name in ("Project.toml", "Manifest.toml"))]
+    _require(len(projects) == 1, "failed runner has no unambiguous pinned project")
+    project = projects[0]
+    backend = "cuda" if project.endswith("T4") else "cpu"
+    precision = "Float32" if backend == "cuda" else identity.get("real_type")
+    _require(precision in ("Float32", "Float64"), "failed CPU runner precision declaration missing")
+    _require(identity.get("backend", backend) == backend and identity.get("project", project) == project
+             and identity.get("real_type", precision) == precision,
+             "failed runner/project declaration mismatch")
+    arm = identity.get("arm")
+    _require(arm in ARMS, "failed runner arm declaration missing")
+    waterlily = "1.10.0" if project.endswith("110") else "1.8.0"
+    _require(backend == "cuda" or arm in ARMS[:2], "failed CPU runner arm is outside E/F")
+    _require(waterlily != "1.10.0" or (arm == "quick" and precision == "Float32"), "failed side E identity mismatch")
+    evidence_class = identity.get("evidence_class", "exploratory_lambda_swap_forward_ad_measurement")
+    _require(evidence_class in ("SYNTHETIC_TEST_FIXTURE", "exploratory_lambda_swap_forward_ad_measurement"), "failed runner evidence class is unknown")
+    return {"arm": arm, "backend": backend, "real_type": precision, "waterlily": waterlily,
+            "julia": None, "forwarddiff": None, "directions": [], "runs": {}, "preflight": None,
+            "evidence_class": evidence_class}
+
+
+def _check_preflight(preflight: dict, arm: str, *, passing: bool, partial: bool = False) -> bool:
+    """Validate produced preflight records; identify the expected D failure.
+
+    'Finite primal' means selected_plain. In real D's failed preflight the
+    selected_dual values are already nonfinite as well as their partials.
+    """
+    _require(isinstance(preflight, dict) and preflight.get("steps") == 20, "preflight absent or invalid steps")
+    _require(partial or type(preflight.get("pass")) is bool, "preflight pass status missing or invalid")
+    _require(preflight.get("arm", arm) == arm, "preflight arm mismatch")
+    arms = preflight.get("arms")
+    expected = {"selected_dual", "selected_plain"} | ({"quick"} if arm == "quick" else {"vanLeer_plain"} if arm == "vanLeer_safe" else set())
+    _require(isinstance(arms, dict) and (set(arms).issubset(expected) if partial else set(arms) == expected), "preflight arm inventory missing")
+    for label, values in arms.items():
+        lam = LAMBDA_TYPES["quick"] if label == "quick" else LAMBDA_TYPES["vanLeer"] if label == "vanLeer_plain" else LAMBDA_TYPES[arm]
+        _require(isinstance(values, dict) and values.get("lambda_type") == lam, "preflight lambda routing mismatch")
+        for flag in ("primal_finite", "tangent_u_finite", "tangent_p_finite"):
+            _require(type(values.get(flag)) is bool and (not passing or values[flag]), "preflight primal/tangent not finite or missing")
+        for component in ("u", "p"):
+            _require(re.fullmatch(r"[a-f0-9]{64}", str(values.get(f"primal_{component}_sha256", ""))) is not None, "preflight primal field SHA missing")
+            maximum = values.get(f"max_abs_tangent_{component}")
+            if values[f"tangent_{component}_finite"]:
+                _number(maximum, "preflight maximum tangent", minimum=0)
+            else:
+                _require(maximum is None, "nonfinite preflight tangent must have a null maximum")
+    if passing:
+        _require(preflight.get("pass") is True, "preflight failed")
+        if arm == "quick":
+            for component in ("u", "p"):
+                _require(preflight.get(f"determinism_primal_{component}_bit_equal") is True,
+                         "quick preflight determinism gate failed or absent")
+                _require(arms["quick"][f"primal_{component}_sha256"] == arms["selected_dual"][f"primal_{component}_sha256"],
+                         "quick preflight determinism hashes disagree")
+        if arm == "vanLeer_safe":
+            for component in ("u", "p"):
+                _require(preflight.get(f"vanLeer_primal_{component}_bit_equal") is True,
+                         "vanLeer_safe preflight is not primal bit-equal to vanLeer")
+                _require(arms["vanLeer_plain"][f"primal_{component}_sha256"] == arms["selected_plain"][f"primal_{component}_sha256"],
+                         "vanLeer_safe/vanLeer plain preflight bit hashes disagree")
+    if partial:
+        return False
+    plain, dual = arms["selected_plain"], arms["selected_dual"]
+    return (preflight.get("pass") is False and plain["primal_finite"]
+            and all(plain[f"tangent_{c}_finite"] for c in ("u", "p"))
+            and any(not dual[f"tangent_{c}_finite"] for c in ("u", "p")))
+
+
+def _failed_output(out_dir: Path, inventory: dict, identity: dict, index: dict, *, has_index: bool) -> dict:
+    """Authenticate failure details without assigning any direction labels."""
+    stage = identity.get("failure_stage")
+    code = identity.get("spike_exit_code")
+    _require(isinstance(stage, str) and stage.strip(), "ERROR transport has no recorded failure stage")
+    _require(code is None or type(code) is int, "invalid failed-run exit code")
+    _require(code not in (0, 3) or stage == "terminal_verification", "ERROR transport contradicts successful measurement exit")
+    text = (out_dir / "ERROR.txt").read_text()
+    _require(text.strip(), "ERROR.txt has no recorded reason")
+    terminal = "ARM_ERROR"
+    preflight = index.get("preflight")
+    if has_index:
+        _require(index["status"] in ("ERROR", "INCOMPLETE", "RUNNING", "COMPLETE", "BLOCKED"), "unknown failed arm status")
+        if index["status"] in ("ERROR", "INCOMPLETE"):
+            _require(code == 2 and isinstance(index.get("error"), str) and index["error"].strip(), "failed index lacks job exit 2 or recorded reason")
+        g2 = _read_json(out_dir / "g2_run_index.json")
+        for key in ("status", "arm", "real_type", "backend", "waterlily", "lambda_type", "directions", "epsilon_m", "input_sha256", "preflight"):
+            _require(g2.get(key) == index.get(key), f"failed g2/grad00 {key} mismatch")
+        dirs = index["directions"]
+        order = ["plain", *(d + suffix for d in dirs for suffix in ("", "__plus", "__minus"))]
+        _require(g2.get("run_order") == order and isinstance(index["runs"], dict), "failed arm run order/inventory mismatch")
+        saved = index["runs"]
+        _require(set(saved) == set(order[:len(saved)]) and set(g2.get("runs", {})) == set(saved)
+                 and set(g2.get("run_status", {})) == set(saved), "failed arm saved runs are not a valid prefix")
+        for label, entry in saved.items():
+            _require(isinstance(entry, dict), f"{label}: saved failed-arm record is invalid")
+            for kind in (("summary", "history", "watchdog") if label in dirs else ("summary", "history")):
+                name = f"{label}.{kind}.{'json' if kind == 'summary' else 'csv'}"
+                _require(entry.get(kind + "_path") == name and entry.get(kind + "_sha256") == inventory.get(name),
+                         f"{label}: failed-arm {kind} SHA/path mismatch")
+                _require(name in inventory, f"{label}: failed-arm {kind} artifact missing")
+            summary = _read_json(out_dir / entry["summary_path"])
+            _require(all(entry.get(k) == v for k, v in summary.items()), f"{label}: failed-arm record differs from authenticated summary")
+            _require(summary.get("label") == label and summary.get("lambda_type") == LAMBDA_TYPES[index["arm"]], f"{label}: failed-arm summary routing mismatch")
+            status = summary.get("status")
+            _require(status in (("COMPLETE", "BLOCKED") if label in dirs else ("COMPLETE",))
+                     and g2["run_status"][label] == status, f"{label}: failed-arm saved status mismatch")
+            _number(summary.get("total_seconds"), f"{label} wall", minimum=0)
+            _number(summary.get("peak_vram_bytes"), f"{label} VRAM", minimum=0)
+        _require({p.name for p in out_dir.glob("*.history.csv")}.issubset({f"{label}.history.csv" for label in order}), "failed arm has an undeclared history")
+        _require({p.name for p in out_dir.glob("*.watchdog.csv")}.issubset({f"{d}.watchdog.csv" for d in dirs}), "failed arm has an undeclared watchdog")
+        if preflight is not None:
+            blocked = _check_preflight(preflight, index["arm"], passing=False)
+            _require("preflight.json" in inventory and _read_json(out_dir / "preflight.json") == preflight, "failed preflight index/artifact mismatch")
+            if blocked and index["status"] == "INCOMPLETE" and code == 2 and not saved:
+                terminal = "PREFLIGHT_BLOCKED"
+        elif "preflight.progress.json" in inventory:
+            _check_preflight(_read_json(out_dir / "preflight.progress.json"), index["arm"], passing=False, partial=True)
+    return {"index": index, "runs": {}, "source_commit": identity["source_commit"],
+            "index_sha256": sha256(out_dir / "grad00_index.json") if has_index else None,
+            "terminal_state": terminal, "runtime_observed": has_index, "preflight": preflight,
+            "terminal_reason": {"failure_stage": stage, "spike_exit_code": code, "index_status": index.get("status"),
+                                "index_error": index.get("error"), "error_text": text, "error_sha256": inventory["ERROR.txt"],
+                                "identity_sha256": inventory["run_identity.json"], "manifest_sha256": sha256(out_dir / "output_manifest.json")}}
+
+
 def verify_output(out_dir: Path, reference: dict) -> dict:
-    """Authenticate a complete 13-run arm (7 runs for CPU Float64) and means.
+    """Authenticate a terminal arm: full measurements or recorded failures.
 
     Short CPU preflights are intentionally rejected here: they cannot acquire
     scientific labels. The kernel's own index remains available for inspection.
     """
     validate_reference(reference)
     out_dir = Path(out_dir)
-    _require((out_dir / "DONE").is_file() and not any((out_dir / p).exists() for p in ("ERROR.txt", "ERROR.json")), "DONE missing or ERROR present")
+    failed = (out_dir / "ERROR.txt").is_file()
+    _require((out_dir / "DONE").is_file() != failed and not (out_dir / "ERROR.json").exists(), "exactly one of DONE or ERROR.txt is required")
     inventory = _read_json(out_dir / "output_manifest.json").get("files")
     _require(isinstance(inventory, dict) and inventory, "output manifest files missing")
     actual = {str(p.relative_to(out_dir)) for p in out_dir.rglob("*") if p.is_file() and p.name != "output_manifest.json"}
     _require(actual == set(inventory), "output manifest does not cover the exact output file inventory")
     for name, digest in inventory.items():
         _require(sha256(_relative_file(out_dir, name)) == digest, f"output SHA mismatch: {name}")
-    for required in ("DONE", "run_identity.json", "g2_run_index.json", "grad00_index.json"):
+    for required in (("ERROR.txt", "run_identity.json") if failed else ("DONE", "run_identity.json", "g2_run_index.json", "grad00_index.json")):
         _require(required in inventory, f"output manifest omits {required}")
     identity = _read_json(out_dir / "run_identity.json")
-    _require(identity.get("failure_stage") is None and identity.get("spike_exit_code") in (0, 3), "runner reports failure")
+    if not failed:
+        _require(identity.get("failure_stage") is None and type(identity.get("spike_exit_code")) is int and identity["spike_exit_code"] in (0, 3), "runner reports failure")
+    if failed and "grad00_index.json" not in inventory:
+        index = _declared_failure_index(identity)
+        _source_identity(identity, index, reference)
+        return _failed_output(out_dir, inventory, identity, index, has_index=False)
     index = _read_json(out_dir / "grad00_index.json")
     _require(isinstance(index, dict), "grad00_index must be an object")
-    missing = REQUIRED_INDEX_KEYS - index.keys()
+    missing = (REQUIRED_INDEX_KEYS - {"preflight"} if failed else REQUIRED_INDEX_KEYS) - index.keys()
     _require(not missing, f"grad00_index missing required keys: {sorted(missing)}")
     _require(index["schema_version"] == 1 and index["tier"] == "GRAD-00", "unknown grad00_index schema")
     arm, precision = index["arm"], index["real_type"]
@@ -310,23 +446,15 @@ def verify_output(out_dir: Path, reference: dict) -> dict:
     if precision == "Float64":
         _require(arm in ARMS[:2] and index["backend"] == "cpu" and index["waterlily"] == "1.8.0", "precision F requires CPU Float64 arms A/B on WaterLily 1.8.0")
     if index["waterlily"] == "1.10.0":
-        _require(arm == "quick" and precision == "Float32", "side E is quick Float32 on WaterLily 1.10.0")
+        _require(arm == "quick" and precision == "Float32" and index["backend"] == "cpu", "side E requires CPU quick Float32 on WaterLily 1.10.0")
     if index["backend"] == "cpu":
         _require(arm in ARMS[:2], "full-window CPU precision comparison is restricted to A/B")
-    dirs = DIRECTIONS[:2] if precision == "Float64" else DIRECTIONS
+    dirs = DIRECTIONS[:2] if index["backend"] == "cpu" else DIRECTIONS
     _require(index["directions"] == list(dirs), "direction inventory mismatch")
     _require(index["window_t_u_l"] == list(WINDOW) and index["sample_every"] == 8 and index["dual_width"] == 1, "full-window/sampling/Dual width mismatch; CPU dry runs are not scientific results")
     _require(index["block_limit"] == BLOCK_LIMIT and index["wall_factor"] == 8.0, "watchdog/wall threshold mismatch")
     _require(isinstance(index["qualification_flags"], dict) and set(index["qualification_flags"]) == set(FLAGS)
              and all(value is False for value in index["qualification_flags"].values()), "qualification_flags must remain false")
-    _require(index["status"] in ("COMPLETE", "BLOCKED"), "arm did not complete its full inventory")
-    _require(identity["spike_exit_code"] == (3 if index["status"] == "BLOCKED" else 0), "runner exit/index status mismatch")
-    preflight = index["preflight"]
-    _require(isinstance(preflight, dict) and preflight.get("pass") is True and preflight.get("steps") == 20, "preflight failed or absent")
-    if arm == "quick":
-        _require(preflight.get("primal_u_bit_equal") is True and preflight.get("primal_p_bit_equal") is True, "quick preflight is not primal bit-equal")
-    if arm == "vanLeer_safe":
-        _require(all(preflight.get(f"vanLeer_primal_{c}_bit_equal") is True for c in ("u", "p")), "vanLeer_safe preflight is not primal bit-equal to vanLeer")
     expected_lambda = LAMBDA_TYPES[arm]
     _require(index["lambda_type"] == expected_lambda, "lambda_type is not the selected convection scheme")
     _require(index["input_sha256"] == INPUT_SHA256, "registered input_sha256 mismatch")
@@ -334,20 +462,13 @@ def verify_output(out_dir: Path, reference: dict) -> dict:
     for direction in DIRECTIONS:
         epsilon = _number(index["epsilon_m"][direction], f"{direction} epsilon_m", positive=True)
         _require(epsilon <= 5e-3 and epsilon == reference["directions"][direction]["epsilon_m"], f"{direction}: epsilon differs from reference or exceeds 5 mm")
-    preflight_arms = preflight.get("arms")
-    expected_preflight = {"selected_dual", "selected_plain"} | ({"quick"} if arm == "quick" else {"vanLeer_plain"} if arm == "vanLeer_safe" else set())
-    _require(isinstance(preflight_arms, dict) and set(preflight_arms) == expected_preflight, "preflight arm inventory missing")
-    for label, values in preflight_arms.items():
-        _require(values.get("lambda_type") == (LAMBDA_TYPES["quick"] if label == "quick" else LAMBDA_TYPES["vanLeer"] if label == "vanLeer_plain" else expected_lambda), "preflight lambda routing mismatch")
-        _require(all(values.get(k) is True for k in ("primal_finite", "tangent_u_finite", "tangent_p_finite")), "preflight primal/tangent not finite")
-        for component in ("u", "p"):
-            _require(re.fullmatch(r"[a-f0-9]{64}", str(values.get(f"primal_{component}_sha256", ""))) is not None, "preflight primal field SHA missing")
-            _number(values.get(f"max_abs_tangent_{component}"), "preflight maximum tangent", minimum=0)
-            if arm == "quick":
-                _require(preflight_arms["quick"][f"primal_{component}_sha256"] == preflight_arms["selected_dual"][f"primal_{component}_sha256"], "quick preflight bit hashes disagree")
-    if arm == "vanLeer_safe":
-        for component in ("u", "p"):
-            _require(preflight_arms["vanLeer_plain"][f"primal_{component}_sha256"] == preflight_arms["selected_plain"][f"primal_{component}_sha256"], "vanLeer_safe/vanLeer plain preflight bit hashes disagree")
+    if failed:
+        _require("g2_run_index.json" in inventory, "failed output index has no g2 index")
+        return _failed_output(out_dir, inventory, identity, index, has_index=True)
+    _require(index["status"] in ("COMPLETE", "BLOCKED"), "arm did not complete its full inventory")
+    _require(identity["spike_exit_code"] == (3 if index["status"] == "BLOCKED" else 0), "runner exit/index status mismatch")
+    preflight = index["preflight"]
+    _check_preflight(preflight, arm, passing=True)
     _require("preflight.json" in inventory and _read_json(out_dir / "preflight.json") == preflight, "preflight index/artifact mismatch")
     order = ["plain", *(label for d in dirs for label in (d, d + "__plus", d + "__minus"))]
     g2 = _read_json(out_dir / "g2_run_index.json")
@@ -457,6 +578,12 @@ def _runtime(checked):
     return {k: checked["index"].get(k) for k in ("backend", "julia", "waterlily", "forwarddiff", "cuda_jl", "gpu_name")}
 
 
+def _plain_difference(checked, control):
+    if "plain" not in checked["runs"] or "plain" not in control["runs"]:
+        return {c: None for c in ("fx", "fz")}
+    return {c: _mean(checked["runs"]["plain"], c) - _mean(control["runs"]["plain"], c) for c in ("fx", "fz")}
+
+
 def analyze_campaign(root: Path, reference: dict) -> dict:
     validate_reference(reference)
     root = Path(root)
@@ -470,7 +597,7 @@ def analyze_campaign(root: Path, reference: dict) -> dict:
     _require("vanLeer_safe" not in verified or verified["vanLeer_safe"]["index"]["arm"] == "vanLeer_safe", "vanLeer_safe output directory contains a different arm")
     identities = [_identity(v) for v in verified.values()]
     _require(len(set(identities)) == len(identities), "duplicate arm/precision/version/backend identity")
-    _require({(arm, "Float32", "1.8.0", "cuda") for arm in PRIMARY_ARMS}.issubset(identities), "all four primary CUDA/T4 A-D arms are required before final analysis")
+    _require({(arm, "Float32", "1.8.0", "cuda") for arm in PRIMARY_ARMS}.issubset(identities), "all four primary CUDA/T4 A-D arms require authenticated terminal outputs before analysis")
     classes = {v["index"]["evidence_class"] for v in verified.values()}
     _require(len(classes) == 1, "synthetic and measured evidence classes cannot be mixed")
     control = next(v for v in verified.values() if _identity(v) == ("quick", "Float32", "1.8.0", "cuda"))
@@ -479,6 +606,18 @@ def analyze_campaign(root: Path, reference: dict) -> dict:
     arms, allowed = {}, []
     for name, checked in verified.items():
         index, runs = checked["index"], checked["runs"]
+        common = {"arm": index["arm"], "real_type": index["real_type"], "waterlily": index["waterlily"],
+                  "backend": index["backend"], "runtime": _runtime(checked), "runtime_observed": checked.get("runtime_observed", True),
+                  "index_sha256": checked["index_sha256"], "source_commit": checked["source_commit"],
+                  "plain_minus_arm_a_n": _plain_difference(checked, control),
+                  "plain_comparison_arm_a_source_commit": control["source_commit"],
+                  "plain_comparison_same_runtime": _runtime(checked) == _runtime(control)
+                  if checked.get("runtime_observed", True) and control.get("runtime_observed", True) else None}
+        if checked.get("terminal_state"):
+            arms[name] = {**common, "label": checked["terminal_state"], "terminal_reason": checked["terminal_reason"],
+                          "preflight": checked["preflight"], "agree_count": 0, "direction_count": 0,
+                          "directions": {}, "next_step_eligible": False, "wall_seconds_all_runs": None, "peak_vram_bytes": None}
+            continue
         directions = {}
         for direction in index["directions"]:
             run = runs[direction]
@@ -495,7 +634,7 @@ def analyze_campaign(root: Path, reference: dict) -> dict:
             entry["rows"] = rows
             if state == "BOUNDED":
                 labels = [r["label"] for r in rows.values()]
-                entry["agreement"] = "NOT_EVALUABLE" if "NOT_EVALUABLE" in labels else "AGREE" if all(v == "AGREE" for v in labels) else "DISAGREE"
+                entry["agreement"] = "DISAGREE" if "DISAGREE" in labels else "NOT_EVALUABLE" if "NOT_EVALUABLE" in labels else "AGREE"
             directions[direction] = entry
         count = sum(v["boundedness"] == "BOUNDED" for v in directions.values())
         label = "BOUNDED_ALL" if count == len(directions) else "BLOCKED_ALL" if not count else "PARTIAL"
@@ -503,22 +642,28 @@ def analyze_campaign(root: Path, reference: dict) -> dict:
         eligible = index["arm"] in NEXT_STEP_ARMS and index["real_type"] == "Float32" and index["waterlily"] == "1.8.0" and index["backend"] == "cuda" and len(directions) == 4
         if eligible and label == "BOUNDED_ALL" and agree_count >= 3:
             allowed.append(name)
-        arms[name] = {"arm": index["arm"], "real_type": index["real_type"], "waterlily": index["waterlily"], "label": label,
-                      "backend": index["backend"], "runtime": _runtime(checked),
+        arms[name] = {**common, "label": label,
                       "agree_count": agree_count, "direction_count": len(directions), "next_step_eligible": eligible, "directions": directions,
-                      "plain_minus_arm_a_n": {c: _mean(runs["plain"], c) - _mean(control["runs"]["plain"], c) for c in ("fx", "fz")},
-                      "plain_comparison_arm_a_source_commit": control["source_commit"], "plain_comparison_same_runtime": _runtime(checked) == _runtime(control),
-                      "index_sha256": checked["index_sha256"], "source_commit": checked["source_commit"],
                       "wall_seconds_all_runs": sum(r["total_seconds"] for r in runs.values()), "peak_vram_bytes": max(r["peak_vram_bytes"] for r in runs.values())}
     if not any(v["index"]["arm"] == "vanLeer_safe" for v in verified.values()):
         arms["vanLeer_safe"] = {"arm": "vanLeer_safe", "label": "NOT_RUN", "reason": "output_directory_absent",
                                "agree_count": 0, "direction_count": 0, "directions": {}, "next_step_eligible": False}
+    if not any(v["index"]["waterlily"] == "1.10.0" for v in verified.values()):
+        _require("quick_110" not in arms, "quick_110 directory does not identify CPU side E")
+        arms["quick_110"] = {"arm": "quick", "waterlily": "1.10.0", "backend": "cpu", "real_type": "Float32",
+                             "label": "NOT_RUN", "reason": "output_directory_absent", "agree_count": 0,
+                             "direction_count": 0, "directions": {}, "next_step_eligible": False}
+    bc = {arm: next(value for value in arms.values() if value["arm"] == arm and value.get("backend") == "cuda")
+          for arm in ("quick_nobound", "cds")}
+    safe_condition = {"met": all(not (value["label"] == "BOUNDED_ALL" and value["direction_count"] == 4 and value["agree_count"] == 4) for value in bc.values()),
+                      "human_run_decision_required": True, "rule": "run D-prime only if neither B nor C is BOUNDED and AGREE in all four directions",
+                      "basis": {arm: {key: value[key] for key in ("label", "direction_count", "agree_count")} for arm, value in bc.items()}}
     precision_differences = {}
     for arm in ARMS[:2]:
         f32 = next((v for v in verified.values() if _identity(v) == (arm, "Float32", "1.8.0", "cpu")), None)
         f32 = f32 or next((v for v in verified.values() if _identity(v) == (arm, "Float32", "1.8.0", "cuda")), None)
         f64 = next((v for v in verified.values() if _identity(v) == (arm, "Float64", "1.8.0", "cpu")), None)
-        if f32 and f64:
+        if f32 and f64 and not f32.get("terminal_state") and not f64.get("terminal_state"):
             paired = {}
             for d in DIRECTIONS[:2]:
                 both_bounded = f32["runs"][d]["status"] == f64["runs"][d]["status"] == "COMPLETE"
@@ -531,7 +676,7 @@ def analyze_campaign(root: Path, reference: dict) -> dict:
                                          "cross_backend_confound": f32["index"]["backend"] != f64["index"]["backend"], "directions": paired,
                                          "interpretation": "descriptive CPU Float64 minus Float32; any backend/runtime differences remain confounded with precision"}
     return {"kind": "grad00_lambda_analysis", "analysis_runs": 1, "evidence_class": "SYNTHETIC_TEST_FIXTURE" if all(v["index"].get("evidence_class") == "SYNTHETIC_TEST_FIXTURE" for v in verified.values()) else "EXPLORATORY_COMMITTED",
-            "arms": arms, "precision_differences": precision_differences,
+            "arms": arms, "precision_differences": precision_differences, "vanLeer_safe_run_condition": safe_condition,
             "next_step": "GRAD01_DRAFT_ALLOWED" if allowed else "GRAD01_DRAFT_NOT_ALLOWED", "eligible_arms_passing_next_rule": allowed,
             "reference": reference, "historical_fd08_model_a_scope_record_sha256": SCOPE_RECORD_SHA256,
             "rules": {"relative_error": RELATIVE_ERROR, "spread_multiple": SPREAD_MULTIPLE, "block_limit": BLOCK_LIMIT, "blocks_strictly_above_limit": True,
