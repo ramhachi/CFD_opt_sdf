@@ -97,3 +97,14 @@ review 全文：`/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/git
 11. **多角形の表現**（Amendment 4 §2 のまま）：schema と docstring に明記。
 12. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。
 13. **commit／push は Claude が host で行う。** 報告に commit すべきファイルの一覧を書く。GPU smoke は user の機材で後で行う（review の条件を報告の runbook に書く）。
+
+## Amendment 6（2026-11-07。4 回目（PR #89、`0741a474`）への 2 回目の Opus review の回答。round-1 の B1／M1／M3 と minors は closed、M2 は partial。この節が本文と Amendment 1〜5 より優先する）
+
+review 全文：`/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/codex/gen01_w1_2026_11_06/reviews/wp04_review_2_opus.md`。登録の判断は同じ worktree の `docs/topo2d00_registration_2026_11_01.md` **Amendment 7**（読む）。
+
+1. **N1。** 順位比較は両側で resolved な対だけ。W か R の点順位が非単調（E2 が最良／最悪）なら E1↔E3 の差も両側で required（未解決なら UNRESOLVED）。review の (h′)（E1↔E3 が雑音レベル）が DISCORDANT ではなく UNRESOLVED になるテストと、resolved な対の逆順が DISCORDANT になるテスト。analyzer と checker の両方。
+2. **N2。** `prerun_window.py` を登録 Amendment 7 §2 に書き直す：burn-in の候補は最初のサンプル時刻から 50 c₁/U 刻み、判定は ±2 SE（SE は残り部分の block 20 c₁/U の batch-means SE）、≥ 80、fallback は 130 c₁/U で `BURN_IN_FALLBACK`；S0 は L ∈ {10, 20, 40} の点推定の最大（χ² 上限なし）；W は 50 の倍数で 400 で clip（`WINDOW_CAPPED`）、拒否しない。`scene_campaign.parent_window` の > 400 拒否を clip に変える。**合成 AR(1)（既知 S0、200 seed）で拒否率 0、W の中央値が真値の 1.5 倍以内**を示すテストを足す（review の表と同じ設定）。WP2 統合後に最初のサンプルが step 1 の後に来ても B の候補が成立することをテスト。
+3. **N3。** DOMAIN control は記述のみ：不完全・timeout・単一位相の DOMAIN state は `DOMAIN_NOT_JUDGED` とし、解析全体を拒否しない。analyzer と checker を揃えてテスト。
+4. **NOTE 2。** GPU smoke の runbook に「force sample あたりの wall」を足す。
+5. 重点テスト（tests/topo2d00）と Julia 自己テストを回す。全体 pytest は **不要**（変更は analyzer／checker／prerun／campaign とテストだけ。job と幾何は触らない）。
+6. **commit／push は Claude が host で行う。** worktree は `0741a474`。報告に commit すべきファイルの一覧を書く。
