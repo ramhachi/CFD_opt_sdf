@@ -76,3 +76,13 @@ review 全文：`/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/git
 6. **m6／n6／n3／n5。** summary に timing の非互換を明記、header／usage／DONE の文言を FORCE-00 に、C4 の 15 % 境界に 1e-9 の相対許容、球の半径は 1 箇所。
 7. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。
 8. **commit／push は Claude が host で行う。** worktree は `afac79ed`。報告に commit すべきファイルの一覧を書く。GPU（F1〜F3）は user が後で回す。
+
+## Amendment 4（2026-11-07。4 回目（PR #84、`6881a64e`）への 2 回目の Opus review の回答：INTEGRATE_AS_IS。小さな追加だけ。この節が本文と Amendment 1〜3 より優先する）
+
+review 全文：`/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/codex/gen01_w1_2026_11_06/reviews/wp02_review_2_opus.md`。仕様の判断は同じ worktree の `docs/force00_force_readout_gate_2026_11_01.md` **Amendment 2**（読む）。
+
+1. **N1。** job は `gen01/Force00.jl`・job 自身・dispatcher・`force00_boxes.json` の SHA を **warm-up の前**に計算・記録し、欠落や不一致はその時点で失敗させる。U1／U2 を再実行して決定性と閉包を再確認（U1 の記録は新しい SHA に更新）。
+2. **Kaggle kernel builder（新規）。** `scripts/build_force00_kernels.py`：GRAD-00 の `build_grad00_kernels.py`／TA1 builder の流儀（`sha`／`verify_source`、凍結 runner template の再利用、source commit と全 pin の検証、timeout、T4 metadata）で、F1（flow_24、8 位相、dispatcher 経由）、F2（flow_32、SCREEN-01 の f32a 参照）、F3（flow_32、親と `camber_m19.7`、k7〜k10）と **単一位相の smoke kernel** を `infra/kaggle/kernel_force00_*/` に render する。`--source-commit` と `--boxes docs/harness/force00_boxes.json` を必須にし、box file・dispatcher・job・`Force00.jl` を pin に含める。render 自体は Claude が commit 後に host で行うので、今回は builder とテスト（fake 実行、pin の検証、dirty tree の拒否、未設定での停止）まで。`tests/test_force00_kernels.py`。
+3. worktree は統合 branch（WP1・WP3 統合済み）と merge 済みで、`gen01/README.md` は統合側のものを採用している。`git log --oneline -3` で確認してから始める。
+4. 重点テスト（gate／boxes／kernels／inputs）と Julia 自己テストを回す。全体 pytest は **不要**（変更は job・builder・テスト・記録だけ。`src/` と harness tool の byte 不変だけ報告する）。
+5. **commit／push は Claude が host で行う。** 報告に commit すべきファイルの一覧を書く。
