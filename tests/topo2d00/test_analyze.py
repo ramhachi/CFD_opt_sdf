@@ -5,7 +5,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from scipy.stats import chi2, t
+from scipy.stats import t
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -27,7 +27,9 @@ def test_paired_statistics_and_bounded_retention():
     assert result["label"] == "CONCORDANT"
     stat = result["waterlily"]["1000"]["12"]["downforce"]
     assert stat["mean"] == pytest.approx(1)
-    assert stat["sigma_upper"] >= max(stat["sigma_a"], stat["sigma_b"])
+    assert stat["sigma"] == max(stat["sigma_a"], stat["sigma_b"])
+    assert stat["se"] == pytest.approx(stat["sigma"] / 4)
+    assert not any("upper" in key for key in stat)
     assert stat["ci90"][0] < 1 < stat["ci90"][1]
     assert len(result["tr00"]["qualified_cells"]) == 4
     ratio = result["agreement"]["1000"]["cells"]["SA-WF/fine30"]["RETENTION_12"]
@@ -97,7 +99,7 @@ def test_rans_mesh_failure_remains_distinct_from_numerical():
     row["status"]["E3"] = "MESH_FAILED"
     row["forces"]["E3"] = row["mesh_sha256"]["E3"] = None
     result = A.analyze_input(data)
-    assert result["label"] == "INCOMPLETE"
+    assert result["label"] == "NUMERICAL"
     assert result["rans_diagnostics"]["SA-WF/fine30"]["E3"]["status"] == "MESH_FAILED"
 
 
@@ -188,7 +190,7 @@ def test_zero_baseline_only_undefines_descriptive_retention(zero_side):
     json.dumps(result, allow_nan=False)
 
 
-@pytest.mark.parametrize("label", ["INVALID", "TR_UNQUALIFIED", "NUMERICAL", "INCOMPLETE", "RESOLUTION_LIMITED", "UNRESOLVED", "DISCORDANT", "CONCORDANT"])
+@pytest.mark.parametrize("label", ["INVALID", "TR_UNQUALIFIED", "NUMERICAL", "INCOMPLETE", "RESOLUTION_LIMITED", "UNRESOLVED", "DISCORDANT", "CONCORDANT_PARTIAL", "CONCORDANT"])
 def test_all_reachable_labels(label):
     payload = S.input_table()
     if label == "INVALID":
@@ -211,17 +213,51 @@ def test_all_reachable_labels(label):
         S.set_force(payload, "E1", 1.2, re=1000)
     elif label == "DISCORDANT":
         S.set_force(payload, "E2", 0.2)
+    elif label == "CONCORDANT_PARTIAL":
+        S.set_force(payload, "E2", 0.2, re=1000)
     assert A.analyze_input(payload)["label"] == label
 
 
-def test_partial_shadowed_by_registered_priority_with_consistent_data():
+@pytest.mark.parametrize("discordant_re", [1000, 3000])
+def test_amendment5_partial_is_reachable_in_opus_counterexample_c(discordant_re):
     payload = S.input_table()
-    S.set_force(payload, "E2", 0.2, re=3000)
+    S.set_force(payload, "E2", 0.2, re=discordant_re)
     result = A.analyze_input(payload)
-    assert result["agreement"]["1000"]["RANK_AGREE"]
-    assert not result["agreement"]["3000"]["RANK_AGREE"]
-    assert result["label"] == "DISCORDANT"
-    assert any("CONCORDANT_PARTIAL" in text for text in result["limitations"])
+    assert result["label"] == "CONCORDANT_PARTIAL"
+    assert result["agreement"][str(discordant_re)]["state"] == "DISCORDANT"
+    assert result["agreement"][str(4000 - discordant_re)]["state"] == "CONCORDANT"
+    assert not result["agreement"][str(discordant_re)]["SIGN_AGREE_12"]
+    checker = load(ROOT / "scripts/topo2d00/check.py", "topo_partial_checker")
+    assert checker.compare(result, checker.check(payload)) == []
+    assert not any("unreachable" in text for text in result["limitations"])
+
+
+def test_unresolved_re_precedes_partial_concordance():
+    payload = S.input_table()
+    S.set_force(payload, "E2", 1.2, re=1000)
+    S.set_force(payload, "E1", 1.2, re=1000)
+    result = A.analyze_input(payload)
+    assert result["label"] == "UNRESOLVED"
+    assert result["agreement"]["1000"]["state"] == "UNRESOLVED"
+    assert result["agreement"]["3000"]["state"] == "CONCORDANT"
+
+
+def test_only_registered_12_23_intervals_are_required_by_amendment5():
+    payload = S.input_table()
+    for config, value in (("E1", 1.), ("E2", 3.), ("E3", 1.00001)):
+        S.set_force(payload, config, value)
+        for cell in payload["rans"]["cells"]:
+            for row in cell["realisations"]:
+                row["forces"][config]["downforce"] = value
+    result = A.analyze_input(payload)
+    assert result["label"] == "CONCORDANT"
+    for re in ("1000", "3000"):
+        # E1->E3 sorted-rank interval is unresolved in W; Amendment 5's
+        # required list is fixed to 12/23. Keep this diagnostic visible.
+        assert result["agreement"][re]["state"] == "CONCORDANT"
+        assert not result["agreement"][re]["RANK_AGREE"]
+    checker = load(ROOT / "scripts/topo2d00/check.py", "topo_fixed_required_intervals")
+    assert checker.compare(result, checker.check(payload)) == []
 
 
 def test_tr00_sign_only_threshold_and_ratio_failure():
@@ -270,16 +306,36 @@ def test_fieller_accepts_valid_covariance_boundary_across_units(scale, direction
     assert result["kind"] in {"bounded", "disjoint", "all_real", "empty", "half_line"}
 
 
-def test_sigma_b_and_upper_bound_are_in_sd_units():
+def test_sigma_b_point_estimate_is_in_sd_units_and_t90_uses_p_minus_one():
     payload = S.input_table()
     base = [r for r in payload["waterlily"] if r["role"] == "primary" and r["reynolds"] == 1000 and r["configuration"] == "E1"]
     candidate = [r for r in payload["waterlily"] if r["role"] == "primary" and r["reynolds"] == 1000 and r["configuration"] == "E2"]
     stat = A.wstat(base, candidate)
     assert stat["sigma_a"] < 1e-15
     assert stat["sigma_b"] == pytest.approx(0.001 * np.sqrt(2 / 3))
-    factor = np.sqrt(3 / chi2.ppf(0.025 / 32, 3))
-    assert stat["sigma_b_upper"] == pytest.approx(stat["sigma_b"] * factor)
-    assert stat["se"] == pytest.approx(stat["sigma_upper"] / 4)
+    assert stat["sigma"] == stat["sigma_b"]
+    assert stat["se"] == pytest.approx(stat["sigma"] / 4)
+    assert stat["ci90"] == pytest.approx(1 + np.array([-1, 1]) * t.ppf(.95, 15) * stat["se"])
+    assert not any("upper" in key for key in stat)
+
+
+def test_domain_p2_detects_shift_above_three_point_pooled_standard_errors():
+    payload = S.input_table()
+    for row in list(payload["waterlily"]):
+        if row["role"] == "primary" and row["reynolds"] == 3000 and row["configuration"] in ("E1", "E2") and row["phase"] in ("0", "1"):
+            if row["configuration"] == "E2":
+                jitter = -.1 if row["phase"] == "0" else .1
+                S.set_readout(row, "downforce", row["readouts"]["cur"]["downforce"] + jitter)
+            duplicate = json.loads(json.dumps(row))
+            duplicate["role"] = "domain"
+            if duplicate["configuration"] == "E2":
+                S.set_readout(duplicate, "downforce", duplicate["readouts"]["cur"]["downforce"] + .5)
+            payload["waterlily"].append(duplicate)
+    result = A.analyze_input(payload)
+    assert result["controls"]["domain"]["status"] == "DOMAIN_SENSITIVE"
+    assert result["controls"]["domain"]["z"] == pytest.approx(.5 / np.sqrt(.02))
+    checker = load(ROOT / "scripts/topo2d00/check.py", "topo_domain_checker")
+    assert checker.compare(result, checker.check(payload)) == []
 
 
 def test_controls_are_measured_or_explicitly_not_judged():
@@ -338,11 +394,11 @@ def test_unresolved_drag_is_reported_without_adding_an_acceptance_gate(sign_only
         assert result["agreement"][re]["RANK_AGREE"]
 
 
-def test_incomplete_cap_precedes_numeric_and_required_realisation_outcomes():
+def test_study_numeric_precedes_cap_and_preserves_cell_outcomes():
     payload = S.input_table()
     payload["cap_hit"] = True
     payload["waterlily"][0]["finite"] = False
-    assert A.analyze_input(payload)["label"] == "INCOMPLETE"
+    assert A.analyze_input(payload)["label"] == "NUMERICAL"
     payload = S.input_table()
     row = payload["rans"]["cells"][0]["realisations"][0]
     row["status"]["E3"] = "INCOMPLETE"
@@ -377,7 +433,7 @@ def test_amendment3_cell_severity_is_independent_of_realisation_order(states, ex
         assert result["label"] == "TR_UNQUALIFIED"
         assert all(cell["label"] == expected for cell in result["tr00"]["cells"].values())
     else:
-        assert result["label"] == ("NUMERICAL" if expected == "NUMERICAL" else "INCOMPLETE")
+        assert result["label"] == ("NUMERICAL" if expected in ("NUMERICAL", "MESH_FAILED") else "INCOMPLETE")
     for cell in payload["rans"]["cells"]:
         cell["realisations"].reverse()
     reversed_result = A.analyze_input(payload)
@@ -388,7 +444,7 @@ def test_amendment3_cell_severity_is_independent_of_realisation_order(states, ex
 
 
 @pytest.mark.parametrize("incomplete_source", ["cap", "waterlily", "rans"])
-def test_required_incomplete_state_precedes_independent_waterlily_numeric_failure(incomplete_source):
+def test_study_numeric_precedes_independent_required_incomplete_state(incomplete_source):
     payload = S.input_table()
     failure = payload["waterlily"][0]
     failure.update(finite=False, ok=False, complete=False,
@@ -403,7 +459,7 @@ def test_required_incomplete_state_precedes_independent_waterlily_numeric_failur
         row = payload["rans"]["cells"][0]["realisations"][0]
         row["status"]["E2"] = "INCOMPLETE"
         row["forces"]["E2"] = row["mesh_sha256"]["E2"] = None
-    assert A.analyze_input(payload)["label"] == "INCOMPLETE"
+    assert A.analyze_input(payload)["label"] == "NUMERICAL"
 
 
 @pytest.mark.parametrize("arm", ["E3", "E1_sharp"])
@@ -473,6 +529,26 @@ def test_write_once_checks_both_targets_before_mutation(tmp_path):
     assert not (other / "analysis.json").exists()
 
 
+def test_registered_outputs_are_exclusive_and_hash_all_three_artifacts(tmp_path):
+    record = {"input": S.input_table(), "result": A.analyze_input(S.input_table()), "provenance": {"synthetic": True}}
+    A.write_analysis(tmp_path, record)
+    assert json.loads((tmp_path / "tr00.json").read_text()) == record["result"]["tr00"]
+    lines = (tmp_path / "SHA256SUMS").read_text().splitlines()
+    assert {line.split("  ", 1)[1] for line in lines} == {"analysis.json", "analysis.md", "tr00.json"}
+    for line in lines:
+        digest, name = line.split("  ", 1)
+        assert digest == A.sha256(tmp_path / name)
+    for name in ("analysis.json", "analysis.md", "tr00.json", "SHA256SUMS"):
+        target = tmp_path / name
+        isolated = tmp_path / ("existing_" + name.replace(".", "_"))
+        isolated.mkdir()
+        (isolated / name).write_bytes(target.read_bytes())
+        before = {p.name: p.read_bytes() for p in isolated.iterdir()}
+        with pytest.raises(FileExistsError):
+            A.write_analysis(isolated, record)
+        assert {p.name: p.read_bytes() for p in isolated.iterdir()} == before
+
+
 def test_rans_schema_rejects_ambiguous_units_and_wrong_count():
     payload = S.input_table()
     payload["rans"]["coefficient_reference"]["chord_mm"] = 380
@@ -512,18 +588,18 @@ def formal_boundary(tmp_path, monkeypatch):
     geometry = {}
     for name in A.RCONFIGS:
         path = tmp_path / (name + ".json")
-        path.write_text(json.dumps({"synthetic_geometry": name}))
+        path.write_text(json.dumps({"schema": "topo2d-scene-v1", "synthetic_geometry": name,
+                                    "sources": [{"verification": "VERIFIED_SYNTHETIC"}]}))
         geometry[name] = A.sha256(path)
     payload = S.input_table()
     payload["rans"]["provenance"] = {
         "geometry_sha256": geometry.copy(),
         "component_by_config": {c: "pressure_only" if c.endswith("_sharp") else "pressure_plus_viscous" for c in A.RCONFIGS}}
-    digitization_records = []
-    for i in (1, 2):
-        name = f"digitization_{i}.json"
-        (tmp_path / name).write_text(json.dumps({"synthetic_digitization": i}))
-        digitization_records.append({"path": name, "sha256": A.sha256(tmp_path / name),
-                                      "method": f"synthetic independent tool {i}"})
+    bundle = S.write_reference_bundle(tmp_path)
+    digitization_records = bundle["artifacts"]
+    payload["rans"]["provenance"]["reference_estimate"] = {
+        "kind": "topo2d00_pressure_reference_v1", "observable": "pressure_cl",
+        "manifest": {key: bundle["manifest"][key] for key in ("path", "sha256")}}
     payload["rans"]["reference"]["source"] = {
         "observable": "centre-section pressure-integrated Cl", "title": "Synthetic test only",
         "url": "https://example.invalid/synthetic", "pages": "Table15 and Cp figures",
@@ -547,9 +623,10 @@ def formal_boundary(tmp_path, monkeypatch):
               "cap_hit": False, "primary_readout": "cur", "height_mm": 100,
               "sources": sources, "geometry_sha256": geometry,
               "inputs": {name: A.sha256(tmp_path / name) for name in
-                         ("table.json", "rans.json", "campaign.json", "harness_freeze.json", "digitization_1.json", "digitization_2.json") + tuple(c + ".json" for c in A.RCONFIGS)},
+                         ("table.json", "rans.json", "campaign.json", "harness_freeze.json") + tuple(c + ".json" for c in A.RCONFIGS)},
               "harness": [{"table": "table.json", "campaign": "campaign.json",
                            "freeze": "harness_freeze.json", "outputs": ["raw_output"]}]}
+    freeze["inputs"].update({r["path"]: r["sha256"] for r in digitization_records})
     calls = []
     actual = deepcopy(table_value)
 
@@ -577,7 +654,7 @@ def test_formal_loader_reverifies_raw_table_and_all_source_geometry_inputs(forma
     assert data["identity_valid"] and len(f["calls"]) == 1
     assert A.analyze_input(data)["label"] == "CONCORDANT"
     assert all(r["observable"] == "total_cl" and r["h_over_c1"] == pytest.approx(r["height_mm"] / 223.4) and r["h_over_c"] == pytest.approx(r["height_mm"] / 380) for r in data["waterlily"])
-    assert len(provenance["input_sha256"]) == 11
+    assert len(provenance["input_sha256"]) == 18
     # Confirmation geometry differs, and is bound by its own harness scene.
     assert {r["scene_sha256"] for r in data["waterlily"] if r["grid"] == "confirmation"} == {"c" * 64}
     # A success-flagged table cannot replace different raw verified coefficients.
@@ -586,6 +663,130 @@ def test_formal_loader_reverifies_raw_table_and_all_source_geometry_inputs(forma
     data, provenance = A.load_formal_inputs([f["table"]], f["rans"], f["freeze"])
     assert A.analyze_input(data)["label"] == "INVALID"
     assert any("reverified force table differs" in e for e in provenance["identity_errors"])
+
+
+def refresh_reference_fixture(f, *paths):
+    """Model an authorized fixture freeze update, never mutate real evidence."""
+    rans = A.load_json(f["rans"])
+    for path in paths:
+        path = Path(path).resolve()
+        digest = A.sha256(path)
+        f["spec"]["inputs"][str(path)] = digest
+        for entry in rans["reference"]["source"]["digitization_records"]:
+            if Path(entry["path"]).resolve() == path:
+                entry["sha256"] = digest
+        descriptor = rans["provenance"]["reference_estimate"]["manifest"]
+        if Path(descriptor["path"]).resolve() == path:
+            descriptor["sha256"] = digest
+    f["rans"].write_text(json.dumps(rans))
+    f["spec"]["inputs"]["rans.json"] = A.sha256(f["rans"])
+    f["save"]()
+
+
+def test_formal_reference_recomputed_from_frozen_manifest_and_raw_csvs(formal_boundary):
+    f = formal_boundary
+    data, provenance = A.load_formal_inputs([f["table"]], f["rans"], f["freeze"])
+    assert data["reference_inputs"]["manifest"].endswith("digitization_manifest.json")
+    assert len(data["reference_inputs"]["sha256"]) == 9
+    result = A.analyze_input(data)
+    assert result["tr00"]["reference"] == pytest.approx({"delta_cl": 1., "digitizing_uncertainty": .01})
+    checker = load(ROOT / "scripts/topo2d00/check.py", "topo_reference_checker")
+    assert checker.compare(result, checker.check(data)) == []
+    path = f["root"] / "digitization_e0_A_upper.csv"
+    path.write_text(path.read_text().replace("0.7985", "0.9985"))
+    # A saved normalized record cannot conceal raw-record mutation from either implementation.
+    for implementation in (A.analyze_input, checker.check):
+        with pytest.raises(ValueError, match="reference.*SHA|SHA.*reference"):
+            implementation(data)
+
+
+def test_formal_provenance_cannot_be_downgraded_to_scalar_only_api(formal_boundary):
+    f = formal_boundary
+    data, _ = A.load_formal_inputs([f["table"]], f["rans"], f["freeze"])
+    del data["reference_inputs"]
+    checker = load(ROOT / "scripts/topo2d00/check.py", "topo_reference_no_downgrade")
+    for implementation in (A.analyze_input, checker.check):
+        with pytest.raises(ValueError, match="reference inputs"):
+            implementation(data)
+
+
+@pytest.mark.parametrize("tamper", [None, "tr00", "checksum", "missing"])
+def test_checker_cli_checks_registered_standalone_outputs(tmp_path, monkeypatch, capsys, tamper):
+    data = S.input_table()
+    A.write_analysis(tmp_path, {"input": data, "result": A.analyze_input(data)})
+    if tamper == "tr00":
+        record = A.load_json(tmp_path / "tr00.json")
+        record["reference"]["delta_cl"] += 1
+        (tmp_path / "tr00.json").write_text(json.dumps(record))
+    elif tamper == "checksum":
+        (tmp_path / "SHA256SUMS").write_text("false checksum\n")
+    elif tamper == "missing":
+        (tmp_path / "analysis.md").unlink()
+    checker = load(ROOT / "scripts/topo2d00/check.py", "topo_registered_cli")
+    monkeypatch.setattr(checker, "__name__", "__main__")
+    monkeypatch.setattr(checker, "__file__", str(ROOT / "scripts/topo2d00/check.py"))
+    monkeypatch.setattr(A.sys, "argv", ["check.py", str(tmp_path / "analysis.json")])
+    with pytest.raises(SystemExit) as exited:
+        checker.main()
+    assert exited.value.code == int(tamper is not None)
+    result = json.loads(capsys.readouterr().out)
+    assert result["pass"] is (tamper is None)
+    assert bool(result["discrepancies"]) is (tamper is not None)
+
+
+@pytest.mark.parametrize("summary_field", ["delta_cl", "digitizing_uncertainty"])
+def test_reference_summary_cannot_override_raw_arithmetic(formal_boundary, summary_field):
+    f = formal_boundary
+    rans = A.load_json(f["rans"])
+    rans["reference"][summary_field] += .5
+    f["rans"].write_text(json.dumps(rans))
+    f["spec"]["inputs"]["rans.json"] = A.sha256(f["rans"])
+    f["save"]()
+    with pytest.raises(ValueError, match="recomputed reference"):
+        A.load_formal_inputs([f["table"]], f["rans"], f["freeze"])
+
+
+@pytest.mark.parametrize("surface", ["upper", "lower"])
+def test_reference_rejects_equal_numeric_contents_despite_distinct_bytes(formal_boundary, surface):
+    f = formal_boundary
+    source = f["root"] / f"digitization_e0_A_{surface}.csv"
+    other = f["root"] / f"digitization_e0_B_{surface}.csv"
+    rows = source.read_text().splitlines()[1:]
+    # Reversed direction, different float spelling, BOM and CRLF are the same reading.
+    other.write_bytes(("\ufeffx/c,Cp\r\n" + "\r\n".join(
+        ",".join(f"{float(v):.17e}" for v in row.split(",")) for row in reversed(rows)) + "\r\n").encode())
+    assert source.read_bytes() != other.read_bytes()
+    refresh_reference_fixture(f, other)
+    with pytest.raises(ValueError, match="normalized numeric"):
+        A.load_formal_inputs([f["table"]], f["rans"], f["freeze"])
+
+
+@pytest.mark.parametrize("problem", ["under_sampled", "swapped", "unbound", "missing_manifest"])
+def test_reference_raw_failures_are_refused_before_output(formal_boundary, problem):
+    f = formal_boundary
+    if problem == "missing_manifest":
+        rans = A.load_json(f["rans"])
+        rans["provenance"].pop("reference_estimate")
+        f["rans"].write_text(json.dumps(rans))
+        f["spec"]["inputs"]["rans.json"] = A.sha256(f["rans"])
+        f["save"]()
+    else:
+        path = f["root"] / "digitization_e0_A_upper.csv"
+        if problem == "under_sampled":
+            path.write_text("\n".join(path.read_text().splitlines()[:6]) + "\n")
+            refresh_reference_fixture(f, path)
+        elif problem == "swapped":
+            lower = f["root"] / "digitization_e0_A_lower.csv"
+            upper_bytes, lower_bytes = path.read_bytes(), lower.read_bytes()
+            path.write_bytes(lower_bytes)
+            lower.write_bytes(upper_bytes)
+            refresh_reference_fixture(f, path, lower)
+        else:
+            f["spec"]["inputs"].pop(str(path.resolve()))
+            f["save"]()
+    with pytest.raises(ValueError):
+        A.run_analysis([f["table"]], f["rans"], f["freeze"], f["root"] / "analysis")
+    assert not (f["root"] / "analysis").exists()
 
 
 def test_formal_loader_rejects_changed_source_and_rans_geometry(formal_boundary):
@@ -601,6 +802,25 @@ def test_formal_loader_rejects_changed_source_and_rans_geometry(formal_boundary)
     assert A.analyze_input(data)["label"] == "INVALID"
     assert any("source mismatch" in e for e in provenance["identity_errors"])
     assert any("RANS geometry identity" in e for e in provenance["identity_errors"])
+
+
+@pytest.mark.parametrize("config", ["E1", "E2", "E3", "E1_sharp", "E2_sharp"])
+@pytest.mark.parametrize("state", ["UNVERIFIED_OCR", "UNKNOWN"])
+def test_analysis_freeze_rejects_unverified_sources_on_every_geometry_arm(formal_boundary, config, state):
+    f = formal_boundary
+    path = f["root"] / (config + ".json")
+    scene = A.load_json(path)
+    scene["sources"][0]["verification"] = state
+    path.write_text(json.dumps(scene))
+    digest = A.sha256(path)
+    rans = A.load_json(f["rans"])
+    rans["provenance"]["geometry_sha256"][config] = digest
+    f["rans"].write_text(json.dumps(rans))
+    f["spec"]["geometry_sha256"][config] = digest
+    f["spec"]["inputs"].update({config + ".json": digest, "rans.json": A.sha256(f["rans"])})
+    f["save"]()
+    with pytest.raises(ValueError, match="UNVERIFIED_OCR|verification"):
+        A.load_formal_inputs([f["table"]], f["rans"], f["freeze"])
 
 
 def test_json_duplicate_identity_is_rejected(tmp_path):
@@ -620,7 +840,7 @@ def test_formal_tr00_requires_two_distinct_frozen_digitizations(formal_boundary)
     f["save"]()
     with pytest.raises(ValueError, match="distinct artifacts"):
         A.load_formal_inputs([f["table"]], f["rans"], f["freeze"])
-    records.pop()
+    records[:] = records[:1]
     f["rans"].write_text(json.dumps(rans))
     f["spec"]["inputs"]["rans.json"] = A.sha256(f["rans"])
     f["save"]()
@@ -632,12 +852,10 @@ def test_distinct_digitization_paths_cannot_hide_identical_content(formal_bounda
     f = formal_boundary
     rans = json.loads(f["rans"].read_text())
     records = rans["reference"]["source"]["digitization_records"]
-    (f["root"] / records[1]["path"]).write_bytes((f["root"] / records[0]["path"]).read_bytes())
-    records[1]["sha256"] = records[0]["sha256"]
-    f["rans"].write_text(json.dumps(rans))
-    f["spec"]["inputs"].update({"rans.json": A.sha256(f["rans"]), records[1]["path"]: records[1]["sha256"]})
-    f["save"]()
-    with pytest.raises(ValueError, match="distinct content SHA"):
+    a, b = [f["root"] / f"digitization_e0_{reader}_upper.csv" for reader in ("A", "B")]
+    b.write_bytes(a.read_bytes())
+    refresh_reference_fixture(f, b)
+    with pytest.raises(ValueError, match="normalized numeric contents"):
         A.load_formal_inputs([f["table"]], f["rans"], f["freeze"])
 
 
@@ -765,6 +983,10 @@ def bind_actual_raw_harness_study(f, monkeypatch, writer):
     monkeypatch.setattr(A, "REPO", repo)
     monkeypatch.setattr(scene_campaign, "verify", f["real_verifier"])
     monkeypatch.setattr(scene_campaign, "formal_context", lambda *args: [0.5, 4.5])
+    # External PDF/source-verification admission is synthetic in this raw
+    # receipt fixture, just like the qualification gate and git attestations.
+    # Real scene geometry gates, manifests and receipt linkage still run.
+    monkeypatch.setattr(scene_campaign, "require_verified_geometry", lambda scene: None)
     for name in f["spec"]["sources"]:
         path = repo / name
         if not path.is_file():
@@ -778,7 +1000,8 @@ def bind_actual_raw_harness_study(f, monkeypatch, writer):
     for config in A.RCONFIGS:
         if config not in geometry_paths:
             path = repo / (config + ".json")
-            path.write_text(json.dumps({"synthetic_unrun_geometry": config}))
+            path.write_text(json.dumps({"schema": "topo2d-scene-v1", "synthetic_unrun_geometry": config,
+                                        "sources": [{"verification": "VERIFIED_SYNTHETIC"}]}))
             geometry_paths[config] = path
     geometry = {config: A.sha256(path) for config, path in geometry_paths.items()}
     rans = json.loads(f["rans"].read_text())

@@ -13,6 +13,7 @@ import json
 import math
 import os
 from pathlib import Path
+import runpy
 import subprocess
 import sys
 import time
@@ -40,13 +41,17 @@ def validate_campaign(c):
            "draft scene campaign requires the parent-derived window freeze")
     SC.req(c["measurement"].get("force_unit") == "N/m" and c["measurement"].get("reference_chord_mm") == 223.4, "scene force/chord contract")
     SC.req(c["kernels"] and c["owner"] and c["campaign_id"], "scene campaign identity")
+    SC.req(isinstance(c["job_env_common"], dict) and all(isinstance(key, str) and SC.NAME.fullmatch(key) and isinstance(value, str) for key, value in c["job_env_common"].items()), "scene common environment")
+    SC.req(isinstance(c["job_env_keys"], list) and len(set(c["job_env_keys"])) == len(c["job_env_keys"]) and all(isinstance(key, str) and SC.NAME.fullmatch(key) for key in c["job_env_keys"]), "scene declared environment keys")
+    SC.req(isinstance(c["scrub_env"], list) and all(isinstance(key, str) for key in c["scrub_env"]), "scene scrub environment")
+    SC.req(not any(key.startswith("CUDA_") or key.startswith("W4_") or key == "JULIA_NUM_THREADS" for key in c["job_env_common"]), "scene common environment sets runner-owned identity/device")
     for name, row in c["states"].items():
         SC.req(SC.NAME.fullmatch(name) and set(row) == SCENE_KEYS, "scene state keys/name")
         SC.safe_rel(row["scene_path"])
         SC.req(SC.is_sha(row["scene_sha256"]), "scene state SHA")
         ident = row["topo2d"]
         SC.req(set(ident) == IDENTITY_KEYS and ident["configuration"] in ("E1", "E2", "E3"), "scene run identity")
-        SC.req(ident["grid"] in ("main", "confirmation") and ident["role"] in ("primary", "confirmation", "determinism", "domain", "secondary"), "scene grid/role")
+        SC.req(ident["grid"] in ("main", "confirmation") and ident["role"] in ("primary", "confirmation", "determinism", "domain", "secondary", "prerun"), "scene grid/role")
         SC.req(SC.finite(ident["height_mm"]) > 0 and SC.finite(ident["reynolds"]) > 0 and isinstance(ident["phase"], (str, int)), "scene physical identity")
     used = set()
     for key, kernel in c["kernels"].items():
@@ -71,6 +76,8 @@ def validate_campaign(c):
             ident = c["states"][run["state"]]["topo2d"]
             SC.req(ident["reynolds"] == case["reynolds"], "scene state/kernel Re mismatch")
             SC.req(float(run["env"].get("TOPO2D_TOP_FACTOR", "1")) == (1.5 if ident["role"] == "domain" else 1.0), "scene domain control factor")
+            if ident["role"] == "prerun":
+                SC.req(ident["configuration"] == "E1" and ident["grid"] == "main" and str(ident["phase"]) == "0" and shift == [0, 0, 0] and case["solver_length"] == 120, "scene E1 parent pre-run contract")
     SC.req(used == set(c["states"]), "unreferenced scene state")
 
 
@@ -111,6 +118,30 @@ def _scene_records(rows, repo):
             scenes[key] = scene_record(Path(repo) / key[0], key[1])
         _scene_declaration(scenes[key], row["topo2d"])
     return scenes
+
+
+def require_verified_geometry(scene):
+    """Formal freeze/admission never upgrades the deliberately marked OCR rows."""
+    sources = scene.get("sources")
+    SC.req(isinstance(sources, list) and sources, "formal geometry source provenance missing")
+    SC.req(all(isinstance(source.get("verification"), str) and source["verification"].startswith("VERIFIED_") for source in sources), "formal freeze refuses UNVERIFIED_OCR or unknown geometry source verification")
+
+
+def numerical_stop_key(identity):
+    """Only the exact (configuration, Re, height, role) stops; phases share it."""
+    return tuple(identity[key] for key in ("configuration", "reynolds", "height_mm", "role"))
+
+
+def job_environment(campaign, run, inherited):
+    """Scrub job/device prefixes, then apply the campaign's explicit environment."""
+    allowed = {SC.ORIGIN_ENV, *campaign["job_env_keys"]}
+    SC.req(set(run["env"]) <= allowed and all(isinstance(value, str) for value in run["env"].values()), "run environment contains an undeclared key or non-string value")
+    env = {key: value for key, value in inherited.items() if not key.startswith(("TOPO2D_", "W4_", "CUDA_"))}
+    for key in campaign["scrub_env"]:
+        env.pop(key, None)
+    env.update(campaign["job_env_common"])
+    env.update(run["env"])
+    return env
 
 
 def scene_wire(path, expected_sha):
@@ -212,8 +243,14 @@ def source_paths(backend="cpu", repo=ROOT):
     return paths
 
 
+def _window_estimator(repo):
+    # The estimator is an explicitly pinned script, keeping registered harness
+    # v1.1 tool files unchanged. run_name='__run_path__' does not invoke its CLI.
+    return runpy.run_path(str(Path(repo) / "scripts/topo2d00/prerun_window.py"))
+
+
 def scene_pins(c, campaign_rel, kernel, repo=ROOT, backend="cuda"):
-    paths = {*source_paths(backend, repo), *SC.TOOL_FILES, campaign_rel, *c["pins"], c["kernels"][kernel]["job"]}
+    paths = {*source_paths(backend, repo), *SC.TOOL_FILES, campaign_rel, *c["pins"], c["kernels"][kernel]["job"], "scripts/topo2d00/prerun_window.py"}
     scenes = _scene_records((c["states"][run["state"]] for run in c["kernels"][kernel]["runs"]), repo)
     paths.update(path for path, _ in scenes)
     return {p: SC.sha256_path(Path(repo) / p) for p in sorted(paths)}
@@ -254,15 +291,18 @@ def parent_window(mean_downforce, s0_upper, burn_in):
     return [burn, burn + width]
 
 
-def formal_context(c, campaign_path, kernel, freeze, repo=ROOT):
+def formal_context(c, campaign_path, kernel, freeze, repo=ROOT, *, prerun=False):
     """Same source/backend/window admission for execution AND verification."""
     repo = Path(repo).resolve()
+    SC.req("formal_context" not in freeze and "windows" not in freeze, "hand-entered formal_context/windows are forbidden; use the hash-bound parent record")
     SC.req(freeze.get("kind") == SC.FREEZE_KIND and freeze.get("harness_version") == SC.HARNESS_VERSION and freeze.get("campaign_sha256") == SC.sha256_path(campaign_path), "scene freeze identity")
     SC.req(SC.COMMIT.fullmatch(freeze.get("source_commit", "")) is not None and freeze.get("scene_runner_approved") is True, "scene runner is not frozen/approved")
     runtime = freeze.get("runtime", {}).get(kernel)
     SC.req(isinstance(runtime, dict) and runtime.get("backend") == "WaterLily CUDA" and runtime.get("identity", {}).get("memory") == "CuArray", "formal scene evidence requires qualified CUDA, never CPU")
     pins = scene_pins(c, str(Path(campaign_path).resolve().relative_to(repo)), kernel, repo)
     SC.req(freeze.get("pins", {}).get(kernel) == pins, "scene freeze omits or changes source/scene pins")
+    for scene in _scene_records((c["states"][run["state"]] for run in c["kernels"][kernel]["runs"]), repo).values():
+        require_verified_geometry(scene)
     qualification = freeze.get("backend_qualification", {})
     SC.req(qualification.get("passed") is True and qualification.get("backend") == "cuda" and isinstance(qualification.get("device_uuid"), str) and qualification["device_uuid"].startswith("GPU-"), "backend qualification is absent or not passed")
     gate_path = repo / SC.safe_rel(qualification.get("path"))
@@ -271,18 +311,23 @@ def formal_context(c, campaign_path, kernel, freeze, repo=ROOT):
     SC.req(gate.get("schema_version") == 1 and gate.get("status") == "PASS" and gate.get("failed_criteria") == [] and gate.get("incomplete_criteria") == [], "LOCAL-GPU-01 backend gate is not PASS")
     SC.req(gate.get("gpu_identity", {}).get("uuid") == qualification["device_uuid"] == runtime["identity"].get("device_uuid"), "qualified gate/runtime device UUID mismatch")
     SC.req(all(gate.get("criteria", {}).get(k, {}).get("status") == "PASS" for k in ("C1", "C2", "C5", "C6")), "LOCAL-GPU-01 required backend criteria are absent")
+    if prerun:
+        SC.req(any(c["states"][run["state"]]["topo2d"]["role"] == "prerun" for run in c["kernels"][kernel]["runs"]), "kernel has no registered E1 pre-run")
+        return [80, 520]
     parent = freeze.get("parent_window_records", {}).get(kernel)
     SC.req(isinstance(parent, dict) and SC.is_sha(parent.get("sha256")), "frozen E1 parent window record missing")
     parent_path = repo / SC.safe_rel(parent["path"])
     SC.req(SC.sha256_path(parent_path) == parent["sha256"], "parent pre-run record hash mismatch")
-    record = SC.jload(parent_path)
+    record = _window_estimator(repo)["validate_record"](parent_path, repo=repo)
     SC.req(record.get("configuration") == "E1" and record.get("reynolds") == c["kernels"][kernel]["case"]["reynolds"], "parent pre-run identity")
-    window = parent_window(record["mean_downforce"], record["s0_upper"], record["burn_in"])
-    SC.req(freeze.get("windows", {}).get(kernel) == window, "frozen window differs from parent formula")
+    expected_parent = next(row for row in c["states"].values() if row["topo2d"]["role"] == "prerun" and row["topo2d"]["reynolds"] == record["reynolds"])
+    SC.req(record["scene_sha256"] == expected_parent["scene_sha256"] and record["height_mm"] == expected_parent["topo2d"]["height_mm"] and record["runtime"] == runtime["identity"], "parent pre-run source scene/height/runtime identity")
+    SC.req(all(pins.get(path) == digest for path, digest in record["source_sha256"].items()) and set(record["source_sha256"]) == set(source_paths("cuda", repo)), "parent pre-run source pins differ")
+    window = record["window"]
     return window
 
 
-def run_frozen_kernel(campaign_path, kernel, output_dir, freeze_path, *, expected_commit, expected_pins, repo=ROOT, julia="julia"):
+def run_frozen_kernel(campaign_path, kernel, output_dir, freeze_path, *, expected_commit, expected_pins, repo=ROOT, julia="julia", prerun=False):
     """Future local qualified-GPU entry point. No call is made during WP4 tests."""
     repo, freeze_path = Path(repo).resolve(), Path(freeze_path).resolve()
     c, freeze = SC.jload(campaign_path), SC.jload(freeze_path)
@@ -293,9 +338,10 @@ def run_frozen_kernel(campaign_path, kernel, output_dir, freeze_path, *, expecte
     SC.req(freeze.get("source_commit") == expected_commit and freeze.get("scene_runner_approved") is True and freeze.get("pins", {}).get(kernel) == expected_pins, "scene runner is not frozen/approved")
     SC.req(all(SC.sha256_path(repo / SC.safe_rel(p)) == h for p, h in expected_pins.items()), "scene frozen source changed")
     SC.req(expected_pins == scene_pins(c, str(Path(campaign_path).resolve().relative_to(repo)), kernel, repo), "scene freeze omits or changes source/scene pins")
-    window = formal_context(c, campaign_path, kernel, freeze, repo)
-    return _run_kernel(campaign_path, kernel, output_dir, window=window, count=len(c["kernels"][kernel]["runs"]), repo=repo, julia=julia,
-                       smoke=False, backend="cuda", freeze=freeze, pins=expected_pins)
+    window = formal_context(c, campaign_path, kernel, freeze, repo, prerun=prerun)
+    runs = [run for run in c["kernels"][kernel]["runs"] if (c["states"][run["state"]]["topo2d"]["role"] == "prerun") is prerun]
+    return _run_kernel(campaign_path, kernel, output_dir, window=window, count=len(runs), repo=repo, julia=julia,
+                       smoke=False, backend="cuda", freeze=freeze, pins=expected_pins, prerun=prerun)
 
 
 def make_campaign(repo=ROOT):
@@ -353,6 +399,13 @@ def make_campaign(repo=ROOT):
             if extra_role == "domain":
                 env["TOPO2D_TOP_FACTOR"] = "1.5"
             runs.append({"state": name, "env": env})
+        if resolution == 120:
+            relative = "docs/harness/topo2d00_scenes/E1.json"
+            digest, scene = scene_input(relative)
+            name = f"E1_h{scene['height_mm']:g}_re{re}_main_k00_prerun"
+            states[name] = {"kind": "scene", "scene_path": relative, "scene_sha256": digest,
+                            "topo2d": {"configuration": "E1", "height_mm": scene["height_mm"], "reynolds": float(re), "grid": "main", "phase": "0", "role": "prerun"}}
+            runs.append({"state": name, "env": {SC.ORIGIN_ENV: "0,0,0"}})
         cap = 21600 if resolution == 180 else 50400
         kernels[key] = {"kernel_id": f"ramhachi888/cfd-opt-sdf-topo2d00-{key}", "job": "scripts/waterlily_topo2d_job.jl",
                         "case": {"case_id": key, "flow_dims": [7 * resolution, round(6.8 * resolution) + 8], "flow_spacing_m": dx, "solver_length": float(resolution),
@@ -362,10 +415,13 @@ def make_campaign(repo=ROOT):
                                    "instantiate_timeout_s": 2400, "gpu_probe_timeout_s": 300, "reserve_s": 900, "formal_runner": "FROZEN_LOCAL_GPU_REQUIRES_BACKEND_AND_WINDOW_APPROVAL"}, "runs": runs}
     campaign = {"harness_version": SC.HARNESS_VERSION, "campaign_id": "topo2d00", "owner": "ramhachi888", "repo_url": "https://github.com/ramhachi/CFD_opt_sdf.git",
                 "index_name": SC.INDEX_NAME_DEFAULT, "out_prefix": "topo2d00_", "job_env_common": {"TOPO2D_BACKEND": "cpu", "TOPO2D_WINDOW_FROZEN": "0"},
-                "job_env_keys": ["TOPO2D_REYNOLDS", "TOPO2D_WINDOW_START", "TOPO2D_WINDOW_END", "TOPO2D_PHASE", "TOPO2D_GRID", "TOPO2D_ROLE", "TOPO2D_CASE_ID"],
+                "job_env_keys": ["TOPO2D_REYNOLDS", "TOPO2D_WINDOW_START", "TOPO2D_WINDOW_END", "TOPO2D_PHASE", "TOPO2D_GRID", "TOPO2D_ROLE", "TOPO2D_CASE_ID", "TOPO2D_TOP_FACTOR"],
                 "scrub_env": [], "measurement": {"candidate_operator": "SetBody(min, AutoBody polygon elements); wing-only force", "time_window_t_u_l": None,
                 "requires_parent_window_freeze": True, "force_unit": "N/m", "reference_chord_mm": 223.4,
                 "window_formula": {"source": "TOPO-2D-00 section 5; RE-01 Stage-0", "minimum_multiple_c1_over_u": 50, "target_se_fraction": 0.015, "cap_c1_over_u": 400},
+                "parent_prerun": {"configuration": "E1", "grid": "main", "phase": "0", "horizon_c1_over_u": 520,
+                                  "measurement_window_c1_over_u": [80, 520], "record_template": "docs/harness/topo2d00_window_re<Re>.json",
+                                  "estimator": "scripts/topo2d00/prerun_window.py", "formal_window": "hash-bound parent record; hand-entered windows refused"},
                 "phase_rule": "JOB-02 R2 (0.7548776662,0.5698402910) fractional shifts centered at 0, k=1..8 with exact mirrors in x,z",
                 "remaining_controls": "E1 parent pre-run force histories must fix windows before freeze; unavailable readout controls remain NOT_JUDGED until WP2 integration"},
                 "domain": {"fluid_box_min_m": [-0.4468, 0.0, 0.0], "fluid_box_max_m": [1.117, 0.0, 1.51912], "solid_ground_padding_cells": 8}, "baseline": None, "directions": {},
@@ -379,12 +435,14 @@ def run_cpu_smoke(campaign_path, kernel, output_dir, *, window, count=1, repo=RO
     return _run_kernel(campaign_path, kernel, output_dir, window=window, count=count, repo=repo, julia=julia, smoke=True, backend="cpu")
 
 
-def _run_kernel(campaign_path, kernel, output_dir, *, window, count, repo, julia, smoke, backend, freeze=None, pins=None):
+def _run_kernel(campaign_path, kernel, output_dir, *, window, count, repo, julia, smoke, backend, freeze=None, pins=None, prerun=False):
     repo, output_dir = Path(repo).resolve(), Path(output_dir).resolve()
     c = SC.jload(campaign_path)
     validate_campaign(c)
     SC.req(kernel in c["kernels"] and not output_dir.exists(), "unknown kernel or existing CPU smoke output")
     k = c["kernels"][kernel]
+    if not smoke:
+        k = {**k, "runs": [run for run in k["runs"] if (c["states"][run["state"]]["topo2d"]["role"] == "prerun") is prerun]}
     SC.req(1 <= count <= len(k["runs"]) and all(math.isfinite(v) for v in window) and 0 <= window[0] < window[1], "CPU smoke run/window")
     _scene_records((c["states"][run["state"]] for run in k["runs"][:count]), repo)
     output_dir.mkdir(parents=True)
@@ -393,7 +451,7 @@ def _run_kernel(campaign_path, kernel, output_dir, *, window, count, repo, julia
     pins = pins or {p: SC.sha256_path(repo / p) for p in sorted(set(paths))}
     commit = subprocess.check_output(["git", "-C", str(repo), "rev-parse", "HEAD"], text=True).strip()
     identity = {"schema": "topo2d-scene-run-identity-v1", "kernel": kernel, "campaign_sha256": SC.sha256_path(campaign_path), "smoke": smoke, "backend": "WaterLily CPU" if smoke else "WaterLily CUDA",
-                "source_commit": commit, "pins": pins, "expected_names": SC.run_names(k)[:count]}
+                "source_commit": commit, "pins": pins, "expected_names": SC.run_names(k)[:count], "prerun": prerun}
     index = {"kernel": kernel, "status": "RUNNING", "states": [], "solver_process_wall_seconds_total": 0.0}
     (output_dir / SC.IDENTITY_NAME).write_text(json.dumps(identity, indent=2, sort_keys=True) + "\n")
     stopped = {}
@@ -433,16 +491,17 @@ def _run_kernel(campaign_path, kernel, output_dir, *, window, count, repo, julia
         name, state = SC.run_name(run), c["states"][run["state"]]
         dest = output_dir / "states" / name
         dest.mkdir(parents=True)
-        if state["topo2d"]["configuration"] in stopped:
-            (dest / SC.ERROR_NAME).write_text("SKIPPED_NUMERICAL: configuration already failed at this Reynolds number.\n")
-            index["states"].append({"name": name, "complete": False, "status": "SKIPPED_NUMERICAL", "seconds": 0.0, "prior_failure_sha256": stopped[state["topo2d"]["configuration"]]})
+        stop_key = numerical_stop_key(state["topo2d"])
+        if stop_key in stopped:
+            (dest / SC.ERROR_NAME).write_text("SKIPPED_NUMERICAL: this configuration/Re/height/role already failed.\n")
+            index["states"].append({"name": name, "complete": False, "status": "SKIPPED_NUMERICAL", "seconds": 0.0, "prior_failure_sha256": stopped[stop_key]})
             checkpoint_index()
             continue
         SC.req(all(SC.sha256_path(repo / p) == digest for p, digest in pins.items()), "scene source changed before job launch")
-        env = dict(os.environ, W4_JOB_SHA256=pins[k["job"]], W4_SCENE_SHA256=state["scene_sha256"], TOPO2D_BACKEND=backend, TOPO2D_SMOKE="1" if smoke else "0", TOPO2D_WINDOW_FROZEN="0" if smoke else "1",
+        env = dict(job_environment(c, run, os.environ), W4_JOB_SHA256=pins[k["job"]], W4_SCENE_SHA256=state["scene_sha256"], TOPO2D_BACKEND=backend, TOPO2D_SMOKE="1" if smoke else "0", TOPO2D_WINDOW_FROZEN="0" if smoke else "1",
                    TOPO2D_REYNOLDS=str(k["case"]["reynolds"]), TOPO2D_WINDOW_START=str(window[0]), TOPO2D_WINDOW_END=str(window[1]), TOPO2D_SAMPLE_EVERY="1" if smoke else "8", TOPO2D_BATCHES="4" if smoke else "8",
                    TOPO2D_PHASE=str(state["topo2d"]["phase"]), TOPO2D_GRID=state["topo2d"]["grid"], TOPO2D_ROLE=state["topo2d"]["role"], TOPO2D_CASE_ID=k["case"]["case_id"],
-                   TOPO2D_PYTHON=sys.executable, JULIA_NUM_THREADS="1", **run["env"])
+                   TOPO2D_PYTHON=sys.executable, JULIA_NUM_THREADS="1")
         if not smoke:
             env["W4_SELECTED_GPU_UUID"] = freeze["backend_qualification"]["device_uuid"]
         started = time.monotonic()
@@ -465,7 +524,7 @@ def _run_kernel(campaign_path, kernel, output_dir, *, window, count, repo, julia
             SC.req(failure.get("smoke") is smoke and failure.get("source_sha256") == {p: pins[p] for p in source_paths(backend, repo)}, "numerical failure source identity")
             if not smoke:
                 SC.req(failure.get("runtime") == freeze["runtime"][kernel]["identity"], "numerical failure runtime identity")
-            stopped[state["topo2d"]["configuration"]] = SC.sha256_path(failure_path)
+            stopped[stop_key] = SC.sha256_path(failure_path)
             index["states"].append({"name": name, "complete": False, "status": "NUMERICAL", "exit_code": 42, "seconds": seconds, "failure_sha256": SC.sha256_path(failure_path)})
             checkpoint_index()
             if seconds > min(k["config"]["per_state_timeout_s"], remaining):
@@ -482,14 +541,14 @@ def _run_kernel(campaign_path, kernel, output_dir, *, window, count, repo, julia
     index["status"] = "NUMERICAL" if stopped else "COMPLETE"
     checkpoint_index()
     if stopped:
-        (output_dir / SC.ERROR_NAME).write_text("NUMERICAL: stopped configurations at this Re: " + ", ".join(sorted(stopped)) + "; unaffected configurations continued.\n")
+        (output_dir / SC.ERROR_NAME).write_text("NUMERICAL: stopped (configuration, Re, height, role): " + ", ".join(map(str, sorted(stopped))) + "; unaffected states continued.\n")
     else:
         (output_dir / SC.DONE_NAME).write_text("CPU capability smoke only; not formal evidence.\n" if smoke else "Frozen scene kernel completed; host verification required.\n")
     (output_dir / SC.MANIFEST_NAME).write_text(json.dumps(SC.build_manifest(output_dir), indent=2, sort_keys=True) + "\n")
     return output_dir
 
 
-def verify(campaign_path, kernel_dirs, freeze_path=None, smoke=False, repo=ROOT, source_commit=None):
+def verify(campaign_path, kernel_dirs, freeze_path=None, smoke=False, repo=ROOT, source_commit=None, prerun=False):
     """Verify scene kernel directories and return the usual harness force table.
 
     A formal record needs an externally supplied freeze with exact source pins,
@@ -500,6 +559,7 @@ def verify(campaign_path, kernel_dirs, freeze_path=None, smoke=False, repo=ROOT,
     validate_campaign(c)
     csha = SC.sha256_path(campaign_path)
     SC.req(smoke == (freeze_path is None), "formal scene verification requires freeze; smoke takes none")
+    SC.req(not (smoke and prerun), "formal parent pre-run verification cannot be a CPU smoke")
     freeze = None if smoke else SC.jload(freeze_path)
     if freeze is not None:
         sidecar = Path(str(freeze_path) + ".sha256")
@@ -513,8 +573,12 @@ def verify(campaign_path, kernel_dirs, freeze_path=None, smoke=False, repo=ROOT,
         k = index.get("kernel")
         SC.req(k in c["kernels"] and k not in tables and index.get("status") in ("COMPLETE", "NUMERICAL", "INCOMPLETE"), "scene kernel identity/status")
         kernel = c["kernels"][k]
+        if not smoke:
+            kernel = {**kernel, "runs": [run for run in kernel["runs"] if (c["states"][run["state"]]["topo2d"]["role"] == "prerun") is prerun]}
+            SC.req(kernel["runs"] and identity.get("prerun", False) is prerun, "scene pre-run/formal identity or empty kernel")
+        window = None
         if freeze is not None:
-            formal_context(c, campaign_path, k, freeze, repo)
+            window = formal_context(c, campaign_path, k, freeze, repo, prerun=True) if prerun else formal_context(c, campaign_path, k, freeze, repo)
         names = SC.run_names(kernel)
         if smoke:
             names = identity.get("expected_names")
@@ -591,7 +655,7 @@ def verify(campaign_path, kernel_dirs, freeze_path=None, smoke=False, repo=ROOT,
                 observed = preflight.get("runtime", {})
                 SC.req(receipt.get("runtime_observed") == observed and observed.get("waterlily_version") == "1.8.0" and observed.get("memory") == ("Array" if smoke else "CuArray") and observed.get("threads") == 1 and observed.get("scalar_type") == "Float32" and observed.get("scheme") == "quick", "scene cap observed runtime")
                 if not smoke:
-                    SC.req(observed == freeze["runtime"][k]["identity"] and preflight.get("window_t_u_l") == freeze["windows"][k], "scene cap preflight qualified runtime/window")
+                    SC.req(observed == freeze["runtime"][k]["identity"] and preflight.get("window_t_u_l") == window, "scene cap preflight qualified runtime/window")
             cap_receipts[k] = {"sha256": digest, "record": receipt}
         states, total, failures = {}, 0.0, {}
         for entry, run in zip(index["states"], kernel["runs"]):
@@ -601,7 +665,7 @@ def verify(campaign_path, kernel_dirs, freeze_path=None, smoke=False, repo=ROOT,
             scene_record(scene_path, row["scene_sha256"], row["topo2d"])
             case = kernel["case"]
             state_dir = d / "states" / name
-            config = row["topo2d"]["configuration"]
+            stop_key = numerical_stop_key(row["topo2d"])
             if entry.get("status") in ("INCOMPLETE_TIMEOUT", "UNRUN_CAP"):
                 SC.req(not (state_dir / "numerical_failure.json").exists(), "budget marker cannot hide a recorded numerical failure")
                 if entry["status"] == "UNRUN_CAP":
@@ -610,12 +674,12 @@ def verify(campaign_path, kernel_dirs, freeze_path=None, smoke=False, repo=ROOT,
                 states[name] = {"topo2d": row["topo2d"], "scene_sha256": row["scene_sha256"], "status": entry["status"], "cap_receipt_sha256": cap_receipts[k]["sha256"]}
                 continue
             if entry.get("status") == "SKIPPED_NUMERICAL":
-                SC.req(entry.get("complete") is False and entry.get("seconds") == 0 and entry.get("prior_failure_sha256") == failures.get(config) and config in failures, "skipped scene lacks an earlier authenticated failure at this Re")
+                SC.req(entry.get("complete") is False and entry.get("seconds") == 0 and entry.get("prior_failure_sha256") == failures.get(stop_key) and stop_key in failures, "skipped scene lacks an earlier authenticated failure for this configuration/Re/height/role")
                 SC.req({p.name for p in state_dir.iterdir()} == {SC.ERROR_NAME}, "skipped scene contains solver outputs")
                 states[name] = {"observable": "total_cl", "topo2d": row["topo2d"], "scene_sha256": row["scene_sha256"], "ok": False, "finite": None, "complete": False,
-                                "status": "SKIPPED_NUMERICAL", "prior_failure_sha256": failures[config], "drag_n": None, "downforce_n": None, "readouts": dict.fromkeys(READOUTS)}
+                                "status": "SKIPPED_NUMERICAL", "prior_failure_sha256": failures[stop_key], "drag_n": None, "downforce_n": None, "readouts": dict.fromkeys(READOUTS)}
                 continue
-            SC.req(config not in failures, "a configuration continued after its registered numerical stop")
+            SC.req(stop_key not in failures, "a configuration/Re/height/role continued after its registered numerical stop")
             if entry.get("status") == "NUMERICAL":
                 failure_path = state_dir / "numerical_failure.json"
                 failure = SC.jload(failure_path)
@@ -633,12 +697,12 @@ def verify(campaign_path, kernel_dirs, freeze_path=None, smoke=False, repo=ROOT,
                 expected_dims[1] = round((expected_dims[1] - 8) * float(run["env"].get("TOPO2D_TOP_FACTOR", "1"))) + 8
                 SC.req(failure.get("flow_dims") == expected_dims, "scene numerical failure grid")
                 if freeze is not None:
-                    SC.req([start, end] == freeze["windows"][k] and runtime == freeze["runtime"][k]["identity"], "scene numerical failure frozen window/runtime")
+                    SC.req([start, end] == window and runtime == freeze["runtime"][k]["identity"], "scene numerical failure frozen window/runtime")
                 wall = SC.finite(entry["seconds"])
                 is_overrun = capped and cap_receipts[k]["record"]["reason"] == "WALL_TIME_OVERRUN" and cap_receipts[k]["record"]["state"] == name
                 SC.req(0 < SC.finite(failure["wall_seconds"]) <= wall and (wall <= kernel["config"]["per_state_timeout_s"] or is_overrun), "scene numerical failure wall budget")
                 total += wall
-                failures[config] = digest
+                failures[stop_key] = digest
                 states[name] = {"observable": "total_cl", "topo2d": row["topo2d"], "scene_sha256": row["scene_sha256"], "ok": False, "finite": False, "complete": False,
                                 "status": "NUMERICAL", "failure_sha256": digest, "drag_n": None, "downforce_n": None, "readouts": dict.fromkeys(READOUTS), "solver_process_wall_seconds": wall}
                 continue
@@ -672,7 +736,7 @@ def verify(campaign_path, kernel_dirs, freeze_path=None, smoke=False, repo=ROOT,
             SC.req(0 <= SC.finite(start) < SC.finite(end) <= SC.finite(summary["t_end_reached"]), "scene window/horizon")
             SC.req(0 < SC.finite(summary["wall_seconds"]) <= wall and (summary["wall_seconds"] <= kernel["config"]["per_state_timeout_s"] or is_overrun), "scene Julia wall budget")
             if freeze is not None:
-                SC.req([start, end] == freeze["windows"][k] and summary["runtime"] == freeze["runtime"][k]["identity"], "scene frozen window/runtime")
+                SC.req([start, end] == window and summary["runtime"] == freeze["runtime"][k]["identity"], "scene frozen window/runtime")
             scale = case["density_kg_m3"] * case["freestream_mps"][0] ** 2 * case["flow_spacing_m"]
             element_names = [element["name"] for element in SC.jload(scene_path)["elements"]]
             host = host_readouts(csv_path, start=start, end=end, solver_length=case["solver_length"], force_scale=scale, available=summary["readout_available"], batches=summary["batch_count"], element_names=element_names)
@@ -683,9 +747,10 @@ def verify(campaign_path, kernel_dirs, freeze_path=None, smoke=False, repo=ROOT,
         SC.req(capped or bool(failures) is numerical, "scene kernel numerical status lacks an actual failure")
         SC.req((capped or total <= kernel["config"]["solver_wall_time_cap_s"]) and math.isclose(total, index["solver_process_wall_seconds_total"], rel_tol=1e-12), "scene aggregate wall budget")
         tables[k], manifests[k] = states, SC.sha256_path(d / SC.MANIFEST_NAME)
-    SC.req(len(tables) == 1 if smoke else set(tables) == set(c["kernels"]), "scene required kernel set")
+    expected_kernels = {key for key, row in c["kernels"].items() if any((c["states"][run["state"]]["topo2d"]["role"] == "prerun") is prerun for run in row["runs"])}
+    SC.req(len(tables) == 1 if smoke else set(tables) == expected_kernels, "scene required kernel set")
     return {"kind": SC.TABLE_KIND, "harness_version": SC.HARNESS_VERSION, "campaign_id": c["campaign_id"], "campaign_sha256": csha, "source_commit": identity["source_commit"],
-            "smoke": smoke, "legacy_replay": False, "freeze_sha256": None if smoke else SC.sha256_path(freeze_path), "harness_tool_sha256": {**SC.tool_hashes(), "src/cfd_harness/scene_campaign.py": SC.sha256_path(__file__)},
+            "smoke": smoke, "prerun": prerun, "legacy_replay": False, "freeze_sha256": None if smoke else SC.sha256_path(freeze_path), "harness_tool_sha256": {**SC.tool_hashes(), "src/cfd_harness/scene_campaign.py": SC.sha256_path(__file__)},
             "integrity": {"pass": True, "failures": []}, "kernel_manifest_sha256": manifests, "force_unit": "N/m", "cap_hit": bool(cap_receipts), "cap_receipts": cap_receipts, "state_forces_n": tables}
 
 
@@ -719,12 +784,14 @@ def main(argv=None):
     frozen.add_argument("out", type=Path)
     frozen.add_argument("--freeze", required=True, type=Path)
     frozen.add_argument("--source-commit", required=True)
+    frozen.add_argument("--prerun", action="store_true", help="run only the E1 phase-0 parent at horizon 520; no derived window needed yet")
     checked = sub.add_parser("verify")
     checked.add_argument("campaign", type=Path)
     checked.add_argument("outputs", nargs="+", type=Path)
     checked.add_argument("--freeze", type=Path)
     checked.add_argument("--smoke", action="store_true")
     checked.add_argument("--source-commit")
+    checked.add_argument("--prerun", action="store_true", help="verify only the two parent pre-run kernels")
     checked.add_argument("--out", type=Path)
     args = parser.parse_args(argv)
     if args.command == "wire":
@@ -747,9 +814,9 @@ def main(argv=None):
     elif args.command == "run-frozen":
         campaign = SC.jload(args.campaign)
         pins = scene_pins(campaign, str(args.campaign.resolve().relative_to(ROOT)), args.kernel)
-        print(run_frozen_kernel(args.campaign, args.kernel, args.out, args.freeze, expected_commit=args.source_commit, expected_pins=pins))
+        print(run_frozen_kernel(args.campaign, args.kernel, args.out, args.freeze, expected_commit=args.source_commit, expected_pins=pins, prerun=args.prerun))
     else:
-        table = verify(args.campaign, args.outputs, args.freeze, args.smoke, source_commit=args.source_commit)
+        table = verify(args.campaign, args.outputs, args.freeze, args.smoke, source_commit=args.source_commit, prerun=args.prerun)
         text = json.dumps(table, sort_keys=True, indent=2, allow_nan=False) + "\n"
         if args.out is None:
             print(text, end="")

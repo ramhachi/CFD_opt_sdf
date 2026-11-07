@@ -68,7 +68,7 @@ def test_checker_priority_and_missing_input():
     value["waterlily"][0]["finite"] = False
     assert C.check(value)["label"] == "NUMERICAL"
     value["cap_hit"] = True
-    assert C.check(value)["label"] == "INCOMPLETE"
+    assert C.check(value)["label"] == "NUMERICAL"
     value["waterlily"][0]["finite"] = True
     assert C.check(value)["label"] == "INCOMPLETE"
     value = planted()
@@ -102,13 +102,13 @@ def test_checker_amendment3_severity_from_raw_realisation_states(states, expecte
         assert result["label"] == "TR_UNQUALIFIED"
         assert result["tr00"]["cells"]["SA/fine30"]["label"] == expected
     else:
-        assert result["label"] == ("NUMERICAL" if expected == "NUMERICAL" else "INCOMPLETE")
+        assert result["label"] == ("NUMERICAL" if expected in ("NUMERICAL", "MESH_FAILED") else "INCOMPLETE")
     data["rans"]["cells"][0]["realisations"].reverse()
     assert C.compare(result, C.check(data)) == []
 
 
 @pytest.mark.parametrize("incomplete_source", ["cap", "waterlily", "rans"])
-def test_checker_cap_or_required_incomplete_wins_over_measured_numeric_failure(incomplete_source):
+def test_checker_study_numeric_precedes_cap_or_required_incomplete(incomplete_source):
     data = planted()
     data["waterlily"][0].update(ok=False, finite=False, complete=False,
                                readouts={name: None for name in ("cur", "nds", "cv")})
@@ -121,7 +121,7 @@ def test_checker_cap_or_required_incomplete_wins_over_measured_numeric_failure(i
         row = data["rans"]["cells"][0]["realisations"][0]
         row["status"]["E2"] = "INCOMPLETE"
         row["forces"]["E2"] = row["mesh_sha256"]["E2"] = None
-    assert C.check(data)["label"] == "INCOMPLETE"
+    assert C.check(data)["label"] == "NUMERICAL"
 
 
 @pytest.mark.parametrize("arm", ["E3", "E1_sharp"])
@@ -237,11 +237,12 @@ def test_zero_baseline_does_not_block_reported_only_retention(zero_side):
     ("numerical", "NUMERICAL"), ("resolution", "RESOLUTION_LIMITED"),
     ("control_numerical", "NUMERICAL"), ("numerical_partial", "NUMERICAL"),
     ("unresolved", "UNRESOLVED"), ("discordant", "DISCORDANT"),
+    ("partial", "CONCORDANT_PARTIAL"),
     ("sign_only", "CONCORDANT"), ("adopted_nds", "CONCORDANT"),
     ("drag_unresolved_ratio", "CONCORDANT"), ("drag_unresolved_sign", "CONCORDANT"),
     ("degenerate_main", "INCOMPLETE"), ("degenerate_sharp", "TR_UNQUALIFIED"),
-    ("mesh_failed", "INCOMPLETE"),
-    ("numeric_with_cap", "INCOMPLETE"),
+    ("mesh_failed", "NUMERICAL"),
+    ("numeric_with_cap", "NUMERICAL"),
     ("mixed_main_states", "INCOMPLETE"), ("mixed_sharp_states", "TR_UNQUALIFIED"),
 ])
 def test_independent_implementations_agree_on_force_tables(case, expected):
@@ -275,6 +276,12 @@ def test_independent_implementations_agree_on_force_tables(case, expected):
                 row["readouts"]["cur"]["downforce"] *= 2
                 for b in row["readouts"]["cur"]["batches"]:
                     b["downforce"] *= 2
+    elif case == "partial":
+        for row in data["waterlily"]:
+            if row["configuration"] == "E2" and row["reynolds"] == 1000:
+                row["readouts"]["cur"]["downforce"] -= 3
+                for batch in row["readouts"]["cur"]["batches"]:
+                    batch["downforce"] -= 3
     elif case in ("unresolved", "discordant"):
         level = 2. if case == "unresolved" else 1.5
         for row in data["waterlily"]:

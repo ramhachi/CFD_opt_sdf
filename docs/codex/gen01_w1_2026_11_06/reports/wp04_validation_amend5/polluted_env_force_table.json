@@ -1,0 +1,81 @@
+{
+  "campaign_id": "topo2d00",
+  "campaign_sha256": "439b638e0e2a6e95ce315ebe89049ed4739262be597300ec3014d85a0347c0a9",
+  "cap_hit": false,
+  "cap_receipts": {},
+  "force_unit": "N/m",
+  "freeze_sha256": null,
+  "harness_tool_sha256": {
+    "scripts/harness.py": "e9d036846ffd33fced8a1507a8fb191e49e0179a517c25a393354c83de4655fa",
+    "src/cfd_harness/campaign_build.py": "7e3ee902bc3ed020edd5e37cbd9060490f9c0f5119e72a60448edbdcf0688a68",
+    "src/cfd_harness/campaign_runner_template.py": "d53e2df74af8becc4e512c19e14381c549006a499c38c2cfab2ba89b6ab9ead1",
+    "src/cfd_harness/campaign_schema.py": "4c3c494ed381930d9d1e51b063efbbdcf1fa4586c1ac7e84d2b999a5c984d1b8",
+    "src/cfd_harness/campaign_verify.py": "8db4714799e258e08ce1a2e8ed9de4b5ff90ba3d9fa56513ec6d6997b0e57a2e",
+    "src/cfd_harness/scene_campaign.py": "ffd0c7c835b0c8daddf10a434bcd7ade83e735ad50b97c6ed685cfaa33489e1b"
+  },
+  "harness_version": "harness v1.1",
+  "integrity": {
+    "failures": [],
+    "pass": true
+  },
+  "kernel_manifest_sha256": {
+    "re1000": "7e22369e6fd3297599cc038d63e7f09199a879bad8b7337321e7752bf20b7a7c"
+  },
+  "kind": "harness_state_force_table",
+  "legacy_replay": false,
+  "prerun": false,
+  "smoke": true,
+  "source_commit": "db36e4e50f3e926ff71fe2fff9de804c7aec4511",
+  "state_forces_n": {
+    "re1000": {
+      "E1_h100_re1000_main_k01": {
+        "complete": true,
+        "downforce_n": 0.37016354909485366,
+        "drag_n": 0.18719914303419607,
+        "finite": true,
+        "forces_csv_sha256": "0a6df38d51545225aea02f343f95c6b1f33b141f36026263daa34e344a924938",
+        "julia_summary_wall_seconds": 21.764525890350342,
+        "observable": "total_cl",
+        "ok": true,
+        "readouts": {
+          "cur": {
+            "batches": [
+              {
+                "downforce": 17.686425501754346,
+                "drag": 5.630346296371081
+              },
+              {
+                "downforce": -1.3876127648746917,
+                "drag": 0.5226140011672628
+              },
+              {
+                "downforce": -2.4225653350509755,
+                "drag": 0.23062061530704947
+              },
+              {
+                "downforce": -0.6206144888527192,
+                "drag": 0.32005894513835137
+              }
+            ],
+            "downforce": 3.31390822824399,
+            "drag": 1.6759099644959363,
+            "observable": "total_cl"
+          },
+          "cv": null,
+          "nds": null
+        },
+        "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+        "solver_process_wall_seconds": 29.000236958032474,
+        "summary_sha256": "0f0b39ef7a2b90616028ff8a65c4df253a7a90c0f7df53fe07ad3f995f7fdb43",
+        "topo2d": {
+          "configuration": "E1",
+          "grid": "main",
+          "height_mm": 100.0,
+          "phase": "1",
+          "reynolds": 1000.0,
+          "role": "primary"
+        }
+      }
+    }
+  }
+}

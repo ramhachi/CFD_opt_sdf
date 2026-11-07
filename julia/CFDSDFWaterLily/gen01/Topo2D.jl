@@ -40,6 +40,8 @@ end
 
 """Point-to-segment Euclidean distance and nonzero-winding sign, directly in 2D.
 
+Vertices form an ordered open list: the last-to-first closing edge is implied.
+Scene validation refuses duplicated vertices, including a duplicated endpoint.
 This is piecewise AD compatible; polygon vertices/medial axes have the usual
 distance-function kinks. No finite differences or trilinear grid intervene.
 """
@@ -163,7 +165,8 @@ function setup(scene; reynolds, phase_shift_m=(0.0,0.0,0.0), dims=nothing, smoke
     sim = Simulation(dims,(1.0f0,0.0f0),Float32(L); ν=Float32(L/reynolds),body=combined,exitBC=true,λ=WaterLily.quick,T=Float32,mem=memory)
     columns = vcat(BASE_COLUMNS, ["$(r)_$(a)_solver" for r in ("cur","nds","cv") for a in FORCE_AXES], ["element_$(name)_$(a)_solver" for name in scene.names for a in FORCE_AXES])
     ident = Dict("configuration"=>scene.configuration,"height_mm"=>scene.height_mm,"reynolds"=>Float64(reynolds),"grid"=>grid,"phase"=>string(phase),"role"=>role)
-    contract = (; scene_sha=scene.sha256, phase_shift_m, dims, reynolds, start, stop, sample_every, batches, L, smoke, case_id, phase=string(phase), role, grid, top_factor, backend, x0, z0, remeasure=true)
+    contract = (; scene_sha=scene.sha256, phase_shift_m, dims, reynolds, start, stop, sample_every, batches, L, smoke, case_id, phase=string(phase), role, grid, top_factor, backend, x0, z0,
+                remeasure=false,timestep_floor="eps(T)*max(1,abs(solver_time))")
     fingerprint = bytes2hex(sha256(repr((contract,sort!(collect(source_hashes(backend));by=first),sort!(collect(runtime_identity(backend));by=first)))))
     wp2 = isdefined(@__MODULE__, :force_readouts)
     box = nothing
@@ -221,16 +224,38 @@ function force_row(run, step)
     row
 end
 
+"""Reject collapsed adaptive steps at the solver's floating-point time resolution.
+
+This is a machine-precision guard, not a new physical/stationarity threshold.
+The pending step is stored in the final entry; completed time excludes it.
+"""
+function check_timestep(sim)
+    dt=sim.flow.Δt[end]
+    t=WaterLily.time(sim)
+    isfinite(t) && isfinite(dt) && dt>eps(typeof(dt))*max(one(dt),abs(t)) ||
+        throw(NumericalFailure("Δt collapse: pending solver Δt=$dt at time=$t is below floating-point time resolution"))
+    nothing
+end
+
+function static_step!(sim)
+    check_timestep(sim)
+    before=sim_time(sim)
+    sim_step!(sim;remeasure=false)
+    after=sim_time(sim)
+    isfinite(after) && after>before || throw(NumericalFailure("Δt collapse: solver time did not advance"))
+    check_timestep(sim)
+end
+
 function advance!(run, rows, step; until=run.contract.stop, stop_after_steps=typemax(Int))
     # WP2's CV storage requires an actually completed time step. Its first
     # sample therefore follows step one; all registered windows start later.
     if isempty(rows) && run.available["cv"] && step==0
-        sim_step!(run.sim);step+=1
+        static_step!(run.sim);step+=1
     end
     isempty(rows) && push!(rows,force_row(run,step))
     taken = 0
     while sim_time(run.sim) < until && taken < stop_after_steps
-        sim_step!(run.sim); step += 1; taken += 1
+        static_step!(run.sim); step += 1; taken += 1
         if step % run.contract.sample_every == 0 || sim_time(run.sim) >= until
             push!(rows,force_row(run,step))
         end
@@ -345,7 +370,7 @@ function write_outputs(run,rows,step,out; wall_seconds)
         "observable"=>"total_cl","h_over_c1"=>run.scene.height_mm/C1_MM,"h_over_c"=>run.scene.height_mm/380,
         "source_sha256"=>source_hashes(c.backend),"runtime"=>runtime_identity(c.backend),"backend"=>(c.backend=="cuda" ? "WaterLily CUDA" : "WaterLily CPU"),"smoke"=>c.smoke,
         "phase_shift_m"=>collect(c.phase_shift_m),"flow_dims"=>collect(c.dims),"solver_length"=>c.L,"reynolds"=>Float64(c.reynolds),
-        "top_factor"=>c.top_factor,
+        "top_factor"=>c.top_factor,"remeasure_after_construction"=>c.remeasure,"timestep_floor"=>c.timestep_floor,
         "flow_origin_m"=>[c.x0/1000,0.0,c.z0/1000],
         "reference_chord_mm"=>C1_MM,"force_unit"=>"N/m","force_scale_n_per_m"=>run.scene.dx_mm/1000,
         "force_projection_semantics"=>"drag=+Fx; downforce=-Fz","ground_velocity_solver"=>[1.0,0.0],"ground_plane_solver"=>Float64(run.ground.z),
@@ -353,7 +378,7 @@ function write_outputs(run,rows,step,out; wall_seconds)
         "t_end_reached"=>Float64(sim_time(run.sim)),"batch_count"=>c.batches,"sample_every_solver_steps"=>c.sample_every,"steps"=>step,
         "readout_available"=>run.available,"readout_note"=>(run.available["nds"] ? "WP2 force_readouts: explicit wing-only body and validated immutable box" : "WP2 wing-only readouts absent: cur only; nds/cv reserved as NaN in CSV"),
         "checkpoint_provider"=>(checkpoint_available() ? "WP1_DATA_ONLY_FINITE_COLUMN_ADAPTER" : "TOPO2D_CPU_SERIALIZATION"),
-        "checkpoint_note"=>(checkpoint_available() ? "WP1 source-pinned finite-column payload, explicit missing-column mask, fresh-simulation restore and default remeasurement" : "WP1 absent: isolated CPU full-simulation fallback with source/runtime/scene/window identity"),
+        "checkpoint_note"=>(checkpoint_available() ? "WP1 source-pinned finite-column payload and fresh static-scene coefficients; WP4 CPU bit-identity verified with remeasure=false; CUDA restore unverified" : "WP1 absent: isolated CPU full-simulation fallback with source/runtime/scene/window identity"),
         "wall_seconds"=>wall_seconds,"force_csv_sha256"=>file_sha(csv_path),"stationarity_relative_half_window_drift"=>drifts,
         "drag_time_weighted_n_per_m"=>means["drag"]*run.scene.dx_mm/1000,"downforce_time_weighted_n_per_m"=>means["downforce"]*run.scene.dx_mm/1000,
         "cd_time_weighted"=>2means["drag"]/c.L,"cl_time_weighted"=>2means["downforce"]/c.L)
@@ -395,7 +420,8 @@ function main_loaded(args)
         "observable"=>"total_cl","h_over_c1"=>scene.height_mm/C1_MM,"h_over_c"=>scene.height_mm/380,
         "source_sha256"=>source_hashes(backend),"runtime"=>runtime_identity(backend),"smoke"=>smoke,
         "phase_shift_m"=>collect(run_data.contract.phase_shift_m),"window_t_u_l"=>[run_data.contract.start,run_data.contract.stop],
-        "flow_dims"=>collect(run_data.contract.dims),"contract_fingerprint"=>run_data.fingerprint)
+        "flow_dims"=>collect(run_data.contract.dims),"contract_fingerprint"=>run_data.fingerprint,
+        "remeasure_after_construction"=>run_data.contract.remeasure,"timestep_floor"=>run_data.contract.timestep_floor)
     preflight_toml=joinpath(out,"job_preflight.toml")
     open(preflight_toml,"w") do io
         TOML.print(io,preflight;sorted=true)

@@ -1,0 +1,37 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "scripts/topo2d00/check.py",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/synthetic_analysis/analysis.json"
+  ],
+  "computed_reference": {
+    "delta_cl": 1.0,
+    "digitizing_uncertainty": 0.009999999999999787
+  },
+  "evidence_class": "SYNTHETIC_SOFTWARE_ONLY",
+  "returncode": 0,
+  "stdout": {
+    "discrepancies": [],
+    "pass": true
+  },
+  "wp5_increment": {
+    "delta_Cl": 1.0,
+    "digitization_exceeds_5_percent": false,
+    "digitization_fraction_of_increment": 0.009999999999999787,
+    "digitization_sensitivity_abs": 0.009999999999999787,
+    "from": "E1_sharp",
+    "from_digitization_sensitivity_abs": 0.0,
+    "qualification_decided": false,
+    "reference_difference_reading_sensitivity_abs": 0.009999999999999787,
+    "threshold_fraction": 0.05,
+    "threshold_uncertainty_basis": "to_reference_digitization_sensitivity_abs",
+    "to": "E2_sharp",
+    "to_digitization_sensitivity_abs": 0.009999999999999787,
+    "total_reference_uncertainty_known": false,
+    "zero_increment": false
+  },
+  "wp5_source_path": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-05-tr00-rans/scripts/topo2d00/digitize_cp.py",
+  "wp5_source_sha256": "30913be9d0dfa9e152511abf5d121facc7348bd7b2d721970e509db180e66164",
+  "wp5_source_unchanged": true,
+  "written_once_refused": true
+}

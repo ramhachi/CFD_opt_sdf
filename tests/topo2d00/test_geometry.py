@@ -1,5 +1,6 @@
 """TOPO-2D-00 geometry contracts; source identity has separate transcription tests."""
 import json
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -21,6 +22,44 @@ from cfd_gen.topo2d.geometry import (
 
 
 DX = 223.4 / 120
+
+
+def test_e3_nose_caveat_is_quantified_without_claiming_a_global_floor():
+    scene = build_scene("E3", height_mm=100, dx_mm=DX)
+    for element in scene["elements"][1:]:
+        nose = element["nose_thickness"]
+        assert element["thickening"]["original_max_thickness_mm"] == pytest.approx(6.7011462)
+        assert nose["source_maximum_below_t_min"] is True
+        assert nose["registered_approximate_chord_fractions"] == {
+            "below_t_min": .129, "below_classic_bdim_floor": .069}
+        assert nose["paired_width_first_crossings"]["t_min"]["chord_fraction"] == pytest.approx(.12608231)
+        assert nose["paired_width_first_crossings"]["classic_bdim"]["chord_fraction"] == pytest.approx(.06846234)
+        assert nose["paired_width_first_crossings"]["t_min"]["threshold_mm"] == 4 * DX
+        assert nose["paired_width_first_crossings"]["classic_bdim"]["threshold_mm"] == pytest.approx((2 + np.sqrt(2)) * DX)
+        assert nose["excluded_from_phase_core_check"] is True
+    assert scene["elements"][0]["nose_thickness"]["source_maximum_below_t_min"] is False
+
+
+def test_gate_refuses_stale_nose_caveat_metadata():
+    scene = build_scene("E3", height_mm=100, dx_mm=DX)
+    scene["elements"][1]["nose_thickness"]["paired_width_first_crossings"]["t_min"]["chord_fraction"] = 0
+    with pytest.raises(GeometryError, match="nose"):
+        validate_scene(scene)
+
+
+def test_scene_json_schema_states_and_enforces_implicit_closure():
+    # The schema complements the continuous geometric gates, not replaces them.
+    schema = json.loads((Path(__file__).resolve().parents[2]
+        / "docs/codex/gen01_w1_2026_11_06/reports/topo2d00_scene_schema.json").read_text())
+    polygon_schema = schema["$defs"]["element"]["properties"]["polygon_mm"]
+    assert polygon_schema["uniqueItems"] is True
+    assert "implicit" in polygon_schema["description"]
+    assert "duplicated" in polygon_schema["description"]
+    scene = build_scene("E2", height_mm=100, dx_mm=DX)
+    validate_scene(scene)
+    scene["elements"][0]["polygon_mm"].append(scene["elements"][0]["polygon_mm"][0])
+    with pytest.raises(GeometryError, match="duplicated"):
+        validate_scene(scene)
 
 
 @pytest.mark.parametrize("configuration,dx,height", [

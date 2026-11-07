@@ -1,0 +1,87 @@
+{
+  "evidence_class": "CPU_CAPABILITY_ONLY",
+  "independent_python_host_readouts": {
+    "E1": {
+      "force_csv_sha256": "36ff6b6d14178067e64cc70be74016a2701710580881512696a07c4ce87cbba5",
+      "host_minus_julia_nominal_n_per_m": {
+        "downforce": 2.7755575615628914e-17,
+        "drag": 2.7755575615628914e-17
+      },
+      "host_readouts": {
+        "downforce_n": 0.1671964211669022,
+        "drag_n": 0.21553744123825003,
+        "observable": "total_cl",
+        "readouts": {
+          "cur": {
+            "batches": [
+              {
+                "downforce": 5.082090207409814,
+                "drag": 3.331604724397608
+              },
+              {
+                "downforce": 0.0255115851410513,
+                "drag": 1.649368471669397
+              },
+              {
+                "downforce": 0.26368505538095743,
+                "drag": 1.4255822387307946
+              },
+              {
+                "downforce": 0.6160514212499932,
+                "drag": 1.3118847169748058
+              }
+            ],
+            "downforce": 1.4968345672954537,
+            "drag": 1.9296100379431513,
+            "observable": "total_cl"
+          },
+          "cv": null,
+          "nds": null
+        }
+      },
+      "passed": true,
+      "summary_sha256": "c5e880f500cb51fa5fd4d280902e224b597b7fa5ebd5a3f0b9828a5a6c211118"
+    },
+    "E2": {
+      "force_csv_sha256": "129a3a66fe49126d75325b67c56cbfa15f2d228e70ab836744f076b05e06b4fe",
+      "host_minus_julia_nominal_n_per_m": {
+        "downforce": -4.440892098500626e-16,
+        "drag": 1.1102230246251565e-16
+      },
+      "host_readouts": {
+        "downforce_n": 2.257892131836527,
+        "drag_n": 0.9165765168127264,
+        "observable": "total_cl",
+        "readouts": {
+          "cur": {
+            "batches": [
+              {
+                "downforce": 31.113882890635864,
+                "drag": 12.113743255029616
+              },
+              {
+                "downforce": 18.065676585147198,
+                "drag": 7.696183887140147
+              },
+              {
+                "downforce": 16.027064778292452,
+                "drag": 6.707866690418317
+              },
+              {
+                "downforce": 15.648957906587949,
+                "drag": 6.304999965539991
+              }
+            ],
+            "downforce": 20.213895540165865,
+            "drag": 8.205698449532017,
+            "observable": "total_cl"
+          },
+          "cv": null,
+          "nds": null
+        }
+      },
+      "passed": true,
+      "summary_sha256": "92e450f1251a80d00449e79cf96d0cc39b2e4b9ac950b8c34c29a5793ad3877e"
+    }
+  }
+}

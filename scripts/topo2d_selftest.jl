@@ -5,7 +5,81 @@ include(joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "CFDSDFWater
 Base.include(CFDSDFWaterLily,
     joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "gen01", "Topo2D.jl"))
 using .CFDSDFWaterLily.Topo2D
-using WaterLily
+import WaterLily
+
+function remeasurement_identity(scene)
+    fixture()=Topo2D.setup(scene;reynolds=200.0,dims=(320,160),smoke=true,start=0.003,stop=0.015,sample_every=1,batches=4)
+    static,remeasured=fixture(),fixture()
+    @test static.contract.remeasure === false
+    static_rows=Vector{Float64}[]
+    static_step=Topo2D.advance!(static,static_rows,0)
+    # Independent reference path deliberately retains the old remeasurement.
+    reference_rows=Vector{Float64}[]
+    reference_step=0
+    if remeasured.available["cv"]
+        WaterLily.sim_step!(remeasured.sim;remeasure=true);reference_step+=1
+    end
+    push!(reference_rows,Topo2D.force_row(remeasured,reference_step))
+    while WaterLily.sim_time(remeasured.sim)<remeasured.contract.stop
+        WaterLily.sim_step!(remeasured.sim;remeasure=true);reference_step+=1
+        push!(reference_rows,Topo2D.force_row(remeasured,reference_step))
+    end
+    @test static_step==reference_step
+    @test isequal(static_rows,reference_rows)
+    @test isequal(static.sim.flow.u,remeasured.sim.flow.u)
+    @test isequal(static.sim.flow.p,remeasured.sim.flow.p)
+    @test isequal(static.sim.flow.Δt,remeasured.sim.flow.Δt)
+    for column in (6,7)
+        @test isequal(Topo2D.window_mean(static_rows,column,0.003,0.015),
+                      Topo2D.window_mean(reference_rows,column,0.003,0.015))
+    end
+    Dict("passed"=>true,"steps"=>static_step,"static_remeasure"=>false,"reference_remeasure"=>true,
+         "fields_rows_timesteps_windows_bit_equal"=>true)
+end
+
+function timestep_collapse(scene,out)
+    run=Topo2D.setup(scene;reynolds=200.0,dims=(320,160),smoke=true,start=0.003,stop=0.015,
+                      sample_every=1,batches=4,case_id="dt_collapse")
+    original=run.sim.flow.Δt[end]
+    @test Topo2D.check_timestep(run.sim)===nothing
+    for value in (0.0f0,-1.0f0,NaN32,Inf32,eps(Float32)/2)
+        run.sim.flow.Δt[end]=value
+        @test_throws Topo2D.NumericalFailure Topo2D.check_timestep(run.sim)
+    end
+    run.sim.flow.Δt[end]=original
+    step=Topo2D.advance!(run,Vector{Float64}[],0;stop_after_steps=1)
+    run.sim.flow.Δt[end]=eps(Float32)*abs(WaterLily.time(run.sim))/2
+    @test_throws Topo2D.NumericalFailure Topo2D.advance!(run,Vector{Float64}[],step)
+
+    # A positive, finite but collapsed Δt passes WP1's data validation. Resume
+    # it through the actual job process to verify the NUMERICAL receipt/exit.
+    collapsed=Topo2D.setup(scene;reynolds=200.0,dims=(320,160),smoke=true,start=0.003,stop=0.015,
+                            sample_every=1,batches=4,case_id="dt_collapse")
+    collapsed.sim.flow.Δt[end]=eps(Float32)/2
+    rows=[Topo2D.force_row(collapsed,0)]
+    checkpoint=joinpath(out,"dt_collapse.checkpoint")
+    Topo2D.save_checkpoint(checkpoint,collapsed.sim,0,rows;fingerprint=collapsed.fingerprint)
+    scene_path=joinpath(Topo2D.ROOT,"docs","harness","topo2d00_scenes","E1.json")
+    entry=joinpath(Topo2D.ROOT,"scripts","waterlily_topo2d_job.jl")
+    dest=joinpath(out,"dt_collapse")
+    process=withenv("W4_JOB_SHA256"=>Topo2D.file_sha(entry),"W4_SCENE_SHA256"=>scene.sha256,
+        "TOPO2D_BACKEND"=>"cpu","TOPO2D_SMOKE"=>"1","TOPO2D_REYNOLDS"=>"200",
+        "TOPO2D_WINDOW_START"=>"0.003","TOPO2D_WINDOW_END"=>"0.015","TOPO2D_DIMS"=>"320,160",
+        "TOPO2D_SAMPLE_EVERY"=>"1","TOPO2D_BATCHES"=>"4","W4_CANONICAL_ORIGIN_M"=>"0,0,0",
+        "TOPO2D_PHASE"=>"0","TOPO2D_GRID"=>"main","TOPO2D_ROLE"=>"primary","TOPO2D_CASE_ID"=>"dt_collapse",
+        "TOPO2D_CHECKPOINT"=>nothing,"TOPO2D_RESUME"=>checkpoint,"TOPO2D_TOP_FACTOR"=>nothing) do
+        Base.run(ignorestatus(`$(Base.julia_cmd()) --startup-file=no --project=$(joinpath(Topo2D.ROOT,"julia","CFDSDFWaterLily")) $entry $scene_path $dest`))
+    end
+    @test process.exitcode==42
+    receipt=Topo2D.TOML.parsefile(joinpath(dest,"numerical_failure.toml"))
+    @test receipt["status"]=="NUMERICAL"
+    @test occursin("Δt collapse",receipt["reason"])
+    @test receipt["topo2d"]["height_mm"]==scene.height_mm && receipt["topo2d"]["role"]=="primary"
+    @test isfile(joinpath(dest,"numerical_failure.json")) && !isfile(joinpath(dest,"W4_JOB_DONE"))
+    Dict("passed"=>true,"exit_code"=>process.exitcode,"status"=>receipt["status"],"reason"=>receipt["reason"],
+         "receipt_sha256"=>Topo2D.file_sha(joinpath(dest,"numerical_failure.json")),
+         "criterion"=>"Δt <= eps(Float32)*max(1,abs(solver time)); no physical threshold")
+end
 
 function wp1_integration(scene,source)
     fixture()=Topo2D.setup(scene;reynolds=200.0,dims=(320,160),smoke=true,start=0.003,stop=0.015,sample_every=1,batches=4)
@@ -18,17 +92,22 @@ function wp1_integration(scene,source)
         @test_throws ErrorException Topo2D.load_checkpoint(path;fingerprint="wrong",sim=fresh.sim)
         saved=Topo2D.load_checkpoint(path;fingerprint=split.fingerprint,sim=fresh.sim)
         @test isequal(rows,saved.rows)
-        @test all(all(isnan,row[19:28]) for row in saved.rows)
+        @test split.available["nds"] || all(all(isnan,row[19:28]) for row in saved.rows)
         resumed=merge(fresh,(;sim=saved.sim))
         full_step=Topo2D.advance!(split,rows,step)
         resumed_step=Topo2D.advance!(resumed,saved.rows,saved.step)
         @test full_step==resumed_step
         means=[Topo2D.window_mean(rows,c,0.003,0.015) for c in (6,7)]
         restored=[Topo2D.window_mean(saved.rows,c,0.003,0.015) for c in (6,7)]
-        @test all(isapprox(a,b;rtol=1e-6,atol=1e-10) for (a,b) in zip(means,restored))
+        @test isequal(rows,saved.rows)
+        @test isequal(split.sim.flow.u,resumed.sim.flow.u)
+        @test isequal(split.sim.flow.p,resumed.sim.flow.p)
+        @test isequal(split.sim.flow.Δt,resumed.sim.flow.Δt)
+        @test isequal(means,restored)
         @test all(isfinite,resumed.sim.flow.u) && all(isfinite,resumed.sim.flow.p)
-        Dict("passed"=>true,"source_path"=>source,"source_sha256"=>Topo2D.file_sha(source),"missing_columns_restored_as_nan"=>true,
-             "provider"=>"WP1_DATA_ONLY_FINITE_COLUMN_ADAPTER","window_means"=>means,"restored_window_means"=>restored,"checkpoint_sha256"=>Topo2D.file_sha(path))
+        Dict("passed"=>true,"source_path"=>source,"source_sha256"=>Topo2D.file_sha(source),"missing_columns_restored_as_nan"=>!split.available["nds"],
+             "provider"=>"WP1_DATA_ONLY_FINITE_COLUMN_ADAPTER","static_remeasure"=>false,"fields_rows_timesteps_windows_bit_equal"=>true,
+             "window_means"=>means,"restored_window_means"=>restored,"checkpoint_sha256"=>Topo2D.file_sha(path))
     end
     result
 end
@@ -74,6 +153,7 @@ function selftest(out)
         scene=Topo2D.load_scene(path,Topo2D.file_sha(path))
         @test_throws ErrorException Topo2D.setup(scene;reynolds=Inf,smoke=true,start=0.003,stop=0.015)
         @test_throws ErrorException Topo2D.setup(scene;reynolds=200.0,smoke=true,start=0.003,stop=Inf)
+        summaries[config*"_remeasurement_identity"]=remeasurement_identity(scene)
         run=Topo2D.setup(scene;reynolds=200.0,dims=(320,160),smoke=true,start=0.003,stop=0.015,sample_every=1,batches=4)
         @test run.sim.flow.u isa Array && all(b.sdf.vertices isa Vector{NTuple{2,Float32}} for b in run.bodies)
         println("TOPO2D_SELFTEST_BUILT ",config," seconds=",time()-started);flush(stdout)
@@ -137,11 +217,16 @@ function selftest(out)
         scene=Topo2D.load_scene(path,Topo2D.file_sha(path))
         cores[config]=Topo2D.phase_core_checks(scene)
         @test cores[config]["passed"]
+        # Construct exactly the tuple-backed wing/ground union used by the
+        # explicit CUDA path, while keeping all arrays and execution on CPU.
+        bodies=[WaterLily.AutoBody(Topo2D.PolygonSDF(Tuple((Float32(p[1]),Float32(p[2])) for p in polygon))) for polygon in scene.polygons]
+        union=WaterLily.SetBody(min,reduce((a,b)->WaterLily.SetBody(min,a,b),bodies),Topo2D.MovingGround(0.0f0,1.0f0))
+        @test isbitstype(typeof(union))
+        cores[config]["tuple_union_isbitstype"]=true
     end
     summaries["phase_core_checks"]=cores
     println("TOPO2D_SELFTEST_DONE phase_core_checks seconds=",time()-started);flush(stdout)
-    # Optional read-only integration against actual sibling source paths. They
-    # are never copied into this checkout or promoted to pinned formal inputs.
+    # Providers are discovered from this checkout, with no sibling-source env.
     scene_path=joinpath(Topo2D.ROOT,"docs","harness","topo2d00_scenes","E1.json")
     scene=Topo2D.load_scene(scene_path,Topo2D.file_sha(scene_path))
     entry_dir=joinpath(out,"job_entrypoint")
@@ -157,27 +242,22 @@ function selftest(out)
     @test entry["finite_forces"]
     summaries["job_entrypoint"]=Dict("passed"=>true,"force_csv_sha256"=>entry["force_csv_sha256"],"preflight_sha256"=>Topo2D.file_sha(joinpath(entry_dir,"job_preflight.json")))
     println("TOPO2D_SELFTEST_DONE job_entrypoint seconds=",time()-started);flush(stdout)
-    if haskey(ENV,"TOPO2D_WP1_TEST_SOURCE")
-        source=abspath(ENV["TOPO2D_WP1_TEST_SOURCE"])
-        before=Topo2D.file_sha(source)
-        Base.include(Topo2D,source)
-        Topo2D.CHECKPOINT_SOURCE[]=source
-        summaries["wp1_integration"]=Base.invokelatest(wp1_integration,scene,source)
-        summaries["wp1_integration"]["source_origin_path"]=get(ENV,"TOPO2D_WP1_TEST_ORIGIN",source)
-        @test before==Topo2D.file_sha(source)
-        println("TOPO2D_SELFTEST_DONE wp1_integration seconds=",time()-started);flush(stdout)
-    end
-    if haskey(ENV,"TOPO2D_WP2_TEST_SOURCE")
-        source=abspath(ENV["TOPO2D_WP2_TEST_SOURCE"])
-        before=Topo2D.file_sha(source)
-        Base.include(Topo2D,source)
-        Topo2D.FORCE_SOURCE[]=source
+    source=joinpath(Topo2D.ROOT,"julia","CFDSDFWaterLily","gen01","Checkpoint.jl")
+    @test Topo2D.checkpoint_available()
+    @test Topo2D.CHECKPOINT_SOURCE[]==source
+    summaries["wp1_integration"]=wp1_integration(scene,source)
+    println("TOPO2D_SELFTEST_DONE wp1_integration seconds=",time()-started);flush(stdout)
+    summaries["timestep_collapse"]=timestep_collapse(scene,out)
+    println("TOPO2D_SELFTEST_DONE timestep_collapse seconds=",time()-started);flush(stdout)
+    if isdefined(Topo2D,:force_readouts)
+        source=Topo2D.FORCE_SOURCE[]
         path=joinpath(Topo2D.ROOT,"docs","harness","topo2d00_scenes","E2.json")
         scene=Topo2D.load_scene(path,Topo2D.file_sha(path))
-        summaries["wp2_integration"]=Base.invokelatest(wp2_integration,scene,source,out)
-        summaries["wp2_integration"]["source_origin_path"]=get(ENV,"TOPO2D_WP2_TEST_ORIGIN",source)
-        @test before==Topo2D.file_sha(source)
+        summaries["wp2_integration"]=wp2_integration(scene,source,out)
         println("TOPO2D_SELFTEST_DONE wp2_integration seconds=",time()-started);flush(stdout)
+    else
+        summaries["wp2_integration"]=Dict("status"=>"NOT_INTEGRATED_CUR_ONLY",
+            "note"=>"Branch-local Force00.jl absent: cur only; nds/cv reserved as NaN")
     end
     summaries["schema"]="topo2d-cpu-selftest-v1"
     summaries["evidence_class"]="CPU_CAPABILITY_ONLY"
@@ -185,10 +265,6 @@ function selftest(out)
     summaries["runtime"]=Topo2D.runtime_identity()
     summaries["selftest_source_sha256"]=Topo2D.file_sha(@__FILE__)
     summaries["source_sha256"]=Topo2D.source_hashes()
-    if haskey(ENV,"TOPO2D_PROVIDER_ORIGIN_RECORD")
-        path=ENV["TOPO2D_PROVIDER_ORIGIN_RECORD"]
-        summaries["provider_origin_record"]=Dict("path"=>path,"sha256"=>Topo2D.file_sha(path))
-    end
     summaries["cuda_module_loaded"]=any(id.name=="CUDA" for id in keys(Base.loaded_modules))
     @test !summaries["cuda_module_loaded"]
     summaries["wall_seconds"]=time()-started

@@ -1414,6 +1414,22 @@
       ],
       "name": "main",
       "nominal_chord_mm": 223.4,
+      "nose_thickness": {
+        "excluded_from_phase_core_check": true,
+        "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+        "paired_width_first_crossings": {
+          "classic_bdim": {
+            "chord_fraction": 0.00349167193530176,
+            "threshold_mm": 6.356127581951245
+          },
+          "t_min": {
+            "chord_fraction": 0.004825061298171234,
+            "threshold_mm": 7.446666666666667
+          }
+        },
+        "source_maximum_below_t_min": false,
+        "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+      },
       "polygon_mm": [
         [
           224.35529205987632,
@@ -8832,6 +8848,22 @@
       ],
       "name": "flap1",
       "nominal_chord_mm": 165.7,
+      "nose_thickness": {
+        "excluded_from_phase_core_check": true,
+        "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+        "paired_width_first_crossings": {
+          "classic_bdim": {
+            "chord_fraction": 0.00561096149276184,
+            "threshold_mm": 6.356127581951245
+          },
+          "t_min": {
+            "chord_fraction": 0.007966857820506292,
+            "threshold_mm": 7.446666666666667
+          }
+        },
+        "source_maximum_below_t_min": false,
+        "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+      },
       "polygon_mm": [
         [
           369.2352882636777,

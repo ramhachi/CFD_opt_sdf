@@ -1,140 +1,247 @@
-# WP4：TOPO-2D-00 WaterLily 側 — Amendment 3 報告
+# WP4 TOPO-2D-00 WaterLily 側 — Amendment 5 報告
 
 ## 状態
 
-**PARTIAL**。`ba3164c7` からの第3回修正。幾何の sliver／閉辺、cell severity、scene 高さの拘束を修正し、全10 scene・campaign・図を更新した。対象 pytest 219件と CPU 自己テスト59件は成功。指定の全体 pytest は3701 passed／74 skipped／0 failedで完走し、失敗node集合はbaseと同じ空集合。
+**DONE（Amendment 5 の実装・専用テスト・CPU検証・全体回帰を完了）**。本測定はNOT_RUN。
 
-`CONCORDANT_PARTIAL` の到達性は **仕様の整合確認待ち（BLOCKED）**。登録 Amendment 3 §5 の「片方の Re のみ SIGN_AGREE_12」「両側で resolved な範囲の順位一致」と、従来の先行 UNRESOLVED を同時に保つと、PARTIAL に到達できない。独立 checker と生データの合成反例を保存した。未解決の他方 Re を許す狭い例外にする解釈をユーザーへ照会中で、無回答を承認とは扱っていない。この条件を満たすと偽って全ラベル完了とは報告しない。
+基点は `db36e4e50f3e926ff71fe2fff9de804c7aec4511`、branch は
+`feat/gen01-w1-04-topo2d-waterlily`。開始時の tracked / untracked 差分は空。
+今回の authority は follow-ups worktree の登録 Amendment 1–5 と Opus review
+`wp04_review_1_opus.md`。読取元パスとSHAは `wp04_validation_amend5/authority.json`。
+この報告は実装と短いCPU/software validationであり、TOPO-2D-00本測定、TR-00適格化、
+GPU適格化、物理downforce、Re転写、FSAE、grid independenceの結果ではない。
 
-本報告は software／CPU capability の証拠。登録、凍結、本測定、物理 downforce、Re 転写、GPU 適格化、FSAE の結果ではない。commit／push／PR #89 本文更新は最新のユーザー指示に従い Claude host が行う。agent は stage／commit／push していない。
+GPU・Kaggle・RANS実行、登録・凍結・ロードマップ改定はしていない。
+最新 Amendment 5 に従い、commit／push／PR #89 更新は Claude host が行う。
+この agent は stage／commit／push を行っていない。
 
-## 作ったもの
+## 作ったもの（今回の修正）
 
-- `src/cfd_gen/topo2d/geometry.py`：表を通る自然 CubicSpline と単調 PCHIP pairing は維持し、元表 station と別グリッドの単純な和集合を廃止。各元表区間の弧長・曲率 monitor を等分して元表の全点を残しつつ再標本化する。元の最短 0.005648 mm の原因を除去した。
-- 同生成器の gate：全周期線分に 0.1–1 mm、隣接長比 ≤3、TE cap 2頂点以外の角度 ≤5°、頂点の重複なしを適用。既存の4Δxの厚さ／間隙、clearance、self-intersection、source／camber／TE／LE cap identity も維持。
-- `docs/harness/topo2d00_scenes/*.json`：全10 scene を再生成。JSON は終点を重複しない頂点列で、閉辺は最後→最初。sharp は公開の有限TE原形を意味し `mathematically_sharp=false`。
-- `julia/CFDSDFWaterLily/gen01/Topo2D.jl`：多角形 SDF を周期的に評価し、最後→最初の距離と winding を含める。既存 job の編集はない。
-- `src/cfd_harness/scene_campaign.py`：scene JSON の高さを export と state identity の唯一の出所とし、宣言した config／height の不一致を pin／run／verify／CLI validate で拒否。異なる phase が同じ SHA を共有しても各宣言を検査する。
-- `docs/harness/topo2d00_campaign.json`：全 scene SHA を更新。Re1000 56run、Re3000 61run、confirmation 8run、計125 state。元の主評価96、確認8、secondary16、determinism1、DOMAIN対照4を維持。未凍結の draft。
-- `scripts/topo2d00/analyze.py` と `check.py`：cell 集約を INCOMPLETE > MESH_FAILED > NUMERICAL > SETTLED に変更。checker は analyzer を import せず再計算する。cap／独立した未完了記録が numeric failure より先になり、単独の実非有限 failure は NUMERICAL のまま。重複 mesh が failure 診断値を保持しても CI を出さない。
-- `scripts/topo2d00/plot_geometry.py`：生成器を別途呼び直す経路から、実際の検証済み scene JSON を描く経路へ変更。閉辺と scene の高さを使う。
-- `scripts/topo2d_selftest.jl`：閉辺に最近接する square SDF probe 3件を追加。既存の CPU、移動地面、位相、core、checkpoint、WP1／WP2 integration も実行。
-- `tests/topo2d00/`：全10幾何 variant の独立周期検査、5種類のsampling欠陥拒否、cell severity／順序不変性／cap／重複mesh、scene height／同一SHA異宣言／CFD前拒否を追加。
-- `reports/topo2d00_geometry.png`：更新後の E1／E2／E3 と元の有限TE原形、厚肉比、gap、4Δx の範囲を表示。PNG を実際に開いて確認した。
-- `reports/wp04_validation_amend3/`：新しい実行ログ、raw CSV／summary、source／scene SHA、独立 review、保護対象確認、WP5 readback、schema比較、合成 checker と policy反例。過去の validation は変更していない。
+- `julia/CFDSDFWaterLily/gen01/Topo2D.jl`：静的sceneのstepを remeasure=false、
+  fingerprint／preflight／summaryを更新。Δtの機械精度崩壊をNUMERICALにする。
+- `scripts/topo2d_selftest.jl`：E1/E2の再測定経路とのbit一致、branch内WP1の再開、
+  E1/E2/E3 tuple unionのisbitstype、実jobのtiny-Δt exit42を追加。
+- `src/cfd_harness/scene_campaign.py`：prefix環境scrub、exact stop key、親pre-runの
+  別選択・verify、raw再計算による窓admission、未照合geometryのformal拒否。
+- `scripts/topo2d00/prerun_window.py`：実force履歴からB／S0／Wを導出し、式・単位・
+  raw SHAを持つrecordをexclusive-createする。手入力の統計ではformalに入れない。
+- `docs/harness/topo2d00_campaign.json`：既存3kernelを維持、E1/main/phase0の親を
+  各Reに追加。127宣言state = primary96 + confirmation8 + secondary16 +
+  determinism1 + DOMAIN4 + prerun2。通常formal集合は従来の125、親は別実行。
+- `scripts/topo2d00/analyze.py`、`check.py`：per-Re判定、点推定σ、研究ラベルの
+  precedence、凍結raw digitisationの再計算、tr00.jsonとSHA256SUMS、written-once。
+  checkerはanalyzerもWP5 readerもimportしない。
+- `src/cfd_gen/topo2d/geometry.py`：形を変えず、鼻の薄さをmetadataへ追加。
+  `docs/harness/topo2d00_scenes/*.json` 全10件を再出力し、全polygon/surface座標が
+  変更前と完全同一であることをassertした。sharp3件はJSON bytesも従来どおり。
+- `reports/topo2d00_scene_schema.json` とPython／Julia docstring：開いた頂点列、
+  暗黙の閉辺、重複拒否を明記。schemaは構造、実gateは距離・sampling・交差を検査。
+- `reports/topo2d00_rans_result_schema.json`：observableと既存WP5 raw-reference
+  manifest interfaceを明記。WP5とのschema byte一致は指定どおりClaudeが統合する。
+- `scripts/topo2d00/plot_geometry.py` と図：E3鼻の注意を追加。
+- `tests/topo2d00/`：全ラベル、P=2 DOMAIN、raw参照偽造、全5geometryのverification、
+  生成器metadata、pre-run estimator／formal admission／環境scrubを回帰検査。
 
-## 幾何の数値と出所
+[実行記録と後日のrunbook](wp04_validation_amend5/README.md)。
+旧validation／旧evidenceは保持し、今回の記録は同directoryにのみ追加した。
+今回の移動はない。cfd_gen／Julia gen01への移動は既に基点に含まれる。
+`src/cfd_sdf/topo2d/` と `julia/topo2d/` は存在しない。
 
-座標は既存の `data/zz2003/{single_element_table2,main_element_table3,flap_table4}.dat`（44／44／18行）。取得は前回記録の公式 PDF indexed OCR であり、今回は再取得していない。Amendment 2 が採用した転記を維持し、全行の `# UNVERIFIED` と provenance `UNVERIFIED_OCR` を保持した。PDFページ画像との照合は未完。推測の座標は足していない。
+## 幾何、出所、厚肉化と解像度
 
-Table3 を380mm基準、T2-0 を223.4mm基準で mm に直した同順の最大絶対差は、suction x/z、pressure x/z の順に **0.05234、0.81702、0.04600、0.85498 mm**。T2-0 の XFOIL sharp TE と原表の有限TEは同じ座標列ではない。元表の全点が sharp contour に残る誤差は独立検査で ≤2.45e-13 mm。
+座標は既存 `data/zz2003/{single_element_table2,main_element_table3,flap_table4}.dat`
+の44／44／18行。今回再転記・推測補完はしていない。採用済みindexed OCR転記を保ち、
+全行の `# UNVERIFIED` とsourceの `UNVERIFIED_OCR` は維持した。PDFページ画像照合は
+未完で、formal入場は意図どおり拒否される。研究freezeやsource検証済みへの昇格はない。
 
-overlap は上流TE中点x − 下流LE x、gap は下流 suction の最低z − 上流TE中点z。最終配置に9／12mmを適用し、c=380mmと14.1°は公称の正規化。今回の E2 実座標の合成弦は **379.428107730 mm、14.436796729°**。E3 は半弦フラップ2個、総姿勢角を等分、同じgap／overlap規則で構成した例であり、公開3要素実験の再現ではない。
+Table3×380mm と T2-0 sharpened table×223.4mm を同順に比較した最大絶対差は、
+(suction x,z; pressure x,z) の順で **0.05234、0.81702、0.04600、0.85498 mm**。
+元の有限TEとXFOIL-sharpened TEは同じ座標列ではない。自然CubicSpline補間、
+線分0.1–1mm、隣接比≤3、TE capの2頂点以外の折れ角≤5°は既存規則を維持。
+全10 scene の最短線分0.1331799225mm、最長0.9929049002mm、隣接比最大2.8975646881、
+非cap角最大3.4453710530°。重複終点なし、最後→最初の辺も検査／SDF評価する。
 
-全10 scene の周期的な独立検査：
+正overlapは上流TE中点x−下流LE x、正gapは下流suction最低z−上流TE中点z。
+最終配置は9／12mm、回転中心(0.567,0.076)c。E2実合成弦は379.428107730mm、
+姿勢14.436796729°、正規化は公称c=380mm／14.1°。E3は半弦フラップ2個、
+総角度等分、同じgap/overlap規則の構成であり、公開3要素実験の再現ではない。
+`*_sharp` は公開有限TE原形で `mathematically_sharp=false`。
 
-| 量 | 実測した幾何値 | 規則 |
-| --- | ---: | ---: |
-| 最短線分 | 0.133179922501 mm | ≥0.1 mm |
-| 最長線分 | 0.992904900205 mm | ≤1 mm |
-| 最大隣接長比 | 2.897564688141 | ≤3 |
-| 最大非cap角 | 3.445371053014° | ≤5° |
-| 重複頂点／重複終点 | 0 | 0 |
-
-厚くした後と原形を宣言した並進分だけ戻して比較した独立誤差は、camber ≤8.53e-14 mm、TE中点 ≤2.85e-14 mm、保持LE cap ≤1.43e-14 mm。厚さfloorは元の最大厚さ位置以後の法線幅であり、厚さが0となるLE鼻端やsmoothstep移行区間へ正の全域下限を主張しない。
-
-| scene／grid | main 最大比 | flap1 最大比 | flap2 最大比 |
+| grid／scene | main最大厚肉比 | flap1最大比 | flap2最大比 |
 | --- | ---: | ---: | ---: |
-| E1 main | 4.594745 | — | — |
-| E2 main | 4.594745 | 8.866711 | — |
-| E3 main | 4.594745 | 17.733423 | 17.733423 |
-| E1 confirmation | 3.063211 | — | — |
-| E2 confirmation | 3.063211 | 5.911141 | — |
+| 主格子E1 | 4.594745 | — | — |
+| 主格子E2 | 4.594745 | 8.866711 | — |
+| 主格子E3 | 4.594745 | 17.733423 | 17.733423 |
+| 確認格子E1 | 3.063211 | — | — |
+| 確認格子E2 | 3.063211 | 5.911141 | — |
 
-| grid | Δx mm | c1 cells | flap cells | E3半弦 cells | 公称gap cells | 4Δx mm |
+| Δx | mm/cell | c1 cells | flap cells | 半flap cells | 公称gap cells | 4Δx mm |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | c1/120 | 1.861666667 | 120 | 89.006267 | 44.503133 | 6.445837 | 7.446666667 |
 | c1/180 | 1.241111111 | 180 | 133.509400 | 66.754700 | 9.668756 | 4.964444444 |
 
-E3 confirmation scene は登録どおり作っていない。確認格子はその格子の4Δxで再厚肉化するので、格子と幾何の両方が変わる対照であり、純粋な grid refinement ではない。h100 の h/c1=0.447627574、h/c=0.263157895。h80 は0.358102059／0.210526316。どちらも scene JSON と実 clearance を再検査する。
+実Euclidean gapはE2で約8.57mm、E3で約8.40／8.93mm。
+公称12mmと区別する。高さ100mmは h/c1=0.447627574／h/c=0.263157895、
+80mmは0.358102059／0.210526316。宣言したconfig／heightとscene JSONが違えば拒否。
+確認格子は自分の4Δxで再厚肉化するため、格子と幾何の両方が変わる対照であり、
+純粋なgrid refinementとは呼ばない。
 
-## インターフェース
+**E3鼻の注意。** 半flap元最大法線厚さは6.701146189mmで、主格子の
+ t_min=7.446666667mm未満。登録Amendment5 §5の概数「弦の最初12.9%が4Δx未満、
+6.9%が(2+√2)Δx未満」をsceneの `registered_approximate_chord_fractions` に保持した。
+別に、paired camber-normal widthと弦方向射影を明示した最初の線形補間crossingは
+12.608231%／6.846234%で、登録の概数とは別項目にした。幅・弦座標の定義を曖昧にして
+概数を厳密一致した値とは扱わない。形は変更していない。
+鼻はslot内にあり、LE cap／smoothstep rampとともにphase-coreのbulk証明から除外される。
+厚さfloorは元の最大厚さstation以後の実polygon法線幅に対するもので、鼻全域の正の
+厚さ下限や全phase coreを主張しない。H3と後日の結果解釈にこの注意を残す。
 
-Python の `build_scene`／`validate_scene`／`polygon_sdf`／`scene_sdf`／`write_scene`／`save_npz` を維持。SDF helper は閉辺を内部で追加できるが、scene JSON は必ず重複終点なし。Julia は同じ raw JSON の SHA を検査して text wire 経由で読む。新規依存はない。
+![E1 E2 E3 geometry](topo2d00_geometry.png)
 
-`scene_record(path, expected_sha, declared=None)` は高さ／configを拘束する共通読込口。`scene_wire` の行schemaは維持し、polygonの閉辺だけ周期的に扱う。h80 というファイル名から高さを復元しない。
+## インターフェースと判定
 
-既存13 CSV列、cur／nds／cv予約列、要素別列、2D N/m と共通c1係数、endpoint-clipped time-weighted mean、drift、`W4_CANONICAL_ORIGIN_M` の x/0/z、地面を含む共通位相は維持。cur fallback の不足列はNaN、WP2接続時は全readoutが有限。WP1 は `save_checkpoint(...; identity)`／`load_checkpoint`／`restore_checkpoint!(...; identity)` の実APIへadapterし、欠測列maskとfingerprintを拘束する。
+Python geometry API、13既存CSV列とcur/nds/cv・要素別追加列、force=−(pressure+viscous)、
+ drag=+Fx／downforce=−Fz、endpoint-clipped time-weighted mean、drift、共通phaseで
+地面も一緒に動かす意味は維持。今回のbranchにForce00.jlは無く、**curのみ**を検証。
+nds/cvは予約列NaNで、3readout成功を主張しない。
+WP1はbranch内 `gen01/Checkpoint.jl` を使い、provider環境なしで検証した。
+WP1本体のdocstringではremeasure=falseは未検証だが、今回のWP4静的sceneのCPUでは
+fresh restore後の場・rows・Δt・窓までbit一致した。CUDA restoreは未確認。
 
-WP5用共有JSON Schemaは既存の `reports/topo2d00_rans_result_schema.json`。SHA256:
-`ce5c4c90f821aa5dcf3d63493096a16cad6f72395c461f434307a7dcd3ceb5a7`。
-`schema=topo2d00-rans-results-v1`、共通c1係数、両h正規化、reference、cells(model,family)、8 realisations、config別mesh SHA／status／force、`observable` を持つ。sharp=pressure_cl、thick=total_cl、observable間の差分は拒否する。Fieller、A/Bと上側限界、90%区間、TR ratio/sign、対照、written-onceは既存の独立実装と合成試験で確認した。
+各Reの必要区間は downforce Δ12／Δ23 のWと全qualified RANS cellsの90%区間。
+どれか0を含めばC(Re)=UNRESOLVED、それ以外でΔ12符号または平均順位が違えば
+DISCORDANT、他はCONCORDANT。先行INVALID→TR_UNQUALIFIED→NUMERICAL→INCOMPLETE→
+RESOLUTION_LIMITEDの後、片方unresolvedならUNRESOLVED、両方discordantならDISCORDANT、
+concordantとdiscordantの組ならCONCORDANT_PARTIAL、両方concordantならCONCORDANT。
+非単調順位の追加隣接区間（E1↔E3など）のresolutionは記述として保持する。
+`INVALID`を除いた8研究ラベル、含めた9ラベル全ての到達性を検証した。
 
-現在のWP5 schema SHAは `c47d77013fcf7a8fef52c30ae42475a60b55bafb9711cc3d4fd4bdcfcf9cbcf9` で byte一致していない。JSON差分は `schema_comparison.json` に全列挙。ユーザー Amendment 2 §5 の指定どおり Claude が統合時に揃える。本WPはWP5 sourceを変更していない。
+σ_d=max(A=phase対差分SD, B=within-run batch SEを対差分SDへ伝播)は点推定。
+SE=σ_d/√P、区間=平均±t(.95,P−1)×SE。上側σ係数とBonferroni分割は削除した。
+DOMAINのP=2合成例は差0.5、pooled SE=√0.02、z=3.5355でDOMAIN_SENSITIVEを検出。
+cell内のINCOMPLETE>MESH_FAILED>NUMERICAL>SETTLEDと研究ラベルの優先順位は分離し、
+研究レベルでは独立したNUMERICALがcapより先。MESH_FAILEDも研究NUMERICALへ写像する。
+Fieller区間、TR ratio/sign、drag符号、manipulation、determinism、readoutを独立再計算する。
+RETENTIONはrelative incrementのdelta-method分散にFiellerを使う近似で、厳密な入れ子比ではない。
+
+共有RANS schemaは `reports/topo2d00_rans_result_schema.json`。
+RANS schema SHA-256: `5bba0a153fc033d2a9a0a6f42bbb37d0efe134bce7b8f96fa57472dafad4d175`。
+scene schema SHA-256: `d16f0285bccf0882e3c9f1a8f33b05da7d9fb61b97e72c41f25bd3435793c4e2`。
+`observable=pressure_cl` はsharp/Cp比較、`total_cl` はthick/WaterLily比較。
+observableをまたぐ差分を拒否する。共通c1=223.4mm、両height正規化、model/familyごとの
+8paired realisations、相異なるmesh SHA、失敗状態とnull forceを明示する。
+
+WP5既存のraw reference interfaceを再利用した。
+
+```json
+{
+  "provenance": {
+    "reference_estimate": {
+      "kind": "topo2d00_pressure_reference_v1",
+      "observable": "pressure_cl",
+      "manifest": {"path": "canonical absolute path", "sha256": "SHA-256"}
+    }
+  }
+}
+```
+
+manifestは `topo2d00_cp_manifest_v1`。E1はtabulated_cl／cl_curve／cp、E2は2要素Cp。
+`reference.source.digitization_records` がmanifestと全raw CSVを列挙し、study freeze.inputsが
+全件を束縛する。formal CLIはscalar summaryだけでは動かない。
+保存normalized inputの `reference_inputs={manifest,sha256:{absolute_path:digest}}` を
+両実装が毎回再ハッシュし、別コードで積分する。Cp面10点以上、単調・全extent、
+各要素downforce-positive、向き/BOM/改行/float表記を正規化しても異なる2読取を要求。
+ΔClとΣ_element |Cl_A−Cl_B|を再計算してsummaryと照合する。
+符号逆のreading差+0.006／−0.004で正しい保守的和0.01を再現し、先に合計して差を取る
+0.002とは区別した。実WP5 digitizer（読取専用）との数値一致も記録した。
+純粋な合成算術APIのみraw参照を省略でき、formal CLIの例外ではない。
+
+出力 analysis.json／analysis.md／tr00.json／SHA256SUMS は全4pathをexclusive-createで
+予約してから書く。どれか存在すれば既存bytesを変えず拒否。checker CLIはtr00と
+3成果物のchecksumも検査する。合成出力のCONCORDANTはfixtureだけの結果である。
+
+親pre-runは各ReのE1/main/phase0、horizon520c1/U。`--prerun`で独立に実行・verifyする。
+`prerun_window.py SERIES SUMMARY` はB／S0／W／単位／formula／raw SHAを1回だけ書く。
+Bの100-wide block開始は0/100/200/300、後続complete100-block平均±sample_SD/√nに
+入る最初を採りB=max(80,start)。後続2block以上、未bracketの候補は外挿せずskip。
+S0はpost-Bの5/10/20/40/80 complete batchesのlength×分散の片側90%χ²上限の最大。
+Wは1.5%条件を満たす最小50倍数、上限400。rawのない手入力やcap超過は拒否する。
+単位はN/m（ρ=1,U=1）、c1/U、S0は(N/m)^2·c1/U。これらは測定前に固定したengineering
+離散化で、formal σ_dの点推定とは別。詳細と後日のコマンドはrunbookに記録した。
+実pre-run未実行なので `docs/harness/topo2d00_window_re*.json` は作っていない。
+
+runnerはTOPO2D_*／W4_*／CUDA_*をscrub後にcampaignの明示envを適用し、所有identityを設定。
+Numerical stopは(config,Re,height,role)だけに適用。Δtの非有限／非正／時刻進行不能、
+または Δt≤eps(T)×max(1,|solver_time|)をNUMERICALとする（物理閾値ではなく機械精度基準）。
 
 ## テスト
 
 - `.venv/bin/python -m compileall src tests`：exit0。
-- `.venv/bin/python -m pytest -q tests/topo2d00 -p no:cacheprovider`：**219 passed、85.01秒**。
-- `julia --project=julia/CFDSDFWaterLily scripts/topo2d_selftest.jl <新規出力先>`：**59/59 passed、testset95.4秒、process97.64秒**。CPU320×160、Re200、短窓。E1／E2 finite、evolved near-ground u≈U、共通shift、16phase bulk core、fallback／実WP1再開、実WP2 cur/nds/cv と host再計算。CUDA module_loaded=false。
-- 合成 `write_analysis` → 独立 `check.py` CLI：discrepancies=[]、再書込はFileExistsError。結果のCONCORDANTは合成fixtureの値であり本測定の判定ではない。
-- `git diff --check`：exit0。
-- 全体 `.venv/bin/python -m pytest --ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider`：**3701 passed、74 skipped、0 failed、1001.69秒（process1002.53秒）**。失敗node集合=[]、指定baseの空集合と一致。対象sourceの開始／終了SHAも一致。7295 warningsはpytest deprecation等としてraw logに保持した。
+- `.venv/bin/python -m pytest -q tests/topo2d00 -p no:cacheprovider`：**278 passed、62.82秒**。
+- `julia --startup-file=no --project=julia/CFDSDFWaterLily scripts/topo2d_selftest.jl <今回出力先>`：
+  **86/86 pass、test56.0秒／process57.228812秒**。実行環境はTOPO2D_*／W4_*／CUDA_*を
+  親から除去しJULIA_NUM_THREADS=1のみ上書き。外部provider/source注入なし。
+  Julia1.12.6／WaterLily1.8.0／Array／Float32／QUICK／1thread、CUDA未読込。
+  E1/E2 bit一致、動く地面、共通phase、bulk core、WP1再開、tuple isbitsを確認。
+  tinyΔtの実job exit42／NUMERICALは意図したnegative testで、通常runの失敗ではない。
+- 独立Python host_readouts：raw CSVからの窓がJuliaと≤1e-12 N/mで一致。
+- 汚染env実CPU smoke：**exit0、29.554秒**、actual840×824、6steps、finite forces、
+  top_factor=1、remeasure=false。harness verify integrity.pass=true。
+- 合成write→checker CLI：discrepancies=[]、written-once再書込拒否。
+- 全体 `.venv/bin/python -m pytest --ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider`：**4160 passed／74 skipped／0 failed、749.61秒（process 750.232秒）、失敗node集合=[]、指定baseと一致、source前後SHA一致**。
+- `git diff --check`：exit0。7295 warningsは既存pytest deprecation等で、raw logを保持した。
 
-baseはユーザー提供のhost実行 `e3dcdf61`、3482 passed／74 skipped／0 failed、失敗node集合=[]。この作業でbase側を再実行していない。結果側の実失敗node集合を `full_execution.json` に保存し、件数だけでなく集合を比較する。
+baseはユーザー提供Claude hostの `e3dcdf61`、3482 passed／74 skipped／0 failed、
+失敗node集合=[]。base側は今回再実行していない。結果側だけを指定flagsで完走し、
+件数でなくnode集合を比較する。正確argv／環境／時間／source前後SHA／raw logは
+`wp04_validation_amend5/`。raw logはSHAを記録したgzipで保持する。
 
-## 仕様からの逸脱と未完
+## 仕様からの逸脱、未確認の仮定と§10への回答
 
-PARTIALの新定義と先行UNRESOLVEDの整合以外に、今回の閾値変更はない。4Δx、[0.5,2]、α=.05を維持した。登録・roadmap・STATE本文、旧job、source freeze、tests/conftest.py、Project／Manifestは変更していない。`src/cfd_sdf/topo2d/` にbytesは残っていない。保護対象144sourceとその他指定pathの `e3dcdf61` からの差分は空。
+4Δx、[0.5,2]、α=.05、予算・既存job・力の符号・窓定義は変更していない。
+全保護pathの変更／新規file集合は空（tracked36341件）。参照INTERFACEの指定pathは無く、
+実canonical `scripts/screen01/INTERFACE.md` を全文読んだ。README指定の全governing文書と
+phase_plan全7782行はworkerと範囲分担して省略せず確認した。
+OpenCode MCP未提供、CLIはlog権限失敗、隔離XDGではproviderなし。global設定・課金を
+変更せずnative workerへfallbackした（`worker_routing.json`）。
 
-PARTIALの数学的問題：両側の完全順位が確定して一致すれば、E1/E2の順序、従ってΔ12の符号も一致する。片方のReだけSIGNが真となるには、他方に未解決の必要区間か、確定した順位の不一致が必要になる。前者はUNRESOLVED、後者はDISCORDANTが先に発火する。`partial_precedence_counterexample.json` は Re1000を未解決、Re3000を符号／順位一致とした生の合成入力で、analyzer／checkerともUNRESOLVED。八つの科学的ラベル全ての到達性を達成したとは扱わない（INVALIDを含めると仕様表のラベルは九つ）。
-
-提案した最小clarificationは「一方で符号・順位が確定一致し、他方は未解決、かつ確定した順位不一致がなければPARTIAL」。このときだけ他方の未解決を先行UNRESOLVEDの必要条件から外す。採否はユーザー／Claudeの登録判断であり、本実装では先取りしない。
-
-WP5実loaderのread-only preflight（作業中のsource更新後もv2で再確認）は **0/20受理**（10scene×2family、全件 `WP4 polygon/surface identity mismatch`）。これは現snapshotの `_wp4_scene` が旧表現の重複閉終点を要求するためで、mesh／RANSの失敗ではない。WP5は新しい重複なしJSONを検査した上で、内部contourにだけ最初の点を追加して既存の明示閉曲線helperへ渡すadapterが必要。raw JSON／SHAは共通のままにする。loader path／SHAと各拒否は `wp5_geometry_readback.json` と `wp5_geometry_readback_v2.json` に保存した（v2の読込中sourceは不変）。RANS側の実装・mesh生成は行っていない。
-
-## §10の未解決点への回答／未確認の仮定
-
-| 項目 | 現状 |
+| 登録§10項目 | 今回分かったこと／残るもの |
 | --- | --- |
-| 表座標・reference | OCR転記は保持、数値差とsmooth再標本化を検証。PDFページ画像、Table15のh/c1=.448、double Cpの独立2読取、DOI一次資料確認は未完。 |
-| E3構成 | 半弦2個、総角度等分、9／12mmの決定的構成。公開3要素referenceなし。 |
-| WaterLily job／厚さ／core | CPU59検査と16phase bulk coreは成功。LE／cap／rampを含む全域core、GPU、長窓、physicsは未確認。 |
-| blunt-TE gmsh | 新JSONにWP5 adapter更新が必要。mesh／checkMesh／RANSはWP5側。受理をmesh成功と呼ばない。 |
-| Mahon & Zhangモデル選択 | このWPで原論文によるSA／SSTの適格化はしていない。 |
+| 座標、Cp参照、DOI | 採用済みOCR転記を保持しT2-0差とsamplingを検証。PDF画像照合、Table15 h/c1=.448の確認、実double Cp2読取・一次DOI確認は未完。formalは拒否。 |
+| E3構成 | 半弦2個・角度等分・9/12mm規則を維持。公刊3要素referenceなし。鼻の注意を数値化。 |
+| 2D job、厚さ、core | CPU契約は成功。LE/ramp全域、GPU、長窓、iid/batch近似のadequacy、物理は未確認。 |
+| blunt-TE multi-body meshing | WP5の範囲。今回mesh/checkMesh/RANS実行なし。shared raw-reference readerのinteropはsoftwareのみ。 |
+| Mahon & Zhang、model選択 | 本WPでは原論文に基づくSA/SST適格化はしない。 |
 
-iid phase／batch近似、σ上側限界、Fiellerのdelta法による入れ子比近似、source metadataのplatform間float一致は登録前reviewの範囲。数字の一致やCPU試験を物理／GPUの資格にしない。
+## Claude／ユーザーへの提案する追記・次に要るもの
 
-## Claude／ユーザーへの提案する追記
+hostで下記ファイルをcommit/pushしPR #89本文をこの最終実装に揃える。
+登録本文を本agentが修正する必要はない。実referenceと画像確認、schema bytesとscene SHAの
+WP5統合、review／freeze／backend gateの後にのみ親pre-runと本測定へ進む。
+ユーザー機材で行うGPU smokeの条件はrunbook末尾に記録した。直接job、T4 project、
+backend=cuda/smoke=1、実GPU UUID、clean env、scratch、E1→E3 formal grid数百step、
+compile／tuple parameter／measure!対mom_step! ms/step／CPUとのfinite force比較を記録する。
+これはcapability-onlyであり、GPU gateやTOPO-2D-00 evidenceへ昇格させない。
 
-1. 登録 Amendment 3 §5 で PARTIAL と先行 UNRESOLVED／resolved範囲の意味を明文化する。承認された規則からanalyzer／checker／全ラベル合成試験を同時に確定する。
-2. WP5 adapterを重複なしJSONへ対応させ、同じ10sceneのSHAを読み込んで20件のreadbackをやり直す。meshの結果は別に評価する。
-3. WP4／WP5 schema bytes、scene SHA、WP1／WP2 sourceを統合し、画像reference／review／freezeが揃ってから別途許可された本測定へ進む。
+## Hostでcommitすべき完全な一覧
 
-## 次に要るもの
+今回の移動はなし。raw `.log` はlossless gzipをcommitし、元path／SHAは `log_archives.json`。
+機械可読一覧は `wp04_validation_amend5/wp04_pending_files.json`。
 
-PARTIAL規則の回答、WP5側のadapter／schema統合、PDF画像とTR reference、plan／source review。Claude hostで末尾の一覧のみをcommit／pushし、PR #89を更新する。GPU／Kaggle実行、登録判定、ロードマップ更新はこのWPではしていない。
-
-## Hostでcommitすべき完全なファイル一覧
-
-Amendment3内の移動はなし（Python／Juliaの移動は基点ba3164c7に含まれる）。raw .logはarchiveとraw SHAを保存し、commit対象一覧から除く。実際の全パスは以下と `wp04_validation_amend3/wp04_pending_files.json` に記録。
-
-### 変更（25ファイル）
+### 変更（24ファイル）
 
 - `docs/codex/gen01_w1_2026_11_06/reports/topo2d00_geometry.png`
+- `docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_result_schema.json`
 - `docs/codex/gen01_w1_2026_11_06/reports/wp04_design.md`
 - `docs/codex/gen01_w1_2026_11_06/reports/wp04_report.md`
 - `docs/harness/topo2d00_campaign.json`
 - `docs/harness/topo2d00_scenes/E1.json`
 - `docs/harness/topo2d00_scenes/E1_fine.json`
 - `docs/harness/topo2d00_scenes/E1_h80.json`
-- `docs/harness/topo2d00_scenes/E1_sharp.json`
 - `docs/harness/topo2d00_scenes/E2.json`
 - `docs/harness/topo2d00_scenes/E2_fine.json`
 - `docs/harness/topo2d00_scenes/E2_h80.json`
-- `docs/harness/topo2d00_scenes/E2_sharp.json`
 - `docs/harness/topo2d00_scenes/E3.json`
-- `docs/harness/topo2d00_scenes/E3_sharp.json`
 - `julia/CFDSDFWaterLily/gen01/Topo2D.jl`
 - `scripts/topo2d00/analyze.py`
 - `scripts/topo2d00/check.py`
@@ -142,59 +249,85 @@ Amendment3内の移動はなし（Python／Juliaの移動は基点ba3164c7に含
 - `scripts/topo2d_selftest.jl`
 - `src/cfd_gen/topo2d/geometry.py`
 - `src/cfd_harness/scene_campaign.py`
+- `tests/topo2d00/synthetic.py`
 - `tests/topo2d00/test_analyze.py`
 - `tests/topo2d00/test_campaign.py`
 - `tests/topo2d00/test_check.py`
 - `tests/topo2d00/test_geometry.py`
 
-### 新規（49ファイル）
+### 新規（74ファイル）
 
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/README.md`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/SHA256SUMS`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/amendment_authority.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/checker_cli.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/compileall.log.gz`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_execution.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest.stderr.log.gz`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest.stdout.log.gz`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/E1/W4_JOB_DONE`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/E1/topo2d.forces.csv`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/E1/topo2d.summary.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/E1/topo2d.summary.toml`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/E2/W4_JOB_DONE`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/E2/topo2d.forces.csv`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/E2/topo2d.summary.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/E2/topo2d.summary.toml`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/job_entrypoint/W4_JOB_DONE`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/job_entrypoint/entrypoint.forces.csv`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/job_entrypoint/entrypoint.summary.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/job_entrypoint/entrypoint.summary.toml`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/job_entrypoint/job_preflight.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/job_entrypoint/job_preflight.toml`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/selftest.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/selftest.toml`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/wp2_integration/W4_JOB_DONE`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/wp2_integration/host_readouts.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/wp2_integration/topo2d.forces.csv`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/wp2_integration/topo2d.summary.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest/wp2_integration/topo2d.summary.toml`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/diff_check.log.gz`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/full_execution.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/full_pytest.log.gz`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/geometry_summary.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/independent_geometry_review.md`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/log_archives.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/partial_precedence_counterexample.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/protected_source_closure.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/provider_origins.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/schema_comparison.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/synthetic_analysis/README.md`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/synthetic_analysis/analysis.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/synthetic_analysis/analysis.md`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/targeted_execution.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/topo2d_pytest.log.gz`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/validation.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/worker_routing.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/wp04_pending_files.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/wp5_geometry_readback.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/wp5_geometry_readback_v2.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/topo2d00_scene_schema.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/README.md`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/SHA256SUMS`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/authority.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/campaign_validation.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/checker_cli.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/compileall.log.gz`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_execution.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_host_verification.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/E1/W4_JOB_DONE`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/E1/topo2d.forces.csv`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/E1/topo2d.summary.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/E1/topo2d.summary.toml`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/E2/W4_JOB_DONE`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/E2/topo2d.forces.csv`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/E2/topo2d.summary.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/E2/topo2d.summary.toml`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/dt_collapse/ERROR.txt`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/dt_collapse/job_preflight.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/dt_collapse/job_preflight.toml`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/dt_collapse/numerical_failure.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/dt_collapse/numerical_failure.toml`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/job_entrypoint/W4_JOB_DONE`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/job_entrypoint/entrypoint.forces.csv`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/job_entrypoint/entrypoint.summary.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/job_entrypoint/entrypoint.summary.toml`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/job_entrypoint/job_preflight.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/job_entrypoint/job_preflight.toml`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/selftest.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_selftest/selftest.toml`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_stderr.log.gz`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/cpu_stdout.log.gz`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/full_execution.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/full_pytest.log.gz`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/geometry_pytest.log.gz`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/geometry_regeneration.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/geometry_summary.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/log_archives.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/polluted_env_execution.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/polluted_env_force_table.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/polluted_env_job.log.gz`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/polluted_env_smoke.log.gz`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/polluted_env_smoke/DONE`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/polluted_env_smoke/harness_index.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/polluted_env_smoke/output_manifest.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/polluted_env_smoke/run_identity.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/polluted_env_smoke/states/E1_h100_re1000_main_k01/W4_JOB_DONE`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/polluted_env_smoke/states/E1_h100_re1000_main_k01/job_preflight.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/polluted_env_smoke/states/E1_h100_re1000_main_k01/job_preflight.toml`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/polluted_env_smoke/states/E1_h100_re1000_main_k01/re1000.forces.csv`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/polluted_env_smoke/states/E1_h100_re1000_main_k01/re1000.summary.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/polluted_env_smoke/states/E1_h100_re1000_main_k01/re1000.summary.toml`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/protected_source_closure.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/synthetic_analysis/SHA256SUMS`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/synthetic_analysis/analysis.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/synthetic_analysis/analysis.md`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/synthetic_analysis/tr00.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/synthetic_reference/README.md`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/synthetic_reference/digitization_e0_A_lower.csv`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/synthetic_reference/digitization_e0_A_upper.csv`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/synthetic_reference/digitization_e0_B_lower.csv`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/synthetic_reference/digitization_e0_B_upper.csv`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/synthetic_reference/digitization_e1_A_lower.csv`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/synthetic_reference/digitization_e1_A_upper.csv`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/synthetic_reference/digitization_e1_B_lower.csv`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/synthetic_reference/digitization_e1_B_upper.csv`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/synthetic_reference/digitization_manifest.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/targeted.log.gz`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/targeted_execution.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/validation.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/worker_routing.json`
+- `docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/wp04_pending_files.json`
+- `scripts/topo2d00/prerun_window.py`
+- `tests/topo2d00/test_prerun_window.py`

@@ -1,0 +1,47 @@
+{
+  "archives": {
+    "compileall.log": {
+      "archive_bytes": 273,
+      "archive_path": "compileall.log.gz",
+      "archive_sha256": "a07e9ee1d5eaa64b2f35b0c492d887a38e6c06179acbb477a8923060ad5449fc",
+      "raw_bytes": 1002,
+      "raw_sha256": "322644a435f5b668d1e7492e5d334fb3f0730271ef913af63f9b63728bd51a50"
+    },
+    "full_pytest.log": {
+      "archive_bytes": 1428,
+      "archive_path": "full_pytest.log.gz",
+      "archive_sha256": "7527c37ab0a988ed4360c9e44de29e8a897b2762903b850c081a7285a9e79ba6",
+      "raw_bytes": 7919,
+      "raw_sha256": "b9276c2691623ce7beb524acd270d52bb5f5f7a25b6c9f2222941edda9ef9c53"
+    },
+    "geometry_pytest.log": {
+      "archive_bytes": 53,
+      "archive_path": "geometry_pytest.log.gz",
+      "archive_sha256": "9c062c061bc3c6b60362fe8fc20103141dad6775bf4ff59c447a2a2502e4f523",
+      "raw_bytes": 100,
+      "raw_sha256": "5a05c7d3caeaa4befee781c326b044d454741370df70d292a6e6c2554fa48bde"
+    },
+    "polluted_env_smoke.log": {
+      "archive_bytes": 142,
+      "archive_path": "polluted_env_smoke.log.gz",
+      "archive_sha256": "16b7fc66bc5d1f075ba18e0511f499309bffe684fbd2abcf6b98adedb20b625d",
+      "raw_bytes": 146,
+      "raw_sha256": "5e13dcd129cf94dd32e736055aa436a755c3c23f5581b80f9376677d069296c0"
+    },
+    "polluted_env_smoke/states/E1_h100_re1000_main_k01/job.log": {
+      "archive_bytes": 20,
+      "archive_path": "polluted_env_job.log.gz",
+      "archive_sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "targeted.log": {
+      "archive_bytes": 84,
+      "archive_path": "targeted.log.gz",
+      "archive_sha256": "92b61a2979fb73d9101fd0f1ad89662b07a220fb5126574f035831116b2b4edf",
+      "raw_bytes": 351,
+      "raw_sha256": "aec23651d13f7e3120cccd9e9b916174d7cefa3083153373e0a32caf84890396"
+    }
+  },
+  "evidence_class": "lossless log transport; source bytes not changed"
+}

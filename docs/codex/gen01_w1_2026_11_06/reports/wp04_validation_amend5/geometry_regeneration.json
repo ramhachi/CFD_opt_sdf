@@ -1,0 +1,284 @@
+{
+  "base_commit": "db36e4e50f3e926ff71fe2fff9de804c7aec4511",
+  "evidence_class": "software geometry diagnostics, not physics",
+  "scenes": [
+    {
+      "nose_thickness": {
+        "main": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.00349167193530176,
+              "threshold_mm": 6.356127581951245
+            },
+            "t_min": {
+              "chord_fraction": 0.004825061298171234,
+              "threshold_mm": 7.446666666666667
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        }
+      },
+      "path": "docs/harness/topo2d00_scenes/E1.json",
+      "polygon_and_surface_coordinates_unchanged": true,
+      "sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab"
+    },
+    {
+      "nose_thickness": {
+        "main": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.001565884423067535,
+              "threshold_mm": 4.237418387967496
+            },
+            "t_min": {
+              "chord_fraction": 0.002078403367429578,
+              "threshold_mm": 4.964444444444444
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        }
+      },
+      "path": "docs/harness/topo2d00_scenes/E1_fine.json",
+      "polygon_and_surface_coordinates_unchanged": true,
+      "sha256": "574808f8812ee5055fb78a6eba8ebc1cd283b08afbd9bb8cfa4ecfbad9bf9595"
+    },
+    {
+      "nose_thickness": {
+        "main": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.003491671935301736,
+              "threshold_mm": 6.356127581951245
+            },
+            "t_min": {
+              "chord_fraction": 0.0048250612981712345,
+              "threshold_mm": 7.446666666666667
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        }
+      },
+      "path": "docs/harness/topo2d00_scenes/E1_h80.json",
+      "polygon_and_surface_coordinates_unchanged": true,
+      "sha256": "d9e7cc0da6134a52fc5746390dd828bf6237011505af5c11582055dc8a02b0d2"
+    },
+    {
+      "nose_thickness": {
+        "main": null
+      },
+      "path": "docs/harness/topo2d00_scenes/E1_sharp.json",
+      "polygon_and_surface_coordinates_unchanged": true,
+      "sha256": "c4a2ce56ef6f7cfbaa0e8a8f41a267afce4b1e99880a79bb512e80eb6b921612"
+    },
+    {
+      "nose_thickness": {
+        "flap1": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.00561096149276184,
+              "threshold_mm": 6.356127581951245
+            },
+            "t_min": {
+              "chord_fraction": 0.007966857820506292,
+              "threshold_mm": 7.446666666666667
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        },
+        "main": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.00349167193530176,
+              "threshold_mm": 6.356127581951245
+            },
+            "t_min": {
+              "chord_fraction": 0.004825061298171234,
+              "threshold_mm": 7.446666666666667
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        }
+      },
+      "path": "docs/harness/topo2d00_scenes/E2.json",
+      "polygon_and_surface_coordinates_unchanged": true,
+      "sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f"
+    },
+    {
+      "nose_thickness": {
+        "flap1": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.0024059532642842396,
+              "threshold_mm": 4.237418387967496
+            },
+            "t_min": {
+              "chord_fraction": 0.003336491191914595,
+              "threshold_mm": 4.964444444444444
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        },
+        "main": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.001565884423067535,
+              "threshold_mm": 4.237418387967496
+            },
+            "t_min": {
+              "chord_fraction": 0.002078403367429578,
+              "threshold_mm": 4.964444444444444
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        }
+      },
+      "path": "docs/harness/topo2d00_scenes/E2_fine.json",
+      "polygon_and_surface_coordinates_unchanged": true,
+      "sha256": "f7131cef61223e21a57c70708dd58622c630ff71fbe5b55aa39c47791919e7c6"
+    },
+    {
+      "nose_thickness": {
+        "flap1": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.005610961492761822,
+              "threshold_mm": 6.356127581951245
+            },
+            "t_min": {
+              "chord_fraction": 0.00796685782050632,
+              "threshold_mm": 7.446666666666667
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        },
+        "main": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.003491671935301736,
+              "threshold_mm": 6.356127581951245
+            },
+            "t_min": {
+              "chord_fraction": 0.0048250612981712345,
+              "threshold_mm": 7.446666666666667
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        }
+      },
+      "path": "docs/harness/topo2d00_scenes/E2_h80.json",
+      "polygon_and_surface_coordinates_unchanged": true,
+      "sha256": "2786a4b0dd0998fcdf6bf79a99786ba4c6992da951854e9f09c2df68d7ee307b"
+    },
+    {
+      "nose_thickness": {
+        "flap1": null,
+        "main": null
+      },
+      "path": "docs/harness/topo2d00_scenes/E2_sharp.json",
+      "polygon_and_surface_coordinates_unchanged": true,
+      "sha256": "bc416012668448c414594fe8381306123e162bb669c1c7f063a6498cdb6ed5d5"
+    },
+    {
+      "nose_thickness": {
+        "flap1": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.06846234423807124,
+              "threshold_mm": 6.356127581951245
+            },
+            "t_min": {
+              "chord_fraction": 0.12608230973916498,
+              "threshold_mm": 7.446666666666667
+            }
+          },
+          "registered_approximate_chord_fractions": {
+            "below_classic_bdim_floor": 0.069,
+            "below_t_min": 0.129
+          },
+          "registration_note": "Amendment 5 section 5; approximate main-grid E3 half-flap values",
+          "source_maximum_below_t_min": true,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        },
+        "flap2": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.06846234423806764,
+              "threshold_mm": 6.356127581951245
+            },
+            "t_min": {
+              "chord_fraction": 0.1260823097391657,
+              "threshold_mm": 7.446666666666667
+            }
+          },
+          "registered_approximate_chord_fractions": {
+            "below_classic_bdim_floor": 0.069,
+            "below_t_min": 0.129
+          },
+          "registration_note": "Amendment 5 section 5; approximate main-grid E3 half-flap values",
+          "source_maximum_below_t_min": true,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        },
+        "main": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.00349167193530176,
+              "threshold_mm": 6.356127581951245
+            },
+            "t_min": {
+              "chord_fraction": 0.004825061298171234,
+              "threshold_mm": 7.446666666666667
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        }
+      },
+      "path": "docs/harness/topo2d00_scenes/E3.json",
+      "polygon_and_surface_coordinates_unchanged": true,
+      "sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f"
+    },
+    {
+      "nose_thickness": {
+        "flap1": null,
+        "flap2": null,
+        "main": null
+      },
+      "path": "docs/harness/topo2d00_scenes/E3_sharp.json",
+      "polygon_and_surface_coordinates_unchanged": true,
+      "sha256": "f48ec5464152bb2432ccdc1ffff88faa07cc826bb87ff78135cf0d9b49c001c2"
+    }
+  ]
+}

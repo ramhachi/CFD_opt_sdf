@@ -53,6 +53,10 @@ def plot_geometry(output, *, dx_mm=None):
         ax.text(0.99, 0.06, f"floor = 4 dx = {scene['t_min_mm']:.3f} mm; "
                 + (f"adjacent Euclidean gaps: {gap_text} mm" if gap_text else "single element"),
                 transform=ax.transAxes, ha="right", va="bottom", fontsize=8)
+        if scene["configuration"] == "E3":
+            ax.text(0.99, 0.14, "Half-flap source maximum 6.70 mm < floor; noses excluded from core proof.\n"
+                    "Registration: ~12.9% chord below 4 dx; ~6.9% below classic BDIM floor.",
+                    transform=ax.transAxes, ha="right", va="bottom", fontsize=7.5)
         ax.grid(alpha=0.15)
         ax.legend(loc="upper left", fontsize=8, frameon=False, ncol=3)
     axes[-1].set_xlabel("x [mm]; flow to the right; moving ground at z=0")

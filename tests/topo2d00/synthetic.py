@@ -1,5 +1,51 @@
 """Deterministic coefficient tables for WP4 software tests, never CFD evidence."""
 from copy import deepcopy
+import hashlib
+import json
+from pathlib import Path
+
+
+def write_reference_bundle(folder):
+    """WP5 digitize_cp manifest/CSV shape, with planted delta=1 and sum error=.01.
+
+    The two element reading differences have opposite signs. Summing totals
+    first would give .002 rather than the registered conservative .01.
+    """
+    folder = Path(folder)
+    folder.mkdir(parents=True, exist_ok=True)
+    source = {"citation": "Synthetic test only", "url": "https://example.invalid/synthetic",
+              "location": "Synthetic Table15 and Cp", "observable": "centre_section_pressure_integrated",
+              "transition": "synthetic no physical evidence"}
+    elements = []
+    artifacts = []
+    for index, sensitivity in enumerate((.006, -.004)):
+        surfaces = {}
+        for reader, direction in (("A", -1), ("B", 1)):
+            surfaces[reader] = {}
+            for surface, cp in (("upper", .8 + direction * sensitivity / 4),
+                                ("lower", -.2 - direction * sensitivity / 4)):
+                name = f"digitization_e{index}_{reader}_{surface}.csv"
+                path = folder / name
+                path.write_text("x/c,Cp\n" + "".join(f"{index + i / 10!r},{cp!r}\n" for i in range(11)))
+                surfaces[reader][surface] = name
+                artifacts.append({"path": str(path.resolve()), "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                                  "method": f"synthetic reader {reader}, {index}/{surface}"})
+        elements.append({"id": f"element{index}", "abscissa_chord_m": .2234,
+                         "x_extent": [index, index + 1], "coverage_note": "full synthetic contour", "surfaces": surfaces})
+    common = {"height_m": .1, "height_mapping_note": "synthetic 100mm", "source": source}
+    manifest = {"kind": "topo2d00_cp_manifest_v1", "reference_chord_m": .2234,
+        "configs": [dict(common, config="E1_sharp", method="tabulated_cl", Cl=1., coefficient_chord_m=.2234,
+                         coefficient_sign="downforce=-Fz", reading_sensitivity_abs=0., reading_sensitivity_note="exact planted scalar"),
+                    dict(common, config="E2_sharp", method="cp", abscissa_direction="global_streamwise",
+                         independence_note="different synthetic tools, no experiment", elements=elements,
+                         digitizers=[{"id": "A", "operator": "reader A", "tool": "tool A"},
+                                     {"id": "B", "operator": "reader B", "tool": "tool B"}])],
+        "increments": [{"from": "E1_sharp", "to": "E2_sharp"}]}
+    path = folder / "digitization_manifest.json"
+    path.write_text(json.dumps(manifest))
+    manifest_record = {"path": str(path.resolve()), "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                       "method": "WP5-format synthetic manifest; E1 scalar extraction and E2 raw CSVs"}
+    return {"manifest": manifest_record, "artifacts": [manifest_record, *artifacts]}
 
 
 def input_table():

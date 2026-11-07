@@ -1,0 +1,48 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "src/cfd_harness/scene_campaign.py",
+    "cpu-smoke",
+    "docs/harness/topo2d00_campaign.json",
+    "re1000",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend5/polluted_env_smoke",
+    "--start",
+    "0.003",
+    "--end",
+    "0.015"
+  ],
+  "duration_seconds": 29.554080458008684,
+  "evidence_class": "CPU capability only",
+  "inherited_pollution": {
+    "CUDA_VISIBLE_DEVICES": "invalid-device",
+    "TOPO2D_CHECKPOINT": "/missing/wp04-poison-output",
+    "TOPO2D_DIMS": "12,12",
+    "TOPO2D_RESUME": "/missing/wp04-poison-checkpoint",
+    "TOPO2D_TOP_FACTOR": "99",
+    "W4_SCENE_SHA256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "returncode": 0,
+  "verified": {
+    "finite_forces": true,
+    "flow_dims": [
+      840,
+      824
+    ],
+    "integrity": {
+      "failures": [],
+      "pass": true
+    },
+    "remeasure_after_construction": false,
+    "runtime": {
+      "julia_version": "1.12.6",
+      "memory": "Array",
+      "scalar_type": "Float32",
+      "scheme": "quick",
+      "threads": 1,
+      "waterlily_version": "1.8.0"
+    },
+    "steps": 6,
+    "top_factor": 1.0
+  },
+  "written_utc": "2026-11-07T10:48:38.675291+00:00"
+}

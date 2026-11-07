@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cfd-opt-sdf:topo2d-scene-v1",
+  "title": "TOPO-2D-00 shared W/R scene geometry",
+  "description": "Draft structural schema. The Python geometric gate additionally recomputes source hashes, surface identity, sampling, thickness, gaps, clearance and intersections. polygon_mm is an open ordered vertex list with the closing edge last-to-first implicit; duplicated vertices are refused, including a repeated terminal first vertex. The same raw JSON bytes and SHA-256 are consumed by WaterLily and RANS. This schema confers no source-image or physics qualification.",
+  "type": "object",
+  "required": ["schema", "configuration", "height_mm", "dx_mm", "normalizations", "elements", "sources", "gates"],
+  "properties": {
+    "schema": {"const": "topo2d-scene-v1"},
+    "configuration": {"enum": ["E1", "E2", "E3", "E1_sharp", "E2_sharp", "E3_sharp"]},
+    "height_mm": {"type": "number", "exclusiveMinimum": 0},
+    "dx_mm": {"type": "number", "exclusiveMinimum": 0},
+    "normalizations": {
+      "type": "object",
+      "required": ["c1_mm", "c_mm", "h_over_c1", "h_over_c"],
+      "properties": {
+        "c1_mm": {"const": 223.4}, "c_mm": {"const": 380.0},
+        "h_over_c1": {"type": "number", "exclusiveMinimum": 0},
+        "h_over_c": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "elements": {"type": "array", "minItems": 1, "maxItems": 3, "items": {"$ref": "#/$defs/element"}},
+    "sources": {"type": "array", "minItems": 1},
+    "gates": {"type": "object", "required": ["accepted"], "properties": {"accepted": {"const": true}}}
+  },
+  "$defs": {
+    "element": {
+      "type": "object", "required": ["name", "polygon_mm", "suction_mm", "pressure_mm"],
+      "properties": {
+        "name": {"enum": ["main", "flap1", "flap2"]},
+        "polygon_mm": {
+          "type": "array", "minItems": 3, "uniqueItems": true,
+          "description": "Open ordered vertices in mm. The last-to-first edge is implicit and subject to the same segment bounds. All duplicated vertices, including a duplicated closing endpoint, are refused. Segment lengths 0.1-1 mm, adjacent length ratio <=3, turning angle <=5 degrees except exactly two TE cap corners are independently checked by the geometric gate.",
+          "items": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}}
+        },
+        "nose_thickness": {
+          "type": "object",
+          "description": "Thick-arm diagnostic of the nose excluded from the bulk phase-core proof. Registered approximate E3 fractions and recomputed chord-projection first crossings are separately labelled; no global thickness qualification is inferred."
+        }
+      }
+    }
+  }
+}

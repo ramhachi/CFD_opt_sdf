@@ -296,7 +296,7 @@ def test_draft_campaign_phase_pairing_controls_and_scene_hashes():
     campaign = S.make_campaign()
     S.validate_campaign(campaign)
     assert set(campaign["kernels"]) == {"re1000", "re3000", "confirmation"}
-    assert len(campaign["states"]) == 125
+    assert len(campaign["states"]) == 127
     assert campaign["measurement"]["time_window_t_u_l"] is None
     for key in ("re1000", "re3000"):
         runs = campaign["kernels"][key]["runs"]
@@ -314,6 +314,107 @@ def test_draft_campaign_phase_pairing_controls_and_scene_hashes():
     root = Path(__file__).resolve().parents[2]
     recorded = SC.jload(root / "docs/harness/topo2d00_campaign.json")
     assert recorded == campaign
+
+
+def test_campaign_contains_exact_parent_preruns_without_adding_kernels():
+    campaign = S.make_campaign()
+    for key, reynolds in (("re1000", 1000), ("re3000", 3000)):
+        selected = [run for run in campaign["kernels"][key]["runs"] if campaign["states"][run["state"]]["topo2d"]["role"] == "prerun"]
+        assert len(selected) == 1
+        state = campaign["states"][selected[0]["state"]]
+        assert state["topo2d"] == {"configuration": "E1", "height_mm": 100.0, "reynolds": float(reynolds), "grid": "main", "phase": "0", "role": "prerun"}
+        assert selected[0]["env"] == {SC.ORIGIN_ENV: "0,0,0"}
+    assert not any(campaign["states"][run["state"]]["topo2d"]["role"] == "prerun" for run in campaign["kernels"]["confirmation"]["runs"])
+    assert campaign["measurement"]["parent_prerun"]["horizon_c1_over_u"] == 520
+
+
+def test_scene_runner_scrubs_external_controls_then_applies_declared_environment():
+    campaign = S.make_campaign()
+    run = campaign["kernels"]["re1000"]["runs"][0]
+    inherited = {"PATH": "/example", "HOME": "/home", "TOPO2D_DIMS": "12,12", "TOPO2D_RESUME": "/bad", "TOPO2D_CHECKPOINT": "/bad",
+                 "W4_SELECTED_GPU_UUID": "GPU-wrong", "CUDA_VISIBLE_DEVICES": "99", "OTHER_REMOVE": "old"}
+    campaign["scrub_env"] = ["OTHER_REMOVE"]
+    campaign["job_env_common"]["TOPO2D_SAMPLE_EVERY"] = "16"
+    env = S.job_environment(campaign, run, inherited)
+    assert env["PATH"] == "/example" and env["HOME"] == "/home"
+    assert env["TOPO2D_SAMPLE_EVERY"] == "16"
+    assert env[SC.ORIGIN_ENV] == run["env"][SC.ORIGIN_ENV]
+    assert not any(key in env for key in ("TOPO2D_DIMS", "TOPO2D_RESUME", "TOPO2D_CHECKPOINT", "W4_SELECTED_GPU_UUID", "CUDA_VISIBLE_DEVICES", "OTHER_REMOVE"))
+    bad = {"state": run["state"], "env": {**run["env"], "TOPO2D_DIMS": "12,12"}}
+    with pytest.raises(ValueError, match="declared|environment"):
+        S.job_environment(campaign, bad, inherited)
+
+
+def test_smoke_launch_does_not_inherit_grid_resume_or_cuda(monkeypatch, tmp_path):
+    from types import SimpleNamespace
+    campaign, planted, _ = write_synthetic_numerical_kernel(tmp_path)
+    names = SC.run_names(SC.jload(campaign)["kernels"]["re1000"])
+    monkeypatch.setattr(S.subprocess, "check_output", lambda *args, **kwargs: "a" * 40)
+    for key, value in {"TOPO2D_DIMS": "12,12", "TOPO2D_RESUME": "/bad", "CUDA_VISIBLE_DEVICES": "99", "W4_SCENE_SHA256": "0" * 64}.items():
+        monkeypatch.setenv(key, value)
+    def fake_job(command, **kwargs):
+        env = kwargs["env"]
+        assert "TOPO2D_DIMS" not in env and "TOPO2D_RESUME" not in env and "CUDA_VISIBLE_DEVICES" not in env
+        assert env["W4_SCENE_SHA256"] == SC.jload(campaign)["states"][names[0]]["scene_sha256"]
+        dest = Path(command[-1])
+        failure = SC.jload(planted / "states" / names[0] / "numerical_failure.json")
+        failure["wall_seconds"] = 1e-10
+        (dest / "numerical_failure.json").write_text(json.dumps(failure))
+        (dest / SC.ERROR_NAME).write_text("synthetic failure\n")
+        return SimpleNamespace(returncode=42)
+    monkeypatch.setattr(S.subprocess, "run", fake_job)
+    S.run_cpu_smoke(campaign, "re1000", tmp_path / "scrubbed_smoke", window=[0.5, 4.5], repo=tmp_path)
+
+
+def test_numerical_stop_scope_is_exact_configuration_re_height_and_role():
+    base = {"configuration": "E2", "reynolds": 3000, "height_mm": 100, "role": "primary", "phase": "1", "grid": "main"}
+    assert S.numerical_stop_key(base) == ("E2", 3000, 100, "primary")
+    assert S.numerical_stop_key({**base, "phase": "2"}) == S.numerical_stop_key(base)
+    for change in ({"height_mm": 80}, {"role": "domain"}, {"reynolds": 1000}, {"configuration": "E1"}):
+        assert S.numerical_stop_key({**base, **change}) != S.numerical_stop_key(base)
+
+
+def test_formal_scene_source_refuses_unverified_ocr_but_cpu_read_is_available(tmp_path):
+    root = Path(__file__).resolve().parents[2]
+    path = root / "docs/harness/topo2d00_scenes/E1.json"
+    scene = S.scene_record(path, SC.sha256_path(path))
+    with pytest.raises(ValueError, match="UNVERIFIED_OCR"):
+        S.require_verified_geometry(scene)
+    for source in scene["sources"]:
+        source["verification"] = "VERIFIED_PDF"
+    S.require_verified_geometry(scene)
+
+
+@pytest.mark.parametrize("field", ["formal_context", "windows"])
+def test_formal_admission_refuses_hand_entered_window_fields(field):
+    campaign = S.make_campaign()
+    with pytest.raises(ValueError, match="hand-entered"):
+        S.formal_context(campaign, S.ROOT / "docs/harness/topo2d00_campaign.json", "re1000", {field: {"burn_in": 80, "window_width": 50}})
+
+
+def test_frozen_runner_selects_parent_prerun_separately_from_formal_states(monkeypatch, tmp_path):
+    campaign = S.make_campaign()
+    campaign_path = tmp_path / "campaign.json"
+    campaign_path.write_text(json.dumps(campaign))
+    freeze = {"kind": SC.FREEZE_KIND, "harness_version": SC.HARNESS_VERSION, "campaign_sha256": SC.sha256_path(campaign_path),
+              "source_commit": "a" * 40, "scene_runner_approved": True, "pins": {"re1000": {}}, "runtime": {}}
+    freeze_path = tmp_path / "freeze.json"
+    freeze_path.write_text(json.dumps(freeze))
+    Path(str(freeze_path) + ".sha256").write_text(SC.sha256_path(freeze_path))
+    monkeypatch.setattr(S.subprocess, "check_output", lambda *args, **kwargs: "a" * 40)
+    monkeypatch.setattr(S, "scene_pins", lambda *args: {})
+    seen = []
+    def context(*args, prerun=False):
+        seen.append(prerun)
+        return [80, 520] if prerun else [100, 200]
+    monkeypatch.setattr(S, "formal_context", context)
+    calls = []
+    monkeypatch.setattr(S, "_run_kernel", lambda *args, **kwargs: calls.append(kwargs))
+    for prerun in (True, False):
+        S.run_frozen_kernel(campaign_path, "re1000", tmp_path / f"output_{prerun}", freeze_path, expected_commit="a" * 40, expected_pins={}, repo=tmp_path, prerun=prerun)
+    assert seen == [True, False]
+    assert calls[0]["prerun"] is True and calls[0]["count"] == 1 and calls[0]["window"] == [80, 520]
+    assert calls[1]["prerun"] is False and calls[1]["count"] == 56 and calls[1]["window"] == [100, 200]
 
 
 def write_synthetic_numerical_kernel(tmp_path, smoke=True):

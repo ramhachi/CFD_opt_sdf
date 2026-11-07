@@ -28,7 +28,8 @@
     "TOPO2D_PHASE",
     "TOPO2D_GRID",
     "TOPO2D_ROLE",
-    "TOPO2D_CASE_ID"
+    "TOPO2D_CASE_ID",
+    "TOPO2D_TOP_FACTOR"
   ],
   "kernels": {
     "confirmation": {
@@ -484,6 +485,12 @@
             "W4_CANONICAL_ORIGIN_M": "-1.8161177151333199e-05,0,0.00067079464984333328"
           },
           "state": "E2_h80_re1000_main_k04_secondary"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0,0,0"
+          },
+          "state": "E1_h100_re1000_main_k00_prerun"
         }
       ]
     },
@@ -890,6 +897,12 @@
             "W4_CANONICAL_ORIGIN_M": "-0.00047449725524233323,0,-0.00013001934174499999"
           },
           "state": "E2_h100_re3000_main_k02_domain"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0,0,0"
+          },
+          "state": "E1_h100_re3000_main_k00_prerun"
         }
       ]
     }
@@ -898,6 +911,19 @@
   "measurement": {
     "candidate_operator": "SetBody(min, AutoBody polygon elements); wing-only force",
     "force_unit": "N/m",
+    "parent_prerun": {
+      "configuration": "E1",
+      "estimator": "scripts/topo2d00/prerun_window.py",
+      "formal_window": "hash-bound parent record; hand-entered windows refused",
+      "grid": "main",
+      "horizon_c1_over_u": 520,
+      "measurement_window_c1_over_u": [
+        80,
+        520
+      ],
+      "phase": "0",
+      "record_template": "docs/harness/topo2d00_window_re<Re>.json"
+    },
     "phase_rule": "JOB-02 R2 (0.7548776662,0.5698402910) fractional shifts centered at 0, k=1..8 with exact mirrors in x,z",
     "reference_chord_mm": 223.4,
     "remaining_controls": "E1 parent pre-run force histories must fix windows before freeze; unavailable readout controls remain NOT_JUDGED until WP2 integration",
@@ -923,10 +949,23 @@
     "docs/harness/topo2d00_scenes"
   ],
   "states": {
+    "E1_h100_re1000_main_k00_prerun": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "0",
+        "reynolds": 1000.0,
+        "role": "prerun"
+      }
+    },
     "E1_h100_re1000_main_k01": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -939,7 +978,7 @@
     "E1_h100_re1000_main_k02": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -952,7 +991,7 @@
     "E1_h100_re1000_main_k03": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -965,7 +1004,7 @@
     "E1_h100_re1000_main_k04": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -978,7 +1017,7 @@
     "E1_h100_re1000_main_k05": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -991,7 +1030,7 @@
     "E1_h100_re1000_main_k06": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1004,7 +1043,7 @@
     "E1_h100_re1000_main_k07": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1017,7 +1056,7 @@
     "E1_h100_re1000_main_k08": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1030,7 +1069,7 @@
     "E1_h100_re1000_main_k09": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1043,7 +1082,7 @@
     "E1_h100_re1000_main_k10": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1056,7 +1095,7 @@
     "E1_h100_re1000_main_k11": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1069,7 +1108,7 @@
     "E1_h100_re1000_main_k12": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1082,7 +1121,7 @@
     "E1_h100_re1000_main_k13": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1095,7 +1134,7 @@
     "E1_h100_re1000_main_k14": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1108,7 +1147,7 @@
     "E1_h100_re1000_main_k15": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1121,7 +1160,7 @@
     "E1_h100_re1000_main_k16": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1134,7 +1173,7 @@
     "E1_h100_re3000_confirmation_k01": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1_fine.json",
-      "scene_sha256": "d57f5947590401517748eff77ccb289d2f4c382d1ee0a3c99a7e636307d6cabb",
+      "scene_sha256": "574808f8812ee5055fb78a6eba8ebc1cd283b08afbd9bb8cfa4ecfbad9bf9595",
       "topo2d": {
         "configuration": "E1",
         "grid": "confirmation",
@@ -1147,7 +1186,7 @@
     "E1_h100_re3000_confirmation_k02": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1_fine.json",
-      "scene_sha256": "d57f5947590401517748eff77ccb289d2f4c382d1ee0a3c99a7e636307d6cabb",
+      "scene_sha256": "574808f8812ee5055fb78a6eba8ebc1cd283b08afbd9bb8cfa4ecfbad9bf9595",
       "topo2d": {
         "configuration": "E1",
         "grid": "confirmation",
@@ -1160,7 +1199,7 @@
     "E1_h100_re3000_confirmation_k03": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1_fine.json",
-      "scene_sha256": "d57f5947590401517748eff77ccb289d2f4c382d1ee0a3c99a7e636307d6cabb",
+      "scene_sha256": "574808f8812ee5055fb78a6eba8ebc1cd283b08afbd9bb8cfa4ecfbad9bf9595",
       "topo2d": {
         "configuration": "E1",
         "grid": "confirmation",
@@ -1173,7 +1212,7 @@
     "E1_h100_re3000_confirmation_k04": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1_fine.json",
-      "scene_sha256": "d57f5947590401517748eff77ccb289d2f4c382d1ee0a3c99a7e636307d6cabb",
+      "scene_sha256": "574808f8812ee5055fb78a6eba8ebc1cd283b08afbd9bb8cfa4ecfbad9bf9595",
       "topo2d": {
         "configuration": "E1",
         "grid": "confirmation",
@@ -1183,10 +1222,23 @@
         "role": "confirmation"
       }
     },
+    "E1_h100_re3000_main_k00_prerun": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "0",
+        "reynolds": 3000.0,
+        "role": "prerun"
+      }
+    },
     "E1_h100_re3000_main_k01": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1199,7 +1251,7 @@
     "E1_h100_re3000_main_k01_determinism": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1212,7 +1264,7 @@
     "E1_h100_re3000_main_k01_domain": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1225,7 +1277,7 @@
     "E1_h100_re3000_main_k02": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1238,7 +1290,7 @@
     "E1_h100_re3000_main_k02_domain": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1251,7 +1303,7 @@
     "E1_h100_re3000_main_k03": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1264,7 +1316,7 @@
     "E1_h100_re3000_main_k04": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1277,7 +1329,7 @@
     "E1_h100_re3000_main_k05": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1290,7 +1342,7 @@
     "E1_h100_re3000_main_k06": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1303,7 +1355,7 @@
     "E1_h100_re3000_main_k07": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1316,7 +1368,7 @@
     "E1_h100_re3000_main_k08": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1329,7 +1381,7 @@
     "E1_h100_re3000_main_k09": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1342,7 +1394,7 @@
     "E1_h100_re3000_main_k10": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1355,7 +1407,7 @@
     "E1_h100_re3000_main_k11": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1368,7 +1420,7 @@
     "E1_h100_re3000_main_k12": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1381,7 +1433,7 @@
     "E1_h100_re3000_main_k13": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1394,7 +1446,7 @@
     "E1_h100_re3000_main_k14": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1407,7 +1459,7 @@
     "E1_h100_re3000_main_k15": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1420,7 +1472,7 @@
     "E1_h100_re3000_main_k16": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1.json",
-      "scene_sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1433,7 +1485,7 @@
     "E1_h80_re1000_main_k01_secondary": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1_h80.json",
-      "scene_sha256": "bab24c97a260015b557a2ca14c9344f64f5bb4880091a39493031a38bfb3318e",
+      "scene_sha256": "d9e7cc0da6134a52fc5746390dd828bf6237011505af5c11582055dc8a02b0d2",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1446,7 +1498,7 @@
     "E1_h80_re1000_main_k02_secondary": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1_h80.json",
-      "scene_sha256": "bab24c97a260015b557a2ca14c9344f64f5bb4880091a39493031a38bfb3318e",
+      "scene_sha256": "d9e7cc0da6134a52fc5746390dd828bf6237011505af5c11582055dc8a02b0d2",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1459,7 +1511,7 @@
     "E1_h80_re1000_main_k03_secondary": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1_h80.json",
-      "scene_sha256": "bab24c97a260015b557a2ca14c9344f64f5bb4880091a39493031a38bfb3318e",
+      "scene_sha256": "d9e7cc0da6134a52fc5746390dd828bf6237011505af5c11582055dc8a02b0d2",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1472,7 +1524,7 @@
     "E1_h80_re1000_main_k04_secondary": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1_h80.json",
-      "scene_sha256": "bab24c97a260015b557a2ca14c9344f64f5bb4880091a39493031a38bfb3318e",
+      "scene_sha256": "d9e7cc0da6134a52fc5746390dd828bf6237011505af5c11582055dc8a02b0d2",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1485,7 +1537,7 @@
     "E1_h80_re3000_main_k01_secondary": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1_h80.json",
-      "scene_sha256": "bab24c97a260015b557a2ca14c9344f64f5bb4880091a39493031a38bfb3318e",
+      "scene_sha256": "d9e7cc0da6134a52fc5746390dd828bf6237011505af5c11582055dc8a02b0d2",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1498,7 +1550,7 @@
     "E1_h80_re3000_main_k02_secondary": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1_h80.json",
-      "scene_sha256": "bab24c97a260015b557a2ca14c9344f64f5bb4880091a39493031a38bfb3318e",
+      "scene_sha256": "d9e7cc0da6134a52fc5746390dd828bf6237011505af5c11582055dc8a02b0d2",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1511,7 +1563,7 @@
     "E1_h80_re3000_main_k03_secondary": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1_h80.json",
-      "scene_sha256": "bab24c97a260015b557a2ca14c9344f64f5bb4880091a39493031a38bfb3318e",
+      "scene_sha256": "d9e7cc0da6134a52fc5746390dd828bf6237011505af5c11582055dc8a02b0d2",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1524,7 +1576,7 @@
     "E1_h80_re3000_main_k04_secondary": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E1_h80.json",
-      "scene_sha256": "bab24c97a260015b557a2ca14c9344f64f5bb4880091a39493031a38bfb3318e",
+      "scene_sha256": "d9e7cc0da6134a52fc5746390dd828bf6237011505af5c11582055dc8a02b0d2",
       "topo2d": {
         "configuration": "E1",
         "grid": "main",
@@ -1537,7 +1589,7 @@
     "E2_h100_re1000_main_k01": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1550,7 +1602,7 @@
     "E2_h100_re1000_main_k02": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1563,7 +1615,7 @@
     "E2_h100_re1000_main_k03": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1576,7 +1628,7 @@
     "E2_h100_re1000_main_k04": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1589,7 +1641,7 @@
     "E2_h100_re1000_main_k05": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1602,7 +1654,7 @@
     "E2_h100_re1000_main_k06": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1615,7 +1667,7 @@
     "E2_h100_re1000_main_k07": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1628,7 +1680,7 @@
     "E2_h100_re1000_main_k08": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1641,7 +1693,7 @@
     "E2_h100_re1000_main_k09": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1654,7 +1706,7 @@
     "E2_h100_re1000_main_k10": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1667,7 +1719,7 @@
     "E2_h100_re1000_main_k11": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1680,7 +1732,7 @@
     "E2_h100_re1000_main_k12": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1693,7 +1745,7 @@
     "E2_h100_re1000_main_k13": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1706,7 +1758,7 @@
     "E2_h100_re1000_main_k14": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1719,7 +1771,7 @@
     "E2_h100_re1000_main_k15": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1732,7 +1784,7 @@
     "E2_h100_re1000_main_k16": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1745,7 +1797,7 @@
     "E2_h100_re3000_confirmation_k01": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2_fine.json",
-      "scene_sha256": "05cff8029f675219768411d382cc59d6d5e461881b20db6b8d9ab8093763c2e0",
+      "scene_sha256": "f7131cef61223e21a57c70708dd58622c630ff71fbe5b55aa39c47791919e7c6",
       "topo2d": {
         "configuration": "E2",
         "grid": "confirmation",
@@ -1758,7 +1810,7 @@
     "E2_h100_re3000_confirmation_k02": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2_fine.json",
-      "scene_sha256": "05cff8029f675219768411d382cc59d6d5e461881b20db6b8d9ab8093763c2e0",
+      "scene_sha256": "f7131cef61223e21a57c70708dd58622c630ff71fbe5b55aa39c47791919e7c6",
       "topo2d": {
         "configuration": "E2",
         "grid": "confirmation",
@@ -1771,7 +1823,7 @@
     "E2_h100_re3000_confirmation_k03": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2_fine.json",
-      "scene_sha256": "05cff8029f675219768411d382cc59d6d5e461881b20db6b8d9ab8093763c2e0",
+      "scene_sha256": "f7131cef61223e21a57c70708dd58622c630ff71fbe5b55aa39c47791919e7c6",
       "topo2d": {
         "configuration": "E2",
         "grid": "confirmation",
@@ -1784,7 +1836,7 @@
     "E2_h100_re3000_confirmation_k04": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2_fine.json",
-      "scene_sha256": "05cff8029f675219768411d382cc59d6d5e461881b20db6b8d9ab8093763c2e0",
+      "scene_sha256": "f7131cef61223e21a57c70708dd58622c630ff71fbe5b55aa39c47791919e7c6",
       "topo2d": {
         "configuration": "E2",
         "grid": "confirmation",
@@ -1797,7 +1849,7 @@
     "E2_h100_re3000_main_k01": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1810,7 +1862,7 @@
     "E2_h100_re3000_main_k01_domain": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1823,7 +1875,7 @@
     "E2_h100_re3000_main_k02": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1836,7 +1888,7 @@
     "E2_h100_re3000_main_k02_domain": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1849,7 +1901,7 @@
     "E2_h100_re3000_main_k03": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1862,7 +1914,7 @@
     "E2_h100_re3000_main_k04": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1875,7 +1927,7 @@
     "E2_h100_re3000_main_k05": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1888,7 +1940,7 @@
     "E2_h100_re3000_main_k06": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1901,7 +1953,7 @@
     "E2_h100_re3000_main_k07": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1914,7 +1966,7 @@
     "E2_h100_re3000_main_k08": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1927,7 +1979,7 @@
     "E2_h100_re3000_main_k09": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1940,7 +1992,7 @@
     "E2_h100_re3000_main_k10": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1953,7 +2005,7 @@
     "E2_h100_re3000_main_k11": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1966,7 +2018,7 @@
     "E2_h100_re3000_main_k12": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1979,7 +2031,7 @@
     "E2_h100_re3000_main_k13": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -1992,7 +2044,7 @@
     "E2_h100_re3000_main_k14": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -2005,7 +2057,7 @@
     "E2_h100_re3000_main_k15": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -2018,7 +2070,7 @@
     "E2_h100_re3000_main_k16": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2.json",
-      "scene_sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -2031,7 +2083,7 @@
     "E2_h80_re1000_main_k01_secondary": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2_h80.json",
-      "scene_sha256": "71afd0f92e499f73c194c4327089a2c89a747e63f76a16c48fc7e0d051009a41",
+      "scene_sha256": "2786a4b0dd0998fcdf6bf79a99786ba4c6992da951854e9f09c2df68d7ee307b",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -2044,7 +2096,7 @@
     "E2_h80_re1000_main_k02_secondary": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2_h80.json",
-      "scene_sha256": "71afd0f92e499f73c194c4327089a2c89a747e63f76a16c48fc7e0d051009a41",
+      "scene_sha256": "2786a4b0dd0998fcdf6bf79a99786ba4c6992da951854e9f09c2df68d7ee307b",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -2057,7 +2109,7 @@
     "E2_h80_re1000_main_k03_secondary": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2_h80.json",
-      "scene_sha256": "71afd0f92e499f73c194c4327089a2c89a747e63f76a16c48fc7e0d051009a41",
+      "scene_sha256": "2786a4b0dd0998fcdf6bf79a99786ba4c6992da951854e9f09c2df68d7ee307b",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -2070,7 +2122,7 @@
     "E2_h80_re1000_main_k04_secondary": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2_h80.json",
-      "scene_sha256": "71afd0f92e499f73c194c4327089a2c89a747e63f76a16c48fc7e0d051009a41",
+      "scene_sha256": "2786a4b0dd0998fcdf6bf79a99786ba4c6992da951854e9f09c2df68d7ee307b",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -2083,7 +2135,7 @@
     "E2_h80_re3000_main_k01_secondary": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2_h80.json",
-      "scene_sha256": "71afd0f92e499f73c194c4327089a2c89a747e63f76a16c48fc7e0d051009a41",
+      "scene_sha256": "2786a4b0dd0998fcdf6bf79a99786ba4c6992da951854e9f09c2df68d7ee307b",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -2096,7 +2148,7 @@
     "E2_h80_re3000_main_k02_secondary": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2_h80.json",
-      "scene_sha256": "71afd0f92e499f73c194c4327089a2c89a747e63f76a16c48fc7e0d051009a41",
+      "scene_sha256": "2786a4b0dd0998fcdf6bf79a99786ba4c6992da951854e9f09c2df68d7ee307b",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -2109,7 +2161,7 @@
     "E2_h80_re3000_main_k03_secondary": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2_h80.json",
-      "scene_sha256": "71afd0f92e499f73c194c4327089a2c89a747e63f76a16c48fc7e0d051009a41",
+      "scene_sha256": "2786a4b0dd0998fcdf6bf79a99786ba4c6992da951854e9f09c2df68d7ee307b",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -2122,7 +2174,7 @@
     "E2_h80_re3000_main_k04_secondary": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E2_h80.json",
-      "scene_sha256": "71afd0f92e499f73c194c4327089a2c89a747e63f76a16c48fc7e0d051009a41",
+      "scene_sha256": "2786a4b0dd0998fcdf6bf79a99786ba4c6992da951854e9f09c2df68d7ee307b",
       "topo2d": {
         "configuration": "E2",
         "grid": "main",
@@ -2135,7 +2187,7 @@
     "E3_h100_re1000_main_k01": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2148,7 +2200,7 @@
     "E3_h100_re1000_main_k02": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2161,7 +2213,7 @@
     "E3_h100_re1000_main_k03": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2174,7 +2226,7 @@
     "E3_h100_re1000_main_k04": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2187,7 +2239,7 @@
     "E3_h100_re1000_main_k05": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2200,7 +2252,7 @@
     "E3_h100_re1000_main_k06": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2213,7 +2265,7 @@
     "E3_h100_re1000_main_k07": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2226,7 +2278,7 @@
     "E3_h100_re1000_main_k08": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2239,7 +2291,7 @@
     "E3_h100_re1000_main_k09": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2252,7 +2304,7 @@
     "E3_h100_re1000_main_k10": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2265,7 +2317,7 @@
     "E3_h100_re1000_main_k11": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2278,7 +2330,7 @@
     "E3_h100_re1000_main_k12": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2291,7 +2343,7 @@
     "E3_h100_re1000_main_k13": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2304,7 +2356,7 @@
     "E3_h100_re1000_main_k14": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2317,7 +2369,7 @@
     "E3_h100_re1000_main_k15": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2330,7 +2382,7 @@
     "E3_h100_re1000_main_k16": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2343,7 +2395,7 @@
     "E3_h100_re3000_main_k01": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2356,7 +2408,7 @@
     "E3_h100_re3000_main_k02": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2369,7 +2421,7 @@
     "E3_h100_re3000_main_k03": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2382,7 +2434,7 @@
     "E3_h100_re3000_main_k04": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2395,7 +2447,7 @@
     "E3_h100_re3000_main_k05": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2408,7 +2460,7 @@
     "E3_h100_re3000_main_k06": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2421,7 +2473,7 @@
     "E3_h100_re3000_main_k07": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2434,7 +2486,7 @@
     "E3_h100_re3000_main_k08": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2447,7 +2499,7 @@
     "E3_h100_re3000_main_k09": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2460,7 +2512,7 @@
     "E3_h100_re3000_main_k10": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2473,7 +2525,7 @@
     "E3_h100_re3000_main_k11": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2486,7 +2538,7 @@
     "E3_h100_re3000_main_k12": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2499,7 +2551,7 @@
     "E3_h100_re3000_main_k13": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2512,7 +2564,7 @@
     "E3_h100_re3000_main_k14": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2525,7 +2577,7 @@
     "E3_h100_re3000_main_k15": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",
@@ -2538,7 +2590,7 @@
     "E3_h100_re3000_main_k16": {
       "kind": "scene",
       "scene_path": "docs/harness/topo2d00_scenes/E3.json",
-      "scene_sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
       "topo2d": {
         "configuration": "E3",
         "grid": "main",

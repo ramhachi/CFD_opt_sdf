@@ -1,0 +1,694 @@
+{
+  "coordinate_comparison": {
+    "columns": [
+      "suction_x",
+      "suction_z",
+      "pressure_x",
+      "pressure_z"
+    ],
+    "legacy_rows": 44,
+    "main_rows": 44,
+    "max_abs_difference_mm": [
+      0.05233999999998673,
+      0.8170199999999976,
+      0.04599999999999227,
+      0.8549799999999994
+    ]
+  },
+  "grids": [
+    {
+      "c1_cells": 120,
+      "dx_mm": 1.8616666666666668,
+      "flap_cells": 89.006266786034,
+      "half_flap_cells": 44.503133393017,
+      "nominal_gap_cells": 6.445837063563115,
+      "t_min_mm": 7.446666666666667
+    },
+    {
+      "c1_cells": 180,
+      "dx_mm": 1.241111111111111,
+      "flap_cells": 133.50940017905103,
+      "half_flap_cells": 66.75470008952551,
+      "nominal_gap_cells": 9.668755595344674,
+      "t_min_mm": 4.964444444444444
+    }
+  ],
+  "scenes": {
+    "E1.json": {
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "nose_thickness": {
+        "main": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.00349167193530176,
+              "threshold_mm": 6.356127581951245
+            },
+            "t_min": {
+              "chord_fraction": 0.004825061298171234,
+              "threshold_mm": 7.446666666666667
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        }
+      },
+      "pair_gaps_mm": [],
+      "placement": {
+        "combined_chord_mm": 223.84685322782627,
+        "combined_incidence_deg": 3.4549901830136687
+      },
+      "sampling": {
+        "main": {
+          "leading_edge_cap_arc_mm": 4.468,
+          "max_adjacent_segment_ratio": 1.718556939917815,
+          "max_noncap_turn_deg": 3.4426716214324946,
+          "max_segment_mm": 0.9308339190556993,
+          "min_segment_mm": 0.1805928418893029,
+          "trailing_edge_cap": "straight finite-thickness closure"
+        }
+      },
+      "sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "thickening_ratios": {
+        "main": 4.594745076277198
+      }
+    },
+    "E1_fine.json": {
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "nose_thickness": {
+        "main": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.001565884423067535,
+              "threshold_mm": 4.237418387967496
+            },
+            "t_min": {
+              "chord_fraction": 0.002078403367429578,
+              "threshold_mm": 4.964444444444444
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        }
+      },
+      "pair_gaps_mm": [],
+      "placement": {
+        "combined_chord_mm": 223.84685322782627,
+        "combined_incidence_deg": 3.4549901830136758
+      },
+      "sampling": {
+        "main": {
+          "leading_edge_cap_arc_mm": 4.468,
+          "max_adjacent_segment_ratio": 1.718556982428401,
+          "max_noncap_turn_deg": 3.442672413640632,
+          "max_segment_mm": 0.9929049002053859,
+          "min_segment_mm": 0.1805928418893029,
+          "trailing_edge_cap": "straight finite-thickness closure"
+        }
+      },
+      "sha256": "574808f8812ee5055fb78a6eba8ebc1cd283b08afbd9bb8cfa4ecfbad9bf9595",
+      "thickening_ratios": {
+        "main": 3.0632108532169107
+      }
+    },
+    "E1_h80.json": {
+      "height_mm": 80.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.21052631578947367,
+        "h_over_c1": 0.35810205908683973
+      },
+      "nose_thickness": {
+        "main": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.003491671935301736,
+              "threshold_mm": 6.356127581951245
+            },
+            "t_min": {
+              "chord_fraction": 0.0048250612981712345,
+              "threshold_mm": 7.446666666666667
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        }
+      },
+      "pair_gaps_mm": [],
+      "placement": {
+        "combined_chord_mm": 223.84685322782627,
+        "combined_incidence_deg": 3.4549901830136687
+      },
+      "sampling": {
+        "main": {
+          "leading_edge_cap_arc_mm": 4.468,
+          "max_adjacent_segment_ratio": 1.718556939917815,
+          "max_noncap_turn_deg": 3.4426716214324946,
+          "max_segment_mm": 0.9308339190556993,
+          "min_segment_mm": 0.1805928418893029,
+          "trailing_edge_cap": "straight finite-thickness closure"
+        }
+      },
+      "sha256": "d9e7cc0da6134a52fc5746390dd828bf6237011505af5c11582055dc8a02b0d2",
+      "thickening_ratios": {
+        "main": 4.594745076277198
+      }
+    },
+    "E1_sharp.json": {
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "nose_thickness": {
+        "main": null
+      },
+      "pair_gaps_mm": [],
+      "placement": {
+        "combined_chord_mm": 223.84685322782627,
+        "combined_incidence_deg": 3.454990183013665
+      },
+      "sampling": {
+        "main": {
+          "leading_edge_cap_arc_mm": 4.468,
+          "max_adjacent_segment_ratio": 1.7228364885313434,
+          "max_noncap_turn_deg": 3.43571603820754,
+          "max_segment_mm": 0.8360000000000127,
+          "min_segment_mm": 0.1805928418893029,
+          "trailing_edge_cap": "straight finite-thickness closure"
+        }
+      },
+      "sha256": "c4a2ce56ef6f7cfbaa0e8a8f41a267afce4b1e99880a79bb512e80eb6b921612",
+      "thickening_ratios": {
+        "main": 1.0
+      }
+    },
+    "E2.json": {
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "nose_thickness": {
+        "flap1": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.00561096149276184,
+              "threshold_mm": 6.356127581951245
+            },
+            "t_min": {
+              "chord_fraction": 0.007966857820506292,
+              "threshold_mm": 7.446666666666667
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        },
+        "main": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.00349167193530176,
+              "threshold_mm": 6.356127581951245
+            },
+            "t_min": {
+              "chord_fraction": 0.004825061298171234,
+              "threshold_mm": 7.446666666666667
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        }
+      },
+      "pair_gaps_mm": [
+        {
+          "distance_mm": 8.573124916422216,
+          "elements": [
+            "main",
+            "flap1"
+          ]
+        }
+      ],
+      "placement": {
+        "combined_chord_mm": 379.42810773003464,
+        "combined_incidence_deg": 14.436796728942292
+      },
+      "sampling": {
+        "flap1": {
+          "leading_edge_cap_arc_mm": 3.314,
+          "max_adjacent_segment_ratio": 1.4485807668412796,
+          "max_noncap_turn_deg": 3.444775299355507,
+          "max_segment_mm": 0.930833337826019,
+          "min_segment_mm": 0.2755074236008483,
+          "trailing_edge_cap": "straight finite-thickness closure"
+        },
+        "main": {
+          "leading_edge_cap_arc_mm": 4.468,
+          "max_adjacent_segment_ratio": 1.718556939917815,
+          "max_noncap_turn_deg": 3.4426716214324946,
+          "max_segment_mm": 0.9308339190556993,
+          "min_segment_mm": 0.1805928418893029,
+          "trailing_edge_cap": "straight finite-thickness closure"
+        }
+      },
+      "sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "thickening_ratios": {
+        "flap1": 8.86671143889008,
+        "main": 4.594745076277198
+      }
+    },
+    "E2_fine.json": {
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "nose_thickness": {
+        "flap1": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.0024059532642842396,
+              "threshold_mm": 4.237418387967496
+            },
+            "t_min": {
+              "chord_fraction": 0.003336491191914595,
+              "threshold_mm": 4.964444444444444
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        },
+        "main": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.001565884423067535,
+              "threshold_mm": 4.237418387967496
+            },
+            "t_min": {
+              "chord_fraction": 0.002078403367429578,
+              "threshold_mm": 4.964444444444444
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        }
+      },
+      "pair_gaps_mm": [
+        {
+          "distance_mm": 9.806064917017604,
+          "elements": [
+            "main",
+            "flap1"
+          ]
+        }
+      ],
+      "placement": {
+        "combined_chord_mm": 379.42796657728894,
+        "combined_incidence_deg": 14.436713933568768
+      },
+      "sampling": {
+        "flap1": {
+          "leading_edge_cap_arc_mm": 3.314,
+          "max_adjacent_segment_ratio": 1.5450813405618362,
+          "max_noncap_turn_deg": 3.445371053014021,
+          "max_segment_mm": 0.9928890117071978,
+          "min_segment_mm": 0.2755046365510305,
+          "trailing_edge_cap": "straight finite-thickness closure"
+        },
+        "main": {
+          "leading_edge_cap_arc_mm": 4.468,
+          "max_adjacent_segment_ratio": 1.718556982428401,
+          "max_noncap_turn_deg": 3.442672413640632,
+          "max_segment_mm": 0.9929049002053859,
+          "min_segment_mm": 0.1805928418893029,
+          "trailing_edge_cap": "straight finite-thickness closure"
+        }
+      },
+      "sha256": "f7131cef61223e21a57c70708dd58622c630ff71fbe5b55aa39c47791919e7c6",
+      "thickening_ratios": {
+        "flap1": 5.911141331791372,
+        "main": 3.0632108532169107
+      }
+    },
+    "E2_h80.json": {
+      "height_mm": 80.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.21052631578947367,
+        "h_over_c1": 0.35810205908683973
+      },
+      "nose_thickness": {
+        "flap1": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.005610961492761822,
+              "threshold_mm": 6.356127581951245
+            },
+            "t_min": {
+              "chord_fraction": 0.00796685782050632,
+              "threshold_mm": 7.446666666666667
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        },
+        "main": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.003491671935301736,
+              "threshold_mm": 6.356127581951245
+            },
+            "t_min": {
+              "chord_fraction": 0.0048250612981712345,
+              "threshold_mm": 7.446666666666667
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        }
+      },
+      "pair_gaps_mm": [
+        {
+          "distance_mm": 8.573124916422188,
+          "elements": [
+            "main",
+            "flap1"
+          ]
+        }
+      ],
+      "placement": {
+        "combined_chord_mm": 379.42810773003464,
+        "combined_incidence_deg": 14.436796728942292
+      },
+      "sampling": {
+        "flap1": {
+          "leading_edge_cap_arc_mm": 3.314,
+          "max_adjacent_segment_ratio": 1.4485807668412796,
+          "max_noncap_turn_deg": 3.4447752993551894,
+          "max_segment_mm": 0.930833337826019,
+          "min_segment_mm": 0.2755074236008483,
+          "trailing_edge_cap": "straight finite-thickness closure"
+        },
+        "main": {
+          "leading_edge_cap_arc_mm": 4.468,
+          "max_adjacent_segment_ratio": 1.718556939917815,
+          "max_noncap_turn_deg": 3.4426716214324946,
+          "max_segment_mm": 0.9308339190556993,
+          "min_segment_mm": 0.1805928418893029,
+          "trailing_edge_cap": "straight finite-thickness closure"
+        }
+      },
+      "sha256": "2786a4b0dd0998fcdf6bf79a99786ba4c6992da951854e9f09c2df68d7ee307b",
+      "thickening_ratios": {
+        "flap1": 8.86671143889008,
+        "main": 4.594745076277198
+      }
+    },
+    "E2_sharp.json": {
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "nose_thickness": {
+        "flap1": null,
+        "main": null
+      },
+      "pair_gaps_mm": [
+        {
+          "distance_mm": 11.437980503695714,
+          "elements": [
+            "main",
+            "flap1"
+          ]
+        }
+      ],
+      "placement": {
+        "combined_chord_mm": 379.4339179470803,
+        "combined_incidence_deg": 14.440204346934753
+      },
+      "sampling": {
+        "flap1": {
+          "leading_edge_cap_arc_mm": 3.314,
+          "max_adjacent_segment_ratio": 1.2634081568539473,
+          "max_noncap_turn_deg": 3.4404185637765305,
+          "max_segment_mm": 0.6489392546291525,
+          "min_segment_mm": 0.26635984500238447,
+          "trailing_edge_cap": "straight finite-thickness closure"
+        },
+        "main": {
+          "leading_edge_cap_arc_mm": 4.468,
+          "max_adjacent_segment_ratio": 1.7228364885313434,
+          "max_noncap_turn_deg": 3.43571603820754,
+          "max_segment_mm": 0.8360000000000127,
+          "min_segment_mm": 0.1805928418893029,
+          "trailing_edge_cap": "straight finite-thickness closure"
+        }
+      },
+      "sha256": "bc416012668448c414594fe8381306123e162bb669c1c7f063a6498cdb6ed5d5",
+      "thickening_ratios": {
+        "flap1": 1.0,
+        "main": 1.0
+      }
+    },
+    "E3.json": {
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "nose_thickness": {
+        "flap1": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.06846234423807124,
+              "threshold_mm": 6.356127581951245
+            },
+            "t_min": {
+              "chord_fraction": 0.12608230973916498,
+              "threshold_mm": 7.446666666666667
+            }
+          },
+          "registered_approximate_chord_fractions": {
+            "below_classic_bdim_floor": 0.069,
+            "below_t_min": 0.129
+          },
+          "registration_note": "Amendment 5 section 5; approximate main-grid E3 half-flap values",
+          "source_maximum_below_t_min": true,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        },
+        "flap2": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.06846234423806764,
+              "threshold_mm": 6.356127581951245
+            },
+            "t_min": {
+              "chord_fraction": 0.1260823097391657,
+              "threshold_mm": 7.446666666666667
+            }
+          },
+          "registered_approximate_chord_fractions": {
+            "below_classic_bdim_floor": 0.069,
+            "below_t_min": 0.129
+          },
+          "registration_note": "Amendment 5 section 5; approximate main-grid E3 half-flap values",
+          "source_maximum_below_t_min": true,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        },
+        "main": {
+          "excluded_from_phase_core_check": true,
+          "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+          "paired_width_first_crossings": {
+            "classic_bdim": {
+              "chord_fraction": 0.00349167193530176,
+              "threshold_mm": 6.356127581951245
+            },
+            "t_min": {
+              "chord_fraction": 0.004825061298171234,
+              "threshold_mm": 7.446666666666667
+            }
+          },
+          "source_maximum_below_t_min": false,
+          "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection"
+        }
+      },
+      "pair_gaps_mm": [
+        {
+          "distance_mm": 8.395099172939728,
+          "elements": [
+            "main",
+            "flap1"
+          ]
+        },
+        {
+          "distance_mm": 77.62302357715747,
+          "elements": [
+            "main",
+            "flap2"
+          ]
+        },
+        {
+          "distance_mm": 8.934197849890756,
+          "elements": [
+            "flap1",
+            "flap2"
+          ]
+        }
+      ],
+      "placement": {
+        "combined_chord_mm": 374.67857534304034,
+        "combined_incidence_deg": 14.595283260227143
+      },
+      "sampling": {
+        "flap1": {
+          "leading_edge_cap_arc_mm": 1.657,
+          "max_adjacent_segment_ratio": 2.897564688141328,
+          "max_noncap_turn_deg": 3.4404185637816185,
+          "max_segment_mm": 0.9308333333508938,
+          "min_segment_mm": 0.1379987522570947,
+          "trailing_edge_cap": "straight finite-thickness closure"
+        },
+        "flap2": {
+          "leading_edge_cap_arc_mm": 1.657,
+          "max_adjacent_segment_ratio": 2.8975646881406827,
+          "max_noncap_turn_deg": 3.4404185637823606,
+          "max_segment_mm": 0.9308333333508875,
+          "min_segment_mm": 0.13799875225709524,
+          "trailing_edge_cap": "straight finite-thickness closure"
+        },
+        "main": {
+          "leading_edge_cap_arc_mm": 4.468,
+          "max_adjacent_segment_ratio": 1.718556939917815,
+          "max_noncap_turn_deg": 3.4426716214324946,
+          "max_segment_mm": 0.9308339190556993,
+          "min_segment_mm": 0.1805928418893029,
+          "trailing_edge_cap": "straight finite-thickness closure"
+        }
+      },
+      "sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "thickening_ratios": {
+        "flap1": 17.733422877780182,
+        "flap2": 17.733422877780185,
+        "main": 4.594745076277198
+      }
+    },
+    "E3_sharp.json": {
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "nose_thickness": {
+        "flap1": null,
+        "flap2": null,
+        "main": null
+      },
+      "pair_gaps_mm": [
+        {
+          "distance_mm": 11.225968589423843,
+          "elements": [
+            "main",
+            "flap1"
+          ]
+        },
+        {
+          "distance_mm": 78.3244598974326,
+          "elements": [
+            "main",
+            "flap2"
+          ]
+        },
+        {
+          "distance_mm": 12.497934474815828,
+          "elements": [
+            "flap1",
+            "flap2"
+          ]
+        }
+      ],
+      "placement": {
+        "combined_chord_mm": 374.6111743473414,
+        "combined_incidence_deg": 14.555641128107967
+      },
+      "sampling": {
+        "flap1": {
+          "leading_edge_cap_arc_mm": 1.657,
+          "max_adjacent_segment_ratio": 1.6123161037175118,
+          "max_noncap_turn_deg": 3.4404185637816185,
+          "max_segment_mm": 0.5133517312720447,
+          "min_segment_mm": 0.1331799225012034,
+          "trailing_edge_cap": "straight finite-thickness closure"
+        },
+        "flap2": {
+          "leading_edge_cap_arc_mm": 1.657,
+          "max_adjacent_segment_ratio": 1.6123161037177058,
+          "max_noncap_turn_deg": 3.4404185637823606,
+          "max_segment_mm": 0.5133517312720447,
+          "min_segment_mm": 0.13317992250116495,
+          "trailing_edge_cap": "straight finite-thickness closure"
+        },
+        "main": {
+          "leading_edge_cap_arc_mm": 4.468,
+          "max_adjacent_segment_ratio": 1.7228364885313434,
+          "max_noncap_turn_deg": 3.43571603820754,
+          "max_segment_mm": 0.8360000000000127,
+          "min_segment_mm": 0.1805928418893029,
+          "trailing_edge_cap": "straight finite-thickness closure"
+        }
+      },
+      "sha256": "f48ec5464152bb2432ccdc1ffff88faa07cc826bb87ff78135cf0d9b49c001c2",
+      "thickening_ratios": {
+        "flap1": 1.0,
+        "flap2": 1.0,
+        "main": 1.0
+      }
+    }
+  }
+}

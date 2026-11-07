@@ -509,8 +509,49 @@ def _element(name, s, p, source_chord, nominal_chord, metadata):
     }
 
 
+def _nose_thickness(element, dx_mm, floor_mm):
+    """Disclose excluded nose widths; these are diagnostics, not a new gate.
+
+    Interpolate the first floor crossing of paired camber-normal width in the
+    chordwise projection, measured from LE to the finite-TE midpoint. This is
+    distinct from a continuous polygon normal-ray proof (the bulk gate).
+    """
+    _, _, camber, _, _, width = _curves(element["suction_mm"], element["pressure_mm"])
+    chord = camber[-1] - camber[0]
+    fractions = (camber - camber[0]) @ chord / float(chord @ chord)
+    crossings = {}
+    for label, threshold in (("t_min", floor_mm), ("classic_bdim", (2 + math.sqrt(2)) * dx_mm)):
+        above = np.flatnonzero(width >= threshold)
+        if not len(above):
+            raise GeometryError("thickened element never reaches the nose diagnostic threshold")
+        index = int(above[0])
+        fraction = float(np.interp(threshold, width[index - 1:index + 1], fractions[index - 1:index + 1]))
+        crossings[label] = {"threshold_mm": threshold, "chord_fraction": fraction}
+    below = element["thickening"]["original_max_thickness_mm"] < floor_mm
+    result = {
+        "source_maximum_below_t_min": bool(below),
+        "width_metric": "paired camber-normal width; first linear-interpolated crossing in chordwise projection",
+        "paired_width_first_crossings": crossings,
+        "excluded_from_phase_core_check": True,
+        "interpretation": "LE cap and ramp excluded from the bulk core proof; no full-nose BDIM qualification",
+    }
+    if element["name"] != "main" and element["nominal_chord_mm"] == 82.85:
+        # Registration Amendment 5 section 5 retains this geometry and requires
+        # its approximate nose fractions in H3 interpretation. Keep the quoted
+        # values separate from the precisely defined diagnostic above.
+        result["registered_approximate_chord_fractions"] = {
+            "below_t_min": .129, "below_classic_bdim_floor": .069}
+        result["registration_note"] = "Amendment 5 section 5; approximate main-grid E3 half-flap values"
+    return result
+
+
 def validate_scene(scene):
-    """Recompute geometric gates; raise before CFD on any failure."""
+    """Recompute gates before CFD, including the implicitly closing segment.
+
+    ``polygon_mm`` is an open, ordered vertex list: last-to-first is the
+    implicit closing edge. Duplicated vertices, including a repeated terminal
+    first vertex, are refused; this contract is shared by the W and R loaders.
+    """
     if scene.get("schema") != SCHEMA or not scene.get("elements"):
         raise GeometryError("unknown or empty scene schema")
     label = scene.get("configuration", "")
@@ -622,6 +663,8 @@ def validate_scene(scene):
                 raise GeometryError(f"{e['name']}: controlled thickness {measured} below {floor}")
             if not math.isclose(e["thickening"]["controlled_min_thickness_mm"], measured, abs_tol=TOL, rel_tol=0):
                 raise GeometryError(f"{name}: actual thickness measurement metadata differs")
+            if e.get("nose_thickness") != _nose_thickness(e, dx, floor):
+                raise GeometryError(f"{name}: stale nose-thickness caveat metadata")
             camber = (s + upper) / 2
             candidates = np.arange(start, len(camber))
             guard = (1 + math.sqrt(2) / 2) * dx
@@ -716,6 +759,7 @@ def build_scene(configuration, *, height_mm, dx_mm, t_min_cells=4, g_min_cells=4
         suction, pressure = suction + shift, pressure + shift
         element = _element(name, suction, pressure, source_chord, nominal, metadata)
         if not sharp:
+            element["nose_thickness"] = _nose_thickness(element, dx, t_cells * dx)
             camber = (suction + pressure) / 2
             candidates = np.arange(metadata["controlled_from_index"], len(camber))
             guard = (1 + math.sqrt(2) / 2) * dx
@@ -759,7 +803,11 @@ def build_scene(configuration, *, height_mm, dx_mm, t_min_cells=4, g_min_cells=4
 
 
 def write_scene(scene, path):
-    """Export deterministic JSON after rechecking gates."""
+    """Export JSON with an open vertex list and implicit last-to-first edge.
+
+    Repeated vertices (including an explicit duplicated closing endpoint) are
+    refused by the geometric gates before any bytes are written.
+    """
     if validate_scene(scene) != scene["gates"]:
         raise GeometryError("scene contains stale gate results")
     Path(path).write_text(json.dumps(scene, sort_keys=True, indent=2, allow_nan=False) + "\n")

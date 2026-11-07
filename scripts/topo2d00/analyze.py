@@ -8,6 +8,7 @@ hashes. No registration, solver execution, or qualification flag is produced her
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
 import json
 import math
@@ -18,7 +19,7 @@ import subprocess
 import sys
 
 import numpy as np
-from scipy.stats import chi2, t
+from scipy.stats import t
 
 REPO = Path(__file__).resolve().parents[2]
 CONFIGS = ("E1", "E2", "E3")
@@ -32,7 +33,7 @@ CELL_SEVERITY = {"SETTLED": 0, "NUMERICAL": 1, "MESH_FAILED": 2, "INCOMPLETE": 3
 SHA = re.compile(r"[0-9a-f]{64}\Z")
 LIMITATIONS = [
     "No physical, grid-independent, FSAE or 3D qualification is implied.",
-    "CONCORDANT_PARTIAL requires registration clarification: Amendment 3's exactly-one-Re rule is unreachable under earlier global UNRESOLVED and resolved-rank DISCORDANT precedence.",
+    "Concordance is judged per Re using the required downforce 12/23 intervals, then combined under registration Amendment 5; other sorted-rank interval resolution is descriptive.",
     "RETENTION_12 uses delta-method relative-increment variances followed by Fieller; it is not an exact nested-ratio interval.",
     "The uncertainty model treats placement phases and equal-duration batches as sampling units; iid adequacy requires registration review.",
     "The confirmation grid re-thickens at its own 4dx; its contrast includes geometry and grid changes.",
@@ -165,10 +166,10 @@ def rstat(values):
     return {"n": n, "mean": mean, "sd": sd, "se": se, "df": n - 1, "ci90": [mean - margin, mean + margin]}
 
 
-def batch_variance(row, readout, response, upper_tail=None):
+def batch_variance(row, readout, response):
     values = np.asarray([b[response] for b in row["readouts"][readout]["batches"]], dtype=float)
     var = float(values.var(ddof=1)) / len(values)
-    return var if upper_tail is None else var * (len(values) - 1) / float(chi2.ppf(upper_tail, len(values) - 1))
+    return var
 
 
 def wstat(base, candidate, readout="cur", response="downforce"):
@@ -183,18 +184,11 @@ def wstat(base, candidate, readout="cur", response="downforce"):
     vb = [batch_variance(r, readout, response) for r in base]
     vc = [batch_variance(r, readout, response) for r in candidate]
     sigma_b = math.sqrt(float(np.mean(np.asarray(vb) + vc)))
-    # alpha=.05 split equally between A and B; B split across its 2P runs.
-    a_upper = a * math.sqrt((p - 1) / float(chi2.ppf(0.025, p - 1)))
-    tail = 0.025 / (2 * p)
-    bu = [batch_variance(r, readout, response, tail) for r in base]
-    cu = [batch_variance(r, readout, response, tail) for r in candidate]
-    b_upper = math.sqrt(float(np.mean(np.asarray(bu) + cu)))
-    upper = max(a_upper, b_upper)
-    se = upper / math.sqrt(p)
+    # Amendment 5: point sigma only, with B in paired-phase SD units.
+    se = max(a, sigma_b) / math.sqrt(p)
     mean = float(d.mean())
     margin = float(t.ppf(0.95, p - 1)) * se
     return {"n": p, "mean": mean, "sigma_a": a, "sigma_b": sigma_b, "sigma": max(a, sigma_b),
-            "sigma_a_upper": a_upper, "sigma_b_upper": b_upper, "sigma_upper": upper,
             "se": se, "df": p - 1, "ci90": [mean - margin, mean + margin]}
 
 
@@ -323,10 +317,128 @@ def thickening_diagnostics(cell):
     return result
 
 
-def tr00(rans):
-    ref = rans["reference"]["delta_cl"]
-    sign_only = rans["reference"]["digitizing_uncertainty"] > 0.05 * abs(ref)
-    result = {"cells": {}, "qualified_cells": []}
+def reference_from_records(rans, bundle):
+    """Recompute WP5's canonical digitize_cp manifest from frozen raw CSVs.
+
+    The upstream format is ``topo2d00_cp_manifest_v1`` and the manifest pointer
+    is WP5's existing ``provenance.reference_estimate.manifest``. No derived
+    ``Cl`` in reference_estimate is trusted. The independent checker parses the
+    same raw records without importing this implementation or the WP5 reader.
+    """
+    require(isinstance(bundle, dict) and isinstance(bundle.get("sha256"), dict), "frozen reference inputs missing")
+    hashes = bundle["sha256"]
+    require(hashes and all(Path(path).is_absolute() and is_sha(digest) for path, digest in hashes.items()), "reference paths/SHA invalid")
+    for path, digest in hashes.items():
+        require(Path(path).is_file() and sha256(path) == digest, "reference input SHA mismatch: " + path)
+    estimate = rans.get("provenance", {}).get("reference_estimate", {})
+    require(estimate.get("kind") == "topo2d00_pressure_reference_v1" and estimate.get("observable") == "pressure_cl", "canonical WP5 reference estimate missing")
+    descriptor = estimate.get("manifest", {})
+    manifest_path = Path(bundle.get("manifest", "")).resolve()
+    require(descriptor.get("path") == str(manifest_path) and hashes.get(str(manifest_path)) == descriptor.get("sha256"), "reference manifest missing or not frozen")
+    manifest = load_json(manifest_path)
+    require(manifest.get("kind") == "topo2d00_cp_manifest_v1" and finite(manifest.get("reference_chord_m")) == .2234, "unknown reference manifest or chord")
+    configs = manifest.get("configs")
+    require(isinstance(configs, list) and all(isinstance(c, dict) for c in configs), "reference configs missing")
+    named = {c.get("config"): c for c in configs}
+    require(len(named) == len(configs) and {"E1_sharp", "E2_sharp"} <= set(named), "reference configs must uniquely cover sharp E1/E2")
+    requests = manifest.get("increments")
+    require(isinstance(requests, list) and sum(r == {"from": "E1_sharp", "to": "E2_sharp"} for r in requests) == 1, "reference increment request missing or duplicated")
+
+    def points(relative, columns):
+        require(isinstance(relative, str) and relative, "reference CSV path missing")
+        path = (manifest_path.parent / relative).resolve()
+        require(str(path) in hashes, "reference CSV missing from freeze inputs")
+        with path.open(encoding="utf-8-sig", newline="") as stream:
+            reader = csv.reader(stream, strict=True)
+            require(next(reader, None) == list(columns), "reference CSV header mismatch")
+            rows = []
+            for row in reader:
+                require(len(row) == 2, "reference CSV requires two columns")
+                rows.append(tuple(finite(float(v), "reference CSV value") for v in row))
+        require(len(rows) >= (10 if columns[0] == "x/c" else 2), "reference surface needs at least 10 points; curve needs two")
+        if all(b[0] < a[0] for a, b in zip(rows, rows[1:])):
+            rows.reverse()
+        require(all(b[0] > a[0] for a, b in zip(rows, rows[1:])), "reference abscissa must be strictly monotone")
+        return rows
+
+    def readers(config):
+        who = config.get("digitizers")
+        require(isinstance(who, list) and len(who) == 2 and all(isinstance(w, dict) for w in who), "reference needs two independent digitizers")
+        require(all(isinstance(w.get(k), str) and w[k].strip() for w in who for k in ("id", "operator", "tool")), "reference digitizer identity incomplete")
+        require(who[0]["id"] != who[1]["id"] and (who[0]["operator"], who[0]["tool"]) != (who[1]["operator"], who[1]["tool"]), "reference digitizers are not independent")
+        require(isinstance(config.get("independence_note"), str) and config["independence_note"].strip(), "reference independence note missing")
+        return [w["id"] for w in who]
+
+    def estimate_config(config, name):
+        require(finite(config.get("height_m")) == .1 and config.get("source", {}).get("observable") == "centre_section_pressure_integrated", "reference height/observable differs")
+        method = config.get("method")
+        if name == "E2_sharp":
+            require(method == "cp", "E2 reference requires raw Cp integration")
+        if method in ("tabulated_cl", "cl_curve"):
+            require(config.get("coefficient_sign") == "downforce=-Fz", "reference sign differs")
+            scale = finite(config.get("coefficient_chord_m")) / .2234
+            require(scale > 0, "reference coefficient chord must be positive")
+            if method == "tabulated_cl":
+                require(finite(config.get("reading_sensitivity_abs")) >= 0, "reference table reading sensitivity must be nonnegative")
+                return finite(config.get("Cl")) * scale, 0.
+            ids = readers(config)
+            require(isinstance(config.get("curves"), dict) and set(config["curves"]) == set(ids), "reference curve readers differ")
+            height_chord = finite(config.get("height_chord_m"))
+            require(height_chord > 0, "reference height chord must be positive")
+            target = .1 / height_chord
+            curves = [points(config["curves"][who], ("h/c", "Cl")) for who in ids]
+            require(curves[0] != curves[1], "reference curves have identical normalized numeric contents")
+            values = []
+            for curve in curves:
+                require(curve[0][0] <= target <= curve[-1][0], "reference curve extrapolation refused")
+                values.append(float(np.interp(target, [p[0] for p in curve], [p[1] for p in curve])) * scale)
+            return math.fsum(values) / 2, abs(values[0] - values[1])
+        require(method == "cp" and config.get("abscissa_direction") == "global_streamwise", "unknown reference method or non-global Cp abscissa")
+        ids = readers(config)
+        elements = config.get("elements")
+        require(isinstance(elements, list) and len(elements) == (2 if name == "E2_sharp" else 1), "reference pressure element count differs")
+        require(len({e.get("id") for e in elements}) == len(elements), "duplicate reference pressure element")
+        means, uncertainties = [], []
+        for element in elements:
+            scale = finite(element.get("abscissa_chord_m")) / .2234
+            require(scale > 0, "reference abscissa chord must be positive")
+            extent = element.get("x_extent")
+            require(isinstance(extent, list) and len(extent) == 2 and finite(extent[0]) < finite(extent[1]), "reference contour extent invalid")
+            surfaces = element.get("surfaces")
+            require(isinstance(surfaces, dict) and set(surfaces) == set(ids), "reference surface readers differ")
+            parsed = []
+            for who in ids:
+                require(isinstance(surfaces[who], dict) and set(surfaces[who]) == {"upper", "lower"}, "reference needs physical upper/lower surfaces")
+                parsed.append({side: points(surfaces[who][side], ("x/c", "Cp")) for side in ("upper", "lower")})
+            for side in ("upper", "lower"):
+                require(parsed[0][side] != parsed[1][side], "reference surfaces have identical normalized numeric contents")
+            values = []
+            for reading in parsed:
+                integrals = {}
+                for side, curve in reading.items():
+                    require(all(math.isclose(curve[i][0], extent[j], rel_tol=0, abs_tol=1e-10) for i, j in ((0, 0), (-1, 1))), "reference contour coverage incomplete")
+                    integrals[side] = math.fsum((b[0] - a[0]) * (a[1] + b[1]) / 2 for a, b in zip(curve, curve[1:]))
+                value = (integrals["upper"] - integrals["lower"]) * scale
+                require(value > 0, "each reference element must be downforce-positive; surface swap refused")
+                values.append(value)
+            means.append(math.fsum(values) / 2)
+            uncertainties.append(abs(values[0] - values[1]))
+        return math.fsum(means), math.fsum(uncertainties)
+
+    single, _ = estimate_config(named["E1_sharp"], "E1_sharp")
+    double, uncertainty = estimate_config(named["E2_sharp"], "E2_sharp")
+    reference = {"delta_cl": finite(double - single), "digitizing_uncertainty": finite(uncertainty)}
+    require(reference["delta_cl"] != 0, "recomputed reference increment is zero")
+    for key, value in reference.items():
+        require(math.isclose(finite(rans["reference"].get(key)), value, rel_tol=1e-12, abs_tol=1e-12), "claimed summary differs from recomputed reference " + key)
+    return reference
+
+
+def tr00(rans, reference=None):
+    reference = reference or {key: rans["reference"][key] for key in ("delta_cl", "digitizing_uncertainty")}
+    ref = reference["delta_cl"]
+    sign_only = reference["digitizing_uncertainty"] > 0.05 * abs(ref)
+    result = {"cells": {}, "qualified_cells": [], "reference": reference}
     for cell in rans["cells"]:
         name = cell_id(cell)
         statuses = [r["status"][c] for r in cell["realisations"] for c in ("E1_sharp", "E2_sharp")]
@@ -377,9 +489,8 @@ def relative_w(base, candidate, readout):
         return None, None
     ratio = float((c - b).mean() / b.mean())
     influence = ((c - b) - ratio * b) / b.mean()
-    a = float(influence.var(ddof=1)) / p * (p - 1) / float(chi2.ppf(0.025, p - 1))
-    tail = 0.025 / (2 * p)
-    v = sum(batch_variance(cr, readout, "downforce", tail) + (1 + ratio) ** 2 * batch_variance(br, readout, "downforce", tail)
+    a = float(influence.var(ddof=1)) / p
+    v = sum(batch_variance(cr, readout, "downforce") + (1 + ratio) ** 2 * batch_variance(br, readout, "downforce")
             for br, cr in zip(base, candidate)) / (p * p * float(b.mean()) ** 2)
     return ratio, max(a, v)
 
@@ -414,48 +525,45 @@ def analyze_input(data):
     if not data["identity_valid"]:
         result["label"] = "INVALID"
         return result
+    require("reference_inputs" in data or "reference_estimate" not in data["rans"].get("provenance", {}),
+            "WP5 reference provenance requires frozen reference inputs; scalar-only API is synthetic only")
     result["rans_diagnostics"] = rans_diagnostics(data["rans"])
     result["thickening_alone"] = {cell_id(c): thickening_diagnostics(c) for c in data["rans"]["cells"]}
-    result["tr00"] = tr00(data["rans"])
+    reference = reference_from_records(data["rans"], data["reference_inputs"]) if "reference_inputs" in data else None
+    result["tr00"] = tr00(data["rans"], reference)
     qualified = [c for c in data["rans"]["cells"] if cell_id(c) in result["tr00"]["qualified_cells"]]
     if not qualified:
         result["label"] = "TR_UNQUALIFIED"
         return result
     required_w = [r for r in data["waterlily"] if r["height_mm"] == 100 and r["role"] in ("primary", "confirmation")]
-    statuses = [r["status"][c] for cell in qualified for r in cell["realisations"] for c in CONFIGS]
-    degenerate_main = any(result["rans_diagnostics"][cell_id(c)][config]["status"] == "DEGENERATE_REALISATIONS" for c in qualified for config in CONFIGS)
-    # A nonfinite run is a measured numerical failure even when it could not
-    # complete its window. Separate cap/incomplete records still outrank it.
-    statuses.extend("NUMERICAL" for r in data["waterlily"] if not r["finite"])
-    statuses.extend("NUMERICAL" if not r["ok"] else "SETTLED" for r in required_w if r["complete"])
-    statuses.extend("INCOMPLETE" for r in required_w if not r["complete"] and r["finite"])
-    if data["cap_hit"] or degenerate_main:
-        statuses.append("INCOMPLETE")
-    state = worst_cell_state(statuses)
-    if state != "SETTLED":
-        result["label"] = "INCOMPLETE" if state in ("INCOMPLETE", "MESH_FAILED") else "NUMERICAL"
+    # Aggregate each RANS arm's cell state before mapping to study labels.
+    # Within-cell INCOMPLETE has precedence, while an independent numerical
+    # cell/run outranks a cap at study level (registration Amendment 5).
+    states = [result["rans_diagnostics"][cell_id(c)][config]["status"] for c in qualified for config in CONFIGS]
+    numerical = (any(state in ("MESH_FAILED", "NUMERICAL") for state in states)
+                 or any(not row["finite"] for row in data["waterlily"])
+                 or any(row["complete"] and not row["ok"] for row in required_w))
+    incomplete = (data["cap_hit"] or any(state in ("INCOMPLETE", "DEGENERATE_REALISATIONS") for state in states)
+                  or any(not row["complete"] and row["finite"] for row in required_w))
+    if numerical or incomplete:
+        result["label"] = "NUMERICAL" if numerical else "INCOMPLETE"
         return result
     readout = data["controls"].get("primary_readout", "cur")
     groups = {re: select_runs(data, re, count=16, readout=readout)[0] for re in REYNOLDS}
     r_rank = {}
-    required_intervals = []
     for cell in qualified:
         name = cell_id(cell)
         result["rans"][name] = {f"{a}{b}": {q: rstat(rarrays(cell, f"E{b}", q) - rarrays(cell, f"E{a}", q)) for q in RESPONSES}
                                 for a, b in ((1, 2), (2, 3))}
         r_rank[name] = ranking({c: rarrays(cell, c, "downforce") for c in CONFIGS},
                                lambda a, b: rstat(rarrays(cell, b, "downforce") - rarrays(cell, a, "downforce")))
-        required_intervals.extend(result["rans"][name][c]["downforce"]["ci90"] for c in ("12", "23"))
         stat = result["rans"][name]["12"]["downforce"]
         result["controls"]["manipulation"]["R/" + name] = {"z": zvalue(stat["mean"], stat["se"]), "pass": abs(stat["mean"]) > 3 * stat["se"]}
-    rank_resolved = all(v[1] for v in r_rank.values())
     for re in REYNOLDS:
         w = groups[re]
         estimates = {f"{a}{b}": {q: wstat(w[f"E{a}"], w[f"E{b}"], readout, q) for q in RESPONSES} for a, b in ((1, 2), (2, 3))}
         result["waterlily"][str(re)] = estimates
-        required_intervals.extend(estimates[c]["downforce"]["ci90"] for c in ("12", "23"))
         order, resolved = ranking({c: [r["readouts"][readout]["downforce"] for r in w[c]] for c in CONFIGS}, lambda a, b: wstat(w[a], w[b], readout))
-        rank_resolved = rank_resolved and resolved
         wr, wv = relative_w(w["E1"], w["E2"], readout)
         agreement = {"SIGN_AGREE_12": True, "RANK_AGREE": True, "DRAG_SIGN_AGREE_12": True, "cells": {}}
         for cell in qualified:
@@ -470,6 +578,14 @@ def analyze_input(data):
             for key in ("SIGN_AGREE_12", "RANK_AGREE", "DRAG_SIGN_AGREE_12"):
                 agreement[key] = agreement[key] and record[key]
         result["agreement"][str(re)] = agreement
+        required = [estimates[c]["downforce"]["ci90"] for c in ("12", "23")]
+        required += [result["rans"][name][c]["downforce"]["ci90"] for name in result["rans"] for c in ("12", "23")]
+        if any(sign(interval) == 0 for interval in required):
+            agreement["state"] = "UNRESOLVED"
+        elif not agreement["SIGN_AGREE_12"] or any(order != rank[0] for rank in r_rank.values()):
+            agreement["state"] = "DISCORDANT"
+        else:
+            agreement["state"] = "CONCORDANT"
         stat = estimates["12"]["downforce"]
         result["controls"]["manipulation"][f"W/{re}"] = {"z": zvalue(stat["mean"], stat["se"]), "pass": abs(stat["mean"]) > 3 * stat["se"]}
         result["controls"]["readout"][str(re)] = {}
@@ -508,17 +624,14 @@ def analyze_input(data):
         difference = abs(ds["mean"] - ns["mean"])
         pooled = math.hypot(ds["se"], ns["se"])
         result["controls"]["domain"] = {"status": "DOMAIN_SENSITIVE" if difference > 3 * pooled else "CONSISTENT", "z": zvalue(difference, pooled)}
-    unresolved = not rank_resolved or any(sign(interval) == 0 for interval in required_intervals) or not all(r["pass"] for r in result["controls"]["manipulation"].values())
-    agreement = [result["agreement"][str(re)] for re in REYNOLDS]
+    states = [result["agreement"][str(re)]["state"] for re in REYNOLDS]
     if resolution_limited:
         label = "RESOLUTION_LIMITED"
-    elif unresolved:
+    elif "UNRESOLVED" in states or not all(r["pass"] for r in result["controls"]["manipulation"].values()):
         label = "UNRESOLVED"
-    elif (not any(r["SIGN_AGREE_12"] for r in agreement)) or not all(r["RANK_AGREE"] for r in agreement):
+    elif states == ["DISCORDANT", "DISCORDANT"]:
         label = "DISCORDANT"
-    elif (all(r["SIGN_AGREE_12"] for r in agreement) and not all(r["RANK_AGREE"] for r in agreement)) or (sum(r["SIGN_AGREE_12"] for r in agreement) == 1):
-        # Literal rev-0 precedence makes this branch unreachable for consistent
-        # fully resolved raw data. Retain the policy rather than inventing one.
+    elif "DISCORDANT" in states:
         label = "CONCORDANT_PARTIAL"
     else:
         label = "CONCORDANT"
@@ -541,24 +654,28 @@ def load_json(path):
 
 def write_analysis(out, record):
     out = Path(out)
-    targets = (out / "analysis.json", out / "analysis.md")
+    targets = tuple(out / name for name in ("analysis.json", "analysis.md", "tr00.json", "SHA256SUMS"))
     for path in targets:
         if path.exists():
             raise FileExistsError(f"written-once analysis exists: {path}")
     payload = json.dumps(record, indent=2, sort_keys=True, allow_nan=False) + "\n"
     result = record.get("result", {})
     markdown = summary_markdown(record)
+    tr_payload = json.dumps(result["tr00"], indent=2, sort_keys=True, allow_nan=False) + "\n"
+    contents = [payload, markdown, tr_payload]
+    contents.append("".join(hashlib.sha256(content.encode("utf-8")).hexdigest() + "  " + path.name + "\n"
+                            for path, content in zip(targets, contents)))
     out.mkdir(parents=True, exist_ok=True)
     created = []
     try:
-        # Reserve both paths before writing either: no silent overwrite even
+        # Reserve every path before writing any: no silent overwrite even
         # under concurrent invocations. Roll back our own incomplete reservations.
         handles = []
         try:
             for path in targets:
-                handles.append(path.open("x"))
+                handles.append(path.open("x", encoding="utf-8"))
                 created.append(path)
-            for handle, content in zip(handles, (payload, markdown)):
+            for handle, content in zip(handles, contents):
                 handle.write(content)
                 handle.flush()
                 os.fsync(handle.fileno())
@@ -581,11 +698,11 @@ def summary_markdown(record):
     for name, cell in result.get("tr00", {}).get("cells", {}).items():
         stat = cell["delta"]
         text += f"| {name} | {cell['label']} | {stat['mean'] if stat else 'N/A'} | {stat['ci90'] if stat else 'N/A'} | {cell['ratio_ci90']} |\n"
-    text += "\n## WaterLily paired estimates\n\n| Re | contrast | response | mean | sigma A | sigma B | sigma upper | 90% interval |\n| --- | --- | --- | ---: | ---: | ---: | ---: | --- |\n"
+    text += "\n## WaterLily paired estimates\n\n| Re | contrast | response | mean | sigma A | sigma B | sigma | 90% interval |\n| --- | --- | --- | ---: | ---: | ---: | ---: | --- |\n"
     for reynolds, contrasts in result.get("waterlily", {}).items():
         for contrast, responses in contrasts.items():
             for response, stat in responses.items():
-                text += f"| {reynolds} | {contrast} | {response} | {stat['mean']:.10g} | {stat['sigma_a']:.8g} | {stat['sigma_b']:.8g} | {stat['sigma_upper']:.8g} | {stat['ci90']} |\n"
+                text += f"| {reynolds} | {contrast} | {response} | {stat['mean']:.10g} | {stat['sigma_a']:.8g} | {stat['sigma_b']:.8g} | {stat['sigma']:.8g} | {stat['ci90']} |\n"
     text += "\n## Qualified RANS cells and worst-case interval envelope\n\n| model/family | contrast | response | mean | 90% interval |\n| --- | --- | --- | ---: | --- |\n"
     for name, contrasts in result.get("rans", {}).items():
         for contrast, responses in contrasts.items():
@@ -647,6 +764,15 @@ def load_formal_inputs(table_paths, rans_path, freeze_path):
     geometry = freeze.get("geometry_sha256")
     require(isinstance(geometry, dict) and set(geometry) == set(RCONFIGS) and all(is_sha(h) for h in geometry.values()), "study freeze must bind all five main/sharp geometry JSON hashes")
     require(set(geometry.values()) <= set(bound.values()), "frozen geometry artifacts missing from input inventory")
+    from cfd_harness.scene_campaign import require_verified_geometry
+    for config, digest in geometry.items():
+        files = sorted(path for path, actual in bound.items() if actual == digest and Path(path).suffix == ".json")
+        require(files, "frozen geometry JSON missing for " + config)
+        scene = load_json(files[0])
+        require(isinstance(scene, dict) and scene.get("schema") == "topo2d-scene-v1", "frozen geometry must be a scene JSON")
+        # Sharp RANS arms are absent from the W campaign, so the study freeze
+        # must enforce source verification here as well as at W admission.
+        require_verified_geometry(scene)
     rans = load_json(rans_path)
     reference_source = rans.get("reference", {}).get("source")
     require(isinstance(reference_source, dict) and reference_source.get("observable") == "centre-section pressure-integrated Cl", "formal TR-00 needs centre-section pressure-integrated reference provenance")
@@ -663,7 +789,12 @@ def load_formal_inputs(table_paths, rans_path, freeze_path):
             identities_valid = False
             errors.append("TR-00 digitization SHA differs from frozen input: " + path)
     require(len(set(digitization_paths)) == len(digitization_paths), "TR-00 digitization records must be distinct artifacts")
-    require(len({d["sha256"] for d in digitizations}) == len(digitizations), "TR-00 digitization records must have distinct content SHA-256")
+    estimate = rans.get("provenance", {}).get("reference_estimate", {})
+    require(isinstance(estimate, dict) and isinstance(estimate.get("manifest"), dict), "formal TR-00 reference manifest missing")
+    manifest = estimate["manifest"].get("path")
+    require(isinstance(manifest, str) and Path(manifest).is_absolute() and manifest in digitization_paths, "formal reference manifest must be a frozen digitization record")
+    reference_inputs = {"manifest": manifest, "sha256": {p: bound[p] for p in digitization_paths}}
+    reference_from_records(rans, reference_inputs)
     require(isinstance(rans.get("provenance"), dict) and isinstance(rans["provenance"].get("geometry_sha256"), dict), "formal RANS results need geometry provenance")
     if "component_by_config" in rans["provenance"]:
         components = {config: "pressure_only" if config.endswith("_sharp") else "pressure_plus_viscous" for config in RCONFIGS}
@@ -739,7 +870,8 @@ def load_formal_inputs(table_paths, rans_path, freeze_path):
                                    "scene_sha256": row["scene_sha256"], "readouts": row["readouts"],
                                    **({"force_csv_sha256": row["forces_csv_sha256"]} if "forces_csv_sha256" in row else {})})
     data = {"schema": "topo2d00-input-v1", "identity_valid": identities_valid, "cap_hit": cap_hit,
-            "waterlily": normalized, "rans": rans, "controls": {"primary_readout": freeze["primary_readout"]}}
+            "waterlily": normalized, "rans": rans, "controls": {"primary_readout": freeze["primary_readout"]},
+            "reference_inputs": reference_inputs}
     provenance = {"source_commit": freeze["source_commit"], "freeze_sha256": sha256(freeze_path),
                   "input_sha256": {path: sha256(path) for path in sorted(bound)}, "identity_errors": errors,
                   "sources": freeze["sources"], "numerical_failures": numerical_failures, "skipped_numerical": skipped_numerical,
@@ -749,7 +881,7 @@ def load_formal_inputs(table_paths, rans_path, freeze_path):
 
 
 def run_analysis(table_paths, rans_path, freeze_path, out):
-    for name in ("analysis.json", "analysis.md"):
+    for name in ("analysis.json", "analysis.md", "tr00.json", "SHA256SUMS"):
         if (Path(out) / name).exists():
             raise FileExistsError(f"written-once analysis exists: {Path(out) / name}")
     data, provenance = load_formal_inputs(table_paths, rans_path, freeze_path)

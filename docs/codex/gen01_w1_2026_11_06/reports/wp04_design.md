@@ -1,5 +1,57 @@
 # WP4 設計メモ
 
+## Amendment 5 対応設計（attempt 4、2026-11-07）
+
+基点 `db36e4e5`（WP1／WP3 統合済み）、開始差分は空。今回の authority は
+follow-ups worktree の登録 Amendment 1–5 と `wp04_review_1_opus.md`。
+登録本文、roadmap、旧 evidence、凍結 source、Julia Project／Manifest は変更しない。
+commit／push／PR 更新は Claude host が担当する。今回の記録は
+`reports/wp04_validation_amend5/` に追加し、過去の実行記録は保存する。
+
+- Julia: 静的 scene の `sim_step!` を `remeasure=false` とし fingerprint に束縛。
+  CPU で remeasure=true との場・力・窓の bit 一致、branch 内 WP1 Checkpoint の再開、
+  Tuple union の isbitstype、Δt collapse の NUMERICAL 経路を検査する。
+  WP2 Force00 が無ければ cur のみ。外部 worktree を指す環境変数は使わない。
+- analyzer／独立 checker: 各 Re の Δ12／Δ23 の必要区間から三状態を判定して合成する。
+  σ_d=max(A,B) は点推定、90% t 区間は df=P−1。cell severity と研究ラベルの順を分離。
+  freeze に束縛された digitisation の数値内容から TR 参照増分・保守的不確かさを再計算し、
+  数値内容が同一の二読取は拒否。written-once の `tr00.json` と `SHA256SUMS` を追加する。
+- campaign: 既存3 kernel に Re 別 E1／主格子／phase0／520 c1/U の pre-run state を追加。
+  `prerun_window.py` は実時系列の endpoint-clipped time-weighted block mean から
+  B／S0／W を求め、単位・式・series SHA を持つ record を1回だけ書く。formal は
+  record と raw series の再計算・SHA を要求し、手入力の統計値は拒否する。
+  B の100 c1/U block の位置と SE の定義はデータを見る前に実装・テストで明示する。
+  環境は TOPO2D_*／W4_*／CUDA_* を除去した後、campaign の明示設定だけを適用する。
+  freeze admission は UNVERIFIED_OCR source を拒否し、numerical stop は
+  (configuration, Re, height, role) ごととする。
+- 幾何: 形と sampling 規則は変更せず、E3 半フラップの鼻の薄さを再計算して metadata に
+  記録する。scene JSON の `polygon_mm` は終点を重複しない順序付き頂点列で、閉辺は暗黙、
+  重複拒否を schema と docstring に明記する。全10 scene を再出力して座標不変を検査し、
+  campaign SHA と図を追従させる。
+
+分担: Julia worker／解析 worker／campaign worker は別ファイルを所有し、parent は幾何・
+schema・scene／図・統合レビュー・全体検証と報告を担当。OpenCode Go MCP は未提供。
+CLI は通常の log 書込みで sandbox エラー、隔離 XDG では `Provider not found: opencode-go`。
+追加課金・global 設定変更なしで native worker へ fallback した。
+
+検証は欠陥の targeted regression → `pytest tests/topo2d00` → CPU selftest → compileall →
+`.venv/bin/python -m pytest --ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider`。
+指定 base は host `e3dcdf61` の3482 passed／74 skipped／0 failed、失敗 node 集合=[]。
+結果側だけを実行して失敗 node 集合を比較し、実行環境・command・SHA を記録する。
+GPU 実行・freeze・本測定は行わず、後日の GPU smoke 条件は report に残す。
+
+今回の実装上の明文化（データ取得前）: burn 候補の100 c1/U block は開始0／100／200／300、
+候補を除く後続の完全100 block の平均±標本SD/√個数を SE 範囲とする。後続は2個以上、
+端点を bracket できない候補は外挿せず skip、B=max(80, 最初の合格blockの開始)。
+S0 は B 以後の完全な5／10／20／40／80 block ごとの length×標本分散に対する片側90%の
+χ²上限の最大（Bonferroniなし）。これらは工程パラメータの再現可能な離散化であり、
+paired σ_d の点推定規則とは別である。formal の手入力 freeze.windows は拒否する。
+親 pre-run を `--prerun` で先に選択し [80,520] を保存、正式集合は親を除くので循環しない。
+Re ごとの UNRESOLVED は Amendment 5 の列挙どおり Δ12／Δ23 の区間に適用し、
+それ以外の並べ替え順位の隣接区間（例:E1↔E3）の resolution は記述として保持する。
+E3 の鼻は登録の概数12.9%／6.9%を別項目に保持し、独立に定義した弦方向射影における
+paired normal width の最初の線形補間crossingも記録する（概数を厳密再計算値とは呼ばない）。
+
 ## Amendment 3 対応設計（attempt 3、2026-11-07）
 
 基点 `ba3164c7`、開始差分なし。README と AGENTS が要求する governing 文書は

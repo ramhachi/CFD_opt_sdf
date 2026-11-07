@@ -1,0 +1,45 @@
+{
+  "campaign_sha256": "439b638e0e2a6e95ce315ebe89049ed4739262be597300ec3014d85a0347c0a9",
+  "evidence_class": "draft schema, geometry and state identity only; no launch or freeze",
+  "has_derived_window_records": false,
+  "kernels": {
+    "confirmation": {
+      "flow_dims": [
+        1260,
+        1232
+      ],
+      "prerun_states": 0,
+      "reynolds": 3000.0,
+      "states": 8
+    },
+    "re1000": {
+      "flow_dims": [
+        840,
+        824
+      ],
+      "prerun_states": 1,
+      "reynolds": 1000.0,
+      "states": 57
+    },
+    "re3000": {
+      "flow_dims": [
+        840,
+        824
+      ],
+      "prerun_states": 1,
+      "reynolds": 3000.0,
+      "states": 62
+    }
+  },
+  "regenerated_campaign_content_equal": true,
+  "roles": {
+    "confirmation": 8,
+    "determinism": 1,
+    "domain": 4,
+    "prerun": 2,
+    "primary": 96,
+    "secondary": 16
+  },
+  "schema": "topo2d-draft-campaign-validation-v1",
+  "state_count": 127
+}
