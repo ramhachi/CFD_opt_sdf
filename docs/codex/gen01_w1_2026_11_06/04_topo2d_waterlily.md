@@ -79,3 +79,21 @@ Zhang & Zerihan（2003）の 2 要素の地面効果翼から 1／2／3 要素�
 1. **`CONCORDANT_PARTIAL`**：登録 Amendment 4 §2 のとおり、優先順位はそのまま（UNRESOLVED が先）。到達するのは「片方の Re で SIGN_AGREE_12 が真、もう片方では両側 resolved で符号が逆、RANK_AGREE は両側 resolved の範囲で真」のケース。WP4 が提案した「片方未解決なら PARTIAL」は採らない。analyzer と checker にこの正確なケースの到達性テストを足す（判定コードの変更が不要ならテストだけ）。
 2. **多角形の表現**：登録 Amendment 4 §1（終点を重複しない開いた頂点列、閉じる辺は暗黙、重複は拒否）を JSON schema と docstring に明記する。
 3. 全体 pytest は不要（テストと docstring だけ）。commit は Claude が host で行う。
+
+## Amendment 5（2026-11-07。3 回目（PR #89、`fae6c0a8`）への Opus source review の回答。Amendment 4 の `CONCORDANT_PARTIAL` 項は撤回し、登録 Amendment 5 に従う。この節が本文と Amendment 1〜4 より優先する）
+
+review 全文：`/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/codex/gen01_w1_2026_11_06/reviews/wp04_review_1_opus.md`。登録の判断は同じ worktree の `docs/topo2d00_registration_2026_11_01.md` **Amendment 5**（読む）。verdict は INTEGRATE_AFTER_FIXES。
+
+1. **M1。** `sim_step!(sim; remeasure=false)` に変更し、CPU で remeasure=true との bit 一致テストを足す。fingerprint の項目を更新。
+2. **m2。** runner の環境を scrub（`TOPO2D_*`、`W4_*`、`CUDA_*` を落としてから campaign の `job_env_common`／`job_env_keys`／`scrub_env` を適用）。smoke で `TOPO2D_DIMS` が格子を変えないテスト。
+3. **m4。** worktree は統合 branch（WP1 の `gen01/Checkpoint.jl`、WP3）と merge 済み。自己テストは **branch 内の** `gen01/Checkpoint.jl` を使い、環境変数なしで WP1 の経路を含めて走らせる（WP2 の `Force00.jl` は未統合なので、無ければ cur のみの経路で、記録にその旨を書く）。記録するコマンドに環境を含める。
+4. **B1。** 登録 Amendment 5 §1 の per-Re 規則（UNRESOLVED／DISCORDANT／CONCORDANT を Re ごとに判定し、両方 concordant → CONCORDANT、片方 concordant 片方 discordant → CONCORDANT_PARTIAL、両方 discordant → DISCORDANT、どちらか unresolved → UNRESOLVED）を analyzer と checker に実装し、review の反例 (c) が `CONCORDANT_PARTIAL` になる到達性テストと、8 ラベル全部の到達性テストを更新する。
+5. **M3。** σ_d を点推定（A と B の大きい方）に戻し、区間は自由度 P−1 の 90 % t。上側信頼限界と Bonferroni の分割を外す。DOMAIN control（P=2）が無力でないことをテストで示す。
+6. **M2。** 親 pre-run：campaign に Re ごとの E1 pre-run state（主格子、phase 0、520 c₁/U）を足し、`scripts/topo2d00/prerun_window.py` が登録 Amendment 5 §4 の burn-in／S0／W を計算して `docs/harness/topo2d00_window_re<Re>.json` を 1 回だけ書く（単位を明記）。formal campaign はこの記録（hash 束縛）から W と B を読み、手入力の `formal_context` は拒否する。合成時系列（既知の S0）でテスト。
+7. **m1。** 研究ラベルへの写像（登録 Amendment 5 §2）：cell INCOMPLETE → INCOMPLETE、MESH_FAILED／NUMERICAL → NUMERICAL、研究レベルでは §5 の順（NUMERICAL が INCOMPLETE より先）。
+8. **m3。** E3 の半フラップの鼻（t_max < t_min）の数値を報告と scene の metadata に書く（幾何は変えない）。
+9. **m5／m6／m7／m8／NOTE 3。** `tr00.json` と `SHA256SUMS` を書く；freeze 経路は `UNVERIFIED_OCR` を拒否；TR-00 参照増分と不確かさは凍結 digitisation 記録から再計算（内容レベルの相違検査）；Δt 崩壊は NUMERICAL；numerical stop の key に height と role を含める。
+10. **m9。** tuple union の `isbitstype` を CPU 側で検査するテスト。
+11. **多角形の表現**（Amendment 4 §2 のまま）：schema と docstring に明記。
+12. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。
+13. **commit／push は Claude が host で行う。** 報告に commit すべきファイルの一覧を書く。GPU smoke は user の機材で後で行う（review の条件を報告の runbook に書く）。
