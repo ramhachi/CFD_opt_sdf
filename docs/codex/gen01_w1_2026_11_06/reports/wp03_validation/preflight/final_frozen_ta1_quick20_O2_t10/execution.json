@@ -1,0 +1,20 @@
+{
+  "name": "final_frozen_ta1_quick20_O2_t10",
+  "command": [
+    "julia",
+    "-O2",
+    "-t",
+    "10",
+    "--project=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/julia/CFDSDFWaterLily",
+    "/tmp/grad00-validation/ta1_reference_capture.jl"
+  ],
+  "env": {
+    "G2_BACKEND": "cpu",
+    "G2_DRYRUN_T_END": "0.4",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "source_sha256": "f7c5e353b69e0238093f42f847e6d3e62156d012ec12af7066140edbf2ab177e",
+  "exit_code": 0,
+  "wall_s": 90.06402058399999
+}

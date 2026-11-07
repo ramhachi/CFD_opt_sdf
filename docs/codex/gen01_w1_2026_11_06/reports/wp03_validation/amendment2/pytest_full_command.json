@@ -1,0 +1,40 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "--ignore=tests/test_lbm_metal.py",
+    "-q",
+    "-rf",
+    "-p",
+    "no:cacheprovider",
+    "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/pytest_full.xml"
+  ],
+  "timeout_s": null,
+  "baseline_rerun": false,
+  "source_sha256_before": {
+    "scripts/analyze_grad00.py": "992c7073834104964ae35f1dd0aca84b97376e01f9c4fccd907a86e4c0ffee1a",
+    "scripts/build_grad00_kernels.py": "fff40ee0b881bbc4ecf005c033fd4ae902a5d85f6c4b95f0153d024dce2f933f",
+    "scripts/waterlily_grad00_lambda_2026_11.jl": "b7b305b83223a45da32db550f6da6cfd4a7f48450d80e3b73cebd10443e65437",
+    "scripts/vanleer_safe.jl": "2a964c56415c32ad6bf58c739fdcc3ec5cd4c5490b77f73749858ae2b86ab56b",
+    "scripts/grad00_selftest.jl": "05228976561157f53a800fca50b0b2952f38cd897b5d2ce11500f16585c7066d",
+    "tests/test_grad00.py": "8063f9f4f3bd2bc5786c2bb843c6e231681a065a215c19bcf5615258cd2a24b0",
+    "tests/test_grad00_reference.py": "73bbe328e26e4b7c5d656f6a6fa1f366a955995faf3c4b9ba7510899ed8b7b82",
+    "tests/test_grad00_kernels.py": "950bc63c5d9d0823593c69fd60e996d8ad10903aeb2860982297e4587ea2e21a",
+    "tests/test_grad00_cpu.py": "b84d8701a2fbcfb8125a7e7a41576a11709fe0795997d0e9606697e2f5b415ac"
+  },
+  "exit_code": 0,
+  "wall_seconds": 1429.4910292089917,
+  "source_sha256_after": {
+    "scripts/analyze_grad00.py": "992c7073834104964ae35f1dd0aca84b97376e01f9c4fccd907a86e4c0ffee1a",
+    "scripts/build_grad00_kernels.py": "fff40ee0b881bbc4ecf005c033fd4ae902a5d85f6c4b95f0153d024dce2f933f",
+    "scripts/waterlily_grad00_lambda_2026_11.jl": "b7b305b83223a45da32db550f6da6cfd4a7f48450d80e3b73cebd10443e65437",
+    "scripts/vanleer_safe.jl": "2a964c56415c32ad6bf58c739fdcc3ec5cd4c5490b77f73749858ae2b86ab56b",
+    "scripts/grad00_selftest.jl": "05228976561157f53a800fca50b0b2952f38cd897b5d2ce11500f16585c7066d",
+    "tests/test_grad00.py": "8063f9f4f3bd2bc5786c2bb843c6e231681a065a215c19bcf5615258cd2a24b0",
+    "tests/test_grad00_reference.py": "73bbe328e26e4b7c5d656f6a6fa1f366a955995faf3c4b9ba7510899ed8b7b82",
+    "tests/test_grad00_kernels.py": "950bc63c5d9d0823593c69fd60e996d8ad10903aeb2860982297e4587ea2e21a",
+    "tests/test_grad00_cpu.py": "b84d8701a2fbcfb8125a7e7a41576a11709fe0795997d0e9606697e2f5b415ac"
+  },
+  "sources_unchanged_during_run": true
+}

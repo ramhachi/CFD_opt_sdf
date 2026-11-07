@@ -1,0 +1,35 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_local_gpu.py",
+    "tests/test_local_gpu_backend.py",
+    "tests/test_local_gpu_gate.py",
+    "tests/test_local_gpu_julia.py",
+    "tests/test_harness_registered_reverify.py",
+    "-p",
+    "no:cacheprovider",
+    "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.xml"
+  ],
+  "complete": true,
+  "counts": {
+    "errors": 0,
+    "failures": 0,
+    "passed": 169,
+    "skipped": 0,
+    "tests": 169
+  },
+  "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu",
+  "failed_nodes": [],
+  "finished_utc": "2026-11-06T09:00:04.849452+00:00",
+  "junit_path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.xml",
+  "junit_sha256": "cef334789d65a2ffb3e57eb5507c01989209e8cb398a6a9ea0e45c034c182a33",
+  "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.txt",
+  "log_sha256": "8fe398814bc67b8818145cc78230570b35a80c2cadeb21a84109f6f846e528e4",
+  "returncode": 0,
+  "started_utc": "2026-11-06T08:58:16.767669+00:00",
+  "summary": ".........................                                                [100%]\n169 passed in 107.35s (0:01:47)",
+  "wall_seconds": 108.08182825008407
+}

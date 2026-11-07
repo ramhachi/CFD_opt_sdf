@@ -1,0 +1,24 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_grad00_kernels.py",
+    "tests/test_grad00_cpu.py",
+    "--junitxml=/tmp/grad00-pytest/grad00_transport.xml"
+  ],
+  "cwd": "/tmp/grad00-publication",
+  "head": "9aedf41d0bf705848a5bd8511cffecb1073b9f84",
+  "exit_code": 0,
+  "wall_s": 2.324016834027134,
+  "log_sha256": "9a532610e63be4c001a874cb9b0afa9b25b03ab24caf89af28a9ea978caa6b85",
+  "evidence_class": "synthetic_transport_and_cpu_routing_tests",
+  "source_sha256": {
+    "scripts/analyze_grad00.py": "d5b59d28ff3edb96d98bacf74392a5e8270303a8aac90248572d407329777858",
+    "scripts/build_grad00_kernels.py": "36234b51222b7a60bfd1bb9ef31d526668761e29e171d4517982d12bd794875e",
+    "scripts/run_grad00_cpu.py": "7f46a415d3477a7abcb7f455d6bf8d9fa6d4d05381554eadd11bc0ad1299e0ec",
+    "tests/test_grad00_cpu.py": "b84d8701a2fbcfb8125a7e7a41576a11709fe0795997d0e9606697e2f5b415ac",
+    "tests/test_grad00_kernels.py": "50bdcdc9b95e4b3209f6e9b048ec4561ffb3b9e24f02a666a7fe3897da05854a"
+  }
+}

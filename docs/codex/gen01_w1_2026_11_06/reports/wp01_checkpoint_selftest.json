@@ -1,0 +1,29 @@
+{
+  "checkpoint_sha256": "1ff34a9f718d7332a6a6ab7cb1dc766920746a7237f130d19ea1dcc52dc7d224",
+  "checkpoint_source_sha256": "21d7c9a2ca2c27bbfbecc6ed579417acde0c4dc1ca270c9ee3d5c1da64e13076",
+  "checkpoint_step": 50,
+  "class": "BITWISE",
+  "evidence_class": "CPU_CHECKPOINT_SELFTEST",
+  "flow_dims": [
+    64,
+    32
+  ],
+  "julia_executable_sha256": "9ad38bea81ecace044a4bdef2a0246dee94cb8a44c9420809cc00f9872651c64",
+  "julia_threads": 1,
+  "julia_version": "1.12.6",
+  "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+  "maximum_relative_difference": 0.0,
+  "resumed_window_means": [
+    2.9167655424387706,
+    -3.003170726879792e-05
+  ],
+  "selftest_source_sha256": "55a9f802d7ce2574076fb1ff6165b10bdb669f6a3110b21f49b7446b8ccaad6c",
+  "status": "PASS",
+  "steps": 100,
+  "wall_seconds": 42.016518115997314,
+  "waterlily_version": "1.8.0",
+  "window_means": [
+    2.9167655424387706,
+    -3.003170726879792e-05
+  ]
+}

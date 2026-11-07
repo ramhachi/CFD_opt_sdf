@@ -1,0 +1,44 @@
+{
+  "evidence_class": "local_render_code_path",
+  "kernels": [
+    {
+      "arm": "quick",
+      "source_commit": "282ffc51ee44424038e2a2d8d50a97fe5e37b9d4",
+      "source_tree_id": "dd95797f6210d04c32369df33a81e86e84c2c631",
+      "runner_sha256": "249dc751d8b91858a046ec131699a348de42a4c482432022d373250088569316",
+      "reference": "UNCONFIGURED",
+      "timeout_s": 10800,
+      "pin_count": 19
+    },
+    {
+      "arm": "quick_nobound",
+      "source_commit": "282ffc51ee44424038e2a2d8d50a97fe5e37b9d4",
+      "source_tree_id": "dd95797f6210d04c32369df33a81e86e84c2c631",
+      "runner_sha256": "fe993f1d969765fc635c8ec8e90c81dc89db10cdb66621338945fe601820d368",
+      "reference": "UNCONFIGURED",
+      "timeout_s": 10800,
+      "pin_count": 19
+    },
+    {
+      "arm": "cds",
+      "source_commit": "282ffc51ee44424038e2a2d8d50a97fe5e37b9d4",
+      "source_tree_id": "dd95797f6210d04c32369df33a81e86e84c2c631",
+      "runner_sha256": "c01f59ec84bd67d44c91dde99e4511f821f8518ba9a9b3062c0297fc8e9a15d1",
+      "reference": "UNCONFIGURED",
+      "timeout_s": 10800,
+      "pin_count": 19
+    },
+    {
+      "arm": "vanLeer",
+      "source_commit": "282ffc51ee44424038e2a2d8d50a97fe5e37b9d4",
+      "source_tree_id": "dd95797f6210d04c32369df33a81e86e84c2c631",
+      "runner_sha256": "b26bccfc316e69b2c0bea8962cb2f21966fa0d54ab8c19e11f988cc2fc8861f8",
+      "reference": "UNCONFIGURED",
+      "timeout_s": 10800,
+      "pin_count": 19
+    }
+  ],
+  "all_file_pins_match_committed_and_working_bytes": true,
+  "kaggle_push": false,
+  "measurement_started": false
+}

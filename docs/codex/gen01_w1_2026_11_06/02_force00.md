@@ -38,6 +38,16 @@ WaterLily 1.8.0 の `pressure_force`（`∮ p n ds` を `nds = n·kern(clamp(d,�
 - `waterlily_force00_job.jl` の R_cur 列が既存 job と同じ定義であることを、CPU の小さい格子（flow_16 相当、短い窓）で既存 job と並べて確認する（両方を同じ入力で走らせ、`cur` 列が byte 同一）。
 - `pytest -q tests/test_force00_gate.py` が通り、全体の失敗集合が base と同一。
 
+## Amendment 1（2026-11-06。1 回目の試み（Draft PR #84、`21d1e8e7`）が「配置の決定待ち」で止まった点への回答。この節が上の本文より優先する）
+
+1. **配置は A。** 新しい読み出しは **新規ファイル `julia/CFDSDFWaterLily/src/Force00.jl`** に置き、`Forces.jl` は **1 byte も変えない**（W2a の manifest が `Forces.jl` 全体を SHA で固定しているため。`test_candidate_c_w2a_source_manifest_and_criteria_hashes_resolve` が通ること）。用意済みの `reports/wp02_preserve_pins.proposed.diff` を適用し、`CFDSDFWaterLily.jl` への `include` の追加が他の pin（conftest の `_PINNED_SOURCE_*`、各 freeze の source SHA）を壊さないことを、全体 pytest の失敗集合が base と同一であることで示す。もし `CFDSDFWaterLily.jl` 自体が pin されていて `include` を足せないなら、`Force00.jl` を job 側から `Base.include` する（`quick_tie.jl` と同じ流儀）。
+2. 「Julia 自己テストは数秒」は cold start の JIT を除いた話でよい。69〜161 秒は許容。報告にそう書く。
+3. C4 は 15 %（本文の値）を採用し、10 % は診断値として報告する（既に実装済み。そのまま）。C5 で `camber_m19.7` の UNC-01 σ_d が登録 evidence に無い場合は `INCOMPLETE`（既に実装済み。そのまま）。
+4. **道具の注意。** 今回の sandbox では共有の Git dir（`/Users/sota/projects/FomulaTMU/CFD2026_09/.git`）に書き込めるので、この worktree の branch `feat/gen01-w1-02-force00` で直接 commit・push する（一時 checkout は使わない）。worktree は remote の `21d1e8e7` に同期済み。1 回目の記録 `reports/wp02_design.md`・`wp02_report.md` はそのまま更新してよい（`wp02_preserve_pins.proposed.diff` は適用後に削除）。PR は既存の Draft PR #84 を `gh pr edit` で更新し、受け入れ条件を満たしたら `gh pr ready` にする（新しい PR は作らない）。
+5. 全体 pytest の base の失敗集合は、開始 commit（`e3dcdf61`）を `git worktree add --detach` した別ディレクトリで **完走**させて取る（中断した記録は base にならない）。実装後も完走させ、両者の失敗 ID 集合を報告に載せる。
+
+これで決定待ちは解消したので、今回は BLOCKED にせず完了して PR を ready にすること。
+
 ## 注意
 
 - `nds` の符号と向き（外向き法線、物体が流体に及ぼす力の符号）は `Forces.jl` の docstring の約束に合わせる。

@@ -1,0 +1,72 @@
+--- a/scripts/waterlily_lowdim02_flow32_job.jl
++++ b/scripts/waterlily_local_gpu_job.jl
+@@ -7,6 +7,9 @@
+ 
+ include(joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "CFDSDFWaterLily.jl"))
+ using .CFDSDFWaterLily
++Base.include(CFDSDFWaterLily,
++    joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "gen01", "Checkpoint.jl"))
++using .CFDSDFWaterLily.Checkpoint
+ using .CFDSDFWaterLily.GridSDFBody
+ using WaterLily
+ include(joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "OwnedV16Run.jl"))
+@@ -27,7 +30,7 @@
+ using .CFDSDFWaterLily.DeviceGridSDF
+ using .CFDSDFWaterLily.V16W4Sensitivity
+ 
+-length(ARGS) == 2 || error("usage: waterlily_lowdim02_flow32_job.jl <phi_fortran.raw> <output_dir>")
++length(ARGS) == 2 || error("usage: waterlily_local_gpu_job.jl <phi_fortran.raw> <output_dir>")
+ phi_raw_path, output_dir = ARGS
+ 
+ env_tuple(name, ::Type{T}, fallback) where {T} =
+@@ -146,11 +149,35 @@
+     warm_started = time()
+     println("W4_SOLVER_STEP_INVOKED ", case.case_id)
+     flush(stdout)
+-    sim_step!(sim) # compile this grid's GPU path; excluded from case solve timing
++    checkpoint_every = parse(Int, get(ENV, "LOCAL_GPU_CHECKPOINT_EVERY", "0"))
++    checkpoint_every >= 0 || error("LOCAL_GPU_CHECKPOINT_EVERY must be non-negative")
++    checkpoint_path = get(ENV, "LOCAL_GPU_CHECKPOINT_PATH",
++        joinpath(output_dir, case.case_id * ".checkpoint.bin"))
++    resume_path = get(ENV, "LOCAL_GPU_RESUME_PATH", "")
++    # Bind restart to this job, canonical phi, placement, case and sample contract.
++    checkpoint_identity = bytes2hex(sha256(string((
++        bytes2hex(sha256(read(@__FILE__))), EXPECTED_STATE_SHA256, phi_f_sha,
++        EXPECTED_STATE_NPZ_SHA256, phi_c_sha, EXPECTED_SOURCE_STL_SHA256,
++        CANONICAL_STATE_LABEL, CANONICAL_ORIGIN_M, CANONICAL_DESIGN_SPACING_M,
++        CANONICAL_POINT_SHAPE, CANONICAL_CELL_SHAPE, REQUIRED_MARGIN_M,
++        EXPECTED_MARGIN_M, MARGIN_TOL_M, case, T_END, BURN_IN, SAMPLE_EVERY))))
++    if isempty(resume_path)
++        sim_step!(sim) # compile this grid's GPU path; excluded from case solve timing
++        step = 1
++    else
++        checkpoint = load_checkpoint(resume_path)
++        restore_checkpoint!(sim, checkpoint; identity=checkpoint_identity)
++        step, history = checkpoint.step, checkpoint.rows
++        loaded_sha = bytes2hex(sha256(read(resume_path)))
++        write(joinpath(output_dir, "local_gpu_resume.json"),
++            "{\"schema_version\":1,\"resumed\":true,\"checkpoint_sha256\":\"$loaded_sha\"," *
++            "\"checkpoint_step\":$step,\"checkpoint_time_t_u_l\":$(Float64(checkpoint.sim_time))," *
++            "\"identity\":\"$checkpoint_identity\"}\n")
++        println("LOCAL_GPU_CHECKPOINT_RESUMED step=", step, " sha256=", loaded_sha)
++    end
+     println("W4_SOLVER_STEP_RETURNED ", case.case_id)
+     flush(stdout)
+     first_step_seconds = time() - warm_started
+-    step = 1
+     peak_vram = CUDA.used_memory()
+     started = time()
+     while sim_time(sim) < T_END
+@@ -170,6 +197,12 @@
+         end
+         if step % 50 == 0
+             peak_vram = max(peak_vram, CUDA.used_memory())
++        end
++        if checkpoint_every > 0 && (step % checkpoint_every == 0 || sim_time(sim) >= T_END)
++            save_checkpoint(checkpoint_path, sim, step, history; identity=checkpoint_identity)
++            println("LOCAL_GPU_CHECKPOINT_SAVED step=", step,
++                " sha256=", bytes2hex(sha256(read(checkpoint_path))))
++            flush(stdout)
+         end
+     end
+     CUDA.synchronize()

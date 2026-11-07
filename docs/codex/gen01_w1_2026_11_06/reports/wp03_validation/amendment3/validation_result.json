@@ -1,0 +1,52 @@
+{
+  "analysis_json_written": false,
+  "analyzer_sha256": "da28523625ff3899645684b5919dd52f2789013d8568ecf2326bb714875aa474",
+  "commit_push_owner": "Claude host",
+  "completed_utc": "2026-11-07T09:22:50.297011+00:00",
+  "cpu_expected_vanleer_nonfinite": true,
+  "cpu_other_profiles_pass": true,
+  "cpu_profiles": 8,
+  "existing_grad00_infra_files_unchanged": 15,
+  "focused_tests": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 203
+  },
+  "full_junit_sha256": "a565660b59590949f79a177882620ab4faa50c7e1d95576cfc08d91e26ba3175",
+  "full_log_sha256": "ecc949d1f6d04462abfa7e49beb31171d1e798868598fc93a338eb77a50fc41f",
+  "full_tests": {
+    "baseline_comparison": "Host baseline belongs to Claude; no base run performed here",
+    "baseline_rerun": false,
+    "completed": true,
+    "evidence_class": "result_side_full_python_test_run",
+    "exit_code": 0,
+    "failed_nodes": [],
+    "junit_counts": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 74,
+      "tests": 3759
+    },
+    "passed": 3685,
+    "process_wall_seconds": 1188.3082943750778,
+    "sources_unchanged_during_run": true,
+    "timeout_s": null
+  },
+  "full_window_cpu_execution": false,
+  "git_mutation": false,
+  "gpu_execution": false,
+  "head_unchanged": "e2dddf06c745cae2a95248d9a74930a20494e2eb",
+  "integration_boundary": "Current kernels still pin the old analyzer; host must commit/push implementation and rerender five kernels before use.",
+  "job_sha256": "bba320e88553bfa026afb715572166c936c763be81a537c601fe59300d15cdbe",
+  "kaggle_push": false,
+  "kernel_rendered": false,
+  "protected_files_unchanged": 228,
+  "reference_sha256": "f0f5f77c3ae80d94028970e928f430daf9356d3dae4fd7ce3a720c24f8ade5f7",
+  "scope": "Amendment 3 implementation, software validation, short CPU preflight and report only",
+  "source_review": "PASS_SOURCE_REVIEW",
+  "source_review_sha256": "e241e4741ecd23245e043af7d9db631bee1fe9e6ba3a4bb8fe93dc45d12f9ee6",
+  "status": "DONE",
+  "ta1_cross_script_plain_and_dual_bit_equal": true,
+  "vanleer_safe_plain_vs_vanleer_bit_equal": true
+}

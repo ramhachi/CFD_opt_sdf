@@ -1,0 +1,59 @@
+{
+  "command": [
+    "julia",
+    "--startup-file=no",
+    "-O2",
+    "-t",
+    "10",
+    "--project=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/julia/CFDSDFWaterLily",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/scripts/waterlily_grad00_lambda_2026_11.jl",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw",
+    "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment3/CFDSDFWaterLily_quick_nobound_Float32",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D0_interface_offset.dir_f4_fortran.raw",
+    "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D1_filtered_seed11.dir_f4_fortran.raw",
+    "96fe6e62c5fcb7ad0108dd64d6fac68cc488ee49deb188be742530f828037a87",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D2_filtered_seed2026.dir_f4_fortran.raw",
+    "2a22eb09407a14755f495fa07d4df8dee2d4632db41a0b75d1bf744fd3d1d5de",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/P1_upstream_lobe.dir_f4_fortran.raw",
+    "24cc06aeb18e2a5729e560636f13ce78f8f19746268699783e8498921aec5dcc",
+    "0.003971641173621408",
+    "0.003971641173621408",
+    "0.003971641173621408",
+    "0.003971641173621408"
+  ],
+  "env": {
+    "G2_BACKEND": "cpu",
+    "G2_DRYRUN_T_END": "0.4",
+    "GRAD00_ARM": "quick_nobound",
+    "GRAD00_T": "Float32",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "TA1_PREFLIGHT_ONLY": "1"
+  },
+  "evidence_class": "short_cpu_software_validation",
+  "exit_code": 0,
+  "index_sha256": "c1420290ea8e776c64d71eadf9a784d0c2f1ed6216eb41920f016579286e1417",
+  "index_status": "PREFLIGHT_ONLY",
+  "log_sha256": "90348444dddfb017d1e4f49936ca30e33de452664e5ad84c09c4d8c511448568",
+  "preflight_pass": true,
+  "process_cap_s": 480,
+  "source_sha256_after": {
+    "docs/evidence/grad00_lambda_2026_11/reference.json": "f0f5f77c3ae80d94028970e928f430daf9356d3dae4fd7ce3a720c24f8ade5f7",
+    "julia/CFDSDFWaterLily/Manifest.toml": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    "julia/CFDSDFWaterLily/Project.toml": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+    "scripts/quick_nobound.jl": "14158bb32958c9e501c2e92764ab49980a19036acce26630640b9808db2e4698",
+    "scripts/vanleer_safe.jl": "2a964c56415c32ad6bf58c739fdcc3ec5cd4c5490b77f73749858ae2b86ab56b",
+    "scripts/waterlily_grad00_lambda_2026_11.jl": "bba320e88553bfa026afb715572166c936c763be81a537c601fe59300d15cdbe"
+  },
+  "source_sha256_before": {
+    "docs/evidence/grad00_lambda_2026_11/reference.json": "f0f5f77c3ae80d94028970e928f430daf9356d3dae4fd7ce3a720c24f8ade5f7",
+    "julia/CFDSDFWaterLily/Manifest.toml": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    "julia/CFDSDFWaterLily/Project.toml": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+    "scripts/quick_nobound.jl": "14158bb32958c9e501c2e92764ab49980a19036acce26630640b9808db2e4698",
+    "scripts/vanleer_safe.jl": "2a964c56415c32ad6bf58c739fdcc3ec5cd4c5490b77f73749858ae2b86ab56b",
+    "scripts/waterlily_grad00_lambda_2026_11.jl": "bba320e88553bfa026afb715572166c936c763be81a537c601fe59300d15cdbe"
+  },
+  "wall_seconds": 57.85498608299531
+}
