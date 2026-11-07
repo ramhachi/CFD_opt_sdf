@@ -20,10 +20,13 @@ LIMITATIONS = [
     "CONCORDANT_PARTIAL is shadowed by DISCORDANT under global-AND resolved ranking.",
     "RETENTION_12 uses delta-method relative-increment variances followed by Fieller; it is not an exact nested-ratio interval.",
     "The uncertainty model treats placement phases and equal-duration batches as sampling units; iid adequacy requires registration review.",
+    "The confirmation grid re-thickens at its own 4dx; its contrast includes geometry and grid changes.",
+    "Thickening-alone differences need the same observable on sharp and thick arms; the primary pressure/total arms cannot be subtracted.",
 ]
 CONFIGS = ("E1", "E2", "E3")
 READOUTS = ("cur", "nds", "cv")
 RESPONSES = ("downforce", "drag")
+RCONFIGS = (*CONFIGS, "E1_sharp", "E2_sharp")
 
 
 def need(condition, message):
@@ -65,6 +68,8 @@ def batch_variance(readout, response, phases, upper=False):
 
 def paired_w(left, right, response, readout="cur"):
     need(len(left) == len(right) and len(left) >= 2, "paired phase count")
+    need(all(r.get("observable") == "total_cl" and r["readouts"][readout].get("observable") == "total_cl" for r in [*left, *right]),
+         "cannot difference across observables")
     n = len(left)
     d = np.array([number(b["readouts"][readout][response]) -
                   number(a["readouts"][readout][response]) for a, b in zip(left, right)])
@@ -163,10 +168,59 @@ def z_test(mean, se):
                 **{"pass": abs(mean) > 3 * se})
 
 
+def thickness_effect(cell):
+    """Recompute each auxiliary component from raw paired WP5 rows."""
+    output = {}
+    for config in CONFIGS:
+        source = config + "_sharp"
+        if source not in RCONFIGS:
+            output[config] = dict(status="UNAVAILABLE_SHARP_ARM", observables={})
+            continue
+        output[config] = {"from": source, "to": config, "observables": {}}
+        for label in ("pressure_cl", "total_cl"):
+            field, cv = (("pressure_coefficients", "pressure_convergence") if label == "pressure_cl" else ("coefficients", "convergence"))
+            samples = {"downforce": [], "drag": []}
+            for rep in cell["realisations"]:
+                values = []
+                for arm in (source, config):
+                    diagnostic = rep.get("diagnostics", {}).get(arm, {})
+                    coefficients = diagnostic.get(field, {}).get("total")
+                    if (diagnostic.get("status") != "COMPLETED" or diagnostic.get("usable") is not True
+                            or diagnostic.get(cv, {}).get("state") != "settled"
+                            or rep["status"][arm] not in {"SETTLED", "INCOMPLETE"}
+                            or not isinstance(coefficients, dict)):
+                        break
+                    numbers = [coefficients.get(k) for k in ("Cl", "Cd")]
+                    if not all(type(x) in (int, float) and math.isfinite(x) for x in numbers):
+                        break
+                    need((diagnostic.get("config"), diagnostic.get("model"), diagnostic.get("family"), diagnostic.get("mesh_msh_sha256"))
+                         == (arm, cell["model"], cell["family"], rep["mesh_sha256"][arm]), "auxiliary RANS identity differs")
+                    values.append(numbers)
+                if len(values) == 2:
+                    for i, response in enumerate(RESPONSES):
+                        samples[response].append(values[1][i] - values[0][i])
+            count = len(samples["downforce"])
+            all_settled = all(row["status"][arm] == "SETTLED" for row in cell["realisations"] for arm in (source, config))
+            distinct = True
+            for arm in (source, config):
+                hashes = [row["mesh_sha256"][arm] for row in cell["realisations"]]
+                distinct &= None not in hashes and len(set(hashes)) == 8
+            confidence = count == 8 and all_settled and distinct
+            output[config]["observables"][label] = dict(
+                observable=label, status="DESCRIPTIVE" if confidence else "POINT_ONLY" if count else "UNAVAILABLE",
+                paired_realisations=count,
+                point_estimate={k: sum(v) / count for k, v in samples.items()} if count else None,
+                ci90={k: classical(v)["ci90"] for k, v in samples.items()} if confidence else None)
+    return output
+
+
 def initial():
     return dict(schema="topo2d00-analysis-v1", label="INVALID",
         tr00=dict(cells={}, qualified_cells=[]), waterlily={}, rans={}, agreement={},
         resolution=dict(status="NOT_JUDGED", downforce=None),
+        height=dict(height_mm=100.0, h_over_c1=100 / 223.4, h_over_c=100 / 380.0),
+        observables=dict(waterlily="total_cl", rans_main="total_cl", tr00="pressure_cl"),
+        rans_diagnostics={}, thickening_alone={},
         controls=dict(determinism=dict(judged=False, **{"pass": None}),
                       domain=dict(status="NOT_JUDGED", z=None), readout={}, manipulation={}),
         limitations=list(LIMITATIONS))
@@ -175,6 +229,11 @@ def initial():
 def tr_cells(payload):
     need(payload["schema"] == "topo2d00-rans-results-v1", "RANS schema")
     need(payload["coefficient_reference"]["chord_mm"] == 223.4, "RANS chord convention")
+    reference = payload["coefficient_reference"]
+    need(reference.get("height_mm") == 100, "RANS physical height")
+    for key, chord in (("h_over_c1", 223.4), ("h_over_c", 380.)):
+        need(math.isclose(number(reference.get(key)), 100 / chord, rel_tol=1e-12), "inconsistent RANS " + key)
+    need(payload["reference"].get("observable") == "pressure_cl", "TR-00 reference observable must be pressure_cl")
     reference = number(payload["reference"]["delta_cl"])
     uncertainty = number(payload["reference"]["digitizing_uncertainty"])
     need(reference != 0 and uncertainty >= 0, "invalid measured reference increment")
@@ -185,11 +244,26 @@ def tr_cells(payload):
         rows = cell["realisations"]
         need(len({row["id"] for row in rows}) == len(rows), "duplicate realisation")
         statuses = [row["status"][config] for row in rows for config in ("E1_sharp", "E2_sharp")]
-        need(set(statuses) <= {"SETTLED", "NUMERICAL", "INCOMPLETE"}, "unknown RANS status")
-        block = dict(label="TR00_FAIL", delta=None, ratio_ci90=None)
+        need(set(statuses) <= {"SETTLED", "NUMERICAL", "INCOMPLETE", "MESH_FAILED"}, "unknown RANS status")
+        for row in rows:
+            for config in RCONFIGS:
+                force = row["forces"][config]
+                if force is not None:
+                    need(force.get("observable") == ("pressure_cl" if config.endswith("_sharp") else "total_cl"),
+                         "RANS observable mismatch: cannot difference across observables")
+        degenerate = any(len({r["mesh_sha256"][c] for r in rows}) < 8
+                         and all(r["mesh_sha256"][c] is not None for r in rows)
+                         for c in ("E1_sharp", "E2_sharp"))
+        measured = all(r["forces"][c] is not None for r in rows for c in ("E1_sharp", "E2_sharp"))
+        point = (sum(number(r["forces"]["E2_sharp"]["downforce"]) - number(r["forces"]["E1_sharp"]["downforce"]) for r in rows) / len(rows)
+                 if measured else None)
+        block = dict(label="TR00_FAIL", delta=None, ratio_ci90=None, point_estimate=point,
+                     reason="DEGENERATE_REALISATIONS" if degenerate else None, observable="pressure_cl")
         if "NUMERICAL" in statuses:
             block["label"] = "NUMERICAL"
-        elif len(rows) != 8 or "INCOMPLETE" in statuses:
+        elif "MESH_FAILED" in statuses:
+            block["label"] = "MESH_FAILED"
+        elif len(rows) != 8 or "INCOMPLETE" in statuses or degenerate:
             block["label"] = "INCOMPLETE"
         else:
             stat = classical([number(row["forces"]["E2_sharp"]["downforce"]) -
@@ -246,6 +320,31 @@ def check(payload):
     result = initial()
     if not payload["identity_valid"]:
         return result
+    for row in payload["waterlily"]:
+        need(row.get("observable") == "total_cl", "WaterLily observable must be total_cl")
+        for force in row["readouts"].values():
+            if force is not None:
+                need(force.get("observable") == "total_cl", "WaterLily readout observable mismatch")
+        for key, chord in (("h_over_c1", 223.4), ("h_over_c", 380.)):
+            if key in row:
+                need(math.isclose(number(row[key]), number(row["height_mm"]) / chord, rel_tol=1e-12), "inconsistent " + key)
+    for cell in payload["rans"]["cells"]:
+        key = cell["model"] + "/" + cell["family"]
+        result["rans_diagnostics"][key] = {}
+        for config in RCONFIGS:
+            values = [r["forces"][config] for r in cell["realisations"] if r["forces"][config] is not None]
+            hashes = [r["mesh_sha256"][config] for r in cell["realisations"] if r["mesh_sha256"][config] is not None]
+            states = {r["status"][config] for r in cell["realisations"]}
+            if "NUMERICAL" in states or "MESH_FAILED" in states:
+                status = "NUMERICAL" if "NUMERICAL" in states else "MESH_FAILED"
+            elif len(hashes) == 8 and len(set(hashes)) < 8:
+                status = "DEGENERATE_REALISATIONS"
+            else:
+                status = "COMPLETE" if len(hashes) == 8 and states == {"SETTLED"} else "INCOMPLETE"
+            result["rans_diagnostics"][key][config] = dict(
+                status=status, distinct_meshes=len(set(hashes)), measured_realisations=len(values), ci90=None,
+                point_estimate={q: sum(number(v[q]) for v in values) / len(values) for q in RESPONSES} if values else None)
+        result["thickening_alone"][key] = thickness_effect(cell)
     cells, qualified = tr_cells(payload["rans"])
     result["tr00"] = dict(cells=cells, qualified_cells=sorted(qualified))
     if not qualified:
@@ -259,13 +358,14 @@ def check(payload):
         need(all(type(row[k]) is bool for k in ("ok", "finite", "complete")),
              "explicit run flags required")
     states = [r["status"][c] for values in qualified.values() for r in values for c in CONFIGS]
-    need(set(states) <= {"SETTLED", "NUMERICAL", "INCOMPLETE"}, "unknown primary R status")
+    need(set(states) <= {"SETTLED", "NUMERICAL", "INCOMPLETE", "MESH_FAILED"}, "unknown primary R status")
     if (any(not r["finite"] for r in rows)
             or any(r["complete"] and not r["ok"] for r in required)
             or "NUMERICAL" in states):
         result["label"] = "NUMERICAL"
         return result
-    if payload["cap_hit"] or any(not r["complete"] for r in required) or "INCOMPLETE" in states:
+    degenerate_main = any(result["rans_diagnostics"][key][c]["status"] == "DEGENERATE_REALISATIONS" for key in qualified for c in CONFIGS)
+    if payload["cap_hit"] or any(not r["complete"] for r in required) or "INCOMPLETE" in states or "MESH_FAILED" in states or degenerate_main:
         result["label"] = "INCOMPLETE"
         return result
     for reynolds in (1000, 3000):

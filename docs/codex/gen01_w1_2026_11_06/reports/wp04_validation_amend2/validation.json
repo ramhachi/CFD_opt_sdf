@@ -1,0 +1,116 @@
+{
+  "agent_commit_or_push": false,
+  "base": {
+    "failed_nodes": [],
+    "passed": 3482,
+    "provenance": "user-supplied Claude host execution",
+    "skipped": 74,
+    "source_commit": "e3dcdf61"
+  },
+  "compileall": {
+    "argv": [
+      ".venv/bin/python",
+      "-m",
+      "compileall",
+      "src",
+      "tests"
+    ],
+    "exit_code": 0,
+    "log_sha256": "278ab810f88efbb02f51f079c888eb60152b56fa4b13ed4595199f7271178da7",
+    "name": "compileall",
+    "wall_seconds": 0.14329218864440918
+  },
+  "completed_utc": "2026-11-07T09:21:59.629904+00:00",
+  "cpu_selftest": {
+    "cuda_module_loaded": false,
+    "passed": 56,
+    "total": 56,
+    "wall_seconds": 113.19236087799072
+  },
+  "evidence_class": "SOFTWARE_AND_CPU_CAPABILITY_ONLY",
+  "formal_study_run": false,
+  "frozen_closure": {
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "tests/test_grid02_evidence.py::test_the_analysis_is_the_registered_one_and_reproduces_from_the_kept_output",
+      "tests/test_grid02_prereg.py::test_the_real_freeze_validates_with_the_analyzer_and_is_sidecar_bound"
+    ],
+    "log_sha256": "d30593e5bebbadd3babfced28033e3b625f60ef32b0e66d4dd0e1933761f6ed4",
+    "passed": 2
+  },
+  "full_pytest": {
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "--ignore=tests/test_lbm_metal.py",
+      "-q",
+      "-rf",
+      "-p",
+      "no:cacheprovider"
+    ],
+    "exit_code": 0,
+    "failed_nodes": [],
+    "log_sha256": "48d957624b23fbb03680628e770982d525b2c5372cc839685309b60854d97a71",
+    "passed": 3640,
+    "pytest_seconds": 1260.81,
+    "same_failure_set_as_supplied_base": true,
+    "skipped": 74,
+    "wall_seconds": 1261.8542430400848,
+    "warnings": 7295
+  },
+  "full_run_program_before_after": {
+    "docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_result_schema.json": "ce5c4c90f821aa5dcf3d63493096a16cad6f72395c461f434307a7dcd3ceb5a7",
+    "docs/harness/topo2d00_campaign.json": "e811ea154d41bcc5a6ef96715f289fd57427785100df2662fe401befbf73eabb",
+    "docs/harness/topo2d00_scenes/E1.json": "3b5a0312385b6cc99961c6b002680e00cb2f6dc51e9964ae39b6c099d0bcb8a8",
+    "docs/harness/topo2d00_scenes/E1_fine.json": "36a920bfc1c5c7fd7acc285a0ac7ac62931300eaea518e797ce3d44eb3657294",
+    "docs/harness/topo2d00_scenes/E1_h80.json": "41d4e234d7bd354ba883c497a3f7636e3c8064de360265f321103a7da8f9b3ea",
+    "docs/harness/topo2d00_scenes/E1_sharp.json": "f217a0e2180ae161be2cad69551de568f289b0191657f342add876c22fe1fc85",
+    "docs/harness/topo2d00_scenes/E2.json": "a8f7001a2348acef8ac96099cef0f894279cb6f319d9241a61b14d89e45342bc",
+    "docs/harness/topo2d00_scenes/E2_fine.json": "e0d982bcd550ec1bfde0b64db52e9b861e6b80065c7d9c72723ab4c380912c0b",
+    "docs/harness/topo2d00_scenes/E2_h80.json": "6e2722a77f5d6dec2b93ca62d970fa17e15e9c9fbc73892187da26d02d0618fb",
+    "docs/harness/topo2d00_scenes/E2_sharp.json": "b89e77a44cca8a9f5434d390dd9422c01c49be33f4445f242d07e0917a863341",
+    "docs/harness/topo2d00_scenes/E3.json": "aff70efbfabc0a6d03931e76615e9ec361add2af5e59efbd6b9e8fb36a81c03a",
+    "docs/harness/topo2d00_scenes/E3_sharp.json": "4fe72e0793a4ae35f5d6f123007e527240faccd0d63f556489ab6dfc0ca4a3cb",
+    "julia/CFDSDFWaterLily/gen01/Topo2D.jl": "67b07f46abca5b889ecc37994dbb477c2d4f300a9528e430d2aaf72197169c42",
+    "scripts/topo2d00/analyze.py": "81f57a0e07cd8aefcb08f4a0a0bcdee54bd0e23ca61194266a2a5fda05e38255",
+    "scripts/topo2d00/check.py": "374a3a8c3c5b9027832e8ab94ea929a874b1ca4ab9b518a6348f3807e813c79e",
+    "scripts/topo2d00/plot_geometry.py": "c18d155a8dc50f85a9c85517b821e3e6d4c5da977116948d71621160365172b0",
+    "scripts/topo2d_selftest.jl": "13ddd8630436ce477f2ab93a0046df52f427094e9c8e481dce25ff1139e9dfdc",
+    "scripts/waterlily_topo2d_job.jl": "96d33b5732e339e18ddecf3fc02ab81a9bdc84138b1c50aa12c749aa3c34c645",
+    "src/cfd_gen/__init__.py": "58671457aa4e97078672298ab97ab42c73451817d308b6bfe1cfff5ea063c750",
+    "src/cfd_gen/topo2d/__init__.py": "3b74b60d63b34e84a56d22098a1deca8eaaa410ceb1359b89fa659954673178b",
+    "src/cfd_gen/topo2d/geometry.py": "3f33be577438fbe3e78eaa1d589bbe1172e0b93330088f5b8f080f54f20ee512",
+    "src/cfd_harness/scene_campaign.py": "abf7f60f31fdad3817499dae20c3b95a53b70b03a0f933149a9efd22d7cef191",
+    "tests/topo2d00/synthetic.py": "7e767598dc74ac312dd60462076eb1df672a26f032b191b528941cc459682d78",
+    "tests/topo2d00/test_analyze.py": "311cc99380757f6bcdc3814aadd7e9c0ebc2338b59196b6d09b5ed48afd15af7",
+    "tests/topo2d00/test_campaign.py": "c7f534358aff1838a93f8b1a98ea0644017129201b12da304526c9eb7311f285",
+    "tests/topo2d00/test_check.py": "cd279aca71e04c38712eb57a9cd8da8c14c012c3580a33e5e0c3d070958a21b4",
+    "tests/topo2d00/test_geometry.py": "713bb3b7b0c856b5e0602aebb4b75e8eb1f67e28d977756fd5d5af4c64d82d25",
+    "tests/topo2d00/test_source.py": "509c1bad405c8224f62e161185b0a86c67ebcedc653cd1ee4d84f6f740a43551"
+  },
+  "gpu_execution": false,
+  "head_at_execution": "88fea06eec7ab42638335dba7f74ea6539a85453",
+  "mesh_or_RANS_execution": false,
+  "program_unchanged_during_full_run": true,
+  "schema": "wp04-amend2-validation-v1",
+  "topo2d_pytest": {
+    "argv": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/topo2d00",
+      "-p",
+      "no:cacheprovider"
+    ],
+    "exit_code": 0,
+    "log_sha256": "54caf4315f0707118b453ca63437851e27f9e73d6adac455506c276e772bad6f",
+    "wall_seconds": 61.31529092788696
+  }
+}

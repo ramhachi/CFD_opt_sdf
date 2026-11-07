@@ -1,0 +1,20 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "scripts/topo2d00/check.py",
+    "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp04-synthetic-checker-ymsrectl/analysis.json"
+  ],
+  "evidence_class": "SYNTHETIC_SOFTWARE_TEST_ONLY",
+  "exit_code": 0,
+  "files_unchanged_after_refusal": true,
+  "note": "No registered study analysis or freeze was created.",
+  "result": {
+    "discrepancies": [],
+    "pass": true
+  },
+  "uncompressed_output_sha256": {
+    "analysis.json": "f1d1ef2c60ef9f6ad61b621917d839d59b06aa4d46c05d863d501e8e4dc567b9",
+    "analysis.md": "81519739817bbe3e86e8d09af25b585089282683278ae1efb55bccfa1b387ab5"
+  },
+  "written_once_refused_second_write": true
+}

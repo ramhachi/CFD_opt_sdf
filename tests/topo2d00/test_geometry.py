@@ -4,9 +4,10 @@ import json
 import numpy as np
 import pytest
 
-from cfd_sdf.topo2d.geometry import (
+from cfd_gen.topo2d.geometry import (
     GeometryError,
     _controlled_minimum,
+    _closed_from_surfaces,
     _normal_ray_minimum,
     build_scene,
     polygon_gap,
@@ -20,6 +21,29 @@ from cfd_sdf.topo2d.geometry import (
 
 
 DX = 223.4 / 120
+
+
+@pytest.mark.parametrize("configuration", ["E1", "E2", "E3", "E2_sharp", "E3_sharp"])
+def test_spline_density_and_arclength_cap_are_registered(configuration):
+    scene = build_scene(configuration, height_mm=100, dx_mm=DX)
+    assert scene["sampling"]["method"] == "natural-cubic-spline-arclength"
+    assert all(s["spline_max_arc_mm"] <= 1 for s in scene["sources"])
+    for element in scene["elements"]:
+        polygon = np.asarray(element["polygon_mm"])
+        # TE closure is an intentional finite-width cap, densified like surfaces.
+        assert np.linalg.norm(np.diff(polygon, axis=0), axis=1).max() <= 1 + 1e-9
+        assert element["sampling"]["max_noncap_turn_deg"] <= 5 + 1e-9
+        for surface in ("suction_mm", "pressure_mm"):
+            curve = np.asarray(element[surface])
+            edges = np.diff(curve, axis=0)
+            lengths = np.linalg.norm(edges, axis=1)
+            arc = np.r_[0, np.cumsum(lengths)]
+            cosine = (edges[:-1] * edges[1:]).sum(axis=1) / (lengths[:-1] * lengths[1:])
+            turns = np.degrees(np.arccos(np.clip(cosine, -1, 1)))
+            assert max(turns[arc[1:-1] > .02 * element["nominal_chord_mm"]]) <= 5 + 1e-9
+        if not configuration.endswith("_sharp"):
+            assert element["thickening"]["preserved_cap_arc_mm"] == pytest.approx(
+                .02 * element["nominal_chord_mm"])
 
 
 @pytest.mark.parametrize("configuration,count", [("E1", 1), ("E2", 2), ("E3", 3)])
@@ -69,12 +93,29 @@ def test_normal_thickening_preserves_cap_camber_and_te_midpoint():
     suction = np.column_stack((x, [0, -0.3, -0.7, -1, -0.8, -0.3, -0.1]))
     pressure = np.column_stack((x, [0, 0.3, 0.7, 1, 0.8, 0.3, 0.1]))
     lower, upper, metadata = thicken_element(suction, pressure, t_min_mm=3)
-    np.testing.assert_array_equal(lower[:3], suction[:3])
-    np.testing.assert_array_equal(upper[:3], pressure[:3])
+    np.testing.assert_array_equal(lower[0], suction[0])
+    np.testing.assert_array_equal(upper[0], pressure[0])
     np.testing.assert_allclose((lower + upper) / 2, (suction + pressure) / 2, atol=1e-15)
     assert metadata["controlled_min_thickness_mm"] >= 3 - 1e-12
     assert metadata["max_thickness_ratio"] == pytest.approx(15)
-    assert metadata["preserved_cap_pairs"] == 3
+    assert metadata["preserved_cap_pairs"] == 1
+    assert metadata["preserved_cap_arc_mm"] == pytest.approx(.12)
+
+
+def test_thickening_is_independent_of_station_numbers_on_the_same_linear_surfaces():
+    x = np.arange(7.0)
+    thickness = np.array([0, .6, 1.4, 2, 1.6, .6, .2])
+    s = np.column_stack((x, -thickness / 2))
+    p = np.column_stack((x, thickness / 2))
+    lower, upper, meta = thicken_element(s, p, t_min_mm=3)
+    refined_x = np.unique(np.r_[x, np.linspace(0, .1, 20)])
+    refined = np.interp(refined_x, x, thickness)
+    lo, hi, dense_meta = thicken_element(np.column_stack((refined_x, -refined / 2)),
+                                        np.column_stack((refined_x, refined / 2)), t_min_mm=3)
+    indices = np.searchsorted(refined_x, x)
+    np.testing.assert_allclose(lo[indices], lower, atol=1e-12)
+    np.testing.assert_allclose(hi[indices], upper, atol=1e-12)
+    assert dense_meta["preserved_cap_pairs"] > meta["preserved_cap_pairs"]
 
 
 def test_sharp_named_original_retains_finite_te_and_discloses_exception():
@@ -158,7 +199,7 @@ def test_ray_gate_rejects_oblique_cap_even_when_paired_projection_stays_wide():
     lower[-1] += 0.5 * tangent
     upper[-1] -= 0.5 * tangent
     element["suction_mm"], element["pressure_mm"] = lower.tolist(), upper.tolist()
-    element["polygon_mm"] = np.vstack((lower[::-1], upper[1:], lower[-1:])).tolist()
+    element["polygon_mm"] = _closed_from_surfaces(lower, upper).tolist()
     with pytest.raises(GeometryError, match="normal ray|normal width|outside"):
         _controlled_minimum(lower, upper, element["thickening"]["controlled_from_index"])
     with pytest.raises(GeometryError, match="camber-normal|normal ray|normal width|outside"):
@@ -170,13 +211,14 @@ def test_gate_derives_thickness_scope_from_source_not_advertised_metadata():
     element = scene["elements"][0]
     lower, upper = np.array(element["suction_mm"]), np.array(element["pressure_mm"])
     camber = (lower + upper) / 2
-    vector = upper[24] - lower[24]
+    station = element["thickening"]["controlled_from_index"] + 5
+    vector = upper[station] - lower[station]
     vector /= np.linalg.norm(vector)
-    lower[24], upper[24] = camber[24] - vector / 2, camber[24] + vector / 2
+    lower[station], upper[station] = camber[station] - vector / 2, camber[station] + vector / 2
     element["suction_mm"], element["pressure_mm"] = lower.tolist(), upper.tolist()
-    element["polygon_mm"] = np.vstack((lower[::-1], upper[1:], lower[-1:])).tolist()
-    element["thickening"]["controlled_from_index"] = 26
-    candidates = np.arange(26, len(camber))
+    element["polygon_mm"] = _closed_from_surfaces(lower, upper).tolist()
+    element["thickening"]["controlled_from_index"] = station + 1
+    candidates = np.arange(station + 1, len(camber))
     keep = polygon_sdf(camber[candidates], element["polygon_mm"]) <= -(1 + np.sqrt(2) / 2) * DX + 1e-9
     element["bulk_core_probe_station_indices"] = candidates[keep].tolist()
     element["bulk_core_probe_stations_mm"] = camber[candidates[keep]].tolist()
@@ -203,7 +245,7 @@ def test_gate_rejects_source_provenance_or_preserved_camber_forgery():
     lower[30, 1] += 0.1
     upper[30, 1] += 0.1
     element["suction_mm"], element["pressure_mm"] = lower.tolist(), upper.tolist()
-    element["polygon_mm"] = np.vstack((lower[::-1], upper[1:], lower[-1:])).tolist()
+    element["polygon_mm"] = _closed_from_surfaces(lower, upper).tolist()
     with pytest.raises(GeometryError, match="camber|source"):
         validate_scene(scene)
 
@@ -246,7 +288,9 @@ def test_generated_scene_sdf_gradient_and_source_cap_preservation():
     for thick, original in zip(scene["elements"], raw["elements"]):
         for surface in ("suction_mm", "pressure_mm"):
             a, b = np.array(thick[surface]), np.array(original[surface])
-            np.testing.assert_allclose(a[:3] - a[0], b[:3] - b[0], atol=1e-13)
+            arc = np.r_[0, np.cumsum(np.linalg.norm(np.diff(b, axis=0), axis=1))]
+            cap = arc <= .02 * original["nominal_chord_mm"]
+            np.testing.assert_allclose(a[cap] - a[0], b[cap] - b[0], atol=1e-13)
     points = np.array([[-30, 100], [120, 70], [120, 150], [300, 150], [400, 100]], float)
     eps = 1e-4
     gradient = np.column_stack([(scene_sdf(points + np.eye(2)[j] * eps, scene)

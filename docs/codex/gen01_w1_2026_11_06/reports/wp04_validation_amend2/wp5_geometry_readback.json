@@ -1,0 +1,254 @@
+{
+  "command_method": ".venv/bin/python - (stdin script); sys.dont_write_bytecode=True; importlib.util.spec_from_file_location loads the actual sibling t2d_multibody_case.py; call load_geometry(path, family=family) for all ten scene JSON files and fine30/med30, assert returned geometry_sha256 matches the unchanged input bytes; assert gmsh absent from sys.modules and sibling source SHA unchanged",
+  "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily",
+  "evidence_class": "GEOMETRY_ADAPTER_VALIDATION_ONLY",
+  "no_gmsh": true,
+  "no_mesh": true,
+  "no_solver": true,
+  "passed_count": 20,
+  "python": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/.venv/bin/python",
+  "results": [
+    {
+      "families": {
+        "fine30": {
+          "max_noncap_turn_deg": 2.9811200042153234,
+          "max_segment_mm": 0.9308339190469463,
+          "passed": true,
+          "vertices": [
+            883
+          ]
+        },
+        "med30": {
+          "max_noncap_turn_deg": 2.9811200042153234,
+          "max_segment_mm": 0.9308339190469463,
+          "passed": true,
+          "vertices": [
+            883
+          ]
+        }
+      },
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "3b5a0312385b6cc99961c6b002680e00cb2f6dc51e9964ae39b6c099d0bcb8a8"
+    },
+    {
+      "families": {
+        "fine30": {
+          "max_noncap_turn_deg": 2.9811214747108945,
+          "max_segment_mm": 0.9929048999659262,
+          "passed": true,
+          "vertices": [
+            880
+          ]
+        },
+        "med30": {
+          "max_noncap_turn_deg": 2.9811214747108945,
+          "max_segment_mm": 0.9929048999659262,
+          "passed": true,
+          "vertices": [
+            880
+          ]
+        }
+      },
+      "scene_path": "docs/harness/topo2d00_scenes/E1_fine.json",
+      "scene_sha256": "36a920bfc1c5c7fd7acc285a0ac7ac62931300eaea518e797ce3d44eb3657294"
+    },
+    {
+      "families": {
+        "fine30": {
+          "max_noncap_turn_deg": 2.9811200042153234,
+          "max_segment_mm": 0.9308339190469463,
+          "passed": true,
+          "vertices": [
+            883
+          ]
+        },
+        "med30": {
+          "max_noncap_turn_deg": 2.9811200042153234,
+          "max_segment_mm": 0.9308339190469463,
+          "passed": true,
+          "vertices": [
+            883
+          ]
+        }
+      },
+      "scene_path": "docs/harness/topo2d00_scenes/E1_h80.json",
+      "scene_sha256": "41d4e234d7bd354ba883c497a3f7636e3c8064de360265f321103a7da8f9b3ea"
+    },
+    {
+      "families": {
+        "fine30": {
+          "max_noncap_turn_deg": 2.9762017555132485,
+          "max_segment_mm": 0.8360000000000034,
+          "passed": true,
+          "vertices": [
+            877
+          ]
+        },
+        "med30": {
+          "max_noncap_turn_deg": 2.9762017555132485,
+          "max_segment_mm": 0.8360000000000034,
+          "passed": true,
+          "vertices": [
+            877
+          ]
+        }
+      },
+      "scene_path": "docs/harness/topo2d00_scenes/E1_sharp.json",
+      "scene_sha256": "f217a0e2180ae161be2cad69551de568f289b0191657f342add876c22fe1fc85"
+    },
+    {
+      "families": {
+        "fine30": {
+          "max_noncap_turn_deg": 3.021698823282137,
+          "max_segment_mm": 0.9308339190469463,
+          "passed": true,
+          "vertices": [
+            883,
+            651
+          ]
+        },
+        "med30": {
+          "max_noncap_turn_deg": 3.021698823282137,
+          "max_segment_mm": 0.9308339190469463,
+          "passed": true,
+          "vertices": [
+            883,
+            651
+          ]
+        }
+      },
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "a8f7001a2348acef8ac96099cef0f894279cb6f319d9241a61b14d89e45342bc"
+    },
+    {
+      "families": {
+        "fine30": {
+          "max_noncap_turn_deg": 3.022433061010416,
+          "max_segment_mm": 0.9929048999659262,
+          "passed": true,
+          "vertices": [
+            880,
+            648
+          ]
+        },
+        "med30": {
+          "max_noncap_turn_deg": 3.022433061010416,
+          "max_segment_mm": 0.9929048999659262,
+          "passed": true,
+          "vertices": [
+            880,
+            648
+          ]
+        }
+      },
+      "scene_path": "docs/harness/topo2d00_scenes/E2_fine.json",
+      "scene_sha256": "e0d982bcd550ec1bfde0b64db52e9b861e6b80065c7d9c72723ab4c380912c0b"
+    },
+    {
+      "families": {
+        "fine30": {
+          "max_noncap_turn_deg": 3.0216988232797233,
+          "max_segment_mm": 0.9308339190469463,
+          "passed": true,
+          "vertices": [
+            883,
+            651
+          ]
+        },
+        "med30": {
+          "max_noncap_turn_deg": 3.0216988232797233,
+          "max_segment_mm": 0.9308339190469463,
+          "passed": true,
+          "vertices": [
+            883,
+            651
+          ]
+        }
+      },
+      "scene_path": "docs/harness/topo2d00_scenes/E2_h80.json",
+      "scene_sha256": "6e2722a77f5d6dec2b93ca62d970fa17e15e9c9fbc73892187da26d02d0618fb"
+    },
+    {
+      "families": {
+        "fine30": {
+          "max_noncap_turn_deg": 2.9762017555132485,
+          "max_segment_mm": 0.8360000000000034,
+          "passed": true,
+          "vertices": [
+            877,
+            645
+          ]
+        },
+        "med30": {
+          "max_noncap_turn_deg": 2.9762017555132485,
+          "max_segment_mm": 0.8360000000000034,
+          "passed": true,
+          "vertices": [
+            877,
+            645
+          ]
+        }
+      },
+      "scene_path": "docs/harness/topo2d00_scenes/E2_sharp.json",
+      "scene_sha256": "b89e77a44cca8a9f5434d390dd9422c01c49be33f4445f242d07e0917a863341"
+    },
+    {
+      "families": {
+        "fine30": {
+          "max_noncap_turn_deg": 2.9811200042153234,
+          "max_segment_mm": 0.9308339190469463,
+          "passed": true,
+          "vertices": [
+            883,
+            651,
+            651
+          ]
+        },
+        "med30": {
+          "max_noncap_turn_deg": 2.9811200042153234,
+          "max_segment_mm": 0.9308339190469463,
+          "passed": true,
+          "vertices": [
+            883,
+            651,
+            651
+          ]
+        }
+      },
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "aff70efbfabc0a6d03931e76615e9ec361add2af5e59efbd6b9e8fb36a81c03a"
+    },
+    {
+      "families": {
+        "fine30": {
+          "max_noncap_turn_deg": 2.9762017555132485,
+          "max_segment_mm": 0.8360000000000034,
+          "passed": true,
+          "vertices": [
+            877,
+            644,
+            644
+          ]
+        },
+        "med30": {
+          "max_noncap_turn_deg": 2.9762017555132485,
+          "max_segment_mm": 0.8360000000000034,
+          "passed": true,
+          "vertices": [
+            877,
+            644,
+            644
+          ]
+        }
+      },
+      "scene_path": "docs/harness/topo2d00_scenes/E3_sharp.json",
+      "scene_sha256": "4fe72e0793a4ae35f5d6f123007e527240faccd0d63f556489ab6dfc0ca4a3cb"
+    }
+  ],
+  "saved_utc": "2026-11-06T09:00:43.964601+00:00",
+  "schema": "wp04-wp5-geometry-readback-v1",
+  "scope": "Observed results saved without rerunning load_geometry; source and scene hashes rechecked at save. No RANS mesh, checkMesh, CFD, GPU, or physical qualification evidence.",
+  "source_path": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-05-tr00-rans/scripts/topo2d00/t2d_multibody_case.py",
+  "source_sha256": "583022c5c45d9d9d991a9d758104b783a023c7df29a98c12204e72f90861810c",
+  "validation_count": 20
+}

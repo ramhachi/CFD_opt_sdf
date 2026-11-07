@@ -36,6 +36,131 @@ def test_paired_statistics_and_bounded_retention():
     assert result["controls"]["determinism"] == {"judged": True, "pass": True}
 
 
+@pytest.mark.parametrize("target", ["waterlily", "readout", "main", "sharp", "reference"])
+def test_observable_mismatch_is_refused_before_any_difference(target):
+    data = S.input_table()
+    if target == "waterlily":
+        data["waterlily"][0]["observable"] = "pressure_cl"
+    elif target == "readout":
+        data["waterlily"][0]["readouts"]["cur"]["observable"] = "pressure_cl"
+    elif target == "reference":
+        data["rans"]["reference"]["observable"] = "total_cl"
+    else:
+        config = "E1" if target == "main" else "E1_sharp"
+        data["rans"]["cells"][0]["realisations"][0]["forces"][config]["observable"] = "pressure_cl" if target == "main" else "total_cl"
+    with pytest.raises(ValueError, match="observable"):
+        A.analyze_input(data)
+
+
+@pytest.mark.parametrize("arm,expected", [("E3", "INCOMPLETE"), ("E1_sharp", "TR_UNQUALIFIED")])
+def test_duplicate_meshes_are_not_independent_realisations(arm, expected):
+    data = S.input_table()
+    for cell in data["rans"]["cells"]:
+        for row in cell["realisations"]:
+            row["mesh_sha256"][arm] = "b" * 64
+    result = A.analyze_input(data)
+    assert result["label"] == expected
+    for cell in result["rans_diagnostics"].values():
+        assert cell[arm]["status"] == "DEGENERATE_REALISATIONS"
+        assert cell[arm]["distinct_meshes"] == 1
+        assert cell[arm]["point_estimate"] is not None
+        assert cell[arm]["ci90"] is None
+    if arm.endswith("_sharp"):
+        for cell in result["tr00"]["cells"].values():
+            assert cell["label"] == "INCOMPLETE"
+            assert cell["reason"] == "DEGENERATE_REALISATIONS"
+            assert cell["delta"] is cell["ratio_ci90"] is None
+            assert cell["point_estimate"] is not None
+
+
+def test_height_normalizations_and_thickening_observable_limit_are_explicit():
+    data = S.input_table()
+    result = A.analyze_input(data)
+    assert result["height"]["h_over_c1"] == pytest.approx(100 / 223.4)
+    assert result["height"]["h_over_c"] == pytest.approx(100 / 380)
+    record = result["thickening_alone"]["SA-WF/fine30"]["E2"]
+    assert record["from"] == "E2_sharp" and record["to"] == "E2"
+    assert all(r["status"] == "UNAVAILABLE" and r["point_estimate"] is None and r["paired_realisations"] == 0 for r in record["observables"].values())
+    assert any("geometry and grid" in text for text in result["limitations"])
+    data["rans"]["coefficient_reference"]["h_over_c"] = 100 / 223.4
+    with pytest.raises(ValueError, match="h_over_c"):
+        A.analyze_input(data)
+    data = S.input_table()
+    data["waterlily"][0]["h_over_c1"] = 100 / 380
+    with pytest.raises(ValueError, match="h_over_c1"):
+        A.analyze_input(data)
+
+
+def test_rans_mesh_failure_remains_distinct_from_numerical():
+    data = S.input_table()
+    row = data["rans"]["cells"][0]["realisations"][0]
+    row["status"]["E3"] = "MESH_FAILED"
+    row["forces"]["E3"] = row["mesh_sha256"]["E3"] = None
+    result = A.analyze_input(data)
+    assert result["label"] == "INCOMPLETE"
+    assert result["rans_diagnostics"]["SA-WF/fine30"]["E3"]["status"] == "MESH_FAILED"
+
+
+def test_thickening_recomputed_from_raw_same_observable_auxiliary_coefficients():
+    payload = S.add_auxiliary_coefficients(S.input_table())
+    # Precomputed collector summaries are untrusted, including plausible-looking values.
+    payload["rans"]["cells"][0]["thickening_alone"] = [{"point_estimate": {"downforce": 999}}]
+    analyzed = A.analyze_input(payload)
+    checker = load(ROOT / "scripts/topo2d00/check.py", "topo_auxiliary_checker")
+    assert checker.compare(analyzed, checker.check(payload)) == []
+    assert analyzed["label"] == "CONCORDANT"
+    for config in ("E1", "E2"):
+        observed = analyzed["thickening_alone"]["SA-WF/fine30"][config]["observables"]
+        for name, downforce, drag in (("pressure_cl", 3, .2), ("total_cl", 7, .4)):
+            stat = observed[name]
+            assert stat["status"] == "DESCRIPTIVE" and stat["paired_realisations"] == 8
+            assert stat["point_estimate"] == pytest.approx({"downforce": downforce, "drag": drag})
+            assert stat["ci90"]["downforce"] == pytest.approx([downforce, downforce])
+    assert analyzed["thickening_alone"]["SA-WF/fine30"]["E3"]["status"] == "UNAVAILABLE_SHARP_ARM"
+
+
+@pytest.mark.parametrize("failure", ["duplicate", "unusable", "status", "pressure_unsettled", "total_unsettled", "nonfinite", "missing"])
+def test_thickening_auxiliary_failures_withhold_ci_and_do_not_change_label(failure):
+    payload = S.add_auxiliary_coefficients(S.input_table())
+    cell = payload["rans"]["cells"][0]
+    raw = cell["realisations"][0]["diagnostics"]["E2_sharp"]
+    if failure == "duplicate":
+        for row in cell["realisations"]:
+            row["mesh_sha256"]["E2_sharp"] = "b" * 64
+            row["diagnostics"]["E2_sharp"]["mesh_msh_sha256"] = "b" * 64
+    elif failure == "unusable":
+        raw["usable"] = False
+    elif failure == "status":
+        raw["status"] = "SOLVER_DIVERGED"
+    elif failure == "pressure_unsettled":
+        raw["pressure_convergence"]["state"] = "not_settled"
+    elif failure == "total_unsettled":
+        raw["convergence"]["state"] = "not_settled"
+    elif failure == "nonfinite":
+        raw["pressure_coefficients"]["total"]["Cl"] = float("nan")
+    else:
+        raw.pop("pressure_coefficients")
+    result = A.analyze_input(payload)
+    checker = load(ROOT / "scripts/topo2d00/check.py", "topo_auxiliary_failure_checker")
+    assert checker.compare(result, checker.check(payload)) == []
+    assert result["label"] == "CONCORDANT"  # Other registered cells still qualify.
+    stats = result["thickening_alone"]["SA-WF/fine30"]["E2"]["observables"]
+    limited = ("total_cl",) if failure == "total_unsettled" else ("pressure_cl",) if failure in ("pressure_unsettled", "nonfinite", "missing") else ("pressure_cl", "total_cl")
+    for name in limited:
+        assert stats[name]["status"] == "POINT_ONLY" and stats[name]["ci90"] is None
+        assert stats[name]["paired_realisations"] == (8 if failure == "duplicate" else 7)
+
+
+def test_thickening_auxiliary_config_and_mesh_identity_are_bound():
+    checker = load(ROOT / "scripts/topo2d00/check.py", "topo_auxiliary_identity_checker")
+    payload = S.add_auxiliary_coefficients(S.input_table())
+    payload["rans"]["cells"][0]["realisations"][0]["diagnostics"]["E1"]["mesh_msh_sha256"] = "0" * 64
+    with pytest.raises(ValueError, match="auxiliary RANS"):
+        A.analyze_input(payload)
+    with pytest.raises(ValueError, match="auxiliary RANS"):
+        checker.check(payload)
+
+
 @pytest.mark.parametrize("zero_side", ["waterlily", "rans", "both"])
 def test_zero_baseline_only_undefines_descriptive_retention(zero_side):
     payload = S.input_table()
@@ -297,7 +422,7 @@ def formal_boundary(tmp_path, monkeypatch):
     from cfd_harness import campaign_schema as sc, scene_campaign
     commit = "b" * 40
     source_names = ("scripts/topo2d00/analyze.py", "scripts/topo2d00/check.py",
-                    "scripts/waterlily_topo2d_job.jl", "src/cfd_sdf/topo2d/geometry.py")
+                    "scripts/waterlily_topo2d_job.jl", "src/cfd_gen/topo2d/geometry.py")
     sources = {}
     for name in source_names:
         path = tmp_path / name
@@ -336,7 +461,7 @@ def formal_boundary(tmp_path, monkeypatch):
         topo_keys = ("configuration", "height_mm", "reynolds", "grid", "phase", "role")
         row["scene_sha256"] = geometry[row["configuration"]] if row["grid"] == "main" else "c" * 64
         rows[str(i)] = {"topo2d": {key: row[key] for key in topo_keys},
-                        **{key: row[key] for key in ("ok", "finite", "complete", "scene_sha256", "readouts")}}
+                        **{key: row[key] for key in ("ok", "finite", "complete", "scene_sha256", "readouts", "observable")}}
     table_value = {"kind": sc.TABLE_KIND, "harness_version": sc.HARNESS_VERSION,
                    "smoke": False, "integrity": {"pass": True, "failures": []},
                    "force_unit": "N/m", "source_commit": commit, "state_forces_n": {"kernel": rows}}
@@ -378,6 +503,7 @@ def test_formal_loader_reverifies_raw_table_and_all_source_geometry_inputs(forma
     data, provenance = A.load_formal_inputs([f["table"]], f["rans"], f["freeze"])
     assert data["identity_valid"] and len(f["calls"]) == 1
     assert A.analyze_input(data)["label"] == "CONCORDANT"
+    assert all(r["observable"] == "total_cl" and r["h_over_c1"] == pytest.approx(r["height_mm"] / 223.4) and r["h_over_c"] == pytest.approx(r["height_mm"] / 380) for r in data["waterlily"])
     assert len(provenance["input_sha256"]) == 11
     # Confirmation geometry differs, and is bound by its own harness scene.
     assert {r["scene_sha256"] for r in data["waterlily"] if r["grid"] == "confirmation"} == {"c" * 64}
@@ -429,19 +555,65 @@ def test_formal_tr00_requires_two_distinct_frozen_digitizations(formal_boundary)
         A.load_formal_inputs([f["table"]], f["rans"], f["freeze"])
 
 
-@pytest.mark.parametrize("malformation", ["missing", "wrong"])
-def test_formal_rans_must_declare_the_writer_pressure_and_total_components(formal_boundary, malformation):
+def test_distinct_digitization_paths_cannot_hide_identical_content(formal_boundary):
     f = formal_boundary
     rans = json.loads(f["rans"].read_text())
-    if malformation == "missing":
-        rans["provenance"].pop("component_by_config")
-    else:
-        rans["provenance"]["component_by_config"]["E1_sharp"] = "pressure_plus_viscous"
+    records = rans["reference"]["source"]["digitization_records"]
+    (f["root"] / records[1]["path"]).write_bytes((f["root"] / records[0]["path"]).read_bytes())
+    records[1]["sha256"] = records[0]["sha256"]
+    f["rans"].write_text(json.dumps(rans))
+    f["spec"]["inputs"].update({"rans.json": A.sha256(f["rans"]), records[1]["path"]: records[1]["sha256"]})
+    f["save"]()
+    with pytest.raises(ValueError, match="distinct content SHA"):
+        A.load_formal_inputs([f["table"]], f["rans"], f["freeze"])
+
+
+def test_formal_analysis_refuses_wrong_rans_observable(formal_boundary):
+    f = formal_boundary
+    rans = json.loads(f["rans"].read_text())
+    rans["cells"][0]["realisations"][0]["forces"]["E2"]["observable"] = "pressure_cl"
+    f["rans"].write_text(json.dumps(rans))
+    f["spec"]["inputs"]["rans.json"] = A.sha256(f["rans"])
+    f["save"]()
+    with pytest.raises(ValueError, match="observable"):
+        A.run_analysis([f["table"]], f["rans"], f["freeze"], f["root"] / "analysis")
+    assert not (f["root"] / "analysis").exists()
+
+
+def test_formal_analysis_refuses_wrong_verified_waterlily_observable(formal_boundary):
+    f = formal_boundary
+    claimed = json.loads(f["table"].read_text())
+    next(iter(claimed["state_forces_n"]["kernel"].values()))["observable"] = "pressure_cl"
+    f["actual"].clear()
+    f["actual"].update(claimed)
+    f["table"].write_text(json.dumps(claimed))
+    f["spec"]["inputs"]["table.json"] = A.sha256(f["table"])
+    f["save"]()
+    with pytest.raises(ValueError, match="observable"):
+        A.run_analysis([f["table"]], f["rans"], f["freeze"], f["root"] / "analysis")
+    assert not (f["root"] / "analysis").exists()
+
+
+def test_formal_legacy_component_map_cannot_contradict_force_observables(formal_boundary):
+    f = formal_boundary
+    rans = json.loads(f["rans"].read_text())
+    rans["provenance"]["component_by_config"]["E1_sharp"] = "pressure_plus_viscous"
     f["rans"].write_text(json.dumps(rans))
     f["spec"]["inputs"]["rans.json"] = A.sha256(f["rans"])
     f["save"]()
     with pytest.raises(ValueError, match="component_by_config"):
         A.load_formal_inputs([f["table"]], f["rans"], f["freeze"])
+
+
+def test_formal_current_wp5_component_map_uses_observable_names(formal_boundary):
+    f = formal_boundary
+    rans = json.loads(f["rans"].read_text())
+    rans["provenance"]["component_by_config"] = {c: "pressure_cl" if c.endswith("_sharp") else "total_cl" for c in A.RCONFIGS}
+    f["rans"].write_text(json.dumps(rans))
+    f["spec"]["inputs"]["rans.json"] = A.sha256(f["rans"])
+    f["save"]()
+    data, _ = A.load_formal_inputs([f["table"]], f["rans"], f["freeze"])
+    assert A.analyze_input(data)["label"] == "CONCORDANT"
 
 
 def test_readout_whole_mean_must_match_equal_duration_batch_means():

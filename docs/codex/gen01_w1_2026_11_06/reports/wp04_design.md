@@ -1,5 +1,70 @@
 # WP4 設計メモ
 
+## Amendment 1・2 対応設計（attempt 2、2026-11-06）
+
+基点は `88fea06e`、開始時の差分は空。今回の authority は follow-ups worktree の
+`docs/topo2d00_registration_2026_11_01.md` Amendment 1・2（read-only）とユーザーの
+Amendment 2。以下は初回設計の同じ項目に優先する。登録・凍結・GPU 実行・commit/push は
+行わない。commit/push と PR #89 本文は Claude の host 作業へ引き継ぐ。
+
+- `src/cfd_sdf/topo2d/` を `src/cfd_gen/topo2d/` へ移し、旧 closure 内に bytes を残さない。
+  `cfd_gen/__init__.py` と 2–3 行 README を置く。過去の frozen source／例外は変更しない。
+- 表座標を T2-0 と同じ自然境界の弧長パラメータ補間 CubicSpline で再標本化する。
+  `airfoil_points` は入力が固定で有限 TE を閉じて消すため直接 import せず、既存 SciPy の
+  `CubicSpline` を使う。弧長 ≤1 mm、非 cap 頂点の折れ角 ≤5° を独立 gate とする。
+  必要な局所細分化は角度と長さの双方を満たすまで決定的に行う。頂点番号で cap を定めない。
+  各面の LE から弧長 2 % c を保持し、camber の弧長 smoothstep で元の最大厚さ位置へ移行する。
+  後方の実多角形法線幅 ≥4Δx、同じ camber と TE 中点、gap／clearance の gate を維持する。
+  W/R 共通 scene JSON 全件・SHA と図を再生成し、実弦長／姿勢、厚さ比、両 h 正規化を記録する。
+- Julia helper を `julia/CFDSDFWaterLily/gen01/Topo2D.jl` に移し、job から
+  `Base.include(CFDSDFWaterLily, ...)` で読む。全 path／hash pin と CPU 自己テストを追従する。
+- RANS force record と reference に `observable` を明示し、sharp は `pressure_cl`、thick と W は
+  `total_cl` とする。差分の前に両端を検査し、不一致は入力拒否。checker は共有評価コードを
+  import せず独立に検査する。両 h 正規化、SHA-distinct realisations と digitizations、
+  sharp→thick の記述用差分も登録 Amendment 1 の範囲で更新する。
+
+担当: parent は geometry／scene 再生成／図／統合レビューと最終報告。独立 worker は
+analyzer/checker/schema/tests と Julia/harness/path/tests に分担し、同じ実装を繰り返さない。
+OpenCode Go MCP は未提供、CLI の現在モデル一覧取得はログ先の sandbox permission で失敗。
+追加課金／設定変更をせず native workers へ fallback。
+
+検証: 新規 regression を先に実行、`.venv/bin/python -m pytest -q tests/topo2d00`、
+CPU 小格子 selftest、compileall、最後に
+`.venv/bin/python -m pytest --ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider`。
+base はユーザー指定 host 実行 `e3dcdf61` の 3482 passed／74 skipped／0 failed を参照する。
+結果側の全失敗 node を記録し、空集合との一致を検査する。凍結 evidence の変更はしない。
+初回 validation は歴史記録として保持し、attempt 2 の証拠は別のディレクトリへ保存する。
+
+### 実装・統合時の確定事項（2026-11-07、登録ではない）
+
+全 governing docs（handoff、README、phase_plan、problem_register、resolution_plan、
+GEN plan）は read-only worker が省略のない分割で全文確認した。登録 Amendment 1・2 は
+follow-ups worktree で確認し、その本文は変更していない。
+
+元の厚さと floor の hard max は接続部に約6°の折れを生むため、bulk 幅の smooth L8 envelope
+`(t_original^8 + t_min^8)^(1/8)` を使う（overflow を避けた scaled form）。camber-normal offset、
+cap／TE 中点保存、独立 normal-ray 幅 ≥4dx の gate は維持する。前縁も細分化して、2つの
+有限 TE cap corner 以外の全頂点で5°以下を検査する。WP5 実 loader は10 scene×2 familyを
+修復なしに受理した。元 spline の区間弧長は速度積分、出力 polygon は実 segment 長で検査する。
+
+CPU の頂点格納を Vector、未実行 CUDA 経路を Tuple とした。883／651頂点の長さを型に
+持たせた CPU 統合試験は1805.96秒、Vector版は113.19秒で同じ56検査を完了した。SDF の式、
+probe／sample／窓／検査数は変えていない。GPU の実行・性能の証拠ではない。
+
+WP1 最新 API の restore は `identity` keyword が必須であり、最初の統合試験で欠落を検出した。
+fingerprint と検証済み column mask から expected identity を再構成して渡すように修正した。
+WP2 は gen01/ へ移動済みの実 source を読み取り専用 snapshot から使い、出所と SHA を保存した。
+snapshot は provider 2ファイルだけで、repo の /tmp clone は作っていない。
+
+WP5 の実 raw diagnostics は sharp／thick 双方の pressure と total を含む。厚肉化のみの対照は
+primary force record を跨いで引かず、同一 observable の raw pair から独立再計算する。
+各 observable の収束と config／model／family／mesh identity を検査し、8対・独立meshが揃わない
+ときは点推定／未利用を明示する。collector の事前集計値は算術に使わず、ラベルにも使わない。
+
+campaign の同じsceneを位相ごとに再検査する重複は、同じ generation／pin 集合内でのみ排除する。
+CFD 前の scene SHA と幾何 gate、formal verifier の確認は維持する。canonical な旧 campaign
+schema／runner／凍結 closure に例外は追加しない。
+
 状態: implementation design, 2026-11-06。登録・凍結・科学的判定ではない。
 基点: `e3dcdf6188df6079e197eb28f7fcba1451ec512d`、branch
 `feat/gen01-w1-04-topo2d-waterlily`。開始時の tracked/untracked diff は空。

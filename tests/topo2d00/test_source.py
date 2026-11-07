@@ -42,3 +42,15 @@ def test_main_source_is_distinct_from_the_sharpened_t20_variant():
     np.testing.assert_allclose(np.max(np.abs(main - sharpened), axis=0),
         [.00023428827215754566, .003657206803939113,
          .00020590868397496465, .003827126230975829], rtol=1e-11, atol=1e-14)
+
+
+def test_spline_resampling_interpolates_every_transcribed_table_coordinate():
+    from cfd_gen.topo2d.geometry import build_scene
+    scene = build_scene("E2_sharp", height_mm=100, dx_mm=223.4 / 120)
+    for name, element, transform in zip(("main_element_table3.dat", "flap_table4.dat"),
+                                        scene["elements"], scene["placement"]["transformations"]):
+        rows = np.loadtxt(DATA / name) * 380
+        for surface, columns in (("suction_mm", slice(0, 2)), ("pressure_mm", slice(2, 4))):
+            dense = np.asarray(element[surface]) - transform["translation_mm"]
+            distances = np.linalg.norm(rows[:, columns, None] - dense.T[None], axis=1)
+            assert distances.min(axis=1).max() < 1e-10

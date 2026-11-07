@@ -17,6 +17,23 @@ def test_existing_campaign_still_uses_legacy_contract():
     assert not S.is_scene_campaign(campaign)
 
 
+def test_gen01_entrypoints_and_loaded_source_closure():
+    root = Path(__file__).resolve().parents[2]
+    module = "julia/CFDSDFWaterLily/gen01/Topo2D.jl"
+    paths = S.source_paths(repo=root)
+    assert module in paths
+    assert "src/cfd_gen/topo2d/geometry.py" in paths
+    assert {"src/cfd_gen/__init__.py", "src/cfd_gen/topo2d/__init__.py"} <= set(paths)
+    assert not any(p.startswith(("julia/topo2d/", "src/cfd_sdf/topo2d/")) for p in paths)
+    assert not (root / "julia/topo2d/Topo2D.jl").exists()
+    for filename in ("CFDSDFWaterLily.jl", "GridSDFBody.jl", "WaterLilyBody.jl", "Forces.jl", "Runtime.jl", "Simulation.jl"):
+        assert f"julia/CFDSDFWaterLily/src/{filename}" in paths
+    for script in ("scripts/waterlily_topo2d_job.jl", "scripts/topo2d_selftest.jl"):
+        text = (root / script).read_text()
+        assert "Base.include(CFDSDFWaterLily," in text
+        assert '"gen01", "Topo2D.jl"' in text
+
+
 def test_provider_pins_follow_gen01_placement_and_legacy_fallback(tmp_path):
     for name in ("Checkpoint.jl", "Force00.jl"):
         for folder in ("src", "gen01"):
@@ -30,8 +47,19 @@ def test_provider_pins_follow_gen01_placement_and_legacy_fallback(tmp_path):
         assert f"julia/CFDSDFWaterLily/src/{name}" in S.source_paths(repo=tmp_path)
 
 
+def test_scene_observable_and_both_height_normalizations_are_required():
+    metadata = {"observable": "total_cl", "h_over_c1": 100 / 223.4, "h_over_c": 100 / 380}
+    S.validate_observable(metadata, 100)
+    with pytest.raises(ValueError, match="observable"):
+        S.validate_observable({**metadata, "observable": "pressure_cl"}, 100)
+    with pytest.raises(ValueError, match="h_over_c"):
+        S.validate_observable({**metadata, "h_over_c": 100 / 223.4}, 100)
+    with pytest.raises(ValueError, match="h_over_c1"):
+        S.validate_observable({k: v for k, v in metadata.items() if k != "h_over_c1"}, 100)
+
+
 def test_scene_wire_checks_hash_and_geometry_before_solver(tmp_path):
-    from cfd_sdf.topo2d.geometry import build_scene
+    from cfd_gen.topo2d.geometry import build_scene
     scene = build_scene("E1", height_mm=100, dx_mm=223.4 / 120)
     path = tmp_path / "scene.json"
     path.write_text(json.dumps(scene))
@@ -46,7 +74,7 @@ def test_scene_wire_checks_hash_and_geometry_before_solver(tmp_path):
 
 
 def test_scene_wire_recomputes_gates_even_with_a_fresh_hash(tmp_path):
-    from cfd_sdf.topo2d.geometry import build_scene, GeometryError
+    from cfd_gen.topo2d.geometry import build_scene, GeometryError
     scene = build_scene("E1", height_mm=100, dx_mm=223.4 / 120)
     scene["elements"][0]["polygon_mm"][4], scene["elements"][0]["polygon_mm"][40] = scene["elements"][0]["polygon_mm"][40], scene["elements"][0]["polygon_mm"][4]
     path = tmp_path / "forged_scene.json"
@@ -66,6 +94,7 @@ def test_extended_force_csv_reconstruction_and_batch_endpoints(tmp_path):
             drag, down = 2 + i, 3 + 2 * i
             writer.writerow([i, i, drag, 0, -down, drag, down, drag, 0, -down, 0, 0, 0, drag, down, "NaN", "NaN", "NaN", "NaN"])
     got = S.host_readouts(path, start=0.5, end=4.5, solver_length=80, force_scale=0.002, available={"cur": True, "nds": False, "cv": False}, batches=4)
+    assert got["observable"] == got["readouts"]["cur"]["observable"] == "total_cl"
     assert got["readouts"]["cur"]["drag"] == pytest.approx(2 * 4.5 / 80)
     assert got["readouts"]["cur"]["downforce"] == pytest.approx(2 * 8 / 80)
     assert len(got["readouts"]["cur"]["batches"]) == 4
@@ -145,6 +174,7 @@ def test_scene_verify_recomputes_full_cpu_output_and_rejects_missing_elements(tm
     write_csv()
     pins = {relative: SC.sha256_path(tmp_path / relative) for relative in {*S.source_paths(), *SC.TOOL_FILES, state["scene_path"], campaign_rel}}
     summary = {"source_sha256": {p: pins[p] for p in S.source_paths()}, "force_csv_sha256": SC.sha256_path(csv_path), "scene_sha256": state["scene_sha256"], "topo2d": state["topo2d"],
+               "observable": "total_cl", "h_over_c1": 100 / 223.4, "h_over_c": 100 / 380,
                "phase_shift_m": SC.floats(kernel["runs"][0]["env"][SC.ORIGIN_ENV]), "force_unit": "N/m", "reference_chord_mm": 223.4,
                "backend": "WaterLily CPU", "smoke": True, "runtime": {"waterlily_version": "1.8.0", "scalar_type": "Float32", "scheme": "quick", "threads": 1},
                "finite_u": True, "finite_p": True, "finite_forces": True, "flow_dims": kernel["case"]["flow_dims"], "top_factor": 1.0,
@@ -164,11 +194,19 @@ def test_scene_verify_recomputes_full_cpu_output_and_rejects_missing_elements(tm
     receipts()
     table = S.verify(campaign_path, [output], smoke=True, repo=tmp_path)
     result = table["state_forces_n"]["re1000"][name]
+    assert result["observable"] == result["readouts"]["cur"]["observable"] == "total_cl"
     assert result["readouts"]["cur"]["downforce"] == pytest.approx(0.05)
     assert result["ok"] and result["finite"] and result["complete"]
     assert table["smoke"] is True and table["force_unit"] == "N/m"
     with pytest.raises(ValueError, match="smoke"):
         SC.require_formal_table(table)
+    for key, forged in (("observable", "pressure_cl"), ("h_over_c", 100 / 223.4)):
+        original = summary[key]
+        summary[key] = forged
+        receipts()
+        with pytest.raises(ValueError, match="observable|h_over_c"):
+            S.verify(campaign_path, [output], smoke=True, repo=tmp_path)
+        summary[key] = original
     # Forge consistent file receipts after dropping all element columns. The
     # schema/physics verifier must reject it independently of those receipts.
     cols[:] = cols[:-5]
@@ -232,6 +270,7 @@ def write_synthetic_numerical_kernel(tmp_path, smoke=True):
         d.mkdir(parents=True)
     failed = campaign["states"][names[0]]
     failure = {"schema": "topo2d-job-failure-v1", "status": "NUMERICAL", "topo2d": failed["topo2d"], "scene_sha256": failed["scene_sha256"],
+               "observable": "total_cl", "h_over_c1": 100 / 223.4, "h_over_c": 100 / 380,
                "source_sha256": source, "runtime": runtime, "phase_shift_m": SC.floats(kernel["runs"][0]["env"][SC.ORIGIN_ENV]),
                "window_t_u_l": [0.5, 4.5], "flow_dims": kernel["case"]["flow_dims"], "contract_fingerprint": "f" * 64,
                "smoke": smoke, "reason": "synthetic nonfinite-force injection", "wall_seconds": 1.0}
@@ -249,6 +288,7 @@ def write_synthetic_numerical_kernel(tmp_path, smoke=True):
         writer.writerow(cols)
         writer.writerows([[i, i, 2, 0, -3, 2, 3, 2, 0, -3, 0, 0, 0, 2, 0, -3, 2, 3, *(["NaN"] * 10), 1, 0, -1.5, 1, 1.5, 1, 0, -1.5, 1, 1.5] for i in range(6)])
     summary = {"source_sha256": source, "force_csv_sha256": SC.sha256_path(csv_path), "scene_sha256": good["scene_sha256"], "topo2d": good["topo2d"],
+               "observable": "total_cl", "h_over_c1": 100 / 223.4, "h_over_c": 100 / 380,
                "phase_shift_m": SC.floats(kernel["runs"][1]["env"][SC.ORIGIN_ENV]), "force_unit": "N/m", "reference_chord_mm": 223.4,
                "backend": "WaterLily CPU" if smoke else "WaterLily CUDA", "smoke": smoke, "runtime": runtime,
                "finite_u": True, "finite_p": True, "finite_forces": True, "flow_dims": kernel["case"]["flow_dims"], "top_factor": 1.0,
@@ -365,6 +405,7 @@ def write_synthetic_incomplete_kernel(tmp_path, smoke=True, reason="STATE_TIMEOU
                "runtime_expected": None if smoke else runtime, "runtime_observed": None, "preflight_sha256": None}
     if reason == "STATE_TIMEOUT":
         preflight = {"schema": "topo2d-job-preflight-v1", "topo2d": campaign["states"][names[1]]["topo2d"], "scene_sha256": campaign["states"][names[1]]["scene_sha256"],
+                     "observable": "total_cl", "h_over_c1": 100 / 223.4, "h_over_c": 100 / 380,
                      "source_sha256": source, "runtime": runtime, "smoke": smoke, "phase_shift_m": SC.floats(kernel["runs"][1]["env"][SC.ORIGIN_ENV]),
                      "contract_fingerprint": "f" * 64, "flow_dims": kernel["case"]["flow_dims"], "window_t_u_l": [0.5, 4.5]}
         preflight_path = current_dir / "job_preflight.json"

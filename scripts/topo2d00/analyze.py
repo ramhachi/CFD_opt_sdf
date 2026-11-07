@@ -32,6 +32,8 @@ LIMITATIONS = [
     "CONCORDANT_PARTIAL is shadowed by DISCORDANT under global-AND resolved ranking.",
     "RETENTION_12 uses delta-method relative-increment variances followed by Fieller; it is not an exact nested-ratio interval.",
     "The uncertainty model treats placement phases and equal-duration batches as sampling units; iid adequacy requires registration review.",
+    "The confirmation grid re-thickens at its own 4dx; its contrast includes geometry and grid changes.",
+    "Thickening-alone differences need the same observable on sharp and thick arms; the primary pressure/total arms cannot be subtracted.",
 ]
 
 
@@ -64,6 +66,10 @@ def validate_input(data):
         require(row.get("grid") in ("main", "confirmation"), "unknown WaterLily grid")
         require(row.get("role") in ("primary", "confirmation", "secondary", "domain", "determinism"), "unknown WaterLily role")
         require(finite(row.get("height_mm"), "height_mm") > 0, "positive height required")
+        require(row.get("observable") == "total_cl", "WaterLily observable must be total_cl")
+        for name, chord in (("h_over_c1", 223.4), ("h_over_c", 380.0)):
+            if name in row:
+                require(math.isclose(finite(row[name], name), row["height_mm"] / chord, rel_tol=1e-12), f"inconsistent {name}")
         require(isinstance(row.get("phase"), (str, int)) and not isinstance(row.get("phase"), bool) and str(row["phase"]), "phase identity missing")
         require(is_sha(row.get("scene_sha256")), "scene SHA missing or invalid")
         for key in ("ok", "finite", "complete"):
@@ -76,6 +82,7 @@ def validate_input(data):
             if value is None:
                 continue
             require(isinstance(value, dict), f"{name} readout must be an object or null")
+            require(value.get("observable") == row["observable"], "WaterLily readout observable differs from row; cannot difference across observables")
             for response in RESPONSES:
                 finite(value.get(response), f"{name} {response}")
             batches = value.get("batches")
@@ -95,9 +102,13 @@ def validate_input(data):
     require(isinstance(rans, dict) and rans.get("schema") == "topo2d00-rans-results-v1", "unknown RANS schema")
     reference = rans.get("coefficient_reference", {})
     require(reference.get("chord_mm") == 223.4, "RANS coefficients must use common c1 = 223.4 mm")
+    require(reference.get("height_mm") == 100, "RANS primary height must be 100 mm")
+    for name, chord in (("h_over_c1", 223.4), ("h_over_c", 380.0)):
+        require(math.isclose(finite(reference.get(name), name), 100 / chord, rel_tol=1e-12), f"inconsistent RANS {name}")
     if "units" in reference:
         require(reference["units"] == "dimensionless", "RANS force coefficients must be dimensionless")
     ref = rans.get("reference", {})
+    require(ref.get("observable") == "pressure_cl", "TR-00 reference observable must be pressure_cl")
     require(finite(ref.get("delta_cl"), "reference delta_cl") != 0, "reference increment must be nonzero")
     require(finite(ref.get("digitizing_uncertainty"), "digitizing uncertainty") >= 0, "negative digitizing uncertainty")
     require(isinstance(rans.get("cells"), list) and bool(rans["cells"]), "RANS model/family matrix missing")
@@ -118,10 +129,13 @@ def validate_input(data):
                 require(isinstance(row.get(field), dict) and set(row[field]) == set(RCONFIGS), f"RANS {field} must cover exactly E1/E2/E3 and E1_sharp/E2_sharp")
             for config in RCONFIGS:
                 status = row["status"][config]
-                require(status in ("SETTLED", "NUMERICAL", "INCOMPLETE"), "unknown RANS status")
+                require(status in ("SETTLED", "NUMERICAL", "INCOMPLETE", "MESH_FAILED"), "unknown RANS status")
                 mesh = row["mesh_sha256"][config]
                 require(is_sha(mesh) or (status != "SETTLED" and mesh is None), "RANS mesh SHA missing")
                 force = row["forces"][config]
+                if force is not None:
+                    observable = "pressure_cl" if config.endswith("_sharp") else "total_cl"
+                    require(isinstance(force, dict) and force.get("observable") == observable, f"RANS {config} observable must be {observable}; cannot difference across observables")
                 if status == "SETTLED":
                     require(isinstance(force, dict), "settled RANS force missing")
                     for response in RESPONSES:
@@ -152,6 +166,8 @@ def batch_variance(row, readout, response, upper_tail=None):
 
 def wstat(base, candidate, readout="cur", response="downforce"):
     require(len(base) == len(candidate) and len(base) >= 2, "paired phases required")
+    require(all(r.get("observable") == "total_cl" and r["readouts"][readout].get("observable") == "total_cl" for r in [*base, *candidate]),
+            "cannot difference across observables")
     p = len(base)
     b = np.asarray([r["readouts"][readout][response] for r in base])
     c = np.asarray([r["readouts"][readout][response] for r in candidate])
@@ -231,6 +247,73 @@ def rarrays(cell, config, response):
     return np.asarray([r["forces"][config][response] for r in cell["realisations"]], dtype=float)
 
 
+def rans_diagnostics(rans):
+    """Mesh repeats remain point diagnostics, never independent realizations."""
+    result = {}
+    for cell in rans["cells"]:
+        result[cell_id(cell)] = {}
+        for config in RCONFIGS:
+            rows = cell["realisations"]
+            hashes = [r["mesh_sha256"][config] for r in rows if r["mesh_sha256"][config] is not None]
+            values = [r["forces"][config] for r in rows if r["forces"][config] is not None]
+            duplicate = len(hashes) == 8 and len(set(hashes)) < 8
+            states = {r["status"][config] for r in rows}
+            status = ("NUMERICAL" if "NUMERICAL" in states else "MESH_FAILED" if "MESH_FAILED" in states else
+                      "DEGENERATE_REALISATIONS" if duplicate else "COMPLETE" if states == {"SETTLED"} and len(hashes) == 8 else "INCOMPLETE")
+            result[cell_id(cell)][config] = {
+                "status": status,
+                "distinct_meshes": len(set(hashes)), "measured_realisations": len(values),
+                "point_estimate": {q: float(np.mean([v[q] for v in values])) for q in RESPONSES} if values else None,
+                "ci90": None,
+            }
+    return result
+
+
+def thickening_diagnostics(cell):
+    """Descriptive, same-observable contrasts from WP5's raw diagnostics.
+
+    Collector summaries are deliberately not arithmetic inputs. ``usable`` is
+    the native arm's flag, so the auxiliary observable must additionally pass
+    its own convergence state. Duplicate meshes can retain points, never CIs.
+    """
+    result = {}
+    for config in CONFIGS:
+        sharp = config + "_sharp"
+        if sharp not in RCONFIGS:
+            result[config] = {"status": "UNAVAILABLE_SHARP_ARM", "observables": {}}
+            continue
+        result[config] = {"from": sharp, "to": config, "observables": {}}
+        for observable, field, convergence in (("pressure_cl", "pressure_coefficients", "pressure_convergence"),
+                                                ("total_cl", "coefficients", "convergence")):
+            differences = []
+            for row in cell["realisations"]:
+                pair = []
+                for arm in (sharp, config):
+                    raw = row.get("diagnostics", {}).get(arm, {})
+                    values = raw.get(field, {}).get("total")
+                    ready = (raw.get("usable") is True and raw.get("status") == "COMPLETED"
+                             and raw.get(convergence, {}).get("state") == "settled"
+                             and row["status"][arm] in ("SETTLED", "INCOMPLETE"))
+                    if not ready or not isinstance(values, dict) or not all(isinstance(values.get(q), (int, float)) and not isinstance(values[q], bool) and math.isfinite(values[q]) for q in ("Cl", "Cd")):
+                        break
+                    require(raw.get("config") == arm and raw.get("model") == cell["model"] and raw.get("family") == cell["family"]
+                            and raw.get("mesh_msh_sha256") == row["mesh_sha256"][arm], "auxiliary RANS config/model/family/mesh identity differs")
+                    pair.append(values)
+                if len(pair) == 2:
+                    differences.append({q: pair[1][key] - pair[0][key] for q, key in (("downforce", "Cl"), ("drag", "Cd"))})
+            rows = cell["realisations"]
+            distinct = all(len({r["mesh_sha256"][arm] for r in rows}) == 8 and all(r["mesh_sha256"][arm] is not None for r in rows) for arm in (sharp, config))
+            settled = all(r["status"][arm] == "SETTLED" for r in rows for arm in (sharp, config))
+            complete = len(differences) == 8 and distinct and settled
+            result[config]["observables"][observable] = {
+                "observable": observable, "status": "DESCRIPTIVE" if complete else "POINT_ONLY" if differences else "UNAVAILABLE",
+                "paired_realisations": len(differences),
+                "point_estimate": {q: float(np.mean([d[q] for d in differences])) for q in RESPONSES} if differences else None,
+                "ci90": {q: rstat([d[q] for d in differences])["ci90"] for q in RESPONSES} if complete else None,
+            }
+    return result
+
+
 def tr00(rans):
     ref = rans["reference"]["delta_cl"]
     sign_only = rans["reference"]["digitizing_uncertainty"] > 0.05 * abs(ref)
@@ -238,14 +321,21 @@ def tr00(rans):
     for cell in rans["cells"]:
         name = cell_id(cell)
         statuses = [r["status"][c] for r in cell["realisations"] for c in ("E1_sharp", "E2_sharp")]
-        record = {"label": "NUMERICAL" if "NUMERICAL" in statuses else "INCOMPLETE", "delta": None, "ratio_ci90": None}
-        if set(statuses) == {"SETTLED"}:
+        degenerate = any(len({r["mesh_sha256"][c] for r in cell["realisations"]}) < 8
+                         and all(r["mesh_sha256"][c] is not None for r in cell["realisations"])
+                         for c in ("E1_sharp", "E2_sharp"))
+        point = (float(np.mean(rarrays(cell, "E2_sharp", "downforce") - rarrays(cell, "E1_sharp", "downforce")))
+                 if all(r["forces"][c] is not None for r in cell["realisations"] for c in ("E1_sharp", "E2_sharp")) else None)
+        record = {"label": "NUMERICAL" if "NUMERICAL" in statuses else "MESH_FAILED" if "MESH_FAILED" in statuses else "INCOMPLETE",
+                  "delta": None, "ratio_ci90": None, "point_estimate": point,
+                  "reason": "DEGENERATE_REALISATIONS" if degenerate else None, "observable": "pressure_cl"}
+        if set(statuses) == {"SETTLED"} and not degenerate:
             stat = rstat(rarrays(cell, "E2_sharp", "downforce") - rarrays(cell, "E1_sharp", "downforce"))
             ratio = sorted(x / ref for x in stat["ci90"])
             agrees = sign(stat["ci90"]) == (1 if ref > 0 else -1)
             passed = agrees and (sign_only or (ratio[0] >= 0.5 and ratio[1] <= 2))
             label = ("TR00_PASS_SIGN" if sign_only else "TR00_PASS_RATIO") if passed else "TR00_FAIL"
-            record = {"label": label, "delta": stat, "ratio_ci90": ratio}
+            record.update(label=label, delta=stat, ratio_ci90=ratio)
             if passed:
                 result["qualified_cells"].append(name)
         result["cells"][name] = record
@@ -301,6 +391,9 @@ def ranking(arrays, statistic):
 def empty_result():
     return {"schema": "topo2d00-analysis-v1", "label": None, "tr00": {"cells": {}, "qualified_cells": []},
             "waterlily": {}, "rans": {}, "agreement": {}, "resolution": {"status": "NOT_JUDGED", "downforce": None},
+            "height": {"height_mm": 100.0, "h_over_c1": 100 / 223.4, "h_over_c": 100 / 380.0},
+            "observables": {"waterlily": "total_cl", "rans_main": "total_cl", "tr00": "pressure_cl"},
+            "rans_diagnostics": {}, "thickening_alone": {},
             "controls": {"determinism": {"judged": False, "pass": None}, "domain": {"status": "NOT_JUDGED", "z": None},
                          "readout": {}, "manipulation": {}}, "limitations": list(LIMITATIONS)}
 
@@ -311,6 +404,8 @@ def analyze_input(data):
     if not data["identity_valid"]:
         result["label"] = "INVALID"
         return result
+    result["rans_diagnostics"] = rans_diagnostics(data["rans"])
+    result["thickening_alone"] = {cell_id(c): thickening_diagnostics(c) for c in data["rans"]["cells"]}
     result["tr00"] = tr00(data["rans"])
     qualified = [c for c in data["rans"]["cells"] if cell_id(c) in result["tr00"]["qualified_cells"]]
     if not qualified:
@@ -322,7 +417,8 @@ def analyze_input(data):
             or any(r["complete"] and not r["ok"] for r in required_w)):
         result["label"] = "NUMERICAL"
         return result
-    if data["cap_hit"] or "INCOMPLETE" in statuses or any(not r["complete"] for r in required_w):
+    degenerate_main = any(result["rans_diagnostics"][cell_id(c)][config]["status"] == "DEGENERATE_REALISATIONS" for c in qualified for config in CONFIGS)
+    if data["cap_hit"] or "INCOMPLETE" in statuses or "MESH_FAILED" in statuses or degenerate_main or any(not r["complete"] for r in required_w):
         result["label"] = "INCOMPLETE"
         return result
     readout = data["controls"].get("primary_readout", "cur")
@@ -487,7 +583,7 @@ def summary_markdown(record):
             for response in RESPONSES:
                 intervals = [cell[contrast][response]["ci90"] for cell in result["rans"].values()]
                 text += f"- {contrast} {response}: [{min(i[0] for i in intervals):.10g}, {max(i[1] for i in intervals):.10g}].\n"
-    text += "\n## Agreement, resolution and controls\n\n```json\n" + json.dumps({k: result.get(k) for k in ("agreement", "resolution", "controls")}, indent=2, sort_keys=True, allow_nan=False) + "\n```\n"
+    text += "\n## Agreement, resolution, controls and observable diagnostics\n\n```json\n" + json.dumps({k: result.get(k) for k in ("height", "observables", "agreement", "resolution", "controls", "rans_diagnostics", "thickening_alone")}, indent=2, sort_keys=True, allow_nan=False) + "\n```\n"
     text += "\n## Provenance\n\n```json\n" + json.dumps(record.get("provenance", {}), indent=2, sort_keys=True, allow_nan=False) + "\n```\n"
     return text
 
@@ -509,7 +605,7 @@ def load_formal_inputs(table_paths, rans_path, freeze_path):
     require(all(table.get("force_unit") == "N/m" for table in supplied.values()), "TOPO force tables must explicitly carry 2D physical N/m units")
     identities_valid = sidecar.read_text().strip() == sha256(freeze_path)
     errors = [] if identities_valid else ["analysis freeze SHA sidecar mismatch"]
-    required_sources = {"scripts/topo2d00/analyze.py", "scripts/topo2d00/check.py", "scripts/waterlily_topo2d_job.jl", "src/cfd_sdf/topo2d/geometry.py"}
+    required_sources = {"scripts/topo2d00/analyze.py", "scripts/topo2d00/check.py", "scripts/waterlily_topo2d_job.jl", "src/cfd_gen/topo2d/geometry.py"}
     require(required_sources <= set(freeze["sources"]), "freeze omits required analyzer/checker/job/geometry source")
     for rel, expected in freeze["sources"].items():
         require(is_sha(expected) and not Path(rel).is_absolute() and ".." not in Path(rel).parts, "invalid frozen source path/hash")
@@ -553,9 +649,12 @@ def load_formal_inputs(table_paths, rans_path, freeze_path):
             identities_valid = False
             errors.append("TR-00 digitization SHA differs from frozen input: " + path)
     require(len(set(digitization_paths)) == len(digitization_paths), "TR-00 digitization records must be distinct artifacts")
+    require(len({d["sha256"] for d in digitizations}) == len(digitizations), "TR-00 digitization records must have distinct content SHA-256")
     require(isinstance(rans.get("provenance"), dict) and isinstance(rans["provenance"].get("geometry_sha256"), dict), "formal RANS results need geometry provenance")
-    components = {config: "pressure_only" if config.endswith("_sharp") else "pressure_plus_viscous" for config in RCONFIGS}
-    require(rans["provenance"].get("component_by_config") == components, "formal RANS component_by_config must declare pressure-only sharp arms and pressure-plus-viscous main arms")
+    if "component_by_config" in rans["provenance"]:
+        components = {config: "pressure_only" if config.endswith("_sharp") else "pressure_plus_viscous" for config in RCONFIGS}
+        observables = {config: "pressure_cl" if config.endswith("_sharp") else "total_cl" for config in RCONFIGS}
+        require(rans["provenance"]["component_by_config"] in (components, observables), "formal RANS component_by_config conflicts with force observables")
     if rans["provenance"]["geometry_sha256"] != geometry:
         identities_valid = False
         errors.append("RANS geometry identity differs from main/sharp study geometry")
@@ -620,7 +719,9 @@ def load_formal_inputs(table_paths, rans_path, freeze_path):
                     require(is_sha(row.get("failure_sha256")) and row["finite"] is False and row["ok"] is False and row["complete"] is False
                             and row["readouts"] == {name: None for name in READOUTS}, "authenticated numerical failure row is inconsistent")
                     numerical_failures.append({**identity, "failure_sha256": row["failure_sha256"]})
-                normalized.append({**topo, "ok": row["ok"], "finite": row["finite"], "complete": row["complete"],
+                require(row.get("observable") == "total_cl", "verified WaterLily observable must be total_cl")
+                normalized.append({**topo, "observable": "total_cl", "h_over_c1": topo["height_mm"] / 223.4, "h_over_c": topo["height_mm"] / 380.0,
+                                   "ok": row["ok"], "finite": row["finite"], "complete": row["complete"],
                                    "scene_sha256": row["scene_sha256"], "readouts": row["readouts"],
                                    **({"force_csv_sha256": row["forces_csv_sha256"]} if "forces_csv_sha256" in row else {})})
     data = {"schema": "topo2d00-input-v1", "identity_valid": identities_valid, "cap_hit": cap_hit,

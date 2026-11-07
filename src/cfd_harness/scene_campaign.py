@@ -80,7 +80,7 @@ def scene_wire(path, expected_sha):
     SC.req(SC.sha256_path(path) == expected_sha, "scene hash mismatch")
     s = SC.jload(path)
     SC.req(s.get("schema") == "topo2d-scene-v1" and s.get("gates", {}).get("accepted") is True, "scene geometry gate not accepted")
-    from cfd_sdf.topo2d.geometry import validate_scene
+    from cfd_gen.topo2d.geometry import validate_scene
     SC.req(validate_scene(s) == s["gates"], "scene geometry gate record is stale")
     SC.req(s.get("configuration") in ("E1", "E2", "E3"), "unregistered scene configuration")
     dx, ground = SC.finite(s["dx_mm"]), SC.finite(s["ground_z_mm"])
@@ -108,6 +108,13 @@ def _mean(rows, column, start, end):
             slope = (b[column] - a[column]) / (b["t_u_l"] - a["t_u_l"])
             total += (a[column] + slope * ((lo + hi) / 2 - a["t_u_l"])) * (hi - lo)
     return total / (end - start)
+
+
+def validate_observable(record, height_mm):
+    """Bind the WaterLily total-force observable and both ride-height scales."""
+    SC.req(record.get("observable") == "total_cl", "WaterLily scene observable must be total_cl")
+    for key, chord in (("h_over_c1", 223.4), ("h_over_c", 380.0)):
+        SC.req(math.isclose(SC.finite(record.get(key), key), height_mm / chord, rel_tol=1e-12), f"scene {key} differs from height_mm")
 
 
 def host_readouts(path, *, start, end, solver_length, force_scale, available, batches=8, element_names=None):
@@ -152,10 +159,10 @@ def host_readouts(path, *, start, end, solver_length, force_scale, available, ba
                 SC.req(r[f"{readout}_fy_solver"] == 0, "2D scene readout spanwise force must be zero")
         coefficient = lambda q, a, b: 2 * _mean(rows, f"{readout}_{q}_solver", a, b) / solver_length
         edges = [start + (end - start) * i / batches for i in range(batches + 1)]
-        out[readout] = {q: coefficient(q, start, end) for q in ("downforce", "drag")}
+        out[readout] = {"observable": "total_cl", **{q: coefficient(q, start, end) for q in ("downforce", "drag")}}
         out[readout]["batches"] = [{q: coefficient(q, a, b) for q in ("downforce", "drag")} for a, b in zip(edges, edges[1:])]
     SC.req(all(math.isclose(r[f"cur_{q}_solver"], r[f"{q}_solver"], rel_tol=1e-12, abs_tol=1e-12) for r in rows for q in ("downforce", "drag")), "cur differs from canonical force")
-    return {"drag_n": force_scale * _mean(rows, "drag_solver", start, end), "downforce_n": force_scale * _mean(rows, "downforce_solver", start, end), "readouts": out}
+    return {"observable": "total_cl", "drag_n": force_scale * _mean(rows, "drag_solver", start, end), "downforce_n": force_scale * _mean(rows, "downforce_solver", start, end), "readouts": out}
 
 
 def refuse_formal_runner():
@@ -164,9 +171,11 @@ def refuse_formal_runner():
 
 def source_paths(backend="cpu", repo=ROOT):
     project = "CFDSDFWaterLilyT4" if backend == "cuda" else "CFDSDFWaterLily"
-    paths = ["scripts/waterlily_topo2d_job.jl", "julia/topo2d/Topo2D.jl", "src/cfd_harness/scene_campaign.py", "src/cfd_harness/campaign_schema.py", "src/cfd_sdf/topo2d/geometry.py",
+    paths = ["scripts/waterlily_topo2d_job.jl", "julia/CFDSDFWaterLily/gen01/Topo2D.jl", "src/cfd_harness/scene_campaign.py", "src/cfd_harness/campaign_schema.py", "src/cfd_gen/topo2d/geometry.py",
+            "src/cfd_gen/__init__.py", "src/cfd_gen/topo2d/__init__.py",
             "data/zz2003/main_element_table3.dat", "data/zz2003/flap_table4.dat", "data/zz2003/single_element_table2.dat",
             "julia/CFDSDFWaterLily/src/Forces.jl", f"julia/{project}/Project.toml", f"julia/{project}/Manifest.toml"]
+    paths += [f"julia/CFDSDFWaterLily/src/{name}" for name in ("CFDSDFWaterLily.jl", "GridSDFBody.jl", "WaterLilyBody.jl", "Runtime.jl", "Simulation.jl")]
     for optional in ("Checkpoint.jl", "Force00.jl"):
         for folder in ("gen01", "src"):
             path = f"julia/CFDSDFWaterLily/{folder}/" + optional
@@ -178,10 +187,11 @@ def source_paths(backend="cpu", repo=ROOT):
 
 def scene_pins(c, campaign_rel, kernel, repo=ROOT, backend="cuda"):
     paths = {*source_paths(backend, repo), *SC.TOOL_FILES, campaign_rel, *c["pins"], c["kernels"][kernel]["job"]}
-    for run in c["kernels"][kernel]["runs"]:
-        row = c["states"][run["state"]]
-        scene_wire(Path(repo) / row["scene_path"], row["scene_sha256"])
-        paths.add(row["scene_path"])
+    scenes = {(c["states"][run["state"]]["scene_path"], c["states"][run["state"]]["scene_sha256"])
+              for run in c["kernels"][kernel]["runs"]}
+    for path, digest in sorted(scenes):
+        scene_wire(Path(repo) / path, digest)
+        paths.add(path)
     return {p: SC.sha256_path(Path(repo) / p) for p in sorted(paths)}
 
 
@@ -268,6 +278,16 @@ def make_campaign(repo=ROOT):
     """Unfrozen three-kernel declaration; windows intentionally require pre-run data."""
     repo = Path(repo)
     states, kernels = {}, {}
+    scene_hashes = {}
+
+    def scene_hash(relative):
+        # One generation reuses a geometry across phases and Re. Gate each
+        # distinct input once here; run/verify still recheck the actual files.
+        if relative not in scene_hashes:
+            digest = SC.sha256_path(repo / relative)
+            scene_wire(repo / relative, digest)
+            scene_hashes[relative] = digest
+        return scene_hashes[relative]
     # JOB-02's R2 placement mechanism, centered and extended with exact mirrors
     # in (x,z). Every configuration uses the identical phase at a given grid.
     r2 = (0.7548776662, 0.5698402910)  # scripts/unc01_build.py:48, JOB-02 mechanism
@@ -283,8 +303,7 @@ def make_campaign(repo=ROOT):
             for config in configs:
                 name = f"{config}_h100_re{re}_{grid}_k{phase:02d}"
                 relative = f"docs/harness/topo2d00_scenes/{config}{'_fine' if resolution == 180 else ''}.json"
-                scene_wire(repo / relative, SC.sha256_path(repo / relative))
-                states[name] = {"kind": "scene", "scene_path": relative, "scene_sha256": SC.sha256_path(repo / relative),
+                states[name] = {"kind": "scene", "scene_path": relative, "scene_sha256": scene_hash(relative),
                                 "topo2d": {"configuration": config, "height_mm": 100.0, "reynolds": float(re), "grid": grid, "phase": str(phase), "role": role}}
                 runs.append({"state": name, "env": {SC.ORIGIN_ENV: f"{vector[0] * dx:.17g},0,{vector[1] * dx:.17g}"}})
         extras = []
@@ -297,8 +316,7 @@ def make_campaign(repo=ROOT):
             vector = fractions[phase - 1]
             name = f"{config}_h{height:g}_re{re}_{grid}_k{phase:02d}_{extra_role}"
             relative = f"docs/harness/topo2d00_scenes/{config}{'_h80' if height == 80 else ''}.json"
-            digest = SC.sha256_path(repo / relative)
-            scene_wire(repo / relative, digest)
+            digest = scene_hash(relative)
             states[name] = {"kind": "scene", "scene_path": relative, "scene_sha256": digest,
                             "topo2d": {"configuration": config, "height_mm": height, "reynolds": float(re), "grid": grid, "phase": str(phase), "role": extra_role}}
             env = {SC.ORIGIN_ENV: f"{vector[0] * dx:.17g},0,{vector[1] * dx:.17g}"}
@@ -321,7 +339,7 @@ def make_campaign(repo=ROOT):
                 "phase_rule": "JOB-02 R2 (0.7548776662,0.5698402910) fractional shifts centered at 0, k=1..8 with exact mirrors in x,z",
                 "remaining_controls": "E1 parent pre-run force histories must fix windows before freeze; unavailable readout controls remain NOT_JUDGED until WP2 integration"},
                 "domain": {"fluid_box_min_m": [-0.4468, 0.0, 0.0], "fluid_box_max_m": [1.117, 0.0, 1.51912], "solid_ground_padding_cells": 8}, "baseline": None, "directions": {},
-                "states": states, "kernels": kernels, "sparse": ["julia/topo2d", "docs/harness/topo2d00_scenes"], "pins": ["julia/topo2d/Topo2D.jl", "src/cfd_harness/scene_campaign.py"], "legacy_replay": False}
+                "states": states, "kernels": kernels, "sparse": ["julia/CFDSDFWaterLily/gen01", "docs/harness/topo2d00_scenes"], "pins": ["julia/CFDSDFWaterLily/gen01/Topo2D.jl", "src/cfd_harness/scene_campaign.py"], "legacy_replay": False}
     validate_campaign(campaign)
     return campaign
 
@@ -533,6 +551,7 @@ def verify(campaign_path, kernel_dirs, freeze_path=None, smoke=False, repo=ROOT,
                 state = c["states"][receipt["state"]]
                 run = kernel["runs"][cap_position]
                 SC.req(preflight.get("schema") == "topo2d-job-preflight-v1" and preflight.get("topo2d") == state["topo2d"] and preflight.get("scene_sha256") == state["scene_sha256"] and preflight.get("source_sha256") == receipt["source_sha256"], "scene cap preflight source/scene identity")
+                validate_observable(preflight, state["topo2d"]["height_mm"])
                 SC.req(preflight.get("smoke") is smoke and preflight.get("phase_shift_m") == SC.floats(run["env"][SC.ORIGIN_ENV]) and SC.is_sha(preflight.get("contract_fingerprint")), "scene cap preflight phase/contract")
                 expected_dims = list(kernel["case"]["flow_dims"])
                 expected_dims[1] = round((expected_dims[1] - 8) * float(run["env"].get("TOPO2D_TOP_FACTOR", "1"))) + 8
@@ -562,7 +581,7 @@ def verify(campaign_path, kernel_dirs, freeze_path=None, smoke=False, repo=ROOT,
             if entry.get("status") == "SKIPPED_NUMERICAL":
                 SC.req(entry.get("complete") is False and entry.get("seconds") == 0 and entry.get("prior_failure_sha256") == failures.get(config) and config in failures, "skipped scene lacks an earlier authenticated failure at this Re")
                 SC.req({p.name for p in state_dir.iterdir()} == {SC.ERROR_NAME}, "skipped scene contains solver outputs")
-                states[name] = {"topo2d": row["topo2d"], "scene_sha256": row["scene_sha256"], "ok": False, "finite": None, "complete": False,
+                states[name] = {"observable": "total_cl", "topo2d": row["topo2d"], "scene_sha256": row["scene_sha256"], "ok": False, "finite": None, "complete": False,
                                 "status": "SKIPPED_NUMERICAL", "prior_failure_sha256": failures[config], "drag_n": None, "downforce_n": None, "readouts": dict.fromkeys(READOUTS)}
                 continue
             SC.req(config not in failures, "a configuration continued after its registered numerical stop")
@@ -572,6 +591,7 @@ def verify(campaign_path, kernel_dirs, freeze_path=None, smoke=False, repo=ROOT,
                 digest = SC.sha256_path(failure_path)
                 SC.req(entry.get("complete") is False and entry.get("exit_code") == 42 and entry.get("failure_sha256") == digest, "scene numerical failure index/hash")
                 SC.req(failure.get("schema") == "topo2d-job-failure-v1" and failure.get("status") == "NUMERICAL" and failure.get("topo2d") == row["topo2d"] and failure.get("scene_sha256") == row["scene_sha256"], "scene numerical failure identity")
+                validate_observable(failure, row["topo2d"]["height_mm"])
                 SC.req(failure.get("source_sha256") == {p: identity["pins"][p] for p in source_paths("cpu" if smoke else "cuda", repo)}, "scene numerical failure source identity")
                 SC.req(failure.get("smoke") is smoke and failure.get("phase_shift_m") == SC.floats(run["env"][SC.ORIGIN_ENV]) and SC.is_sha(failure.get("contract_fingerprint")), "scene numerical failure phase/contract")
                 runtime = failure.get("runtime", {})
@@ -588,7 +608,7 @@ def verify(campaign_path, kernel_dirs, freeze_path=None, smoke=False, repo=ROOT,
                 SC.req(0 < SC.finite(failure["wall_seconds"]) <= wall and (wall <= kernel["config"]["per_state_timeout_s"] or is_overrun), "scene numerical failure wall budget")
                 total += wall
                 failures[config] = digest
-                states[name] = {"topo2d": row["topo2d"], "scene_sha256": row["scene_sha256"], "ok": False, "finite": False, "complete": False,
+                states[name] = {"observable": "total_cl", "topo2d": row["topo2d"], "scene_sha256": row["scene_sha256"], "ok": False, "finite": False, "complete": False,
                                 "status": "NUMERICAL", "failure_sha256": digest, "drag_n": None, "downforce_n": None, "readouts": dict.fromkeys(READOUTS), "solver_process_wall_seconds": wall}
                 continue
             csv_path, summary_path = state_dir / SC.forces_name(case["case_id"]), state_dir / SC.summary_name(case["case_id"])
@@ -603,6 +623,7 @@ def verify(campaign_path, kernel_dirs, freeze_path=None, smoke=False, repo=ROOT,
             SC.req(0 < wall and (wall <= kernel["config"]["per_state_timeout_s"] or is_overrun), "scene state wall budget")
             total += wall
             SC.req(summary.get("scene_sha256") == row["scene_sha256"] and summary.get("topo2d") == row["topo2d"], "scene job identity")
+            validate_observable(summary, row["topo2d"]["height_mm"])
             SC.req(summary.get("phase_shift_m") == SC.floats(run["env"][SC.ORIGIN_ENV]), "scene job phase")
             SC.req(summary.get("force_unit") == "N/m" and summary.get("reference_chord_mm") == 223.4, "scene force units")
             SC.req(summary.get("smoke") is smoke and (summary.get("backend") == "WaterLily CPU" if smoke else summary.get("backend") == freeze["runtime"][k]["backend"]), "scene runtime backend/smoke")

@@ -18,7 +18,7 @@ def planted():
     def force(j, phase):
         d = j + (phase - 7) * (.0001 * j)
         drag = .1 * j + (phase - 7) * .00001 * j
-        return {"downforce": d, "drag": drag,
+        return {"observable": "total_cl", "downforce": d, "drag": drag,
                 "batches": [{"downforce": d, "drag": drag} for _ in range(8)]}
     rows = []
     for re in (1000, 3000):
@@ -26,24 +26,24 @@ def planted():
             for phase in range(16):
                 rows.append(dict(configuration=f"E{j}", height_mm=100, reynolds=re,
                     grid="main", phase=str(phase), role="primary", ok=True, finite=True,
-                    complete=True, scene_sha256=str(j) * 64,
+                    complete=True, observable="total_cl", scene_sha256=str(j) * 64,
                     readouts=dict(cur=force(j, phase), nds=None, cv=None)))
     for j in (1, 2):
         for phase in range(4):
             rows.append(dict(configuration=f"E{j}", height_mm=100, reynolds=3000,
                 grid="confirmation", phase=str(phase), role="confirmation", ok=True, finite=True,
-                complete=True, scene_sha256=str(j + 3) * 64,
+                complete=True, observable="total_cl", scene_sha256=str(j + 3) * 64,
                 readouts=dict(cur=force(j, phase), nds=None, cv=None)))
     realizations = []
     for i in range(8):
         names = ("E1", "E2", "E3", "E1_sharp", "E2_sharp")
-        realizations.append(dict(id=str(i), mesh_sha256={c: "a" * 64 for c in names},
+        realizations.append(dict(id=str(i), mesh_sha256={c: f"{i + 1:064x}" for c in names},
             status={c: "SETTLED" for c in names}, forces={
-                c: {"downforce": int(c[1]) + i * .0001 * int(c[1]),
+                c: {"observable": "pressure_cl" if c.endswith("_sharp") else "total_cl", "downforce": int(c[1]) + i * .0001 * int(c[1]),
                     "drag": .1 * int(c[1]) + i * .00001 * int(c[1])} for c in names}))
     return dict(schema="topo2d00-input-v1", identity_valid=True, cap_hit=False, waterlily=rows,
-        rans=dict(schema="topo2d00-rans-results-v1", coefficient_reference=dict(chord_mm=223.4),
-                  reference=dict(delta_cl=1., digitizing_uncertainty=.01),
+        rans=dict(schema="topo2d00-rans-results-v1", coefficient_reference=dict(chord_mm=223.4, height_mm=100, h_over_c1=100 / 223.4, h_over_c=100 / 380.),
+                  reference=dict(delta_cl=1., digitizing_uncertainty=.01, observable="pressure_cl"),
                   cells=[dict(model="SA", family="fine30", realisations=realizations)]), controls={})
 
 
@@ -79,6 +79,34 @@ def test_checker_priority_and_missing_input():
     value["waterlily"][0]["readouts"]["cur"]["downforce"] += .1
     with pytest.raises(ValueError, match="batch means"):
         C.check(value)
+
+
+@pytest.mark.parametrize("target", ["waterlily", "readout", "main", "sharp", "reference"])
+def test_checker_rejects_observable_mismatch_independently(target):
+    data = planted()
+    if target == "waterlily":
+        data["waterlily"][0]["observable"] = "pressure_cl"
+    elif target == "readout":
+        data["waterlily"][0]["readouts"]["cur"]["observable"] = "pressure_cl"
+    elif target == "reference":
+        data["rans"]["reference"]["observable"] = "total_cl"
+    else:
+        force = data["rans"]["cells"][0]["realisations"][0]["forces"]["E1" if target == "main" else "E1_sharp"]
+        force["observable"] = "pressure_cl" if target == "main" else "total_cl"
+    with pytest.raises(ValueError, match="observable"):
+        C.check(data)
+
+
+@pytest.mark.parametrize("config,expected", [("E3", "INCOMPLETE"), ("E1_sharp", "TR_UNQUALIFIED")])
+def test_checker_refuses_duplicate_mesh_intervals(config, expected):
+    data = planted()
+    for row in data["rans"]["cells"][0]["realisations"]:
+        row["mesh_sha256"][config] = "b" * 64
+    result = C.check(data)
+    assert result["label"] == expected
+    diagnostic = result["rans_diagnostics"]["SA/fine30"][config]
+    assert diagnostic["status"] == "DEGENERATE_REALISATIONS"
+    assert diagnostic["point_estimate"] is not None and diagnostic["ci90"] is None
 
 
 def test_independent_checker_has_no_analyzer_import_or_dynamic_source_load():
@@ -150,6 +178,8 @@ def test_zero_baseline_does_not_block_reported_only_retention(zero_side):
     ("unresolved", "UNRESOLVED"), ("discordant", "DISCORDANT"),
     ("sign_only", "CONCORDANT"), ("adopted_nds", "CONCORDANT"),
     ("drag_unresolved_ratio", "CONCORDANT"), ("drag_unresolved_sign", "CONCORDANT"),
+    ("degenerate_main", "INCOMPLETE"), ("degenerate_sharp", "TR_UNQUALIFIED"),
+    ("mesh_failed", "INCOMPLETE"),
 ])
 def test_independent_implementations_agree_on_force_tables(case, expected):
     # Importing both at the comparison boundary shares no implementation code.
@@ -199,6 +229,14 @@ def test_independent_implementations_agree_on_force_tables(case, expected):
             row["readouts"]["nds"]["downforce"] *= 1.1
             for b in row["readouts"]["nds"]["batches"]:
                 b["downforce"] *= 1.1
+    elif case.startswith("degenerate_"):
+        config = "E3" if case == "degenerate_main" else "E1_sharp"
+        for row in data["rans"]["cells"][0]["realisations"]:
+            row["mesh_sha256"][config] = "b" * 64
+    elif case == "mesh_failed":
+        row = data["rans"]["cells"][0]["realisations"][0]
+        row["status"]["E3"] = "MESH_FAILED"
+        row["forces"]["E3"] = row["mesh_sha256"]["E3"] = None
     if case.startswith("drag_unresolved_"):
         for row in data["waterlily"]:
             row["readouts"]["cur"]["drag"] = .1

@@ -3,7 +3,7 @@ module Topo2D
 
 using WaterLily, SHA, Serialization, TOML
 
-const ROOT = normpath(joinpath(@__DIR__, "..", ".."))
+const ROOT = normpath(joinpath(@__DIR__, "..", "..", ".."))
 const BRIDGE = joinpath(ROOT, "src", "cfd_harness", "scene_campaign.py")
 const PYTHON = get(ENV, "TOPO2D_PYTHON", isfile(joinpath(ROOT, ".venv", "bin", "python")) ? joinpath(ROOT, ".venv", "bin", "python") : "python3")
 const C1_MM = 223.4
@@ -16,7 +16,7 @@ struct NumericalFailure <: Exception
 end
 Base.showerror(io::IO, e::NumericalFailure) = print(io,e.message)
 
-# The optional WP2 module lives in the existing source file after integration.
+# Opt in to separately pinned WP1/WP2 additions; registered src bytes stay fixed.
 include(joinpath(ROOT, "julia", "CFDSDFWaterLily", "src", "Forces.jl"))
 const FORCE_SOURCE = Ref(joinpath(ROOT,"julia","CFDSDFWaterLily","src","Forces.jl"))
 for folder in ("gen01","src")
@@ -93,9 +93,11 @@ end
 
 function source_hashes(backend="cpu")
     project = backend == "cuda" ? "CFDSDFWaterLilyT4" : "CFDSDFWaterLily"
-    paths = ["scripts/waterlily_topo2d_job.jl", "julia/topo2d/Topo2D.jl", "src/cfd_harness/scene_campaign.py", "src/cfd_harness/campaign_schema.py", "src/cfd_sdf/topo2d/geometry.py",
+    paths = ["scripts/waterlily_topo2d_job.jl", "julia/CFDSDFWaterLily/gen01/Topo2D.jl", "src/cfd_harness/scene_campaign.py", "src/cfd_harness/campaign_schema.py", "src/cfd_gen/topo2d/geometry.py",
+        "src/cfd_gen/__init__.py", "src/cfd_gen/topo2d/__init__.py",
         "data/zz2003/main_element_table3.dat", "data/zz2003/flap_table4.dat", "data/zz2003/single_element_table2.dat",
         "julia/CFDSDFWaterLily/src/Forces.jl", "julia/$project/Project.toml", "julia/$project/Manifest.toml"]
+    append!(paths,["julia/CFDSDFWaterLily/src/$name" for name in ("CFDSDFWaterLily.jl","GridSDFBody.jl","WaterLilyBody.jl","Runtime.jl","Simulation.jl")])
     hashes=Dict(p => file_sha(joinpath(ROOT, p)) for p in paths)
     if FORCE_SOURCE[] != joinpath(ROOT,"julia","CFDSDFWaterLily","src","Forces.jl")
         key=relpath(FORCE_SOURCE[],ROOT)
@@ -125,6 +127,7 @@ function setup(scene; reynolds, phase_shift_m=(0.0,0.0,0.0), dims=nothing, smoke
                start, stop, sample_every=8, batches=8, case_id="topo2d", phase="0", role="primary", grid="main", top_factor=1.0, backend="cpu")
     isfinite(reynolds) && reynolds > 0 && all(isfinite, phase_shift_m) && length(phase_shift_m) == 3 && phase_shift_m[2] == 0 || error("Re or 2D phase")
     all(isfinite,(start,stop)) && 0 <= start < stop && sample_every isa Integer && sample_every > 0 && batches isa Integer && batches >= 4 || error("time/sampling contract")
+    backend in ("cpu","cuda") || error("unknown backend")
     L = C1_MM/scene.dx_mm
     ground_padding = 8
     top_factor in (1.0,1.5) || error("unregistered top-boundary factor")
@@ -139,11 +142,16 @@ function setup(scene; reynolds, phase_shift_m=(0.0,0.0,0.0), dims=nothing, smoke
     shift = (1000phase_shift_m[1],1000phase_shift_m[3])
     polygons = [[(Float32((p[1]+shift[1]-x0)/scene.dx_mm), Float32((p[2]+shift[2]-z0)/scene.dx_mm)) for p in poly] for poly in scene.polygons]
     all(1 < p[1] < dims[1]-1 && 1 < p[2] < dims[2]-1 for poly in polygons for p in poly) || error("scene touches finite domain before CFD")
-    bodies = [AutoBody(PolygonSDF(Tuple(p))) for p in polygons]
+    # Keep the vertex count out of CPU flow/readout kernel types. CUDA still
+    # needs inline isbits storage; the SDF arithmetic is shared and unchanged.
+    bodies = if backend == "cuda"
+        [AutoBody(PolygonSDF(Tuple(p))) for p in polygons]
+    else
+        [AutoBody(PolygonSDF(p)) for p in polygons]
+    end
     wing = reduce((a,b)->WaterLily.SetBody(min,a,b), bodies)
     ground = MovingGround(Float32((scene.ground_z_mm+shift[2]-z0)/scene.dx_mm),1.0f0)
     combined = WaterLily.SetBody(min,wing,ground)
-    backend in ("cpu","cuda") || error("unknown backend")
     memory = Array
     if backend == "cuda"
         isdefined(@__MODULE__,:CUDA) && CUDA.functional() || error("explicit CUDA backend unavailable")
@@ -273,7 +281,8 @@ function load_checkpoint(path; fingerprint,sim=nothing)
         expected=[i for i in 1:width if isdefined(@__MODULE__,:force_readouts) || !(i in 19:28)]
         width in (33,38,43) && columns==expected || error("checkpoint finite-column identity is invalid")
         sim===nothing && error("WP1 restore requires a newly constructed identical simulation")
-        Checkpoint.restore_checkpoint!(sim,data)
+        expected_identity=join((fingerprint,"topo2d-finite-columns-v1",string(width),join(expected,',')),'|')
+        Checkpoint.restore_checkpoint!(sim,data;identity=expected_identity)
         rows=[begin
             length(row)==length(columns) || error("checkpoint row width differs")
             full=fill(NaN,width);full[columns]=row;full
@@ -332,6 +341,7 @@ function write_outputs(run,rows,step,out; wall_seconds)
     middle = (c.start+c.stop)/2
     drifts = Dict(q=>abs(window_mean(rows,col,c.start,middle)-window_mean(rows,col,middle,c.stop))/max(abs(means[q]),eps(Float64)) for (q,col) in (("drag",6),("downforce",7)))
     summary = Dict("schema"=>"topo2d-job-summary-v1","case_id"=>c.case_id,"scene_sha256"=>run.scene.sha256,"topo2d"=>run.ident,
+        "observable"=>"total_cl","h_over_c1"=>run.scene.height_mm/C1_MM,"h_over_c"=>run.scene.height_mm/380,
         "source_sha256"=>source_hashes(c.backend),"runtime"=>runtime_identity(c.backend),"backend"=>(c.backend=="cuda" ? "WaterLily CUDA" : "WaterLily CPU"),"smoke"=>c.smoke,
         "phase_shift_m"=>collect(c.phase_shift_m),"flow_dims"=>collect(c.dims),"solver_length"=>c.L,"reynolds"=>Float64(c.reynolds),
         "top_factor"=>c.top_factor,
@@ -381,6 +391,7 @@ function main_loaded(args)
     end
     mkpath(out)
     preflight=Dict("schema"=>"topo2d-job-preflight-v1","topo2d"=>run_data.ident,"scene_sha256"=>scene.sha256,
+        "observable"=>"total_cl","h_over_c1"=>scene.height_mm/C1_MM,"h_over_c"=>scene.height_mm/380,
         "source_sha256"=>source_hashes(backend),"runtime"=>runtime_identity(backend),"smoke"=>smoke,
         "phase_shift_m"=>collect(run_data.contract.phase_shift_m),"window_t_u_l"=>[run_data.contract.start,run_data.contract.stop],
         "flow_dims"=>collect(run_data.contract.dims),"contract_fingerprint"=>run_data.fingerprint)
@@ -401,6 +412,7 @@ function main_loaded(args)
     catch err
         err isa NumericalFailure || rethrow()
         failure=Dict("schema"=>"topo2d-job-failure-v1","status"=>"NUMERICAL","topo2d"=>run_data.ident,
+            "observable"=>"total_cl","h_over_c1"=>scene.height_mm/C1_MM,"h_over_c"=>scene.height_mm/380,
             "scene_sha256"=>scene.sha256,"source_sha256"=>source_hashes(backend),"runtime"=>runtime_identity(backend),
             "phase_shift_m"=>collect(run_data.contract.phase_shift_m),"window_t_u_l"=>[run_data.contract.start,run_data.contract.stop],
             "flow_dims"=>collect(run_data.contract.dims),"contract_fingerprint"=>run_data.fingerprint,

@@ -13,7 +13,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
-from cfd_sdf.topo2d.geometry import build_scene  # noqa: E402
+from cfd_gen.topo2d.geometry import build_scene  # noqa: E402
 
 
 def plot_geometry(output, *, dx_mm=223.4 / 120):
@@ -29,8 +29,10 @@ def plot_geometry(output, *, dx_mm=223.4 / 120):
             ax.plot(polygon[:, 0], polygon[:, 1], color=color, lw=1.4, label=e["name"])
             original_polygon = np.array(original["polygon_mm"])
             ax.plot(original_polygon[:, 0], original_polygon[:, 1], color="#444444", ls="--", lw=0.75)
-            cap = np.array(e["suction_mm"])[:3]
-            ax.plot(cap[:, 0], cap[:, 1], "o", color=color, ms=2)
+            original_surface = np.array(original["suction_mm"])
+            arc = np.r_[0, np.cumsum(np.linalg.norm(np.diff(original_surface, axis=0), axis=1))]
+            cap = np.array(e["suction_mm"])[arc <= .02 * e["nominal_chord_mm"]]
+            ax.plot(cap[:, 0], cap[:, 1], color=color, lw=2.6)
             ratios.append(f"{e['name']}: {e['thickening']['max_thickness_ratio']:.2f}x")
         ax.axhline(0, color="#222222", lw=1.3)
         ax.set_aspect("equal", adjustable="box")
@@ -48,7 +50,7 @@ def plot_geometry(output, *, dx_mm=223.4 / 120):
     axes[-1].set_xlim(-20, 405)
     figure.suptitle("TOPO-2D-00: deterministic source-derived polygon series\n"
                     "Solid: thickened; dashed: original finite-TE arm (*_sharp). "
-                    "First three source pairs retained as the LE cap.\n"
+                    "LE cap retained through 2% chord in surface arc.\n"
                     "4 dx normal-thickness gate applies from original maximum-thickness station aft; "
                     "cap/ramp excluded. Source OCR: UNVERIFIED.", fontsize=10)
     figure.savefig(output, dpi=180, metadata={"Software": "TOPO-2D-00 geometry"})

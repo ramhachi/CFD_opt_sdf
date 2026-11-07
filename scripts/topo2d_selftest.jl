@@ -1,8 +1,10 @@
 # Short CPU capability test; the compact domain is explicitly not the registered
 # aerodynamic domain. Run: julia --project=julia/CFDSDFWaterLily scripts/topo2d_selftest.jl [OUTPUT_DIR]
 using Test
-include(joinpath(@__DIR__, "..", "julia", "topo2d", "Topo2D.jl"))
-using .Topo2D
+include(joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "CFDSDFWaterLily.jl"))
+Base.include(CFDSDFWaterLily,
+    joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "gen01", "Topo2D.jl"))
+using .CFDSDFWaterLily.Topo2D
 using WaterLily
 
 function wp1_integration(scene,source)
@@ -67,7 +69,7 @@ function selftest(out)
         @test_throws ErrorException Topo2D.setup(scene;reynolds=Inf,smoke=true,start=0.003,stop=0.015)
         @test_throws ErrorException Topo2D.setup(scene;reynolds=200.0,smoke=true,start=0.003,stop=Inf)
         run=Topo2D.setup(scene;reynolds=200.0,dims=(320,160),smoke=true,start=0.003,stop=0.015,sample_every=1,batches=4)
-        @test isbitstype(typeof(run.sim.body))
+        @test run.sim.flow.u isa Array && all(b.sdf.vertices isa Vector{NTuple{2,Float32}} for b in run.bodies)
         println("TOPO2D_SELFTEST_BUILT ",config," seconds=",time()-started);flush(stdout)
         rows=Vector{Float64}[]
         step=0
@@ -131,6 +133,7 @@ function selftest(out)
         @test cores[config]["passed"]
     end
     summaries["phase_core_checks"]=cores
+    println("TOPO2D_SELFTEST_DONE phase_core_checks seconds=",time()-started);flush(stdout)
     # Optional read-only integration against actual sibling source paths. They
     # are never copied into this checkout or promoted to pinned formal inputs.
     scene_path=joinpath(Topo2D.ROOT,"docs","harness","topo2d00_scenes","E1.json")
@@ -147,6 +150,7 @@ function selftest(out)
     @test isfile(joinpath(entry_dir,"job_preflight.json")) && isfile(joinpath(entry_dir,"W4_JOB_DONE"))
     @test entry["finite_forces"]
     summaries["job_entrypoint"]=Dict("passed"=>true,"force_csv_sha256"=>entry["force_csv_sha256"],"preflight_sha256"=>Topo2D.file_sha(joinpath(entry_dir,"job_preflight.json")))
+    println("TOPO2D_SELFTEST_DONE job_entrypoint seconds=",time()-started);flush(stdout)
     if haskey(ENV,"TOPO2D_WP1_TEST_SOURCE")
         source=abspath(ENV["TOPO2D_WP1_TEST_SOURCE"])
         before=Topo2D.file_sha(source)
@@ -155,6 +159,7 @@ function selftest(out)
         summaries["wp1_integration"]=Base.invokelatest(wp1_integration,scene,source)
         summaries["wp1_integration"]["source_origin_path"]=get(ENV,"TOPO2D_WP1_TEST_ORIGIN",source)
         @test before==Topo2D.file_sha(source)
+        println("TOPO2D_SELFTEST_DONE wp1_integration seconds=",time()-started);flush(stdout)
     end
     if haskey(ENV,"TOPO2D_WP2_TEST_SOURCE")
         source=abspath(ENV["TOPO2D_WP2_TEST_SOURCE"])
@@ -166,6 +171,7 @@ function selftest(out)
         summaries["wp2_integration"]=Base.invokelatest(wp2_integration,scene,source,out)
         summaries["wp2_integration"]["source_origin_path"]=get(ENV,"TOPO2D_WP2_TEST_ORIGIN",source)
         @test before==Topo2D.file_sha(source)
+        println("TOPO2D_SELFTEST_DONE wp2_integration seconds=",time()-started);flush(stdout)
     end
     summaries["schema"]="topo2d-cpu-selftest-v1"
     summaries["evidence_class"]="CPU_CAPABILITY_ONLY"
