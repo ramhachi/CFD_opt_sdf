@@ -1,0 +1,151 @@
+{
+  "evidence_class": "CPU_synthetic_inventory_and_static_contract_audit_not_GPU_execution",
+  "gate_json_written": false,
+  "gpu_expected": {
+    "cuda_device_order": "PCI_BUS_ID",
+    "cuda_visible_devices": "0",
+    "logical_device_count": 1,
+    "visible_gpu_names": [
+      "Tesla T4"
+    ]
+  },
+  "gpu_jobs_started": false,
+  "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+  "projects": {
+    "CFDSDFWaterLily": {
+      "manifest_has_cuda": false,
+      "manifest_has_jld2": false,
+      "project_dependencies": [
+        "WaterLily"
+      ],
+      "waterlily_version": "1.8.0"
+    },
+    "CFDSDFWaterLilyT4": {
+      "manifest_has_cuda": true,
+      "manifest_has_jld2": false,
+      "project_dependencies": [
+        "CUDA",
+        "WaterLily"
+      ],
+      "waterlily_version": "1.8.0"
+    }
+  },
+  "publication": {
+    "commit_completed": false,
+    "local_git_add": {
+      "exit_code": 128,
+      "message": "Unable to create .git/worktrees/CFD2026_09-wp-01-local-gpu/index.lock: Operation not permitted",
+      "reason": "shared_Git_worktree_index_lock_outside_writable_roots"
+    },
+    "local_git_head": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+    "local_record_state": "three_untracked_files_preserved_in_worktree",
+    "pull_request_created": false,
+    "push_completed": false,
+    "remote_delivery": {
+      "attempted_action": "github_create_tree",
+      "method": "GitHub_connector",
+      "reason": "MCP tool call requires approval, but approval policy is never",
+      "status": "DENIED_BY_APPROVAL_CONTROL"
+    }
+  },
+  "qualification_flags_changed": false,
+  "read_scope": {
+    "details": "wp01_local_gpu_01_design.md",
+    "full_historical_handoff_phase_plan_problem_register": "NOT_COMPLETED_stopped_on_contract_contradiction"
+  },
+  "reason": "unchanged_registered_T4_runner_and_verifier_conflict_with_truthful_RTX4070_Ti_identity",
+  "registered_files_edited": false,
+  "rendered_source_commit": "1edbdcbd90d98c3e97626005cf067df373060728",
+  "replay_first_state_csv_sha256": "97e7b43c346a57a1e24be28e385d9cb9ac03d17b427677b9052683cc3e9c6477",
+  "routing": {
+    "fallback": "native_parent_and_two_independent_read_only_workers",
+    "fallback_reason": "infrastructure_not_model_quality",
+    "model_dispatched": "NONE_discovery_failed",
+    "opencode_cli_attempts": [
+      {
+        "command": "opencode models opencode-go",
+        "exit_code": 1,
+        "reason": "FileSystem.open (/Users/sota/.local/share/opencode/log/opencode.log)"
+      },
+      {
+        "command": "opencode --print-logs models opencode-go",
+        "exit_code": 1,
+        "reason": "same_log_file_access_error"
+      }
+    ],
+    "opencode_go_mcp": "not_exposed"
+  },
+  "rtx4070_ti_negative_control": {
+    "exception": "ValueError",
+    "message": "every visible worker GPU must be a Tesla T4"
+  },
+  "runner_project": "julia/CFDSDFWaterLilyT4",
+  "source_commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+  "source_sha256": {
+    "docs/harness/harness01_replay_campaign.json": "5b425fc0b9009b7046ea5559c82e7433d2e9cb360bc7b028e7b2d360d6705869",
+    "infra/kaggle/kernel_harness01_replay_a_smoke/runner.py": "ff7e482e36beede5f0437f7cdb99bcf792a6630f97a899714e5aabf7437cd44e",
+    "julia/CFDSDFWaterLily/Manifest.toml": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    "julia/CFDSDFWaterLily/Project.toml": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/grid01_gpu.py": "bfaed961f3136d14bdeb7e4fccfab807f5fb8c257b45cd3ebb875963104fff38",
+    "scripts/waterlily_grid02_job.jl": "4d5a30b04820b5ab2adbe96a129cd0d3d77c3085035a7c3d337154ac6cfcf6ad",
+    "scripts/waterlily_lowdim02_flow32_job.jl": "418796ce258e8f9e9945332d18869104a53f74000a96b609d4f4b42c82a21683",
+    "src/cfd_harness/campaign_runner_template.py": "d53e2df74af8becc4e512c19e14381c549006a499c38c2cfab2ba89b6ab9ead1",
+    "src/cfd_harness/campaign_schema.py": "4c3c494ed381930d9d1e51b063efbbdcf1fa4586c1ac7e84d2b999a5c984d1b8",
+    "src/cfd_harness/campaign_verify.py": "8db4714799e258e08ce1a2e8ed9de4b5ff90ba3d9fa56513ec6d6997b0e57a2e"
+  },
+  "status": "BLOCKED_before_implementation",
+  "t4_positive_control": {
+    "index": 0,
+    "name": "Tesla T4",
+    "uuid": "GPU-synthetic-0"
+  },
+  "tests": {
+    "baseline_pytest": {
+      "command": ".venv/bin/python -m pytest -q",
+      "complete_failure_set": "NOT_ESTABLISHED",
+      "exit_code": 2,
+      "log": "........................................................................ [  2%]\n........................................................................ [  4%]\n.........................................................s.............. [  6%]\n.................\n=============================== warnings summary ===============================\nscripts/screen01/screen01_pool.py:110\n  /Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/scripts/screen01/screen01_pool.py:110: UserWarning: The balance properties of Sobol' points require n to be a power of 2.\n    return x_to_u(qmc.Sobol(d=3, scramble=True, seed=seed).random(n))\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! KeyboardInterrupt !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/scipy/stats/_distn_infrastructure.py:2077: KeyboardInterrupt\n(to show a full traceback on KeyboardInterrupt use --full-trace)\n232 passed, 1 skipped, 1 warning in 297.92s (0:04:57)\n",
+      "log_sha256": "1f9db528863ca3095ecc5c97374908bda26dc7bf0227b157e8530ee2d5f5ad9a",
+      "passed": 232,
+      "skipped": 1,
+      "status": "interrupted_after_specification_blocker_confirmed",
+      "wall_s": 297.92,
+      "warnings": 1
+    },
+    "compileall": {
+      "command": ".venv/bin/python -m compileall src tests",
+      "exit_code": 0,
+      "log_sha256": "5769cbf2c9fd2fc358b87e7cd02c0abb8d80aba1683cbeae16e7d63b0f7ef177"
+    },
+    "cpu_contract_probe": {
+      "command": ".venv/bin/python (runpy grid01_gpu positive/negative inventory, ast.literal_eval harness constants, tomllib both locked projects)",
+      "exit_code": 0,
+      "gpu_executed": false,
+      "reproduction": {
+        "code": "import ast, json, runpy, tomllib\nfrom pathlib import Path\nselect = runpy.run_path(\"scripts/grid01_gpu.py\")[\"select_worker_gpu\"]\nassert select(\"0, Tesla T4, GPU-synthetic-0, 15360 MiB, 535.0\\n\")[\"name\"] == \"Tesla T4\"\ntry:\n    select(\"0, NVIDIA GeForce RTX 4070 Ti, GPU-synthetic-0, 12288 MiB, 535.0\\n\")\nexcept ValueError as exc:\n    assert str(exc) == \"every visible worker GPU must be a Tesla T4\"\nelse:\n    raise AssertionError(\"RTX inventory unexpectedly accepted\")\nfor name, cuda in ((\"CFDSDFWaterLily\", False), (\"CFDSDFWaterLilyT4\", True)):\n    path = Path(\"julia\") / name\n    project = tomllib.loads((path / \"Project.toml\").read_text())\n    manifest = tomllib.loads((path / \"Manifest.toml\").read_text())\n    assert (\"CUDA\" in project[\"deps\"]) is cuda\n    assert (\"CUDA\" in manifest[\"deps\"]) is cuda\n    assert \"JLD2\" not in manifest[\"deps\"]\n    assert manifest[\"deps\"][\"WaterLily\"][0][\"version\"] == \"1.8.0\"\nassignments = {}\nfor node in ast.parse(Path(\"src/cfd_harness/campaign_schema.py\").read_text()).body:\n    if isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Name) and node.targets[0].id == \"GPU_EXPECTED\":\n        assignments[\"GPU_EXPECTED\"] = ast.literal_eval(node.value)\nassert assignments[\"GPU_EXPECTED\"][\"visible_gpu_names\"] == [\"Tesla T4\"]\nprint(\"PASS: T4 positive / RTX negative controls; project, Manifest and GPU_EXPECTED contracts\")\n",
+        "command": ".venv/bin/python -c CODE",
+        "exit_code": 0,
+        "stdout": "PASS: T4 positive / RTX negative controls; project, Manifest and GPU_EXPECTED contracts\n"
+      }
+    },
+    "git_diff_check": {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    "local_gpu_acceptance": "NOT_RUN_artifacts_not_implemented",
+    "new_records_whitespace": {
+      "files": 3,
+      "no_trailing_whitespace": true,
+      "one_trailing_newline": true,
+      "status": "PASS",
+      "utf8": true
+    },
+    "postimplementation_pytest_failure_set_comparison": "NOT_PERFORMED_no_implementation",
+    "source_hash_preservation": {
+      "checked_files": 12,
+      "status": "PASS"
+    }
+  }
+}

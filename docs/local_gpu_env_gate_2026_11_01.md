@@ -74,3 +74,15 @@ A pass says the harness runs, reproduces itself to the declared class, and how f
 ## 9. Results (to be filled once; append-only)
 
 (not run)
+
+## 10. Amendment 1 (2026-11-06, before any run): what WP1's first attempt found and how the gate changes
+
+Codex's first implementation attempt (`docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_*`) stopped as BLOCKED on four real contradictions between this draft and the registered harness. The draft is amended as follows; this section overrides §2-§5 where they conflict.
+
+1. **"Unchanged runner" is impossible: the registered runner and verifier are T4-only.** `scripts/grid01_gpu.py` rejects any visible GPU that is not a Tesla T4 before Julia starts; `src/cfd_harness/campaign_schema.py` (`GPU_EXPECTED`) and `campaign_verify.py` require it too. Resolution: the harness gains a **backend profile** (new module `src/cfd_harness/backend_profiles.py`): the default profile `kaggle_t4` reproduces today's behaviour byte for byte (every existing campaign, freeze and rendered kernel is unchanged; a test renders an existing campaign with the default profile and asserts byte identity with the committed kernel); a second profile `local_rtx4070ti` names the accepted GPU by `nvidia-smi` name (and, when present, UUID) and `used_gpu_count = 1`. Kernels for the local backend are **re-rendered with the profile** by `scripts/local_gpu.py render`, and `verify --smoke` accepts the profile recorded in the campaign. The runner's identity check therefore runs, with the local profile, instead of being bypassed.
+2. **The T4 byte gate of the existing campaigns is not a local criterion.** On the local backend the comparison with T4 references is descriptive (C3), and the gate is the same-machine repeat (C1). `first_state_csv_sha256`-type gates in existing campaigns stay as they are for Kaggle; the local profile records the local first-state SHA as its own reference once C1 passes.
+3. **Julia projects.** GPU runs use the registered GPU project `julia/CFDSDFWaterLilyT4` (WaterLily 1.8.0 + CUDA 6.3.1), exactly as the Kaggle runner does; the lock pins that project's `Manifest.toml` SHA-256. CPU self-tests (checkpoint, force tests) use `julia/CFDSDFWaterLily`. Neither Manifest is modified.
+4. **Checkpoint/resume needs a job that calls it.** The registered jobs are not edited. WP1 creates `scripts/waterlily_local_gpu_job.jl` as a **copy** of `scripts/waterlily_lowdim02_flow32_job.jl` whose only additions are the `Checkpoint.jl` save/resume calls (period and path from environment variables) and an unchanged force CSV; the diff is committed as `scripts/waterlily_local_gpu_job.diff`. R3 and R5 use this job; R1/R2 use the existing jobs through the re-rendered kernels. C5 compares R5 with R3 within the C1 class.
+5. **Tooling notes for Codex.** Commit through the shared Git directory (`/Users/sota/projects/FomulaTMU/CFD2026_09/.git`, made writable for the sandbox), use the `gh` CLI for the PR (not a GitHub connector), and keep the first attempt's three report files under `reports/wp01_attempt1_blocked/`.
+
+Everything else (lock contents, runs R0-R6, criteria C1-C6, the procedure, the claim ceiling) stands.

@@ -1,0 +1,20 @@
+{
+  "evidence_class": "installed_source_inspection",
+  "claim": "Both pinned stock QUICK definitions retain the inner 10c-9u bound; quick_nobound is the separate formula arm.",
+  "sources": [
+    {
+      "waterlily": "1.8.0",
+      "path": "/Users/sota/.julia/packages/WaterLily/yOkji/src/Flow.jl",
+      "sha256": "6138c88f48b04db7ed6861f1f1bec9c450e04214160caef177d85bdad326b7f0",
+      "line": 4,
+      "quick_definition": "@fastmath quick(u,c,d) = median((5c+2d-u)/6,c,median(10c-9u,c,d))"
+    },
+    {
+      "waterlily": "1.10.0",
+      "path": "/Users/sota/.julia/packages/WaterLily/V6kyE/src/Flow.jl",
+      "sha256": "978218e83176311841f65a940b954d97a8d5ad5c121825c08ab1ef41960f9627",
+      "line": 4,
+      "quick_definition": "@fastmath quick(u,c,d) = median((5c+2d-u)/6,c,median(10c-9u,c,d))"
+    }
+  ]
+}

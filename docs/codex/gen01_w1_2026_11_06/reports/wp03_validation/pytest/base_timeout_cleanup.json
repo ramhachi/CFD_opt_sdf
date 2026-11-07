@@ -1,0 +1,8 @@
+{
+  "reason": "terminate only descendants whose command contains the unique owned base-checkout path after the outer pytest cap",
+  "pattern": "/tmp/grad00-base-tests/",
+  "exit_code": 3,
+  "stderr": "sysmon request failed with error: sysmond service not found\npkill: Cannot get process list\n",
+  "time_utc": "2026-11-06T07:39:55.970993+00:00",
+  "user_workspace_processes_targeted": false
+}

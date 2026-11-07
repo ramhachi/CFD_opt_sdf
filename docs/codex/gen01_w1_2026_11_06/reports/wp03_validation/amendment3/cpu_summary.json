@@ -1,0 +1,663 @@
+{
+  "claim_limit": "No full-window boundedness, FD agreement, GPU or physics qualification",
+  "evidence_class": "20_step_cpu_software_preflight_only",
+  "rows": {
+    "CFDSDFWaterLily110_quick_Float32": {
+      "exit_code": 0,
+      "index_status": "PREFLIGHT_ONLY",
+      "preflight_pass": true,
+      "preflight_sha256": "3211066912b583b7da8b6dde704779bee26353452f2cd7380aa458d4dbf47bd0",
+      "selected_dual_primal_finite": true,
+      "selected_plain_primal_finite": true,
+      "tangent": {
+        "p": {
+          "argmax": {
+            "abs_value": 36.0581169128418,
+            "candidate_sdf_is_fluid_extension": false,
+            "candidate_sdf_m": -4.768396166809907e-08,
+            "combined_sdf_m": -4.768396166809907e-08,
+            "domain_boundary_clearance_m": [
+              1.9166667461395264,
+              1.183333396911621,
+              0.6500000357627869
+            ],
+            "finite": true,
+            "ground_distance_m": 0.6500000357627869,
+            "halo_cell": false,
+            "index": [
+              59,
+              38,
+              21
+            ],
+            "inside_solid": true,
+            "selection": "max_abs_tangent",
+            "solver_position": [
+              57.5,
+              36.5,
+              19.5
+            ],
+            "value": 36.0581169128418,
+            "world_position_m": [
+              -0.58333325,
+              0.01666665,
+              -0.24999994
+            ]
+          },
+          "maximum_abs": 36.0581169128418
+        },
+        "u": {
+          "argmax": {
+            "abs_value": 25.949617385864258,
+            "candidate_sdf_is_fluid_extension": false,
+            "candidate_sdf_m": 8.940700979565008e-08,
+            "combined_sdf_m": 8.940700979565008e-08,
+            "domain_boundary_clearance_m": [
+              2.1000001430511475,
+              1.1500000953674316,
+              0.6500000357627869
+            ],
+            "finite": true,
+            "ground_distance_m": 1.1500000953674316,
+            "halo_cell": false,
+            "index": [
+              89,
+              36,
+              36,
+              1
+            ],
+            "inside_solid": false,
+            "selection": "max_abs_tangent",
+            "solver_position": [
+              87.0,
+              34.5,
+              34.5
+            ],
+            "value": 25.949617385864258,
+            "world_position_m": [
+              0.4000001,
+              -0.049999952,
+              0.25000012
+            ]
+          },
+          "maximum_abs": 25.949617385864258
+        }
+      },
+      "wall_seconds": 60.61406866705511
+    },
+    "CFDSDFWaterLily_cds_Float32": {
+      "exit_code": 0,
+      "index_status": "PREFLIGHT_ONLY",
+      "preflight_pass": true,
+      "preflight_sha256": "343eba9adf32ca3977e1bbc97ee82f142984172ad87c84d637a117a65d5c08d7",
+      "selected_dual_primal_finite": true,
+      "selected_plain_primal_finite": true,
+      "tangent": {
+        "p": {
+          "argmax": {
+            "abs_value": 29.02386474609375,
+            "candidate_sdf_is_fluid_extension": false,
+            "candidate_sdf_m": -4.768396166809907e-08,
+            "combined_sdf_m": -4.768396166809907e-08,
+            "domain_boundary_clearance_m": [
+              1.9166667461395264,
+              1.183333396911621,
+              0.6500000357627869
+            ],
+            "finite": true,
+            "ground_distance_m": 0.6500000357627869,
+            "halo_cell": false,
+            "index": [
+              59,
+              38,
+              21
+            ],
+            "inside_solid": true,
+            "selection": "max_abs_tangent",
+            "solver_position": [
+              57.5,
+              36.5,
+              19.5
+            ],
+            "value": 29.02386474609375,
+            "world_position_m": [
+              -0.58333325,
+              0.01666665,
+              -0.24999994
+            ]
+          },
+          "maximum_abs": 29.02386474609375
+        },
+        "u": {
+          "argmax": {
+            "abs_value": 25.607879638671875,
+            "candidate_sdf_is_fluid_extension": false,
+            "candidate_sdf_m": 8.940701690107744e-08,
+            "combined_sdf_m": 8.940701690107744e-08,
+            "domain_boundary_clearance_m": [
+              2.1000001430511475,
+              1.183333396911621,
+              0.6500000357627869
+            ],
+            "finite": true,
+            "ground_distance_m": 1.1500000953674316,
+            "halo_cell": false,
+            "index": [
+              89,
+              37,
+              36,
+              1
+            ],
+            "inside_solid": false,
+            "selection": "max_abs_tangent",
+            "solver_position": [
+              87.0,
+              35.5,
+              34.5
+            ],
+            "value": 25.607879638671875,
+            "world_position_m": [
+              0.4000001,
+              -0.01666665,
+              0.25000012
+            ]
+          },
+          "maximum_abs": 25.607879638671875
+        }
+      },
+      "wall_seconds": 59.32502754207235
+    },
+    "CFDSDFWaterLily_quick_Float32": {
+      "exit_code": 0,
+      "index_status": "PREFLIGHT_ONLY",
+      "preflight_pass": true,
+      "preflight_sha256": "6125d62d04a8cf3b57f6e23f2b7ef0a35fcb4d0434c95c09a7490aa507056c9a",
+      "selected_dual_primal_finite": true,
+      "selected_plain_primal_finite": true,
+      "tangent": {
+        "p": {
+          "argmax": {
+            "abs_value": 33.658355712890625,
+            "candidate_sdf_is_fluid_extension": false,
+            "candidate_sdf_m": -4.768396166809907e-08,
+            "combined_sdf_m": -4.768396166809907e-08,
+            "domain_boundary_clearance_m": [
+              1.9166667461395264,
+              1.183333396911621,
+              0.6500000357627869
+            ],
+            "finite": true,
+            "ground_distance_m": 0.6500000357627869,
+            "halo_cell": false,
+            "index": [
+              59,
+              38,
+              21
+            ],
+            "inside_solid": true,
+            "selection": "max_abs_tangent",
+            "solver_position": [
+              57.5,
+              36.5,
+              19.5
+            ],
+            "value": 33.658355712890625,
+            "world_position_m": [
+              -0.58333325,
+              0.01666665,
+              -0.24999994
+            ]
+          },
+          "maximum_abs": 33.658355712890625
+        },
+        "u": {
+          "argmax": {
+            "abs_value": 25.052122116088867,
+            "candidate_sdf_is_fluid_extension": false,
+            "candidate_sdf_m": 8.940701690107744e-08,
+            "combined_sdf_m": 8.940701690107744e-08,
+            "domain_boundary_clearance_m": [
+              2.1000001430511475,
+              1.183333396911621,
+              0.6500000357627869
+            ],
+            "finite": true,
+            "ground_distance_m": 1.1500000953674316,
+            "halo_cell": false,
+            "index": [
+              89,
+              37,
+              36,
+              1
+            ],
+            "inside_solid": false,
+            "selection": "max_abs_tangent",
+            "solver_position": [
+              87.0,
+              35.5,
+              34.5
+            ],
+            "value": 25.052122116088867,
+            "world_position_m": [
+              0.4000001,
+              -0.01666665,
+              0.25000012
+            ]
+          },
+          "maximum_abs": 25.052122116088867
+        }
+      },
+      "wall_seconds": 67.54343312501442
+    },
+    "CFDSDFWaterLily_quick_Float64": {
+      "exit_code": 0,
+      "index_status": "PREFLIGHT_ONLY",
+      "preflight_pass": true,
+      "preflight_sha256": "32bbc11c6e06c02c64c4cb88cde79668b49018c05e1e9e5a77b7d7067f54c641",
+      "selected_dual_primal_finite": true,
+      "selected_plain_primal_finite": true,
+      "tangent": {
+        "p": {
+          "argmax": {
+            "abs_value": 3302205.96112245,
+            "candidate_sdf_is_fluid_extension": false,
+            "candidate_sdf_m": -0.049999997019767775,
+            "combined_sdf_m": -0.049999997019767775,
+            "domain_boundary_clearance_m": [
+              2.45,
+              0.8166666666666667,
+              0.85
+            ],
+            "finite": true,
+            "ground_distance_m": 0.85,
+            "halo_cell": false,
+            "index": [
+              75,
+              49,
+              27
+            ],
+            "inside_solid": true,
+            "selection": "max_abs_tangent",
+            "solver_position": [
+              73.5,
+              47.5,
+              25.5
+            ],
+            "value": -3302205.96112245,
+            "world_position_m": [
+              -0.04999999999999982,
+              0.3833333333333333,
+              -0.050000000000000044
+            ]
+          },
+          "maximum_abs": 3302205.96112245
+        },
+        "u": {
+          "argmax": {
+            "abs_value": 23.920933925733657,
+            "candidate_sdf_is_fluid_extension": false,
+            "candidate_sdf_m": -5.960464388721137e-09,
+            "combined_sdf_m": -5.960464388721137e-09,
+            "domain_boundary_clearance_m": [
+              2.1,
+              1.1833333333333333,
+              0.65
+            ],
+            "finite": true,
+            "ground_distance_m": 1.15,
+            "halo_cell": false,
+            "index": [
+              89,
+              37,
+              36,
+              1
+            ],
+            "inside_solid": true,
+            "selection": "max_abs_tangent",
+            "solver_position": [
+              87.0,
+              35.5,
+              34.5
+            ],
+            "value": 23.920933925733657,
+            "world_position_m": [
+              0.3999999999999999,
+              -0.016666666666666607,
+              0.2499999999999999
+            ]
+          },
+          "maximum_abs": 23.920933925733657
+        }
+      },
+      "wall_seconds": 122.5745307089528
+    },
+    "CFDSDFWaterLily_quick_nobound_Float32": {
+      "exit_code": 0,
+      "index_status": "PREFLIGHT_ONLY",
+      "preflight_pass": true,
+      "preflight_sha256": "46235989995449c81290ba9434b21d6f90892d2842094ad4e6a9782d0e7df157",
+      "selected_dual_primal_finite": true,
+      "selected_plain_primal_finite": true,
+      "tangent": {
+        "p": {
+          "argmax": {
+            "abs_value": 31.356611251831055,
+            "candidate_sdf_is_fluid_extension": false,
+            "candidate_sdf_m": -4.768396166809907e-08,
+            "combined_sdf_m": -4.768396166809907e-08,
+            "domain_boundary_clearance_m": [
+              1.9166667461395264,
+              1.183333396911621,
+              0.6500000357627869
+            ],
+            "finite": true,
+            "ground_distance_m": 0.6500000357627869,
+            "halo_cell": false,
+            "index": [
+              59,
+              38,
+              21
+            ],
+            "inside_solid": true,
+            "selection": "max_abs_tangent",
+            "solver_position": [
+              57.5,
+              36.5,
+              19.5
+            ],
+            "value": 31.356611251831055,
+            "world_position_m": [
+              -0.58333325,
+              0.01666665,
+              -0.24999994
+            ]
+          },
+          "maximum_abs": 31.356611251831055
+        },
+        "u": {
+          "argmax": {
+            "abs_value": 25.08502769470215,
+            "candidate_sdf_is_fluid_extension": false,
+            "candidate_sdf_m": 8.940701690107744e-08,
+            "combined_sdf_m": 8.940701690107744e-08,
+            "domain_boundary_clearance_m": [
+              2.1000001430511475,
+              1.183333396911621,
+              0.6500000357627869
+            ],
+            "finite": true,
+            "ground_distance_m": 1.1500000953674316,
+            "halo_cell": false,
+            "index": [
+              89,
+              37,
+              36,
+              1
+            ],
+            "inside_solid": false,
+            "selection": "max_abs_tangent",
+            "solver_position": [
+              87.0,
+              35.5,
+              34.5
+            ],
+            "value": 25.08502769470215,
+            "world_position_m": [
+              0.4000001,
+              -0.01666665,
+              0.25000012
+            ]
+          },
+          "maximum_abs": 25.08502769470215
+        }
+      },
+      "wall_seconds": 57.85498608299531
+    },
+    "CFDSDFWaterLily_quick_nobound_Float64": {
+      "exit_code": 0,
+      "index_status": "PREFLIGHT_ONLY",
+      "preflight_pass": true,
+      "preflight_sha256": "44394f972a8d2b4688bb4259952d291fbb8c277c3f3c56396db95b914645724d",
+      "selected_dual_primal_finite": true,
+      "selected_plain_primal_finite": true,
+      "tangent": {
+        "p": {
+          "argmax": {
+            "abs_value": 3296238.796319234,
+            "candidate_sdf_is_fluid_extension": false,
+            "candidate_sdf_m": -0.049999997019767775,
+            "combined_sdf_m": -0.049999997019767775,
+            "domain_boundary_clearance_m": [
+              2.45,
+              0.8166666666666667,
+              0.85
+            ],
+            "finite": true,
+            "ground_distance_m": 0.85,
+            "halo_cell": false,
+            "index": [
+              75,
+              49,
+              27
+            ],
+            "inside_solid": true,
+            "selection": "max_abs_tangent",
+            "solver_position": [
+              73.5,
+              47.5,
+              25.5
+            ],
+            "value": -3296238.796319234,
+            "world_position_m": [
+              -0.04999999999999982,
+              0.3833333333333333,
+              -0.050000000000000044
+            ]
+          },
+          "maximum_abs": 3296238.796319234
+        },
+        "u": {
+          "argmax": {
+            "abs_value": 23.864809800417593,
+            "candidate_sdf_is_fluid_extension": false,
+            "candidate_sdf_m": -5.960464388721137e-09,
+            "combined_sdf_m": -5.960464388721137e-09,
+            "domain_boundary_clearance_m": [
+              2.1,
+              1.1833333333333333,
+              0.65
+            ],
+            "finite": true,
+            "ground_distance_m": 1.15,
+            "halo_cell": false,
+            "index": [
+              89,
+              37,
+              36,
+              1
+            ],
+            "inside_solid": true,
+            "selection": "max_abs_tangent",
+            "solver_position": [
+              87.0,
+              35.5,
+              34.5
+            ],
+            "value": 23.864809800417593,
+            "world_position_m": [
+              0.3999999999999999,
+              -0.016666666666666607,
+              0.2499999999999999
+            ]
+          },
+          "maximum_abs": 23.864809800417593
+        }
+      },
+      "wall_seconds": 68.97065100003965
+    },
+    "CFDSDFWaterLily_vanLeer_Float32": {
+      "exit_code": 2,
+      "index_status": "INCOMPLETE",
+      "preflight_pass": false,
+      "preflight_sha256": "518afbc2d7d871590302356fb12fa90735b8e394072d753486d62c54f3df9944",
+      "selected_dual_primal_finite": false,
+      "selected_plain_primal_finite": true,
+      "tangent": {
+        "p": {
+          "argmax": {
+            "abs_value": null,
+            "candidate_sdf_is_fluid_extension": true,
+            "candidate_sdf_m": 3.0,
+            "combined_sdf_m": -0.01666666753590107,
+            "domain_boundary_clearance_m": [
+              -0.01666666753590107,
+              -0.01666666753590107,
+              -0.01666666753590107
+            ],
+            "finite": false,
+            "ground_distance_m": -0.01666666753590107,
+            "halo_cell": true,
+            "index": [
+              1,
+              1,
+              1
+            ],
+            "inside_solid": true,
+            "selection": "first_non_finite",
+            "solver_position": [
+              -0.5,
+              -0.5,
+              -0.5
+            ],
+            "value": null,
+            "world_position_m": [
+              -2.5166667,
+              -1.2166667,
+              -0.9166666
+            ]
+          },
+          "maximum_abs": null
+        },
+        "u": {
+          "argmax": {
+            "abs_value": null,
+            "candidate_sdf_is_fluid_extension": true,
+            "candidate_sdf_m": 3.0,
+            "combined_sdf_m": -0.01666666753590107,
+            "domain_boundary_clearance_m": [
+              0.03333333507180214,
+              -0.01666666753590107,
+              -0.01666666753590107
+            ],
+            "finite": false,
+            "ground_distance_m": -0.01666666753590107,
+            "halo_cell": true,
+            "index": [
+              3,
+              1,
+              1,
+              1
+            ],
+            "inside_solid": true,
+            "selection": "first_non_finite",
+            "solver_position": [
+              1.0,
+              -0.5,
+              -0.5
+            ],
+            "value": null,
+            "world_position_m": [
+              -2.4666667,
+              -1.2166667,
+              -0.9166666
+            ]
+          },
+          "maximum_abs": null
+        }
+      },
+      "wall_seconds": 59.26136404206045
+    },
+    "CFDSDFWaterLily_vanLeer_safe_Float32": {
+      "exit_code": 0,
+      "index_status": "PREFLIGHT_ONLY",
+      "preflight_pass": true,
+      "preflight_sha256": "4779fb589504312ac0f5ebc9b8d15ef8f78a9136f5c4569e884189c6f2018206",
+      "selected_dual_primal_finite": true,
+      "selected_plain_primal_finite": true,
+      "tangent": {
+        "p": {
+          "argmax": {
+            "abs_value": 32.0726432800293,
+            "candidate_sdf_is_fluid_extension": false,
+            "candidate_sdf_m": -4.768396166809907e-08,
+            "combined_sdf_m": -4.768396166809907e-08,
+            "domain_boundary_clearance_m": [
+              1.9166667461395264,
+              1.183333396911621,
+              0.6500000357627869
+            ],
+            "finite": true,
+            "ground_distance_m": 0.6500000357627869,
+            "halo_cell": false,
+            "index": [
+              59,
+              38,
+              21
+            ],
+            "inside_solid": true,
+            "selection": "max_abs_tangent",
+            "solver_position": [
+              57.5,
+              36.5,
+              19.5
+            ],
+            "value": 32.0726432800293,
+            "world_position_m": [
+              -0.58333325,
+              0.01666665,
+              -0.24999994
+            ]
+          },
+          "maximum_abs": 32.0726432800293
+        },
+        "u": {
+          "argmax": {
+            "abs_value": 24.481000900268555,
+            "candidate_sdf_is_fluid_extension": false,
+            "candidate_sdf_m": 8.940701690107744e-08,
+            "combined_sdf_m": 8.940701690107744e-08,
+            "domain_boundary_clearance_m": [
+              2.1000001430511475,
+              1.183333396911621,
+              0.6500000357627869
+            ],
+            "finite": true,
+            "ground_distance_m": 1.1500000953674316,
+            "halo_cell": false,
+            "index": [
+              89,
+              37,
+              36,
+              1
+            ],
+            "inside_solid": false,
+            "selection": "max_abs_tangent",
+            "solver_position": [
+              87.0,
+              35.5,
+              34.5
+            ],
+            "value": 24.481000900268555,
+            "world_position_m": [
+              0.4000001,
+              -0.01666665,
+              0.25000012
+            ]
+          },
+          "maximum_abs": 24.481000900268555
+        }
+      },
+      "wall_seconds": 86.35064729105216
+    }
+  },
+  "vanLeer_safe_plain_vs_vanLeer_bit_equal": true
+}

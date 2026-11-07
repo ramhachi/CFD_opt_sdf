@@ -1,0 +1,17 @@
+{
+  "command": [
+    "julia",
+    "--project=julia/CFDSDFWaterLily",
+    "--startup-file=no",
+    "--threads=1",
+    "-O1",
+    "scripts/grad00_orchestration_selftest.jl",
+    "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/grad00_orchestration_vwetbkjw/synthetic_output"
+  ],
+  "returncode": 0,
+  "wall_seconds": 31.36001812503673,
+  "log": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/grad00_orchestration_vwetbkjw/selftest.log",
+  "output_dir": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/grad00_orchestration_vwetbkjw/synthetic_output",
+  "evidence_class": "SYNTHETIC_TEST_FIXTURE",
+  "solver_steps": 0
+}

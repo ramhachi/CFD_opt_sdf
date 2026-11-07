@@ -46,3 +46,18 @@ WaterLily の固定格子に乗せる **部品プリミティブの SDF の unio
 ## やらないこと
 
 - CFD の実行、既存 gate（v2）の変更、`problem_spec.py`（v2）の変更、WaterLily job の編集（WP4）、最適化器の実装（応答曲面・DFO は次の WP）。
+
+## Amendment 1（2026-11-06。1 回目の試み（Draft PR #82、`08e0ea38`）が BLOCKED で止まった点への回答。この節が上の本文より優先する）
+
+1. **距離の契約（決定）。** 「v18 と同じ式」と「厳密な SDF（|∇φ| = 1）」は、非零のキャンバー／reflex では両立しない（反例は `reports/wp06_sdf_preflight.json`）。採るのは **選択肢 2 に数量の帯を付けたもの**：
+   - 可動プリミティブの φ は **解析的な implicit field** で、無変形の stadium 板では厳密な SDF（これは今までどおりテストで |∇φ| = 1 を要求）。キャンバー／reflex 付きでは、零等位面は v18 の式が定める面のまま、距離は一次近似（`|v + f(u)| − t/2`）でよい。
+   - 根拠：WaterLily の `AutoBody.measure` は d を |∇φ| で正規化する（調査 F §2：「`measure` takes the gradient of the SDF by AD, normalises `d` by the gradient magnitude」）ので、|∇φ| ≠ 1 の一次誤差は solver 側で補正される。本リポジトリの gate 2（`sdf_distance_property`：band 内の median ||∇φ| − 1| ≤ 0.10）も同じ許容の考え方。
+   - テストは次に置き換える：(a) 無変形の板で |∇φ| = 1（1e-8）；(b) 変形付きの板で、band（|φ| ≤ 2h）内の median ||∇φ| − 1| ≤ 0.10（gate 2 と同じ）と、**数値の最近点距離**（零等位面を細かく標本化した点群への最短距離）との差が band 内で ≤ 2 % × t（登録する許容差。設計時の既定）；(c) 本プロジェクトで使う振幅の範囲（キャンバー ≤ 6 % c、reflex ≤ 4 % c）で (b) が成り立つことを表にして報告に載せる。
+   - union `min_c φ_c` は重なりの内側で真の最短距離ではない。これは docstring に書くだけでよく、停止理由ではない（重なりは scene gate で禁止するので、BDIM の band には現れない）。
+2. **`r_c` は WaterLily の線では使わない。** rev 2 の Vertex Morphing の名残で、rev 3.1 の WaterLily 主線には節点変位のフィルタが無い。ProblemSpec v3 から `r_c` を外し、代わりに **部品ごとのパラメタの範囲（bounds）と刻み**を宣言する。GEN-01 rev 3.1 §2・§3.8 の `r_c` への言及は Claude が直す（Codex は本文を編集しない）。
+3. **厚さ・間隙の既定 4h は「開発時の既定」**で、登録値は RES-00 の梯子で決まる。docstring と報告でそう区別する。
+4. **#32 の Birth-1** は実際の primal 応答を要求するので、WP6 のテストは「Birth-1 のソフトウェア準備（要素数の変化の分類）」と記す。Birth-0 はそのまま。
+5. **道具の注意。** 今回の sandbox では共有の Git dir（`/Users/sota/projects/FomulaTMU/CFD2026_09/.git`）に書き込めるので、この worktree の branch `feat/gen01-w1-06-geom-s1` で直接 commit・push する（1 回目の sparse clone は使わない）。worktree は remote の `08e0ea38` に同期済み。1 回目の記録 `reports/wp06_*` は `git mv` で `reports/wp06_attempt1_blocked/` に移す。PR は既存の Draft PR #82 を `gh pr edit`／`gh pr ready` で更新する（新しい PR は作らない）。
+6. 必読文書のうち、`docs/opencode_handoff_2026_09.md`、`docs/problem_register_2026_09.md`、`docs/problem_resolution_plan_2026_09.md` は **目次と該当節（geometry gates、SDF、topology policy、PROC-01）だけ**でよい。全体 pytest は **実装後に 1 回完走**させ、base の失敗集合は `git stash` ではなく、開始 commit を別ディレクトリに `git worktree add --detach` して取る（共有 `.git` は書き込み可）。
+
+これで矛盾は解消しているはずなので、今回は BLOCKED にせずフェーズ A を完了して PR を ready にすること。フェーズ B は別 PR。新たな矛盾が見つかった場合だけ、その箇所を具体的に示して止める。

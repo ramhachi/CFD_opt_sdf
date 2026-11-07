@@ -1,0 +1,41 @@
+{
+  "evidence_class": "software_validation_incomplete_global_comparison",
+  "status": "NOT_ESTABLISHED",
+  "base_commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+  "implementation_commit": "9aedf41d0bf705848a5bd8511cffecb1073b9f84",
+  "exclusions": [
+    "tests/test_lbm_metal.py"
+  ],
+  "unmodified_original_full_base": {
+    "shell_exit_code": 134,
+    "reason": "native abort during existing Metal initialization",
+    "complete_junit": false
+  },
+  "cpu_only_base": {
+    "exit_code": 124,
+    "cap_s": 1800,
+    "last_reported_percent": 46,
+    "complete_junit": false
+  },
+  "cpu_only_final_full": "NOT_STARTED_AFTER_BASE_TIMEOUT",
+  "earlier_final_full": "interrupted during collection; not a test result",
+  "same_global_failure_ids": null,
+  "new_global_failure_ids": null,
+  "new_test_modules": {
+    "grad00_focused": {
+      "tests": 88,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "grad00_transport": {
+      "tests": 49,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "new_test_module_failure_ids": [],
+  "new_tests_total_passed": 137,
+  "claim_limit": "No claim that the full repository suite is green or has the same failure set as base. New test modules pass at the recorded implementation commit."
+}

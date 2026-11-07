@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="24" skipped="0" tests="108" time="10.125" timestamp="2026-11-07T18:27:29.214610+09:00" hostname="Mac"><testcase classname="tests.test_local_gpu_gate" name="test_all_criteria_synthetic_pass_and_reference_provenance" time="0.088" /><testcase classname="tests.test_local_gpu_gate" name="test_c1_requires_the_same_runner_for_each_repeat[R1b]" time="0.087" /><testcase classname="tests.test_local_gpu_gate" name="test_c1_requires_the_same_runner_for_each_repeat[R2b]" time="0.079" /><testcase classname="tests.test_local_gpu_gate" name="test_c1_c5_exclude_wsl_interop_only_between_runs_and_keep_the_snapshot" time="0.090"><failure message="AssertionError: assert 'FAIL' == 'PASS'&#10;  &#10;  - PASS&#10;  + FAIL">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c1_c5_exclude_wsl_...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c1_c5_exclude_wsl_interop0/repo/runs/R2b/kernel', '--campaign', ...]])
+
+    def test_c1_c5_exclude_wsl_interop_only_between_runs_and_keep_the_snapshot(evidence):
+        _, runs, _, _ = evidence
+        snapshots = {}
+        for index, name in enumerate(("R1a", "R1b", "R2a", "R2b", "R3", "R5")):
+            run = runs / name
+            for path in (run / "local_run.json", run / "kernel/run_identity.json"):
+                doc = json.loads(path.read_text())
+                doc["filtered_environment"]["WSL_INTEROP"] = f"/run/WSL/{index}_interop"
+                write_json(path, doc)
+            rehash_run(run)
+            snapshots[name] = json.loads((run / "local_run.json").read_text())["filtered_environment"]
+        prior = runs / "R5/resume_input/prior_local_run.json"
+        doc = json.loads(prior.read_text())
+        doc["filtered_environment"]["WSL_INTEROP"] = "/run/WSL/interrupted_interop"
+        write_json(prior, doc)
+        path = runs / "R5/local_run.json"
+        rec = json.loads(path.read_text())
+        rec["resume"]["interrupted_run_sha256"] = digest(prior)
+        write_json(path, rec)
+        result = evaluate(evidence)
+&gt;       assert result["status"] == "PASS"
+E       AssertionError: assert 'FAIL' == 'PASS'
+E         
+E         - PASS
+E         + FAIL
+
+tests/test_local_gpu_gate.py:284: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_identity_comparison_still_rejects_nonvolatile_environment_changes[WSLENV-R1b-C1]" time="0.082" /><testcase classname="tests.test_local_gpu_gate" name="test_identity_comparison_still_rejects_nonvolatile_environment_changes[WSLENV-R5-C5]" time="0.086" /><testcase classname="tests.test_local_gpu_gate" name="test_identity_comparison_still_rejects_nonvolatile_environment_changes[WSLENV-prior-C5]" time="0.136" /><testcase classname="tests.test_local_gpu_gate" name="test_identity_comparison_still_rejects_nonvolatile_environment_changes[CUDA_LAUNCH_BLOCKING-R1b-C1]" time="0.083" /><testcase classname="tests.test_local_gpu_gate" name="test_identity_comparison_still_rejects_nonvolatile_environment_changes[CUDA_LAUNCH_BLOCKING-R5-C5]" time="0.086" /><testcase classname="tests.test_local_gpu_gate" name="test_identity_comparison_still_rejects_nonvolatile_environment_changes[CUDA_LAUNCH_BLOCKING-prior-C5]" time="0.086" /><testcase classname="tests.test_local_gpu_gate" name="test_volatile_environment_must_still_match_within_the_same_run" time="0.076" /><testcase classname="tests.test_local_gpu_gate" name="test_c1_tolerance_and_fail" time="0.148" /><testcase classname="tests.test_local_gpu_gate" name="test_missing_run_incomplete_and_failure_dominates" time="0.168" /><testcase classname="tests.test_local_gpu_gate" name="test_run_identity_fail_closed[lock_sha256-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb]" time="0.067" /><testcase classname="tests.test_local_gpu_gate" name="test_run_identity_fail_closed[backend_profile-unknown]" time="0.070" /><testcase classname="tests.test_local_gpu_gate" name="test_run_identity_fail_closed[cuda_visible_devices-1]" time="0.065" /><testcase classname="tests.test_local_gpu_gate" name="test_run_identity_fail_closed[returncode-3]" time="0.067" /><testcase classname="tests.test_local_gpu_gate" name="test_run_identity_fail_closed[used_gpu_count-2]" time="0.088" /><testcase classname="tests.test_local_gpu_gate" name="test_actual_runtime_project_pins_must_match_environment_lock[wrapper]" time="0.080" /><testcase classname="tests.test_local_gpu_gate" name="test_actual_runtime_project_pins_must_match_environment_lock[identity]" time="0.067" /><testcase classname="tests.test_local_gpu_gate" name="test_every_run_checks_observed_gpu_identity[probe-logical_device_count-2]" time="0.066" /><testcase classname="tests.test_local_gpu_gate" name="test_every_run_checks_observed_gpu_identity[probe-visible_gpu_names-value1]" time="0.069" /><testcase classname="tests.test_local_gpu_gate" name="test_every_run_checks_observed_gpu_identity[probe-default_device_uuid-GPU-other]" time="0.068" /><testcase classname="tests.test_local_gpu_gate" name="test_every_run_checks_observed_gpu_identity[identity-used_gpu_count-2]" time="0.069" /><testcase classname="tests.test_local_gpu_gate" name="test_every_run_checks_observed_gpu_identity[identity-selected_gpu-value4]" time="0.069" /><testcase classname="tests.test_local_gpu_gate" name="test_every_run_checks_observed_gpu_identity[identity-backend_profile-None]" time="0.124" /><testcase classname="tests.test_local_gpu_gate" name="test_every_run_checks_observed_gpu_identity[identity-cuda_device_order-None]" time="0.074" /><testcase classname="tests.test_local_gpu_gate" name="test_every_run_checks_observed_gpu_identity[smi-driver-556.0]" time="0.071" /><testcase classname="tests.test_local_gpu_gate" name="test_cuda_uuid_stays_bound_when_nvml_uuid_is_unavailable" time="0.228" /><testcase classname="tests.test_local_gpu_gate" name="test_cuda_uuid_is_common_across_runs_without_nvml_identity" time="0.147" /><testcase classname="tests.test_local_gpu_gate" name="test_csv_hash_schema_nonfinite_and_steps_fail_closed" time="0.192" /><testcase classname="tests.test_local_gpu_gate" name="test_c1_rejects_schema_and_different_case_even_with_equal_bytes" time="0.150" /><testcase classname="tests.test_local_gpu_gate" name="test_c2_failure_and_invalid_json_fail_closed" time="0.309" /><testcase classname="tests.test_local_gpu_gate" name="test_c3_difference_descriptive_but_reference_hash_mismatch_fails" time="0.140" /><testcase classname="tests.test_local_gpu_gate" name="test_descriptive_criteria_never_block_pass[C3-FAIL]" time="0.129" /><testcase classname="tests.test_local_gpu_gate" name="test_descriptive_criteria_never_block_pass[C3-INCOMPLETE]" time="0.082" /><testcase classname="tests.test_local_gpu_gate" name="test_descriptive_criteria_never_block_pass[C4-FAIL]" time="0.086" /><testcase classname="tests.test_local_gpu_gate" name="test_descriptive_criteria_never_block_pass[C4-INCOMPLETE]" time="0.084" /><testcase classname="tests.test_local_gpu_gate" name="test_c3_rejects_a_different_geometry_or_physical_contract[canonical_sdf_origin_m-value0]" time="0.085" /><testcase classname="tests.test_local_gpu_gate" name="test_c3_rejects_a_different_geometry_or_physical_contract[phi_fortran_sha256-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb]" time="0.124" /><testcase classname="tests.test_local_gpu_gate" name="test_c3_rejects_a_different_geometry_or_physical_contract[density_kg_m3-1.2]" time="0.087" /><testcase classname="tests.test_local_gpu_gate" name="test_c3_rejects_a_different_geometry_or_physical_contract[burn_in_t_u_l-70.0]" time="0.088" /><testcase classname="tests.test_local_gpu_gate" name="test_c5_requires_resume_provenance_and_statistics" time="0.191" /><testcase classname="tests.test_local_gpu_gate" name="test_c5_rejects_missing_or_contradictory_job_resume_event" time="0.139" /><testcase classname="tests.test_local_gpu_gate" name="test_c5_rejects_unrelated_interruption_or_geometry[prior-source_commit-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb]" time="0.087" /><testcase classname="tests.test_local_gpu_gate" name="test_c5_rejects_unrelated_interruption_or_geometry[prior-runner_sha256-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb]" time="0.136" /><testcase classname="tests.test_local_gpu_gate" name="test_c5_rejects_unrelated_interruption_or_geometry[summary-canonical_sdf_origin_m-value2]" time="0.086" /><testcase classname="tests.test_local_gpu_gate" name="test_c5_prior_checkpoint_must_be_the_checkpoint_actually_loaded" time="0.086" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_stability_failures[clocks_sm_mhz-1700]" time="0.086" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_stability_failures[memory_used_mib-nan]" time="0.075" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_stability_failures[driver_reset-true]" time="0.076" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_stability_failures[error-nvidia-smi failed]" time="0.090" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_clock_drawdown_ignores_only_initial_ramp_up" time="0.150" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_idle_drawdown_is_excluded_only_with_active_evidence" time="0.137" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_runner_solver_intervals_can_mark_active_samples" time="0.086" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_vram_leak_and_repeat_peak_change" time="0.136" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_missing_ten_second_peak_is_incomplete" time="0.083" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_short_active_groups_are_recorded_and_skipped[1]" time="0.085"><failure message="AssertionError: assert ('INCOMPLETE' == 'PASS'&#10;  &#10;  - PASS&#10;  + INCOMPLETE)">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_short_active_gr...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_short_active_groups_ar0/repo/runs/R2b/kernel', '--campaign', ...]])
+short_samples = 1
+
+    @pytest.mark.parametrize("short_samples", [1, 2])
+    def test_c6_short_active_groups_are_recorded_and_skipped(evidence, short_samples):
+        def split_groups(rows):
+            rows[short_samples].update(utilization_gpu_pct="0")
+            rows[-2].update(utilization_gpu_pct="0")  # Leaves a one-sample group at the end.
+    
+        update_watch(evidence, split_groups)
+        result = evaluate(evidence)["criteria"]["C6"]
+&gt;       assert result["status"] == "PASS" and result["missing_evidence"] == []
+E       AssertionError: assert ('INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE)
+
+tests/test_local_gpu_gate.py:657: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_short_active_groups_are_recorded_and_skipped[2]" time="0.086"><failure message="AssertionError: assert ('INCOMPLETE' == 'PASS'&#10;  &#10;  - PASS&#10;  + INCOMPLETE)">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_short_active_gr...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_short_active_groups_ar1/repo/runs/R2b/kernel', '--campaign', ...]])
+short_samples = 2
+
+    @pytest.mark.parametrize("short_samples", [1, 2])
+    def test_c6_short_active_groups_are_recorded_and_skipped(evidence, short_samples):
+        def split_groups(rows):
+            rows[short_samples].update(utilization_gpu_pct="0")
+            rows[-2].update(utilization_gpu_pct="0")  # Leaves a one-sample group at the end.
+    
+        update_watch(evidence, split_groups)
+        result = evaluate(evidence)["criteria"]["C6"]
+&gt;       assert result["status"] == "PASS" and result["missing_evidence"] == []
+E       AssertionError: assert ('INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE)
+
+tests/test_local_gpu_gate.py:657: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_each_repeat_needs_an_interval_with_two_mature_samples" time="0.085"><failure message="assert False&#10; +  where False = any(&lt;generator object test_c6_each_repeat_needs_an_interval_with_two_mature_samples.&lt;locals&gt;.&lt;genexpr&gt; at 0x10832a5a0&gt;)">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_each_repeat_nee...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_each_repeat_needs_an_i0/repo/runs/R2b/kernel', '--campaign', ...]])
+
+    def test_c6_each_repeat_needs_an_interval_with_two_mature_samples(evidence):
+        update_watch(evidence, lambda rows: [row.update(utilization_gpu_pct="0") for row in rows[2:180]])
+        result = evaluate(evidence)["criteria"]["C6"]
+        assert result["status"] == "INCOMPLETE"
+&gt;       assert any("R6/repeat_001" in item and "at least one" in item for item in result["missing_evidence"])
+E       assert False
+E        +  where False = any(&lt;generator object test_c6_each_repeat_needs_an_interval_with_two_mature_samples.&lt;locals&gt;.&lt;genexpr&gt; at 0x10832a5a0&gt;)
+
+tests/test_local_gpu_gate.py:669: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_missing_telemetry_is_incomplete[clocks_sm_mhz]" time="0.085" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_missing_telemetry_is_incomplete[memory_used_mib]" time="0.098" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_missing_telemetry_is_incomplete[utilization_gpu_pct]" time="0.090" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_power_and_temperature_are_recorded_only[-power_draw_w]" time="0.088"><failure message="AssertionError: assert 'INCOMPLETE' == 'PASS'&#10;  &#10;  - PASS&#10;  + INCOMPLETE">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_tempe...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_temperature_0/repo/runs/R2b/kernel', '--campaign', ...]])
+column = 'power_draw_w', value = ''
+
+    @pytest.mark.parametrize("column", ["power_draw_w", "temperature_gpu_c"])
+    @pytest.mark.parametrize("value", ["", "[N/A]", "nan"])
+    def test_c6_power_and_temperature_are_recorded_only(evidence, column, value):
+        update_watch(evidence, lambda rows: rows[10].update({column: value}))
+        result = evaluate(evidence)["criteria"]["C6"]
+&gt;       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:685: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_power_and_temperature_are_recorded_only[-temperature_gpu_c]" time="0.072"><failure message="AssertionError: assert 'INCOMPLETE' == 'PASS'&#10;  &#10;  - PASS&#10;  + INCOMPLETE">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_tempe...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_temperature_1/repo/runs/R2b/kernel', '--campaign', ...]])
+column = 'temperature_gpu_c', value = ''
+
+    @pytest.mark.parametrize("column", ["power_draw_w", "temperature_gpu_c"])
+    @pytest.mark.parametrize("value", ["", "[N/A]", "nan"])
+    def test_c6_power_and_temperature_are_recorded_only(evidence, column, value):
+        update_watch(evidence, lambda rows: rows[10].update({column: value}))
+        result = evaluate(evidence)["criteria"]["C6"]
+&gt;       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:685: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_power_and_temperature_are_recorded_only[[N/A]-power_draw_w]" time="0.190"><failure message="AssertionError: assert 'INCOMPLETE' == 'PASS'&#10;  &#10;  - PASS&#10;  + INCOMPLETE">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_tempe...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_temperature_2/repo/runs/R2b/kernel', '--campaign', ...]])
+column = 'power_draw_w', value = '[N/A]'
+
+    @pytest.mark.parametrize("column", ["power_draw_w", "temperature_gpu_c"])
+    @pytest.mark.parametrize("value", ["", "[N/A]", "nan"])
+    def test_c6_power_and_temperature_are_recorded_only(evidence, column, value):
+        update_watch(evidence, lambda rows: rows[10].update({column: value}))
+        result = evaluate(evidence)["criteria"]["C6"]
+&gt;       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:685: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_power_and_temperature_are_recorded_only[[N/A]-temperature_gpu_c]" time="0.072"><failure message="AssertionError: assert 'INCOMPLETE' == 'PASS'&#10;  &#10;  - PASS&#10;  + INCOMPLETE">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_tempe...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_temperature_3/repo/runs/R2b/kernel', '--campaign', ...]])
+column = 'temperature_gpu_c', value = '[N/A]'
+
+    @pytest.mark.parametrize("column", ["power_draw_w", "temperature_gpu_c"])
+    @pytest.mark.parametrize("value", ["", "[N/A]", "nan"])
+    def test_c6_power_and_temperature_are_recorded_only(evidence, column, value):
+        update_watch(evidence, lambda rows: rows[10].update({column: value}))
+        result = evaluate(evidence)["criteria"]["C6"]
+&gt;       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:685: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_power_and_temperature_are_recorded_only[nan-power_draw_w]" time="0.064"><failure message="AssertionError: assert 'FAIL' == 'PASS'&#10;  &#10;  - PASS&#10;  + FAIL">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_tempe...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_temperature_4/repo/runs/R2b/kernel', '--campaign', ...]])
+column = 'power_draw_w', value = 'nan'
+
+    @pytest.mark.parametrize("column", ["power_draw_w", "temperature_gpu_c"])
+    @pytest.mark.parametrize("value", ["", "[N/A]", "nan"])
+    def test_c6_power_and_temperature_are_recorded_only(evidence, column, value):
+        update_watch(evidence, lambda rows: rows[10].update({column: value}))
+        result = evaluate(evidence)["criteria"]["C6"]
+&gt;       assert result["status"] == "PASS"
+E       AssertionError: assert 'FAIL' == 'PASS'
+E         
+E         - PASS
+E         + FAIL
+
+tests/test_local_gpu_gate.py:685: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_power_and_temperature_are_recorded_only[nan-temperature_gpu_c]" time="0.063"><failure message="AssertionError: assert 'FAIL' == 'PASS'&#10;  &#10;  - PASS&#10;  + FAIL">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_tempe...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_temperature_5/repo/runs/R2b/kernel', '--campaign', ...]])
+column = 'temperature_gpu_c', value = 'nan'
+
+    @pytest.mark.parametrize("column", ["power_draw_w", "temperature_gpu_c"])
+    @pytest.mark.parametrize("value", ["", "[N/A]", "nan"])
+    def test_c6_power_and_temperature_are_recorded_only(evidence, column, value):
+        update_watch(evidence, lambda rows: rows[10].update({column: value}))
+        result = evaluate(evidence)["criteria"]["C6"]
+&gt;       assert result["status"] == "PASS"
+E       AssertionError: assert 'FAIL' == 'PASS'
+E         
+E         - PASS
+E         + FAIL
+
+tests/test_local_gpu_gate.py:685: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[]" time="0.069"><failure message="AssertionError: assert 'INCOMPLETE' == 'PASS'&#10;  &#10;  - PASS&#10;  + INCOMPLETE">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_nvml_uuid_falls...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_nvml_uuid_falls_back_t0/repo/runs/R2b/kernel', '--campaign', ...]])
+uuid = ''
+
+    @pytest.mark.parametrize("uuid", ["", "N/A", "[N/A]", "[Not Supported]"])
+    def test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe(evidence, uuid):
+        update_watch(evidence, lambda rows: rows[10].update(gpu_uuid=uuid, missing_reason="uuid: NVML unavailable"))
+        result = evaluate(evidence)["criteria"]["C6"]
+&gt;       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:693: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[N/A]" time="0.074"><failure message="AssertionError: assert 'INCOMPLETE' == 'PASS'&#10;  &#10;  - PASS&#10;  + INCOMPLETE">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_nvml_uuid_falls...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_nvml_uuid_falls_back_t1/repo/runs/R2b/kernel', '--campaign', ...]])
+uuid = 'N/A'
+
+    @pytest.mark.parametrize("uuid", ["", "N/A", "[N/A]", "[Not Supported]"])
+    def test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe(evidence, uuid):
+        update_watch(evidence, lambda rows: rows[10].update(gpu_uuid=uuid, missing_reason="uuid: NVML unavailable"))
+        result = evaluate(evidence)["criteria"]["C6"]
+&gt;       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:693: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[[N/A]]" time="0.070"><failure message="AssertionError: assert 'INCOMPLETE' == 'PASS'&#10;  &#10;  - PASS&#10;  + INCOMPLETE">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_nvml_uuid_falls...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_nvml_uuid_falls_back_t2/repo/runs/R2b/kernel', '--campaign', ...]])
+uuid = '[N/A]'
+
+    @pytest.mark.parametrize("uuid", ["", "N/A", "[N/A]", "[Not Supported]"])
+    def test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe(evidence, uuid):
+        update_watch(evidence, lambda rows: rows[10].update(gpu_uuid=uuid, missing_reason="uuid: NVML unavailable"))
+        result = evaluate(evidence)["criteria"]["C6"]
+&gt;       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:693: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[[Not Supported]]" time="0.071"><failure message="AssertionError: assert 'INCOMPLETE' == 'PASS'&#10;  &#10;  - PASS&#10;  + INCOMPLETE">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_nvml_uuid_falls...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_nvml_uuid_falls_back_t3/repo/runs/R2b/kernel', '--campaign', ...]])
+uuid = '[Not Supported]'
+
+    @pytest.mark.parametrize("uuid", ["", "N/A", "[N/A]", "[Not Supported]"])
+    def test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe(evidence, uuid):
+        update_watch(evidence, lambda rows: rows[10].update(gpu_uuid=uuid, missing_reason="uuid: NVML unavailable"))
+        result = evaluate(evidence)["criteria"]["C6"]
+&gt;       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:693: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_uuid_fallback_covers_all_samples_but_refuses_a_different_nvml_uuid" time="0.069"><failure message="AssertionError: assert 'INCOMPLETE' == 'PASS'&#10;  &#10;  - PASS&#10;  + INCOMPLETE">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_uuid_fallback_c...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_uuid_fallback_covers_a0/repo/runs/R2b/kernel', '--campaign', ...]])
+
+    def test_c6_uuid_fallback_covers_all_samples_but_refuses_a_different_nvml_uuid(evidence):
+        update_watch(evidence, lambda rows: [row.update(gpu_uuid="") for row in rows])
+        result = evaluate(evidence)["criteria"]["C6"]
+&gt;       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:704: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_device_capacity_can_come_from_the_locked_gpu_identity" time="0.070"><failure message="AssertionError: assert 'INCOMPLETE' == 'PASS'&#10;  &#10;  - PASS&#10;  + INCOMPLETE">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_device_capacity...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_device_capacity_can_co0/repo/runs/R2b/kernel', '--campaign', ...]])
+
+    def test_c6_device_capacity_can_come_from_the_locked_gpu_identity(evidence):
+        update_watch(evidence, lambda rows: [row.update(memory_total_mib="") for row in rows])
+        result = evaluate(evidence)["criteria"]["C6"]
+&gt;       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:713: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_missing_telemetry_does_not_hide_nonfinite_or_reset" time="0.063" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_record_only_collector_missing_markers_do_not_block[power.draw]" time="0.069"><failure message="AssertionError: assert 'INCOMPLETE' == 'PASS'&#10;  &#10;  - PASS&#10;  + INCOMPLETE">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_col...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_collector_0/repo/runs/R2b/kernel', '--campaign', ...]])
+field = 'power.draw'
+
+    @pytest.mark.parametrize("field", ["power.draw", "temperature.gpu", "uuid"])
+    def test_c6_record_only_collector_missing_markers_do_not_block(evidence, field):
+        _, runs, _, _ = evidence
+        column = {"power.draw": "power_draw_w", "temperature.gpu": "temperature_gpu_c", "uuid": "gpu_uuid"}[field]
+        update_watch(evidence, lambda rows: rows[10].update({column: "", "missing_reason": f"{field} unavailable"}))
+        path = runs / "R6/watchdog_status.json"
+        status = json.loads(path.read_text())
+        status["telemetry_errors"] = [{"incomplete": f"{field} unavailable"}]
+        write_json(path, status)
+        result = evaluate(evidence)["criteria"]["C6"]
+&gt;       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:733: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_record_only_collector_missing_markers_do_not_block[temperature.gpu]" time="0.086"><failure message="AssertionError: assert 'INCOMPLETE' == 'PASS'&#10;  &#10;  - PASS&#10;  + INCOMPLETE">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_col...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_collector_1/repo/runs/R2b/kernel', '--campaign', ...]])
+field = 'temperature.gpu'
+
+    @pytest.mark.parametrize("field", ["power.draw", "temperature.gpu", "uuid"])
+    def test_c6_record_only_collector_missing_markers_do_not_block(evidence, field):
+        _, runs, _, _ = evidence
+        column = {"power.draw": "power_draw_w", "temperature.gpu": "temperature_gpu_c", "uuid": "gpu_uuid"}[field]
+        update_watch(evidence, lambda rows: rows[10].update({column: "", "missing_reason": f"{field} unavailable"}))
+        path = runs / "R6/watchdog_status.json"
+        status = json.loads(path.read_text())
+        status["telemetry_errors"] = [{"incomplete": f"{field} unavailable"}]
+        write_json(path, status)
+        result = evaluate(evidence)["criteria"]["C6"]
+&gt;       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:733: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_record_only_collector_missing_markers_do_not_block[uuid]" time="0.073"><failure message="AssertionError: assert 'INCOMPLETE' == 'PASS'&#10;  &#10;  - PASS&#10;  + INCOMPLETE">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_col...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_collector_2/repo/runs/R2b/kernel', '--campaign', ...]])
+field = 'uuid'
+
+    @pytest.mark.parametrize("field", ["power.draw", "temperature.gpu", "uuid"])
+    def test_c6_record_only_collector_missing_markers_do_not_block(evidence, field):
+        _, runs, _, _ = evidence
+        column = {"power.draw": "power_draw_w", "temperature.gpu": "temperature_gpu_c", "uuid": "gpu_uuid"}[field]
+        update_watch(evidence, lambda rows: rows[10].update({column: "", "missing_reason": f"{field} unavailable"}))
+        path = runs / "R6/watchdog_status.json"
+        status = json.loads(path.read_text())
+        status["telemetry_errors"] = [{"incomplete": f"{field} unavailable"}]
+        write_json(path, status)
+        result = evaluate(evidence)["criteria"]["C6"]
+&gt;       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:733: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_actual_telemetry_collector_missing_uses_required_field_policy[power_draw_w]" time="0.077"><failure message="AssertionError: assert 'INCOMPLETE' == 'PASS'&#10;  &#10;  - PASS&#10;  + INCOMPLETE">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_actual_telemetry_c...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_actual_telemetry_collecto0/repo/runs/R2b/kernel', '--campaign', ...]])
+tmp_path = PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_actual_telemetry_collecto0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x10830c950&gt;
+missing_column = 'power_draw_w'
+
+    @pytest.mark.parametrize("missing_column", ["power_draw_w", "memory_used_mib"])
+    def test_actual_telemetry_collector_missing_uses_required_field_policy(evidence, tmp_path, monkeypatch, missing_column):
+        import local_gpu as L
+    
+        # Execute the real parser, collector and status writer against a deterministic NVML response.
+        # Only wall coverage comes from the synthetic six-hour evidence; no hardware is queried.
+        def raw_probe(argv, **kwargs):
+            if "--query-gpu=memory.used" in argv:
+                return "[N/A]" if missing_column == "memory_used_mib" else "50"
+            values = ["2000", "60", "100", "50", "80", "GPU-test", "12282"]
+            values[2 if missing_column == "power_draw_w" else 3] = "[N/A]"
+            return ", ".join(values)
+    
+        monkeypatch.setattr(L.C, "probe", raw_probe)
+        monkeypatch.setattr(L, "query_resets", lambda started: False)
+        collected = tmp_path / "collected.csv"
+        telemetry = L.Telemetry(collected)
+        monkeypatch.setattr(telemetry.stop, "wait", lambda timeout: telemetry.stop.set())
+        telemetry.start()
+        telemetry.thread.join(timeout=2)
+        assert not telemetry.thread.is_alive()
+        actual_status = telemetry.finish()
+        with collected.open(newline="") as handle:
+            actual_row = next(csv.DictReader(handle))
+        assert actual_row[missing_column] == "" and actual_row["missing_reason"]
+        assert actual_status["telemetry_errors"][0]["incomplete"]
+        actual_row["elapsed_s"] = "600"
+        update_watch(evidence, lambda rows: rows.__setitem__(10, actual_row))
+        status_path = evidence[1] / "R6/watchdog_status.json"
+        status = json.loads(status_path.read_text())
+        status["telemetry_errors"] = actual_status["telemetry_errors"]
+        write_json(status_path, status)
+        expected = "PASS" if missing_column == "power_draw_w" else "INCOMPLETE"
+&gt;       assert evaluate(evidence)["criteria"]["C6"]["status"] == expected
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:770: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_actual_telemetry_collector_missing_uses_required_field_policy[memory_used_mib]" time="0.071" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_record_only_collector_invalid_values_do_not_block[power.draw]" time="0.060"><failure message="AssertionError: assert 'FAIL' == 'PASS'&#10;  &#10;  - PASS&#10;  + FAIL">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_col...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_collector_3/repo/runs/R2b/kernel', '--campaign', ...]])
+field = 'power.draw'
+
+    @pytest.mark.parametrize("field", ["power.draw", "temperature.gpu"])
+    def test_c6_record_only_collector_invalid_values_do_not_block(evidence, field):
+        message = f"{field}: nan (non-finite or out-of-range numeric value)"
+        update_watch(evidence, lambda rows: rows[10].update(error=message))
+        path = evidence[1] / "R6/watchdog_status.json"
+        status = json.loads(path.read_text())
+        status["telemetry_errors"] = [{"error": message}]
+        write_json(path, status)
+&gt;       assert evaluate(evidence)["criteria"]["C6"]["status"] == "PASS"
+E       AssertionError: assert 'FAIL' == 'PASS'
+E         
+E         - PASS
+E         + FAIL
+
+tests/test_local_gpu_gate.py:781: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_record_only_collector_invalid_values_do_not_block[temperature.gpu]" time="0.061"><failure message="AssertionError: assert 'FAIL' == 'PASS'&#10;  &#10;  - PASS&#10;  + FAIL">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_col...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_collector_4/repo/runs/R2b/kernel', '--campaign', ...]])
+field = 'temperature.gpu'
+
+    @pytest.mark.parametrize("field", ["power.draw", "temperature.gpu"])
+    def test_c6_record_only_collector_invalid_values_do_not_block(evidence, field):
+        message = f"{field}: nan (non-finite or out-of-range numeric value)"
+        update_watch(evidence, lambda rows: rows[10].update(error=message))
+        path = evidence[1] / "R6/watchdog_status.json"
+        status = json.loads(path.read_text())
+        status["telemetry_errors"] = [{"error": message}]
+        write_json(path, status)
+&gt;       assert evaluate(evidence)["criteria"]["C6"]["status"] == "PASS"
+E       AssertionError: assert 'FAIL' == 'PASS'
+E         
+E         - PASS
+E         + FAIL
+
+tests/test_local_gpu_gate.py:781: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_watchdog_schema_requires_exact_column_set[missing_error]" time="0.070"><failure message="AssertionError: assert 'PASS' == 'FAIL'&#10;  &#10;  - FAIL&#10;  + PASS">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_watchdog_schema...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_watchdog_schema_requir0/repo/runs/R2b/kernel', '--campaign', ...]])
+schema = 'missing_error'
+
+    @pytest.mark.parametrize("schema", ["missing_error", "missing_driver_reset", "extra", "duplicate", "reordered"])
+    def test_c6_watchdog_schema_requires_exact_column_set(evidence, schema):
+        path = evidence[1] / "R6/watchdog.csv"
+        with path.open(newline="") as handle:
+            rows = list(csv.DictReader(handle))
+        columns = list(G.WATCHDOG_COLUMNS)
+        if schema.startswith("missing_"):
+            columns.remove(schema.removeprefix("missing_"))
+        elif schema == "extra":
+            columns.append("unknown")
+        elif schema == "duplicate":
+            columns.append(columns[0])
+        else:
+            columns.reverse()
+        with path.open("w", newline="") as handle:
+            writer = csv.DictWriter(handle, columns, extrasaction="ignore")
+            writer.writeheader()
+            writer.writerows(rows)
+        status_path = path.with_name("watchdog_status.json")
+        status = json.loads(status_path.read_text())
+        status["watchdog_sha256"] = digest(path)
+        write_json(status_path, status)
+        result = evaluate(evidence)["criteria"]["C6"]
+&gt;       assert result["status"] == ("PASS" if schema == "reordered" else "FAIL")
+E       AssertionError: assert 'PASS' == 'FAIL'
+E         
+E         - FAIL
+E         + PASS
+
+tests/test_local_gpu_gate.py:807: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_watchdog_schema_requires_exact_column_set[missing_driver_reset]" time="0.069"><failure message="AssertionError: assert 'INCOMPLETE' == 'FAIL'&#10;  &#10;  - FAIL&#10;  + INCOMPLETE">evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_watchdog_schema...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_watchdog_schema_requir1/repo/runs/R2b/kernel', '--campaign', ...]])
+schema = 'missing_driver_reset'
+
+    @pytest.mark.parametrize("schema", ["missing_error", "missing_driver_reset", "extra", "duplicate", "reordered"])
+    def test_c6_watchdog_schema_requires_exact_column_set(evidence, schema):
+        path = evidence[1] / "R6/watchdog.csv"
+        with path.open(newline="") as handle:
+            rows = list(csv.DictReader(handle))
+        columns = list(G.WATCHDOG_COLUMNS)
+        if schema.startswith("missing_"):
+            columns.remove(schema.removeprefix("missing_"))
+        elif schema == "extra":
+            columns.append("unknown")
+        elif schema == "duplicate":
+            columns.append(columns[0])
+        else:
+            columns.reverse()
+        with path.open("w", newline="") as handle:
+            writer = csv.DictWriter(handle, columns, extrasaction="ignore")
+            writer.writeheader()
+            writer.writerows(rows)
+        status_path = path.with_name("watchdog_status.json")
+        status = json.loads(status_path.read_text())
+        status["watchdog_sha256"] = digest(path)
+        write_json(status_path, status)
+        result = evaluate(evidence)["criteria"]["C6"]
+&gt;       assert result["status"] == ("PASS" if schema == "reordered" else "FAIL")
+E       AssertionError: assert 'INCOMPLETE' == 'FAIL'
+E         
+E         - FAIL
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:807: AssertionError</failure></testcase><testcase classname="tests.test_local_gpu_gate" name="test_c6_watchdog_schema_requires_exact_column_set[extra]" time="0.060" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_watchdog_schema_requires_exact_column_set[duplicate]" time="0.059" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_watchdog_schema_requires_exact_column_set[reordered]" time="0.069" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_unobservable_reset_and_short_duration_incomplete" time="0.119" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_monitor_unknown_type_and_cadence_gap" time="0.125" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_watch_alone_cannot_qualify_a_short_workload" time="0.073" /><testcase classname="tests.test_local_gpu_gate" name="test_c6_requires_monitor_overlap_and_nonoverlapping_workloads" time="0.117" /><testcase classname="tests.test_local_gpu_gate" name="test_malformed_objects_return_structured_failure" time="0.081" /><testcase classname="tests.test_local_gpu_gate" name="test_c4_rejects_invalid_steps_and_wall" time="0.110" /><testcase classname="tests.test_local_gpu_gate" name="test_duplicate_json_and_unsafe_output_paths_fail_closed" time="0.080" /><testcase classname="tests.test_local_gpu_gate" name="test_write_once_output_and_lock_sidecar" time="0.072" /><testcase classname="tests.test_local_gpu_gate" name="test_unexpected_gate_exception_does_not_reserve_output" time="0.028" /><testcase classname="tests.test_local_gpu_gate" name="test_exclusive_gate_publish_preserves_a_racing_writer" time="0.001" /><testcase classname="tests.test_local_gpu_gate" name="test_done_missing_identity_artifacts_fails[run_identity.json]" time="0.058" /><testcase classname="tests.test_local_gpu_gate" name="test_done_missing_identity_artifacts_fails[gpu_device_probe.json]" time="0.054" /><testcase classname="tests.test_local_gpu_gate" name="test_done_missing_identity_artifacts_fails[nvidia_smi.csv]" time="0.058" /><testcase classname="tests.test_local_gpu_gate" name="test_done_missing_identity_artifacts_fails[output_manifest.json]" time="0.055" /><testcase classname="tests.test_local_gpu_gate" name="test_c1_binds_runtime_environment_and_depot[filtered_environment]" time="0.063" /><testcase classname="tests.test_local_gpu_gate" name="test_c1_binds_runtime_environment_and_depot[julia_depot]" time="0.062" /><testcase classname="tests.test_local_gpu_gate" name="test_lock_matches_utf8_capture_and_requires_binary_manifest_identity" time="0.029" /><testcase classname="tests.test_local_gpu_gate" name="test_json_float_overflow_is_a_structured_failure" time="0.063" /><testcase classname="tests.test_local_gpu_gate" name="test_finite_inputs_with_nonfinite_derived_statistics_cannot_pass" time="0.072" /><testcase classname="tests.test_local_gpu_gate" name="test_retained_t4_references_recompute_read_only" time="0.079" /></testsuite></testsuites>

@@ -1,0 +1,191 @@
+{
+  "archives": {
+    "formal_kernel_output.tar.gz": {
+      "all_member_hashes_match": true,
+      "members_verified": 137,
+      "sha256": "4fe354eb4553bd16380c7da373ee0a3f92ffda2ca1cfe74d05bff0fb847512ec"
+    },
+    "formal_registered_payload.tar.gz": {
+      "all_member_hashes_match": true,
+      "members_verified": 55,
+      "sha256": "0eca9fa85e2d4888644fcb4b9e9244eb5b63aa9a101e0325b67ac103e94c797d"
+    }
+  },
+  "captured_utc": "2026-11-07T08:56:08.170002+00:00",
+  "evidence_class": "software_input_integrity",
+  "external_authority_sha256": {
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/codex/gen01_w1_2026_11_06/reviews/wp03_review_1_opus.md": "a487efc1b98151ff1754ec60091967118de3f60f02ac8bcc51aacb9023ff87e7",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/grad00_lambda_swap_spec_2026_11_01.md": "33030dfcc98602605e7996b3816e64b38d262d27b5ec4601d422ce812f34c721"
+  },
+  "kind": "grad00_amendment3_input_integrity_audit",
+  "numerical_reference": {
+    "D0_interface_offset": {
+      "epsilon_m": 0.003971641173621408,
+      "formal_interior_epsilon_m": [
+        0.0006294627058970836,
+        0.0015811388300841897,
+        0.003971641173621408
+      ],
+      "model_a_gradient_drag_downforce_n_per_m": [
+        -0.10398729014231183,
+        0.8014915523435178
+      ],
+      "spread_n_per_m": {
+        "fx": 0.003340882961506817,
+        "fz": 0.02060014270961251
+      }
+    },
+    "D1_filtered_seed11": {
+      "epsilon_m": 0.003971641173621408,
+      "formal_interior_epsilon_m": [
+        0.0006294627058970836,
+        0.0015811388300841897,
+        0.003971641173621408
+      ],
+      "model_a_gradient_drag_downforce_n_per_m": [
+        -0.06372394066171688,
+        -0.10643781759208808
+      ],
+      "spread_n_per_m": {
+        "fx": 0.0023411868563410834,
+        "fz": 0.003321700208349783
+      }
+    },
+    "D2_filtered_seed2026": {
+      "epsilon_m": 0.003971641173621408,
+      "formal_interior_epsilon_m": [
+        0.0006294627058970836,
+        0.0015811388300841897,
+        0.003971641173621408
+      ],
+      "model_a_gradient_drag_downforce_n_per_m": [
+        -0.1697629387636076,
+        -0.09172298102069233
+      ],
+      "spread_n_per_m": {
+        "fx": 0.004788957134019947,
+        "fz": 0.0029913937716240396
+      }
+    },
+    "P1_upstream_lobe": {
+      "epsilon_m": 0.003971641173621408,
+      "formal_interior_epsilon_m": [
+        0.0006294627058970836,
+        0.0015811388300841897,
+        0.003971641173621408
+      ],
+      "model_a_gradient_drag_downforce_n_per_m": [
+        -0.21429781188666328,
+        -0.38519518769124206
+      ],
+      "spread_n_per_m": {
+        "fx": 0.005882931182735196,
+        "fz": 0.010178941059118983
+      }
+    }
+  },
+  "raw_input_checks": {
+    "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw": {
+      "bytes": 1541540,
+      "sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431"
+    },
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D0_interface_offset.dir_f4_fortran.raw": {
+      "bytes": 1541540,
+      "formal_c_order_sha256": "8b5773b7d404cc21819078085eddeae437cad619472910fcac17430b2b6be3b5",
+      "sha256": "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549"
+    },
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D1_filtered_seed11.dir_f4_fortran.raw": {
+      "bytes": 1541540,
+      "formal_c_order_sha256": "4da3513780c3ba9b2ab91837911d46a2cab362e9a561eedb18468b424f81d4f5",
+      "sha256": "96fe6e62c5fcb7ad0108dd64d6fac68cc488ee49deb188be742530f828037a87"
+    },
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D2_filtered_seed2026.dir_f4_fortran.raw": {
+      "bytes": 1541540,
+      "formal_c_order_sha256": "bb1eeaf0cdd43bc71085499c853f24eae6335e030851dfc0f9b581f4f5aa8fe8",
+      "sha256": "2a22eb09407a14755f495fa07d4df8dee2d4632db41a0b75d1bf744fd3d1d5de"
+    },
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/P1_upstream_lobe.dir_f4_fortran.raw": {
+      "bytes": 1541540,
+      "formal_c_order_sha256": "93631cba7024fc5592bb2a0999ed33b580142fbf7a50f1542b41692bc26c0fd7",
+      "sha256": "24cc06aeb18e2a5729e560636f13ce78f8f19746268699783e8498921aec5dcc"
+    }
+  },
+  "reference_check": {
+    "command": [
+      "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+      "scripts/grad00_reference_from_fd08.py",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": ""
+  },
+  "reference_sha256": "f0f5f77c3ae80d94028970e928f430daf9356d3dae4fd7ce3a720c24f8ade5f7",
+  "reference_sources": {
+    "docs/evidence/fd08_v2_formal_2026_10_07_amend3/formal_analysis.json": "3da59ac9b1086ed286cb0109cd669dac804f4fb99785986515ce35db1acf0466",
+    "docs/evidence/fd08_v2_formal_2026_10_07_amend3/formal_criteria.json": "31b29cccc9d3fd6912a910b09694a8230f9ee0aa84e6a418161881ffbcf907be"
+  },
+  "resources": {
+    "process_list": {
+      "command": [
+        "ps",
+        "-axo",
+        "pid,ppid,%cpu,rss,etime,comm"
+      ],
+      "exit_code": null,
+      "stderr": "[Errno 1] Operation not permitted: 'ps'",
+      "stdout": ""
+    },
+    "uptime": {
+      "command": [
+        "uptime"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "17:56  3 users, load averages: 19.38 35.28 29.85\n"
+    },
+    "vm_stat": {
+      "command": [
+        "vm_stat"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               29008.\nPages active:                            665496.\nPages inactive:                          659656.\nPages speculative:                         4884.\nPages throttled:                              0.\nPages wired down:                        185810.\nPages purgeable:                          25927.\n\"Translation faults\":                5636639706.\nPages copy-on-write:                  214143584.\nPages zero filled:                   2780983419.\nPages reactivated:                    740499715.\nPages purged:                         101002623.\nFile-backed pages:                       368960.\nAnonymous pages:                         961076.\nPages stored in compressor:             2124923.\nPages occupied by compressor:            500009.\nDecompressions:                       639971093.\nCompressions:                         826709819.\nPageins:                              133322386.\nPageouts:                               1355728.\nSwapins:                                8630227.\nSwapouts:                              10905460.\n"
+    }
+  },
+  "runtime_manifests": {
+    "CFDSDFWaterLily": {
+      "julia": "1.12.6",
+      "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+      "project_sha256": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+      "versions": {
+        "ForwardDiff": "1.4.6",
+        "KernelAbstractions": "0.9.42",
+        "WaterLily": "1.8.0"
+      }
+    },
+    "CFDSDFWaterLily110": {
+      "julia": "1.12.6",
+      "manifest_sha256": "48b2fb4f83619a9599d69b4f9cb846332a26e702cfea79cae56c3b089ff62388",
+      "project_sha256": "c4e838eba03286938e60aec8fd690f275b056a39e1b6be0f3e0e22c0334e3448",
+      "versions": {
+        "CUDA": "6.3.1",
+        "ForwardDiff": "1.4.5",
+        "KernelAbstractions": "0.9.45",
+        "WaterLily": "1.10.0"
+      }
+    },
+    "CFDSDFWaterLilyT4": {
+      "julia": "1.12.6",
+      "manifest_sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+      "project_sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+      "versions": {
+        "CUDA": "6.3.1",
+        "ForwardDiff": "1.4.5",
+        "KernelAbstractions": "0.9.42",
+        "WaterLily": "1.8.0"
+      }
+    }
+  },
+  "scope": "No solve, GPU, Kaggle, reference write, commit, or push. Formal PASS is Model A interior interpolation only; current tests are software capability evidence."
+}

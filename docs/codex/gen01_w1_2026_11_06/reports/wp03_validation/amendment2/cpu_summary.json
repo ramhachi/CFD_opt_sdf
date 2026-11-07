@@ -1,0 +1,214 @@
+{
+  "all_original_four_arms_passed": false,
+  "checks": {
+    "CFDSDFWaterLily110_quick_Float32": {
+      "all_required_index_keys_present": true,
+      "arm_finiteness": {
+        "quick": {
+          "primal_finite": true,
+          "tangent_p_finite": true,
+          "tangent_u_finite": true
+        },
+        "selected_dual": {
+          "primal_finite": true,
+          "tangent_p_finite": true,
+          "tangent_u_finite": true
+        },
+        "selected_plain": {
+          "primal_finite": true,
+          "tangent_p_finite": true,
+          "tangent_u_finite": true
+        }
+      },
+      "exit_code": 0,
+      "forwarddiff": "1.4.5",
+      "lambda_type": "typeof(quick)",
+      "pass": true,
+      "real_type": "Float32",
+      "status": "PREFLIGHT_ONLY",
+      "wall_seconds": 62.19567512499634,
+      "waterlily": "1.10.0"
+    },
+    "CFDSDFWaterLily_cds_Float32": {
+      "all_required_index_keys_present": true,
+      "arm_finiteness": {
+        "selected_dual": {
+          "primal_finite": true,
+          "tangent_p_finite": true,
+          "tangent_u_finite": true
+        },
+        "selected_plain": {
+          "primal_finite": true,
+          "tangent_p_finite": true,
+          "tangent_u_finite": true
+        }
+      },
+      "exit_code": 0,
+      "forwarddiff": "1.4.6",
+      "lambda_type": "typeof(cds)",
+      "pass": true,
+      "real_type": "Float32",
+      "status": "PREFLIGHT_ONLY",
+      "wall_seconds": 86.93295891594607,
+      "waterlily": "1.8.0"
+    },
+    "CFDSDFWaterLily_quick_Float32": {
+      "all_required_index_keys_present": true,
+      "arm_finiteness": {
+        "quick": {
+          "primal_finite": true,
+          "tangent_p_finite": true,
+          "tangent_u_finite": true
+        },
+        "selected_dual": {
+          "primal_finite": true,
+          "tangent_p_finite": true,
+          "tangent_u_finite": true
+        },
+        "selected_plain": {
+          "primal_finite": true,
+          "tangent_p_finite": true,
+          "tangent_u_finite": true
+        }
+      },
+      "exit_code": 0,
+      "forwarddiff": "1.4.6",
+      "lambda_type": "typeof(quick)",
+      "pass": true,
+      "real_type": "Float32",
+      "status": "PREFLIGHT_ONLY",
+      "wall_seconds": 98.88096087495796,
+      "waterlily": "1.8.0"
+    },
+    "CFDSDFWaterLily_quick_Float64": {
+      "all_required_index_keys_present": true,
+      "arm_finiteness": {
+        "quick": {
+          "primal_finite": true,
+          "tangent_p_finite": true,
+          "tangent_u_finite": true
+        },
+        "selected_dual": {
+          "primal_finite": true,
+          "tangent_p_finite": true,
+          "tangent_u_finite": true
+        },
+        "selected_plain": {
+          "primal_finite": true,
+          "tangent_p_finite": true,
+          "tangent_u_finite": true
+        }
+      },
+      "exit_code": 0,
+      "forwarddiff": "1.4.6",
+      "lambda_type": "typeof(quick)",
+      "pass": true,
+      "real_type": "Float64",
+      "status": "PREFLIGHT_ONLY",
+      "wall_seconds": 145.2617968750419,
+      "waterlily": "1.8.0"
+    },
+    "CFDSDFWaterLily_quick_nobound_Float32": {
+      "all_required_index_keys_present": true,
+      "arm_finiteness": {
+        "selected_dual": {
+          "primal_finite": true,
+          "tangent_p_finite": true,
+          "tangent_u_finite": true
+        },
+        "selected_plain": {
+          "primal_finite": true,
+          "tangent_p_finite": true,
+          "tangent_u_finite": true
+        }
+      },
+      "exit_code": 0,
+      "forwarddiff": "1.4.6",
+      "lambda_type": "typeof(WaterLily.quick_nobound)",
+      "pass": true,
+      "real_type": "Float32",
+      "status": "PREFLIGHT_ONLY",
+      "wall_seconds": 69.84591150004417,
+      "waterlily": "1.8.0"
+    },
+    "CFDSDFWaterLily_quick_nobound_Float64": {
+      "all_required_index_keys_present": true,
+      "arm_finiteness": {
+        "selected_dual": {
+          "primal_finite": true,
+          "tangent_p_finite": true,
+          "tangent_u_finite": true
+        },
+        "selected_plain": {
+          "primal_finite": true,
+          "tangent_p_finite": true,
+          "tangent_u_finite": true
+        }
+      },
+      "exit_code": 0,
+      "forwarddiff": "1.4.6",
+      "lambda_type": "typeof(WaterLily.quick_nobound)",
+      "pass": true,
+      "real_type": "Float64",
+      "status": "PREFLIGHT_ONLY",
+      "wall_seconds": 75.36867695802357,
+      "waterlily": "1.8.0"
+    },
+    "CFDSDFWaterLily_vanLeer_Float32": {
+      "all_required_index_keys_present": true,
+      "arm_finiteness": {
+        "selected_dual": {
+          "primal_finite": false,
+          "tangent_p_finite": false,
+          "tangent_u_finite": false
+        },
+        "selected_plain": {
+          "primal_finite": true,
+          "tangent_p_finite": true,
+          "tangent_u_finite": true
+        }
+      },
+      "exit_code": 2,
+      "forwarddiff": "1.4.6",
+      "lambda_type": "typeof(WaterLily.vanLeer)",
+      "pass": false,
+      "real_type": "Float32",
+      "status": "INCOMPLETE",
+      "wall_seconds": 96.44437049992848,
+      "waterlily": "1.8.0"
+    },
+    "CFDSDFWaterLily_vanLeer_safe_Float32": {
+      "all_required_index_keys_present": true,
+      "arm_finiteness": {
+        "selected_dual": {
+          "primal_finite": true,
+          "tangent_p_finite": true,
+          "tangent_u_finite": true
+        },
+        "selected_plain": {
+          "primal_finite": true,
+          "tangent_p_finite": true,
+          "tangent_u_finite": true
+        },
+        "vanLeer_plain": {
+          "primal_finite": true,
+          "tangent_p_finite": true,
+          "tangent_u_finite": true
+        }
+      },
+      "exit_code": 0,
+      "forwarddiff": "1.4.6",
+      "lambda_type": "typeof(WaterLily.vanLeer_safe)",
+      "pass": true,
+      "plain_p_bit_equal_to_vanLeer": true,
+      "plain_u_bit_equal_to_vanLeer": true,
+      "real_type": "Float32",
+      "status": "PREFLIGHT_ONLY",
+      "wall_seconds": 121.05404266691767,
+      "waterlily": "1.8.0"
+    }
+  },
+  "claim_limit": "20-step CPU preflight and finite partial checks only. Registered window not measured; no BOUNDED/AGREE labels.",
+  "evidence_class": "short_cpu_software_preflight_summary",
+  "ta1_plain_and_dual_value_bit_equal": true
+}

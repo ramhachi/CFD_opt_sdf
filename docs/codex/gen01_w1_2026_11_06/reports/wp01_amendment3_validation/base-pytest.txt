@@ -1,0 +1,98 @@
+........................................................................ [  2%]
+........................................................................ [  4%]
+.........................................................s.............. [  6%]
+........................................................................ [  8%]
+........................................................................ [ 10%]
+........................................................................ [ 12%]
+..........................................s............................. [ 14%]
+........................................................................ [ 16%]
+..........................................s............................. [ 18%]
+s.....................sss.s...............................sss........sss [ 20%]
+ss........................................sssssss.....s................. [ 22%]
+........................................................................ [ 24%]
+........................................................................ [ 26%]
+........................................................................ [ 28%]
+........................................................................ [ 30%]
+........................................................................ [ 32%]
+........................................................................ [ 34%]
+........................................................................ [ 36%]
+........................................................................ [ 38%]
+........................................................................ [ 40%]
+........................................................................ [ 42%]
+........................................................................ [ 44%]
+........................................................................ [ 46%]
+........................................................................ [ 48%]
+........................................................................ [ 50%]
+........................................................................ [ 52%]
+............................................s........s.................. [ 54%]
+........................................................................ [ 56%]
+........................................................................ [ 58%]
+........................................................................ [ 60%]
+........................................................................ [ 62%]
+..............s......................s.................................. [ 64%]
+..................................................s..................... [ 66%]
+........................................................................ [ 68%]
+........................................................................ [ 70%]
+................................................s.s....s................ [ 72%]
+........................................................................ [ 74%]
+........................................................................ [ 76%]
+........................................................................ [ 78%]
+........................................................................ [ 80%]
+........................................................................ [ 83%]
+........................................................................ [ 85%]
+.......sssssss........................ss........s.s.s.....s............s [ 87%]
+ssss............ssss....s............ss.ss.s.ss.s............s.s.....sss [ 89%]
+ss....s........ss....s.................................................. [ 91%]
+........................................................................ [ 93%]
+........................................................................ [ 95%]
+........................................................................ [ 97%]
+........................................................................ [ 99%]
+............................                                             [100%]
+=============================== warnings summary ===============================
+scripts/screen01/screen01_pool.py:110
+  /private/tmp/wp01-base-e3dcdf61/scripts/screen01/screen01_pool.py:110: UserWarning: The balance properties of Sobol' points require n to be a power of 2.
+    return x_to_u(qmc.Sobol(d=3, scramble=True, seed=seed).random(n))
+
+tests/test_extraction_qualification.py: 369 warnings
+tests/test_extraction_sweep.py: 1221 warnings
+tests/test_fixed_grid_backend.py: 9 warnings
+tests/test_fixed_grid_canonical_state_injection.py: 221 warnings
+tests/test_fixed_grid_connectivity.py: 190 warnings
+tests/test_fixed_grid_contract.py: 520 warnings
+tests/test_fixed_grid_optimizer.py: 506 warnings
+tests/test_fixed_grid_primal.py: 276 warnings
+tests/test_fixed_grid_sensitivity.py: 369 warnings
+tests/test_front_wing_pipeline.py: 893 warnings
+tests/test_handoff.py: 730 warnings
+tests/test_sdf_native_genesis.py: 131 warnings
+tests/test_sdf_native_geometry_gates.py: 100 warnings
+tests/test_stage_s_entry.py: 1228 warnings
+tests/test_stage_t_candidate_binding.py: 458 warnings
+tests/test_xfid45_surface_round2_candidates.py: 5 warnings
+  /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/vtkmodules/util/numpy_support.py:244: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    result.shape = shape
+
+tests/test_geometry_gates_v2.py: 48 warnings
+  /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/skimage/measure/_marching_cubes_lewiner.py:237: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    ar.shape = shape
+
+tests/test_geometry_gates_v2.py: 11 warnings
+tests/test_reinit04_v17.py: 2 warnings
+tests/test_xfid45_round3_export.py: 3 warnings
+tests/test_xfid45_surface_round2_candidates.py: 3 warnings
+  /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/skimage/measure/_marching_cubes_lewiner.py:213: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    faces.shape = -1, 3
+
+tests/test_grad_g2_diag4_prereg.py::TestFreeze::test_sidecar_and_every_frozen_file_hash
+  /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/_pytest/fixtures.py:1313: PytestRemovedIn10Warning: Class-scoped fixture defined as instance method is deprecated.
+  Instance attributes set in this fixture will NOT be visible to test methods,
+  as each test gets a new instance while the fixture runs only once per class.
+  Use @classmethod decorator and set attributes on cls instead.
+  See https://docs.pytest.org/en/stable/deprecations.html#class-scoped-fixture-as-instance-method
+    fixturefunc = resolve_fixture_function(fixturedef, request)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+3482 passed, 74 skipped, 7295 warnings in 2978.52s (0:49:38)

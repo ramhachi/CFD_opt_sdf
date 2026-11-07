@@ -1,0 +1,38 @@
+{
+  "claim_limit": "software and preflight evidence; no registered-window tangent/FD labels, GRAD01 gate conclusion or physical/gradient qualification",
+  "evidence_class": "grad00_implementation_and_cpu_software_validation",
+  "frozen_ta1_bit_equality": {
+    "Dual_value_components_u_and_p": true,
+    "ordinary_Float32_plain_u_and_p": true
+  },
+  "full_repository_failure_set_equality": "NOT_ESTABLISHED",
+  "grad00_gpu_measurement_count": 0,
+  "initial_existing_metal_initialization_attempt": true,
+  "kaggle_push_count": 0,
+  "main_preflight": {
+    "cds": "PASS",
+    "quick": "PASS",
+    "quick_nobound": "PASS",
+    "vanLeer": "FAIL_INCOMPLETE_nonfinite_Dual_primal_and_partials_plain_finite"
+  },
+  "new_python_tests": {
+    "code_commit": "9aedf41d0bf705848a5bd8511cffecb1073b9f84",
+    "failed": 0,
+    "passed": 137
+  },
+  "overall_acceptance": "PARTIAL",
+  "reasons": [
+    "original full base pytest native abort during existing Metal initialization",
+    "CPU-only base pytest reached 1800 s cap near46%, no final JUnit; final CPU whole suite not started",
+    "directionwise FD08 selected plateau epsilon and spread definition missing",
+    "vanLeer actual CPU Dual preflight nonfinite; no upstream scheme or gate changes"
+  ],
+  "reference_configured": false,
+  "scientific_analysis_json_written": false,
+  "side_preflight": {
+    "Float64_quick": "PASS",
+    "Float64_quick_nobound": "PASS",
+    "WaterLily110_quick_Float32": "PASS"
+  },
+  "sources_and_artifacts": "see workspace_integrity.json, julia_validation_final.json, render_audit.json and pytest/comparison.json"
+}

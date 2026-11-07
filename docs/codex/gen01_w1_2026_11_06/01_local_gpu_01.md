@@ -45,4 +45,15 @@
 
 ## やらないこと
 
-- GPU の実行、Kaggle、`runner.py` や Julia job の編集、`Manifest.toml` の変更、native Windows への harness の移植。
+- GPU の実行、Kaggle、既存の `runner.py` や Julia job の編集、`Manifest.toml` の変更、native Windows への harness の移植。
+
+## Amendment 1（2026-11-06。1 回目の試みが BLOCKED で止まった 4 つの矛盾への回答。この節が上の本文より優先する。仕様 `docs/local_gpu_env_gate_2026_11_01.md` §10 と同じ内容）
+
+1. **「runner を無改変で」は不可能**（`scripts/grid01_gpu.py` が T4 以外を拒否、`campaign_schema.py` の `GPU_EXPECTED` と `campaign_verify.py` も T4 要求）。→ harness に **backend profile** を足す：新規 `src/cfd_harness/backend_profiles.py`。既定 `kaggle_t4` は今の挙動を byte 単位で再現する（既存 campaign・freeze・rendered kernel は不変。テスト：既存 campaign を既定 profile で render し、commit 済み kernel と byte 一致）。`local_rtx4070ti` は `nvidia-smi` の名前（と、取れれば UUID）と `used_gpu_count = 1` を検査する。ローカル用 kernel は `scripts/local_gpu.py render` で **profile 付きに再 render** し、`verify --smoke` は campaign に記録された profile を受け入れる。runner の identity 検査は迂回せず、profile で通す。`grid01_gpu.py`・`campaign_schema.py`・`campaign_verify.py`・`campaign_runner_template.py` に手を入れる必要があるなら、**既定 profile での出力が byte 不変**であることをテストで示した上で最小限に変える（README の「既存ファイルを編集する場合」の規則に従い、理由を報告に書く）。
+2. **既存 campaign の T4 byte gate はローカルの基準にしない。** ローカルでは T4 参照との比較は記述（C3）、gate は同一機の再実行（C1）。ローカル profile は C1 合格後に自分の first-state SHA を参照として記録する。
+3. **Julia project。** GPU 実行は登録済みの GPU project `julia/CFDSDFWaterLilyT4`（WaterLily 1.8.0 ＋ CUDA 6.3.1。Kaggle runner と同じ）を使い、lock はその `Manifest.toml` の SHA-256 を pin する。CPU 自己テスト（checkpoint）は `julia/CFDSDFWaterLily`。どちらの Manifest も変えない。
+4. **checkpoint／resume を呼ぶ job が要る。** 登録済み job は編集しない。`scripts/waterlily_local_gpu_job.jl` を `scripts/waterlily_lowdim02_flow32_job.jl` の **コピー**として作り、追加は `Checkpoint.jl` の save／resume の呼び出し（周期とパスは環境変数）だけ、force CSV は不変。差分を `scripts/waterlily_local_gpu_job.diff` として commit。R3／R5 はこの job、R1／R2 は既存 job を再 render した kernel で。C5 は R5 と R3 を C1 の級で比較。
+5. **道具の注意。** commit は共有の Git dir（`/Users/sota/projects/FomulaTMU/CFD2026_09/.git`。今回の sandbox では書き込み可）に対して行う。PR は `gh pr create`（GitHub の MCP connector は使わない）。1 回目の試みの 3 つの記録（`reports/wp01_local_gpu_01_{design,report}.md`、`wp01_local_gpu_01_validation.json`）は `reports/wp01_attempt1_blocked/` に移して一緒に commit する。
+6. 必読文書のうち、`docs/opencode_handoff_2026_09.md`、`docs/problem_register_2026_09.md`、`docs/problem_resolution_plan_2026_09.md` は **目次と該当節（harness、GPU、Kaggle、PROC-01）だけ**でよい。全文通読は不要。
+
+これで矛盾は解消しているはずなので、今回は BLOCKED にせず実装まで進めること。新たな矛盾が見つかった場合だけ、その箇所を具体的に示して止める。
