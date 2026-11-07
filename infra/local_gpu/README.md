@@ -3,9 +3,10 @@
 このディレクトリは環境 gate の道具です。実機の `lock.json` も GPU の測定値も同梱しません。
 GPU 実行はユーザーが WSL2 内で行います。実行前に source review、環境 lock の commit、
 LOCAL-GPU-01 の exploratory 行の事前記録が必要です。登録・凍結・gate 合格や物理の資格を与えるものではありません。
-仕様は [LOCAL-GPU-01](../../docs/local_gpu_env_gate_2026_11_01.md) と WP1 のユーザー提示 Amendment 1 / 2、
+仕様は [LOCAL-GPU-01](../../docs/local_gpu_env_gate_2026_11_01.md) と WP1 のユーザー提示 Amendment 1 / 2 / 3、
 設計は [WP1 design](../../docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_design.md) を参照してください。
-on-disk rev0 には Amendment 1 の §10 が未収録なので、GPU project と backend profile は本書の改訂契約に従います。
+この worktree の rev0 は amendment が未収録です。Amendment 3 が指定する review worktree の
+LOCAL-GPU-01 §11 と本書の改訂契約に従います。既存 harness の schema/build/verify は変更しません。
 
 ## 1. Windows と WSL2 を準備する
 
@@ -104,6 +105,9 @@ export PATH="$HOME/.local/opt/julia-1.12.6/bin:$PATH"
 export JULIA_NUM_THREADS=1
 export CUDA_VISIBLE_DEVICES=0
 export CUDA_DEVICE_ORDER=PCI_BUS_ID
+# この backend 専用 depot。capture / check-lock / run も同じ値で実行する
+export JULIA_DEPOT_PATH="$HOME/.local/share/cfd-local-gpu/julia-depot"
+mkdir -p "$JULIA_DEPOT_PATH"
 julia --startup-file=no --version
 ```
 
@@ -138,7 +142,10 @@ sidecar は日時を含む **全 lock bytes** の SHA-256 です。
 
 `check-lock` は sidecar と canonical bytes を確認し、同じ方法で取り直した `environment` 全体を比較します。
 日時・生の `CUDA.versioninfo()` の自由 VRAM 表示は `observations` にあり、比較対象から分離します。
-Windows build、WSL kernel/設定、driver、GPU、Julia executable、Manifest、CUDA runtime、depot 等が変われば拒否します。
+Windows build、WSL kernel/設定、driver、GPU、Julia executable と installation root、Manifest、
+CUDA runtime、専用 depot の Manifest-resolved package tree 等が変われば拒否します。
+tarball SHA は template の期待値と実測済みの値を区別します。未取得 archive を検証済みとは記録しません。
+Windows HAGS は registry が読める場合に状態を保存し、読めない場合は理由を保存します。
 クラスと local first-state SHA は C1 後の `gate.json` に lock SHA と一緒に追加するので、元の lock は書き換えません。
 
 ## 4. ローカル campaign と kernel を render する
@@ -162,6 +169,9 @@ Windows build、WSL kernel/設定、driver、GPU、Julia executable、Manifest�
 `--kernel` は元 campaign の key（R1=`a`、R2=`f24`、R3=`f32a`、R4=`f48k13`）です。
 この gate では **すべて `--smoke`** を指定し、各 kernel の最初の parent だけを full registered window で実行します。
 `smoke` は流れの窓を短くするものではありません。
+render から gate まで、campaign、backend module、job、GEN-01 module を含む pinned files を変更しないでください。
+C2 は現在の tree で再 render して照合するため、途中で pin が変わると FAIL になります。
+変更が必要なら source / campaign を再確認し、新しい環境 gate の手続きで扱います。
 
 ```bash
 .venv/bin/python scripts/local_gpu.py render infra/local_gpu/r1.campaign.json \
@@ -170,7 +180,10 @@ Windows build、WSL kernel/設定、driver、GPU、Julia executable、Manifest�
 ```
 
 生成後の `runner.py` は wrapper が一切変更せず実行します。local profile だけが実機名・可能なら NVML UUID、
-CUDA singleton/default UUID、`used_gpu_count=1` を検証し、lock 済み Julia executable を SHA と版で再検査して使用します。
+CUDA singleton/default UUID を検証し、lock 済み Julia executable / installation root / 専用 depot を再検査します。
+singleton の実証は独立 CUDA probe の `logical_device_count=1` です。runner の
+`used_gpu_count=1` はこの検査に対応する bookkeeping で、単独の測定値としては扱いません。
+実際に子へ渡す `JULIA_*` / `CUDA_*` / `NVIDIA_*` / `WSL*` は `local_run.json` の run identity に記録します。
 NVML UUID が取得不能でも CUDA driver の UUID は必須です。
 既定 `kaggle_t4` の template と既存 rendered kernel は保全します。
 
@@ -185,12 +198,14 @@ NVML UUID が取得不能でも CUDA driver の UUID は必須です。
 ```bash
 .venv/bin/python scripts/local_gpu.py bench --out work/local_gpu/r0_wsl2.json
 # native Windows は Windows 用 Julia 1.12.6 + 同じ既存 project を準備してから
-# PowerShell: ./scripts/local_gpu_bench_windows.ps1 -Out work/local_gpu/r0_native_windows.json
+# PowerShell: ./scripts/local_gpu_bench_windows.ps1 -Out work/local_gpu/r0_native_windows.json -Lock infra/local_gpu/lock.json
 ```
 
-R0 は TGV 128³ Float32/Re1600、10 warmup step + 100 timed step、2D capsule 板256×128、chord32、
+R0 は custom TGV 128³ Float32/Re1600、10 warmup step + 100 timed step、2D capsule 板256×128、chord32、
 thickness4、10°、Re1000 を固定します。wall は CUDA synchronize で挟み、cells×steps/wall を出します。
-板は rev0 に細部指定がないため固定した工程 fixture で、物理の資格ではありません。
+TGV は WaterLily の benchmark suite そのものではなく、固定した初期場・境界の工程 fixture です。
+公開 ns/DOF 錨との直接同等性は主張しません。板も rev0 に細部指定がないため固定した工程 fixture です。
+結果には lock SHA と VRAM を記録します。CPU selftest では GPU を使用せず、その旨を明記します。
 native Windows との WSL2 遅延比は記述し、25%超の場合の OS 判断はユーザーが行います。
 native Windows wrapper は benchmark のみで、POSIX harness の移植ではありません。
 
@@ -231,18 +246,23 @@ R6 の N は R3 の wall を基に **合計6時間以上**になるよう実行�
 .venv/bin/python scripts/local_gpu.py watch --out work/local_gpu/extra_watch/watchdog.csv --duration 21600
 ```
 
-VRAM peak は10秒ごとの最大、watch は60秒 cadence。
-clock の判定は各時刻までの最大 clock からの最大低下が15%未満で、idle sample も除外しません。
-初期 idle→clock上昇だけは低下ではありません。clock 低下の原因を thermal throttling と断定しません。
-VRAM min/max/range は記述値です（仕様に数値安定性閾値がないため）。
+VRAM peak は10秒ごとの最大、watch は60秒 cadenceでclock/temperature/power/memory/utilization/UUIDを採取します。
+clock は `utilization.gpu >= 50%` の sample を評価します。明示した solver interval が別途あればその区間も採用できますが、
+本 wrapper は RUN 段の process envelope に JIT が含まれるため active interval を推定しません。
+各時刻までの solver-active 最大 clock からの低下が15%未満を要求します。cold start の idle は含めません。
+clock 低下の原因を thermal throttling と断定しません。
+VRAM は各 solver-active interval の最初60秒を除いた range が device total の5%以下、
+repeat peak 間の相対変動が2%以下（startupを含む全10秒sampleのpeak、分母は最大peak）を要求します。
 R6 は6時間の cold-process loop の wrapper wall、連続・非重複 run、監視が全 loop を覆うこと、sample/loop間隔90秒以内も確認します。
 これは6時間の GPU-active 計算を意味せず、solver wall の合計と wrapper wall に対する比を別記します。
-正常な process 間 idle でも clock 条件が FAIL になり得る、保守的な工程 gate です。
+90秒sample-gapと60秒first-sample allowanceは development defaults として `gate.json` に記録します。
 lock 再確認や Julia 起動が長く loop 間隔を超えた場合は INCOMPLETE です。
 
 reset observer は Windows System log の Display TDR event 4101（開始以降）を PowerShell 経由で読みます。
 取得不能を「resetなし」にせず INCOMPLETE。これはその event の観測範囲であり、全種類の GPU reset を物理的に排除しません。
-NVML query の部分対応、event visibility、clock idle挙動は WSL2 実機で確認が必要です。
+optional clock/temperature/power の欠測、required memory/utilization/UUID の欠測は INCOMPLETE です。
+10秒 memory query の取得不能も INCOMPLETE、非有限値や不正な値は FAIL として扱います。
+NVML query の部分対応、event visibility、solver-active 区間の観測は WSL2 実機で確認が必要です。
 
 ## 6. gate を一度だけ計算する
 
@@ -250,19 +270,24 @@ NVML query の部分対応、event visibility、clock idle挙動は WSL2 実機�
 .venv/bin/python scripts/local_gpu_gate.py --runs "$EVIDENCE" --out "$EVIDENCE/gate.json"
 ```
 
-既存出力は計算・verifier 呼出し前に拒否します。排他新規作成なので、中断して空ファイルが残った場合も
-その attempt は上書きしません。欠けた run/file は INCOMPLETE、不正な JSON/hash/schema/identity は FAIL。
+既存出力は計算・verifier 呼出し前に拒否します。temporary file に完全に書いてから exclusive hardlink で
+公開するため、計算例外で空の `gate.json` を予約しません。欠けた run/file は INCOMPLETE、
+不正な JSON/hash/schema/identity は FAIL、DONE があるのに identity files がない矛盾も FAIL です。
 再試行の可否は LOCAL-OF-01 §6 / LOCAL-GPU-01 に従う所有者判断です。
 
 C1 は R1/R2 の全 force sample を byte 比較し、不一致なら
 `abs(a-b)/max(abs(a),abs(b),1e-300) <= 1e-6`。非有限値・step 不一致は拒否します。
-C2 は両 R2 へ既存 `harness.py verify --smoke` を subprocess 実行します。
-C3 は既存 evidence の manifest/table から SHA を読み、T4 の窓平均との相対差と UNC sigma_d を記述。
-C4 は仕様どおり total reported steps×prod(flow_dims)/solver wall と T4 錨 5.5e7/5.6e7 の比を記述します。
+C2 は両 R2 へ `local_gpu.py verify --smoke` を subprocess 実行し、unchanged harness 検査を local profile で wrap します。
+C3 は既存 evidence の manifest/table から SHA を読み、T4 の窓平均・全sampleとの最大相対差と UNC sigma_d を記述。
+C4 は total reported steps×prod(flow_dims)/solver wall と T4 錨の比を記述します。T4 錨も参照 summary の
+同じ式から導出し、その SHA を記録します（rev0 の丸めた5.5e7/5.6e7を使いません）。
 登録 job の steps は初回 warmup1stepを含み wall はそれを除くため、通常の厳密な timed-step 推定値
 (steps−1)×cells/wall も別記します。
 C5 は R3/R5 の同一 identity と中断・実 restore の証拠を確認し、endpoint-clipped time-weighted な
 窓統計を C1 級で比較。C6 は上記 telemetry と連続稼働の規則です。
+PASS は C1 が BITWISE/TOLERANCE、C2/C5/C6 が PASS の場合です。C3/C4 の FAIL/INCOMPLETE は
+記述として報告し、PASS を妨げません。観測された R1–R6 の CUDA UUID は一つに一致する必要があります。
+R4 欠測時は未観測のまま記録し、R4 を実行済みとは主張しません。
 `PASS` はこの lock の環境能力に限り、T4 force 同値、格子独立性、高Re/FSAE性能を意味しません。
 
 ## 7. WP4 checkpoint API と CPU 検証
@@ -274,9 +299,8 @@ Base.include(CFDSDFWaterLily, joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily
 using .CFDSDFWaterLily.Checkpoint
 save_checkpoint(path, sim, step, rows; identity=study_geometry_sampling_sha)
 state = load_checkpoint(path)
-state.identity == study_geometry_sampling_sha || error("checkpoint identity mismatch")
 sim = construct_identical_fresh_simulation()
-restore_checkpoint!(sim, state)
+restore_checkpoint!(sim, state; identity=study_geometry_sampling_sha)
 step, rows = state.step, copy(state.rows)
 ```
 
@@ -284,7 +308,10 @@ step, rows = state.step, copy(state.rows)
 モジュールは `julia/CFDSDFWaterLily/gen01/Checkpoint.jl` に置き、local campaign の kernel `pins` に明示します。
 今後の GEN-01 追加モジュールも `gen01/` に置き、登録済み `src/` と既存 Manifest の bytes を保ちます。
 標準 Flow/MultiLevelPoisson、同一 body/config、default `remeasure=true`、乱数なしが検証範囲です。
-body closure / RNG / device pointer は保存せず、caller が identity で geometry と sampling を結びます。
+body closure / RNG / device pointer は保存せず、caller が必須の非空 identity で geometry と sampling を結びます。
+restore は module 内でも identity を比較し、異なれば field を変更する前に拒否します。
+`step` は個々の `mom_step!` の完了回数で `length(Δt)==step+1` を満たす必要があります。
+`sim_step!(sim,t_end)` は複数 step を進めるため、その呼出回数を `step` にしてはいけません。
 Julia版・WaterLily版・Manifest SHA・格子・型等が異なる復元は拒否します。
 `Serialization` は自分が作成し信頼する checkpoint のみに使ってください。
 

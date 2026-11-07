@@ -24,8 +24,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "infra/local_gpu"))
 import capture_lock as C
+BP = C.BP
 
-WATCH_COLUMNS = ("elapsed_s", "clocks_sm_mhz", "temperature_gpu_c", "power_draw_w", "memory_used_mib", "driver_reset", "error", "reset_monitor_error")
+WATCH_FIELDS = {"clocks.sm": "clocks_sm_mhz", "temperature.gpu": "temperature_gpu_c", "power.draw": "power_draw_w",
+                "memory.used": "memory_used_mib", "utilization.gpu": "utilization_gpu_pct", "uuid": "gpu_uuid", "memory.total": "memory_total_mib"}
+WATCH_COLUMNS = ("elapsed_s", *WATCH_FIELDS.values(), "driver_reset", "error", "missing_reason", "reset_monitor_error")
 
 
 def write_json(path, record):
@@ -36,7 +39,7 @@ def check_lock(path=C.LOCK):
     lock = C.load_lock(path)
     config_path = lock["environment"].get("wsl", {}).get("settings", {}).get("wslconfig_path")
     options = {"wslconfig": config_path} if isinstance(config_path, str) else {}
-    current = C.capture(julia=lock["environment"]["julia"]["executable"], **options)
+    current = C.capture(julia=lock["environment"]["julia"]["executable"], depot=lock["environment"]["julia_depot"]["path"], **options)
     errors = C.required_errors(current)
     if errors:
         raise ValueError("; ".join(errors))
@@ -47,30 +50,63 @@ def check_lock(path=C.LOCK):
     return lock
 
 
-def query_values(fields):
-    raw = C.probe(["nvidia-smi", "--query-gpu=" + ",".join(fields), "--format=csv,noheader,nounits"], timeout=10)
+def locked_environment(lock):
+    env = lock["environment"]
+    return dict(os.environ, CUDA_VISIBLE_DEVICES="0", CUDA_DEVICE_ORDER="PCI_BUS_ID", JULIA_NUM_THREADS="1",
+                LOCAL_GPU_JULIA=env["julia"]["executable"], LOCAL_GPU_JULIA_SHA256=env["julia"]["sha256"],
+                LOCAL_GPU_JULIA_ROOT_SHA256=env["julia"]["root_sha256"], JULIA_DEPOT_PATH=env["julia_depot"]["path"],
+                LOCAL_GPU_DEPOT_PACKAGES_SHA256=env["julia_depot"]["manifest_packages_sha256"])
+
+
+def query_memory():
+    raw = C.probe(["nvidia-smi", "--query-gpu=memory.used", "--format=csv,noheader,nounits"], timeout=10)
     if isinstance(raw, dict):
-        return raw
+        return {"incomplete": raw["error"]}
+    if raw.strip().lower() in ("", "n/a", "[n/a]", "not supported", "[not supported]"):
+        return {"incomplete": f"nvidia-smi memory.used is unavailable: {raw}"}
     try:
         rows = list(csv.reader(raw.splitlines()))
-        if len(rows) != 1 or len(rows[0]) != len(fields):
+        if len(rows) != 1 or len(rows[0]) != 1:
             raise ValueError("exactly one GPU telemetry row required")
-        numbers = [float(value.strip()) for value in rows[0]]
-        if not all(math.isfinite(value) for value in numbers):
-            raise ValueError("non-finite GPU telemetry")
-        return numbers
+        number = float(rows[0][0].strip())
+        if not math.isfinite(number) or number < 0:
+            raise ValueError("non-finite or negative GPU memory telemetry")
+        return number
     except (ValueError, TypeError) as exc:
         return C.error(f"nvidia-smi telemetry: {exc}")
 
 
-def query_memory():
-    result = query_values(["memory.used"])
-    return result if isinstance(result, dict) else result[0]
-
-
 def query_watch():
-    result = query_values(["clocks.sm", "temperature.gpu", "power.draw", "memory.used"])
-    return result if isinstance(result, dict) else dict(zip(WATCH_COLUMNS[1:5], result))
+    """WSL2 may reject a whole query when one optional NVML field is absent."""
+    fields = list(WATCH_FIELDS)
+    raw = C.probe(["nvidia-smi", "--query-gpu=" + ",".join(fields), "--format=csv,noheader,nounits"], timeout=3)
+    rows = list(csv.reader(raw.splitlines())) if isinstance(raw, str) else []
+    if len(rows) == 1 and len(rows[0]) == len(fields):
+        values = dict(zip(fields, (value.strip() for value in rows[0])))
+    else:
+        values = {field: C.probe(["nvidia-smi", "--query-gpu=" + field, "--format=csv,noheader,nounits"], timeout=3)
+                  for field in fields}
+    row, missing, invalid = {name: "" for name in WATCH_FIELDS.values()}, [], []
+    for field, value in values.items():
+        if isinstance(value, dict) or not isinstance(value, str) or value.strip().lower() in ("", "n/a", "[n/a]", "not supported", "[not supported]"):
+            missing.append(f"{field}: {value.get('error') if isinstance(value, dict) else value or 'empty value'}")
+            continue
+        value = value.strip()
+        if field == "uuid":
+            if not re.fullmatch(r"GPU-[A-Za-z0-9-]+", value):
+                invalid.append("nvidia-smi UUID malformed or ambiguous")
+            else:
+                row[WATCH_FIELDS[field]] = value
+            continue
+        try:
+            number = float(value)
+            if not math.isfinite(number) or number < 0 or field == "utilization.gpu" and number > 100:
+                raise ValueError("non-finite or out-of-range numeric value")
+            row[WATCH_FIELDS[field]] = number
+        except ValueError as exc:
+            invalid.append(f"{field}: {value} ({exc})")
+    row.update(error="; ".join(invalid), missing_reason="; ".join(missing))
+    return row
 
 
 def query_resets(started):
@@ -129,12 +165,12 @@ class Telemetry:
                         next_memory += self.memory_interval
                     if elapsed >= next_watch:
                         sample, reset = query_watch(), query_resets(self.started_utc)
-                        row = {"elapsed_s": f"{elapsed:.6f}", "driver_reset": "", "error": "", "reset_monitor_error": ""}
-                        if "error" in sample:
-                            row["error"] = sample["error"]
+                        row = {"elapsed_s": f"{elapsed:.6f}", "driver_reset": "", "error": "", "missing_reason": "", "reset_monitor_error": ""}
+                        row.update(sample)
+                        if sample.get("error"):
                             self.telemetry_errors.append(sample)
-                        else:
-                            row.update(sample)
+                        if sample.get("missing_reason"):
+                            self.telemetry_errors.append({"incomplete": sample["missing_reason"]})
                         if isinstance(reset, dict):
                             row["reset_monitor_error"] = reset["error"]
                             self.reset_errors.append(reset["error"])
@@ -150,7 +186,7 @@ class Telemetry:
 
     def finish(self, completed=True):
         self.stop.set()
-        self.thread.join(timeout=35)
+        self.thread.join(timeout=55)
         ended = C.utc()
         record = {"schema_version": 1, "started_utc": self.started_utc, "finished_utc": ended,
                   "wall_seconds": time.monotonic() - self.started, "interval_s": self.interval,
@@ -249,15 +285,16 @@ def run(kernel, out, dataset=None, *, lock_path=C.LOCK, checkpoint_every=0, resu
         raise ValueError("checkpoint period must be nonnegative; interrupt delay must be positive")
     if bool(resume_from) != bool(resume_checkpoint):
         raise ValueError("--resume-from and --resume-checkpoint are required together")
-    env = dict(os.environ, CUDA_VISIBLE_DEVICES="0", CUDA_DEVICE_ORDER="PCI_BUS_ID", JULIA_NUM_THREADS="1",
-               CAMPAIGN_WORK_ROOT=str(out), LOCAL_GPU_JULIA=lock["environment"]["julia"]["executable"],
-               LOCAL_GPU_JULIA_SHA256=lock["environment"]["julia"]["sha256"],
-               LOCAL_GPU_CHECKPOINT_PATH=str(out / "checkpoint.bin"), LOCAL_GPU_CHECKPOINT_EVERY=str(checkpoint_every))
+    env = locked_environment(lock)
+    env.update(CAMPAIGN_WORK_ROOT=str(out), LOCAL_GPU_CHECKPOINT_PATH=str(out / "checkpoint.bin"),
+               LOCAL_GPU_CHECKPOINT_EVERY=str(checkpoint_every))
     env.pop("LOCAL_GPU_RESUME_PATH", None)
     out.mkdir(parents=True)
     record = {"schema_version": 1, "backend_profile": C.PROFILE, "used_gpu_count": 1, "lock_sha256": C.sha(lock_path),
               "gpu_identity": lock["environment"]["gpu"], "cuda_visible_devices": "0", "cuda_device_order": "PCI_BUS_ID",
-              "julia": lock["environment"]["julia"], "project": lock["environment"]["project"],
+              "julia": lock["environment"]["julia"], "julia_depot": lock["environment"]["julia_depot"], "project": lock["environment"]["project"],
+              "filtered_environment": BP.filtered_environment(env),
+              "used_gpu_count_evidence": "bookkeeping until gpu_device_probe.json:logical_device_count independently observes exactly one logical CUDA device",
               "runtime_project_pins": meta["runtime_project_pins"],
               "runner_sha256": C.sha(kernel / "runner.py"), "wrapper_sha256": C.sha(__file__),
               "campaign_path": meta["campaign_path"], "source_commit": meta["source_commit"], "kernel": meta["kernel"], "smoke": meta["smoke"],
@@ -369,6 +406,12 @@ def main(argv=None):
     c.add_argument("--kernel")
     c.add_argument("--out", type=Path)
     c.add_argument("--smoke", action="store_true")
+    c = sub.add_parser("verify", help="verify an opt-in local campaign through the unchanged harness checks")
+    c.add_argument("--campaign", type=Path, required=True)
+    c.add_argument("--kernel-output", type=Path, action="append", required=True)
+    c.add_argument("--source-commit")
+    c.add_argument("--freeze", type=Path)
+    c.add_argument("--smoke", action="store_true")
     c = sub.add_parser("run")
     c.add_argument("kernel", type=Path)
     c.add_argument("--out", type=Path, required=True)
@@ -409,14 +452,21 @@ def main(argv=None):
             return 0
         if args.command == "watch":
             return watch(args.out, args.duration)
+        if args.command == "verify":
+            result = BP.verify_local(args.campaign, args.kernel_output, freeze_path=args.freeze,
+                                     smoke=args.smoke, source_commit=args.source_commit)
+            print(C.canonical_bytes(result).decode(), end="")
+            return 0
         if args.command == "bench":
             lock = check_lock(args.lock)
             if args.out.exists():
                 raise ValueError(f"refusing to overwrite bench output: {args.out}")
-            env = dict(os.environ, CUDA_VISIBLE_DEVICES="0", CUDA_DEVICE_ORDER="PCI_BUS_ID", JULIA_NUM_THREADS="1")
+            env = locked_environment(lock)
+            args.out.parent.mkdir(parents=True, exist_ok=True)
             return subprocess.run([lock["environment"]["julia"]["executable"], "--startup-file=no", f"--project={C.PROJECT}",
                                    str(ROOT / "scripts/local_gpu_bench.jl"), "--out", str(args.out), "--steps", str(args.steps),
-                                   "--warmup", str(args.warmup), "--host-label", args.host_label], env=env).returncode
+                                   "--warmup", str(args.warmup), "--host-label", args.host_label,
+                                   "--lock-sha256", C.sha(args.lock)], env=env).returncode
         if args.repeat <= 0 or args.repeat > 1 and (args.resume_from or args.interrupt_after):
             raise ValueError("repeat must be positive; interruption/resume requires a single run")
         group_watch = None

@@ -24,6 +24,10 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "src"))
+from cfd_harness import backend_profiles as BP
+from cfd_harness import campaign_schema as SC
+
 PROJECT = ROOT / "julia/CFDSDFWaterLilyT4"
 LOCK = Path(__file__).with_name("lock.json")
 PROFILE = "local_rtx4070ti"
@@ -135,7 +139,29 @@ def windows_wslconfig():
     return Path(path) if isinstance(path, str) else path
 
 
-def capture(*, julia=None, wslconfig=None):
+def package_identity(julia, depot, env):
+    """Capture only Manifest-resolved package sources, not volatile caches."""
+    try:
+        if not depot or os.pathsep in str(depot) or not Path(depot).is_absolute():
+            raise ValueError("JULIA_DEPOT_PATH must name one absolute dedicated depot")
+        return BP.manifest_packages_identity(julia, PROJECT, depot, env=env)
+    except (OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError) as exc:
+        return {"path": str(depot), "manifest_packages_sha256": error(exc)}
+
+
+def hags_state():
+    """Record the Windows registry observation; an absent value is not 'off'."""
+    raw = probe(["reg.exe", "query", r"HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers", "/v", "HwSchMode"])
+    if isinstance(raw, dict):
+        return raw
+    import re
+    match = re.search(r"\bHwSchMode\s+REG_DWORD\s+0x([0-9a-fA-F]+)\b", raw)
+    if not match or int(match[1], 16) not in (1, 2):
+        return error(f"HAGS setting not explicitly readable as HwSchMode=1/2: {raw}")
+    return {"enabled": int(match[1], 16) == 2, "registry_value": int(match[1], 16), "source": "Windows GraphicsDrivers.HwSchMode"}
+
+
+def capture(*, julia=None, wslconfig=None, depot=None):
     """Return a full capture, including reasons when the current host is unsuitable."""
     commands = {}
     raw = probe(["nvidia-smi", "--query-gpu=" + ",".join(GPU_FIELDS), "--format=csv,noheader"])
@@ -163,12 +189,33 @@ def capture(*, julia=None, wslconfig=None):
            "compute_cap": values["compute_cap"], "power_limit": values["power.limit"], "uuid": uuid}
     executable = shutil.which(str(julia or os.environ.get("LOCAL_GPU_JULIA", "julia")))
     julia_path = Path(executable).resolve() if executable else None
+    julia_root = julia_path.parent.parent if julia_path else None
     constants = runner_constants()
     julia_info = {"version": probe([str(julia_path), "--startup-file=no", "--version"]) if julia_path else error("Julia executable not found"),
                   "executable": str(julia_path) if julia_path else error("Julia executable not found"),
                   "sha256": file_sha(julia_path) if julia_path else error("Julia executable not found"),
-                  "archive_url": constants["JULIA_URL"], "archive_sha256": constants["JULIA_SHA256"]}
+                  "root": str(julia_root) if julia_root else error("Julia installation root unavailable"),
+                  "root_sha256": error("Julia installation root unavailable"),
+                  "archive_url": constants["JULIA_URL"], "expected_archive_sha256": constants["JULIA_SHA256"]}
+    if julia_root:
+        try:
+            julia_info["root_sha256"] = SC.sha256_path(julia_root)
+        except OSError as exc:
+            julia_info["root_sha256"] = error(exc)
     child_env = dict(os.environ, CUDA_VISIBLE_DEVICES="0", CUDA_DEVICE_ORDER="PCI_BUS_ID", JULIA_NUM_THREADS="1")
+    requested_depot = depot or os.environ.get("JULIA_DEPOT_PATH", "")
+    if not requested_depot:
+        depot_info = {"path": error("explicit dedicated JULIA_DEPOT_PATH is required"),
+                      "manifest_packages_sha256": error("dedicated JULIA_DEPOT_PATH unavailable")}
+    elif os.pathsep in str(requested_depot) or not Path(requested_depot).expanduser().is_absolute():
+        depot_info = {"path": error("JULIA_DEPOT_PATH must name one absolute dedicated depot"),
+                      "manifest_packages_sha256": error("dedicated JULIA_DEPOT_PATH invalid")}
+    elif julia_path:
+        child_env["JULIA_DEPOT_PATH"] = str(Path(requested_depot).expanduser().resolve())
+        depot_info = package_identity(str(julia_path), child_env["JULIA_DEPOT_PATH"], child_env)
+    else:
+        depot_info = {"path": str(Path(requested_depot).expanduser().resolve()),
+                      "manifest_packages_sha256": error("Julia executable not found; cannot resolve Manifest package sources")}
     cuda = error("CUDA probe skipped: nvidia-smi GPU/driver unavailable")
     cuda_identity = error("CUDA probe unavailable")
     if julia_path and isinstance(gpu["name"], str) and isinstance(gpu["driver_version"], str):
@@ -192,7 +239,8 @@ def capture(*, julia=None, wslconfig=None):
         numpy_version = error("NumPy is not installed in the capture/runner Python environment")
     environment = {
         "backend_profile": PROFILE,
-        "host": {"proc_version": read_text("/proc/version"), "windows_ver": probe(["cmd.exe", "/c", "ver"])},
+        "host": {"proc_version": read_text("/proc/version"), "windows_ver": probe(["cmd.exe", "/c", "ver"]),
+                 "hardware_accelerated_gpu_scheduling": hags_state()},
         "wsl": {"version": probe(["wsl.exe", "--version"]), "kernel": platform.release(), "distro": read_text("/etc/os-release"),
                 "settings": {"wsl_conf": config_keys("/etc/wsl.conf", (("gpu", "appendLibPath"), ("automount", "ldconfig"))),
                              "wslconfig_path": str(config.resolve()) if isinstance(config, Path) else config,
@@ -203,7 +251,7 @@ def capture(*, julia=None, wslconfig=None):
         "project": {"path": "julia/CFDSDFWaterLilyT4", "manifest_sha256": file_sha(PROJECT / "Manifest.toml"),
                     "project_sha256": file_sha(PROJECT / "Project.toml")},
         "cuda": cuda_identity, "cuda_visible_devices": "0", "cuda_device_order": "PCI_BUS_ID",
-        "julia_depot_path": os.environ.get("JULIA_DEPOT_PATH", str(Path.home() / ".julia")), "path_mode": "CAMPAIGN_WORK_ROOT",
+        "julia_depot": depot_info, "path_mode": "CAMPAIGN_WORK_ROOT",
     }
     result = {"schema_version": 1, "captured_utc": utc(), "environment": environment,
               "observations": {"cuda_versioninfo": cuda, "commands": commands}, "errors": []}
@@ -216,7 +264,8 @@ def required_errors(lock):
         return ["mandatory environment object missing"]
     env = lock.get("environment", {})
     errors = []
-    for section, key in (("gpu", "name"), ("gpu", "driver_version"), ("julia", "sha256"), ("project", "manifest_sha256")):
+    for section, key in (("gpu", "name"), ("gpu", "driver_version"), ("julia", "sha256"), ("julia", "root_sha256"),
+                         ("julia_depot", "path"), ("julia_depot", "manifest_packages_sha256"), ("project", "manifest_sha256")):
         value = env.get(section, {}).get(key) if isinstance(env.get(section), dict) else error(f"{section} is not an object")
         if not isinstance(value, str) or not value.strip():
             errors.append(f"mandatory {section}.{key} missing: {value!r}")
@@ -245,11 +294,12 @@ def main(argv=None):
     p.add_argument("--out", type=Path, default=LOCK)
     p.add_argument("--julia")
     p.add_argument("--wslconfig", type=Path)
+    p.add_argument("--depot", type=Path, help="dedicated single Julia depot, also accepted through JULIA_DEPOT_PATH")
     args = p.parse_args(argv)
     try:
         if args.out.exists() or args.out.with_name(args.out.name + ".sha256").exists():
             raise ValueError(f"refusing to overwrite lock: {args.out}")
-        lock = capture(julia=args.julia, wslconfig=args.wslconfig)
+        lock = capture(julia=args.julia, wslconfig=args.wslconfig, depot=args.depot)
         if lock["errors"]:
             print(canonical_bytes({"status": "ERROR", **lock}).decode(), end="")
             return 2

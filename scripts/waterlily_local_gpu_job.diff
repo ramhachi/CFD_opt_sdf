@@ -19,7 +19,7 @@
  phi_raw_path, output_dir = ARGS
  
  env_tuple(name, ::Type{T}, fallback) where {T} =
-@@ -146,11 +149,36 @@
+@@ -146,11 +149,35 @@
      warm_started = time()
      println("W4_SOLVER_STEP_INVOKED ", case.case_id)
      flush(stdout)
@@ -41,8 +41,7 @@
 +        step = 1
 +    else
 +        checkpoint = load_checkpoint(resume_path)
-+        checkpoint.identity == checkpoint_identity || error("checkpoint job/phi/case identity mismatch")
-+        restore_checkpoint!(sim, checkpoint)
++        restore_checkpoint!(sim, checkpoint; identity=checkpoint_identity)
 +        step, history = checkpoint.step, checkpoint.rows
 +        loaded_sha = bytes2hex(sha256(read(resume_path)))
 +        write(joinpath(output_dir, "local_gpu_resume.json"),
@@ -58,7 +57,7 @@
      peak_vram = CUDA.used_memory()
      started = time()
      while sim_time(sim) < T_END
-@@ -170,6 +198,12 @@
+@@ -170,6 +197,12 @@
          end
          if step % 50 == 0
              peak_vram = max(peak_vram, CUDA.used_memory())

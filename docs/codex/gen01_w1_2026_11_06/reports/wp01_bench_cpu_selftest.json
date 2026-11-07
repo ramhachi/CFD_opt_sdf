@@ -1,8 +1,9 @@
 {
-  "captured_utc": "2026-11-06T07:22:21.775Z",
+  "benchmark_definition": "custom Taylor-Green and plate fixtures; not WaterLily benchmark suite; published ns/DOF timings are not directly comparable",
+  "captured_utc": "2026-11-06T09:01:00.836Z",
   "cases": [
     {
-      "cell_steps_per_second": 456332.2308089653,
+      "cell_steps_per_second": 237368.4324903837,
       "cells": 4096,
       "dtype": "Float32",
       "final_t_u_l": 0.13599315285682678,
@@ -15,14 +16,14 @@
       ],
       "initial_t_u_l": 0.015625,
       "name": "tgv",
-      "ns_per_cell_step": 2191.3858642578125,
+      "ns_per_cell_step": 4212.860107421875,
       "steps": 2,
-      "wall_seconds": 0.017951833,
+      "wall_seconds": 0.03451175,
       "warmup_steps": 1,
-      "warmup_wall_seconds": 12.648255042
+      "warmup_wall_seconds": 9.74836675
     },
     {
-      "cell_steps_per_second": 581763.1457024094,
+      "cell_steps_per_second": 621630.3378673192,
       "cells": 2048,
       "dtype": "Float32",
       "final_t_u_l": 0.22975414991378784,
@@ -34,11 +35,11 @@
       ],
       "initial_t_u_l": 0.03125,
       "name": "plate_2d",
-      "ns_per_cell_step": 1718.91259765625,
+      "ns_per_cell_step": 1608.673095703125,
       "steps": 2,
-      "wall_seconds": 0.007040666,
+      "wall_seconds": 0.006589125,
       "warmup_steps": 1,
-      "warmup_wall_seconds": 13.126391583
+      "warmup_wall_seconds": 11.383857875
     }
   ],
   "cuda_visible_devices": "not-applicable",
@@ -49,8 +50,13 @@
   },
   "host_label": "cpu_selftest",
   "julia_version": "1.12.6",
+  "lock_binding": "not-applicable: CPU selftest",
+  "lock_sha256": "not-applicable: CPU selftest",
   "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
   "measured_steps": 2,
+  "peak_vram_mib": {
+    "not_applicable": "CPU selftest; no GPU invoked"
+  },
   "plate_definition": {
     "angle_degrees": 10,
     "chord_cells": 8,
@@ -59,6 +65,15 @@
   },
   "schema_version": 1,
   "used_gpu_count": 0,
+  "vram_sampling": {
+    "errors": [],
+    "interval_s": 10,
+    "method": "CPU selftest; no GPU probe",
+    "peak": {
+      "not_applicable": "CPU selftest; no GPU invoked"
+    },
+    "samples": 0
+  },
   "warmup_steps": 1,
   "waterlily_version": "1.8.0"
 }

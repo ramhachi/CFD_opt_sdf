@@ -1,0 +1,279 @@
+{
+  "bench-cpu-selftest": {
+    "artifact": "docs/codex/gen01_w1_2026_11_06/reports/wp01_bench_cpu_selftest.json",
+    "artifact_sha256": "72c287628d4b38cf81d4e3507ea68abf6024edfc3b54f41b0e55db811f70756b",
+    "command": [
+      "julia",
+      "--startup-file=no",
+      "--project=julia/CFDSDFWaterLily",
+      "scripts/local_gpu_bench.jl",
+      "--cpu-selftest",
+      "--out",
+      "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/cpu-bench-tmp.json"
+    ],
+    "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/bench-cpu-selftest.txt",
+    "log_sha256": "54541da3a04fe77816aa2d79f0dacc2d634f25e5348cddc5b5e5a34409a908c1",
+    "result": {
+      "benchmark_definition": "custom Taylor-Green and plate fixtures; not WaterLily benchmark suite; published ns/DOF timings are not directly comparable",
+      "captured_utc": "2026-11-06T09:01:00.836Z",
+      "cases": [
+        {
+          "cell_steps_per_second": 237368.4324903837,
+          "cells": 4096,
+          "dtype": "Float32",
+          "final_t_u_l": 0.13599315285682678,
+          "finite_p": true,
+          "finite_u": true,
+          "flow_dims": [
+            16,
+            16,
+            16
+          ],
+          "initial_t_u_l": 0.015625,
+          "name": "tgv",
+          "ns_per_cell_step": 4212.860107421875,
+          "steps": 2,
+          "wall_seconds": 0.03451175,
+          "warmup_steps": 1,
+          "warmup_wall_seconds": 9.74836675
+        },
+        {
+          "cell_steps_per_second": 621630.3378673192,
+          "cells": 2048,
+          "dtype": "Float32",
+          "final_t_u_l": 0.22975414991378784,
+          "finite_p": true,
+          "finite_u": true,
+          "flow_dims": [
+            64,
+            32
+          ],
+          "initial_t_u_l": 0.03125,
+          "name": "plate_2d",
+          "ns_per_cell_step": 1608.673095703125,
+          "steps": 2,
+          "wall_seconds": 0.006589125,
+          "warmup_steps": 1,
+          "warmup_wall_seconds": 11.383857875
+        }
+      ],
+      "cuda_visible_devices": "not-applicable",
+      "evidence_class": "CPU_BENCH_SELFTEST",
+      "gpu_identity": {
+        "name": "CPU selftest; no GPU invoked",
+        "uuid": "not-applicable"
+      },
+      "host_label": "cpu_selftest",
+      "julia_version": "1.12.6",
+      "lock_binding": "not-applicable: CPU selftest",
+      "lock_sha256": "not-applicable: CPU selftest",
+      "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+      "measured_steps": 2,
+      "peak_vram_mib": {
+        "not_applicable": "CPU selftest; no GPU invoked"
+      },
+      "plate_definition": {
+        "angle_degrees": 10,
+        "chord_cells": 8,
+        "reynolds": 1000,
+        "thickness_cells": 1
+      },
+      "schema_version": 1,
+      "used_gpu_count": 0,
+      "vram_sampling": {
+        "errors": [],
+        "interval_s": 10,
+        "method": "CPU selftest; no GPU probe",
+        "peak": {
+          "not_applicable": "CPU selftest; no GPU invoked"
+        },
+        "samples": 0
+      },
+      "warmup_steps": 1,
+      "waterlily_version": "1.8.0"
+    },
+    "returncode": 0,
+    "stderr": "",
+    "wall_seconds": 47.4182001670124
+  },
+  "checkpoint-selftest": {
+    "artifact": "docs/codex/gen01_w1_2026_11_06/reports/wp01_checkpoint_selftest.json",
+    "artifact_sha256": "782339ce119c5cc6d473bafd161b4d786ebcb598720a163f28c6d2ee4d3d66b9",
+    "command": [
+      "julia",
+      "--startup-file=no",
+      "--project=julia/CFDSDFWaterLily",
+      "scripts/checkpoint_selftest.jl"
+    ],
+    "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/checkpoint-selftest.txt",
+    "log_sha256": "e09c6b455c09591feea752c5a17422247700dbf5492392432e0bdf2c5422c6b4",
+    "result": {
+      "checkpoint_sha256": "1ff34a9f718d7332a6a6ab7cb1dc766920746a7237f130d19ea1dcc52dc7d224",
+      "checkpoint_source_sha256": "21d7c9a2ca2c27bbfbecc6ed579417acde0c4dc1ca270c9ee3d5c1da64e13076",
+      "checkpoint_step": 50,
+      "class": "BITWISE",
+      "evidence_class": "CPU_CHECKPOINT_SELFTEST",
+      "flow_dims": [
+        64,
+        32
+      ],
+      "julia_executable_sha256": "9ad38bea81ecace044a4bdef2a0246dee94cb8a44c9420809cc00f9872651c64",
+      "julia_threads": 1,
+      "julia_version": "1.12.6",
+      "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+      "maximum_relative_difference": 0.0,
+      "resumed_window_means": [
+        2.9167655424387706,
+        -3.003170726879792e-05
+      ],
+      "selftest_source_sha256": "55a9f802d7ce2574076fb1ff6165b10bdb669f6a3110b21f49b7446b8ccaad6c",
+      "status": "PASS",
+      "steps": 100,
+      "wall_seconds": 42.016518115997314,
+      "waterlily_version": "1.8.0",
+      "window_means": [
+        2.9167655424387706,
+        -3.003170726879792e-05
+      ]
+    },
+    "returncode": 0,
+    "stderr": "",
+    "wall_seconds": 65.7010867500212
+  },
+  "mac-capture": {
+    "command": [
+      ".venv/bin/python",
+      "infra/local_gpu/capture_lock.py",
+      "--out",
+      "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/absent-mac-lock.json"
+    ],
+    "lock_created": false,
+    "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/mac-capture.txt",
+    "log_sha256": "87d9f25959be07fd9b97ea40e46c5bfb42eb44b2bc65c886c81e9d3349352585",
+    "result": {
+      "captured_utc": "2026-11-06T08:59:09.272484+00:00",
+      "environment": {
+        "backend_profile": "local_rtx4070ti",
+        "cuda": {
+          "error": "CUDA probe unavailable"
+        },
+        "cuda_device_order": "PCI_BUS_ID",
+        "cuda_visible_devices": "0",
+        "gpu": {
+          "compute_cap": {
+            "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+          },
+          "driver_version": {
+            "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+          },
+          "memory_total": {
+            "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+          },
+          "name": {
+            "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+          },
+          "power_limit": {
+            "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+          },
+          "uuid": {
+            "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+          }
+        },
+        "host": {
+          "hardware_accelerated_gpu_scheduling": {
+            "error": "reg.exe: [Errno 2] No such file or directory: 'reg.exe'"
+          },
+          "proc_version": {
+            "error": "[Errno 2] No such file or directory: '/proc/version'"
+          },
+          "windows_ver": {
+            "error": "cmd.exe: [Errno 2] No such file or directory: 'cmd.exe'"
+          }
+        },
+        "julia": {
+          "archive_url": "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz",
+          "executable": "/opt/homebrew/Cellar/juliaup/1.22.7/bin/julialauncher",
+          "expected_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+          "root": "/opt/homebrew/Cellar/juliaup/1.22.7",
+          "root_sha256": "cc99b66b21ee9578ebef8a22607810474bc3e2cf82efe8d9604d4e9527eb1ddd",
+          "sha256": "d923e2b0f59c7f51a58eb02eab6d79979f053495599af690e84841c5113422ef",
+          "version": "julia version 1.12.6"
+        },
+        "julia_depot": {
+          "manifest_packages_sha256": {
+            "error": "dedicated JULIA_DEPOT_PATH unavailable"
+          },
+          "path": {
+            "error": "explicit dedicated JULIA_DEPOT_PATH is required"
+          }
+        },
+        "path_mode": "CAMPAIGN_WORK_ROOT",
+        "project": {
+          "manifest_sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+          "path": "julia/CFDSDFWaterLilyT4",
+          "project_sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
+        },
+        "python": {
+          "executable": "/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+          "numpy_version": "2.5.2",
+          "sha256": "31b9c9a8d50289f3a13f014b3efd8ea3534fc3eea7ca7d9809e166139910b805",
+          "version": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]"
+        },
+        "wsl": {
+          "distro": {
+            "error": "[Errno 2] No such file or directory: '/etc/os-release'"
+          },
+          "kernel": "25.3.0",
+          "settings": {
+            "wsl_conf": {
+              "automount.ldconfig": {
+                "error": "[Errno 2] No such file or directory: '/etc/wsl.conf'"
+              },
+              "gpu.appendLibPath": {
+                "error": "[Errno 2] No such file or directory: '/etc/wsl.conf'"
+              }
+            },
+            "wslconfig": {
+              "wsl2.memory": {
+                "error": "cannot locate Windows USERPROFILE through cmd.exe"
+              },
+              "wsl2.processors": {
+                "error": "cannot locate Windows USERPROFILE through cmd.exe"
+              },
+              "wsl2.swap": {
+                "error": "cannot locate Windows USERPROFILE through cmd.exe"
+              }
+            },
+            "wslconfig_path": {
+              "error": "cannot locate Windows USERPROFILE through cmd.exe"
+            }
+          },
+          "version": {
+            "error": "wsl.exe: [Errno 2] No such file or directory: 'wsl.exe'"
+          }
+        }
+      },
+      "errors": [
+        "mandatory gpu.name missing: {'error': \"nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'\"}",
+        "mandatory gpu.driver_version missing: {'error': \"nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'\"}",
+        "mandatory julia_depot.path missing: {'error': 'explicit dedicated JULIA_DEPOT_PATH is required'}",
+        "mandatory julia_depot.manifest_packages_sha256 missing: {'error': 'dedicated JULIA_DEPOT_PATH unavailable'}"
+      ],
+      "observations": {
+        "commands": {
+          "nvidia_smi": {
+            "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+          }
+        },
+        "cuda_versioninfo": {
+          "error": "CUDA probe skipped: nvidia-smi GPU/driver unavailable"
+        }
+      },
+      "schema_version": 1,
+      "status": "ERROR"
+    },
+    "returncode": 2,
+    "stderr": "",
+    "wall_seconds": 1.1988305830163881
+  }
+}

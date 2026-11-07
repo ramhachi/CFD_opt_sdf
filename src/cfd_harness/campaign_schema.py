@@ -35,7 +35,6 @@ NAME = re.compile("[A-Za-z0-9_.-]+")
 # ---- campaign.json -------------------------------------------------------------------------------------------------------------------------------
 CAMPAIGN_KEYS = ("harness_version", "campaign_id", "owner", "repo_url", "index_name", "out_prefix", "job_env_common", "job_env_keys", "scrub_env", "measurement", "domain", "baseline",
                  "directions", "states", "kernels", "sparse", "pins", "legacy_replay")
-CAMPAIGN_OPTIONAL = ("backend_profile",)  # absent retains the registered Kaggle T4 contract
 # legacy_replay true = verification-only description of pre-harness outputs (GRID-02): the only campaign whose outputs may lack the harness identity fields and self_test.json.
 # job_env_keys = the job variables (besides W4_CANONICAL_ORIGIN_M) a run's env may set, e.g. GRID02_CASE.
 # state identity: phi_fortran = SHA of the Fortran-order float32 bytes (what the Julia DeviceGridSDF roundtrip hashes), phi_c = SHA of the C-order bytes: two DIFFERENT fields
@@ -241,9 +240,7 @@ def validate_kernel(c, k, kernel):
 
 
 def validate_campaign(c):
-    req(isinstance(c, dict) and set(CAMPAIGN_KEYS) <= set(c) <= set(CAMPAIGN_KEYS + CAMPAIGN_OPTIONAL), f"campaign keys must be {CAMPAIGN_KEYS}, optional {CAMPAIGN_OPTIONAL}")
-    req(c.get("backend_profile", "kaggle_t4") in ("kaggle_t4", "local_rtx4070ti"), "unknown backend profile")
-    req(c.get("backend_profile") != "local_rtx4070ti" or c["legacy_replay"] is False, "local backend cannot reinterpret legacy replay evidence")
+    req(isinstance(c, dict) and set(c) == set(CAMPAIGN_KEYS), f"campaign keys must be exactly {CAMPAIGN_KEYS}")
     req(c["harness_version"] == HARNESS_VERSION, "harness version differs")
     req(isinstance(c["campaign_id"], str) and re.fullmatch("[a-z0-9_]+", c["campaign_id"]) and re.fullmatch("[a-z0-9-]+", c["owner"]), "campaign_id / owner")
     req(isinstance(c["repo_url"], str) and NAME.fullmatch(c["index_name"]) and NAME.fullmatch(c["out_prefix"]), "repo_url / index_name / out_prefix")
@@ -341,22 +338,9 @@ def expected_summary(c, kernel, run, row, gpu_uuid):
     return {"canonical_sdf_origin_m": floats(env[ORIGIN_ENV]), "canonical_design_spacing_m": float(env["W4_CANONICAL_DESIGN_SPACING_M"]), "canonical_state_label": env["W4_CANONICAL_STATE_LABEL"],
             "canonical_design_point_shape": ints(env["W4_POINT_SHAPE"]), "canonical_design_cell_shape": ints(env["W4_CELL_SHAPE"]), "source_surface_sha256": env["W4_SOURCE_SURFACE_SHA256"],
             "device_roundtrip_sha256": row["phi_fortran_order_sha256"], "flow_origin_m": c["domain"]["flow_origin_m"], "physical_box_max_m": c["domain"]["physical_box_max_m"],
-            "cells_per_reference_length": int(case["solver_length"]), "case_id": case["case_id"], "gpu_name": local_backend().LOCAL_GPU_NAME if c.get("backend_profile") == "local_rtx4070ti" else "Tesla T4", "gpu_uuid": gpu_uuid, "phi_fortran_sha256": row["phi_fortran_order_sha256"],
+            "cells_per_reference_length": int(case["solver_length"]), "case_id": case["case_id"], "gpu_name": "Tesla T4", "gpu_uuid": gpu_uuid, "phi_fortran_sha256": row["phi_fortran_order_sha256"],
             "phi_c_order_sha256": row["phi_c_order_sha256"], "state_sha256": row["state_sha256"], "state_npz_sha256": row["npz_sha256"], "force_integration_body": c["measurement"]["candidate_operator"],
             "force_projection_semantics": FORCE_PROJECTION, "flow_dims": case["flow_dims"], "freestream_mps": case["freestream_mps"]}
-
-
-def local_backend():
-    """The file-loaded worker schema imports this extra pinned module only locally."""
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("local_backend_profiles", Path(__file__).with_name("backend_profiles.py"))
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-def select_profile_gpu(c, inventory):
-    return local_backend().select_worker_gpu(inventory, c.get("backend_profile", "kaggle_t4"))
 
 
 def check_summary(summary, c, kernel, run, row, gpu_uuid):

@@ -1,0 +1,32 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "--ignore=tests/test_lbm_metal.py",
+    "-q",
+    "-rf",
+    "-p",
+    "no:cacheprovider",
+    "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.xml"
+  ],
+  "complete": true,
+  "counts": {
+    "errors": 0,
+    "failures": 0,
+    "passed": 3651,
+    "skipped": 74,
+    "tests": 3725
+  },
+  "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu",
+  "failed_nodes": [],
+  "finished_utc": "2026-11-07T09:07:43.676102+00:00",
+  "junit_path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.xml",
+  "junit_sha256": "462a1b45fad474bd95f2673dccfdb01f3e280572fdb37c55d62edf10213b9e64",
+  "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.txt",
+  "log_sha256": "aa86bb3b6278af7af683850a4eee35146450999ba6e1e5356e85d901117baf0c",
+  "returncode": 0,
+  "started_utc": "2026-11-06T09:00:07.970529+00:00",
+  "summary": "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n3651 passed, 74 skipped, 7295 warnings in 1933.39s (0:32:13)",
+  "wall_seconds": 1934.9927469580434
+}

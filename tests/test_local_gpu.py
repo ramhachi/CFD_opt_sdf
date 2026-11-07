@@ -18,7 +18,9 @@ def locked(tmp_path):
     env = {
         "backend_profile": "local_rtx4070ti",
         "gpu": {"name": "NVIDIA GeForce RTX 4070 Ti", "uuid": "GPU-test", "driver_version": "592.02"},
-        "julia": {"version": "julia version 1.12.6", "executable": "/fake/julia", "sha256": "a" * 64},
+        "julia": {"version": "julia version 1.12.6", "executable": "/fake/julia", "sha256": "a" * 64,
+                  "root": "/fake/julia-install", "root_sha256": "f" * 64},
+        "julia_depot": {"path": str(tmp_path / "dedicated-depot"), "manifest_packages_sha256": "e" * 64},
         "project": {"path": "julia/CFDSDFWaterLilyT4", "manifest_sha256": "b" * 64, "project_sha256": "d" * 64},
         "cuda_visible_devices": "0", "cuda_device_order": "PCI_BUS_ID",
     }
@@ -256,3 +258,108 @@ def test_check_lock_recaptures_explicit_wslconfig_path(tmp_path, monkeypatch):
         return lock
     monkeypatch.setattr(C, "capture", capture)
     assert L.check_lock(path) == lock
+
+
+def test_julia_install_and_depot_are_required_lock_identity(tmp_path):
+    _, lock = locked(tmp_path)
+    for section, key in (("julia", "root_sha256"), ("julia_depot", "manifest_packages_sha256")):
+        missing = json.loads(json.dumps(lock))
+        missing["environment"][section].pop(key)
+        assert any(f"{section}.{key}" in reason for reason in C.required_errors(missing))
+
+
+def test_watch_query_preserves_supported_fields_and_missing_reasons(monkeypatch):
+    def probe(argv, **kwargs):
+        field = next(s.split("=", 1)[1] for s in argv if s.startswith("--query-gpu="))
+        values = {"clocks.sm": "2000", "temperature.gpu": "55", "power.draw": "[Not Supported]",
+                  "memory.used": "4096", "utilization.gpu": "90", "uuid": "GPU-test", "memory.total": "12288"}
+        return values.get(field, C.error("WSL2 rejects combined query"))
+    monkeypatch.setattr(C, "probe", probe)
+    row = L.query_watch()
+    assert row["utilization_gpu_pct"] == 90 and row["gpu_uuid"] == "GPU-test"
+    assert row["memory_total_mib"] == 12288 and row["memory_used_mib"] == 4096
+    assert row["power_draw_w"] == "" and "power.draw" in row["missing_reason"]
+    assert not row.get("error")
+
+
+def test_run_records_the_effective_filtered_child_environment(tmp_path, monkeypatch):
+    path, lock = locked(tmp_path)
+    monkeypatch.setattr(C, "capture", lambda **kw: lock)
+    no_telemetry(monkeypatch)
+    monkeypatch.setenv("JULIA_LOAD_PATH", "@:@stdlib")
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "7")
+    monkeypatch.setenv("JULIA_DEPOT_PATH", "/foreign/depot")
+    monkeypatch.setenv("UNRELATED_FOR_TEST", "do not retain")
+    kernel = fake_kernel(tmp_path, "import json,os\nfrom pathlib import Path\np=Path(os.environ['CAMPAIGN_WORK_ROOT'])\n(p/'effective_env.json').write_text(json.dumps({k:v for k,v in os.environ.items() if k.startswith(('JULIA_','CUDA_','NVIDIA_','WSL'))}))\n(p/'DONE').write_text('CPU stub\\n')\n")
+    out = tmp_path / "environment_run"
+    assert L.run(kernel, out, lock_path=path) == 0
+    record, effective = C.jload(out / "local_run.json"), C.jload(out / "effective_env.json")
+    expected = {key: value for key, value in effective.items() if key.startswith(("JULIA_", "CUDA_", "NVIDIA_", "WSL"))}
+    assert record["filtered_environment"] == expected
+    assert expected["CUDA_VISIBLE_DEVICES"] == "0" and expected["JULIA_LOAD_PATH"] == "@:@stdlib"
+    assert expected["JULIA_DEPOT_PATH"] == lock["environment"]["julia_depot"]["path"]
+    assert record["julia_depot"] == lock["environment"]["julia_depot"]
+    assert "logical_device_count" in record["used_gpu_count_evidence"]
+
+
+def test_capture_records_root_sha_and_expected_archive_separately(tmp_path, monkeypatch):
+    install = tmp_path / "julia-install"
+    (install / "bin").mkdir(parents=True)
+    executable = install / "bin/julia"
+    executable.write_text("synthetic Julia launcher")
+    (install / "lib").mkdir()
+    (install / "lib/libjulia.so").write_bytes(b"synthetic library")
+    monkeypatch.setattr(C.shutil, "which", lambda name: str(executable))
+    monkeypatch.setattr(C, "probe", lambda argv, **kw: C.error("synthetic unavailable"))
+    monkeypatch.setattr(C, "package_identity", lambda *args, **kwargs: {"path": str(tmp_path / "depot"), "manifest_packages_sha256": "e" * 64})
+    capture = C.capture(julia=str(executable), depot=str(tmp_path / "depot"), wslconfig=tmp_path / "missing")
+    julia = capture["environment"]["julia"]
+    assert julia["root"] == str(install)
+    before = julia["root_sha256"]
+    (install / "lib/libjulia.so").write_bytes(b"changed library, identical launcher")
+    assert C.capture(julia=str(executable), depot=str(tmp_path / "depot"), wslconfig=tmp_path / "missing")["environment"]["julia"]["root_sha256"] != before
+    assert julia["expected_archive_sha256"] == C.runner_constants()["JULIA_SHA256"]
+    assert "archive_sha256" not in julia
+    assert capture["environment"]["host"]["hardware_accelerated_gpu_scheduling"]["error"]
+
+
+def test_bench_passes_lock_binding_and_dedicated_runtime_environment(tmp_path, monkeypatch):
+    path, lock = locked(tmp_path)
+    monkeypatch.setattr(L, "check_lock", lambda path: lock)
+    observed = {}
+    def run(argv, **kwargs):
+        observed.update(argv=argv, env=kwargs["env"])
+        return type("Completed", (), {"returncode": 0})()
+    monkeypatch.setattr(L.subprocess, "run", run)
+    assert L.main(["bench", "--out", str(tmp_path / "bench.json"), "--lock", str(path)]) == 0
+    argv = observed["argv"]
+    assert argv[argv.index("--lock-sha256") + 1] == C.sha(path)
+    assert observed["env"]["JULIA_DEPOT_PATH"] == lock["environment"]["julia_depot"]["path"]
+
+
+def test_watch_nonfinite_is_failure_but_missing_required_is_incomplete(monkeypatch):
+    def probe(argv, **kwargs):
+        query = next(s.split("=", 1)[1] for s in argv if s.startswith("--query-gpu="))
+        return {"memory.used": "NaN", "uuid": "[N/A]"}.get(query, C.error("not supported"))
+    monkeypatch.setattr(C, "probe", probe)
+    row = L.query_watch()
+    assert "non-finite" in row["error"]
+    assert "uuid" in row["missing_reason"]
+    monkeypatch.setattr(C, "probe", lambda *args, **kwargs: "[N/A]")
+    assert "incomplete" in L.query_memory()
+
+
+def test_verify_cli_calls_local_wrapper_with_source_and_smoke(tmp_path, monkeypatch):
+    def verify(campaign, outputs, **kwargs):
+        assert campaign == tmp_path / "campaign.json" and outputs == [tmp_path / "output"]
+        assert kwargs["smoke"] is True and kwargs["source_commit"] == "a" * 40
+        return {"kind": "local_test"}
+    monkeypatch.setattr(L.BP, "verify_local", verify)
+    assert L.main(["verify", "--campaign", str(tmp_path / "campaign.json"), "--kernel-output", str(tmp_path / "output"),
+                   "--smoke", "--source-commit", "a" * 40]) == 0
+
+
+@pytest.mark.parametrize("value,enabled", [(1, False), (2, True)])
+def test_hags_records_observed_explicit_registry_state(monkeypatch, value, enabled):
+    monkeypatch.setattr(C, "probe", lambda *args, **kwargs: f"HwSchMode    REG_DWORD    0x{value:x}")
+    assert C.hags_state()["enabled"] is enabled

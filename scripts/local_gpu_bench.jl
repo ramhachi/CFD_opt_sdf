@@ -1,5 +1,7 @@
 #!/usr/bin/env julia
-# R0 engineering throughput probe. Never run automatically by tests on a GPU.
+# R0 custom engineering fixtures, not WaterLily's benchmark suite.
+# Published ns/DOF values are context only, not directly comparable timings.
+# Never run automatically by tests on a GPU.
 using WaterLily, SHA, Dates
 
 # Load the extension at top level before compiling any GPU stepping method.
@@ -14,7 +16,7 @@ const FIXED_STEPS = 100
 const WARMUP_STEPS = 10
 
 function arguments(args)
-    options = Dict("--out" => "", "--steps" => "100", "--warmup" => "10",
+    options = Dict("--out" => "", "--steps" => "100", "--warmup" => "10", "--lock-sha256" => "",
                    "--host-label" => Sys.iswindows() ? "native_windows" : "wsl2")
     cpu = "--cpu-selftest" in args
     args = filter(!=("--cpu-selftest"), args)
@@ -28,6 +30,7 @@ function arguments(args)
     options["--host-label"] in ("wsl2", "native_windows") || error("unknown R0 host label")
     parse(Int, options["--steps"]) == FIXED_STEPS || error("R0 fixes 100 measured steps")
     parse(Int, options["--warmup"]) == WARMUP_STEPS || error("R0 fixes 10 warmup steps")
+    cpu || occursin(r"^[0-9a-f]{64}$", options["--lock-sha256"]) || error("GPU R0 requires --lock-sha256 of its reference environment lock")
     return options, cpu
 end
 
@@ -98,6 +101,53 @@ json(x::Tuple) = "[" * join(json.(x), ",") * "]"
 json(x::AbstractVector) = "[" * join(json.(x), ",") * "]"
 json(x::NamedTuple) = "{" * join((json(string(k)) * ":" * json(v) for (k, v) in pairs(x)), ",") * "}"
 
+function start_memory_sampler()
+    path, handle = mktemp()
+    try
+        # External process runs while Julia executes kernels; no GPU sync or
+        # per-step process launch enters the measured solver loop.
+        process = run(pipeline(`nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits --loop-ms=10000`;
+                               stdout=handle, stderr=handle); wait=false)
+        return (path=path, handle=handle, process=process, start_error="")
+    catch err
+        return (path=path, handle=handle, process=nothing, start_error=sprint(showerror, err))
+    end
+end
+
+function finish_memory_sampler(sampler)
+    errors = isempty(sampler.start_error) ? String[] : [sampler.start_error]
+    try
+        if sampler.process !== nothing
+            process_running(sampler.process) && kill(sampler.process)
+            wait(sampler.process)
+        end
+    catch err
+        push!(errors, sprint(showerror, err))
+    finally
+        close(sampler.handle)
+    end
+    text = read(sampler.path, String)
+    rm(sampler.path; force=true)
+    # Include an end sample for a short fixture that finishes before 10 s.
+    try
+        text *= read(`nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits`, String)
+    catch err
+        push!(errors, sprint(showerror, err))
+    end
+    values = Float64[]
+    for line in split(text, '\n'; keepempty=false)
+        value = tryparse(Float64, strip(line))
+        if value === nothing || !isfinite(value) || value < 0
+            push!(errors, "unavailable/non-finite nvidia-smi memory.used: " * strip(line))
+        else
+            push!(values, value)
+        end
+    end
+    peak = isempty(values) ? (error="no finite VRAM sample acquired",) : maximum(values)
+    return (peak=peak, interval_s=10, samples=length(values), errors=errors,
+            method="nvidia-smi external process every 10 seconds plus final sample; sampled device VRAM, not allocation-exact peak")
+end
+
 function main()
     options, cpu = arguments(ARGS)
     VERSION == v"1.12.6" || error("bench requires Julia 1.12.6")
@@ -120,9 +170,22 @@ function main()
     end
     steps, warmup = cpu ? (2, 1) : (FIXED_STEPS, WARMUP_STEPS)
     size_tgv, size_plate = cpu ? (16, (64, 32)) : (TGV_SIZE, (256, 128))
-    cases = [timed_case("tgv", tgv(size_tgv, mem), steps, warmup, synchronize),
-             timed_case("plate_2d", plate(size_plate, mem), steps, warmup, synchronize)]
+    sampler = cpu ? nothing : start_memory_sampler()
+    vram = (peak=(not_applicable="CPU selftest; no GPU invoked",), interval_s=10, samples=0,
+            errors=String[], method="CPU selftest; no GPU probe")
+    cases = try
+        [timed_case("tgv", tgv(size_tgv, mem), steps, warmup, synchronize),
+         timed_case("plate_2d", plate(size_plate, mem), steps, warmup, synchronize)]
+    finally
+        cpu || (vram = finish_memory_sampler(sampler))
+    end
     result = (schema_version=1, evidence_class=cpu ? "CPU_BENCH_SELFTEST" : "R0_ENGINEERING_BENCHMARK",
+        lock_sha256=cpu ? "not-applicable: CPU selftest" : options["--lock-sha256"],
+        lock_binding=cpu ? "not-applicable: CPU selftest" : options["--host-label"] == "native_windows" ?
+            "WSL2 reference lock only; native Windows is a separate comparison arm" :
+            "WSL2 environment reference SHA; Python wrapper checks the current lock",
+        peak_vram_mib=vram.peak, vram_sampling=vram,
+        benchmark_definition="custom Taylor-Green and plate fixtures; not WaterLily benchmark suite; published ns/DOF timings are not directly comparable",
         host_label=cpu ? "cpu_selftest" : options["--host-label"], captured_utc=string(now(UTC)) * "Z",
         julia_version=string(VERSION), waterlily_version=string(pkgversion(WaterLily)),
         manifest_sha256=bytes2hex(sha256(read(manifest))), gpu_identity=gpu,

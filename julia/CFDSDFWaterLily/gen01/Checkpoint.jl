@@ -34,7 +34,8 @@ function validate(data)
                 :time, :sim_time, :step, :rows)
     all(k -> hasproperty(data, k), required) || throw(ArgumentError("incomplete checkpoint payload"))
     data.schema_version == 1 || throw(ArgumentError("unknown checkpoint schema"))
-    data.identity isa AbstractString || throw(ArgumentError("checkpoint identity must be a string"))
+    data.identity isa AbstractString && !isempty(strip(data.identity)) ||
+        throw(ArgumentError("checkpoint identity must be a nonempty string"))
     data.step isa Integer && data.step >= 0 || throw(ArgumentError("invalid checkpoint step"))
     data.Δt isa Vector && length(data.Δt) == data.step + 1 ||
         throw(ArgumentError("checkpoint step does not match timestep history"))
@@ -58,14 +59,17 @@ function validate(data)
 end
 
 """
-    save_checkpoint(path, sim, step, rows; identity="") -> path
+    save_checkpoint(path, sim, step, rows; identity) -> path
 
 Atomically replace `path` at a completed solver step. Host arrays preserve u,
-p, u⁰ and the entire adaptive Δt history. `identity` is caller-supplied study,
-geometry and sampling identity; the caller must compare it before restoring.
+p, u⁰ and the entire adaptive Δt history. `identity` is a mandatory, nonempty
+caller-supplied study, geometry and sampling identity, checked again on restore.
+`step` counts individual completed `mom_step!` advances: `length(Δt)==step+1`.
+`sim_step!(sim, t_end)` may perform multiple advances, so counting those calls
+does not satisfy this invariant. WP4 callers must track the actual advances.
 Existing checkpoints survive a process kill before the final rename.
 """
-function save_checkpoint(path, sim, step, rows; identity="")
+function save_checkpoint(path, sim, step, rows; identity)
     data = validate((schema_version=1, configuration=configuration(sim),
         identity=identity, u=Array(sim.flow.u), p=Array(sim.flow.p), u⁰=Array(sim.flow.u⁰),
         Δt=copy(sim.flow.Δt), time=WaterLily.time(sim), sim_time=sim_time(sim),
@@ -102,15 +106,19 @@ function load_checkpoint(path)
 end
 
 """
-    restore_checkpoint!(sim, checkpoint) -> sim
+    restore_checkpoint!(sim, checkpoint; identity) -> sim
 
 Restore into a freshly constructed identical simulation. A new pressure solver
 provides zeroed ghost/work buffers; default remeasurement rebuilds its coefficients
 before the next step. Custom flows/solvers, RNG-driven jobs, changed body functions
 and `remeasure=false` are outside this interface's verified contract.
+`identity` must be the expected nonempty study/geometry/sampling identity;
+mismatches are refused before any simulation field is changed.
 """
-function restore_checkpoint!(sim, data)
+function restore_checkpoint!(sim, data; identity)
     validate(data)
+    identity isa AbstractString && !isempty(strip(identity)) && identity == data.identity ||
+        throw(ArgumentError("checkpoint caller identity mismatch"))
     isequal(configuration(sim), data.configuration) ||
         throw(ArgumentError("checkpoint runtime or simulation configuration mismatch"))
     length(sim.flow.Δt) == 1 && isempty(sim.pois.n) ||

@@ -1,343 +1,341 @@
 {
-  "acceptance": {
-    "checkpoint_cpu_passed": true,
-    "fake_runner_done_and_local_run_json": true,
-    "full_failure_node_sets_equal": true,
-    "gpu_execution_required_for_tooling_done": false,
-    "missing_gpu_mac_json_error": true,
-    "new_tests_passed": true,
-    "protected_tests_and_registered_src_unchanged": true,
-    "source_stable_during_final_suite": true
+  "amendment": 3,
+  "artifact_sha256": {
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-pytest.txt": "cde20831d0dd3d8a3996c2622f995ef30efc9445898361b2f3873b777c9b1c2f",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-pytest.xml": "b22bb44783b65135a445b03adf333323dc7c5fdd926d4a389ace30cbe03eccfd",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-result.json": "59f1919674dd6c812fd2724feab4f3a0c82ff5e9909a4372dcdcec0ca9da18fe",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/bench-cpu-selftest.txt": "54541da3a04fe77816aa2d79f0dacc2d634f25e5348cddc5b5e5a34409a908c1",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/checkpoint-selftest.txt": "e09c6b455c09591feea752c5a17422247700dbf5492392432e0bdf2c5422c6b4",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/compileall-result.json": "13fe118715e15c4187fd94000767af916f6eeabbf724a22fe37fd5490eeebb3b",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/compileall.txt": "daac1411f93c89479b52d0b5c0065ff3749ddec9b05a33f7c66ff00e1d367c3a",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/cpu-validation.json": "8a425040c39ff86db8095bc086714e2dc6d28b53f50ad10215f0d594316730f5",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest-result.json": "19993d2add506fef62702b436db530584dbf2bfc6ac5732829ff06fbb6721576",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.txt": "8fe398814bc67b8818145cc78230570b35a80c2cadeb21a84109f6f846e528e4",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.xml": "cef334789d65a2ffb3e57eb5507c01989209e8cb398a6a9ea0e45c034c182a33",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest-result.json": "694b18009314355b1b767ed530892845bd6d46216cf25300afc3c2fb5377cf38",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.txt": "aa86bb3b6278af7af683850a4eee35146450999ba6e1e5356e85d901117baf0c",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.xml": "462a1b45fad474bd95f2673dccfdb01f3e280572fdb37c55d62edf10213b9e64",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/mac-capture.txt": "87d9f25959be07fd9b97ea40e46c5bfb42eb44b2bc65c886c81e9d3349352585",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/protected-paths.json": "fd464c0fb3dca1fa8ce4c9904a3033aa1cb9cc649aa0b8e87fa58dae9d2d001c",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/source-stability.json": "041f20fa1274f18074777662344f2a29d3717c50f47c467ec889f8215c2548c0",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu-result.json": "e52f2e269d968795eaa4052e5ebfddc396ef0857ffb720b9105cc6caabf1048d",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.txt": "731dbfa1fa267685446c70612091eab35243ac5eeb2d27d867974d5496d05e8a",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.xml": "05732ebabc4bff4d6ac8b454e76e431bb381f35d8e59e645e69de264c55ccdd5"
   },
-  "base_commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
-  "base_setup": {
-    "base_path": "/private/tmp/wp01-base-e3dcdf61",
-    "fallback": "git archive e3dcdf61 extracted at exact requested path; no clone, commit, add, push, or further Git write attempted",
-    "git_readonly_link": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/.git",
-    "observed_head": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
-    "requested_command": [
-      "git",
-      "worktree",
-      "add",
-      "--detach",
-      "/private/tmp/wp01-base-e3dcdf61",
-      "e3dcdf61"
-    ],
-    "returncode": 128,
-    "stderr": "Preparing worktree (detached HEAD e3dcdf61)\nfatal: could not create directory of '/Users/sota/projects/FomulaTMU/CFD2026_09/.git/worktrees/wp01-base-e3dcdf61': Operation not permitted\n",
-    "venv_target": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv"
-  },
-  "base_source_byte_audit": {
-    "commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
-    "mismatches": [],
-    "roots": [
-      "src",
-      "tests",
-      "scripts",
-      "julia"
-    ],
-    "tracked_blobs_checked": 914
-  },
-  "base_source_byte_audit_after": {
-    "baseline_commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
-    "head_after_tests": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
-    "mismatches": [],
-    "tracked_source_blobs_checked_after_tests": 914
-  },
-  "base_tree_byte_audit": {
-    "commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
-    "mismatches": [],
-    "observed_head_after_audit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
-    "roots": [
-      "all tracked blobs"
-    ],
-    "tracked_blobs_checked": 37322,
-    "tracked_bytes_checked": 2536917683,
-    "wall_seconds": 12.469715708
-  },
-  "bench_cpu": {
-    "artifact": "docs/codex/gen01_w1_2026_11_06/reports/wp01_bench_cpu_selftest.json",
-    "artifact_sha256": "da6fd30999273638322a69347577a03f7e64f21716a1888d06fd72d5ea6673d3",
-    "command": "JULIA_NUM_THREADS=1 julia --startup-file=no --project=julia/CFDSDFWaterLily scripts/local_gpu_bench.jl --cpu-selftest --out /private/tmp/wp01-validation-attempt3/bench-cpu.json",
-    "result": {
-      "captured_utc": "2026-11-06T07:22:21.775Z",
-      "cases": [
-        {
-          "cell_steps_per_second": 456332.2308089653,
-          "cells": 4096,
-          "dtype": "Float32",
-          "final_t_u_l": 0.13599315285682678,
-          "finite_p": true,
-          "finite_u": true,
-          "flow_dims": [
-            16,
-            16,
-            16
-          ],
-          "initial_t_u_l": 0.015625,
-          "name": "tgv",
-          "ns_per_cell_step": 2191.3858642578125,
-          "steps": 2,
-          "wall_seconds": 0.017951833,
-          "warmup_steps": 1,
-          "warmup_wall_seconds": 12.648255042
+  "base": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+  "cpu_validation": {
+    "bench-cpu-selftest": {
+      "artifact": "docs/codex/gen01_w1_2026_11_06/reports/wp01_bench_cpu_selftest.json",
+      "artifact_sha256": "72c287628d4b38cf81d4e3507ea68abf6024edfc3b54f41b0e55db811f70756b",
+      "command": [
+        "julia",
+        "--startup-file=no",
+        "--project=julia/CFDSDFWaterLily",
+        "scripts/local_gpu_bench.jl",
+        "--cpu-selftest",
+        "--out",
+        "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/cpu-bench-tmp.json"
+      ],
+      "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/bench-cpu-selftest.txt",
+      "log_sha256": "54541da3a04fe77816aa2d79f0dacc2d634f25e5348cddc5b5e5a34409a908c1",
+      "result": {
+        "benchmark_definition": "custom Taylor-Green and plate fixtures; not WaterLily benchmark suite; published ns/DOF timings are not directly comparable",
+        "captured_utc": "2026-11-06T09:01:00.836Z",
+        "cases": [
+          {
+            "cell_steps_per_second": 237368.4324903837,
+            "cells": 4096,
+            "dtype": "Float32",
+            "final_t_u_l": 0.13599315285682678,
+            "finite_p": true,
+            "finite_u": true,
+            "flow_dims": [
+              16,
+              16,
+              16
+            ],
+            "initial_t_u_l": 0.015625,
+            "name": "tgv",
+            "ns_per_cell_step": 4212.860107421875,
+            "steps": 2,
+            "wall_seconds": 0.03451175,
+            "warmup_steps": 1,
+            "warmup_wall_seconds": 9.74836675
+          },
+          {
+            "cell_steps_per_second": 621630.3378673192,
+            "cells": 2048,
+            "dtype": "Float32",
+            "final_t_u_l": 0.22975414991378784,
+            "finite_p": true,
+            "finite_u": true,
+            "flow_dims": [
+              64,
+              32
+            ],
+            "initial_t_u_l": 0.03125,
+            "name": "plate_2d",
+            "ns_per_cell_step": 1608.673095703125,
+            "steps": 2,
+            "wall_seconds": 0.006589125,
+            "warmup_steps": 1,
+            "warmup_wall_seconds": 11.383857875
+          }
+        ],
+        "cuda_visible_devices": "not-applicable",
+        "evidence_class": "CPU_BENCH_SELFTEST",
+        "gpu_identity": {
+          "name": "CPU selftest; no GPU invoked",
+          "uuid": "not-applicable"
         },
-        {
-          "cell_steps_per_second": 581763.1457024094,
-          "cells": 2048,
-          "dtype": "Float32",
-          "final_t_u_l": 0.22975414991378784,
-          "finite_p": true,
-          "finite_u": true,
-          "flow_dims": [
-            64,
-            32
-          ],
-          "initial_t_u_l": 0.03125,
-          "name": "plate_2d",
-          "ns_per_cell_step": 1718.91259765625,
-          "steps": 2,
-          "wall_seconds": 0.007040666,
-          "warmup_steps": 1,
-          "warmup_wall_seconds": 13.126391583
-        }
-      ],
-      "cuda_visible_devices": "not-applicable",
-      "evidence_class": "CPU_BENCH_SELFTEST",
-      "gpu_identity": {
-        "name": "CPU selftest; no GPU invoked",
-        "uuid": "not-applicable"
+        "host_label": "cpu_selftest",
+        "julia_version": "1.12.6",
+        "lock_binding": "not-applicable: CPU selftest",
+        "lock_sha256": "not-applicable: CPU selftest",
+        "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+        "measured_steps": 2,
+        "peak_vram_mib": {
+          "not_applicable": "CPU selftest; no GPU invoked"
+        },
+        "plate_definition": {
+          "angle_degrees": 10,
+          "chord_cells": 8,
+          "reynolds": 1000,
+          "thickness_cells": 1
+        },
+        "schema_version": 1,
+        "used_gpu_count": 0,
+        "vram_sampling": {
+          "errors": [],
+          "interval_s": 10,
+          "method": "CPU selftest; no GPU probe",
+          "peak": {
+            "not_applicable": "CPU selftest; no GPU invoked"
+          },
+          "samples": 0
+        },
+        "warmup_steps": 1,
+        "waterlily_version": "1.8.0"
       },
-      "host_label": "cpu_selftest",
-      "julia_version": "1.12.6",
-      "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
-      "measured_steps": 2,
-      "plate_definition": {
-        "angle_degrees": 10,
-        "chord_cells": 8,
-        "reynolds": 1000,
-        "thickness_cells": 1
+      "returncode": 0,
+      "stderr": "",
+      "wall_seconds": 47.4182001670124
+    },
+    "checkpoint-selftest": {
+      "artifact": "docs/codex/gen01_w1_2026_11_06/reports/wp01_checkpoint_selftest.json",
+      "artifact_sha256": "782339ce119c5cc6d473bafd161b4d786ebcb598720a163f28c6d2ee4d3d66b9",
+      "command": [
+        "julia",
+        "--startup-file=no",
+        "--project=julia/CFDSDFWaterLily",
+        "scripts/checkpoint_selftest.jl"
+      ],
+      "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/checkpoint-selftest.txt",
+      "log_sha256": "e09c6b455c09591feea752c5a17422247700dbf5492392432e0bdf2c5422c6b4",
+      "result": {
+        "checkpoint_sha256": "1ff34a9f718d7332a6a6ab7cb1dc766920746a7237f130d19ea1dcc52dc7d224",
+        "checkpoint_source_sha256": "21d7c9a2ca2c27bbfbecc6ed579417acde0c4dc1ca270c9ee3d5c1da64e13076",
+        "checkpoint_step": 50,
+        "class": "BITWISE",
+        "evidence_class": "CPU_CHECKPOINT_SELFTEST",
+        "flow_dims": [
+          64,
+          32
+        ],
+        "julia_executable_sha256": "9ad38bea81ecace044a4bdef2a0246dee94cb8a44c9420809cc00f9872651c64",
+        "julia_threads": 1,
+        "julia_version": "1.12.6",
+        "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+        "maximum_relative_difference": 0.0,
+        "resumed_window_means": [
+          2.9167655424387706,
+          -3.003170726879792e-05
+        ],
+        "selftest_source_sha256": "55a9f802d7ce2574076fb1ff6165b10bdb669f6a3110b21f49b7446b8ccaad6c",
+        "status": "PASS",
+        "steps": 100,
+        "wall_seconds": 42.016518115997314,
+        "waterlily_version": "1.8.0",
+        "window_means": [
+          2.9167655424387706,
+          -3.003170726879792e-05
+        ]
       },
-      "schema_version": 1,
-      "used_gpu_count": 0,
-      "warmup_steps": 1,
-      "waterlily_version": "1.8.0"
+      "returncode": 0,
+      "stderr": "",
+      "wall_seconds": 65.7010867500212
     },
-    "returncode": 0
-  },
-  "branch": "feat/gen01-w1-01-local-gpu",
-  "checkpoint_cpu": {
-    "artifact": "docs/codex/gen01_w1_2026_11_06/reports/wp01_checkpoint_selftest.json",
-    "artifact_sha256": "b07dd6c7632addc2ad6aa95c4bca7a731a29b00921de6abb1640058e9f7279a1",
-    "command": "julia --startup-file=no --threads=1 --project=julia/CFDSDFWaterLily scripts/checkpoint_selftest.jl --out /private/tmp/wp01_checkpoint_amendment2.json",
-    "result": {
-      "checkpoint_sha256": "1ff34a9f718d7332a6a6ab7cb1dc766920746a7237f130d19ea1dcc52dc7d224",
-      "checkpoint_source_sha256": "f79b8a5ba191f04ad97933c363f2126841604e19196a350d3abc960c340112ff",
-      "checkpoint_step": 50,
-      "class": "BITWISE",
-      "evidence_class": "CPU_CHECKPOINT_SELFTEST",
-      "flow_dims": [
-        64,
-        32
+    "mac-capture": {
+      "command": [
+        ".venv/bin/python",
+        "infra/local_gpu/capture_lock.py",
+        "--out",
+        "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/absent-mac-lock.json"
       ],
-      "julia_executable_sha256": "9ad38bea81ecace044a4bdef2a0246dee94cb8a44c9420809cc00f9872651c64",
-      "julia_threads": 1,
-      "julia_version": "1.12.6",
-      "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
-      "maximum_relative_difference": 0.0,
-      "resumed_window_means": [
-        2.9167655424387706,
-        -3.003170726879792e-05
-      ],
-      "selftest_source_sha256": "7a3110f0ee4aee3f14ba87917dac2a7e824c14c7135ec7b210c463855fe552bc",
-      "status": "PASS",
-      "steps": 100,
-      "wall_seconds": 27.046571016311646,
-      "waterlily_version": "1.8.0",
-      "window_means": [
-        2.9167655424387706,
-        -3.003170726879792e-05
-      ]
-    },
-    "returncode": 0
+      "lock_created": false,
+      "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/mac-capture.txt",
+      "log_sha256": "87d9f25959be07fd9b97ea40e46c5bfb42eb44b2bc65c886c81e9d3349352585",
+      "result": {
+        "captured_utc": "2026-11-06T08:59:09.272484+00:00",
+        "environment": {
+          "backend_profile": "local_rtx4070ti",
+          "cuda": {
+            "error": "CUDA probe unavailable"
+          },
+          "cuda_device_order": "PCI_BUS_ID",
+          "cuda_visible_devices": "0",
+          "gpu": {
+            "compute_cap": {
+              "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+            },
+            "driver_version": {
+              "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+            },
+            "memory_total": {
+              "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+            },
+            "name": {
+              "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+            },
+            "power_limit": {
+              "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+            },
+            "uuid": {
+              "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+            }
+          },
+          "host": {
+            "hardware_accelerated_gpu_scheduling": {
+              "error": "reg.exe: [Errno 2] No such file or directory: 'reg.exe'"
+            },
+            "proc_version": {
+              "error": "[Errno 2] No such file or directory: '/proc/version'"
+            },
+            "windows_ver": {
+              "error": "cmd.exe: [Errno 2] No such file or directory: 'cmd.exe'"
+            }
+          },
+          "julia": {
+            "archive_url": "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz",
+            "executable": "/opt/homebrew/Cellar/juliaup/1.22.7/bin/julialauncher",
+            "expected_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+            "root": "/opt/homebrew/Cellar/juliaup/1.22.7",
+            "root_sha256": "cc99b66b21ee9578ebef8a22607810474bc3e2cf82efe8d9604d4e9527eb1ddd",
+            "sha256": "d923e2b0f59c7f51a58eb02eab6d79979f053495599af690e84841c5113422ef",
+            "version": "julia version 1.12.6"
+          },
+          "julia_depot": {
+            "manifest_packages_sha256": {
+              "error": "dedicated JULIA_DEPOT_PATH unavailable"
+            },
+            "path": {
+              "error": "explicit dedicated JULIA_DEPOT_PATH is required"
+            }
+          },
+          "path_mode": "CAMPAIGN_WORK_ROOT",
+          "project": {
+            "manifest_sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+            "path": "julia/CFDSDFWaterLilyT4",
+            "project_sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
+          },
+          "python": {
+            "executable": "/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+            "numpy_version": "2.5.2",
+            "sha256": "31b9c9a8d50289f3a13f014b3efd8ea3534fc3eea7ca7d9809e166139910b805",
+            "version": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]"
+          },
+          "wsl": {
+            "distro": {
+              "error": "[Errno 2] No such file or directory: '/etc/os-release'"
+            },
+            "kernel": "25.3.0",
+            "settings": {
+              "wsl_conf": {
+                "automount.ldconfig": {
+                  "error": "[Errno 2] No such file or directory: '/etc/wsl.conf'"
+                },
+                "gpu.appendLibPath": {
+                  "error": "[Errno 2] No such file or directory: '/etc/wsl.conf'"
+                }
+              },
+              "wslconfig": {
+                "wsl2.memory": {
+                  "error": "cannot locate Windows USERPROFILE through cmd.exe"
+                },
+                "wsl2.processors": {
+                  "error": "cannot locate Windows USERPROFILE through cmd.exe"
+                },
+                "wsl2.swap": {
+                  "error": "cannot locate Windows USERPROFILE through cmd.exe"
+                }
+              },
+              "wslconfig_path": {
+                "error": "cannot locate Windows USERPROFILE through cmd.exe"
+              }
+            },
+            "version": {
+              "error": "wsl.exe: [Errno 2] No such file or directory: 'wsl.exe'"
+            }
+          }
+        },
+        "errors": [
+          "mandatory gpu.name missing: {'error': \"nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'\"}",
+          "mandatory gpu.driver_version missing: {'error': \"nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'\"}",
+          "mandatory julia_depot.path missing: {'error': 'explicit dedicated JULIA_DEPOT_PATH is required'}",
+          "mandatory julia_depot.manifest_packages_sha256 missing: {'error': 'dedicated JULIA_DEPOT_PATH unavailable'}"
+        ],
+        "observations": {
+          "commands": {
+            "nvidia_smi": {
+              "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+            }
+          },
+          "cuda_versioninfo": {
+            "error": "CUDA probe skipped: nvidia-smi GPU/driver unavailable"
+          }
+        },
+        "schema_version": 1,
+        "status": "ERROR"
+      },
+      "returncode": 2,
+      "stderr": "",
+      "wall_seconds": 1.1988305830163881
+    }
   },
-  "checkpoint_include_closure": {
-    "explicit_local_kernel_pin": true,
-    "module": "julia/CFDSDFWaterLily/gen01/Checkpoint.jl",
-    "positive_and_missing_pin_negative_tests": true
-  },
-  "compileall": {
-    "captured_stdout": "Listing 'src'...\nListing 'src/cfd_harness'...\nListing 'src/cfd_sdf'...\nListing 'src/cfd_sdf/design'...\nListing 'src/cfd_sdf/gradients'...\nListing 'src/cfd_sdf/oracles'...\nListing 'src/cfd_sdf/runtime'...\nListing 'tests'...\nListing 'tests/fid01'...\nListing 'tests/screen01'...\nCompiling 'tests/test_harness_replay.py'...\nCompiling 'tests/test_local_gpu.py'...\nCompiling 'tests/test_local_gpu_backend.py'...\nCompiling 'tests/test_local_gpu_gate.py'...\nCompiling 'tests/test_local_gpu_julia.py'...\n",
+  "focused_pytest": {
     "command": [
       ".venv/bin/python",
       "-m",
-      "compileall",
-      "src",
-      "tests"
+      "pytest",
+      "-q",
+      "tests/test_local_gpu.py",
+      "tests/test_local_gpu_backend.py",
+      "tests/test_local_gpu_gate.py",
+      "tests/test_local_gpu_julia.py",
+      "tests/test_harness_registered_reverify.py",
+      "-p",
+      "no:cacheprovider",
+      "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.xml"
     ],
+    "complete": true,
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 169,
+      "skipped": 0,
+      "tests": 169
+    },
     "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu",
-    "finished_utc": "2026-11-06T07:23:49.268641+00:00",
-    "log": "/private/tmp/wp01-validation-attempt3/compileall.log",
-    "log_sha256": "49747a5b0c1e150142888d24b630e4ef395f570224adc31cc2a5c0adea306bf5",
-    "pid": 7555,
+    "failed_nodes": [],
+    "finished_utc": "2026-11-06T09:00:04.849452+00:00",
+    "junit_path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.xml",
+    "junit_sha256": "cef334789d65a2ffb3e57eb5507c01989209e8cb398a6a9ea0e45c034c182a33",
+    "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.txt",
+    "log_sha256": "8fe398814bc67b8818145cc78230570b35a80c2cadeb21a84109f6f846e528e4",
     "returncode": 0,
-    "started_utc": "2026-11-06T07:23:48.550599+00:00",
-    "wall_seconds": 0.9293198330560699
-  },
-  "default_byte_proof": {
-    "kernels": [
-      "kernel_harness01_replay_a_smoke",
-      "kernel_unc01_u01_f24_smoke"
-    ],
-    "method": "genuine historical source and PINS extracted by git archive; current renderer reproduces committed runner and metadata bytes",
-    "tests": "test_default_render_reproduces_committed_smoke_bytes_at_its_source"
-  },
-  "environment_gate_status": "NOT_RUN",
-  "evidence_class": "implementation, deterministic synthetic validation and bounded CPU selftest; environment GPU gate not run",
-  "files_to_commit": [
-    {
-      "path": "src/cfd_harness/campaign_build.py",
-      "status": "modified"
-    },
-    {
-      "path": "src/cfd_harness/campaign_schema.py",
-      "status": "modified"
-    },
-    {
-      "path": "src/cfd_harness/campaign_verify.py",
-      "status": "modified"
-    },
-    {
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_attempt1_blocked/wp01_local_gpu_01_design.md",
-      "status": "new"
-    },
-    {
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_attempt1_blocked/wp01_local_gpu_01_report.md",
-      "status": "new"
-    },
-    {
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_attempt1_blocked/wp01_local_gpu_01_validation.json",
-      "status": "new"
-    },
-    {
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_bench_cpu_selftest.json",
-      "status": "new"
-    },
-    {
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_checkpoint_selftest.json",
-      "status": "new"
-    },
-    {
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_design.md",
-      "status": "new"
-    },
-    {
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_report.md",
-      "status": "new"
-    },
-    {
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_validation.json",
-      "status": "new"
-    },
-    {
-      "path": "infra/local_gpu/README.md",
-      "status": "new"
-    },
-    {
-      "path": "infra/local_gpu/bind_dataset.sh",
-      "status": "new"
-    },
-    {
-      "path": "infra/local_gpu/capture_lock.py",
-      "status": "new"
-    },
-    {
-      "path": "julia/CFDSDFWaterLily/gen01/Checkpoint.jl",
-      "status": "new"
-    },
-    {
-      "path": "julia/CFDSDFWaterLily/gen01/README.md",
-      "status": "new"
-    },
-    {
-      "path": "scripts/checkpoint_selftest.jl",
-      "status": "new"
-    },
-    {
-      "path": "scripts/local_gpu.py",
-      "status": "new"
-    },
-    {
-      "path": "scripts/local_gpu_bench.jl",
-      "status": "new"
-    },
-    {
-      "path": "scripts/local_gpu_bench_windows.ps1",
-      "status": "new"
-    },
-    {
-      "path": "scripts/local_gpu_gate.py",
-      "status": "new"
-    },
-    {
-      "path": "scripts/waterlily_local_gpu_job.diff",
-      "status": "new"
-    },
-    {
-      "path": "scripts/waterlily_local_gpu_job.jl",
-      "status": "new"
-    },
-    {
-      "path": "src/cfd_harness/backend_profiles.py",
-      "status": "new"
-    },
-    {
-      "path": "tests/test_local_gpu.py",
-      "status": "new"
-    },
-    {
-      "path": "tests/test_local_gpu_backend.py",
-      "status": "new"
-    },
-    {
-      "path": "tests/test_local_gpu_gate.py",
-      "status": "new"
-    },
-    {
-      "path": "tests/test_local_gpu_julia.py",
-      "status": "new"
-    }
-  ],
-  "final_checks": {
-    "bind_helper_syntax": {
-      "command": [
-        "sh",
-        "-n",
-        "infra/local_gpu/bind_dataset.sh"
-      ],
-      "returncode": 0,
-      "stderr": "",
-      "stdout": ""
-    },
-    "diff_check": {
-      "command": [
-        "git",
-        "diff",
-        "--check"
-      ],
-      "returncode": 0,
-      "stderr": "",
-      "stdout": ""
-    }
-  },
-  "focused_regression": {
-    "command": ".venv/bin/python -m pytest tests/test_unc01.py tests/fid01 tests/screen01 tests/test_harness_replay.py tests/test_harness_freeze.py tests/test_local_gpu_backend.py -q -rf -p no:cacheprovider",
-    "passed": 486,
-    "returncode": 0,
-    "skipped": 1,
-    "wall_seconds": 349.79,
-    "warning_scope": "existing Sobol sample-count warning",
-    "warnings": 1
+    "started_utc": "2026-11-06T08:58:16.767669+00:00",
+    "summary": ".........................                                                [100%]\n169 passed in 107.35s (0:01:47)",
+    "wall_seconds": 108.08182825008407
   },
   "full_pytest": {
     "base": {
@@ -367,10 +365,11 @@
       "exit_code": 0,
       "failed_nodes": [],
       "finished_utc": "2026-11-06T08:09:11.098762+00:00",
-      "junit_path": "/private/tmp/wp01-validation-attempt3/base-pytest.xml",
+      "junit_path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-pytest.xml",
       "junit_sha256": "b22bb44783b65135a445b03adf333323dc7c5fdd926d4a389ace30cbe03eccfd",
-      "log": "/private/tmp/wp01-validation-attempt3/base-pytest.log",
+      "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-pytest.txt",
       "log_sha256": "cde20831d0dd3d8a3996c2622f995ef30efc9445898361b2f3873b777c9b1c2f",
+      "provenance": "Completed baseline from attempt 3 at e3dcdf61, verified by its recorded SHA and copied unchanged; not rerun for Amendment 3.",
       "pytest_pid": 1772,
       "returncode": 0,
       "setup": "git archive e3dcdf61 after worktree add denied",
@@ -379,12 +378,8 @@
       "summary": "3482 passed, 74 skipped, 7295 warnings in 2978.52s (0:49:38)",
       "wall_seconds": 2980.48794175
     },
-    "excluded_in_both": [
-      "tests/test_lbm_metal.py"
-    ],
-    "failed_nodes_equal": true,
+    "failed_node_sets_equal": true,
     "implementation": {
-      "captured_stdout": "........................................................................ [  1%]\n........................................................................ [  3%]\n.........................................................s.............. [  5%]\n........................................................................ [  7%]\n........................................................................ [  9%]\n........................................................................ [ 11%]\n..........................................s............................. [ 13%]\n........................................................................ [ 15%]\n..........................................s............................. [ 17%]\ns.....................sss.s...............................sss........sss [ 19%]\nss........................................sssssss.....s................. [ 21%]\n........................................................................ [ 23%]\n........................................................................ [ 25%]\n........................................................................ [ 27%]\n........................................................................ [ 29%]\n........................................................................ [ 31%]\n........................................................................ [ 33%]\n........................................................................ [ 35%]\n........................................................................ [ 37%]\n........................................................................ [ 39%]\n........................................................................ [ 41%]\n........................................................................ [ 43%]\n........................................................................ [ 45%]\n........................................................................ [ 47%]\n........................................................................ [ 49%]\n........................................................................ [ 51%]\n............................................s........s.................. [ 53%]\n........................................................................ [ 55%]\n........................................................................ [ 57%]\n........................................................................ [ 59%]\n........................................................................ [ 61%]\n........................................................................ [ 63%]\n..............................s......................s.................. [ 65%]\n..................................................................s..... [ 67%]\n........................................................................ [ 69%]\n........................................................................ [ 71%]\n................................................................s.s....s [ 73%]\n........................................................................ [ 75%]\n........................................................................ [ 77%]\n........................................................................ [ 79%]\n........................................................................ [ 81%]\n........................................................................ [ 82%]\n........................................................................ [ 84%]\n.......................sssssss........................ss........s.s.s... [ 86%]\n..s............sssss............ssss....s............ss.ss.s.ss.s....... [ 88%]\n.....s.s.....sssss....s........ss....s.................................. [ 90%]\n........................................................................ [ 92%]\n........................................................................ [ 94%]\n........................................................................ [ 96%]\n........................................................................ [ 98%]\n............................................                             [100%]\n=============================== warnings summary ===============================\nscripts/screen01/screen01_pool.py:110\n  /Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/scripts/screen01/screen01_pool.py:110: UserWarning: The balance properties of Sobol' points require n to be a power of 2.\n    return x_to_u(qmc.Sobol(d=3, scramble=True, seed=seed).random(n))\n\ntests/test_extraction_qualification.py: 369 warnings\ntests/test_extraction_sweep.py: 1221 warnings\ntests/test_fixed_grid_backend.py: 9 warnings\ntests/test_fixed_grid_canonical_state_injection.py: 221 warnings\ntests/test_fixed_grid_connectivity.py: 190 warnings\ntests/test_fixed_grid_contract.py: 520 warnings\ntests/test_fixed_grid_optimizer.py: 506 warnings\ntests/test_fixed_grid_primal.py: 276 warnings\ntests/test_fixed_grid_sensitivity.py: 369 warnings\ntests/test_front_wing_pipeline.py: 893 warnings\ntests/test_handoff.py: 730 warnings\ntests/test_sdf_native_genesis.py: 131 warnings\ntests/test_sdf_native_geometry_gates.py: 100 warnings\ntests/test_stage_s_entry.py: 1228 warnings\ntests/test_stage_t_candidate_binding.py: 458 warnings\ntests/test_xfid45_surface_round2_candidates.py: 5 warnings\n  /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/vtkmodules/util/numpy_support.py:244: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.\n  As an alternative, you can create a new view using np.reshape (with copy=False if needed).\n    result.shape = shape\n\ntests/test_geometry_gates_v2.py: 48 warnings\n  /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/skimage/measure/_marching_cubes_lewiner.py:237: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.\n  As an alternative, you can create a new view using np.reshape (with copy=False if needed).\n    ar.shape = shape\n\ntests/test_geometry_gates_v2.py: 11 warnings\ntests/test_reinit04_v17.py: 2 warnings\ntests/test_xfid45_round3_export.py: 3 warnings\ntests/test_xfid45_surface_round2_candidates.py: 3 warnings\n  /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/skimage/measure/_marching_cubes_lewiner.py:213: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.\n  As an alternative, you can create a new view using np.reshape (with copy=False if needed).\n    faces.shape = -1, 3\n\ntests/test_grad_g2_diag4_prereg.py::TestFreeze::test_sidecar_and_every_frozen_file_hash\n  /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/_pytest/fixtures.py:1313: PytestRemovedIn10Warning: Class-scoped fixture defined as instance method is deprecated.\n  Instance attributes set in this fixture will NOT be visible to test methods,\n  as each test gets a new instance while the fixture runs only once per class.\n  Use @classmethod decorator and set attributes on cls instead.\n  See https://docs.pytest.org/en/stable/deprecations.html#class-scoped-fixture-as-instance-method\n    fixturefunc = resolve_fixture_function(fixturedef, request)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n3570 passed, 74 skipped, 7295 warnings in 2886.32s (0:48:06)\n",
       "command": [
         ".venv/bin/python",
         "-m",
@@ -394,392 +389,320 @@
         "-rf",
         "-p",
         "no:cacheprovider",
-        "--junitxml=/private/tmp/wp01-validation-attempt3/final-pytest.xml"
+        "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.xml"
       ],
       "complete": true,
       "counts": {
         "errors": 0,
         "failures": 0,
-        "passed": 3570,
+        "passed": 3651,
         "skipped": 74,
-        "tests": 3644
+        "tests": 3725
       },
       "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu",
       "failed_nodes": [],
-      "finished_utc": "2026-11-06T08:12:27.460192+00:00",
-      "junit_path": "/private/tmp/wp01-validation-attempt3/final-pytest.xml",
-      "junit_sha256": "ff114ca2bc1c8c3b1f5219f056611fda48d4fabb8798020fc4fcc14a772ae949",
-      "log": "/private/tmp/wp01-validation-attempt3/final-pytest.log",
-      "log_sha256": "6a7553d3ce13ceab0ba156e489140d02e7e669d0a1e5220259729bed05a59a76",
-      "pid": 9091,
+      "finished_utc": "2026-11-07T09:07:43.676102+00:00",
+      "junit_path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.xml",
+      "junit_sha256": "462a1b45fad474bd95f2673dccfdb01f3e280572fdb37c55d62edf10213b9e64",
+      "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.txt",
+      "log_sha256": "aa86bb3b6278af7af683850a4eee35146450999ba6e1e5356e85d901117baf0c",
       "returncode": 0,
-      "started_utc": "2026-11-06T07:24:19.159930+00:00",
-      "summary": "3570 passed, 74 skipped, 7295 warnings in 2886.32s (0:48:06)",
-      "wall_seconds": 2888.287057165988
+      "started_utc": "2026-11-06T09:00:07.970529+00:00",
+      "summary": "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n3651 passed, 74 skipped, 7295 warnings in 1933.39s (0:32:13)",
+      "wall_seconds": 1934.9927469580434
     },
-    "new_failed_nodes": [],
-    "resolved_base_failed_nodes": []
+    "new_failed_nodes": []
   },
-  "governing_documents_read": [
+  "head_start": "e6c57e7b",
+  "intended_file_sha256": {
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-pytest.txt": "cde20831d0dd3d8a3996c2622f995ef30efc9445898361b2f3873b777c9b1c2f",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-pytest.xml": "b22bb44783b65135a445b03adf333323dc7c5fdd926d4a389ace30cbe03eccfd",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-result.json": "59f1919674dd6c812fd2724feab4f3a0c82ff5e9909a4372dcdcec0ca9da18fe",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/bench-cpu-selftest.txt": "54541da3a04fe77816aa2d79f0dacc2d634f25e5348cddc5b5e5a34409a908c1",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/checkpoint-selftest.txt": "e09c6b455c09591feea752c5a17422247700dbf5492392432e0bdf2c5422c6b4",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/compileall-result.json": "13fe118715e15c4187fd94000767af916f6eeabbf724a22fe37fd5490eeebb3b",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/compileall.txt": "daac1411f93c89479b52d0b5c0065ff3749ddec9b05a33f7c66ff00e1d367c3a",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/cpu-validation.json": "8a425040c39ff86db8095bc086714e2dc6d28b53f50ad10215f0d594316730f5",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest-result.json": "19993d2add506fef62702b436db530584dbf2bfc6ac5732829ff06fbb6721576",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.txt": "8fe398814bc67b8818145cc78230570b35a80c2cadeb21a84109f6f846e528e4",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.xml": "cef334789d65a2ffb3e57eb5507c01989209e8cb398a6a9ea0e45c034c182a33",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest-result.json": "694b18009314355b1b767ed530892845bd6d46216cf25300afc3c2fb5377cf38",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.txt": "aa86bb3b6278af7af683850a4eee35146450999ba6e1e5356e85d901117baf0c",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.xml": "462a1b45fad474bd95f2673dccfdb01f3e280572fdb37c55d62edf10213b9e64",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/mac-capture.txt": "87d9f25959be07fd9b97ea40e46c5bfb42eb44b2bc65c886c81e9d3349352585",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/protected-paths.json": "fd464c0fb3dca1fa8ce4c9904a3033aa1cb9cc649aa0b8e87fa58dae9d2d001c",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/source-stability.json": "041f20fa1274f18074777662344f2a29d3717c50f47c467ec889f8215c2548c0",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu-result.json": "e52f2e269d968795eaa4052e5ebfddc396ef0857ffb720b9105cc6caabf1048d",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.txt": "731dbfa1fa267685446c70612091eab35243ac5eeb2d27d867974d5496d05e8a",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.xml": "05732ebabc4bff4d6ac8b454e76e431bb381f35d8e59e645e69de264c55ccdd5",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_bench_cpu_selftest.json": "72c287628d4b38cf81d4e3507ea68abf6024edfc3b54f41b0e55db811f70756b",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_checkpoint_selftest.json": "782339ce119c5cc6d473bafd161b4d786ebcb598720a163f28c6d2ee4d3d66b9",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_design.md": "63f633ce2338f42c27779cb4ae65ee3182028165cb0979e62c9229df79ee48fc",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_report.md": "62167b59dae429a97a3a21c1b65f32fca6c800b56bd3414b4645560b68f2e3a2",
+    "infra/local_gpu/README.md": "cdfbe1b21cad4893ee75eed1131e550fa2ef444cf281953979130c6b54e15695",
+    "infra/local_gpu/capture_lock.py": "402c3fe5a40f514834a4ffe18142027930cf60fd0d1160494cebd7905b9aaffc",
+    "julia/CFDSDFWaterLily/gen01/Checkpoint.jl": "21d7c9a2ca2c27bbfbecc6ed579417acde0c4dc1ca270c9ee3d5c1da64e13076",
+    "scripts/checkpoint_selftest.jl": "55a9f802d7ce2574076fb1ff6165b10bdb669f6a3110b21f49b7446b8ccaad6c",
+    "scripts/local_gpu.py": "e125c85ba651ee754ead8222952cf20f894b19e8dc9cc9521fe02a0c600bf46c",
+    "scripts/local_gpu_bench.jl": "bc5e9c924bfa8969a0c8dc4c06c25e3b4f33ebfdbc6ff2fab136dc6ab1e8083f",
+    "scripts/local_gpu_bench_windows.ps1": "b4decffd6b36ced832ce4ce5316110880c8e94fd59dce0f043fe3a020e1371e7",
+    "scripts/local_gpu_gate.py": "89450823200f1c0504b695088822da1d9f45da48ec7005e6f069d79f7f1a452a",
+    "scripts/waterlily_local_gpu_job.diff": "d39c1f01ea0ed16774da193249de7c817a0737215c79828cd34a55178b72771e",
+    "scripts/waterlily_local_gpu_job.jl": "173d52353b59e0597fd839a3673f61b8165012077fec4ac902f1155d9cabad24",
+    "src/cfd_harness/backend_profiles.py": "1edb1ecba33fbd5bdf60fce111332d43557a9398a230a7aee56ab480aadef354",
+    "src/cfd_harness/campaign_build.py": "7e3ee902bc3ed020edd5e37cbd9060490f9c0f5119e72a60448edbdcf0688a68",
+    "src/cfd_harness/campaign_schema.py": "4c3c494ed381930d9d1e51b063efbbdcf1fa4586c1ac7e84d2b999a5c984d1b8",
+    "src/cfd_harness/campaign_verify.py": "8db4714799e258e08ce1a2e8ed9de4b5ff90ba3d9fa56513ec6d6997b0e57a2e",
+    "tests/test_harness_registered_reverify.py": "c02491c0e6f75ef7557813520ec50a74473cf268c3c076631c12ef4d061725ef",
+    "tests/test_local_gpu.py": "dcba5a595963e7a4831c27bc4556439dbf27a48cdc8ea24634b0f51f9acbdeed",
+    "tests/test_local_gpu_backend.py": "26ed8b66b7d1577024d09535ebd18cb5103659c3dbd60b171a2923ee98b9ef11",
+    "tests/test_local_gpu_gate.py": "043e866ab6c1b7f6a3c8ac3accfd4b7a79543a99846e08621c5ac6bb6538b728"
+  },
+  "intended_files": [
     {
-      "lines": 42,
-      "path": "AGENTS.md",
-      "read_scope": "full text",
-      "sha256": "ead04f674840bb6e28cbfd63fcc74f73e82a6d1ebc51d8fae253d6cc024e6923"
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-pytest.txt"
     },
     {
-      "lines": 72,
-      "path": "docs/codex/gen01_w1_2026_11_06/00_README.md",
-      "read_scope": "full text",
-      "sha256": "aac0777a7fa81ba8426de39872424634c7b12b1d311eda8663a8e1ffbaa0f542"
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-pytest.xml"
     },
     {
-      "lines": 7782,
-      "path": "docs/phase_plan.md",
-      "read_scope": "full text",
-      "sha256": "e9bc9b97836e4d92a20027453aed2abc82981a25aafbbee70c7420731855cb23"
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-result.json"
     },
     {
-      "lines": 317,
-      "path": "docs/gen_system_plan_2026_11_01.md",
-      "read_scope": "full text",
-      "sha256": "edcbe927e097d0909c206e45819ed188f0d6093b1027237cf3e43dba01ed5efe"
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/bench-cpu-selftest.txt"
     },
     {
-      "lines": 252,
-      "path": "docs/README.md",
-      "read_scope": "full text",
-      "sha256": "aedf4ad2e22bfdec0d133695ea3256d925d67265e60c1a62cb887dcb66fc9083"
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/checkpoint-selftest.txt"
     },
     {
-      "lines": 61,
-      "path": "docs/STATE.md",
-      "read_scope": "full text",
-      "sha256": "8261732a99c4bf40856655e9aab46370d239dc7fa32fe4c458bbeca6a524bbc3"
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/compileall-result.json"
     },
     {
-      "lines": 70,
-      "path": "docs/git_branching_strategy.md",
-      "read_scope": "full text",
-      "sha256": "7dc44a2921f76b8ee661ffba92663d0059723ee502791113d6dd023bb81779e5"
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/compileall.txt"
     },
     {
-      "lines": 2290,
-      "path": "docs/opencode_handoff_2026_09.md",
-      "read_scope": "TOC and relevant harness/GPU/Kaggle/evidence sections (Amendment 1)",
-      "sha256": "7365dcdd54f4cd76c5d4950f8e16707244e9a15a623f792fe4818bddd56b055b"
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/cpu-validation.json"
     },
     {
-      "lines": 2109,
-      "path": "docs/problem_register_2026_09.md",
-      "read_scope": "TOC and relevant harness/GPU/Kaggle/evidence sections (Amendment 1)",
-      "sha256": "10457facd664ecb7762e4132bc3fe2317a7fccaa8ad12e5711dfbde2be9bda61"
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest-result.json"
     },
     {
-      "lines": 764,
-      "path": "docs/problem_resolution_plan_2026_09.md",
-      "read_scope": "TOC and relevant harness/GPU/Kaggle/evidence sections (Amendment 1)",
-      "sha256": "f3afec6536ee91ebfdebf042daf5323ddc8aafc977fe81dac3ab5ce0d6c57307"
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.txt"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.xml"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest-result.json"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.txt"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.xml"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/mac-capture.txt"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/protected-paths.json"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/source-stability.json"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu-result.json"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.txt"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.xml"
+    },
+    {
+      "change": "変更",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_bench_cpu_selftest.json"
+    },
+    {
+      "change": "変更",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_checkpoint_selftest.json"
+    },
+    {
+      "change": "変更",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_design.md"
+    },
+    {
+      "change": "変更",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_report.md"
+    },
+    {
+      "change": "変更",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_validation.json"
+    },
+    {
+      "change": "変更",
+      "path": "infra/local_gpu/README.md"
+    },
+    {
+      "change": "変更",
+      "path": "infra/local_gpu/capture_lock.py"
+    },
+    {
+      "change": "変更",
+      "path": "julia/CFDSDFWaterLily/gen01/Checkpoint.jl"
+    },
+    {
+      "change": "変更",
+      "path": "scripts/checkpoint_selftest.jl"
+    },
+    {
+      "change": "変更",
+      "path": "scripts/local_gpu.py"
+    },
+    {
+      "change": "変更",
+      "path": "scripts/local_gpu_bench.jl"
+    },
+    {
+      "change": "変更",
+      "path": "scripts/local_gpu_bench_windows.ps1"
+    },
+    {
+      "change": "変更",
+      "path": "scripts/local_gpu_gate.py"
+    },
+    {
+      "change": "変更",
+      "path": "scripts/waterlily_local_gpu_job.diff"
+    },
+    {
+      "change": "変更",
+      "path": "scripts/waterlily_local_gpu_job.jl"
+    },
+    {
+      "change": "変更",
+      "path": "src/cfd_harness/backend_profiles.py"
+    },
+    {
+      "change": "復元",
+      "path": "src/cfd_harness/campaign_build.py"
+    },
+    {
+      "change": "復元",
+      "path": "src/cfd_harness/campaign_schema.py"
+    },
+    {
+      "change": "復元",
+      "path": "src/cfd_harness/campaign_verify.py"
+    },
+    {
+      "change": "新規",
+      "path": "tests/test_harness_registered_reverify.py"
+    },
+    {
+      "change": "変更",
+      "path": "tests/test_local_gpu.py"
+    },
+    {
+      "change": "変更",
+      "path": "tests/test_local_gpu_backend.py"
+    },
+    {
+      "change": "変更",
+      "path": "tests/test_local_gpu_gate.py"
     }
   ],
-  "intended_file_sha256": {
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_attempt1_blocked/wp01_local_gpu_01_design.md": "3967f023396112e62d9d775172c288c7be50233bcebbf09b8f7dbbba935d7603",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_attempt1_blocked/wp01_local_gpu_01_report.md": "d9b44cfd25e62b466fed53eaa3cf8e527d721bc158ab75952eefe0bdc96ebff5",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_attempt1_blocked/wp01_local_gpu_01_validation.json": "030336ee3f5d0661c38b7a28e5c2d8cea9d4154e89c740b264198a907235ec5e",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_bench_cpu_selftest.json": "da6fd30999273638322a69347577a03f7e64f21716a1888d06fd72d5ea6673d3",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_checkpoint_selftest.json": "b07dd6c7632addc2ad6aa95c4bca7a731a29b00921de6abb1640058e9f7279a1",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_design.md": "9a79471c65019f4f594d2e6cbf79550b12fd04c7234b7896559de6b48a3f088a",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_report.md": "e5af9c9579db88ad143f585de0c2aa0de7242df6faaba0457c44eb790d860e46",
-    "infra/local_gpu/README.md": "892e5b7275a2dae4eb56038f3823a7a3385862900683dc17aaeac7f44acc56b4",
-    "infra/local_gpu/bind_dataset.sh": "74645cd7b2766d5f24a146fde079a38946c96ccaf763dcfb4917063a7937b843",
-    "infra/local_gpu/capture_lock.py": "e9a24b5389c97acd85e7adb1c5fb528e9a37b8643221b7777dec24af8c8380ed",
-    "julia/CFDSDFWaterLily/gen01/Checkpoint.jl": "f79b8a5ba191f04ad97933c363f2126841604e19196a350d3abc960c340112ff",
-    "julia/CFDSDFWaterLily/gen01/README.md": "8ca6aa8d687ed24b1bd739e234ad2ea396e8ee08ac7b9b6b58b51a1fe645c72e",
-    "scripts/checkpoint_selftest.jl": "7a3110f0ee4aee3f14ba87917dac2a7e824c14c7135ec7b210c463855fe552bc",
-    "scripts/local_gpu.py": "c317af35b5880d6e28b02fbb544a92f88dbb2b8a4a815a95607b8d32698d4bc7",
-    "scripts/local_gpu_bench.jl": "61a2dde1c1c159d8d9d6fcd5821b78d029c45ec024fb7c4aa1a6b2481180b031",
-    "scripts/local_gpu_bench_windows.ps1": "3d71de26e9743f90fc4abe77ff51c5e7b2635d3a12ef697e977a1fe9be7ed9d1",
-    "scripts/local_gpu_gate.py": "073f02278ee2c9afed22a89dfb6e300e9c4794ab1bc2e80449b117d4afe850f7",
-    "scripts/waterlily_local_gpu_job.diff": "e3d3ea1a1ac68d9002942a8228551820827d197d66e6822db8a7263a2e6c35a3",
-    "scripts/waterlily_local_gpu_job.jl": "342a06f41b88c998c1eb6a62459932870f96fbaa57f856fee8366fc10939c3ce",
-    "src/cfd_harness/backend_profiles.py": "87e72a3ebf8393ed2d40e6703f1a706b1581b27cca28aa80e3dcd22d232aecb2",
-    "src/cfd_harness/campaign_build.py": "1f10503d5b5b1141f4e4241bea3e4e2e4277c44a0372de711680de2d7031b9ba",
-    "src/cfd_harness/campaign_schema.py": "09d5f73ac245818b2d796dbd132d2330e40fef146d82d6aa86107f3f129b05ef",
-    "src/cfd_harness/campaign_verify.py": "b64369f6a81b0cbaaff3949e6307650d1d9d6e48ad491542de9f4b1f610bc3cc",
-    "tests/test_local_gpu.py": "00c40243d062ebe9b54a064a903297455fd2db67d7e80bac53db734c2ac76408",
-    "tests/test_local_gpu_backend.py": "c0a26c1616ce9e2f504d70acf67e56220e1a202b473262d9df1fb134b14042c1",
-    "tests/test_local_gpu_gate.py": "443ca698db3f9b3beea5f0f72c5c8c7d9f4741bd678950b0a7424a5fa13b5dde",
-    "tests/test_local_gpu_julia.py": "fb2b88bb2d448a794a9d8d265d87bfb2007799abf69707682a8551be002e63cd"
-  },
-  "mac_capture": {
-    "captured_stdout": {
-      "captured_utc": "2026-11-06T07:21:27.517656+00:00",
-      "environment": {
-        "backend_profile": "local_rtx4070ti",
-        "cuda": {
-          "error": "CUDA probe unavailable"
-        },
-        "cuda_device_order": "PCI_BUS_ID",
-        "cuda_visible_devices": "0",
-        "gpu": {
-          "compute_cap": {
-            "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
-          },
-          "driver_version": {
-            "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
-          },
-          "memory_total": {
-            "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
-          },
-          "name": {
-            "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
-          },
-          "power_limit": {
-            "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
-          },
-          "uuid": {
-            "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
-          }
-        },
-        "host": {
-          "proc_version": {
-            "error": "[Errno 2] No such file or directory: '/proc/version'"
-          },
-          "windows_ver": {
-            "error": "cmd.exe: [Errno 2] No such file or directory: 'cmd.exe'"
-          }
-        },
-        "julia": {
-          "archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
-          "archive_url": "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz",
-          "executable": "/opt/homebrew/Cellar/juliaup/1.22.7/bin/julialauncher",
-          "sha256": "d923e2b0f59c7f51a58eb02eab6d79979f053495599af690e84841c5113422ef",
-          "version": "julia version 1.12.6"
-        },
-        "julia_depot_path": "/Users/sota/.julia",
-        "path_mode": "CAMPAIGN_WORK_ROOT",
-        "project": {
-          "manifest_sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
-          "path": "julia/CFDSDFWaterLilyT4",
-          "project_sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
-        },
-        "python": {
-          "executable": "/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
-          "numpy_version": "2.5.2",
-          "sha256": "31b9c9a8d50289f3a13f014b3efd8ea3534fc3eea7ca7d9809e166139910b805",
-          "version": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]"
-        },
-        "wsl": {
-          "distro": {
-            "error": "[Errno 2] No such file or directory: '/etc/os-release'"
-          },
-          "kernel": "25.3.0",
-          "settings": {
-            "wsl_conf": {
-              "automount.ldconfig": {
-                "error": "[Errno 2] No such file or directory: '/etc/wsl.conf'"
-              },
-              "gpu.appendLibPath": {
-                "error": "[Errno 2] No such file or directory: '/etc/wsl.conf'"
-              }
-            },
-            "wslconfig": {
-              "wsl2.memory": {
-                "error": "cannot locate Windows USERPROFILE through cmd.exe"
-              },
-              "wsl2.processors": {
-                "error": "cannot locate Windows USERPROFILE through cmd.exe"
-              },
-              "wsl2.swap": {
-                "error": "cannot locate Windows USERPROFILE through cmd.exe"
-              }
-            },
-            "wslconfig_path": {
-              "error": "cannot locate Windows USERPROFILE through cmd.exe"
-            }
-          },
-          "version": {
-            "error": "wsl.exe: [Errno 2] No such file or directory: 'wsl.exe'"
-          }
-        }
-      },
-      "errors": [
-        "mandatory gpu.name missing: {'error': \"nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'\"}",
-        "mandatory gpu.driver_version missing: {'error': \"nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'\"}"
-      ],
-      "observations": {
-        "commands": {
-          "nvidia_smi": {
-            "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
-          }
-        },
-        "cuda_versioninfo": {
-          "error": "CUDA probe skipped: nvidia-smi GPU/driver unavailable"
-        }
-      },
-      "schema_version": 1,
-      "status": "ERROR"
-    },
-    "command": [
-      ".venv/bin/python",
-      "infra/local_gpu/capture_lock.py",
-      "--out",
-      "/private/tmp/wp01-validation-attempt3/absent-mac-lock.json"
-    ],
-    "errors": [
-      "mandatory gpu.name missing: {'error': \"nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'\"}",
-      "mandatory gpu.driver_version missing: {'error': \"nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'\"}"
-    ],
-    "json_status": "ERROR",
-    "lock_created": false,
-    "returncode": 2,
-    "stderr": "",
-    "stdout_path": "/private/tmp/wp01-validation-attempt3/mac-capture.json",
-    "stdout_sha256": "1b9566552b0003e4c295148a706ebf3c63c8c96d3c47761fb0b87be3b90ba798",
-    "wall_seconds": 0.5201251660473645
-  },
-  "new_files_whitespace": {
-    "checked_new_files": 25,
-    "problems": [],
-    "unified_diff_context": [
-      {
-        "line": 4,
-        "path": "scripts/waterlily_local_gpu_job.diff",
-        "reason": "required blank context line in exact unified diff"
-      },
-      {
-        "line": 16,
-        "path": "scripts/waterlily_local_gpu_job.diff",
-        "reason": "required blank context line in exact unified diff"
-      },
-      {
-        "line": 20,
-        "path": "scripts/waterlily_local_gpu_job.diff",
-        "reason": "required blank context line in exact unified diff"
-      }
-    ]
-  },
-  "new_pytest": {
-    "captured_stdout": "........................................................................ [ 81%]\n................                                                         [100%]\n88 passed in 28.96s\n",
-    "command": [
-      ".venv/bin/python",
-      "-m",
-      "pytest",
-      "-q",
-      "tests/test_local_gpu.py",
-      "tests/test_local_gpu_backend.py",
-      "tests/test_local_gpu_gate.py",
-      "tests/test_local_gpu_julia.py",
-      "-p",
-      "no:cacheprovider",
-      "--junitxml=/private/tmp/wp01-validation-attempt3/new-pytest.xml"
-    ],
-    "complete": true,
-    "counts": {
-      "errors": 0,
-      "failures": 0,
-      "passed": 88,
-      "skipped": 0,
-      "tests": 88
-    },
-    "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu",
-    "failed_nodes": [],
-    "finished_utc": "2026-11-06T07:24:19.154331+00:00",
-    "junit_path": "/private/tmp/wp01-validation-attempt3/new-pytest.xml",
-    "junit_sha256": "96154e4221d6ffce3f0723d3fe8e346bc85bb794dd39dea3ee56797316095cb8",
-    "log": "/private/tmp/wp01-validation-attempt3/new-pytest.log",
-    "log_sha256": "17d37c75364f2dfb185b77106f5a09d3d76247a991630d82186061fab683c2fd",
-    "pid": 7592,
-    "returncode": 0,
-    "started_utc": "2026-11-06T07:23:49.273835+00:00",
-    "summary": "88 passed in 28.96s",
-    "wall_seconds": 29.885160334059037
-  },
   "not_performed": [
-    "GPU / CUDA workloads",
-    "Kaggle / Colab / cloud / paid API",
-    "real WSL2 lock or LOCAL-GPU-01 gate measurement",
-    "registered evidence or freeze mutation",
-    "protected historical test exceptions",
-    "roadmap / STATE / exploratory_index amendment"
+    "GPU/CUDA workloads",
+    "Kaggle/Colab/cloud/paid API",
+    "real WSL2 lock or environment gate measurement",
+    "registered evidence or roadmap edits",
+    "protected historical test exceptions"
   ],
+  "prior_t4_byte_claim_corrected": true,
   "protected_paths": {
+    "attempt1_records_unchanged": true,
     "base": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
-    "changed": [],
-    "protected_scopes": [
-      "docs/evidence",
-      "docs/harness",
-      "infra/kaggle",
-      "tests",
-      "julia/CFDSDFWaterLily/src",
-      "julia/CFDSDFWaterLily/Project.toml",
-      "julia/CFDSDFWaterLily/Manifest.toml",
-      "julia/CFDSDFWaterLilyT4/Project.toml",
-      "julia/CFDSDFWaterLilyT4/Manifest.toml",
-      "scripts/waterlily_lowdim02_flow32_job.jl",
-      "src/cfd_harness/campaign_runner_template.py",
-      "scripts/grid01_gpu.py"
+    "checks": [
+      {
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "sh",
+          "-n",
+          "infra/local_gpu/bind_dataset.sh"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      }
     ],
-    "sha256": {
-      "docs/harness/harness01_replay_campaign.json": "5b425fc0b9009b7046ea5559c82e7433d2e9cb360bc7b028e7b2d360d6705869",
-      "infra/kaggle/kernel_harness01_replay_a_smoke/kernel-metadata.json": "01cba77341d5d1e868af0b90df862dd52f3587a9c049bb01136058241c29f1e0",
-      "infra/kaggle/kernel_harness01_replay_a_smoke/runner.py": "ff7e482e36beede5f0437f7cdb99bcf792a6630f97a899714e5aabf7437cd44e",
-      "julia/CFDSDFWaterLily/Manifest.toml": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
-      "julia/CFDSDFWaterLily/Project.toml": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
-      "julia/CFDSDFWaterLily/src/CFDSDFWaterLily.jl": "996224432490df72726e208ad36d1a68657b506ba4058d79a0f9eb72154d4e9e",
-      "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
-      "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
-      "scripts/grid01_gpu.py": "bfaed961f3136d14bdeb7e4fccfab807f5fb8c257b45cd3ebb875963104fff38",
-      "scripts/waterlily_lowdim02_flow32_job.jl": "418796ce258e8f9e9945332d18869104a53f74000a96b609d4f4b42c82a21683",
+    "existing_test_changes": [],
+    "harness_tool_sha256": {
+      "scripts/harness.py": "e9d036846ffd33fced8a1507a8fb191e49e0179a517c25a393354c83de4655fa",
+      "src/cfd_harness/campaign_build.py": "7e3ee902bc3ed020edd5e37cbd9060490f9c0f5119e72a60448edbdcf0688a68",
       "src/cfd_harness/campaign_runner_template.py": "d53e2df74af8becc4e512c19e14381c549006a499c38c2cfab2ba89b6ab9ead1",
-      "tests/conftest.py": "58418a11355ab4dce6e11abcedf8bfaf9d7ec029321e2abcb0b6b666bad467eb",
-      "tests/test_harness_replay.py": "d5c2f6300cce6e2712f3d5c30b0fe1790c3269c0826ac50887b99675ae8cdc7d"
+      "src/cfd_harness/campaign_schema.py": "4c3c494ed381930d9d1e51b063efbbdcf1fa4586c1ac7e84d2b999a5c984d1b8",
+      "src/cfd_harness/campaign_verify.py": "8db4714799e258e08ce1a2e8ed9de4b5ff90ba3d9fa56513ec6d6997b0e57a2e"
     },
-    "src_directory_sha256": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85"
+    "protected_scope_changes": [],
+    "registered_prerun_freezes_with_identical_tool_hashes": {
+      "docs/harness/fid01_campaign.prerun_freeze.json": true,
+      "docs/harness/fid01_f48_campaign.prerun_freeze.json": true,
+      "docs/harness/job02_gate_campaign.prerun_freeze.json": true,
+      "docs/harness/screen01_campaign.prerun_freeze.json": true,
+      "docs/harness/screen01_f48_campaign.prerun_freeze.json": true,
+      "docs/harness/screen01_f_campaign.prerun_freeze.json": true,
+      "docs/harness/screen01_g2_campaign.prerun_freeze.json": true,
+      "docs/harness/unc01_u01_campaign.prerun_freeze.json": true,
+      "docs/harness/unc01_u2_campaign.prerun_freeze.json": true
+    },
+    "registered_source_directory_sha256": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "three_tools_diff_stat": ""
   },
   "publication": {
     "alternate_clone_push_attempted": false,
     "auto_merge": false,
-    "commit": false,
-    "draft_pr": false,
-    "git_add_attempted_this_turn": false,
-    "git_commit_attempted_this_turn": false,
-    "integration_branch": "codex/kaggle-batch-migration",
-    "owner": "Claude on host per Amendment 2",
-    "push": false,
-    "staged_paths": []
+    "git_add_attempted": false,
+    "git_commit_attempted": false,
+    "owner": "Claude on host per Amendment 3",
+    "pr": "#88 (already exists; host updates)",
+    "push_attempted": false
   },
-  "removed_untracked_old_path": [
-    "julia/CFDSDFWaterLily/src/Checkpoint.jl"
-  ],
-  "restored_to_head_no_diff": [
-    "julia/CFDSDFWaterLily/src/CFDSDFWaterLily.jl",
-    "tests/test_harness_replay.py"
-  ],
-  "review_fixes": [
-    {
-      "fix": "require paired RUN_IDENTITY_KEYS equality",
-      "issue": "C1 accepted equal samples from different paired runner SHAs",
-      "regression_cases": [
-        "R1b",
-        "R2b"
-      ]
-    },
-    {
-      "fix": "nonzero wrapper returncode and separate runner_returncode",
-      "issue": "bind cleanup error after successful child returned success",
-      "regression_test": "test_run_cleanup_failure_is_not_a_successful_done"
-    }
-  ],
-  "schema_version": 2,
-  "self_hash_excluded": "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_validation.json",
+  "schema_version": 3,
   "source_stability": {
-    "after_path": "/private/tmp/wp01-validation-attempt3/final-source-sha256-after.json",
-    "after_sha256": "7746ad2b55c69d1dceeeb8bf47885e6dcaee3ae01f5bc380ea3a25a8da97b6b6",
-    "before_path": "/private/tmp/wp01-validation-attempt3/final-source-sha256-before.json",
-    "before_sha256": "7746ad2b55c69d1dceeeb8bf47885e6dcaee3ae01f5bc380ea3a25a8da97b6b6",
-    "changed_during_validation": [],
-    "tracked_and_new_source_files": 931
+    "artifact": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/source-stability.json",
+    "changed": [],
+    "source_files": 927,
+    "status": "COMPLETE"
   },
   "standalone_local_gpu_pytest": {
     "command": [
@@ -789,37 +712,36 @@
       "-q",
       "tests/test_local_gpu.py",
       "-p",
-      "no:cacheprovider"
+      "no:cacheprovider",
+      "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.xml"
     ],
-    "log_path": "/private/tmp/wp01-validation-attempt3/standalone-local-gpu.log",
-    "log_sha256": "51fd68fce29a416cb401bd1ac83d176b17147c47c4959a0a1998b4b45fe578e8",
+    "complete": true,
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 25,
+      "skipped": 0,
+      "tests": 25
+    },
+    "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu",
+    "failed_nodes": [],
+    "finished_utc": "2026-11-06T09:00:07.643879+00:00",
+    "junit_path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.xml",
+    "junit_sha256": "05732ebabc4bff4d6ac8b454e76e431bb381f35d8e59e645e69de264c55ccdd5",
+    "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.txt",
+    "log_sha256": "731dbfa1fa267685446c70612091eab35243ac5eeb2d27d867974d5496d05e8a",
     "returncode": 0,
-    "stderr": "",
-    "stdout": "................                                                         [100%]\n16 passed in 1.24s\n",
-    "wall_seconds": 1.4872851250693202
+    "started_utc": "2026-11-06T09:00:04.853511+00:00",
+    "summary": ".........................                                                [100%]\n25 passed in 2.19s",
+    "wall_seconds": 2.7903375839814544
   },
   "status": "DONE",
-  "unverified_on_wsl2": [
-    "startup / JIT / short-kernel launch latency",
-    "NVML query availability and UUID",
-    "Windows Display event4101 visibility",
-    "optional bind permissions / necessity / cleanup",
-    "GPU cross-process checkpoint restart",
-    "native Windows R0 comparison",
-    "six-hour clock / temperature / RAM / VRAM behavior"
-  ],
-  "updated_utc": "2026-11-06T08:15:12.215497+00:00",
-  "user_followup": [
-    "host exact-path commit / push / gh draft PR",
-    "WSL2 preparation and environment lock review / commit",
-    "independent source review and prerecording",
-    "user R0-R6 and one-shot gate"
-  ],
+  "updated_utc": "2026-11-07T09:07:46.506075+00:00",
   "worker_routing": {
     "actual_model": "native inherited workers",
     "attempt_number": 1,
-    "paid_api_or_global_config_changes": false,
-    "reason": "no opencode_go_run tool; opencode models opencode-go failed at default log FileSystem.open",
+    "global_configuration_or_paid_usage_changed": false,
+    "reason": "MCP unavailable; CLI models failed FileSystem.open(default log)",
     "requested_model": "OpenCode Go model discovery / cheap_worker"
   }
 }

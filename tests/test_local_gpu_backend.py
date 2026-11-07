@@ -2,10 +2,12 @@
 import ast
 import io
 import json
+import os
 import shutil
 import subprocess
 import sys
 import tarfile
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -88,13 +90,14 @@ def test_create_local_campaign_is_new_and_removes_t4_reference(tmp_path):
     assert H01.read_bytes() == before
     assert local["backend_profile"] == "local_rtx4070ti" and local["legacy_replay"] is False
     assert "first_state_csv_sha256" not in local["kernels"]["a"]
-    SC.validate_campaign(local)
-    with pytest.raises(ValueError, match="local backend"):
-        B.refuse_legacy(local)
+    BP.validate_local_campaign(local)
+    assert BP.MODULE_REL in local["pins"]
+    with pytest.raises(ValueError, match="campaign keys"):
+        B.load(target, tmp_path)
     with pytest.raises(FileExistsError):
         BP.create_local_campaign(H01, target, repo=tmp_path)
     with pytest.raises(ValueError, match="backend profile"):
-        SC.validate_campaign(dict(local, backend_profile="unknown"))
+        BP.validate_local_campaign(dict(local, backend_profile="unknown"))
 
 
 def test_checkpoint_campaign_explicitly_pins_gen01_module_and_include_closure(tmp_path):
@@ -125,6 +128,7 @@ def local_fake(tmp_path, monkeypatch, *, smi=LOCAL_SMI, probe_uuid=T.UUID):
     """Run the actual locally rendered Python using real saved force files only."""
     campaign = SC.jload(H01)
     campaign["backend_profile"] = "local_rtx4070ti"
+    campaign["pins"] = sorted(set(campaign["pins"]) | {BP.MODULE_REL})
     campaign["kernels"]["a"].pop("first_state_csv_sha256")
     campaign_file = tmp_path / "local_campaign.json"
     campaign_file.write_text(json.dumps(campaign, sort_keys=True, indent=2) + "\n")
@@ -139,7 +143,7 @@ def local_fake(tmp_path, monkeypatch, *, smi=LOCAL_SMI, probe_uuid=T.UUID):
     (root / "docs/harness").mkdir()
     local = root / "docs/harness/local_campaign.json"
     local.write_bytes(campaign_file.read_bytes())
-    text = B.render(local, T.DUMMY, "a", True, root)
+    text = BP.render_runner(local, T.DUMMY, "a", True, root)
     runner = tmp_path / "runner.py"
     runner.write_text(text)
     ns = {"__name__": "local_test_runner", "__file__": str(runner)}
@@ -163,30 +167,61 @@ def local_fake(tmp_path, monkeypatch, *, smi=LOCAL_SMI, probe_uuid=T.UUID):
         summary_path.write_text(json.dumps(summary, sort_keys=True, indent=2) + "\n")
         return 0
 
-    julia = tmp_path / "julia"
-    julia.write_text("#!/bin/sh\nprintf 'julia version 1.12.6\\n'\n")
+    julia_root = tmp_path / "julia-install"
+    (julia_root / "bin").mkdir(parents=True)
+    julia = julia_root / "bin/julia"
+    depot = tmp_path / "dedicated-depot"
+    inventory = []
+    manifest = tomllib.loads((root / "julia/CFDSDFWaterLilyT4/Manifest.toml").read_text())
+    for name, entries in manifest["deps"].items():
+        for entry in entries:
+            if "git-tree-sha1" not in entry:
+                continue
+            package = depot / "packages" / name / "stub"
+            package.mkdir(parents=True)
+            (package / "source.jl").write_text(name + "\n")
+            inventory.append("\t".join((name, entry["uuid"], entry["git-tree-sha1"], str(package))))
+    (julia_root / "packages.tsv").write_text("\n".join(inventory) + "\n")
+    julia.write_text("#!/usr/bin/env python3\nimport sys\nfrom pathlib import Path\n"
+                     "print('julia version 1.12.6') if '--version' in sys.argv else "
+                     "print((Path(__file__).resolve().parents[1]/'packages.tsv').read_text(),end='')\n")
     julia.chmod(0o755)
     monkeypatch.setenv("LOCAL_GPU_JULIA", str(julia))
     monkeypatch.setenv("LOCAL_GPU_JULIA_SHA256", SC.sha256_path(julia))
+    monkeypatch.setenv("LOCAL_GPU_JULIA_ROOT_SHA256", SC.sha256_path(julia_root))
+    monkeypatch.setenv("JULIA_DEPOT_PATH", str(depot))
+    packages = BP.manifest_packages_identity(julia, root / "julia/CFDSDFWaterLilyT4", depot)
+    monkeypatch.setenv("LOCAL_GPU_DEPOT_PACKAGES_SHA256", packages["manifest_packages_sha256"])
     ns.update(OUT=out, nvidia_smi=lambda: smi, fetch_source=lambda _: root, run=fake_run)
     return ns, out, local, root
 
 
 @pytest.mark.parametrize("inventory_uuid", [T.UUID, "[N/A]"])
-def test_local_rendered_smoke_runs_and_existing_verifier_accepts_it(tmp_path, monkeypatch, inventory_uuid):
+def test_local_rendered_smoke_runs_and_wrapped_verifier_accepts_it(tmp_path, monkeypatch, inventory_uuid):
     ns, out, local, root = local_fake(tmp_path, monkeypatch, smi=LOCAL_SMI.replace(T.UUID, inventory_uuid))
     ns["main"]()
     identity = SC.jload(out / SC.IDENTITY_NAME)
     assert identity["backend_profile"] == "local_rtx4070ti" and identity["used_gpu_count"] == 1
+    assert identity["used_gpu_count_evidence"] == "gpu_device_probe.json:logical_device_count"
     assert BP.MODULE_REL in identity["pins"]
-    table = V.verify(local, [out], smoke=True, source_commit=T.DUMMY, repo=root)
+    original = (V.check_kernel, SC.check_summary, SC.expected_summary, SC.GPU_EXPECTED, B.render)
+    table = BP.verify_local(local, [out], smoke=True, source_commit=T.DUMMY, repo=root)
     assert table["integrity"]["pass"] is True and table["backend_profile"] == "local_rtx4070ti"
+    assert table["cuda_uuid"] == T.UUID and table["used_gpu_count"] == 1
+    assert (V.check_kernel, SC.check_summary, SC.expected_summary, SC.GPU_EXPECTED, B.render) == original
+    # A local verification in this process must leave registered verification usable.
+    saved = T.ROOT / "docs/evidence/unc01_2026_10_20/u01/smoke/smoke_verify_table.json"
+    retained = SC.jload(saved)
+    registered = V.verify(T.ROOT / "docs/harness/unc01_u01_campaign.json",
+                          [saved.parent / "unc01_u01_f24"], smoke=True,
+                          source_commit=retained["source_commit"])
+    assert (json.dumps(registered, sort_keys=True, indent=2) + "\n").encode() == saved.read_bytes()
     assert table["harness_tool_sha256"][BP.MODULE_REL] == SC.sha256_path(T.ROOT / BP.MODULE_REL)
     identity["used_gpu_count"] = 2
     (out / SC.IDENTITY_NAME).write_text(json.dumps(identity))
     (out / SC.MANIFEST_NAME).write_text(json.dumps(SC.build_manifest(out)))
     with pytest.raises(ValueError, match="used_gpu_count"):
-        V.verify(local, [out], smoke=True, source_commit=T.DUMMY, repo=root)
+        BP.verify_local(local, [out], smoke=True, source_commit=T.DUMMY, repo=root)
 
 
 def test_render_local_requires_committed_remote_source_and_refuses_overwrite(tmp_path, monkeypatch):
@@ -231,3 +266,89 @@ def test_local_runner_rejects_bad_identity_before_any_job(tmp_path, monkeypatch,
         ns["main"]()
     assert exc.value.code == 1 and (out / SC.ERROR_NAME).is_file() and not (out / SC.DONE_NAME).exists()
     assert not (out / "states").exists()
+
+
+def test_t4_probe_has_no_uuid_fallback_and_keeps_original_error_text():
+    selected = {"index": 0, "name": "Tesla T4", "uuid": ""}
+    probe = dict(SC.GPU_EXPECTED, visible_gpu_uuids=[T.UUID], default_device_uuid=T.UUID)
+    with pytest.raises(ValueError, match="^observed CUDA singleton/default identity differs from the declaration$"):
+        BP.check_probe(BP.DEFAULT, selected, probe)
+    with pytest.raises(ValueError, match="^observed CUDA singleton/default identity differs from the declaration$"):
+        BP.check_probe(BP.DEFAULT, selected, None)
+
+
+def test_current_tree_default_unc01_smoke_render_is_byte_equal():
+    kernel = T.ROOT / "infra/kaggle/kernel_unc01_u01_f24_smoke/runner.py"
+    table = SC.jload(T.ROOT / "docs/evidence/unc01_2026_10_20/u01/smoke/smoke_verify_table.json")
+    assert B.render(T.ROOT / "docs/harness/unc01_u01_campaign.json", table["source_commit"], "f24", True).encode() == kernel.read_bytes()
+
+
+def test_local_renderer_loads_pinned_backend_before_validating_stripped_campaign(tmp_path, monkeypatch):
+    ns, _, _, _ = local_fake(tmp_path, monkeypatch)
+    text = Path(ns["__file__"]).read_text()
+    assert 'source / "src/cfd_harness/backend_profiles.py"' in text
+    assert text.index('bp_spec.loader.exec_module(BP)') < text.index('SC.validate_campaign({key: value')
+    assert 'SC.local_backend' not in text
+
+
+@pytest.mark.parametrize("mutation", ["root", "packages"])
+def test_local_julia_refuses_changed_root_or_package_tree(tmp_path, monkeypatch, mutation):
+    ns, out, _, _ = local_fake(tmp_path, monkeypatch)
+    if mutation == "root":
+        (Path(os.environ["LOCAL_GPU_JULIA"]).parent.parent / "unexpected").write_text("changed")
+    else:
+        next(Path(os.environ["JULIA_DEPOT_PATH"]).rglob("source.jl")).write_text("changed")
+    with pytest.raises(SystemExit):
+        ns["main"]()
+    assert (out / SC.ERROR_NAME).is_file() and not (out / SC.DONE_NAME).exists()
+    assert not (out / "states").exists()
+
+
+@pytest.mark.parametrize("mutation", ["missing", "wrong_tree", "outside", "duplicate"])
+def test_manifest_package_identity_rejects_incomplete_or_foreign_resolution(tmp_path, monkeypatch, mutation):
+    _, _, _, root = local_fake(tmp_path, monkeypatch)
+    julia = Path(os.environ["LOCAL_GPU_JULIA"])
+    rows = (julia.parent.parent / "packages.tsv").read_text().splitlines()
+    if mutation == "missing":
+        rows.pop()
+    elif mutation == "duplicate":
+        rows.append(rows[0])
+    else:
+        fields = rows[0].split("\t")
+        fields[2 if mutation == "wrong_tree" else 3] = "0" * 40 if mutation == "wrong_tree" else str(tmp_path)
+        rows[0] = "\t".join(fields)
+    monkeypatch.setattr(BP.subprocess, "check_output", lambda *args, **kwargs: "\n".join(rows) + "\n")
+    with pytest.raises(ValueError, match="Manifest|depot"):
+        BP.manifest_packages_identity(julia, root / "julia/CFDSDFWaterLilyT4", os.environ["JULIA_DEPOT_PATH"])
+
+
+@pytest.mark.parametrize("channel", ["job_env_common", "job_env_keys", "run_env", "scrub_env"])
+@pytest.mark.parametrize("key", ["JULIA_DEPOT_PATH", "JULIA_LOAD_PATH", "CUDA_VISIBLE_DEVICES", "NVIDIA_VISIBLE_DEVICES",
+                                  "WSLENV", "LOCAL_GPU_JULIA", "LOCAL_GPU_CHECKPOINT_PATH", "LOCAL_GPU_RESUME_PATH"])
+def test_local_campaign_cannot_override_or_scrub_locked_runtime_controls(tmp_path, channel, key):
+    target = BP.create_local_campaign(H01, tmp_path / "local.json", repo=tmp_path)
+    campaign = SC.jload(target)
+    if channel == "run_env":
+        campaign["job_env_keys"].append(key)
+        campaign["kernels"]["a"]["runs"][0]["env"][key] = "/foreign"
+    elif channel in ("job_env_keys", "scrub_env"):
+        campaign[channel].append(key)
+    else:
+        campaign[channel][key] = "/foreign"
+    with pytest.raises(ValueError):
+        BP.validate_local_campaign(campaign)
+
+
+def test_validated_local_campaign_preserves_locked_environment_through_actual_job_env(tmp_path):
+    target = BP.create_local_campaign(H01, tmp_path / "local.json", repo=tmp_path)
+    campaign = SC.jload(target)
+    BP.validate_local_campaign(campaign)
+    base = {"JULIA_DEPOT_PATH": "/locked/depot", "JULIA_LOAD_PATH": "@:@stdlib", "NVIDIA_VISIBLE_DEVICES": "0",
+            "WSLENV": "JULIA_DEPOT_PATH/p", "LOCAL_GPU_JULIA": "/locked/julia/bin/julia",
+            "LOCAL_GPU_CHECKPOINT_PATH": "/locked/checkpoint.bin", "LOCAL_GPU_RESUME_PATH": "/locked/resume.bin",
+            "CUDA_VISIBLE_DEVICES": "0", "CUDA_DEVICE_ORDER": "PCI_BUS_ID", "JULIA_NUM_THREADS": "1"}
+    for kernel in campaign["kernels"].values():
+        for run in kernel["runs"]:
+            actual = SC.job_env(campaign, run, campaign["states"][run["state"]], base, T.UUID)
+            assert all(actual[key] == value for key, value in base.items())
+            assert BP.filtered_environment(actual) == BP.filtered_environment(base)

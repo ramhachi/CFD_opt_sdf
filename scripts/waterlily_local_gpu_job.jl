@@ -166,8 +166,7 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
         step = 1
     else
         checkpoint = load_checkpoint(resume_path)
-        checkpoint.identity == checkpoint_identity || error("checkpoint job/phi/case identity mismatch")
-        restore_checkpoint!(sim, checkpoint)
+        restore_checkpoint!(sim, checkpoint; identity=checkpoint_identity)
         step, history = checkpoint.step, checkpoint.rows
         loaded_sha = bytes2hex(sha256(read(resume_path)))
         write(joinpath(output_dir, "local_gpu_resume.json"),
