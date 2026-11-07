@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import hashlib
 import copy
-import importlib.util
 import json
 import shutil
 import sys
@@ -19,7 +18,7 @@ import collect_rans as C
 
 
 def case_fixture(tmp_path, *, config="E2_sharp", realisation=0, signal=None,
-                 status="COMPLETED", mode="production", n_layers=4):
+                 status="COMPLETED", mode="production", n_layers=4, height_m=.1):
     key = dict(config=config, model="sa-wf", family="fine30", realisation=realisation)
     folder = tmp_path / C.run_id(key)
     folder.mkdir()
@@ -46,6 +45,7 @@ def case_fixture(tmp_path, *, config="E2_sharp", realisation=0, signal=None,
         "schema_version": "topo2d00-case-v1", "id": C.run_id(key), **key,
         "mode": mode, "status": status, "mesh_msh_sha256": C.sha256(mesh),
         "n_layers": n_layers,
+        "height_m": height_m, "h_over_c1": height_m/.2234, "h_over_c": height_m/.380,
         "mesh_file": "mesh.msh", "geometry_sha256": "a" * 64,
         "normalization": C.NORMALIZATION,
         "convergence_policy": C.CONVERGENCE,
@@ -156,6 +156,28 @@ def test_missing_layer_count_on_meshed_case_fails_closed(tmp_path):
     p.write_text(json.dumps(record))
     with pytest.raises(ValueError, match="n_layers"):
         C.collect([p], expected=[key])
+
+
+@pytest.mark.parametrize('status', ['MESH_FAILED', 'RUNNER_EXCEPTION', 'NOT_RUN_TIME_BUDGET'])
+def test_planned_layers_do_not_require_a_measured_stack_before_generation(tmp_path, status):
+    p, key = case_fixture(tmp_path, status=status)
+    record = json.loads(p.read_text())
+    record.pop('n_layers')
+    if status == 'MESH_FAILED':
+        for field in ('mesh_file', 'mesh_msh_sha256'):
+            record.pop(field)
+    p.write_text(json.dumps(record))
+    row = C.collect([p], expected=[{**key, 'n_layers': 4, 'height_m': .1}])['results'][0]
+    assert row['n_layers'] is None and not row['usable']
+    assert row['status'] == status
+
+
+def test_infrastructure_refusal_keeps_precedence_over_leftover_nonfinite_rows(tmp_path):
+    p, key = case_fixture(tmp_path, status='RUNNER_EXCEPTION', signal=lambda t: np.full(t.shape, np.nan))
+    row = C.collect([p], expected=[key])['results'][0]
+    assert row['status'] == 'RUNNER_EXCEPTION'
+    assert row['convergence']['raw_class'] == 'INFRA_LOSS'
+    assert row['coefficients']['total'] is None
 
 
 def test_duplicate_key_and_unknown_run_fail_closed(tmp_path):
@@ -277,7 +299,7 @@ def test_plan_binds_geometry_identity_in_addition_to_run_key(tmp_path):
         C.collect([p], expected=[{**key, "geometry_sha256": "b"*64}])
 
 
-def reference_fixture(tmp_path):
+def reference_fixture(tmp_path, height_m=.1):
     from scripts.topo2d00 import digitize_cp as CP
     folder = tmp_path / "reference"
     folder.mkdir()
@@ -288,9 +310,9 @@ def reference_fixture(tmp_path):
                 points = np.linspace(0, 1, 10 if reader == "a" else 11)
                 (folder / f"{name}_{reader}_{side}.csv").write_text("x/c,Cp\n" + "".join(f"{x:.12g},{value:.12g}\n" for x in points))
     source = {"citation": "synthetic reference", "url": "https://example.invalid/synthetic-reference", "location": "test panels", "observable": "centre_section_pressure_integrated", "transition": "synthetic"}
-    single = {"config": "E1_sharp", "method": "tabulated_cl", "height_m": .1, "height_mapping_note": "synthetic same physical height", "source": source,
+    single = {"config": "E1_sharp", "method": "tabulated_cl", "height_m": height_m, "height_mapping_note": "synthetic same physical height", "source": source,
               "Cl": 1., "coefficient_chord_m": .2234, "coefficient_sign": "downforce=-Fz", "reading_sensitivity_abs": 0., "reading_sensitivity_note": "synthetic exact input"}
-    double = {"config": "E2_sharp", "method": "cp", "height_m": .1, "height_mapping_note": "synthetic same physical height", "source": source,
+    double = {"config": "E2_sharp", "method": "cp", "height_m": height_m, "height_mapping_note": "synthetic same physical height", "source": source,
               "abscissa_direction": "global_streamwise", "independence_note": "two independent synthetic operators",
               "digitizers": [{"id": "a", "operator": "A", "tool": "test"}, {"id": "b", "operator": "B", "tool": "test"}],
               "elements": [{"id": name, "abscissa_chord_m": chord, "x_extent": [0, 1], "coverage_note": "complete synthetic contour",
@@ -337,7 +359,7 @@ def test_wp4_export_uses_pressure_for_tr_and_total_for_thick(tmp_path):
     assert out["provenance"]["component_by_config"]["E1_sharp"] == "pressure_cl"
     assert out["coefficient_reference"]["h_over_c1"] == pytest.approx(.1/.2234)
     assert out["coefficient_reference"]["h_over_c"] == pytest.approx(.1/.380)
-    assert cell["cell_summary"]["E1_sharp"]["status"] == "COMPLETE"
+    assert cell["cell_summary"]["E1_sharp"]["status"] == "SETTLED"
     assert out["provenance"]["reference_estimate"]["references"][0]["uncertainty"]["covers_total_reference"] is False
     assert out["provenance"]["geometry_sha256"] == geometry_identity_fixture()
     records = out["reference"]["source"]["digitization_records"]
@@ -351,16 +373,19 @@ def test_wp4_export_uses_pressure_for_tr_and_total_for_thick(tmp_path):
     assert "freeze_sha256" not in out["provenance"]
     schema = json.loads(C.SHARED_SCHEMA.read_text())
     assert set(schema["required"]) <= set(out)
-    # Exercise the real consumer when WP4 is integrated or its sibling worktree
-    # is available. This is read-only and never evaluates scientific run data.
-    candidates = [ROOT / "scripts/topo2d00/analyze.py", ROOT.parent / "CFD2026_09-wp-04-topo2d-waterlily/scripts/topo2d00/analyze.py"]
-    consumer = next((x for x in candidates if x.is_file()), None)
-    if consumer:
-        spec = importlib.util.spec_from_file_location("wp4_consumer_under_test", consumer)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        module.validate_input({"schema": "topo2d00-input-v1", "identity_valid": True, "cap_hit": False, "controls": {}, "waterlily": [], "rans": out})
-        assert module.tr00(out)["cells"]["sa-wf/fine30"]["label"] == "TR00_PASS_RATIO"
+    # Hermetic interchange check: the committed schema and synthetic fixtures
+    # define this branch's contract. No sibling worktree code is executed.
+    assert schema["properties"]["schema"]["const"] == out["schema"]
+    for cell in out["cells"]:
+        assert set(schema["$defs"]["cell"]["required"]) == set(cell)
+        for rep in cell["realisations"]:
+            for config in C.CONFIGS:
+                assert rep["status"][config] in schema["$defs"]["status"]["enum"]
+                force = rep["forces"][config]
+                if force is not None:
+                    assert set(schema["$defs"]["force"]["required"]) == set(force)
+                    component = "pressure_force" if config.endswith("_sharp") else "total_force"
+                    assert force["observable"] == schema["$defs"][component]["allOf"][1]["properties"]["observable"]["const"]
 
 
 def test_duplicate_meshes_keep_point_estimates_and_block_ratio_intervals(tmp_path):
@@ -395,6 +420,67 @@ def test_thickening_alone_keeps_pressure_and_total_observables_separate(tmp_path
     assert descriptors["pressure_cl"]["point_estimate"]["downforce"] == pytest.approx(.95)
     assert descriptors["total_cl"]["point_estimate"]["downforce"] == pytest.approx(1.)
     assert all(d["from"] == "E1_sharp" and d["paired_realisations"] == 1 and d["ci90"] is None for d in descriptors.values())
+
+
+@pytest.mark.parametrize("unsettled", ["pressure_cl", "total_cl"])
+def test_thickening_alone_requires_both_histories_of_the_requested_observable(tmp_path, unsettled):
+    sharp, a = case_fixture(tmp_path, config="E1_sharp")
+    thick, b = case_fixture(tmp_path, config="E1")
+    measurements = C.collect([sharp, thick], expected=[a, b])
+    # Both rows remain usable for their own selected study observable. Only the
+    # other observable is unsettled; its descriptive contrast must be absent.
+    row = next(r for r in measurements["results"] if r["config"] == ("E1" if unsettled == "pressure_cl" else "E1_sharp"))
+    row["pressure_convergence" if unsettled == "pressure_cl" else "convergence"]["state"] = "not_settled"
+    assert all(r["usable"] for r in measurements["results"])
+    out = C.to_wp4(measurements, reference_fixture(tmp_path), geometry_sha256=geometry_identity_fixture())
+    pairs = {d["observable"]: d for d in out["cells"][0]["thickening_alone"] if d["to"] == "E1"}
+    assert pairs[unsettled]["paired_realisations"] == 0
+    assert pairs[unsettled]["point_estimate"] is None
+    assert pairs["total_cl" if unsettled == "pressure_cl" else "pressure_cl"]["paired_realisations"] == 1
+
+
+@pytest.mark.parametrize("statuses,want", [
+    (["RUNNER_EXCEPTION", "MESH_FAILED", "SOLVER_FAIL"], "INCOMPLETE"),
+    (["MESH_FAILED", "SOLVER_FAIL"], "MESH_FAILED"),
+    (["SOLVER_FAIL"], "NUMERICAL"),
+    ([], "SETTLED"),
+])
+def test_cell_state_order_is_incomplete_mesh_failed_numerical_settled(tmp_path, statuses, want):
+    paths, keys = [], []
+    for i in range(8):
+        p, key = case_fixture(tmp_path, realisation=i, status=statuses[i] if i < len(statuses) else "COMPLETED")
+        paths.append(p)
+        keys.append(key)
+    out = C.to_wp4(C.collect(paths, expected=keys), reference_fixture(tmp_path), geometry_sha256=geometry_identity_fixture())
+    summary = out["cells"][0]["cell_summary"]["E2_sharp"]
+    assert summary["status"] == want
+    assert summary["ratio_test_status"] == ("READY" if want == "SETTLED" else "INCOMPLETE")
+
+
+def test_missing_realisation_takes_precedence_over_mesh_and_solver_results(tmp_path):
+    p, a = case_fixture(tmp_path, realisation=0, status="MESH_FAILED")
+    q, b = case_fixture(tmp_path, realisation=1, status="SOLVER_FAIL")
+    measurements = C.collect([p, q], expected=[a, b, {**a, "realisation": 2}])
+    out = C.to_wp4(measurements, reference_fixture(tmp_path), geometry_sha256=geometry_identity_fixture())
+    assert out["cells"][0]["cell_summary"]["E2_sharp"]["status"] == "INCOMPLETE"
+
+
+def test_export_uses_recorded_height_and_rejects_a_conflicting_declaration(tmp_path):
+    p, key = case_fixture(tmp_path, height_m=.08)
+    measurements = C.collect([p], expected=[{**key, "height_m": .08}])
+    out = C.to_wp4(measurements, reference_fixture(tmp_path, .08), geometry_sha256=geometry_identity_fixture())
+    assert out["coefficient_reference"]["height_mm"] == 80
+    assert out["coefficient_reference"]["h_over_c1"] == pytest.approx(.08/.2234)
+    assert out["coefficient_reference"]["h_over_c"] == pytest.approx(.08/.380)
+    with pytest.raises(ValueError, match="height"):
+        C.collect([p], expected=[{**key, "height_m": .1}])
+
+
+def test_reference_height_must_equal_the_actual_case_height(tmp_path):
+    p, key = case_fixture(tmp_path, height_m=.08)
+    measurements = C.collect([p], expected=[key])
+    with pytest.raises(ValueError, match="height"):
+        C.to_wp4(measurements, reference_fixture(tmp_path), geometry_sha256=geometry_identity_fixture())
 
 
 def test_shared_export_refuses_wrong_observable_and_layer_mismatch(tmp_path):
@@ -481,6 +567,28 @@ def test_formal_export_requires_real_reference_artifacts_and_all_geometry(tmp_pa
         C.to_wp4(measurements, reference, geometry_sha256=geometry)
 
 
+@pytest.mark.parametrize('formatting', ['bom', 'crlf', 'numeric_spelling'])
+def test_export_rechecks_numeric_independence_in_original_csvs(tmp_path, formatting):
+    p, key = case_fixture(tmp_path)
+    reference = reference_fixture(tmp_path)
+    ds = reference['references'][1]['elements'][0]['digitizations']
+    source = tmp_path/'reference'/ds[0]['upper']['path']
+    target = tmp_path/'reference'/ds[1]['upper']['path']
+    text = source.read_text()
+    if formatting == 'bom':
+        payload = b'\xef\xbb\xbf'+text.encode()
+    elif formatting == 'crlf':
+        payload = text.replace('\n', '\r\n').encode()
+    else:
+        payload = (text.splitlines()[0]+'\n'+''.join(f'{float(x):.17e},{float(y):.17e}\n'
+                   for x, y in (line.split(',') for line in text.splitlines()[1:]))).encode()
+    target.write_bytes(payload)
+    ds[1]['upper']['sha256'] = C.sha256(target)
+    assert ds[0]['upper']['sha256'] != ds[1]['upper']['sha256']
+    with pytest.raises(ValueError, match='numeric'):
+        C.to_wp4(C.collect([p], expected=[key]), reference, geometry_sha256=geometry_identity_fixture())
+
+
 def test_curve_artifacts_and_relative_paths_are_resolved_from_cp_manifest(tmp_path, monkeypatch):
     from scripts.topo2d00 import digitize_cp as CP
     reference_fixture(tmp_path)
@@ -550,8 +658,13 @@ def _synthetic_driver(tmp_path, monkeypatch, *, nonfinite=False, proxy_failure=F
     output = tmp_path / "output"
     (output / "work").mkdir(parents=True)
     helper, calls = R.inherited_runner(), []
+    from test_build_tr00_kernels import geometry_files
+    source = tmp_path / 'source'
+    (source/'geometry').mkdir(parents=True)
+    geometry_files(source/'geometry', ('E1_sharp',))
     spec = {**C.expected_runs()[0], "mode": "production", "iters": 5000, "cont_iters": 15000,
-            "case_cap_s": 9000, "geometry_file": "geometry/E1_sharp.json", "geometry_sha256": "a"*64,
+            "height_m": .1,
+            "case_cap_s": 9000, "geometry_file": "geometry/E1_sharp.json", "geometry_sha256": C.sha256(source/'geometry/E1_sharp.json'),
             "elements": [{"name": "main", "patch": "airfoil"}]}
 
     def generate(command, **kwargs):
@@ -561,6 +674,8 @@ def _synthetic_driver(tmp_path, monkeypatch, *, nonfinite=False, proxy_failure=F
         (case / "mesh.msh").write_text("synthetic mesh")
         (case / "case_manifest.json").write_text(json.dumps({
             "geometry_sha256": spec["geometry_sha256"], "n_layers": 4, "convergence": C.CONVERGENCE,
+            "height_m": .1, "h_over_c1": .1/.2234, "h_over_c": .1/.380,
+            "mesh_msh_sha256": C.sha256(case/'mesh.msh'),
             "mesh_quality_failures": ["skew_boundary (UNVERIFIED)"] if proxy_failure else []}))
         return type("Result", (), {"returncode": 1 if generator_failure else 0, "stdout": "generated", "stderr": ""})()
 
@@ -588,7 +703,7 @@ def _synthetic_driver(tmp_path, monkeypatch, *, nonfinite=False, proxy_failure=F
 
     monkeypatch.setattr(R.subprocess, "run", generate)
     monkeypatch.setattr(helper, "timed_run", timed)
-    result = R.run_case(spec, ROOT, output, time.monotonic()+10000, helper)
+    result = R.run_case(spec, source, output, time.monotonic()+10000, helper)
     path = output / "cases" / R._spec_id(spec) / "case_result.json"
     return result, C.collect([path], expected=[spec]), calls
 
@@ -633,5 +748,6 @@ def test_generator_and_mesh_failures_remain_mesh_failed(tmp_path, monkeypatch, f
     assert measurements["results"][0]["status"] == "MESH_FAILED"
     assert measurements["results"][0]["convergence"]["raw_class"] == "MESH_FAILED"
     assert "simpleFoam" not in calls
-    out = C.to_wp4(measurements, reference_fixture(tmp_path), geometry_sha256=geometry_identity_fixture())
+    identities = {**geometry_identity_fixture(), result['config']: result['geometry_sha256']}
+    out = C.to_wp4(measurements, reference_fixture(tmp_path), geometry_sha256=identities)
     assert out["cells"][0]["realisations"][0]["status"]["E1_sharp"] == "MESH_FAILED"

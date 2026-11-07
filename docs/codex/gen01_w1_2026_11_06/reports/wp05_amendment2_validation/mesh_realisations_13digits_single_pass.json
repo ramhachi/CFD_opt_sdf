@@ -1,0 +1,817 @@
+{
+  "config": "E2_sharp",
+  "distinct_mesh_sha_count": 8,
+  "evidence_class": "DEVELOPMENT_SYNTHETIC_MESH_MECHANISM_CHECK",
+  "family": "med30",
+  "fresh_process_repeat_index": 3,
+  "fresh_process_repeat_matches": true,
+  "fresh_process_repeat_mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+  "fresh_process_repeat_serialization": {
+    "coordinate_significant_digits": 13,
+    "max_allowed_node_displacement_m": 1e-12,
+    "max_node_displacement_m": 6.263421762700815e-13,
+    "mesh_msh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+    "policy": "MSH2 node coordinates only; fixed significant decimal digits; connectivity and node order unchanged",
+    "raw_mesh_msh_sha256": "24f1fce5f8e14557b6a81f00886b8645d9e1dd4b1ed1cff5ecbc56256f969407"
+  },
+  "generator_sha256": {
+    "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+    "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+    "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+    "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+  },
+  "geometry_sha256": "ff4956ad81b655127360c65b42ea096482ee76dff300249b3db530e537189180",
+  "gmsh_option_source": "https://gmsh.info/doc/texinfo/gmsh.html#index-Mesh_002eReproducible",
+  "gmsh_options": {
+    "General.NumThreads": 1,
+    "Mesh.Reproducible": 1
+  },
+  "gmsh_version": "4.15.2",
+  "process_scope": "Each of the eight indices and its repeat ran in a fresh process, matching run_rans.py.",
+  "runs": [
+    {
+      "cells_3d": 31792,
+      "fan_elements": [
+        0,
+        0
+      ],
+      "mesh_msh_sha256": "7d736dca2300367c0e38c42bfeeea3014c7c8558db2705180830be5c422551a8",
+      "mesh_realisation": {
+        "determinism_scope": "one mesh per fresh generator process; record same-index repeat for each gmsh/backend environment",
+        "domain_bounds_m": {
+          "ground": 0.0,
+          "inlet": -0.4468,
+          "outlet": 1.117,
+          "top": 1.5191199999999998
+        },
+        "elements": {
+          "flap1": {
+            "cap_start_index": 930,
+            "leading_edge_index": 465,
+            "trailing_edge_index": 0,
+            "vertex_count": 940,
+            "vertex_start_offset": 0
+          },
+          "main": {
+            "cap_start_index": 930,
+            "leading_edge_index": 465,
+            "trailing_edge_index": 0,
+            "vertex_count": 940,
+            "vertex_start_offset": 0
+          }
+        },
+        "far_field_shift_m": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "gmsh_reproducible": 1,
+        "halton_indexing": "zero-based, point 0=(0,0)",
+        "halton_point": [
+          0.0,
+          0.0
+        ],
+        "index": 0,
+        "mechanism": "topo2d00-indexed-mesh-input-v1",
+        "rule_source": "TOPO-2D-00 Amendment 3 \u00a72"
+      },
+      "mesh_serialization": {
+        "coordinate_significant_digits": 13,
+        "max_allowed_node_displacement_m": 1e-12,
+        "max_node_displacement_m": 6.734387012086796e-13,
+        "mesh_msh_sha256": "7d736dca2300367c0e38c42bfeeea3014c7c8558db2705180830be5c422551a8",
+        "policy": "MSH2 node coordinates only; fixed significant decimal digits; connectivity and node order unchanged",
+        "raw_mesh_msh_sha256": "2ae63749a3da6e7cbd1b8e283abe0ec265db621e44bf904047d023703abb7a14"
+      },
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "nonorth_max",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 9.816428536736115,
+        "cells": 31792,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.011035364291058614,
+        "nonorth_gt70_faces": 1,
+        "nonorth_max": 70.90547255516212,
+        "skew_boundary_max": 0.23705340541410494,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.6590660293726807,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04393798258952554,
+        "weight_lt0.05_faces": 1,
+        "weight_min": 0.04208868126890762,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.312723,
+            0.161738
+          ],
+          "det": [
+            0.292686,
+            0.165216
+          ],
+          "nonorth": [
+            0.357047,
+            0.142593
+          ],
+          "vol_ratio": [
+            0.313604,
+            0.161582
+          ],
+          "weight": [
+            0.313604,
+            0.161582
+          ]
+        }
+      },
+      "realisation": 0
+    },
+    {
+      "cells_3d": 31800,
+      "fan_elements": [
+        0,
+        0
+      ],
+      "mesh_msh_sha256": "e4ddf26cde205c5131a2973953892b5a7521996c755415772924aeddcfaacde4",
+      "mesh_realisation": {
+        "determinism_scope": "one mesh per fresh generator process; record same-index repeat for each gmsh/backend environment",
+        "domain_bounds_m": {
+          "ground": 0.0,
+          "inlet": -0.4448,
+          "outlet": 1.119,
+          "top": 1.5204533333333332
+        },
+        "elements": {
+          "flap1": {
+            "cap_start_index": 813,
+            "leading_edge_index": 348,
+            "trailing_edge_index": 823,
+            "vertex_count": 940,
+            "vertex_start_offset": 117
+          },
+          "main": {
+            "cap_start_index": 813,
+            "leading_edge_index": 348,
+            "trailing_edge_index": 823,
+            "vertex_count": 940,
+            "vertex_start_offset": 117
+          }
+        },
+        "far_field_shift_m": {
+          "x": 0.002,
+          "y": 0.0013333333333333333
+        },
+        "gmsh_reproducible": 1,
+        "halton_indexing": "zero-based, point 0=(0,0)",
+        "halton_point": [
+          0.5,
+          0.3333333333333333
+        ],
+        "index": 1,
+        "mechanism": "topo2d00-indexed-mesh-input-v1",
+        "rule_source": "TOPO-2D-00 Amendment 3 \u00a72"
+      },
+      "mesh_serialization": {
+        "coordinate_significant_digits": 13,
+        "max_allowed_node_displacement_m": 1e-12,
+        "max_node_displacement_m": 6.32458695429927e-13,
+        "mesh_msh_sha256": "e4ddf26cde205c5131a2973953892b5a7521996c755415772924aeddcfaacde4",
+        "policy": "MSH2 node coordinates only; fixed significant decimal digits; connectivity and node order unchanged",
+        "raw_mesh_msh_sha256": "9c466203f7cba07c49ca873c01a581504963d99b290cbbbd4eabad20ca97941d"
+      },
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "nonorth_max",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 8.599967467563403,
+        "cells": 31800,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.018168525577785893,
+        "nonorth_gt70_faces": 1,
+        "nonorth_max": 73.03479835558007,
+        "skew_boundary_max": 0.30388702595910644,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.6590660293726807,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.052870285787750944,
+        "weight_lt0.05_faces": 1,
+        "weight_min": 0.04997079714532537,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.224309,
+            0.115878
+          ],
+          "det": [
+            0.113585,
+            0.156873
+          ],
+          "nonorth": [
+            0.357033,
+            0.142566
+          ],
+          "vol_ratio": [
+            0.35584,
+            0.140841
+          ],
+          "weight": [
+            0.35584,
+            0.140841
+          ]
+        }
+      },
+      "realisation": 1
+    },
+    {
+      "cells_3d": 31808,
+      "fan_elements": [
+        0,
+        0
+      ],
+      "mesh_msh_sha256": "c2a0adb35ff47e77b139f937aeb55ce44fea54d6784d32a3a191b58e4891cf3a",
+      "mesh_realisation": {
+        "determinism_scope": "one mesh per fresh generator process; record same-index repeat for each gmsh/backend environment",
+        "domain_bounds_m": {
+          "ground": 0.0,
+          "inlet": -0.4458,
+          "outlet": 1.1179999999999999,
+          "top": 1.5217866666666664
+        },
+        "elements": {
+          "flap1": {
+            "cap_start_index": 696,
+            "leading_edge_index": 231,
+            "trailing_edge_index": 706,
+            "vertex_count": 940,
+            "vertex_start_offset": 234
+          },
+          "main": {
+            "cap_start_index": 696,
+            "leading_edge_index": 231,
+            "trailing_edge_index": 706,
+            "vertex_count": 940,
+            "vertex_start_offset": 234
+          }
+        },
+        "far_field_shift_m": {
+          "x": 0.001,
+          "y": 0.0026666666666666666
+        },
+        "gmsh_reproducible": 1,
+        "halton_indexing": "zero-based, point 0=(0,0)",
+        "halton_point": [
+          0.25,
+          0.6666666666666666
+        ],
+        "index": 2,
+        "mechanism": "topo2d00-indexed-mesh-input-v1",
+        "rule_source": "TOPO-2D-00 Amendment 3 \u00a72"
+      },
+      "mesh_serialization": {
+        "coordinate_significant_digits": 13,
+        "max_allowed_node_displacement_m": 1e-12,
+        "max_node_displacement_m": 6.218540627511582e-13,
+        "mesh_msh_sha256": "c2a0adb35ff47e77b139f937aeb55ce44fea54d6784d32a3a191b58e4891cf3a",
+        "policy": "MSH2 node coordinates only; fixed significant decimal digits; connectivity and node order unchanged",
+        "raw_mesh_msh_sha256": "79de73a9421b5cd1a102961cade5d055033ee6301fa3f6977d9dbbcddcbded7e"
+      },
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 8.58603476522957,
+        "cells": 31808,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.012460559539881427,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.28983702512123,
+        "skew_boundary_max": 0.251512186851795,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.6590660293726807,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.052870285787750944,
+        "weight_lt0.05_faces": 1,
+        "weight_min": 0.04997079714532537,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.224309,
+            0.115878
+          ],
+          "det": [
+            0.354008,
+            0.149925
+          ],
+          "nonorth": [
+            0.357036,
+            0.142572
+          ],
+          "vol_ratio": [
+            0.35584,
+            0.140841
+          ],
+          "weight": [
+            0.35584,
+            0.140841
+          ]
+        }
+      },
+      "realisation": 2
+    },
+    {
+      "cells_3d": 31796,
+      "fan_elements": [
+        0,
+        0
+      ],
+      "mesh_msh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "mesh_realisation": {
+        "determinism_scope": "one mesh per fresh generator process; record same-index repeat for each gmsh/backend environment",
+        "domain_bounds_m": {
+          "ground": 0.0,
+          "inlet": -0.4438,
+          "outlet": 1.1199999999999999,
+          "top": 1.5195644444444443
+        },
+        "elements": {
+          "flap1": {
+            "cap_start_index": 579,
+            "leading_edge_index": 114,
+            "trailing_edge_index": 589,
+            "vertex_count": 940,
+            "vertex_start_offset": 351
+          },
+          "main": {
+            "cap_start_index": 579,
+            "leading_edge_index": 114,
+            "trailing_edge_index": 589,
+            "vertex_count": 940,
+            "vertex_start_offset": 351
+          }
+        },
+        "far_field_shift_m": {
+          "x": 0.003,
+          "y": 0.0004444444444444444
+        },
+        "gmsh_reproducible": 1,
+        "halton_indexing": "zero-based, point 0=(0,0)",
+        "halton_point": [
+          0.75,
+          0.1111111111111111
+        ],
+        "index": 3,
+        "mechanism": "topo2d00-indexed-mesh-input-v1",
+        "rule_source": "TOPO-2D-00 Amendment 3 \u00a72"
+      },
+      "mesh_serialization": {
+        "coordinate_significant_digits": 13,
+        "max_allowed_node_displacement_m": 1e-12,
+        "max_node_displacement_m": 6.263421762700815e-13,
+        "mesh_msh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+        "policy": "MSH2 node coordinates only; fixed significant decimal digits; connectivity and node order unchanged",
+        "raw_mesh_msh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a"
+      },
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 11.352814596742167,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.0109484550304451,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050274732564,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079897993345,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872467071,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251082307261334,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "realisation": 3
+    },
+    {
+      "cells_3d": 31800,
+      "fan_elements": [
+        0,
+        0
+      ],
+      "mesh_msh_sha256": "e9aa31229af702f146ca0a97fba25864ed1d71cbc627ceb8ace753ef112e9078",
+      "mesh_realisation": {
+        "determinism_scope": "one mesh per fresh generator process; record same-index repeat for each gmsh/backend environment",
+        "domain_bounds_m": {
+          "ground": 0.0,
+          "inlet": -0.4463,
+          "outlet": 1.1175,
+          "top": 1.5208977777777777
+        },
+        "elements": {
+          "flap1": {
+            "cap_start_index": 462,
+            "leading_edge_index": 937,
+            "trailing_edge_index": 472,
+            "vertex_count": 940,
+            "vertex_start_offset": 468
+          },
+          "main": {
+            "cap_start_index": 462,
+            "leading_edge_index": 937,
+            "trailing_edge_index": 472,
+            "vertex_count": 940,
+            "vertex_start_offset": 468
+          }
+        },
+        "far_field_shift_m": {
+          "x": 0.0005,
+          "y": 0.0017777777777777776
+        },
+        "gmsh_reproducible": 1,
+        "halton_indexing": "zero-based, point 0=(0,0)",
+        "halton_point": [
+          0.125,
+          0.4444444444444444
+        ],
+        "index": 4,
+        "mechanism": "topo2d00-indexed-mesh-input-v1",
+        "rule_source": "TOPO-2D-00 Amendment 3 \u00a72"
+      },
+      "mesh_serialization": {
+        "coordinate_significant_digits": 13,
+        "max_allowed_node_displacement_m": 1e-12,
+        "max_node_displacement_m": 5.862235354774696e-13,
+        "mesh_msh_sha256": "e9aa31229af702f146ca0a97fba25864ed1d71cbc627ceb8ace753ef112e9078",
+        "policy": "MSH2 node coordinates only; fixed significant decimal digits; connectivity and node order unchanged",
+        "raw_mesh_msh_sha256": "cbf8ebade0177d2c44624988f66edfbb86fc47ffd932cce72b8ea35da3f313fe"
+      },
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 8.580676742864268,
+        "cells": 31800,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.012460559539881427,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.65328493915963,
+        "skew_boundary_max": 0.19756138976718557,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.6590660293726807,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.052870285787750944,
+        "weight_lt0.05_faces": 1,
+        "weight_min": 0.04997079714532537,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.22431,
+            0.115878
+          ],
+          "det": [
+            0.354008,
+            0.149925
+          ],
+          "nonorth": [
+            0.357036,
+            0.142572
+          ],
+          "vol_ratio": [
+            0.35584,
+            0.140841
+          ],
+          "weight": [
+            0.35584,
+            0.140841
+          ]
+        }
+      },
+      "realisation": 4
+    },
+    {
+      "cells_3d": 31738,
+      "fan_elements": [
+        0,
+        0
+      ],
+      "mesh_msh_sha256": "20bbce0cff893827e6dfe719e5df7328d8a8a2586fd7fbd0430b08f825f8f4ee",
+      "mesh_realisation": {
+        "determinism_scope": "one mesh per fresh generator process; record same-index repeat for each gmsh/backend environment",
+        "domain_bounds_m": {
+          "ground": 0.0,
+          "inlet": -0.4443,
+          "outlet": 1.1195,
+          "top": 1.5222311111111109
+        },
+        "elements": {
+          "flap1": {
+            "cap_start_index": 345,
+            "leading_edge_index": 820,
+            "trailing_edge_index": 355,
+            "vertex_count": 940,
+            "vertex_start_offset": 585
+          },
+          "main": {
+            "cap_start_index": 345,
+            "leading_edge_index": 820,
+            "trailing_edge_index": 355,
+            "vertex_count": 940,
+            "vertex_start_offset": 585
+          }
+        },
+        "far_field_shift_m": {
+          "x": 0.0025,
+          "y": 0.003111111111111111
+        },
+        "gmsh_reproducible": 1,
+        "halton_indexing": "zero-based, point 0=(0,0)",
+        "halton_point": [
+          0.625,
+          0.7777777777777777
+        ],
+        "index": 5,
+        "mechanism": "topo2d00-indexed-mesh-input-v1",
+        "rule_source": "TOPO-2D-00 Amendment 3 \u00a72"
+      },
+      "mesh_serialization": {
+        "coordinate_significant_digits": 13,
+        "max_allowed_node_displacement_m": 1e-12,
+        "max_node_displacement_m": 6.401267146608624e-13,
+        "mesh_msh_sha256": "20bbce0cff893827e6dfe719e5df7328d8a8a2586fd7fbd0430b08f825f8f4ee",
+        "policy": "MSH2 node coordinates only; fixed significant decimal digits; connectivity and node order unchanged",
+        "raw_mesh_msh_sha256": "b38a35cb97fe6e34e7d9298cd6d1ee36c415790a169ba53b2b28dbe573daa15e"
+      },
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 11.352814596742167,
+        "cells": 31738,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.011093776568736835,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.60703495702155,
+        "skew_boundary_max": 0.26092619824243385,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.6156866876966827,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.052870285787750944,
+        "weight_lt0.05_faces": 1,
+        "weight_min": 0.04997079714532537,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.183606,
+            0.141906
+          ],
+          "nonorth": [
+            0.183298,
+            0.142059
+          ],
+          "vol_ratio": [
+            0.35584,
+            0.140841
+          ],
+          "weight": [
+            0.35584,
+            0.140841
+          ]
+        }
+      },
+      "realisation": 5
+    },
+    {
+      "cells_3d": 31782,
+      "fan_elements": [
+        0,
+        0
+      ],
+      "mesh_msh_sha256": "283e4507b9a718629a90d3a7a09c370d5392be13cb8af52550b8b041c5d63aa8",
+      "mesh_realisation": {
+        "determinism_scope": "one mesh per fresh generator process; record same-index repeat for each gmsh/backend environment",
+        "domain_bounds_m": {
+          "ground": 0.0,
+          "inlet": -0.4453,
+          "outlet": 1.1185,
+          "top": 1.5200088888888887
+        },
+        "elements": {
+          "flap1": {
+            "cap_start_index": 228,
+            "leading_edge_index": 703,
+            "trailing_edge_index": 238,
+            "vertex_count": 940,
+            "vertex_start_offset": 702
+          },
+          "main": {
+            "cap_start_index": 228,
+            "leading_edge_index": 703,
+            "trailing_edge_index": 238,
+            "vertex_count": 940,
+            "vertex_start_offset": 702
+          }
+        },
+        "far_field_shift_m": {
+          "x": 0.0015,
+          "y": 0.0008888888888888888
+        },
+        "gmsh_reproducible": 1,
+        "halton_indexing": "zero-based, point 0=(0,0)",
+        "halton_point": [
+          0.375,
+          0.2222222222222222
+        ],
+        "index": 6,
+        "mechanism": "topo2d00-indexed-mesh-input-v1",
+        "rule_source": "TOPO-2D-00 Amendment 3 \u00a72"
+      },
+      "mesh_serialization": {
+        "coordinate_significant_digits": 13,
+        "max_allowed_node_displacement_m": 1e-12,
+        "max_node_displacement_m": 6.496456344082442e-13,
+        "mesh_msh_sha256": "283e4507b9a718629a90d3a7a09c370d5392be13cb8af52550b8b041c5d63aa8",
+        "policy": "MSH2 node coordinates only; fixed significant decimal digits; connectivity and node order unchanged",
+        "raw_mesh_msh_sha256": "7aecda74c48d303e07cfc9fc44e22eb3d61123c5f1fa69218e589077e0c08c75"
+      },
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 8.592421247869794,
+        "cells": 31782,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.018168525577785893,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.24660342674693,
+        "skew_boundary_max": 0.23533602757598746,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.6590660293726807,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.052870285787750944,
+        "weight_lt0.05_faces": 1,
+        "weight_min": 0.04997079714532537,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.224309,
+            0.115878
+          ],
+          "det": [
+            0.113585,
+            0.156873
+          ],
+          "nonorth": [
+            0.357035,
+            0.142569
+          ],
+          "vol_ratio": [
+            0.35584,
+            0.140841
+          ],
+          "weight": [
+            0.35584,
+            0.140841
+          ]
+        }
+      },
+      "realisation": 6
+    },
+    {
+      "cells_3d": 31824,
+      "fan_elements": [
+        0,
+        0
+      ],
+      "mesh_msh_sha256": "40d07a2f805dde6122f528e91bad03e99f72c74a7ad8c1696fba065481ec1a02",
+      "mesh_realisation": {
+        "determinism_scope": "one mesh per fresh generator process; record same-index repeat for each gmsh/backend environment",
+        "domain_bounds_m": {
+          "ground": 0.0,
+          "inlet": -0.44329999999999997,
+          "outlet": 1.1205,
+          "top": 1.521342222222222
+        },
+        "elements": {
+          "flap1": {
+            "cap_start_index": 111,
+            "leading_edge_index": 586,
+            "trailing_edge_index": 121,
+            "vertex_count": 940,
+            "vertex_start_offset": 819
+          },
+          "main": {
+            "cap_start_index": 111,
+            "leading_edge_index": 586,
+            "trailing_edge_index": 121,
+            "vertex_count": 940,
+            "vertex_start_offset": 819
+          }
+        },
+        "far_field_shift_m": {
+          "x": 0.0035,
+          "y": 0.0022222222222222222
+        },
+        "gmsh_reproducible": 1,
+        "halton_indexing": "zero-based, point 0=(0,0)",
+        "halton_point": [
+          0.875,
+          0.5555555555555556
+        ],
+        "index": 7,
+        "mechanism": "topo2d00-indexed-mesh-input-v1",
+        "rule_source": "TOPO-2D-00 Amendment 3 \u00a72"
+      },
+      "mesh_serialization": {
+        "coordinate_significant_digits": 13,
+        "max_allowed_node_displacement_m": 1e-12,
+        "max_node_displacement_m": 6.285819224095172e-13,
+        "mesh_msh_sha256": "40d07a2f805dde6122f528e91bad03e99f72c74a7ad8c1696fba065481ec1a02",
+        "policy": "MSH2 node coordinates only; fixed significant decimal digits; connectivity and node order unchanged",
+        "raw_mesh_msh_sha256": "f3005a2ddba7d7bc1c1ee3347c343322ae8b1891b115a02c8f60d7bf970c0e03"
+      },
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 11.352814596742167,
+        "cells": 31824,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.010946737526750155,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70160927407726,
+        "skew_boundary_max": 0.24112734573910846,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5677019992919428,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04440101611365028,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251337756916202,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.26914,
+            0.166681
+          ],
+          "nonorth": [
+            0.268945,
+            0.166715
+          ],
+          "vol_ratio": [
+            0.297722,
+            0.164547
+          ],
+          "weight": [
+            0.297722,
+            0.164547
+          ]
+        }
+      },
+      "realisation": 7
+    }
+  ],
+  "scope": "Synthetic topology/realisation mechanism only; no checkMesh, physical E2 or Kaggle claim.",
+  "serialization_policy": "Fixed 13 significant decimal digits for solver-consumed MSH2 node coordinates only, displacement <=1e-12 m; no retry or quality selection.",
+  "te_kinds": [
+    "blunt",
+    "blunt"
+  ]
+}

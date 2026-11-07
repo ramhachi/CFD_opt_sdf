@@ -90,11 +90,11 @@ def fix_boundary(text: str, patches: list[str]) -> str:
 
 
 def write_case(out: Path, geometry: Path | str | dict, model='sa-wf', family='fine30', realisation=0, iters=5000,
-               boundary_layer_plan=None) -> dict:
-    """Write mesh/dictionaries and manifest. Each call is one fresh realisation."""
+               boundary_layer_plan=None, *, expected_height_m=None) -> dict:
+    """Write a case bound to the indexed mesh input and declared physical h."""
     if type(realisation) is not int or not 0 <= realisation < 8:
         raise ValueError('realisation must be an integer in [0,7]')
-    geom = M.load_geometry(geometry, family)
+    geom = M.load_geometry(geometry, family, expected_height_m=expected_height_m)
     if boundary_layer_plan is None:
         if iters == 5000:
             raise ValueError('production requires a study-wide boundary-layer plan from all six configurations')
@@ -104,6 +104,8 @@ def write_case(out: Path, geometry: Path | str | dict, model='sa-wf', family='fi
     if iters == 5000 and (boundary_layer_plan.get('scope') != 'study' or
                          set(boundary_layer_plan.get('geometry_sha256', {})) != M.STUDY_CONFIGS):
         raise ValueError('production boundary-layer plan must bind all six study configurations')
+    if iters == 5000 and expected_height_m is None:
+        raise ValueError('production requires the declared expected_height_m for this configuration')
     fixed_layers = M.boundary_layer_settings(boundary_layer_plan, geom, family)
     patches = [e['patch'] for e in geom['elements']]
     files = case_files(model, family, patches, iters)
@@ -111,7 +113,7 @@ def write_case(out: Path, geometry: Path | str | dict, model='sa-wf', family='fi
     if out.exists() and any(out.iterdir()):
         raise FileExistsError(f'refusing to overwrite nonempty case {out}')
     out.mkdir(parents=True, exist_ok=True)
-    stats = M.build_mesh(geom, family, out / 'mesh.msh', boundary_layers=boundary_layer_plan)
+    stats = M.build_mesh(geom, family, out / 'mesh.msh', boundary_layers=boundary_layer_plan, realisation=realisation)
     for rel, text in files.items():
         path = out / rel
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -121,9 +123,10 @@ def write_case(out: Path, geometry: Path | str | dict, model='sa-wf', family='fi
            'model': model, 'foam_model': T.MODELS[model]['foam'], 'family': family, 'mesh': family,
            'mesh_spec': T.MESHES[family], 'realisation': realisation,
            'iterations': iters, 'convergence': CONVERGENCE,
-           'h_m': geom['ride_height_m'], 'h_over_c1': geom['ride_height_m'] / T.CHORD,
-           'h_over_c': geom['ride_height_m'] / COMBINED_CHORD_M,
-           'h_m_datum': 'minimum current contour clearance; not a published zero-incidence datum',
+           'height_m': geom['height_m'], 'expected_height_m': expected_height_m,
+           'h_m': geom['height_m'], 'h_over_c1': geom['height_m'] / T.CHORD,
+           'h_over_c': geom['height_m'] / COMBINED_CHORD_M,
+           'h_m_datum': geom['physical_height_datum'],
            'minimum_clearance_m': geom['minimum_clearance_m'], 'main_element_clearance_m': geom['main_element_clearance_m'],
            'nominal_ride_height_m': geom['nominal_ride_height_m'], 'nominal_height_datum': geom['height_datum'],
            'nominal_h_over_c1': None if geom['nominal_ride_height_m'] is None else geom['nominal_ride_height_m'] / T.CHORD,
@@ -150,9 +153,10 @@ def write_case(out: Path, geometry: Path | str | dict, model='sa-wf', family='fi
            'generator_sha256': {p.name: T.sha256(p) for p in (Path(T.__file__), Path(B.__file__), Path(M.__file__), Path(__file__))},
            'mesh_msh_sha256': T.sha256(out / 'mesh.msh'),
            'te_kind_scope': 'Trusted explicit input metadata; not an automatic cusp or physical-geometry qualification.',
-           'geometry_realisation': 'Exact closed input polygon, one gmsh line per segment; no interpolating-curve geometry change.',
+           'geometry_realisation': 'Exact closed input polygon with indexed start-vertex rotation, one gmsh line per segment; no body movement or resampling.',
+           'mesh_realisation': stats['mesh_realisation'],
            'evidence_class': 'DEVELOPMENT_GENERATED_CASE',
-           'realisation_note': 'Fresh gmsh generation; index is a bookkeeping identity, not a seed or guarantee of a distinct mesh.'}
+           'realisation_note': 'TOPO-2D-00 Amendment 3 §2: index fixes polygon ordering and Halton(2,3) far-field shifts; mesh-realisation intervals use these eight inputs. One mesh per fresh generator process; verify same-index determinism on each backend and eight distinct SHAs. The local synthetic test and Kaggle determinism record are separate.'}
     if 'source_scene_metadata' in geom:
         man['source_scene_metadata'] = geom['source_scene_metadata']
     (out / 'case_manifest.json').write_text(json.dumps(man, indent=1, sort_keys=True, allow_nan=False) + '\n')
@@ -168,8 +172,10 @@ def main(argv=None):
     ap.add_argument('--realisation', type=int, default=0)
     ap.add_argument('--iters', type=int, default=5000)
     ap.add_argument('--boundary-layer-plan', type=Path)
+    ap.add_argument('--expected-height-m', type=float, help='declared study height for this configuration; required for production')
     args = ap.parse_args(argv)
-    man = write_case(args.out, args.geometry, args.model, args.family, args.realisation, args.iters, args.boundary_layer_plan)
+    man = write_case(args.out, args.geometry, args.model, args.family, args.realisation, args.iters, args.boundary_layer_plan,
+                     expected_height_m=args.expected_height_m)
     print(json.dumps({'out': str(args.out), 'config': man['config'], 'mesh_msh_sha256': man['mesh_msh_sha256'],
                       'cells': man['mesh_stats']['cells_3d'], 'proxy_failures': man['mesh_quality_failures']}))
 

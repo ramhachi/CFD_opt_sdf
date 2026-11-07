@@ -50,9 +50,9 @@ SOLVER_STATUSES = {"COMPLETED", "SOLVER_DIVERGED", "SOLVER_FAIL", "simpleFoam_FA
 STATUSES = INFRA_STATUSES | MECHANICAL_STATUSES | SOLVER_STATUSES
 # Immutable T2-0b runner.py:371-372 (blown_up), inherited by T2-0c.
 BLOWUP_ABS = 100.0
-# TOPO-2D-00 registration §§2-3: common h=100 mm, c1=223.4 mm,
-# combined experimental chord c=380 mm, Re_c1=4.6e5.
-HEIGHT_M, COMBINED_CHORD_M, REYNOLDS_C1 = .1, .380, 460000
+# TOPO-2D-00 registration §§2-3: combined experimental chord c=380 mm,
+# Re_c1=4.6e5. Physical height comes from the scene-bound case/run plan.
+COMBINED_CHORD_M, REYNOLDS_C1 = .380, T.RE_C
 
 
 @lru_cache(maxsize=None)
@@ -267,8 +267,14 @@ def collect_case(path: Path) -> dict:
     mesh = _digest(r.get("mesh_msh_sha256"), "mesh", nullable=status != "COMPLETED")
     n_layers = r.get("n_layers")
     if ((n_layers is not None and (type(n_layers) is not int or n_layers < 1))
-            or mesh is not None and status not in MECHANICAL_STATUSES and n_layers is None):
+            or mesh is not None and status not in MECHANICAL_STATUSES | INFRA_STATUSES and n_layers is None):
         raise ValueError("meshed run requires a positive integer n_layers")
+    height = _number(r.get("height_m"), "scene height")
+    if height <= 0:
+        raise ValueError("scene height must be positive")
+    for field, chord in (("h_over_c1", T.CHORD), ("h_over_c", COMBINED_CHORD_M)):
+        if field in r and not math.isclose(_number(r[field], field), height/chord, rel_tol=0, abs_tol=1e-10):
+            raise ValueError(f"scene height normalization mismatch: {field}")
     if r.get("mesh_file"):
         if sha256(_input_path(path.parent, r["mesh_file"])) != mesh:
             raise ValueError("mesh SHA mismatch")
@@ -283,6 +289,7 @@ def collect_case(path: Path) -> dict:
         raise ValueError("element count/names/patches differ from configuration")
     base = {**key, "status": "MESH_FAILED" if status in MECHANICAL_STATUSES else status,
             "mesh_msh_sha256": mesh, "geometry_sha256": geometry, "n_layers": n_layers,
+            "height_m": height, "h_over_c1": height/T.CHORD, "h_over_c": height/COMBINED_CHORD_M,
             "observable": "pressure_cl" if key["config"].endswith("_sharp") else "total_cl",
             "coefficients": {"total": None, "elements": [{"name": e["name"], "patch": e["patch"], "Cl": None, "Cd": None} for e in elements]},
             "pressure_coefficients": {"total": None, "elements": [{"name": e["name"], "patch": e["patch"], "Cl": None, "Cd": None} for e in elements]},
@@ -292,6 +299,10 @@ def collect_case(path: Path) -> dict:
             "usable": False, "provenance": {"case_result": str(path), "case_result_sha256": sha256(path),
                                             "coefficient_files": r.get("coefficient_files", {}), "force_files": r.get("force_files", {})}}
     base["pressure_convergence"] = dict(base["convergence"])
+    # Amendment 3 §3: a refusal or session-deadline interruption cannot be
+    # converted to a solver/mesh result by leftover artifacts from that case.
+    if status in {"RUNNER_EXCEPTION", "DEADLINE_LIMITED"}:
+        return base
     cm = r.get("check_mesh", {})
     if status == "COMPLETED" and (not cm.get("mesh_ok") or cm.get("failed_check_counts")):
         base["status"] = "MESH_FAILED"
@@ -399,7 +410,7 @@ def _family_layers(rows: list[dict]) -> dict[str, int]:
     for row in rows:
         count = row.get("n_layers")
         if count is None:
-            if row.get("mesh_msh_sha256") is not None and row.get("status") != "MESH_FAILED":
+            if row.get("mesh_msh_sha256") is not None and row.get("status") not in INFRA_STATUSES | {"MESH_FAILED"}:
                 raise ValueError(f"meshed run requires n_layers for {row['family']}")
             continue  # Generator failure before a mesh was available.
         if type(count) is not int or count < 1:
@@ -431,7 +442,12 @@ def collect(inputs, *, expected=None, stage="tr00") -> dict:
             raise ValueError(f"duplicate run key: {rid}")
         if rid not in allowed:
             raise ValueError(f"unexpected run key: {rid}")
-        for field in ("geometry_sha256", "n_layers"):
+        for field in ("geometry_sha256", "n_layers", "height_m"):
+            if field == 'n_layers' and record.get(field) is None:
+                # A generator failure or early infrastructure refusal has no
+                # measured stack. collect_case still requires it for usable
+                # meshed results; never turn an unattempted mesh into a refusal.
+                continue
             if field in bound[rid] and record.get(field) != bound[rid][field]:
                 raise ValueError(f"run {field} differs from the expected plan: {rid}")
         found.add(rid)
@@ -453,7 +469,21 @@ def _number(value, label, *, nonnegative=False):
     return float(value)
 
 
-def _pressure_reference(reference: dict) -> dict:
+def _physical_height(measurements, plans):
+    """Read scene-bound records/declarations, never infer height from a name."""
+    heights = [row.get("height_m") for row in measurements.get("results", [])]
+    for plan in plans:
+        heights.extend(plan.get("height_m_by_config", {}).values())
+        heights.extend(row["height_m"] for row in plan.get("runs", []) if "height_m" in row)
+    if not heights:
+        raise ValueError("shared output requires a scene height in records or declared run plans")
+    heights = [_number(h, "scene/declared height") for h in heights]
+    if any(h <= 0 or not math.isclose(h, heights[0], rel_tol=0, abs_tol=1e-9) for h in heights):
+        raise ValueError("scene/declared height differs across the study records and plans")
+    return heights[0]
+
+
+def _pressure_reference(reference: dict, *, height_m) -> dict:
     """Map only the canonical digitize_cp output, retaining its uncertainty ceiling."""
     if reference.get("kind") != "topo2d00_pressure_reference_v1" or reference.get("observable") != "pressure_cl":
         raise ValueError("reference must come from digitize_cp.build_reference")
@@ -471,11 +501,11 @@ def _pressure_reference(reference: dict) -> dict:
     chosen = [named[c] for c in ("E1_sharp", "E2_sharp")]
     urls = []
     for ref in chosen:
-        if (_number(ref.get("height_m"), "reference height") != HEIGHT_M
+        if (not math.isclose(_number(ref.get("height_m"), "reference height"), height_m, rel_tol=0, abs_tol=1e-9)
                 or ref.get("observable") != "pressure_cl"
-                or not math.isclose(_number(ref.get("h_over_c1"), "reference h/c1"), HEIGHT_M/T.CHORD, rel_tol=1e-12)
-                or not math.isclose(_number(ref.get("h_over_c"), "reference h/c"), HEIGHT_M/COMBINED_CHORD_M, rel_tol=1e-12)):
-            raise ValueError("TR-00 reference must declare the same physical h=100 mm")
+                or not math.isclose(_number(ref.get("h_over_c1"), "reference h/c1"), height_m/T.CHORD, rel_tol=0, abs_tol=1e-9/T.CHORD)
+                or not math.isclose(_number(ref.get("h_over_c"), "reference h/c"), height_m/COMBINED_CHORD_M, rel_tol=0, abs_tol=1e-9/COMBINED_CHORD_M)):
+            raise ValueError("TR-00 reference must declare the same physical height as the scene/run plan")
         if ref.get("source", {}).get("observable") != "centre_section_pressure_integrated":
             raise ValueError("reference source must be centre-section pressure, not balance CL")
         _number(ref.get("Cl"), "reference Cl")
@@ -533,6 +563,14 @@ def _pressure_reference(reference: dict) -> dict:
     manifest_path = manifest_path.resolve(strict=True)
     if sha256(manifest_path) != manifest_digest:
         raise ValueError("Cp manifest SHA mismatch")
+    # Reuse the reader's normalized-numeric independence guard on actual CSVs,
+    # including Cl(h) curves. A precomputed/edited reference cannot bypass it.
+    try:
+        from .digitize_cp import build_reference
+    except ImportError:  # direct CLI / standalone kernel
+        from digitize_cp import build_reference
+    if build_reference(manifest_path) != reference:
+        raise ValueError("pressure reference differs from its manifest and numeric CSV contents")
     artifacts, seen = [], set()
 
     def add_artifact(artifact, method):
@@ -665,7 +703,8 @@ def to_wp4(measurements: dict, reference_json: dict, *, plans=(), geometry_sha25
     if measurements.get("schema_version") != VERSION or measurements.get("normalization") != NORMALIZATION or measurements.get("force_convention") != FORCE_CONVENTION:
         raise ValueError("unknown RANS measurement normalization/schema")
     _family_layers(measurements.get("results", []))
-    reference = _pressure_reference(reference_json)
+    height = _physical_height(measurements, plans)
+    reference = _pressure_reference(reference_json, height_m=height)
     identity = _export_identity(measurements, plans, geometry_sha256)
     rows, cells = {}, set()
     for row in measurements.get("results", []):
@@ -721,14 +760,16 @@ def to_wp4(measurements: dict, reference_json: dict, *, plans=(), geometry_sha25
             forces = [r["forces"][config] for r in replicates if r["forces"][config] is not None]
             statuses = {r["status"][config] for r in replicates}
             degenerate = len(set(hashes)) < len(hashes)
-            state = ("DEGENERATE_REALISATIONS" if degenerate else "MESH_FAILED" if "MESH_FAILED" in statuses else
-                     "NUMERICAL" if "NUMERICAL" in statuses else "COMPLETE" if statuses == {"SETTLED"} else "INCOMPLETE")
+            # Amendment 3 §3. Degeneracy is an explicit INCOMPLETE subtype;
+            # otherwise use the same severity order as the WP4 consumer.
+            state = ("DEGENERATE_REALISATIONS" if degenerate else next(
+                s for s in ("INCOMPLETE", "MESH_FAILED", "NUMERICAL", "SETTLED") if s in statuses))
             summaries[config] = {"status": state, "observable": component[config], "distinct_meshes": len(set(hashes)),
                                  "measured_realisations": len(forces),
                                  "point_estimate": {name: float(np.mean([f[name] for f in forces])) for name in ("downforce", "drag")} if forces else None,
                                  # WP4 owns confidence intervals. Degenerate cells can
                                  # never yield one, even from identical finite forces.
-                                 "ci90": None, "ratio_test_status": "READY" if state == "COMPLETE" else "INCOMPLETE"}
+                                 "ci90": None, "ratio_test_status": "READY" if state == "SETTLED" else "INCOMPLETE"}
             if degenerate:
                 for rep in replicates:
                     # Compatibility bridge: the old WP4 reader cannot certify a
@@ -741,7 +782,9 @@ def to_wp4(measurements: dict, reference_json: dict, *, plans=(), geometry_sha25
                 for i in range(8):
                     left = rows.get(run_id(dict(config=config+"_sharp", model=model, family=family, realisation=i)))
                     right = rows.get(run_id(dict(config=config, model=model, family=family, realisation=i)))
-                    if left and right and left["usable"] and right["usable"]:
+                    convergence_field = "pressure_convergence" if observable == "pressure_cl" else "convergence"
+                    if (left and right and left["usable"] and right["usable"]
+                            and all(r[convergence_field]["state"] == "settled" for r in (left, right))):
                         a, b = left[field]["total"], right[field]["total"]
                         differences.append({"downforce": _number(b["Cl"], "thickened Cl")-_number(a["Cl"], "original Cl"),
                                             "drag": _number(b["Cd"], "thickened Cd")-_number(a["Cd"], "original Cd")})
@@ -751,8 +794,8 @@ def to_wp4(measurements: dict, reference_json: dict, *, plans=(), geometry_sha25
         mapped.append({"model": model, "family": family, "realisations": replicates,
                        "cell_summary": summaries, "thickening_alone": thickening})
     out = {"schema": "topo2d00-rans-results-v1", "coefficient_reference": {"chord_mm": float(format(T.CHORD*1000, ".10g")), "units": "dimensionless", "downforce": "-Cz", "drag": "+Cx",
-                                                                                  "reynolds_c1": REYNOLDS_C1, "height_mm": HEIGHT_M*1000,
-                                                                                  "h_over_c1": HEIGHT_M/T.CHORD, "h_over_c": HEIGHT_M/COMBINED_CHORD_M},
+                                                                                  "reynolds_c1": REYNOLDS_C1, "height_mm": height*1000,
+                                                                                  "h_over_c1": height/T.CHORD, "h_over_c": height/COMBINED_CHORD_M},
            "reference": reference, "cells": mapped,
            "provenance": {"component_by_config": component, "measurements": measurements, "reference_estimate": reference_json,
                           **identity,

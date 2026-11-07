@@ -38,6 +38,7 @@ SOURCE_FILES = (
     "scripts/analyze_t20b.py", "scripts/analyze_t20c.py", "scripts/build_t20a_kernel.py",
     "scripts/topo2d00/t2d_multibody_case.py", "scripts/topo2d00/t2d_foam_case.py",
     "scripts/topo2d00/collect_rans.py", "scripts/topo2d00/run_rans.py",
+    "scripts/topo2d00/digitize_cp.py",
     "scripts/topo2d00/build_tr00_kernels.py", "docs/topo2d00_registration_2026_11_01.md",
     "infra/kaggle/kernel_t20b_cpu/runner.py",
     "infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/openfoam_package_lock.json",
@@ -156,7 +157,8 @@ if __name__ == "__main__":
 
 
 def render(out: Path, geometries: dict[str, Path], stage="tr00", qualified_cells=None, owner="ramhachi888", *,
-           study_geometries: dict[str, Path] | None = None, freeze: Path | None = None) -> dict:
+           study_geometries: dict[str, Path] | None = None, freeze: Path | None = None,
+           expected_heights_m: dict[str, float] | None = None) -> dict:
     """Bundle inputs locally; freeze1 is a supplied record, never inferred.
 
     Freeze schema: topo2d00-rans-freeze1-v1, stage=freeze1, source_commit=HEAD,
@@ -180,6 +182,12 @@ def render(out: Path, geometries: dict[str, Path], stage="tr00", qualified_cells
         if config in study and study[config].read_bytes() != path.read_bytes():
             raise ValueError(f"run and study geometry inputs differ: {config}")
         study[config] = path
+    declarations = {} if expected_heights_m is None else dict(expected_heights_m)
+    if not set(declarations) <= set(study):
+        raise ValueError('height declarations must refer to supplied study geometries')
+    for config, height in declarations.items():
+        if C._number(height, f'declared height for {config}') <= 0:
+            raise ValueError('declared study height must be positive')
     # Compute ONE family stack over the declared study, including E3_sharp.
     # Missing configurations make a development stack, never a production one.
     boundary_layers = M.boundary_layer_plan(study, require_complete=set(study) == M.STUDY_CONFIGS)
@@ -191,17 +199,19 @@ def render(out: Path, geometries: dict[str, Path], stage="tr00", qualified_cells
                        ("noble", "infra/kaggle/kernel_openfoam_xfid_v16/openfoam_package_lock.json")):
         if hashlib.sha256(files[rel]).hexdigest() != LOCK_SHA256[suite]:
             raise ValueError("OpenFOAM package lock differs from the registered T2-0 lock")
-    geometry_info, verified = {}, {}
+    geometry_info, verified, heights = {}, {}, {}
     for config, path in sorted(study.items()):
         # Loader validates the actual supplied WP4 vertices, never resampling.
-        geometry = M.load_geometry(path)
+        geometry = M.load_geometry(path, expected_height_m=declarations.get(config))
         if geometry["config"] != config:
             raise ValueError(f"geometry config differs: {path}")
         rel = f"geometry/{config}{path.suffix.lower()}"
         data = path.read_bytes()
         files[rel] = data
         geometry_info[config] = {"geometry_file": rel, "geometry_sha256": hashlib.sha256(data).hexdigest(),
+                                 "height_m": geometry['height_m'],
                                  "elements": [{"name": e["name"], "patch": e["patch"]} for e in geometry["elements"]]}
+        heights[config] = geometry['height_m']
         sources = geometry.get("source_scene_metadata", {}).get("sources", [])
         # Explicit future contract; missing/unknown/UNVERIFIED_OCR is blocked.
         verified[config] = isinstance(sources, list) and bool(sources) and all(
@@ -209,6 +219,10 @@ def render(out: Path, geometries: dict[str, Path], stage="tr00", qualified_cells
     for row in plan["runs"]:
         row.update(geometry_info[row["config"]])
         row.update(boundary_layer_plan_file="boundary_layer_plan.json", boundary_layer_plan_sha256=boundary_digest)
+        row['n_layers'] = boundary_layers['families'][row['family']]['n_layers']
+    # Freeze input_sha256 binds explicit study declarations as well as actual
+    # scene heights; a scene name never implies a physical 100-mm height.
+    files['study_heights.json'] = _json({'declared_height_m_by_config': declarations, 'scene_height_m_by_config': heights})
     head = subprocess.check_output(["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip()
     dirty = bool(subprocess.check_output(["git", "-C", str(ROOT), "status", "--porcelain", "--untracked-files=all"], text=True).strip())
     inputs = {p: hashlib.sha256(data).hexdigest() for p, data in sorted(files.items())}
@@ -216,6 +230,7 @@ def render(out: Path, geometries: dict[str, Path], stage="tr00", qualified_cells
     digest = hashlib.sha256(archive).hexdigest()
     plan.update(source_commit=head, source_dirty=dirty, input_sha256=inputs, bundle_sha256=digest,
                 geometry_input_sha256={c: v["geometry_sha256"] for c, v in geometry_info.items()},
+                height_m_by_config=heights, declared_height_m_by_config=declarations,
                 geometry_verified=verified, boundary_layer_plan_sha256=boundary_digest,
                 boundary_layer_plan_scope=boundary_layers["scope"])
     failures = []
@@ -223,6 +238,8 @@ def render(out: Path, geometries: dict[str, Path], stage="tr00", qualified_cells
         failures.append("whole source tree is dirty")
     if boundary_layers["scope"] != "study":
         failures.append("six study geometries have not been supplied")
+    if set(declarations) != M.STUDY_CONFIGS:
+        failures.append('explicit study height declarations for all six configurations have not been supplied')
     if not all(verified.values()):
         failures.append("all geometry source records must be explicitly VERIFIED")
     if stage == "main" and qualified_cells is None:
@@ -281,6 +298,8 @@ def main(argv=None) -> int:
     ap.add_argument("--study-geometry", action="append", default=[], metavar="CONFIG=PATH",
                     help="complete six-config thick/sharp geometry set for one fixed boundary-layer stack")
     ap.add_argument("--freeze", type=Path, help="supplied topo2d00-rans-freeze1-v1 binding; absent/mismatched stays development")
+    ap.add_argument('--height', action='append', default=[], metavar='CONFIG=METRES',
+                    help='explicit study height per supplied configuration; required for all six before ready')
     ap.add_argument("--qualified-cell", action="append", metavar="MODEL/FAMILY")
     ap.add_argument("--owner", default="ramhachi888", help="Kaggle metadata only; no API is called")
     ap.add_argument("--plan-only", action="store_true", help="write run_plan.json without claiming runnable kernels")
@@ -296,7 +315,7 @@ def main(argv=None) -> int:
     if args.out.exists():
         raise FileExistsError(f"refusing to overwrite: {args.out}")
     if args.plan_only:
-        if args.geometry or args.study_geometry or args.freeze:
+        if args.geometry or args.study_geometry or args.freeze or args.height:
             raise ValueError("--plan-only does not consume geometry or freeze records")
         plan = make_plan(args.stage, cells)
         plan["ready_for_execution"] = False
@@ -311,7 +330,14 @@ def main(argv=None) -> int:
                 if not sep or not name or not path or name in target:
                     raise ValueError("geometry must be unique CONFIG=PATH pairs")
                 target[name] = Path(path)
-        plan = render(args.out, geometries, args.stage, cells, args.owner, study_geometries=study_geometries, freeze=args.freeze)
+        heights = {}
+        for declaration in args.height:
+            name, sep, value = declaration.partition('=')
+            if not sep or not name or name in heights:
+                raise ValueError('height must be unique CONFIG=METRES pairs')
+            heights[name] = float(value)
+        plan = render(args.out, geometries, args.stage, cells, args.owner, study_geometries=study_geometries,
+                      freeze=args.freeze, expected_heights_m=heights)
     print(json.dumps({"out": str(args.out), "runs": len(plan["runs"]), "kernels": len(plan["kernels"]), "ready": plan["ready_for_execution"]}))
     return 0
 

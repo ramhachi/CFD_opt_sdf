@@ -64,7 +64,7 @@
     },
     "result": {
       "type": "object", "additionalProperties": false,
-      "required": ["config", "model", "family", "realisation", "status", "mesh_msh_sha256", "geometry_sha256", "n_layers", "observable", "coefficients", "pressure_coefficients", "viscous_coefficients", "convergence", "pressure_convergence", "usable", "provenance"],
+      "required": ["config", "model", "family", "realisation", "status", "mesh_msh_sha256", "geometry_sha256", "n_layers", "height_m", "h_over_c1", "h_over_c", "observable", "coefficients", "pressure_coefficients", "viscous_coefficients", "convergence", "pressure_convergence", "usable", "provenance"],
       "properties": {
         "config": {"enum": ["E1_sharp", "E2_sharp", "E1", "E2", "E3"]},
         "model": {"enum": ["sa-wf", "sst-wf"]}, "family": {"enum": ["fine30", "med30"]},
@@ -72,7 +72,10 @@
         "status": {"type": "string", "minLength": 1},
         "mesh_msh_sha256": {"$ref": "#/$defs/nullable_sha"},
         "geometry_sha256": {"$ref": "#/$defs/sha"},
-        "n_layers": {"type": ["integer", "null"], "minimum": 1, "description": "Registered family-wide boundary-layer count. Null only when no mesh was generated; equality across configurations/models is enforced by the collector."},
+        "n_layers": {"type": ["integer", "null"], "minimum": 1, "description": "Registered family-wide boundary-layer count. Null when no validated stack is available (generation failed, unstarted run, or infrastructure refusal before manifest validation); equality across configurations/models is enforced for known stacks by the collector."},
+        "height_m": {"type": "number", "exclusiveMinimum": 0, "description": "Physical ride height read from the scene and checked against the declared configuration height. Infrastructure refusals retain the declaration, never a fabricated default."},
+        "h_over_c1": {"type": "number", "exclusiveMinimum": 0},
+        "h_over_c": {"type": "number", "exclusiveMinimum": 0},
         "observable": {"enum": ["pressure_cl", "total_cl"], "description": "Selected study observable: pressure_cl on sharp arms for Cp comparison; total_cl on thickened arms for WaterLily. coefficients always retains total pressure+viscous, pressure_coefficients retains pressure only."},
         "coefficients": {
           "type": "object", "additionalProperties": false, "required": ["total", "elements"],

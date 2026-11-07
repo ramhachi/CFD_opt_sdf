@@ -2,7 +2,9 @@
 """Multi-body gmsh assembly using the immutable T2-0 mesh/statistics helpers.
 
 Inputs are metre-valued closed contours; no published geometry is reconstructed.
-The mesh SHA identifies each realisation: gmsh is not run-to-run reproducible.
+The registered realisation index deterministically changes line ordering and
+the far-field box. Its mesh SHA remains the artifact; Kaggle determinism is
+recorded separately for one index (TOPO-2D-00 Amendment 3 §2).
 """
 from __future__ import annotations
 
@@ -23,15 +25,29 @@ FAMILIES = ('fine30', 'med30')
 STUDY_CONFIGS = {f'E{i}{suffix}' for i in (1, 2, 3) for suffix in ('', '_sharp')}
 # TOPO-2D-00 Amendment 1 §1; density is validated, never repaired in WP5.
 MAX_TURN_DEG = 5.0
+# TOPO-2D-00 Amendment 3 §1: fixed fine30-based floor, also for med30/caps.
+MIN_SEGMENT_M = .05 * T.MESHES['fine30']['ds']
+MAX_ADJACENT_RATIO = 3.0
 
 
 def _density(p, kind, cap_start, family, name):
     edges = np.diff(p, axis=0)
     lengths = np.linalg.norm(edges, axis=1)
     ds = T.MESHES[family]['ds']
+    # Amendment 3 §1 replaces the old <=1 mm wording with four joint guards.
+    # Its 1 mm maximum also satisfies the family's coarser wall-spacing bound.
+    max_segment = min(T.PT_SPACING, ds)
     j = int(np.argmax(lengths))
-    if lengths[j] > ds + 1e-12:
-        raise ValueError(f'{name}: segment {j} length {lengths[j]:.9g} m exceeds {family} ds={ds:g} m (including cap segments)')
+    if lengths[j] > max_segment + 1e-12:
+        raise ValueError(f'{name}: segment {j} length {lengths[j]:.9g} m exceeds registered maximum {max_segment:g} m ({family} ds={ds:g} m; including cap segments)')
+    j = int(np.argmin(lengths))
+    if lengths[j] < MIN_SEGMENT_M - 1e-12:
+        raise ValueError(f'{name}: segment {j} length {lengths[j]:.9g} m is below minimum {MIN_SEGMENT_M:g} m (including cap segments)')
+    previous_lengths = np.roll(lengths, 1)
+    ratios = np.maximum(lengths / previous_lengths, previous_lengths / lengths)
+    j = int(np.argmax(ratios))
+    if ratios[j] > MAX_ADJACENT_RATIO + 1e-10:
+        raise ValueError(f'{name}: adjacent segments {(j - 1) % len(lengths)}/{j} length ratio {ratios[j]:.9g} exceeds {MAX_ADJACENT_RATIO:g} (including cap segments)')
     previous = np.roll(edges, 1, axis=0)
     turns = np.degrees(np.arccos(np.clip((previous * edges).sum(1) /
                        (np.roll(lengths, 1) * lengths), -1, 1)))
@@ -42,8 +58,11 @@ def _density(p, kind, cap_start, family, name):
     j = int(np.argmax(turns))
     if turns[j] > MAX_TURN_DEG + 1e-10:
         raise ValueError(f'{name}: non-cap vertex {j} turn {turns[j]:.9g} deg exceeds {MAX_TURN_DEG:g} deg; require WP4 smooth resampling')
-    return {'family': family, 'max_segment_m': float(lengths.max()),
-            'max_noncap_turn_deg': float(turns.max()), 'limit_turn_deg': MAX_TURN_DEG, 'limit_segment_m': ds}
+    return {'family': family, 'max_segment_m': float(lengths.max()), 'min_segment_m': float(lengths.min()),
+            'max_adjacent_segment_ratio': float(ratios.max()), 'limit_adjacent_segment_ratio': MAX_ADJACENT_RATIO,
+            'limit_min_segment_m': MIN_SEGMENT_M,
+            'max_noncap_turn_deg': float(turns.max()), 'limit_turn_deg': MAX_TURN_DEG,
+            'limit_segment_m': max_segment, 'family_wall_spacing_m': ds}
 
 
 def _cap(p, start):
@@ -137,7 +156,7 @@ def _wp4_scene(scene: dict) -> tuple[dict, dict]:
             'height_datum': 'WP4 height_mm: main-element minimum of exported current contour above ground'}, metadata
 
 
-def load_geometry(source: Path | str | dict, family='fine30') -> dict:
+def load_geometry(source: Path | str | dict, family='fine30', *, expected_height_m=None) -> dict:
     """Read strict JSON or NPZ(metadata_json + points_key arrays), validate, hash.
 
     JSON keys: config, elements[{name, points_m, te_kind:sharp|blunt}].
@@ -236,8 +255,23 @@ def load_geometry(source: Path | str | dict, family='fine30') -> dict:
     h = min(np.asarray(e['points_m'])[:, 1].min() for e in out)
     if 'ride_height_m' in spec and not math.isclose(float(spec['ride_height_m']), h, abs_tol=1e-9, rel_tol=0):
         raise ValueError('ride_height_m differs from geometry minimum')
+    main_clearance = float(np.asarray(out[0]['points_m'])[:, 1].min())
+    # TOPO-2D-00 Amendments 2 §5 / 3 §4: physical h is the scene's declared
+    # main-element clearance, never the minimum over all elements or a constant.
+    height = float(nominal) if source_metadata is not None else main_clearance
+    height_datum = datum if source_metadata is not None else 'main-element minimum of exported current contour above ground'
+    if 'height_m' in spec and not math.isclose(float(spec['height_m']), height, abs_tol=1e-9, rel_tol=0):
+        raise ValueError('geometry height_m differs from main-element contour clearance')
+    if expected_height_m is not None:
+        if (isinstance(expected_height_m, bool) or not isinstance(expected_height_m, (int, float)) or
+                not math.isfinite(expected_height_m) or expected_height_m <= 0):
+            raise ValueError('declared expected_height_m must be positive finite metres')
+        if not math.isclose(height, expected_height_m, abs_tol=1e-9, rel_tol=0):
+            raise ValueError(f'geometry height {height:g} m differs from declared study height {expected_height_m:g} m')
     return {'config': spec['config'], 'main_chord_m': T.CHORD, 'ride_height_m': float(h),
-            'minimum_clearance_m': float(h), 'main_element_clearance_m': float(np.asarray(out[0]['points_m'])[:, 1].min()),
+            'height_m': height, 'physical_height_datum': height_datum,
+            'expected_height_m': expected_height_m,
+            'minimum_clearance_m': float(h), 'main_element_clearance_m': main_clearance,
             'nominal_ride_height_m': None if nominal is None else float(nominal), 'height_datum': datum, 'elements': out,
             'geometry_file': label, 'geometry_sha256': hashlib.sha256(raw).hexdigest(),
             **({'source_scene_metadata': source_metadata} if source_metadata is not None else {})}
@@ -265,7 +299,7 @@ def boundary_layer_plan(geometries: dict, require_complete=True) -> dict:
     for family in FAMILIES:
         mesh = T.MESHES[family]
         nspec, nlayer, bl = T.layers(mesh['ds'], mesh['y1'], mesh['g'], gap)
-        # t20_case.layers caps EACH wall stack at 0.4*gap (lines 92–99).
+        # t20_case.layers caps EACH wall stack at 0.4*gap (lines 82–90).
         if not math.isfinite(gap) or bl > .4 * gap:
             raise ValueError(f'{family}: study minimum gap too small for unchanged T2-0 boundary layers')
         families[family] = {'mesh_spec': mesh, 'n_layers_spec': nspec, 'n_layers': nlayer, 'bl_thickness_m': bl}
@@ -295,14 +329,54 @@ def boundary_layer_settings(plan, geometry, family):
             not math.isclose(settings.get('bl_thickness_m', 0), thickness, abs_tol=1e-12, rel_tol=0) or
             thickness > .4 * gap or minimum_gap(geometry) < gap - 1e-12):
         raise ValueError('boundary-layer plan gap/thickness mismatch')
+    expected_spec, expected_n, _ = T.layers(mesh['ds'], mesh['y1'], mesh['g'], gap)
+    if settings['n_layers_spec'] != expected_spec or n != expected_n:
+        raise ValueError('boundary-layer plan layer count differs from unchanged T2-0 layers rule')
     return settings
 
 
-def build_mesh(geometry: dict, family: str, out_msh: Path, verbose=False, boundary_layers=None) -> dict:
+def realisation_parameters(geometry, family, realisation):
+    """Exact input perturbation, TOPO-2D-00 Amendment 3 §2; no body moves.
+
+    Halton indexing is zero-based: point 0 is (0,0), point 1 is (1/2,1/3).
+    Ground remains y=0; only its inlet/outlet endpoints follow the shifted box.
+    """
+    if family not in FAMILIES or type(realisation) is not int or not 0 <= realisation < 8:
+        raise ValueError('realisation requires a known family and integer index in [0,7]')
+
+    def radical_inverse(k, base):
+        result, weight = 0., 1.
+        while k:
+            k, digit = divmod(k, base)
+            weight /= base
+            result += digit * weight
+        return result
+
+    point = [radical_inverse(realisation, base) for base in (2, 3)]
+    dx, dy = (p * T.MESHES[family]['ds'] for p in point)
+    features = {}
+    for e in geometry['elements']:
+        n = len(e['points_m']) - 1
+        offset = realisation * (n // 8)
+        features[e['name']] = {'vertex_count': n, 'vertex_start_offset': offset,
+                               'trailing_edge_index': (-offset) % n,
+                               'leading_edge_index': (e['leading_edge_index'] - offset) % n,
+                               'cap_start_index': None if e['cap_start_index'] is None else (e['cap_start_index'] - offset) % n}
+    return {'mechanism': 'topo2d00-indexed-mesh-input-v1', 'index': realisation,
+            'determinism_scope': 'one mesh per fresh generator process; record same-index repeat for each gmsh/backend environment',
+            'halton_point': point, 'halton_indexing': 'zero-based, point 0=(0,0)',
+            'far_field_shift_m': {'x': dx, 'y': dy}, 'elements': features,
+            'domain_bounds_m': {'inlet': -T.UP*T.CHORD + dx, 'outlet': T.DOWN*T.CHORD + dx,
+                                'top': T.TOP*T.CHORD + dy, 'ground': 0.},
+            'rule_source': 'TOPO-2D-00 Amendment 3 §2'}
+
+
+def build_mesh(geometry: dict, family: str, out_msh: Path, verbose=False, boundary_layers=None, *, realisation=0) -> dict:
     """Assemble all holes in one 2D mesh, then extrude one cell using T2-0 helpers.
 
     Geometry is a validated load_geometry return value. Quality is recorded, never
-    repaired by retrying until a favorable gmsh draw appears.
+    repaired by retrying until favorable quality appears. Each index fixes the
+    ordering/box perturbation; it does not rely on gmsh run-to-run randomness.
     """
     if family not in FAMILIES:
         raise ValueError(f'family must be one of {FAMILIES}')
@@ -311,6 +385,10 @@ def build_mesh(geometry: dict, family: str, out_msh: Path, verbose=False, bounda
     polygons = [np.asarray(e['points_m']) for e in geometry['elements']]
     for e, q in zip(geometry['elements'], polygons):
         _density(q, e['te_kind'], e['cap_start_index'], family, e['name'])
+    perturbation = realisation_parameters(geometry, family, realisation)
+    polygons = [np.roll(q[:-1], -perturbation['elements'][e['name']]['vertex_start_offset'], axis=0)
+                for e, q in zip(geometry['elements'], polygons)]
+    polygons = [np.vstack((q, q[0])) for q in polygons]
     gap = minimum_gap(geometry)
     ds, y1, g = (mesh[k] for k in ('ds', 'y1', 'g'))
     if boundary_layers is None:
@@ -327,17 +405,18 @@ def build_mesh(geometry: dict, family: str, out_msh: Path, verbose=False, bounda
         m, geo, f = gmsh.model, gmsh.model.geo, gmsh.model.mesh.field
         m.add('topo2d00')
         loops, body_curves, fans, wakes, wall_points = [], [], [], [], []
+        xl, xr, top = (perturbation['domain_bounds_m'][key] for key in ('inlet', 'outlet', 'top'))
         for e, q in zip(geometry['elements'], polygons):
             pts = [geo.addPoint(float(x), float(y), 0) for x, y in q[:-1]]
             wall_points.extend(pts)
             # Each WP4 contour is a polygon; lines preserve the exact same body.
             curves = [geo.addLine(a, b) for a, b in zip(pts, pts[1:] + pts[:1])]
+            te_index = perturbation['elements'][e['name']]['trailing_edge_index']
             if e['te_kind'] == 'sharp':
-                fans.append(pts[0])
+                fans.append(pts[te_index])
             body_curves.append(curves)
             loops.append(geo.addCurveLoop(curves))
-            wakes.append(geo.addLine(pts[0], geo.addPoint(T.DOWN * T.CHORD, float(q[0, 1]), 0)))
-        xl, xr, top = -T.UP * T.CHORD, T.DOWN * T.CHORD, T.TOP * T.CHORD
+            wakes.append(geo.addLine(pts[te_index], geo.addPoint(xr, float(q[te_index, 1]), 0)))
         d0 = min(ds, T.END_AR * y1)
         nend = math.ceil(math.log(ds / d0) / math.log(T.END_R)) + 1 if d0 < ds else 0
         end_width = d0 * (T.END_R ** nend - 1) / (T.END_R - 1) if nend else 0
@@ -397,14 +476,16 @@ def build_mesh(geometry: dict, family: str, out_msh: Path, verbose=False, bounda
         fields.append(threshold)
         for q, e in zip(polygons, geometry['elements']):
             ball = f.add('Ball')
-            le = q[e['leading_edge_index']]
+            indices = perturbation['elements'][e['name']]
+            le = q[indices['leading_edge_index']]
             # t20_case.build_mesh line 188: ball(LE, .012, ds/3); its helper
             # uses Thickness=2.5*radius=.03 (lines 175–180).
             for key, value in {'Radius': .012, 'Thickness': .03, 'VIn': ds / 3, 'VOut': T.SIZE_FAR,
                                'XCenter': le[0], 'YCenter': le[1]}.items():
                 f.setNumber(ball, key, value)
             fields.append(ball)
-            for x, y in ([q[0]] if e['te_kind'] == 'sharp' else [q[0], q[e['cap_start_index']]]):
+            te = q[indices['trailing_edge_index']]
+            for x, y in ([te] if e['te_kind'] == 'sharp' else [te, q[indices['cap_start_index']]]):
                 ste = min(ds / 2, mesh['te'] * y1)
                 fields.append(expression(f'{ste}+{T.TE_GROW}*Sqrt((x-({x:.12g}))^2+(y-({y:.12g}))^2)'))
         if nend:
@@ -434,6 +515,7 @@ def build_mesh(geometry: dict, family: str, out_msh: Path, verbose=False, bounda
     finally:
         gmsh.finalize()
     stats.update(ride_height_m=geometry['ride_height_m'], x_lowest_m=float(lowest[ilow, 0]),
+                 height_m=geometry['height_m'], mesh_realisation=perturbation,
                  minimum_gap_m=gap, n_layers_spec=nspec, n_layers=nlayer, bl_thickness_m=bl,
                  boundary_layer_plan_sha256=plan_sha256(boundary_layers),
                  boundary_layer_plan_scope=boundary_layers['scope'],

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import platform
 import shutil
@@ -22,6 +23,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import collect_rans as C
+import t2d_multibody_case as M
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -81,6 +83,23 @@ def _archive_files(case: Path, keep: Path, object_name: str, filename: str) -> l
     return entries
 
 
+def _record_stage(rec: dict, result: dict, deadline: float, deadline_limited: bool) -> None:
+    """Only a completed meshing result can reject a mesh (Amendment 3 §3)."""
+    rec["stages"].append(result)
+    if not (result["returncode"] or result["timed_out"]):
+        return
+    stage = result["stage"]
+    rec["failure_stage"] = stage
+    if result["timed_out"] and (deadline_limited or time.monotonic() >= deadline):
+        rec["status"], rec["error"] = "RUNNER_EXCEPTION", f"session deadline interrupted {stage}"
+    elif result["timed_out"] and not stage.startswith("simpleFoam"):
+        rec["status"], rec["error"] = "RUNNER_EXCEPTION", f"{stage} exceeded its infrastructure time budget without a completed mesh result"
+    elif stage.startswith("simpleFoam"):
+        rec["status"] = f"{stage}_{'TIMEOUT' if result['timed_out'] else 'FAILED'}"
+    else:
+        rec["status"] = "MESH_FAILED"
+
+
 def run_case(spec: dict, source: Path, output: Path, deadline: float, helper=None) -> dict:
     """One isolated generation/mesh/solve path; bounded by session deadline."""
     helper = helper or inherited_runner(source)
@@ -93,58 +112,100 @@ def run_case(spec: dict, source: Path, output: Path, deadline: float, helper=Non
            "iterations_requested": spec["iters"], "status": "COMPLETED", "stages": [], "geometry_sha256": spec["geometry_sha256"],
            "normalization": C.NORMALIZATION, "force_convention": C.FORCE_CONVENTION, "elements": spec["elements"]}
     started = time.monotonic()
-    if deadline - started < 900:
-        rec["status"] = "NOT_RUN_TIME_BUDGET"
-        _atomic(keep / "case_result.json", rec)
-        return rec
     cmd = [sys.executable, str(source / "scripts/topo2d00/t2d_foam_case.py"), "--geometry", str(source / spec["geometry_file"]),
            "--out", str(case), "--model", spec["model"], "--family", spec["family"], "--realisation", str(spec["realisation"]), "--iters", str(spec["iters"])]
-    phase = "generator"
+    phase = "integrity"
     try:
+        # Retain the declared height even if input integrity prevents reading
+        # the scene. Such records remain infrastructure losses, never usable.
+        if spec.get("height_m") is not None:
+            rec["height_m"] = C._number(spec["height_m"], "declared height")
+            if rec["height_m"] <= 0:
+                raise ValueError("declared height must be positive")
+            rec["h_over_c1"] = rec["height_m"] / C.T.CHORD
+            rec["h_over_c"] = rec["height_m"] / C.COMBINED_CHORD_M
+        if spec["mode"] == "production" and spec.get("height_m") is None:
+            raise ValueError("production requires an explicit declared height_m")
+        if deadline - started < 900:
+            rec["status"] = "NOT_RUN_TIME_BUDGET"
+            return rec
+        geometry_path = source / spec["geometry_file"]
+        if C.sha256(geometry_path) != C._digest(spec["geometry_sha256"], "geometry"):
+            raise ValueError("geometry source SHA differs from bundled input")
+        geometry = M.load_geometry(geometry_path, spec["family"], expected_height_m=spec.get("height_m"))
+        if geometry["config"] != spec["config"]:
+            raise ValueError("geometry configuration differs from run plan")
+        rec["height_m"] = geometry["height_m"]
+        rec["h_over_c1"] = rec["height_m"] / C.T.CHORD
+        rec["h_over_c"] = rec["height_m"] / C.COMBINED_CHORD_M
+        if spec.get("height_m") is not None:
+            cmd += ["--expected-height-m", str(spec["height_m"])]
+        expected_layers = spec.get("n_layers")
+        boundary_plan = None
         if spec.get("boundary_layer_plan_file"):
             plan_path = source / spec["boundary_layer_plan_file"]
             if C.sha256(plan_path) != C._digest(spec.get("boundary_layer_plan_sha256"), "boundary-layer plan"):
                 raise ValueError("boundary-layer plan SHA differs from bundled input")
+            boundary_plan = json.loads(plan_path.read_text())
+            fixed = M.boundary_layer_settings(boundary_plan, geometry, spec["family"])
+            if expected_layers is not None and expected_layers != fixed["n_layers"]:
+                raise ValueError("run-plan n_layers differs from boundary-layer plan")
+            expected_layers = fixed["n_layers"]
             cmd += ["--boundary-layer-plan", str(plan_path)]
-        generated = subprocess.run(cmd, capture_output=True, text=True, timeout=min(900, deadline - time.monotonic()),
+        phase = "generator"
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise TimeoutError("session deadline before generator")
+        generated = subprocess.run(cmd, capture_output=True, text=True, timeout=min(900, remaining),
                                    env={**os.environ, "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1"})
         (keep / "log.generator").write_text(generated.stdout + generated.stderr)
         rec["generator_wall_s"] = time.monotonic() - started
         if generated.returncode:
             rec["status"], rec["failure_stage"] = "MESH_FAILED", "generator"
         if rec["status"] == "COMPLETED":
+            phase = "manifest integrity"
             manifest = json.loads((case / "case_manifest.json").read_text())
             if manifest.get("geometry_sha256") != spec["geometry_sha256"]:
                 raise ValueError("generated geometry SHA differs from bundled input")
             rec["mesh_msh_sha256"] = C.sha256(case / "mesh.msh")
+            if manifest.get("mesh_msh_sha256") != rec["mesh_msh_sha256"]:
+                raise ValueError("generated mesh SHA differs from manifest")
             rec["mesh_proxy_failures"] = manifest["mesh_quality_failures"]
             # T2-0 mesh_quality proxies (including UNVERIFIED boundary skew)
             # are informational. checkMesh below decides mesh acceptance.
             rec["n_layers"] = manifest["n_layers"]
             if type(rec["n_layers"]) is not int or rec["n_layers"] < 1:
                 raise ValueError("manifest n_layers must be a positive integer")
+            if expected_layers is not None and rec["n_layers"] != expected_layers:
+                raise ValueError("manifest n_layers differs from boundary-layer/run plan")
+            if boundary_plan is not None and manifest.get("boundary_layer_plan_sha256") != M.plan_sha256(boundary_plan):
+                raise ValueError("manifest boundary-layer plan SHA differs from bundled plan")
             rec["convergence_policy"] = manifest["convergence"]
             if rec["convergence_policy"] != C.CONVERGENCE:
                 raise ValueError("manifest convergence policy differs from T2-0c collector policy")
-        phase = "mesh"
+            for key in ("height_m", "h_over_c1", "h_over_c"):
+                value = C._number(manifest.get(key), f"manifest {key}")
+                if not math.isclose(value, rec[key], rel_tol=0, abs_tol=1e-9):
+                    raise ValueError(f"manifest {key} differs from source scene height")
+                rec[key] = value
         solve = spec["mode"] != "mesh-only"
         for stage, command in (("gmshToFoam", "gmshToFoam mesh.msh"), ("checkMesh", "checkMesh -allGeometry -allTopology"), ("simpleFoam", "simpleFoam")):
             if rec["status"] != "COMPLETED" or stage == "simpleFoam" and not solve:
                 break
-            if stage == "simpleFoam":
-                phase = "solver"
+            phase = stage
             if stage == "checkMesh":
                 sys.path.insert(0, str(source / "scripts/topo2d00"))
                 from t2d_foam_case import fix_boundary
                 p = case / "constant/polyMesh/boundary"
                 p.write_text(fix_boundary(p.read_text(), [e["patch"] for e in spec["elements"]]))
-            timeout = min(spec["case_cap_s"] if stage == "simpleFoam" else 900, deadline - time.monotonic())
+            cap = spec["case_cap_s"] if stage == "simpleFoam" else 900
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutError(f"session deadline before {stage}")
+            timeout = min(cap, remaining)
             result = helper.timed_run(stage, command, case, timeout)
-            rec["stages"].append(result)
-            if result["returncode"] or result["timed_out"]:
-                rec["failure_stage"] = stage
-                rec["status"] = "MESH_FAILED" if stage != "simpleFoam" else f"{stage}_{'TIMEOUT' if result['timed_out'] else 'FAILED'}"
-            if stage == "checkMesh":
+            _record_stage(rec, result, deadline, remaining <= cap)
+            if stage == "checkMesh" and not result["timed_out"]:
                 cm = helper.parse_check_mesh((case / "log.checkMesh").read_text(errors="replace"))
                 rec["check_mesh"] = cm
                 rec["mesh_only_stage"] = {"mesh_msh_sha256": rec["mesh_msh_sha256"], "check_mesh": cm,
@@ -162,18 +223,20 @@ def run_case(spec: dict, source: Path, output: Path, deadline: float, helper=Non
                     plateau = True  # Divergence is a result; never continue it.
                 else:
                     plateau = C.cl_summary(history)["cl_plateau"]
-            except (ValueError, OSError) as exc:
+            except C.HistoryUnavailable as exc:
                 rec["status"], rec["error"] = "PARSE_FAILED", f"{type(exc).__name__}: {exc}"
                 plateau = True
             if not plateau and rec["status"] == "COMPLETED":
+                phase = "simpleFoam_cont"
                 helper._continue(case, spec["cont_iters"])
                 already = sum(s["wall_s"] for s in rec["stages"] if s["stage"].startswith("simpleFoam"))
-                timeout = min(max(1, spec["case_cap_s"] - already), deadline - time.monotonic())
+                cap, remaining = max(1, spec["case_cap_s"] - already), deadline - time.monotonic()
+                if remaining <= 0:
+                    raise TimeoutError("session deadline before simpleFoam_cont")
+                timeout = min(cap, remaining)
                 result = helper.timed_run("simpleFoam_cont", "simpleFoam", case, timeout)
-                rec["stages"].append(result)
+                _record_stage(rec, result, deadline, remaining <= cap)
                 rec["continued_to"] = spec["cont_iters"]
-                if result["returncode"] or result["timed_out"]:
-                    rec["status"] = f"simpleFoam_cont_{'TIMEOUT' if result['timed_out'] else 'FAILED'}"
         logs = [p for p in (case / "log.simpleFoam", case / "log.simpleFoam_cont") if p.is_file()]
         if logs:
             rec["solver"] = helper.parse_solver(logs[-1].read_text(errors="replace"))
@@ -182,7 +245,7 @@ def run_case(spec: dict, source: Path, output: Path, deadline: float, helper=Non
         objects = {"total": ("forceCoeffs", "forces"), **{e["patch"]: (f"forceCoeffs_{e['patch']}", f"forces_{e['patch']}") for e in spec["elements"]}}
         rec["coefficient_files"] = {k: _archive_files(case, keep, names[0], "coefficient.dat") for k, names in objects.items()}
         rec["force_files"] = {k: _archive_files(case, keep, names[1], "force.dat") for k, names in objects.items()}
-        if solve and rec["status"] not in C.MECHANICAL_STATUSES and C.divergent_coefficients(keep, rec["coefficient_files"]):
+        if solve and rec["status"] not in C.MECHANICAL_STATUSES | C.INFRA_STATUSES and C.divergent_coefficients(keep, rec["coefficient_files"]):
             rec["status"] = "SOLVER_DIVERGED"
         if rec["status"] == "COMPLETED" and solve:
             histories = {name: C.read_history(keep, parts) for name, parts in rec["coefficient_files"].items()}
@@ -197,10 +260,10 @@ def run_case(spec: dict, source: Path, output: Path, deadline: float, helper=Non
         if not solve and rec["status"] == "COMPLETED":
             rec["status"] = "MESH_OK"
     except subprocess.TimeoutExpired:
-        rec["status"], rec["failure_stage"] = "MESH_FAILED", "generator"
-        rec["error"] = "generation exceeded its 900-second infrastructure budget"
+        rec["status"], rec["failure_stage"] = "RUNNER_EXCEPTION", phase
+        rec["error"] = f"session deadline interrupted {phase}" if time.monotonic() >= deadline else f"{phase} exceeded its infrastructure time budget"
     except Exception as exc:
-        rec["status"] = "MESH_FAILED" if phase in ("generator", "mesh") else "RUNNER_EXCEPTION"
+        rec["status"] = "RUNNER_EXCEPTION"
         rec["failure_stage"] = phase
         rec["error"] = f"{type(exc).__name__}: {exc}"
     finally:
@@ -221,8 +284,6 @@ def run_case(spec: dict, source: Path, output: Path, deadline: float, helper=Non
                     shutil.copytree(case / name, keep / "case_dict" / name, ignore=shutil.ignore_patterns("polyMesh"))
             shutil.rmtree(case)
         rec["total_wall_s"] = time.monotonic() - started
-        if time.monotonic() >= deadline and "TIMEOUT" in rec["status"]:
-            rec["status"] = "DEADLINE_LIMITED"
         _atomic(keep / "case_result.json", rec)
     return rec
 

@@ -1,0 +1,60 @@
+{
+  "confirmed": [
+    {
+      "fact": "Every GenerateMesh resets srand(mesh.randomSeed); default seed 1, not missing reset.",
+      "file": "src/mesh/Generator.cpp",
+      "lines": "1427-1428"
+    },
+    {
+      "fact": "Default-comparator std::set<MVertex*> holds wall vertices; pointer-order traversal creates BL-column MFaceVertex objects.",
+      "file": "src/geo/boundaryLayersData.cpp",
+      "lines": "445-456,625-645"
+    },
+    {
+      "fact": "Vertex creation assigns monotonically increasing internal numbers.",
+      "file": "src/geo/MVertex.cpp",
+      "lines": "26-36"
+    },
+    {
+      "fact": "MVertexPtrLessThan compares internal vertex numbers.",
+      "file": "src/geo/MVertex.h",
+      "lines": "218-222"
+    },
+    {
+      "fact": "MFaceLessThan tie-breaking uses vertex numbers.",
+      "file": "src/geo/MFace.h",
+      "lines": "130-140"
+    },
+    {
+      "fact": "Frontal triangle tie-break uses face comparator after radius.",
+      "file": "src/mesh/meshGFaceDelaunayInsertion.h",
+      "lines": "134-142"
+    },
+    {
+      "fact": "Default initial triangulation inserts node copies by unordered_map traversal keyed by internal numbers; no randomFactor or rand reads here.",
+      "file": "src/mesh/meshTriangulation.cpp",
+      "lines": "795-820"
+    },
+    {
+      "fact": "RecombineNodeRepositioning guards relocation, while optional topology processing has independent control.",
+      "file": "src/mesh/meshGFaceOptimize.cpp",
+      "lines": "1311-1348"
+    },
+    {
+      "fact": "Mesh.Reproducible is consumed in 3D HXT, not the inspected 2D path.",
+      "file": "src/mesh/meshGRegionHxt.cpp",
+      "lines": "578"
+    }
+  ],
+  "evidence_class": "PRIMARY_SOURCE_INSPECTION_AND_LIMITED_INFERENCE",
+  "inference": "Allocator-dependent pointer ordering can change BL vertex creation/internal numbers and later insertion/tie-break/accumulation decisions. This is a source-supported possible cause of measured ULP/topology changes, not instrumented proof of internal ordering for the failing pair.",
+  "inspection_role": "independent authority_review worker; no mesh/solver execution",
+  "negative_result": "No documented public option fixing BL pointer-order creation was identified. Seed, relocation and topology option probes did not establish raw same-index reproducibility. No Gmsh source/dependency change, geometric fixture replacement, precision lowering, or weakened assertion is used.",
+  "required_owner_decision": [
+    "Retain raw mesh-SHA determinism and approve a separately qualified Gmsh implementation fix, or",
+    "Re-register materialized mesh artifacts/determinism semantics explicitly. Neither decision is made by this WP."
+  ],
+  "source_archive_sha256": "be3f66f225d27ba9fa014f07e83169285da8a051b0e8ab7103d88066b39bdd3e",
+  "source_archive_url": "https://gmsh.info/src/gmsh-4.15.2-source.tgz",
+  "version": "4.15.2"
+}

@@ -1,0 +1,82 @@
+{
+  "base_head": "45917d8cc93fea6ba17897b914d8ac82f4d930fb",
+  "files": [
+    {
+      "bytes": 9289,
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_measurement_schema.json",
+      "sha256": "d01cceddd63cccfb7b220ab8c138fb66f3d39685064a0993870ee10c044c38f1"
+    },
+    {
+      "bytes": 11472,
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_result_schema.json",
+      "sha256": "c47d77013fcf7a8fef52c30ae42475a60b55bafb9711cc3d4fd4bdcfcf9cbcf9"
+    },
+    {
+      "bytes": 19293,
+      "path": "scripts/topo2d00/build_tr00_kernels.py",
+      "sha256": "3e26c72e1ac505fd7446a643e759d687da854b33ed8daf41b5b19009cf5d5f7e"
+    },
+    {
+      "bytes": 50518,
+      "path": "scripts/topo2d00/collect_rans.py",
+      "sha256": "1f004070b2d10fe482651e720665d0babe667509e728e4a2e563351bad18de35"
+    },
+    {
+      "bytes": 17914,
+      "path": "scripts/topo2d00/digitize_cp.py",
+      "sha256": "30913be9d0dfa9e152511abf5d121facc7348bd7b2d721970e509db180e66164"
+    },
+    {
+      "bytes": 20659,
+      "path": "scripts/topo2d00/run_rans.py",
+      "sha256": "c1586e71e741408955c2c3d349c55fce64193cabe9880dbe9bebd1a81572303c"
+    },
+    {
+      "bytes": 11216,
+      "path": "scripts/topo2d00/t2d_foam_case.py",
+      "sha256": "bbf6c78ad85dad624cb8e078d4cac3e5ce2a418b61ae08150094bc99b86db5e2"
+    },
+    {
+      "bytes": 31717,
+      "path": "scripts/topo2d00/t2d_multibody_case.py",
+      "sha256": "f564358ebc8cf8be74e4af476def24e25d033832161b25152a52732d29535998"
+    },
+    {
+      "bytes": 659,
+      "path": "tests/topo2d00/fixtures/README.md",
+      "sha256": "732ce920fdcdf0fbc60a37adddb86b5f9ade7ab1ccc3e7e074426b6fea8ca049"
+    },
+    {
+      "bytes": 55744,
+      "path": "tests/topo2d00/fixtures/wp4_attempt2_E2_sharp.json.gz",
+      "sha256": "a90907129fab8c0d34d72fbf3676a1ab403c80e3e7e5a3605b43a04cadd460a4"
+    },
+    {
+      "bytes": 19516,
+      "path": "tests/topo2d00/test_build_tr00_kernels.py",
+      "sha256": "39d8d9f740088ed7c829f068e7659a315070f664d278a522d796bac6999c4526"
+    },
+    {
+      "bytes": 40026,
+      "path": "tests/topo2d00/test_collect_rans.py",
+      "sha256": "36e1c351af3d97b2df3a35dc7e7461c1e75c0133fbe8c96afceffb6d470116a1"
+    },
+    {
+      "bytes": 20198,
+      "path": "tests/topo2d00/test_digitize_cp.py",
+      "sha256": "24ae8f0e6fa630dd58e7b8c43ddacc0db114fa7f2a6673713644b6a7325f5043"
+    },
+    {
+      "bytes": 25797,
+      "path": "tests/topo2d00/test_multibody_case.py",
+      "sha256": "d4a31c683ae3ad0728969f184bba3aa1458e3bb52ececcd9f9ca4a9e7ddfe41f"
+    },
+    {
+      "bytes": 11944,
+      "path": "tests/topo2d00/test_run_rans.py",
+      "sha256": "b59bb58261c3e9c1f68def46f14dec279448dfa3f65e840b721f0b9b4e8ad8df"
+    }
+  ],
+  "scope": "Final implementation/test/schema bytes after removing failed reproducibility workarounds; N2 remains unqualified. No formal freeze or commit.",
+  "source_dirty": true
+}

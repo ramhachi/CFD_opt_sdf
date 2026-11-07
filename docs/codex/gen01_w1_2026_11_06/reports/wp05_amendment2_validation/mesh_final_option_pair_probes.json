@@ -1,0 +1,671 @@
+{
+  "evidence_class": "DEVELOPMENT_SYNTHETIC_FINAL_SOURCE_BACKED_OPTION_PROBE",
+  "options": {
+    "Mesh.RecombineNodeRepositioning": 0,
+    "Mesh.RecombineOptimizeTopology": 0
+  },
+  "probe_code": "import json,sys\nfrom pathlib import Path\nfrom topo2d00.t2d_foam_case import write_case\nfrom topo2d00 import t2d_multibody_case as M\nimport gmsh\noriginal_initialize=gmsh.initialize\noptions=json.loads(sys.argv[3])\ndef initialize(*args, **kwargs):\n    original_initialize(*args, **kwargs)\n    for name,value in options.items():\n        gmsh.option.setNumber(name,value)\ngmsh.initialize=initialize\noriginal_serialize=M.canonicalize_mesh_coordinates\ndef capture_raw(path):\n    path=Path(path)\n    path.with_name(\"mesh.raw.msh\").write_bytes(path.read_bytes())\n    return original_serialize(path)\nM.canonicalize_mesh_coordinates=capture_raw\nm=write_case(Path(sys.argv[2]),Path(sys.argv[1]),family=\"med30\",iters=1,realisation=int(sys.argv[4]),expected_height_m=.09)\nraw=Path(sys.argv[2])/\"mesh.raw.msh\"\nm[\"raw_quality\"]=M.T.mesh_quality(raw)\nprint(json.dumps(m))\n",
+  "production_modified": false,
+  "results": [
+    {
+      "cells_3d": 31800,
+      "generator_sha256": {
+        "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+        "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+        "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+        "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+      },
+      "mesh_sha256": "e4ddf26cde205c5131a2973953892b5a7521996c755415772924aeddcfaacde4",
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-final-fixed-option-probe-70obw2uz/index-1-repetition-0",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "nonorth_max",
+        "weight_min"
+      ],
+      "raw_mesh_sha256": "9c466203f7cba07c49ca873c01a581504963d99b290cbbbd4eabad20ca97941d",
+      "raw_quality": {
+        "aspect_ratio_max": 8.599967467707572,
+        "cells": 31800,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.018168525571225252,
+        "nonorth_gt70_faces": 1,
+        "nonorth_max": 73.0347985732895,
+        "skew_boundary_max": 0.3038870258359641,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.659066044809365,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.052870285797729386,
+        "weight_lt0.05_faces": 1,
+        "weight_min": 0.04997079743841973,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.224309,
+            0.115878
+          ],
+          "det": [
+            0.113585,
+            0.156873
+          ],
+          "nonorth": [
+            0.357033,
+            0.142566
+          ],
+          "vol_ratio": [
+            0.35584,
+            0.140841
+          ],
+          "weight": [
+            0.35584,
+            0.140841
+          ]
+        }
+      },
+      "realisation": 1,
+      "repetition": 0,
+      "returncode": 0,
+      "wall_s": 3.247943165944889
+    },
+    {
+      "cells_3d": 31800,
+      "generator_sha256": {
+        "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+        "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+        "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+        "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+      },
+      "mesh_sha256": "e4ddf26cde205c5131a2973953892b5a7521996c755415772924aeddcfaacde4",
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-final-fixed-option-probe-70obw2uz/index-1-repetition-1",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "nonorth_max",
+        "weight_min"
+      ],
+      "raw_mesh_sha256": "9c466203f7cba07c49ca873c01a581504963d99b290cbbbd4eabad20ca97941d",
+      "raw_quality": {
+        "aspect_ratio_max": 8.599967467707572,
+        "cells": 31800,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.018168525571225252,
+        "nonorth_gt70_faces": 1,
+        "nonorth_max": 73.0347985732895,
+        "skew_boundary_max": 0.3038870258359641,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.659066044809365,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.052870285797729386,
+        "weight_lt0.05_faces": 1,
+        "weight_min": 0.04997079743841973,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.224309,
+            0.115878
+          ],
+          "det": [
+            0.113585,
+            0.156873
+          ],
+          "nonorth": [
+            0.357033,
+            0.142566
+          ],
+          "vol_ratio": [
+            0.35584,
+            0.140841
+          ],
+          "weight": [
+            0.35584,
+            0.140841
+          ]
+        }
+      },
+      "realisation": 1,
+      "repetition": 1,
+      "returncode": 0,
+      "wall_s": 3.2399628340499476
+    },
+    {
+      "cells_3d": 31800,
+      "generator_sha256": {
+        "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+        "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+        "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+        "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+      },
+      "mesh_sha256": "e4ddf26cde205c5131a2973953892b5a7521996c755415772924aeddcfaacde4",
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-final-fixed-option-probe-70obw2uz/index-1-repetition-2",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "nonorth_max",
+        "weight_min"
+      ],
+      "raw_mesh_sha256": "9c466203f7cba07c49ca873c01a581504963d99b290cbbbd4eabad20ca97941d",
+      "raw_quality": {
+        "aspect_ratio_max": 8.599967467707572,
+        "cells": 31800,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.018168525571225252,
+        "nonorth_gt70_faces": 1,
+        "nonorth_max": 73.0347985732895,
+        "skew_boundary_max": 0.3038870258359641,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.659066044809365,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.052870285797729386,
+        "weight_lt0.05_faces": 1,
+        "weight_min": 0.04997079743841973,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.224309,
+            0.115878
+          ],
+          "det": [
+            0.113585,
+            0.156873
+          ],
+          "nonorth": [
+            0.357033,
+            0.142566
+          ],
+          "vol_ratio": [
+            0.35584,
+            0.140841
+          ],
+          "weight": [
+            0.35584,
+            0.140841
+          ]
+        }
+      },
+      "realisation": 1,
+      "repetition": 2,
+      "returncode": 0,
+      "wall_s": 3.073664915980771
+    },
+    {
+      "cells_3d": 31796,
+      "generator_sha256": {
+        "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+        "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+        "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+        "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+      },
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-final-fixed-option-probe-70obw2uz/index-3-repetition-0",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "raw_mesh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a",
+      "raw_quality": {
+        "aspect_ratio_max": 11.35281459021195,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.010948455037032304,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050408069211,
+        "skew_boundary_max": 0.1790250043355729,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079883277068,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872501562,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251084665633259,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "realisation": 3,
+      "repetition": 0,
+      "returncode": 0,
+      "wall_s": 3.4946166669251397
+    },
+    {
+      "cells_3d": 31796,
+      "generator_sha256": {
+        "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+        "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+        "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+        "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+      },
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-final-fixed-option-probe-70obw2uz/index-3-repetition-1",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "raw_mesh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a",
+      "raw_quality": {
+        "aspect_ratio_max": 11.35281459021195,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.010948455037032304,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050408069211,
+        "skew_boundary_max": 0.1790250043355729,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079883277068,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872501562,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251084665633259,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "realisation": 3,
+      "repetition": 1,
+      "returncode": 0,
+      "wall_s": 3.4942659590160474
+    },
+    {
+      "cells_3d": 31794,
+      "generator_sha256": {
+        "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+        "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+        "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+        "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+      },
+      "mesh_sha256": "d83eb3eace44101ce4b201e070e38bec5fb6726c17fb4f54d4f1d8293edb3dff",
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-final-fixed-option-probe-70obw2uz/index-3-repetition-2",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "raw_mesh_sha256": "15b34c904944f520554ca276f791e0806d877336f175ba898cd8b80270409203",
+      "raw_quality": {
+        "aspect_ratio_max": 11.35281459021195,
+        "cells": 31794,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.010948455037032304,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050408069211,
+        "skew_boundary_max": 0.1790250043355729,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079867224633,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872501562,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251084665633259,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "realisation": 3,
+      "repetition": 2,
+      "returncode": 0,
+      "wall_s": 3.1439722089562565
+    },
+    {
+      "cells_3d": 31796,
+      "generator_sha256": {
+        "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+        "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+        "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+        "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+      },
+      "mesh_sha256": "d420fe9d239eb4815a1934e2095c7044abc8b70df412f33c748877dfd3df762a",
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-final-fixed-option-probe-70obw2uz/index-3-repetition-3",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "raw_mesh_sha256": "33908761953df93bfc6b1cc9355faec204b674c093aa4d98cb253af5e9d5f2a4",
+      "raw_quality": {
+        "aspect_ratio_max": 11.35281459021195,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.010948455037032304,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050408069211,
+        "skew_boundary_max": 0.1790250043355729,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079883277068,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872501562,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251084665633259,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "realisation": 3,
+      "repetition": 3,
+      "returncode": 0,
+      "wall_s": 3.1323078750865534
+    },
+    {
+      "cells_3d": 31796,
+      "generator_sha256": {
+        "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+        "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+        "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+        "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+      },
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-final-fixed-option-probe-70obw2uz/index-3-repetition-4",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "raw_mesh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a",
+      "raw_quality": {
+        "aspect_ratio_max": 11.35281459021195,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.010948455037032304,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050408069211,
+        "skew_boundary_max": 0.1790250043355729,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079883277068,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872501562,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251084665633259,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "realisation": 3,
+      "repetition": 4,
+      "returncode": 0,
+      "wall_s": 3.107256834045984
+    },
+    {
+      "cells_3d": 31796,
+      "generator_sha256": {
+        "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+        "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+        "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+        "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+      },
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-final-fixed-option-probe-70obw2uz/index-3-repetition-5",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "raw_mesh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a",
+      "raw_quality": {
+        "aspect_ratio_max": 11.35281459021195,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.010948455037032304,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050408069211,
+        "skew_boundary_max": 0.1790250043355729,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079883277068,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872501562,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251084665633259,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "realisation": 3,
+      "repetition": 5,
+      "returncode": 0,
+      "wall_s": 3.1099954169476405
+    },
+    {
+      "cells_3d": 31796,
+      "generator_sha256": {
+        "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+        "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+        "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+        "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+      },
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-final-fixed-option-probe-70obw2uz/index-3-repetition-6",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "raw_mesh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a",
+      "raw_quality": {
+        "aspect_ratio_max": 11.35281459021195,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.010948455037032304,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050408069211,
+        "skew_boundary_max": 0.1790250043355729,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079883277068,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872501562,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251084665633259,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "realisation": 3,
+      "repetition": 6,
+      "returncode": 0,
+      "wall_s": 3.4206419170368463
+    },
+    {
+      "cells_3d": 31796,
+      "generator_sha256": {
+        "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+        "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+        "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+        "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+      },
+      "mesh_sha256": "37e1d1a28518379bdcb539a7171029ef59ca40f24b9fba9d70d769f3d2738595",
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-final-fixed-option-probe-70obw2uz/index-3-repetition-7",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "raw_mesh_sha256": "76caa4a0dfb514bcd02c8ff2b68d2a2a95ef0cd8d1b628317c19634d4336d1f4",
+      "raw_quality": {
+        "aspect_ratio_max": 11.35281459021195,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.010948455037032304,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050408069211,
+        "skew_boundary_max": 0.1790250043355729,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079883277068,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872501562,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251084665633259,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "realisation": 3,
+      "repetition": 7,
+      "returncode": 0,
+      "wall_s": 3.4053510000230744
+    }
+  ],
+  "root": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-final-fixed-option-probe-70obw2uz",
+  "scope": "Raw uncanonicalized MSH2 SHA identity; coordinate precision was not adjusted and raw files are retained in temporary output directories. Optional flag pair is the final bounded root-cause probe.",
+  "summary": {
+    "1": {
+      "distinct_cells": [
+        31800
+      ],
+      "distinct_raw_mesh_shas": 1,
+      "successful_processes": 3
+    },
+    "3": {
+      "distinct_cells": [
+        31794,
+        31796
+      ],
+      "distinct_raw_mesh_shas": 4,
+      "successful_processes": 8
+    }
+  }
+}

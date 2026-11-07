@@ -107,7 +107,33 @@ def test_copied_reader_csv_is_refused_by_content_sha(tmp_path, surface, same_pat
         second = element["surfaces"]["b"][surface]
         (tmp_path / second).write_bytes((tmp_path / first).read_bytes())
         assert first != second
-    with pytest.raises(ValueError, match="different.*SHA"):
+    with pytest.raises(ValueError, match="different.*(SHA|numeric)"):
+        run_manifest(tmp_path, manifest)
+
+
+@pytest.mark.parametrize("surface", ["upper", "lower"])
+@pytest.mark.parametrize("formatting", ["bom", "crlf", "numeric_spelling", "descending", "signed_zero"])
+def test_formatting_cannot_make_identical_numeric_cp_readings_independent(tmp_path, surface, formatting):
+    manifest = cp_manifest(tmp_path)
+    element = manifest["configs"][0]["elements"][0]
+    first = tmp_path / element["surfaces"]["a"][surface]
+    second = tmp_path / element["surfaces"]["b"][surface]
+    text = first.read_text()
+    if formatting == "bom":
+        payload = b"\xef\xbb\xbf" + text.encode()
+    elif formatting == "crlf":
+        payload = text.replace("\n", "\r\n").encode()
+    elif formatting == "numeric_spelling":
+        rows = D.read_csv(first)
+        payload = ("x/c,Cp\n" + "".join(f"{x:.17e},{y:.17e}\n" for x, y in rows)).encode()
+    elif formatting == "descending":
+        lines = text.splitlines()
+        payload = (lines[0] + "\n" + "\n".join(reversed(lines[1:])) + "\n").encode()
+    else:
+        payload = text.replace("0.0,", "-0.0,").encode()
+    second.write_bytes(payload)
+    assert second.read_bytes() != first.read_bytes()
+    with pytest.raises(ValueError, match="numeric"):
         run_manifest(tmp_path, manifest)
 
 
@@ -318,7 +344,25 @@ def test_identical_cl_curve_contents_under_different_paths_are_refused(tmp_path)
     first = write_csv(tmp_path / "a.csv", [(0.25, 1), (0.75, 3)], header="h/c,Cl")
     (tmp_path / "b.csv").write_bytes(first.read_bytes())
     manifest["configs"] = [config]
-    with pytest.raises(ValueError, match="different.*SHA"):
+    with pytest.raises(ValueError, match="different.*(SHA|numeric)"):
+        run_manifest(tmp_path, manifest)
+
+
+@pytest.mark.parametrize("second", [b"\xef\xbb\xbfh/c,Cl\n0.25,1\n0.75,3\n",
+                                    b"h/c,Cl\r\n0.25,1\r\n0.75,3\r\n",
+                                    b"h/c,Cl\n0.7500,3.0000\n0.2500,1.0000\n"])
+def test_identical_numeric_cl_curves_are_refused(tmp_path, second):
+    manifest = cp_manifest(tmp_path)
+    config = table_config()
+    config.update(method="cl_curve", height_chord_m=0.2,
+                  digitizers=manifest["configs"][0]["digitizers"], independence_note="independent readers",
+                  curves={"a": "a.csv", "b": "b.csv"})
+    for key in ("Cl", "reading_sensitivity_abs", "reading_sensitivity_note"):
+        config.pop(key)
+    (tmp_path / "a.csv").write_bytes(b"h/c,Cl\n0.25,1\n0.75,3\n")
+    (tmp_path / "b.csv").write_bytes(second)
+    manifest["configs"] = [config]
+    with pytest.raises(ValueError, match="numeric"):
         run_manifest(tmp_path, manifest)
 
 

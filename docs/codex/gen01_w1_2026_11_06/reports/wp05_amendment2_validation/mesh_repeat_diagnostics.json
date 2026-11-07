@@ -1,0 +1,116 @@
+{
+  "all_differences_are_node_coordinate_lines": true,
+  "candidate_decimal_serialization_diagnostic_only": {
+    "13": {
+      "max_coordinate_quantization_m": 4.987121826616203e-13,
+      "sha_equal": true
+    },
+    "14": {
+      "max_coordinate_quantization_m": 4.9960036108132044e-14,
+      "sha_equal": false
+    },
+    "15": {
+      "max_coordinate_quantization_m": 5.10702591327572e-15,
+      "sha_equal": false
+    },
+    "16": {
+      "max_coordinate_quantization_m": 4.440892098500626e-16,
+      "sha_equal": false
+    }
+  },
+  "cells_3d": [
+    31796,
+    31796
+  ],
+  "command": "WP05_MESH_REALISATION_RECEIPT=... .venv/bin/python -m pytest -q -s tests/topo2d00/test_multibody_case.py -k eight_med30 -p no:cacheprovider",
+  "config": "E2_sharp",
+  "differing_text_lines": 98,
+  "duration_s": 50.86,
+  "evidence_class": "DEVELOPMENT_SYNTHETIC_MESH_REPEAT_DIAGNOSTIC",
+  "examples": [
+    {
+      "line": 3448,
+      "original": "3431 -0.02604761052413836 0.09249525835464674 0.0",
+      "repeat": "3431 -0.026047610524138363 0.09249525835464674 0.0"
+    },
+    {
+      "line": 3449,
+      "original": "3432 -0.02604761052413836 0.09249525835464674 0.002",
+      "repeat": "3432 -0.026047610524138363 0.09249525835464674 0.002"
+    },
+    {
+      "line": 3550,
+      "original": "3533 -0.015981738223680098 0.09606456656233621 0.0",
+      "repeat": "3533 -0.015981738223680098 0.0960645665623362 0.0"
+    },
+    {
+      "line": 3551,
+      "original": "3534 -0.015981738223680098 0.09606456656233621 0.002",
+      "repeat": "3534 -0.015981738223680098 0.0960645665623362 0.002"
+    },
+    {
+      "line": 3572,
+      "original": "3555 -0.01528191535756029 0.06691950059554816 0.0",
+      "repeat": "3555 -0.015281915357560294 0.06691950059554816 0.0"
+    },
+    {
+      "line": 3573,
+      "original": "3556 -0.01528191535756029 0.06691950059554816 0.002",
+      "repeat": "3556 -0.015281915357560294 0.06691950059554816 0.002"
+    },
+    {
+      "line": 3624,
+      "original": "3607 -0.01178314462795383 0.04529732883346653 0.0",
+      "repeat": "3607 -0.01178314462795383 0.04529732883346652 0.0"
+    },
+    {
+      "line": 3625,
+      "original": "3608 -0.01178314462795383 0.04529732883346653 0.002",
+      "repeat": "3608 -0.01178314462795383 0.04529732883346652 0.002"
+    },
+    {
+      "line": 3672,
+      "original": "3655 -0.009557326247651671 0.03583576041735152 0.0",
+      "repeat": "3655 -0.00955732624765167 0.03583576041735152 0.0"
+    },
+    {
+      "line": 3673,
+      "original": "3656 -0.009557326247651671 0.03583576041735152 0.002",
+      "repeat": "3656 -0.00955732624765167 0.03583576041735152 0.002"
+    },
+    {
+      "line": 3724,
+      "original": "3707 -0.008288561329172136 0.09099648447903642 0.0",
+      "repeat": "3707 -0.008288561329172137 0.09099648447903641 0.0"
+    },
+    {
+      "line": 3725,
+      "original": "3708 -0.008288561329172136 0.09099648447903642 0.002",
+      "repeat": "3708 -0.008288561329172137 0.09099648447903641 0.002"
+    }
+  ],
+  "exit_code": 1,
+  "family": "med30",
+  "generator_sha256": {
+    "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+    "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+    "t2d_foam_case.py": "bbf6c78ad85dad624cb8e078d4cac3e5ce2a418b61ae08150094bc99b86db5e2",
+    "t2d_multibody_case.py": "1a329766d245111c867234fe7d32df9200f1ef9e9ecd6eafef5c48155a1251e0"
+  },
+  "geometry_sha256": "ff4956ad81b655127360c65b42ea096482ee76dff300249b3db530e537189180",
+  "gmsh_options": {
+    "General.NumThreads": 1,
+    "Mesh.Reproducible": 1
+  },
+  "gmsh_version": "4.15.2",
+  "interpretation": "Current repeat differs in final floating-point coordinate digits only; no output normalization applied in this measurement. No physical E2, checkMesh or Kaggle claim.",
+  "max_coordinate_difference_m": 1.970645868709653e-15,
+  "mesh_sha256": [
+    "0c50946e44e3cb48468a7c9d20bac7c7ca048659511f86be0baf0526f4225b21",
+    "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a"
+  ],
+  "process_scope": "both original index and repeat were separate fresh processes",
+  "quality_equal": true,
+  "realisation": 3,
+  "total_text_lines": 147914
+}

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import copy
 import sys
 from pathlib import Path
 
@@ -15,29 +16,25 @@ import run_rans as R
 import t2d_multibody_case as M
 
 
-def geometry_files(tmp_path, configs=K.C.CONFIGS, verification="DEVELOPMENT_SYNTHETIC"):
+def geometry_files(tmp_path, configs=K.C.CONFIGS, verification="DEVELOPMENT_SYNTHETIC", height_m=.1):
     """Dense synthetic WP4 scenes; no source coordinates or figure are inferred."""
+    from test_multibody_case import wp4_scene
     paths = {}
     for c in configs:
-        x = (1 - np.cos(np.linspace(0, np.pi, 241))) / 2
-        # Finite-TE NACA-like section: even the published *_sharp arms retain a
-        # finite cap. The samples satisfy the WP5 5-degree / family-ds guard.
-        y = 5*.12*(.2969*np.sqrt(x)-.126*x-.3516*x*x+.2843*x**3-.1015*x**4)
+        scene = wp4_scene()
+        prototype = scene['elements'][0]
         elements = []
         for i in range(int(c[1])):
-            shift = np.array([i*.24, .13])
-            lower = (np.c_[x, -y]*.2234+shift)*1000
-            upper = (np.c_[x, y]*.2234+shift)*1000
-            polygon = np.vstack((lower[::-1], upper[1:], lower[-1]))
-            elements.append({"name": f"element{i+1}", "suction_mm": lower.tolist(),
-                             "pressure_mm": upper.tolist(), "polygon_mm": polygon.tolist()})
+            element = copy.deepcopy(prototype)
+            shift = [i*240., height_m*1000-scene['height_mm']]
+            for key in ('suction_mm', 'pressure_mm', 'polygon_mm'):
+                element[key] = (np.asarray(element[key])+shift).tolist()
+            element['name'] = f'element{i+1}'
+            elements.append(element)
         p = tmp_path / f"{c}.json"
-        p.write_text(json.dumps({"schema": "topo2d-scene-v1", "configuration": c, "units": "mm",
-                                 "normalizations": {"c1_mm": 223.4}, "ground_z_mm": 0,
-                                 "height_mm": min(p[1] for p in elements[0]["polygon_mm"]),
-                                 "sharp_variant": {"mathematically_sharp": False}, "gates": {"accepted": True},
-                                 "sources": [{"path": "<synthetic fixture>", "verification": verification}],
-                                 "elements": elements}))
+        scene.update(configuration=c, height_mm=height_m*1000, elements=elements,
+                     sources=[{"path": "<synthetic fixture>", "verification": verification}])
+        p.write_text(json.dumps(scene))
         paths[c] = p
     return paths
 
@@ -171,11 +168,12 @@ def test_ready_requires_clean_frozen_verified_six_geometry_inputs(tmp_path, monk
     monkeypatch.setattr(M, "boundary_layer_plan", once_per_render)
     geometries = geometry_files(tmp_path, sorted(M.STUDY_CONFIGS), verification="VERIFIED")
     run_geometries = {c: geometries[c] for c in K.C.CONFIGS[:2]}
-    draft = K.render(tmp_path / "draft", run_geometries, study_geometries=geometries)
+    heights = {c: .1 for c in geometries}
+    draft = K.render(tmp_path / "draft", run_geometries, study_geometries=geometries, expected_heights_m=heights)
     assert calls == [M.STUDY_CONFIGS]
     assert not draft["ready_for_execution"] and draft["push_plan"] == []
     freeze = freeze_file(tmp_path, draft)
-    plan = K.render(tmp_path / "ready", run_geometries, study_geometries=geometries, freeze=freeze)
+    plan = K.render(tmp_path / "ready", run_geometries, study_geometries=geometries, freeze=freeze, expected_heights_m=heights)
     assert calls == [M.STUDY_CONFIGS, M.STUDY_CONFIGS]
     assert plan["ready_for_execution"] and plan["render_kind"] == "ready"
     assert len(plan["push_plan"]) == len(plan["kernels"]) == 6
@@ -186,6 +184,35 @@ def test_ready_requires_clean_frozen_verified_six_geometry_inputs(tmp_path, monk
     assert "docs/topo2d00_registration_2026_11_01.md" in plan["input_sha256"]
     assert "geometry/E3_sharp.json" in plan["input_sha256"]
     assert not any("t20d" in key for key in plan["input_sha256"])
+    assert plan['height_m_by_config'] == heights
+    assert all(r['height_m'] == .1 and r['n_layers'] > 0 for r in plan['runs'])
+    assert 'study_heights.json' in plan['input_sha256']
+
+
+def test_scene_height_must_match_declared_height_before_render_writes(tmp_path):
+    geometries = geometry_files(tmp_path, K.C.CONFIGS[:2], height_m=.08)
+    with pytest.raises(ValueError, match='height'):
+        K.render(tmp_path/'out', geometries, expected_heights_m={c: .1 for c in geometries})
+    assert not (tmp_path/'out').exists()
+
+
+@pytest.mark.parametrize('height', [None, True, 0, float('nan')])
+def test_render_refuses_invalid_explicit_height_declarations(tmp_path, height):
+    geometries = geometry_files(tmp_path, K.C.CONFIGS[:2])
+    with pytest.raises(ValueError, match='height'):
+        K.render(tmp_path/'out', geometries, expected_heights_m={c: height for c in geometries})
+    assert not (tmp_path/'out').exists()
+
+
+def test_verified_clean_frozen_render_without_height_declaration_stays_development(tmp_path, monkeypatch):
+    git_state(monkeypatch)
+    geometries = geometry_files(tmp_path, sorted(M.STUDY_CONFIGS), verification='VERIFIED')
+    runs = {c: geometries[c] for c in K.C.CONFIGS[:2]}
+    draft = K.render(tmp_path/'draft', runs, study_geometries=geometries)
+    frozen = freeze_file(tmp_path, draft)
+    plan = K.render(tmp_path/'undeclared', runs, study_geometries=geometries, freeze=frozen)
+    assert not plan['ready_for_execution'] and plan['push_plan'] == []
+    assert 'height' in plan['blocked_reason']
 
 
 @pytest.mark.parametrize("payload", [None, "not JSON", "[]"])
@@ -268,6 +295,7 @@ def test_driver_uses_inherited_continuation_and_retains_distinct_objects(tmp_pat
     (source / "boundary_layer_plan.json").write_bytes(json.dumps(boundary_layers, sort_keys=True, separators=(",", ":")).encode())
     n_layers = boundary_layers["families"]["fine30"]["n_layers"]
     spec = {**K.C.expected_runs()[32], "mode": "production", "iters": 5000, "cont_iters": 15000, "case_cap_s": 9000,
+            "height_m": .1,
             "geometry_file": "geometry/E2_sharp.json", "geometry_sha256": K.C.sha256(geometries["E2_sharp"]),
             "boundary_layer_plan_file": "boundary_layer_plan.json", "boundary_layer_plan_sha256": M.plan_sha256(boundary_layers),
             "elements": [{"name": "main", "patch": "airfoil"}, {"name": "flap", "patch": "airfoil_2"}]}
@@ -279,6 +307,8 @@ def test_driver_uses_inherited_continuation_and_retains_distinct_objects(tmp_pat
         (case / "system/controlDict").write_text("startFrom startTime;\nendTime 5000;\n")
         (case / "mesh.msh").write_text("synthetic mesh")
         (case / "case_manifest.json").write_text(json.dumps({"geometry_sha256": spec["geometry_sha256"], "mesh_quality_failures": [],
+                                                           "height_m": .1, "h_over_c1": .1/.2234, "h_over_c": .1/.380,
+                                                           "mesh_msh_sha256": K.C.sha256(case/'mesh.msh'),
                                                            "n_layers": n_layers, "mesh_stats": {"n_layers": n_layers}, "convergence": K.C.CONVERGENCE,
                                                            "boundary_layer_plan_sha256": spec["boundary_layer_plan_sha256"]}))
         return type("Result", (), {"returncode": 0, "stdout": "generated", "stderr": ""})()

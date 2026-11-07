@@ -1,0 +1,672 @@
+{
+  "evidence_class": "DEVELOPMENT_SYNTHETIC_GMSH_OPTION_CONTROL_PROBE",
+  "options": {
+    "baseline": {},
+    "reposition0": {
+      "Mesh.RecombineNodeRepositioning": 0
+    }
+  },
+  "probe_code": "import json,sys\nfrom pathlib import Path\nfrom topo2d00.t2d_foam_case import write_case\nimport gmsh\noriginal_initialize=gmsh.initialize\noptions=json.loads(sys.argv[3])\ndef initialize(*args, **kwargs):\n    original_initialize(*args, **kwargs)\n    for name,value in options.items():\n        gmsh.option.setNumber(name,value)\ngmsh.initialize=initialize\nm=write_case(Path(sys.argv[2]),Path(sys.argv[1]),family=\"med30\",iters=1,realisation=3,expected_height_m=.09)\nprint(json.dumps(m))\n",
+  "production_modified": false,
+  "results": [
+    {
+      "cells_3d": 31796,
+      "index": 0,
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "options": {},
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/extra-0-baseline/k3",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 11.352814596742167,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.0109484550304451,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050274732564,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079897993345,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872467071,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251082307261334,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "raw_mesh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a",
+      "returncode": 0,
+      "variant": "baseline",
+      "wall_s": 5.775362332933582
+    },
+    {
+      "cells_3d": 31796,
+      "index": 1,
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "options": {},
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/extra-1-baseline/repeat3",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 11.352814596742167,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.0109484550304451,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050274732564,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079897993345,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872467071,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251082307261334,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "raw_mesh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a",
+      "returncode": 0,
+      "variant": "baseline",
+      "wall_s": 4.240839291946031
+    },
+    {
+      "cells_3d": 31796,
+      "index": 2,
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "options": {},
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/extra-2-baseline/k3",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 11.352814596742167,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.0109484550304451,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050274732564,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079897993345,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872467071,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251082307261334,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "raw_mesh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a",
+      "returncode": 0,
+      "variant": "baseline",
+      "wall_s": 4.3511442500166595
+    },
+    {
+      "cells_3d": 31796,
+      "index": 3,
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "options": {},
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/extra-3-baseline/repeat3",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 11.352814596742167,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.0109484550304451,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050274732564,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079897993345,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872467071,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251082307261334,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "raw_mesh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a",
+      "returncode": 0,
+      "variant": "baseline",
+      "wall_s": 5.278812917065807
+    },
+    {
+      "cells_3d": 31796,
+      "index": 4,
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "options": {},
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/extra-4-baseline/k3",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 11.352814596742167,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.0109484550304451,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050274732564,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079897993345,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872467071,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251082307261334,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "raw_mesh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a",
+      "returncode": 0,
+      "variant": "baseline",
+      "wall_s": 5.086736375000328
+    },
+    {
+      "cells_3d": 31796,
+      "index": 5,
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "options": {},
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/extra-5-baseline/repeat3",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 11.352814596742167,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.0109484550304451,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050274732564,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079897993345,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872467071,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251082307261334,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "raw_mesh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a",
+      "returncode": 0,
+      "variant": "baseline",
+      "wall_s": 4.580348125076853
+    },
+    {
+      "cells_3d": 31796,
+      "index": 0,
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "options": {
+        "Mesh.RecombineNodeRepositioning": 0
+      },
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/extra-0-reposition0/k3",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 11.352814596742167,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.0109484550304451,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050274732564,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079897993345,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872467071,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251082307261334,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "raw_mesh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a",
+      "returncode": 0,
+      "variant": "reposition0",
+      "wall_s": 5.772376292035915
+    },
+    {
+      "cells_3d": 31796,
+      "index": 1,
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "options": {
+        "Mesh.RecombineNodeRepositioning": 0
+      },
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/extra-1-reposition0/repeat3",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 11.352814596742167,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.0109484550304451,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050274732564,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079897993345,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872467071,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251082307261334,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "raw_mesh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a",
+      "returncode": 0,
+      "variant": "reposition0",
+      "wall_s": 4.25606612500269
+    },
+    {
+      "cells_3d": 31796,
+      "index": 2,
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "options": {
+        "Mesh.RecombineNodeRepositioning": 0
+      },
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/extra-2-reposition0/k3",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 11.352814596742167,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.0109484550304451,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050274732564,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079897993345,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872467071,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251082307261334,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "raw_mesh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a",
+      "returncode": 0,
+      "variant": "reposition0",
+      "wall_s": 4.380115417065099
+    },
+    {
+      "cells_3d": 31796,
+      "index": 3,
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "options": {
+        "Mesh.RecombineNodeRepositioning": 0
+      },
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/extra-3-reposition0/repeat3",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 11.352814596742167,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.0109484550304451,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050274732564,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079897993345,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872467071,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251082307261334,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "raw_mesh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a",
+      "returncode": 0,
+      "variant": "reposition0",
+      "wall_s": 5.249614708009176
+    },
+    {
+      "cells_3d": 31796,
+      "index": 4,
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "options": {
+        "Mesh.RecombineNodeRepositioning": 0
+      },
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/extra-4-reposition0/k3",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 11.352814596742167,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.0109484550304451,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050274732564,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079897993345,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872467071,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251082307261334,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "raw_mesh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a",
+      "returncode": 0,
+      "variant": "reposition0",
+      "wall_s": 5.073624208918773
+    },
+    {
+      "cells_3d": 31794,
+      "index": 5,
+      "mesh_sha256": "d83eb3eace44101ce4b201e070e38bec5fb6726c17fb4f54d4f1d8293edb3dff",
+      "options": {
+        "Mesh.RecombineNodeRepositioning": 0
+      },
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/extra-5-reposition0/repeat3",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 11.352814596742167,
+        "cells": 31794,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.0109484550304451,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050274732564,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079897993345,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872467071,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251082307261334,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "raw_mesh_sha256": "9f8d09bbbbe453f099f14553345bb97dea2b3e3683b629812e7cb3d5ae3254f0",
+      "returncode": 0,
+      "variant": "reposition0",
+      "wall_s": 4.5728660830063745
+    }
+  ],
+  "root": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_",
+  "summary": {
+    "baseline": {
+      "distinct_mesh_shas": 1,
+      "distinct_raw_mesh_shas": 1
+    },
+    "reposition0": {
+      "distinct_mesh_shas": 2,
+      "distinct_raw_mesh_shas": 2
+    }
+  }
+}

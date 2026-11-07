@@ -1,0 +1,34 @@
+{
+  "checks": [
+    {
+      "fixture": "synthetic_measurements.json.gz",
+      "schema": "topo2d00_rans_measurement_schema.json",
+      "valid": true
+    },
+    {
+      "fixture": "synthetic_rans_results.json.gz",
+      "schema": "topo2d00_rans_result_schema.json",
+      "valid": true
+    },
+    {
+      "mutation": "observable",
+      "rejected": true,
+      "schema": "topo2d00_rans_result_schema.json"
+    },
+    {
+      "mutation": "height_missing",
+      "rejected": true,
+      "schema": "topo2d00_rans_result_schema.json"
+    },
+    {
+      "mutation": "old_success_label",
+      "rejected": true,
+      "schema": "topo2d00_rans_result_schema.json"
+    }
+  ],
+  "evidence_class": "HERMETIC_SYNTHETIC_SCHEMA_VALIDATION",
+  "jsonschema": "4.25.1",
+  "project_dependency_added": false,
+  "python": "3.9.6 (default, Jan  9 2026, 11:03:41) \n[Clang 17.0.0 (clang-1700.6.4.2)]",
+  "scope": "Branch-local schema and synthetic fixtures only; no WP4 analyzer code or study qualification."
+}

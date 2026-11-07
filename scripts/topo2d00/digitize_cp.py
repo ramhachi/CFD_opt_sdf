@@ -146,7 +146,7 @@ def _cp(config, base, chord):
         seen.add(element_id)
         _text(element["coverage_note"], "coverage_note")
         _fields(element["surfaces"], set(ids))
-        digitizations = []
+        digitizations, readings = [], []
         for who in ids:
             surfaces = element["surfaces"][who]
             _fields(surfaces, {"upper", "lower"})
@@ -155,10 +155,14 @@ def _cp(config, base, chord):
             value = _integrate_points(upper, lower, element["abscissa_chord_m"], chord, element["x_extent"])
             if value <= 0:
                 raise ValueError(f"{element_id}/{who}: integrated Cl must be downforce-positive; check physical upper/lower surface labels")
+            readings.append({"upper": upper, "lower": lower})
             digitizations.append({"id": who, "Cl": value, "upper": up_input, "lower": lo_input})
         for surface in ("upper", "lower"):
-            if digitizations[0][surface]["sha256"] == digitizations[1][surface]["sha256"]:
-                raise ValueError(f"{element_id}: {surface} digitizations must have different CSV SHA-256 contents")
+            # Amendment 3 §6: compare parsed ascending numeric pairs. BOM,
+            # newline style, float spelling, signed zero and direction are not
+            # independent readings. Keep the byte SHA solely as provenance.
+            if readings[0][surface] == readings[1][surface]:
+                raise ValueError(f"{element_id}: {surface} digitizations must have different normalized numeric contents")
         value, sensitivity = _pair_summary([d["Cl"] for d in digitizations])
         elements.append({"id": element_id, "Cl": value, "digitization_sensitivity_abs": sensitivity,
                          "abscissa_chord_m": element["abscissa_chord_m"], "x_extent": element["x_extent"],
@@ -193,17 +197,18 @@ def _curve(config, base, chord):
     _fields(config["curves"], set(ids))
     scale = _coefficient_scale(config, chord)
     target = config["height_m"] / _number(config["height_chord_m"], "height_chord_m", positive=True)
-    digits = []
+    digits, readings = [], []
     for who in ids:
         points, inp = _input(base, config["curves"][who], ("h/c", "Cl"))
+        readings.append(points)
         if not points[0][0] <= target <= points[-1][0]:
             raise ValueError("Cl(h/c) reference would require extrapolation")
         i = min(max(bisect.bisect_left([p[0] for p in points], target), 1), len(points) - 1)
         (x0, y0), (x1, y1) = points[i - 1:i + 1]
         fraction = (target - x0) / (x1 - x0)
         digits.append({"id": who, "Cl": _number(((1 - fraction) * y0 + fraction * y1) * scale, "interpolated Cl"), "input": inp})
-    if digits[0]["input"]["sha256"] == digits[1]["input"]["sha256"]:
-        raise ValueError("Cl(h/c) digitizations must have different CSV SHA-256 contents")
+    if readings[0] == readings[1]:
+        raise ValueError("Cl(h/c) digitizations must have different normalized numeric contents")
     value, sensitivity = _pair_summary([d["Cl"] for d in digits])
     return {"Cl": value, "digitization_sensitivity_abs": sensitivity, "digitizations": digits,
             "digitizers": config["digitizers"], "independence_note": config["independence_note"],
