@@ -1,0 +1,530 @@
+...F.....................................................FFF...FFFFFFFFF [ 66%]
+FFF.FFFF.FFFF.......................                                     [100%]
+=================================== FAILURES ===================================
+____ test_c1_c5_exclude_wsl_interop_only_between_runs_and_keep_the_snapshot ____
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c1_c5_exclude_wsl_...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c1_c5_exclude_wsl_interop0/repo/runs/R2b/kernel', '--campaign', ...]])
+
+    def test_c1_c5_exclude_wsl_interop_only_between_runs_and_keep_the_snapshot(evidence):
+        _, runs, _, _ = evidence
+        snapshots = {}
+        for index, name in enumerate(("R1a", "R1b", "R2a", "R2b", "R3", "R5")):
+            run = runs / name
+            for path in (run / "local_run.json", run / "kernel/run_identity.json"):
+                doc = json.loads(path.read_text())
+                doc["filtered_environment"]["WSL_INTEROP"] = f"/run/WSL/{index}_interop"
+                write_json(path, doc)
+            rehash_run(run)
+            snapshots[name] = json.loads((run / "local_run.json").read_text())["filtered_environment"]
+        prior = runs / "R5/resume_input/prior_local_run.json"
+        doc = json.loads(prior.read_text())
+        doc["filtered_environment"]["WSL_INTEROP"] = "/run/WSL/interrupted_interop"
+        write_json(prior, doc)
+        path = runs / "R5/local_run.json"
+        rec = json.loads(path.read_text())
+        rec["resume"]["interrupted_run_sha256"] = digest(prior)
+        write_json(path, rec)
+        result = evaluate(evidence)
+>       assert result["status"] == "PASS"
+E       AssertionError: assert 'FAIL' == 'PASS'
+E         
+E         - PASS
+E         + FAIL
+
+tests/test_local_gpu_gate.py:284: AssertionError
+___________ test_c6_short_active_groups_are_recorded_and_skipped[1] ____________
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_short_active_gr...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_short_active_groups_ar0/repo/runs/R2b/kernel', '--campaign', ...]])
+short_samples = 1
+
+    @pytest.mark.parametrize("short_samples", [1, 2])
+    def test_c6_short_active_groups_are_recorded_and_skipped(evidence, short_samples):
+        def split_groups(rows):
+            rows[short_samples].update(utilization_gpu_pct="0")
+            rows[-2].update(utilization_gpu_pct="0")  # Leaves a one-sample group at the end.
+    
+        update_watch(evidence, split_groups)
+        result = evaluate(evidence)["criteria"]["C6"]
+>       assert result["status"] == "PASS" and result["missing_evidence"] == []
+E       AssertionError: assert ('INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE)
+
+tests/test_local_gpu_gate.py:657: AssertionError
+___________ test_c6_short_active_groups_are_recorded_and_skipped[2] ____________
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_short_active_gr...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_short_active_groups_ar1/repo/runs/R2b/kernel', '--campaign', ...]])
+short_samples = 2
+
+    @pytest.mark.parametrize("short_samples", [1, 2])
+    def test_c6_short_active_groups_are_recorded_and_skipped(evidence, short_samples):
+        def split_groups(rows):
+            rows[short_samples].update(utilization_gpu_pct="0")
+            rows[-2].update(utilization_gpu_pct="0")  # Leaves a one-sample group at the end.
+    
+        update_watch(evidence, split_groups)
+        result = evaluate(evidence)["criteria"]["C6"]
+>       assert result["status"] == "PASS" and result["missing_evidence"] == []
+E       AssertionError: assert ('INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE)
+
+tests/test_local_gpu_gate.py:657: AssertionError
+________ test_c6_each_repeat_needs_an_interval_with_two_mature_samples _________
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_each_repeat_nee...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_each_repeat_needs_an_i0/repo/runs/R2b/kernel', '--campaign', ...]])
+
+    def test_c6_each_repeat_needs_an_interval_with_two_mature_samples(evidence):
+        update_watch(evidence, lambda rows: [row.update(utilization_gpu_pct="0") for row in rows[2:180]])
+        result = evaluate(evidence)["criteria"]["C6"]
+        assert result["status"] == "INCOMPLETE"
+>       assert any("R6/repeat_001" in item and "at least one" in item for item in result["missing_evidence"])
+E       assert False
+E        +  where False = any(<generator object test_c6_each_repeat_needs_an_interval_with_two_mature_samples.<locals>.<genexpr> at 0x10832a5a0>)
+
+tests/test_local_gpu_gate.py:669: AssertionError
+________ test_c6_power_and_temperature_are_recorded_only[-power_draw_w] ________
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_tempe...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_temperature_0/repo/runs/R2b/kernel', '--campaign', ...]])
+column = 'power_draw_w', value = ''
+
+    @pytest.mark.parametrize("column", ["power_draw_w", "temperature_gpu_c"])
+    @pytest.mark.parametrize("value", ["", "[N/A]", "nan"])
+    def test_c6_power_and_temperature_are_recorded_only(evidence, column, value):
+        update_watch(evidence, lambda rows: rows[10].update({column: value}))
+        result = evaluate(evidence)["criteria"]["C6"]
+>       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:685: AssertionError
+_____ test_c6_power_and_temperature_are_recorded_only[-temperature_gpu_c] ______
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_tempe...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_temperature_1/repo/runs/R2b/kernel', '--campaign', ...]])
+column = 'temperature_gpu_c', value = ''
+
+    @pytest.mark.parametrize("column", ["power_draw_w", "temperature_gpu_c"])
+    @pytest.mark.parametrize("value", ["", "[N/A]", "nan"])
+    def test_c6_power_and_temperature_are_recorded_only(evidence, column, value):
+        update_watch(evidence, lambda rows: rows[10].update({column: value}))
+        result = evaluate(evidence)["criteria"]["C6"]
+>       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:685: AssertionError
+_____ test_c6_power_and_temperature_are_recorded_only[[N/A]-power_draw_w] ______
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_tempe...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_temperature_2/repo/runs/R2b/kernel', '--campaign', ...]])
+column = 'power_draw_w', value = '[N/A]'
+
+    @pytest.mark.parametrize("column", ["power_draw_w", "temperature_gpu_c"])
+    @pytest.mark.parametrize("value", ["", "[N/A]", "nan"])
+    def test_c6_power_and_temperature_are_recorded_only(evidence, column, value):
+        update_watch(evidence, lambda rows: rows[10].update({column: value}))
+        result = evaluate(evidence)["criteria"]["C6"]
+>       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:685: AssertionError
+___ test_c6_power_and_temperature_are_recorded_only[[N/A]-temperature_gpu_c] ___
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_tempe...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_temperature_3/repo/runs/R2b/kernel', '--campaign', ...]])
+column = 'temperature_gpu_c', value = '[N/A]'
+
+    @pytest.mark.parametrize("column", ["power_draw_w", "temperature_gpu_c"])
+    @pytest.mark.parametrize("value", ["", "[N/A]", "nan"])
+    def test_c6_power_and_temperature_are_recorded_only(evidence, column, value):
+        update_watch(evidence, lambda rows: rows[10].update({column: value}))
+        result = evaluate(evidence)["criteria"]["C6"]
+>       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:685: AssertionError
+______ test_c6_power_and_temperature_are_recorded_only[nan-power_draw_w] _______
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_tempe...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_temperature_4/repo/runs/R2b/kernel', '--campaign', ...]])
+column = 'power_draw_w', value = 'nan'
+
+    @pytest.mark.parametrize("column", ["power_draw_w", "temperature_gpu_c"])
+    @pytest.mark.parametrize("value", ["", "[N/A]", "nan"])
+    def test_c6_power_and_temperature_are_recorded_only(evidence, column, value):
+        update_watch(evidence, lambda rows: rows[10].update({column: value}))
+        result = evaluate(evidence)["criteria"]["C6"]
+>       assert result["status"] == "PASS"
+E       AssertionError: assert 'FAIL' == 'PASS'
+E         
+E         - PASS
+E         + FAIL
+
+tests/test_local_gpu_gate.py:685: AssertionError
+____ test_c6_power_and_temperature_are_recorded_only[nan-temperature_gpu_c] ____
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_tempe...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_power_and_temperature_5/repo/runs/R2b/kernel', '--campaign', ...]])
+column = 'temperature_gpu_c', value = 'nan'
+
+    @pytest.mark.parametrize("column", ["power_draw_w", "temperature_gpu_c"])
+    @pytest.mark.parametrize("value", ["", "[N/A]", "nan"])
+    def test_c6_power_and_temperature_are_recorded_only(evidence, column, value):
+        update_watch(evidence, lambda rows: rows[10].update({column: value}))
+        result = evaluate(evidence)["criteria"]["C6"]
+>       assert result["status"] == "PASS"
+E       AssertionError: assert 'FAIL' == 'PASS'
+E         
+E         - PASS
+E         + FAIL
+
+tests/test_local_gpu_gate.py:685: AssertionError
+__________ test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[] ___________
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_nvml_uuid_falls...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_nvml_uuid_falls_back_t0/repo/runs/R2b/kernel', '--campaign', ...]])
+uuid = ''
+
+    @pytest.mark.parametrize("uuid", ["", "N/A", "[N/A]", "[Not Supported]"])
+    def test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe(evidence, uuid):
+        update_watch(evidence, lambda rows: rows[10].update(gpu_uuid=uuid, missing_reason="uuid: NVML unavailable"))
+        result = evaluate(evidence)["criteria"]["C6"]
+>       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:693: AssertionError
+_________ test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[N/A] _________
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_nvml_uuid_falls...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_nvml_uuid_falls_back_t1/repo/runs/R2b/kernel', '--campaign', ...]])
+uuid = 'N/A'
+
+    @pytest.mark.parametrize("uuid", ["", "N/A", "[N/A]", "[Not Supported]"])
+    def test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe(evidence, uuid):
+        update_watch(evidence, lambda rows: rows[10].update(gpu_uuid=uuid, missing_reason="uuid: NVML unavailable"))
+        result = evaluate(evidence)["criteria"]["C6"]
+>       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:693: AssertionError
+________ test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[[N/A]] ________
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_nvml_uuid_falls...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_nvml_uuid_falls_back_t2/repo/runs/R2b/kernel', '--campaign', ...]])
+uuid = '[N/A]'
+
+    @pytest.mark.parametrize("uuid", ["", "N/A", "[N/A]", "[Not Supported]"])
+    def test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe(evidence, uuid):
+        update_watch(evidence, lambda rows: rows[10].update(gpu_uuid=uuid, missing_reason="uuid: NVML unavailable"))
+        result = evaluate(evidence)["criteria"]["C6"]
+>       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:693: AssertionError
+___ test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[[Not Supported]] ___
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_nvml_uuid_falls...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_nvml_uuid_falls_back_t3/repo/runs/R2b/kernel', '--campaign', ...]])
+uuid = '[Not Supported]'
+
+    @pytest.mark.parametrize("uuid", ["", "N/A", "[N/A]", "[Not Supported]"])
+    def test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe(evidence, uuid):
+        update_watch(evidence, lambda rows: rows[10].update(gpu_uuid=uuid, missing_reason="uuid: NVML unavailable"))
+        result = evaluate(evidence)["criteria"]["C6"]
+>       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:693: AssertionError
+__ test_c6_uuid_fallback_covers_all_samples_but_refuses_a_different_nvml_uuid __
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_uuid_fallback_c...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_uuid_fallback_covers_a0/repo/runs/R2b/kernel', '--campaign', ...]])
+
+    def test_c6_uuid_fallback_covers_all_samples_but_refuses_a_different_nvml_uuid(evidence):
+        update_watch(evidence, lambda rows: [row.update(gpu_uuid="") for row in rows])
+        result = evaluate(evidence)["criteria"]["C6"]
+>       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:704: AssertionError
+________ test_c6_device_capacity_can_come_from_the_locked_gpu_identity _________
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_device_capacity...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_device_capacity_can_co0/repo/runs/R2b/kernel', '--campaign', ...]])
+
+    def test_c6_device_capacity_can_come_from_the_locked_gpu_identity(evidence):
+        update_watch(evidence, lambda rows: [row.update(memory_total_mib="") for row in rows])
+        result = evaluate(evidence)["criteria"]["C6"]
+>       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:713: AssertionError
+____ test_c6_record_only_collector_missing_markers_do_not_block[power.draw] ____
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_col...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_collector_0/repo/runs/R2b/kernel', '--campaign', ...]])
+field = 'power.draw'
+
+    @pytest.mark.parametrize("field", ["power.draw", "temperature.gpu", "uuid"])
+    def test_c6_record_only_collector_missing_markers_do_not_block(evidence, field):
+        _, runs, _, _ = evidence
+        column = {"power.draw": "power_draw_w", "temperature.gpu": "temperature_gpu_c", "uuid": "gpu_uuid"}[field]
+        update_watch(evidence, lambda rows: rows[10].update({column: "", "missing_reason": f"{field} unavailable"}))
+        path = runs / "R6/watchdog_status.json"
+        status = json.loads(path.read_text())
+        status["telemetry_errors"] = [{"incomplete": f"{field} unavailable"}]
+        write_json(path, status)
+        result = evaluate(evidence)["criteria"]["C6"]
+>       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:733: AssertionError
+_ test_c6_record_only_collector_missing_markers_do_not_block[temperature.gpu] __
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_col...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_collector_1/repo/runs/R2b/kernel', '--campaign', ...]])
+field = 'temperature.gpu'
+
+    @pytest.mark.parametrize("field", ["power.draw", "temperature.gpu", "uuid"])
+    def test_c6_record_only_collector_missing_markers_do_not_block(evidence, field):
+        _, runs, _, _ = evidence
+        column = {"power.draw": "power_draw_w", "temperature.gpu": "temperature_gpu_c", "uuid": "gpu_uuid"}[field]
+        update_watch(evidence, lambda rows: rows[10].update({column: "", "missing_reason": f"{field} unavailable"}))
+        path = runs / "R6/watchdog_status.json"
+        status = json.loads(path.read_text())
+        status["telemetry_errors"] = [{"incomplete": f"{field} unavailable"}]
+        write_json(path, status)
+        result = evaluate(evidence)["criteria"]["C6"]
+>       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:733: AssertionError
+_______ test_c6_record_only_collector_missing_markers_do_not_block[uuid] _______
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_col...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_collector_2/repo/runs/R2b/kernel', '--campaign', ...]])
+field = 'uuid'
+
+    @pytest.mark.parametrize("field", ["power.draw", "temperature.gpu", "uuid"])
+    def test_c6_record_only_collector_missing_markers_do_not_block(evidence, field):
+        _, runs, _, _ = evidence
+        column = {"power.draw": "power_draw_w", "temperature.gpu": "temperature_gpu_c", "uuid": "gpu_uuid"}[field]
+        update_watch(evidence, lambda rows: rows[10].update({column: "", "missing_reason": f"{field} unavailable"}))
+        path = runs / "R6/watchdog_status.json"
+        status = json.loads(path.read_text())
+        status["telemetry_errors"] = [{"incomplete": f"{field} unavailable"}]
+        write_json(path, status)
+        result = evaluate(evidence)["criteria"]["C6"]
+>       assert result["status"] == "PASS"
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:733: AssertionError
+_ test_actual_telemetry_collector_missing_uses_required_field_policy[power_draw_w] _
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_actual_telemetry_c...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_actual_telemetry_collecto0/repo/runs/R2b/kernel', '--campaign', ...]])
+tmp_path = PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_actual_telemetry_collecto0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10830c950>
+missing_column = 'power_draw_w'
+
+    @pytest.mark.parametrize("missing_column", ["power_draw_w", "memory_used_mib"])
+    def test_actual_telemetry_collector_missing_uses_required_field_policy(evidence, tmp_path, monkeypatch, missing_column):
+        import local_gpu as L
+    
+        # Execute the real parser, collector and status writer against a deterministic NVML response.
+        # Only wall coverage comes from the synthetic six-hour evidence; no hardware is queried.
+        def raw_probe(argv, **kwargs):
+            if "--query-gpu=memory.used" in argv:
+                return "[N/A]" if missing_column == "memory_used_mib" else "50"
+            values = ["2000", "60", "100", "50", "80", "GPU-test", "12282"]
+            values[2 if missing_column == "power_draw_w" else 3] = "[N/A]"
+            return ", ".join(values)
+    
+        monkeypatch.setattr(L.C, "probe", raw_probe)
+        monkeypatch.setattr(L, "query_resets", lambda started: False)
+        collected = tmp_path / "collected.csv"
+        telemetry = L.Telemetry(collected)
+        monkeypatch.setattr(telemetry.stop, "wait", lambda timeout: telemetry.stop.set())
+        telemetry.start()
+        telemetry.thread.join(timeout=2)
+        assert not telemetry.thread.is_alive()
+        actual_status = telemetry.finish()
+        with collected.open(newline="") as handle:
+            actual_row = next(csv.DictReader(handle))
+        assert actual_row[missing_column] == "" and actual_row["missing_reason"]
+        assert actual_status["telemetry_errors"][0]["incomplete"]
+        actual_row["elapsed_s"] = "600"
+        update_watch(evidence, lambda rows: rows.__setitem__(10, actual_row))
+        status_path = evidence[1] / "R6/watchdog_status.json"
+        status = json.loads(status_path.read_text())
+        status["telemetry_errors"] = actual_status["telemetry_errors"]
+        write_json(status_path, status)
+        expected = "PASS" if missing_column == "power_draw_w" else "INCOMPLETE"
+>       assert evaluate(evidence)["criteria"]["C6"]["status"] == expected
+E       AssertionError: assert 'INCOMPLETE' == 'PASS'
+E         
+E         - PASS
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:770: AssertionError
+____ test_c6_record_only_collector_invalid_values_do_not_block[power.draw] _____
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_col...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_collector_3/repo/runs/R2b/kernel', '--campaign', ...]])
+field = 'power.draw'
+
+    @pytest.mark.parametrize("field", ["power.draw", "temperature.gpu"])
+    def test_c6_record_only_collector_invalid_values_do_not_block(evidence, field):
+        message = f"{field}: nan (non-finite or out-of-range numeric value)"
+        update_watch(evidence, lambda rows: rows[10].update(error=message))
+        path = evidence[1] / "R6/watchdog_status.json"
+        status = json.loads(path.read_text())
+        status["telemetry_errors"] = [{"error": message}]
+        write_json(path, status)
+>       assert evaluate(evidence)["criteria"]["C6"]["status"] == "PASS"
+E       AssertionError: assert 'FAIL' == 'PASS'
+E         
+E         - PASS
+E         + FAIL
+
+tests/test_local_gpu_gate.py:781: AssertionError
+__ test_c6_record_only_collector_invalid_values_do_not_block[temperature.gpu] __
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_col...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_record_only_collector_4/repo/runs/R2b/kernel', '--campaign', ...]])
+field = 'temperature.gpu'
+
+    @pytest.mark.parametrize("field", ["power.draw", "temperature.gpu"])
+    def test_c6_record_only_collector_invalid_values_do_not_block(evidence, field):
+        message = f"{field}: nan (non-finite or out-of-range numeric value)"
+        update_watch(evidence, lambda rows: rows[10].update(error=message))
+        path = evidence[1] / "R6/watchdog_status.json"
+        status = json.loads(path.read_text())
+        status["telemetry_errors"] = [{"error": message}]
+        write_json(path, status)
+>       assert evaluate(evidence)["criteria"]["C6"]["status"] == "PASS"
+E       AssertionError: assert 'FAIL' == 'PASS'
+E         
+E         - PASS
+E         + FAIL
+
+tests/test_local_gpu_gate.py:781: AssertionError
+_______ test_c6_watchdog_schema_requires_exact_column_set[missing_error] _______
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_watchdog_schema...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_watchdog_schema_requir0/repo/runs/R2b/kernel', '--campaign', ...]])
+schema = 'missing_error'
+
+    @pytest.mark.parametrize("schema", ["missing_error", "missing_driver_reset", "extra", "duplicate", "reordered"])
+    def test_c6_watchdog_schema_requires_exact_column_set(evidence, schema):
+        path = evidence[1] / "R6/watchdog.csv"
+        with path.open(newline="") as handle:
+            rows = list(csv.DictReader(handle))
+        columns = list(G.WATCHDOG_COLUMNS)
+        if schema.startswith("missing_"):
+            columns.remove(schema.removeprefix("missing_"))
+        elif schema == "extra":
+            columns.append("unknown")
+        elif schema == "duplicate":
+            columns.append(columns[0])
+        else:
+            columns.reverse()
+        with path.open("w", newline="") as handle:
+            writer = csv.DictWriter(handle, columns, extrasaction="ignore")
+            writer.writeheader()
+            writer.writerows(rows)
+        status_path = path.with_name("watchdog_status.json")
+        status = json.loads(status_path.read_text())
+        status["watchdog_sha256"] = digest(path)
+        write_json(status_path, status)
+        result = evaluate(evidence)["criteria"]["C6"]
+>       assert result["status"] == ("PASS" if schema == "reordered" else "FAIL")
+E       AssertionError: assert 'PASS' == 'FAIL'
+E         
+E         - FAIL
+E         + PASS
+
+tests/test_local_gpu_gate.py:807: AssertionError
+___ test_c6_watchdog_schema_requires_exact_column_set[missing_driver_reset] ____
+
+evidence = (PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_watchdog_schema...8cqgyshvr0000gn/T/pytest-of-sota/pytest-431/test_c6_watchdog_schema_requir1/repo/runs/R2b/kernel', '--campaign', ...]])
+schema = 'missing_driver_reset'
+
+    @pytest.mark.parametrize("schema", ["missing_error", "missing_driver_reset", "extra", "duplicate", "reordered"])
+    def test_c6_watchdog_schema_requires_exact_column_set(evidence, schema):
+        path = evidence[1] / "R6/watchdog.csv"
+        with path.open(newline="") as handle:
+            rows = list(csv.DictReader(handle))
+        columns = list(G.WATCHDOG_COLUMNS)
+        if schema.startswith("missing_"):
+            columns.remove(schema.removeprefix("missing_"))
+        elif schema == "extra":
+            columns.append("unknown")
+        elif schema == "duplicate":
+            columns.append(columns[0])
+        else:
+            columns.reverse()
+        with path.open("w", newline="") as handle:
+            writer = csv.DictWriter(handle, columns, extrasaction="ignore")
+            writer.writeheader()
+            writer.writerows(rows)
+        status_path = path.with_name("watchdog_status.json")
+        status = json.loads(status_path.read_text())
+        status["watchdog_sha256"] = digest(path)
+        write_json(status_path, status)
+        result = evaluate(evidence)["criteria"]["C6"]
+>       assert result["status"] == ("PASS" if schema == "reordered" else "FAIL")
+E       AssertionError: assert 'INCOMPLETE' == 'FAIL'
+E         
+E         - FAIL
+E         + INCOMPLETE
+
+tests/test_local_gpu_gate.py:807: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_local_gpu_gate.py::test_c1_c5_exclude_wsl_interop_only_between_runs_and_keep_the_snapshot
+FAILED tests/test_local_gpu_gate.py::test_c6_short_active_groups_are_recorded_and_skipped[1]
+FAILED tests/test_local_gpu_gate.py::test_c6_short_active_groups_are_recorded_and_skipped[2]
+FAILED tests/test_local_gpu_gate.py::test_c6_each_repeat_needs_an_interval_with_two_mature_samples
+FAILED tests/test_local_gpu_gate.py::test_c6_power_and_temperature_are_recorded_only[-power_draw_w]
+FAILED tests/test_local_gpu_gate.py::test_c6_power_and_temperature_are_recorded_only[-temperature_gpu_c]
+FAILED tests/test_local_gpu_gate.py::test_c6_power_and_temperature_are_recorded_only[[N/A]-power_draw_w]
+FAILED tests/test_local_gpu_gate.py::test_c6_power_and_temperature_are_recorded_only[[N/A]-temperature_gpu_c]
+FAILED tests/test_local_gpu_gate.py::test_c6_power_and_temperature_are_recorded_only[nan-power_draw_w]
+FAILED tests/test_local_gpu_gate.py::test_c6_power_and_temperature_are_recorded_only[nan-temperature_gpu_c]
+FAILED tests/test_local_gpu_gate.py::test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[]
+FAILED tests/test_local_gpu_gate.py::test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[N/A]
+FAILED tests/test_local_gpu_gate.py::test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[[N/A]]
+FAILED tests/test_local_gpu_gate.py::test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[[Not Supported]]
+FAILED tests/test_local_gpu_gate.py::test_c6_uuid_fallback_covers_all_samples_but_refuses_a_different_nvml_uuid
+FAILED tests/test_local_gpu_gate.py::test_c6_device_capacity_can_come_from_the_locked_gpu_identity
+FAILED tests/test_local_gpu_gate.py::test_c6_record_only_collector_missing_markers_do_not_block[power.draw]
+FAILED tests/test_local_gpu_gate.py::test_c6_record_only_collector_missing_markers_do_not_block[temperature.gpu]
+FAILED tests/test_local_gpu_gate.py::test_c6_record_only_collector_missing_markers_do_not_block[uuid]
+FAILED tests/test_local_gpu_gate.py::test_actual_telemetry_collector_missing_uses_required_field_policy[power_draw_w]
+FAILED tests/test_local_gpu_gate.py::test_c6_record_only_collector_invalid_values_do_not_block[power.draw]
+FAILED tests/test_local_gpu_gate.py::test_c6_record_only_collector_invalid_values_do_not_block[temperature.gpu]
+FAILED tests/test_local_gpu_gate.py::test_c6_watchdog_schema_requires_exact_column_set[missing_error]
+FAILED tests/test_local_gpu_gate.py::test_c6_watchdog_schema_requires_exact_column_set[missing_driver_reset]
+24 failed, 84 passed in 16.89s

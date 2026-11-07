@@ -1,0 +1,821 @@
+{
+  "amendment": 4,
+  "amendment4_checks": {
+    "artifact": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/checks.json",
+    "independent_source_review_findings": [],
+    "registered_freeze_count": 12,
+    "status": "PASS",
+    "verified_source_sha256": {
+      "scripts/local_gpu_gate.py": "09af2220c2454da2ef367a48657493b0a2beba8db9ca2f1d13dd37d81f1442a4",
+      "src/cfd_harness/backend_profiles.py": "a2a6eab89b3f588d4d266a80b3df1dea8e6bcc8c9f281a8aa7c7a98c249c7a71",
+      "tests/test_local_gpu_gate.py": "70590be949b3ba85b327439cfcefbe2a1ff8725402af7ef33839b1ac03cb39f5"
+    }
+  },
+  "amendment4_gate_contract": {
+    "excluded_identity_environment_variables": [
+      "WSL_INTEROP"
+    ],
+    "nvml_uuid_fallback": "same-repeat validated gpu_device_probe.json:default_device_uuid, with probe SHA and sample indices",
+    "record_only_telemetry_fields": [
+      "power.draw",
+      "temperature.gpu"
+    ],
+    "required_telemetry_fields": [
+      "memory.used",
+      "utilization.gpu",
+      "clocks.sm"
+    ],
+    "vram_group_rule": "skip groups with fewer than two samples after first 60 seconds; require at least one eligible group per repeat",
+    "watchdog_schema": "exact column set, order-independent, duplicates rejected"
+  },
+  "amendment4_record_corrections": {
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest-result.json": {
+      "change": "finished_utc renamed to written_utc; timestamp value and other data preserved",
+      "new_sha256": "3c73a5306be70eec9ab03f458c99776bf9ff4f25e2c75ff9cdffd4fb810d7ec5",
+      "old_sha256": "694b18009314355b1b767ed530892845bd6d46216cf25300afc3c2fb5377cf38",
+      "written_utc": "2026-11-07T09:07:43.676102+00:00"
+    },
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/source-stability.json": {
+      "change": "finished_utc renamed to written_utc; timestamp value and other data preserved",
+      "new_sha256": "3ed113646cee4189f05e17e48fd1d8de0e3fe6d3fb1b82a3b690db8a0e68eadc",
+      "old_sha256": "041f20fa1274f18074777662344f2a29d3717c50f47c467ec889f8215c2548c0",
+      "written_utc": "2026-11-07T09:07:43.854143+00:00"
+    }
+  },
+  "amendment4_tdd": {
+    "after": {
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_local_gpu_gate.py",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.xml"
+      ],
+      "complete": true,
+      "evidence_class": "synthetic regression tests after the Amendment 4 implementation; no GPU",
+      "failed_nodes": [],
+      "finished_utc": "2026-11-07T09:29:52.028770+00:00",
+      "junit_path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.xml",
+      "junit_sha256": "912b81225f6aad52e610354944ad2a3ebc3e3c2ef6e7d6f631de8c81b28a8f8b",
+      "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.txt",
+      "log_sha256": "bba76196fb359610be20fe1e76166ce5792d7f9326882a737736852952559954",
+      "returncode": 0,
+      "started_utc": "2026-11-07T09:29:43.009201+00:00",
+      "tests": 108,
+      "wall_seconds": 9.01953504094854
+    },
+    "before": {
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_local_gpu_gate.py",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before.xml"
+      ],
+      "complete": true,
+      "evidence_class": "synthetic regression tests before the Amendment 4 implementation; no GPU",
+      "failed_nodes": [
+        "tests.test_local_gpu_gate::test_c1_c5_exclude_wsl_interop_only_between_runs_and_keep_the_snapshot",
+        "tests.test_local_gpu_gate::test_c6_short_active_groups_are_recorded_and_skipped[1]",
+        "tests.test_local_gpu_gate::test_c6_short_active_groups_are_recorded_and_skipped[2]",
+        "tests.test_local_gpu_gate::test_c6_each_repeat_needs_an_interval_with_two_mature_samples",
+        "tests.test_local_gpu_gate::test_c6_power_and_temperature_are_recorded_only[-power_draw_w]",
+        "tests.test_local_gpu_gate::test_c6_power_and_temperature_are_recorded_only[-temperature_gpu_c]",
+        "tests.test_local_gpu_gate::test_c6_power_and_temperature_are_recorded_only[[N/A]-power_draw_w]",
+        "tests.test_local_gpu_gate::test_c6_power_and_temperature_are_recorded_only[[N/A]-temperature_gpu_c]",
+        "tests.test_local_gpu_gate::test_c6_power_and_temperature_are_recorded_only[nan-power_draw_w]",
+        "tests.test_local_gpu_gate::test_c6_power_and_temperature_are_recorded_only[nan-temperature_gpu_c]",
+        "tests.test_local_gpu_gate::test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[]",
+        "tests.test_local_gpu_gate::test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[N/A]",
+        "tests.test_local_gpu_gate::test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[[N/A]]",
+        "tests.test_local_gpu_gate::test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[[Not Supported]]",
+        "tests.test_local_gpu_gate::test_c6_uuid_fallback_covers_all_samples_but_refuses_a_different_nvml_uuid",
+        "tests.test_local_gpu_gate::test_c6_device_capacity_can_come_from_the_locked_gpu_identity",
+        "tests.test_local_gpu_gate::test_c6_record_only_collector_missing_markers_do_not_block[power.draw]",
+        "tests.test_local_gpu_gate::test_c6_record_only_collector_missing_markers_do_not_block[temperature.gpu]",
+        "tests.test_local_gpu_gate::test_c6_record_only_collector_missing_markers_do_not_block[uuid]",
+        "tests.test_local_gpu_gate::test_actual_telemetry_collector_missing_uses_required_field_policy[power_draw_w]",
+        "tests.test_local_gpu_gate::test_c6_record_only_collector_invalid_values_do_not_block[power.draw]",
+        "tests.test_local_gpu_gate::test_c6_record_only_collector_invalid_values_do_not_block[temperature.gpu]",
+        "tests.test_local_gpu_gate::test_c6_watchdog_schema_requires_exact_column_set[missing_error]",
+        "tests.test_local_gpu_gate::test_c6_watchdog_schema_requires_exact_column_set[missing_driver_reset]"
+      ],
+      "finished_utc": "2026-11-07T09:27:46.128813+00:00",
+      "junit_path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before.xml",
+      "junit_sha256": "3f2b5f3ade586e91f1f4abd737f53bad6effd739f647b7e7291438257893f825",
+      "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before.txt",
+      "log_sha256": "9bfb0e9ada125d08bb5fc283f750ffb2c9a1476b37e8cf640020ad5a0dc2fae1",
+      "returncode": 1,
+      "started_utc": "2026-11-07T09:27:29.073022+00:00",
+      "tests": 108,
+      "wall_seconds": 17.055648165987805
+    }
+  },
+  "artifact_scope": {
+    "wp01_amendment3_validation": "Historical execution data; only full-pytest/source-stability write-time key names were corrected for n5.",
+    "wp01_amendment4_validation": "Current amendment TDD, focused pytest, compileall and immutable-source checks."
+  },
+  "artifact_sha256": {
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-pytest.txt": "cde20831d0dd3d8a3996c2622f995ef30efc9445898361b2f3873b777c9b1c2f",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-pytest.xml": "b22bb44783b65135a445b03adf333323dc7c5fdd926d4a389ace30cbe03eccfd",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-result.json": "59f1919674dd6c812fd2724feab4f3a0c82ff5e9909a4372dcdcec0ca9da18fe",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/bench-cpu-selftest.txt": "54541da3a04fe77816aa2d79f0dacc2d634f25e5348cddc5b5e5a34409a908c1",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/checkpoint-selftest.txt": "e09c6b455c09591feea752c5a17422247700dbf5492392432e0bdf2c5422c6b4",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/compileall-result.json": "13fe118715e15c4187fd94000767af916f6eeabbf724a22fe37fd5490eeebb3b",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/compileall.txt": "daac1411f93c89479b52d0b5c0065ff3749ddec9b05a33f7c66ff00e1d367c3a",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/cpu-validation.json": "8a425040c39ff86db8095bc086714e2dc6d28b53f50ad10215f0d594316730f5",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest-result.json": "19993d2add506fef62702b436db530584dbf2bfc6ac5732829ff06fbb6721576",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.txt": "8fe398814bc67b8818145cc78230570b35a80c2cadeb21a84109f6f846e528e4",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.xml": "cef334789d65a2ffb3e57eb5507c01989209e8cb398a6a9ea0e45c034c182a33",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest-result.json": "3c73a5306be70eec9ab03f458c99776bf9ff4f25e2c75ff9cdffd4fb810d7ec5",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.txt": "aa86bb3b6278af7af683850a4eee35146450999ba6e1e5356e85d901117baf0c",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.xml": "462a1b45fad474bd95f2673dccfdb01f3e280572fdb37c55d62edf10213b9e64",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/mac-capture.txt": "87d9f25959be07fd9b97ea40e46c5bfb42eb44b2bc65c886c81e9d3349352585",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/protected-paths.json": "fd464c0fb3dca1fa8ce4c9904a3033aa1cb9cc649aa0b8e87fa58dae9d2d001c",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/source-stability.json": "3ed113646cee4189f05e17e48fd1d8de0e3fe6d3fb1b82a3b690db8a0e68eadc",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu-result.json": "e52f2e269d968795eaa4052e5ebfddc396ef0857ffb720b9105cc6caabf1048d",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.txt": "731dbfa1fa267685446c70612091eab35243ac5eeb2d27d867974d5496d05e8a",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.xml": "05732ebabc4bff4d6ac8b454e76e431bb381f35d8e59e645e69de264c55ccdd5",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/checks.json": "b0a48fa95b3fbb3405651407444d71ad1f099e0a7a17f4f5d03a99b8f1a08d79",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/compileall.txt": "721ef6850162b06dcdc7b199456a7be2482f05e57d52807584da2922c15796d5",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest-result.json": "c0b98a6ba82d7c590c431c68eb59d23acb95c1d1d19daab90c94cfdee5d0ce57",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest.txt": "b869bf6a5bd82ad17e5662ceb72695074eef5a72383788bcf6a7749de07b922f",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest.xml": "5343b07f2e30a8dc8dda41674bb717291e1e75b1e0f90b5d6d8b11912491fff5",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after-result.json": "b7e42b52bac6e081040ef12077ca2f956411445ef5aa2d35fad669bfa07ab75e",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.txt": "bba76196fb359610be20fe1e76166ce5792d7f9326882a737736852952559954",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.xml": "912b81225f6aad52e610354944ad2a3ebc3e3c2ef6e7d6f631de8c81b28a8f8b",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before-result.json": "7cc5ac5813a66b1933d9f33f9671aceddee29ffa9f9b2aec814104fb9955109c",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before.txt": "9bfb0e9ada125d08bb5fc283f750ffb2c9a1476b37e8cf640020ad5a0dc2fae1",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before.xml": "3f2b5f3ade586e91f1f4abd737f53bad6effd739f647b7e7291438257893f825"
+  },
+  "base": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+  "cpu_validation": {
+    "bench-cpu-selftest": {
+      "artifact": "docs/codex/gen01_w1_2026_11_06/reports/wp01_bench_cpu_selftest.json",
+      "artifact_sha256": "72c287628d4b38cf81d4e3507ea68abf6024edfc3b54f41b0e55db811f70756b",
+      "command": [
+        "julia",
+        "--startup-file=no",
+        "--project=julia/CFDSDFWaterLily",
+        "scripts/local_gpu_bench.jl",
+        "--cpu-selftest",
+        "--out",
+        "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/cpu-bench-tmp.json"
+      ],
+      "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/bench-cpu-selftest.txt",
+      "log_sha256": "54541da3a04fe77816aa2d79f0dacc2d634f25e5348cddc5b5e5a34409a908c1",
+      "result": {
+        "benchmark_definition": "custom Taylor-Green and plate fixtures; not WaterLily benchmark suite; published ns/DOF timings are not directly comparable",
+        "captured_utc": "2026-11-06T09:01:00.836Z",
+        "cases": [
+          {
+            "cell_steps_per_second": 237368.4324903837,
+            "cells": 4096,
+            "dtype": "Float32",
+            "final_t_u_l": 0.13599315285682678,
+            "finite_p": true,
+            "finite_u": true,
+            "flow_dims": [
+              16,
+              16,
+              16
+            ],
+            "initial_t_u_l": 0.015625,
+            "name": "tgv",
+            "ns_per_cell_step": 4212.860107421875,
+            "steps": 2,
+            "wall_seconds": 0.03451175,
+            "warmup_steps": 1,
+            "warmup_wall_seconds": 9.74836675
+          },
+          {
+            "cell_steps_per_second": 621630.3378673192,
+            "cells": 2048,
+            "dtype": "Float32",
+            "final_t_u_l": 0.22975414991378784,
+            "finite_p": true,
+            "finite_u": true,
+            "flow_dims": [
+              64,
+              32
+            ],
+            "initial_t_u_l": 0.03125,
+            "name": "plate_2d",
+            "ns_per_cell_step": 1608.673095703125,
+            "steps": 2,
+            "wall_seconds": 0.006589125,
+            "warmup_steps": 1,
+            "warmup_wall_seconds": 11.383857875
+          }
+        ],
+        "cuda_visible_devices": "not-applicable",
+        "evidence_class": "CPU_BENCH_SELFTEST",
+        "gpu_identity": {
+          "name": "CPU selftest; no GPU invoked",
+          "uuid": "not-applicable"
+        },
+        "host_label": "cpu_selftest",
+        "julia_version": "1.12.6",
+        "lock_binding": "not-applicable: CPU selftest",
+        "lock_sha256": "not-applicable: CPU selftest",
+        "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+        "measured_steps": 2,
+        "peak_vram_mib": {
+          "not_applicable": "CPU selftest; no GPU invoked"
+        },
+        "plate_definition": {
+          "angle_degrees": 10,
+          "chord_cells": 8,
+          "reynolds": 1000,
+          "thickness_cells": 1
+        },
+        "schema_version": 1,
+        "used_gpu_count": 0,
+        "vram_sampling": {
+          "errors": [],
+          "interval_s": 10,
+          "method": "CPU selftest; no GPU probe",
+          "peak": {
+            "not_applicable": "CPU selftest; no GPU invoked"
+          },
+          "samples": 0
+        },
+        "warmup_steps": 1,
+        "waterlily_version": "1.8.0"
+      },
+      "returncode": 0,
+      "stderr": "",
+      "wall_seconds": 47.4182001670124
+    },
+    "checkpoint-selftest": {
+      "artifact": "docs/codex/gen01_w1_2026_11_06/reports/wp01_checkpoint_selftest.json",
+      "artifact_sha256": "782339ce119c5cc6d473bafd161b4d786ebcb598720a163f28c6d2ee4d3d66b9",
+      "command": [
+        "julia",
+        "--startup-file=no",
+        "--project=julia/CFDSDFWaterLily",
+        "scripts/checkpoint_selftest.jl"
+      ],
+      "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/checkpoint-selftest.txt",
+      "log_sha256": "e09c6b455c09591feea752c5a17422247700dbf5492392432e0bdf2c5422c6b4",
+      "result": {
+        "checkpoint_sha256": "1ff34a9f718d7332a6a6ab7cb1dc766920746a7237f130d19ea1dcc52dc7d224",
+        "checkpoint_source_sha256": "21d7c9a2ca2c27bbfbecc6ed579417acde0c4dc1ca270c9ee3d5c1da64e13076",
+        "checkpoint_step": 50,
+        "class": "BITWISE",
+        "evidence_class": "CPU_CHECKPOINT_SELFTEST",
+        "flow_dims": [
+          64,
+          32
+        ],
+        "julia_executable_sha256": "9ad38bea81ecace044a4bdef2a0246dee94cb8a44c9420809cc00f9872651c64",
+        "julia_threads": 1,
+        "julia_version": "1.12.6",
+        "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+        "maximum_relative_difference": 0.0,
+        "resumed_window_means": [
+          2.9167655424387706,
+          -3.003170726879792e-05
+        ],
+        "selftest_source_sha256": "55a9f802d7ce2574076fb1ff6165b10bdb669f6a3110b21f49b7446b8ccaad6c",
+        "status": "PASS",
+        "steps": 100,
+        "wall_seconds": 42.016518115997314,
+        "waterlily_version": "1.8.0",
+        "window_means": [
+          2.9167655424387706,
+          -3.003170726879792e-05
+        ]
+      },
+      "returncode": 0,
+      "stderr": "",
+      "wall_seconds": 65.7010867500212
+    },
+    "mac-capture": {
+      "command": [
+        ".venv/bin/python",
+        "infra/local_gpu/capture_lock.py",
+        "--out",
+        "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/absent-mac-lock.json"
+      ],
+      "lock_created": false,
+      "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/mac-capture.txt",
+      "log_sha256": "87d9f25959be07fd9b97ea40e46c5bfb42eb44b2bc65c886c81e9d3349352585",
+      "result": {
+        "captured_utc": "2026-11-06T08:59:09.272484+00:00",
+        "environment": {
+          "backend_profile": "local_rtx4070ti",
+          "cuda": {
+            "error": "CUDA probe unavailable"
+          },
+          "cuda_device_order": "PCI_BUS_ID",
+          "cuda_visible_devices": "0",
+          "gpu": {
+            "compute_cap": {
+              "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+            },
+            "driver_version": {
+              "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+            },
+            "memory_total": {
+              "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+            },
+            "name": {
+              "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+            },
+            "power_limit": {
+              "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+            },
+            "uuid": {
+              "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+            }
+          },
+          "host": {
+            "hardware_accelerated_gpu_scheduling": {
+              "error": "reg.exe: [Errno 2] No such file or directory: 'reg.exe'"
+            },
+            "proc_version": {
+              "error": "[Errno 2] No such file or directory: '/proc/version'"
+            },
+            "windows_ver": {
+              "error": "cmd.exe: [Errno 2] No such file or directory: 'cmd.exe'"
+            }
+          },
+          "julia": {
+            "archive_url": "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz",
+            "executable": "/opt/homebrew/Cellar/juliaup/1.22.7/bin/julialauncher",
+            "expected_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+            "root": "/opt/homebrew/Cellar/juliaup/1.22.7",
+            "root_sha256": "cc99b66b21ee9578ebef8a22607810474bc3e2cf82efe8d9604d4e9527eb1ddd",
+            "sha256": "d923e2b0f59c7f51a58eb02eab6d79979f053495599af690e84841c5113422ef",
+            "version": "julia version 1.12.6"
+          },
+          "julia_depot": {
+            "manifest_packages_sha256": {
+              "error": "dedicated JULIA_DEPOT_PATH unavailable"
+            },
+            "path": {
+              "error": "explicit dedicated JULIA_DEPOT_PATH is required"
+            }
+          },
+          "path_mode": "CAMPAIGN_WORK_ROOT",
+          "project": {
+            "manifest_sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+            "path": "julia/CFDSDFWaterLilyT4",
+            "project_sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
+          },
+          "python": {
+            "executable": "/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+            "numpy_version": "2.5.2",
+            "sha256": "31b9c9a8d50289f3a13f014b3efd8ea3534fc3eea7ca7d9809e166139910b805",
+            "version": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]"
+          },
+          "wsl": {
+            "distro": {
+              "error": "[Errno 2] No such file or directory: '/etc/os-release'"
+            },
+            "kernel": "25.3.0",
+            "settings": {
+              "wsl_conf": {
+                "automount.ldconfig": {
+                  "error": "[Errno 2] No such file or directory: '/etc/wsl.conf'"
+                },
+                "gpu.appendLibPath": {
+                  "error": "[Errno 2] No such file or directory: '/etc/wsl.conf'"
+                }
+              },
+              "wslconfig": {
+                "wsl2.memory": {
+                  "error": "cannot locate Windows USERPROFILE through cmd.exe"
+                },
+                "wsl2.processors": {
+                  "error": "cannot locate Windows USERPROFILE through cmd.exe"
+                },
+                "wsl2.swap": {
+                  "error": "cannot locate Windows USERPROFILE through cmd.exe"
+                }
+              },
+              "wslconfig_path": {
+                "error": "cannot locate Windows USERPROFILE through cmd.exe"
+              }
+            },
+            "version": {
+              "error": "wsl.exe: [Errno 2] No such file or directory: 'wsl.exe'"
+            }
+          }
+        },
+        "errors": [
+          "mandatory gpu.name missing: {'error': \"nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'\"}",
+          "mandatory gpu.driver_version missing: {'error': \"nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'\"}",
+          "mandatory julia_depot.path missing: {'error': 'explicit dedicated JULIA_DEPOT_PATH is required'}",
+          "mandatory julia_depot.manifest_packages_sha256 missing: {'error': 'dedicated JULIA_DEPOT_PATH unavailable'}"
+        ],
+        "observations": {
+          "commands": {
+            "nvidia_smi": {
+              "error": "nvidia-smi: [Errno 2] No such file or directory: 'nvidia-smi'"
+            }
+          },
+          "cuda_versioninfo": {
+            "error": "CUDA probe skipped: nvidia-smi GPU/driver unavailable"
+          }
+        },
+        "schema_version": 1,
+        "status": "ERROR"
+      },
+      "returncode": 2,
+      "stderr": "",
+      "wall_seconds": 1.1988305830163881
+    },
+    "scope": "Historical CPU validation from Amendment 3; Julia source is unchanged and CPU solver selftests were not rerun for Amendment 4."
+  },
+  "focused_pytest": {
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_local_gpu.py",
+      "tests/test_local_gpu_backend.py",
+      "tests/test_local_gpu_gate.py",
+      "tests/test_local_gpu_julia.py",
+      "tests/test_harness_registered_reverify.py",
+      "-p",
+      "no:cacheprovider",
+      "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest.xml"
+    ],
+    "complete": true,
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 197,
+      "skipped": 0,
+      "tests": 197
+    },
+    "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu",
+    "evidence_class": "CPU/synthetic tooling verification; includes current-tree registered-output byte re-verification; no GPU",
+    "failed_nodes": [],
+    "finished_utc": "2026-11-07T09:31:03.068390+00:00",
+    "junit_path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest.xml",
+    "junit_sha256": "5343b07f2e30a8dc8dda41674bb717291e1e75b1e0f90b5d6d8b11912491fff5",
+    "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest.txt",
+    "log_sha256": "b869bf6a5bd82ad17e5662ceb72695074eef5a72383788bcf6a7749de07b922f",
+    "returncode": 0,
+    "started_utc": "2026-11-07T09:30:47.026486+00:00",
+    "summary": "197 passed in 15.78s",
+    "wall_seconds": 16.041899665957317
+  },
+  "full_pytest": {
+    "base": {
+      "baseline_commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+      "captured_stdout": "........................................................................ [  2%]\n........................................................................ [  4%]\n.........................................................s.............. [  6%]\n........................................................................ [  8%]\n........................................................................ [ 10%]\n........................................................................ [ 12%]\n..........................................s............................. [ 14%]\n........................................................................ [ 16%]\n..........................................s............................. [ 18%]\ns.....................sss.s...............................sss........sss [ 20%]\nss........................................sssssss.....s................. [ 22%]\n........................................................................ [ 24%]\n........................................................................ [ 26%]\n........................................................................ [ 28%]\n........................................................................ [ 30%]\n........................................................................ [ 32%]\n........................................................................ [ 34%]\n........................................................................ [ 36%]\n........................................................................ [ 38%]\n........................................................................ [ 40%]\n........................................................................ [ 42%]\n........................................................................ [ 44%]\n........................................................................ [ 46%]\n........................................................................ [ 48%]\n........................................................................ [ 50%]\n........................................................................ [ 52%]\n............................................s........s.................. [ 54%]\n........................................................................ [ 56%]\n........................................................................ [ 58%]\n........................................................................ [ 60%]\n........................................................................ [ 62%]\n..............s......................s.................................. [ 64%]\n..................................................s..................... [ 66%]\n........................................................................ [ 68%]\n........................................................................ [ 70%]\n................................................s.s....s................ [ 72%]\n........................................................................ [ 74%]\n........................................................................ [ 76%]\n........................................................................ [ 78%]\n........................................................................ [ 80%]\n........................................................................ [ 83%]\n........................................................................ [ 85%]\n.......sssssss........................ss........s.s.s.....s............s [ 87%]\nssss............ssss....s............ss.ss.s.ss.s............s.s.....sss [ 89%]\nss....s........ss....s.................................................. [ 91%]\n........................................................................ [ 93%]\n........................................................................ [ 95%]\n........................................................................ [ 97%]\n........................................................................ [ 99%]\n............................                                             [100%]\n=============================== warnings summary ===============================\nscripts/screen01/screen01_pool.py:110\n  /private/tmp/wp01-base-e3dcdf61/scripts/screen01/screen01_pool.py:110: UserWarning: The balance properties of Sobol' points require n to be a power of 2.\n    return x_to_u(qmc.Sobol(d=3, scramble=True, seed=seed).random(n))\n\ntests/test_extraction_qualification.py: 369 warnings\ntests/test_extraction_sweep.py: 1221 warnings\ntests/test_fixed_grid_backend.py: 9 warnings\ntests/test_fixed_grid_canonical_state_injection.py: 221 warnings\ntests/test_fixed_grid_connectivity.py: 190 warnings\ntests/test_fixed_grid_contract.py: 520 warnings\ntests/test_fixed_grid_optimizer.py: 506 warnings\ntests/test_fixed_grid_primal.py: 276 warnings\ntests/test_fixed_grid_sensitivity.py: 369 warnings\ntests/test_front_wing_pipeline.py: 893 warnings\ntests/test_handoff.py: 730 warnings\ntests/test_sdf_native_genesis.py: 131 warnings\ntests/test_sdf_native_geometry_gates.py: 100 warnings\ntests/test_stage_s_entry.py: 1228 warnings\ntests/test_stage_t_candidate_binding.py: 458 warnings\ntests/test_xfid45_surface_round2_candidates.py: 5 warnings\n  /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/vtkmodules/util/numpy_support.py:244: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.\n  As an alternative, you can create a new view using np.reshape (with copy=False if needed).\n    result.shape = shape\n\ntests/test_geometry_gates_v2.py: 48 warnings\n  /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/skimage/measure/_marching_cubes_lewiner.py:237: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.\n  As an alternative, you can create a new view using np.reshape (with copy=False if needed).\n    ar.shape = shape\n\ntests/test_geometry_gates_v2.py: 11 warnings\ntests/test_reinit04_v17.py: 2 warnings\ntests/test_xfid45_round3_export.py: 3 warnings\ntests/test_xfid45_surface_round2_candidates.py: 3 warnings\n  /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/skimage/measure/_marching_cubes_lewiner.py:213: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.\n  As an alternative, you can create a new view using np.reshape (with copy=False if needed).\n    faces.shape = -1, 3\n\ntests/test_grad_g2_diag4_prereg.py::TestFreeze::test_sidecar_and_every_frozen_file_hash\n  /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/_pytest/fixtures.py:1313: PytestRemovedIn10Warning: Class-scoped fixture defined as instance method is deprecated.\n  Instance attributes set in this fixture will NOT be visible to test methods,\n  as each test gets a new instance while the fixture runs only once per class.\n  Use @classmethod decorator and set attributes on cls instead.\n  See https://docs.pytest.org/en/stable/deprecations.html#class-scoped-fixture-as-instance-method\n    fixturefunc = resolve_fixture_function(fixturedef, request)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n3482 passed, 74 skipped, 7295 warnings in 2978.52s (0:49:38)\n",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "--ignore=tests/test_lbm_metal.py",
+        "-q",
+        "-rf",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/private/tmp/wp01-validation-attempt3/base-pytest.xml"
+      ],
+      "complete": true,
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 3482,
+        "skipped": 74,
+        "tests": 3556
+      },
+      "cwd": "/private/tmp/wp01-base-e3dcdf61",
+      "elapsed_seconds": 2980.48794175,
+      "exit_code": 0,
+      "failed_nodes": [],
+      "finished_utc": "2026-11-06T08:09:11.098762+00:00",
+      "junit_path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-pytest.xml",
+      "junit_sha256": "b22bb44783b65135a445b03adf333323dc7c5fdd926d4a389ace30cbe03eccfd",
+      "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-pytest.txt",
+      "log_sha256": "cde20831d0dd3d8a3996c2622f995ef30efc9445898361b2f3873b777c9b1c2f",
+      "provenance": "Completed baseline from attempt 3 at e3dcdf61, verified by its recorded SHA and copied unchanged; not rerun for Amendment 3.",
+      "pytest_pid": 1772,
+      "returncode": 0,
+      "setup": "git archive e3dcdf61 after worktree add denied",
+      "started_utc": "2026-11-06T07:19:30.593017+00:00",
+      "status": "completed",
+      "summary": "3482 passed, 74 skipped, 7295 warnings in 2978.52s (0:49:38)",
+      "wall_seconds": 2980.48794175
+    },
+    "failed_node_sets_equal": true,
+    "implementation": {
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "--ignore=tests/test_lbm_metal.py",
+        "-q",
+        "-rf",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.xml"
+      ],
+      "complete": true,
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 3651,
+        "skipped": 74,
+        "tests": 3725
+      },
+      "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu",
+      "failed_nodes": [],
+      "junit_path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.xml",
+      "junit_sha256": "462a1b45fad474bd95f2673dccfdb01f3e280572fdb37c55d62edf10213b9e64",
+      "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.txt",
+      "log_sha256": "aa86bb3b6278af7af683850a4eee35146450999ba6e1e5356e85d901117baf0c",
+      "returncode": 0,
+      "started_utc": "2026-11-06T09:00:07.970529+00:00",
+      "summary": "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n3651 passed, 74 skipped, 7295 warnings in 1933.39s (0:32:13)",
+      "wall_seconds": 1934.9927469580434,
+      "written_utc": "2026-11-07T09:07:43.676102+00:00"
+    },
+    "new_failed_nodes": [],
+    "rerun_for_amendment4": false,
+    "scope": "Historical completed runs before Amendment 4: base e3dcdf61 and implementation corresponding to ab801695. Not rerun for this amendment; not current-tree full-suite evidence."
+  },
+  "head_start": "ab80169579495bbb8037ef863982cce312a8d9e4",
+  "intended_file_sha256": {
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest-result.json": "3c73a5306be70eec9ab03f458c99776bf9ff4f25e2c75ff9cdffd4fb810d7ec5",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/source-stability.json": "3ed113646cee4189f05e17e48fd1d8de0e3fe6d3fb1b82a3b690db8a0e68eadc",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/checks.json": "b0a48fa95b3fbb3405651407444d71ad1f099e0a7a17f4f5d03a99b8f1a08d79",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/compileall.txt": "721ef6850162b06dcdc7b199456a7be2482f05e57d52807584da2922c15796d5",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest-result.json": "c0b98a6ba82d7c590c431c68eb59d23acb95c1d1d19daab90c94cfdee5d0ce57",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest.txt": "b869bf6a5bd82ad17e5662ceb72695074eef5a72383788bcf6a7749de07b922f",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest.xml": "5343b07f2e30a8dc8dda41674bb717291e1e75b1e0f90b5d6d8b11912491fff5",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after-result.json": "b7e42b52bac6e081040ef12077ca2f956411445ef5aa2d35fad669bfa07ab75e",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.txt": "bba76196fb359610be20fe1e76166ce5792d7f9326882a737736852952559954",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.xml": "912b81225f6aad52e610354944ad2a3ebc3e3c2ef6e7d6f631de8c81b28a8f8b",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before-result.json": "7cc5ac5813a66b1933d9f33f9671aceddee29ffa9f9b2aec814104fb9955109c",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before.txt": "9bfb0e9ada125d08bb5fc283f750ffb2c9a1476b37e8cf640020ad5a0dc2fae1",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before.xml": "3f2b5f3ade586e91f1f4abd737f53bad6effd739f647b7e7291438257893f825",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_design.md": "4d39bc42f5276e3e3949b7d5c685bc7d9d14dfebeba9cea119e5ad86d44800b4",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_report.md": "ea09e04799f440befdf87e1880f5e2761464845d35be6d49bdd7b36151bccc9f",
+    "scripts/local_gpu_gate.py": "09af2220c2454da2ef367a48657493b0a2beba8db9ca2f1d13dd37d81f1442a4",
+    "src/cfd_harness/backend_profiles.py": "a2a6eab89b3f588d4d266a80b3df1dea8e6bcc8c9f281a8aa7c7a98c249c7a71",
+    "tests/test_local_gpu_gate.py": "70590be949b3ba85b327439cfcefbe2a1ff8725402af7ef33839b1ac03cb39f5"
+  },
+  "intended_files": [
+    {
+      "change": "変更",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest-result.json"
+    },
+    {
+      "change": "変更",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/source-stability.json"
+    },
+    {
+      "change": "変更",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_design.md"
+    },
+    {
+      "change": "変更",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_report.md"
+    },
+    {
+      "change": "変更",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_validation.json"
+    },
+    {
+      "change": "変更",
+      "path": "scripts/local_gpu_gate.py"
+    },
+    {
+      "change": "変更",
+      "path": "src/cfd_harness/backend_profiles.py"
+    },
+    {
+      "change": "変更",
+      "path": "tests/test_local_gpu_gate.py"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/checks.json"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/compileall.txt"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest-result.json"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest.txt"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest.xml"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after-result.json"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.txt"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.xml"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before-result.json"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before.txt"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before.xml"
+    }
+  ],
+  "not_performed": [
+    "GPU/CUDA workloads",
+    "Kaggle/Colab/cloud/paid API",
+    "real WSL2 lock or environment gate measurement",
+    "registered evidence, tool-file or roadmap edits",
+    "protected historical test exceptions",
+    "full pytest rerun (explicit Amendment 4 scope)",
+    "Julia solver selftest rerun (unchanged source; prior evidence retained)",
+    "git add/commit/push or PR mutations"
+  ],
+  "prior_t4_byte_claim_corrected": true,
+  "protected_paths": {
+    "all_campaign_tools_diff_from_e3dcdf61": "",
+    "attempt1_records_unchanged": true,
+    "base": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+    "checks": [
+      {
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "",
+        "wall_seconds": 0.13506000000052154
+      },
+      {
+        "command": [
+          "git",
+          "diff",
+          "e3dcdf61",
+          "--",
+          "src/cfd_harness/campaign_*.py"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "",
+        "wall_seconds": 0.024305833037942648
+      },
+      {
+        "command": [
+          "git",
+          "diff",
+          "--name-only",
+          "--diff-filter=MDRT",
+          "e3dcdf61",
+          "--"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "",
+        "wall_seconds": 0.06281883304473013
+      },
+      {
+        "command": [
+          "git",
+          "diff",
+          "ab801695",
+          "--name-only",
+          "--",
+          "julia",
+          "docs/evidence",
+          "docs/harness",
+          "infra/kaggle",
+          "tests/conftest.py",
+          "tests/test_harness_replay.py",
+          "scripts/waterlily_lowdim02_flow32_job.jl"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "",
+        "wall_seconds": 0.05679000006057322
+      }
+    ],
+    "existing_test_changes": [],
+    "harness_tool_sha256": {
+      "scripts/harness.py": "e9d036846ffd33fced8a1507a8fb191e49e0179a517c25a393354c83de4655fa",
+      "src/cfd_harness/campaign_build.py": "7e3ee902bc3ed020edd5e37cbd9060490f9c0f5119e72a60448edbdcf0688a68",
+      "src/cfd_harness/campaign_runner_template.py": "d53e2df74af8becc4e512c19e14381c549006a499c38c2cfab2ba89b6ab9ead1",
+      "src/cfd_harness/campaign_schema.py": "4c3c494ed381930d9d1e51b063efbbdcf1fa4586c1ac7e84d2b999a5c984d1b8",
+      "src/cfd_harness/campaign_verify.py": "8db4714799e258e08ce1a2e8ed9de4b5ff90ba3d9fa56513ec6d6997b0e57a2e"
+    },
+    "protected_scope_changes": [],
+    "registered_freeze_tool_hash_matches": {
+      "docs/evidence/fid01_2026_10_21/freeze1.json": true,
+      "docs/evidence/screen01_2026_10_30/freeze1.json": true,
+      "docs/evidence/unc01_2026_10_20/freeze1.json": true,
+      "docs/harness/fid01_campaign.prerun_freeze.json": true,
+      "docs/harness/fid01_f48_campaign.prerun_freeze.json": true,
+      "docs/harness/job02_gate_campaign.prerun_freeze.json": true,
+      "docs/harness/screen01_campaign.prerun_freeze.json": true,
+      "docs/harness/screen01_f48_campaign.prerun_freeze.json": true,
+      "docs/harness/screen01_f_campaign.prerun_freeze.json": true,
+      "docs/harness/screen01_g2_campaign.prerun_freeze.json": true,
+      "docs/harness/unc01_u01_campaign.prerun_freeze.json": true,
+      "docs/harness/unc01_u2_campaign.prerun_freeze.json": true
+    },
+    "registered_prerun_freezes_with_identical_tool_hashes": {
+      "docs/harness/fid01_campaign.prerun_freeze.json": true,
+      "docs/harness/fid01_f48_campaign.prerun_freeze.json": true,
+      "docs/harness/job02_gate_campaign.prerun_freeze.json": true,
+      "docs/harness/screen01_campaign.prerun_freeze.json": true,
+      "docs/harness/screen01_f48_campaign.prerun_freeze.json": true,
+      "docs/harness/screen01_f_campaign.prerun_freeze.json": true,
+      "docs/harness/screen01_g2_campaign.prerun_freeze.json": true,
+      "docs/harness/unc01_u01_campaign.prerun_freeze.json": true,
+      "docs/harness/unc01_u2_campaign.prerun_freeze.json": true
+    },
+    "registered_source_directory_sha256": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "three_tools_diff_stat": ""
+  },
+  "publication": {
+    "alternate_clone_push_attempted": false,
+    "auto_merge": false,
+    "git_add_attempted": false,
+    "git_commit_attempted": false,
+    "owner": "Claude on host per Amendment 4",
+    "pr": "#88 (already exists; host updates)",
+    "push_attempted": false
+  },
+  "schema_version": 4,
+  "source_stability": {
+    "artifact": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/source-stability.json",
+    "changed": [],
+    "scope": "Historical before/after inventory of the Amendment 3 full-suite run; not a claim that this inventory equals the modified Amendment 4 sources.",
+    "source_files": 927,
+    "status": "COMPLETE"
+  },
+  "standalone_local_gpu_pytest": {
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_local_gpu.py",
+      "-p",
+      "no:cacheprovider",
+      "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.xml"
+    ],
+    "complete": true,
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 25,
+      "skipped": 0,
+      "tests": 25
+    },
+    "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu",
+    "failed_nodes": [],
+    "finished_utc": "2026-11-06T09:00:07.643879+00:00",
+    "junit_path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.xml",
+    "junit_sha256": "05732ebabc4bff4d6ac8b454e76e431bb381f35d8e59e645e69de264c55ccdd5",
+    "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.txt",
+    "log_sha256": "731dbfa1fa267685446c70612091eab35243ac5eeb2d27d867974d5496d05e8a",
+    "returncode": 0,
+    "scope": "Historical 25-test standalone run; tests/test_local_gpu.py is also included in the current 197-test focused run.",
+    "started_utc": "2026-11-06T09:00:04.853511+00:00",
+    "summary": ".........................                                                [100%]\n25 passed in 2.19s",
+    "wall_seconds": 2.7903375839814544
+  },
+  "status": "DONE",
+  "updated_utc": "2026-11-07T09:35:34.251623+00:00",
+  "worker_routing": {
+    "actual_model": "native parent + inherited read-only review worker",
+    "attempt_number": 1,
+    "global_configuration_or_paid_usage_changed": false,
+    "reason": "OpenCode Go MCP unavailable; CLI models failed FileSystem.open(default log)",
+    "requested_model": "OpenCode Go model discovery / cheap_worker"
+  }
+}
