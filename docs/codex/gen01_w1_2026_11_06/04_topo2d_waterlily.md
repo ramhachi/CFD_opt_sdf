@@ -64,3 +64,12 @@ Zhang & Zerihan（2003）の 2 要素の地面効果翼から 1／2／3 要素�
 5. **observable**：共有 RANS 形式に `observable`（`pressure_cl`／`total_cl`）を足し、analyzer は observable をまたぐ差分を拒否する。WP5 の 2 回目が同じ登録文（Amendment 1 §5）から同じ schema を更新中なので、WP4 の schema ファイルは登録文の定義だけに従い、WP5 との byte 一致は Claude が統合時に揃える。
 6. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。base は Claude の host 実行（e3dcdf61、3482 passed / 74 skipped / 0 failed）。
 7. **commit／push は Claude が host で行う。** `/tmp` の clone は使わない。報告に commit すべきファイルの完全な一覧（移動元→移動先、変更、新規）を書く。worktree は `88fea06e` に同期済み。PR #89 の本文は Claude が更新する。
+
+## Amendment 3（2026-11-07。2 回目（PR #89、`ba3164c7`）への回答。Amendment 1・2 の上に適用する。この節が本文より優先する）
+
+1. **sliver。** 再標本化した多角形に 5.6 µm の線分がある（WP5 の review が (27.3, 127.1) mm 付近で検出。`polygon_mm` の最小線分は 0）。登録 Amendment 3 §1 の規則に合わせる：線分長 ∈ [0.1 mm, 1 mm]、折れ角 ≤ 5°（cap 2 頂点のみ免除）、隣接線分比 ≤ 3、閉じる線分は隣に併合（終点の重複なし）。`geometry.py` の gate と `tests/topo2d00/test_geometry.py` に 4 条件を足し、全 10 scene を再生成して図を更新する。
+2. **cell state の順序**を `INCOMPLETE > MESH_FAILED > NUMERICAL > SETTLED` に（WP5 と共通）。
+3. **高さ。** `E1_h80.json` が `E1` として読まれ export が 100 mm を hard-code している。scene JSON の高さを唯一の出所にし、export と campaign はそれを使う。宣言した高さと scene の高さが違えば拒否。
+4. **`CONCORDANT_PARTIAL`**：登録 Amendment 3 §5 の定義（SIGN_AGREE_12 が片方の Re だけ真、RANK_AGREE は両側 resolved の範囲で真）に analyzer と checker を合わせ、8 ラベルの到達性テストを更新する。
+5. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。
+6. **commit／push は Claude が host で行う。** worktree は `ba3164c7`。報告に commit すべきファイルの一覧を書く。

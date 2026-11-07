@@ -51,3 +51,19 @@ review 全文：`/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/git
 10. **報告（E1）。** `merge-tree` の主張は artifact を付けるか削る。A1／A3／A2 の相違点を報告に明記する。
 11. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。base は Claude の host 実行（e3dcdf61、3482 passed / 74 skipped / 0 failed）。
 12. **commit／push は Claude が host で行う。** `work/wp05/publication.git` の経路は使わない。報告に commit すべきファイルの完全な一覧を書く。worktree は `cb4df650` に同期済み。PR #87 の本文は Claude が更新する。
+
+## Amendment 2（2026-11-07。2 回目（PR #87、`45917d8c`）への 2 回目の Opus review の回答。round-1 の BLOCKER／MAJOR は closed。この節が本文と Amendment 1 より優先する）
+
+review 全文：`/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/codex/gen01_w1_2026_11_06/reviews/wp05_review_2_opus.md`。登録の判断は同じ worktree の `docs/topo2d00_registration_2026_11_01.md` **Amendment 3**（読む）。
+
+1. **N1。** `load_geometry` の guard に **最小線分 0.1 mm（= 0.05 × fine30 の ds）と隣接線分比 ≤ 3** を足す（cap 2 頂点は角度のみ免除）。WP4 の 2 回目の多角形（5.6 µm の sliver）が拒否されるテストと、密な合成多角形が通るテストを足す。
+2. **N2。** realisation 機構を登録 Amendment 3 §2 のとおり実装する：多角形の始点回転（k·⌊n/8⌋）＋far-field box（inlet／outlet／top）の Halton(2,3) による [0, ds)² の shift（ground は固定）。index から mesh が再現できることと、8 個の mesh SHA が pairwise distinct になること（ローカル med30 の E2_sharp 合成幾何で実測）をテストで示す。manifest の「not run-to-run reproducible」の記述を直す。Kaggle の run-to-run 決定性は 1 realisation の記録として残す（本番時）。
+3. **N4。** 整合性失敗（layer plan／geometry／policy の SHA 不一致、checkMesh の deadline 打ち切り）は `RUNNER_EXCEPTION`／`INCOMPLETE` に戻す。`MESH_FAILED` は生成器・gmsh・checkMesh の **結果**だけ。
+4. **N5。** 他 worktree の未 commit コードを実行するテストを hermetic にする（WP4 の analyzer との接続確認は、branch 内に commit した schema と合成 fixture で行う）。
+5. **N6。** thickening-alone の対は同じ observable の usable 行だけ。
+6. **C1。** reader の相違は bytes ではなく **正規化した数値内容**で判定（同一内容なら拒否）。
+7. **B3。** `ready` の条件はそのまま（clean tree、freeze 1、検証済み幾何）。
+8. **NOTE。** cell state の順序を `INCOMPLETE > MESH_FAILED > NUMERICAL > SETTLED` に統一（WP4 側も同じ順に直させる）。h は scene JSON から読み、宣言した高さと違えば拒否（100 mm の hard-code を消す）。
+9. E2 の smoke と kernel 再生成は、WP4 の 3 回目（sliver 修正後）の幾何が来てから Claude が指示する。今回は実装・テスト・報告まで。
+10. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。
+11. **commit／push は Claude が host で行う。** worktree は `45917d8c`。報告に commit すべきファイルの一覧を書く。

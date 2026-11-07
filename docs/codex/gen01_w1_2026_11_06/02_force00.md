@@ -63,3 +63,16 @@ WaterLily 1.8.0 の `pressure_force`（`∮ p n ds` を `nds = n·kern(clamp(d,�
 4. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。base は Claude の host 実行（e3dcdf61、3482 passed / 74 skipped / 0 failed）。一時 CPU 環境や `.venv` の付け替えはしない。
 5. **commit／push は Claude が host で行う。** GitHub API の blob 作成や `/tmp` clone は使わない。報告の「作ったもの」に commit すべきファイルの完全な一覧（移動元→移動先、変更、戻したもの、新規、削除）を書く。worktree の HEAD は `21d1e8e7`、未 commit の 2 回目の変更の上で続ける。PR #84 の本文は Claude が更新する。
 6. 受け入れ条件（Julia 自己テスト、U1/U2 の決定性、R_nds の閉包 1e-12、job の cur 列の byte 回帰、gate テスト、全体の失敗集合が base と同一）を満たしたら状態を DONE にする。GPU（F1〜F3）は user が後で回す。
+
+## Amendment 3（2026-11-07。3 回目（PR #84、`afac79ed`、DONE）への Opus source review の回答。この節が本文と Amendment 1・2 より優先する）
+
+review 全文：`/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/codex/gen01_w1_2026_11_06/reviews/wp02_review_1_opus.md`（reviewer の CPU probe は同じディレクトリの `wp02_review_1_cv_box_probe.jl`）。仕様の判断は同じ worktree の `docs/force00_force_readout_gate_2026_11_01.md` **Amendment 1**（読む）。verdict は INTEGRATE_AFTER_FIXES。数学と solver 側は正しいと確認された。次を直す。
+
+1. **M1。** C5 と σ_d の欠落は採用を妨げない（`criteria.C5` に INCOMPLETE を記録するだけ）。C1〜C4 の入力が欠けている間は `gate.json` を書かずに非零終了。`except (FileNotFoundError, KeyError)` の経路も同じ扱いに。テストを反転・追加。
+2. **m1／m3。** 登録 box：`scripts/force00_boxes.py` が親（phase 0）から grid ごとの box（境界から ≥ 2、親の μ₀ < 1 の support から ≥ 5 セル）を 1 回計算して `docs/harness/force00_boxes.json` に親 SHA 付きで書く（既存なら拒否）。job はこのファイルから box を読む（env var は CPU テスト専用）。`Force00.jl` の `box=nothing` の既定経路を廃止し、`validate_force_box` に box 境界の法線面で **μ₀ == 1 の厳密検査**を足す。gate は grid ごとに全 run（全位相、F3 の対）で box が同一であることを要求。U1／U2 を再実行し決定性を再確認。
+3. **m2。** job summary に `gen01/Force00.jl`・job・dispatcher の SHA を記録し、gate は U1 の記録と一致を要求。
+4. **m5。** C1 に F3 の R_cur 列の byte 回帰（FID-01 の登録 CSV、親と `camber_m19.7`、k7〜k10）を足す。
+5. **m4／n4。** 自己テストに box 非依存の検査（2D 円柱 D=16、Re 100、3 つの入れ子 box。記述）と、線形圧力の厳密な大きさ検査（summation by parts）を足す。reviewer の probe を参考にしてよい（import はしない。branch 内に自前で書く）。
+6. **m6／n6／n3／n5。** summary に timing の非互換を明記、header／usage／DONE の文言を FORCE-00 に、C4 の 15 % 境界に 1e-9 の相対許容、球の半径は 1 箇所。
+7. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。
+8. **commit／push は Claude が host で行う。** worktree は `afac79ed`。報告に commit すべきファイルの一覧を書く。GPU（F1〜F3）は user が後で回す。
