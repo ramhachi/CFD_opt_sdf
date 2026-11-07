@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cfd2026:topo2d00:rans:v1",
+  "title": "WP4/WP5 TOPO-2D-00 RANS measurements (common c1 normalization)",
+  "description": "Collection is not a TR-00 verdict. T2-0c SIMPLE block plateau uses raw-tail Cl relative std <=0.005 after the plateau; SIMPLE iterations carry no physical cycle classification. Only complete, usable settled production measurements enter qualification. Missing runs have no invented coefficient values. Layers are equal within each mesh family across configurations and models.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "evidence_class", "normalization", "force_convention", "complete", "expected_runs", "missing_runs", "results"],
+  "properties": {
+    "schema_version": {"const": "topo2d00-rans-v1"},
+    "evidence_class": {"const": "RANS_MEASUREMENT_UNQUALIFIED"},
+    "normalization": {"$ref": "#/$defs/normalization"},
+    "force_convention": {"$ref": "#/$defs/force_convention"},
+    "complete": {"type": "boolean", "description": "All expected run keys have records; this does not mean that the runs settled or passed TR-00."},
+    "expected_runs": {"type": "integer", "minimum": 1},
+    "missing_runs": {"type": "array", "items": {"$ref": "#/$defs/key"}, "uniqueItems": true},
+    "results": {"type": "array", "items": {"$ref": "#/$defs/result"}}
+  },
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "nullable_sha": {"anyOf": [{"$ref": "#/$defs/sha"}, {"type": "null"}]},
+    "normalization": {
+      "type": "object", "additionalProperties": false,
+      "required": ["reference_chord_m", "extrusion_span_m", "reference_area_m2", "U_inf_m_s", "rho_kg_m3"],
+      "properties": {
+        "reference_chord_m": {"const": 0.2234},
+        "extrusion_span_m": {"const": 0.002},
+        "reference_area_m2": {"const": 0.0004468},
+        "U_inf_m_s": {"const": 30.0},
+        "rho_kg_m3": {"const": 1.0}
+      }
+    },
+    "force_convention": {
+      "type": "object", "additionalProperties": false,
+      "required": ["Cl", "Cd", "lift_direction", "drag_direction"],
+      "properties": {
+        "Cl": {"const": "downforce"}, "Cd": {"const": "drag"},
+        "lift_direction": {"const": [0, -1, 0]}, "drag_direction": {"const": [1, 0, 0]}
+      }
+    },
+    "key": {
+      "type": "object", "additionalProperties": false,
+      "required": ["config", "model", "family", "realisation"],
+      "properties": {
+        "config": {"enum": ["E1_sharp", "E2_sharp", "E1", "E2", "E3"]},
+        "model": {"enum": ["sa-wf", "sst-wf"]},
+        "family": {"enum": ["fine30", "med30"]},
+        "realisation": {"type": "integer", "minimum": 0, "maximum": 7}
+      }
+    },
+    "coefficient": {
+      "type": "object", "additionalProperties": false,
+      "required": ["Cl", "Cd"],
+      "properties": {"Cl": {"type": "number"}, "Cd": {"type": "number"}}
+    },
+    "element": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "patch", "Cl", "Cd"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "patch": {"enum": ["airfoil", "airfoil_2", "airfoil_3"]},
+        "Cl": {"type": ["number", "null"]}, "Cd": {"type": ["number", "null"]}
+      }
+    },
+    "result": {
+      "type": "object", "additionalProperties": false,
+      "required": ["config", "model", "family", "realisation", "status", "mesh_msh_sha256", "geometry_sha256", "n_layers", "height_m", "h_over_c1", "h_over_c", "observable", "coefficients", "pressure_coefficients", "viscous_coefficients", "convergence", "pressure_convergence", "usable", "provenance"],
+      "properties": {
+        "config": {"enum": ["E1_sharp", "E2_sharp", "E1", "E2", "E3"]},
+        "model": {"enum": ["sa-wf", "sst-wf"]}, "family": {"enum": ["fine30", "med30"]},
+        "realisation": {"type": "integer", "minimum": 0, "maximum": 7},
+        "status": {"type": "string", "minLength": 1},
+        "mesh_msh_sha256": {"$ref": "#/$defs/nullable_sha"},
+        "geometry_sha256": {"$ref": "#/$defs/sha"},
+        "n_layers": {"type": ["integer", "null"], "minimum": 1, "description": "Registered family-wide boundary-layer count. Null when no validated stack is available (generation failed, unstarted run, or infrastructure refusal before manifest validation); equality across configurations/models is enforced for known stacks by the collector."},
+        "height_m": {"type": "number", "exclusiveMinimum": 0, "description": "Physical ride height read from the scene and checked against the declared configuration height. Infrastructure refusals retain the declaration, never a fabricated default."},
+        "h_over_c1": {"type": "number", "exclusiveMinimum": 0},
+        "h_over_c": {"type": "number", "exclusiveMinimum": 0},
+        "observable": {"enum": ["pressure_cl", "total_cl"], "description": "Selected study observable: pressure_cl on sharp arms for Cp comparison; total_cl on thickened arms for WaterLily. coefficients always retains total pressure+viscous, pressure_coefficients retains pressure only."},
+        "coefficients": {
+          "type": "object", "additionalProperties": false, "required": ["total", "elements"],
+          "properties": {
+            "total": {"anyOf": [{"$ref": "#/$defs/coefficient"}, {"type": "null"}]},
+            "elements": {"type": "array", "minItems": 1, "maxItems": 3, "items": {"$ref": "#/$defs/element"}}
+          }
+        },
+        "pressure_coefficients": {"$ref": "#/$defs/components", "description": "Pressure-only Cl/Cd from forces pressure vectors, comparable to pressure-integrated Cp reference after matching axes and common c1 normalization."},
+        "viscous_coefficients": {"$ref": "#/$defs/components"},
+        "convergence": {
+          "type": "object", "additionalProperties": false,
+          "required": ["state", "raw_class", "coordinate", "statistics", "reason"],
+          "properties": {
+            "state": {"enum": ["settled", "diverged", "not_settled", "unavailable"]},
+            "raw_class": {"type": "string", "description": "T2-0c VALID, UNSTEADY (>0.005 raw-tail relative Cl std after plateau), SOLVER_FAIL, MESH_FAILED or INFRA_LOSS."},
+            "coordinate": {"const": "SIMPLE iteration (not physical time)"},
+            "statistics": {"type": "object"}, "reason": {"type": "string"}
+          }
+        },
+        "pressure_convergence": {"$ref": "#/$defs/convergence", "description": "Independent pressure-only Cl convergence. Controls validity for pressure_cl sharp arms; retained as a diagnostic for total_cl thick arms, whose selected total convergence controls validity."},
+        "usable": {"type": "boolean"},
+        "provenance": {
+          "type": "object", "additionalProperties": false,
+          "required": ["case_result", "case_result_sha256", "coefficient_files", "force_files"],
+          "properties": {
+            "case_result": {"type": "string"}, "case_result_sha256": {"$ref": "#/$defs/sha"},
+            "coefficient_files": {"type": "object", "additionalProperties": {"type": "array", "items": {"$ref": "#/$defs/artifact"}}},
+            "force_files": {"type": "object", "additionalProperties": {"type": "array", "items": {"$ref": "#/$defs/artifact"}}}
+          }
+        }
+      },
+      "allOf": [{"if": {"properties": {"usable": {"const": true}}}, "then": {
+        "properties": {"status": {"const": "COMPLETED"}, "mesh_msh_sha256": {"$ref": "#/$defs/sha"},
+          "coefficients": {"properties": {"total": {"$ref": "#/$defs/coefficient"}}}},
+        "anyOf": [
+          {"properties": {"observable": {"const": "pressure_cl"}, "pressure_convergence": {"properties": {"state": {"const": "settled"}}}}},
+          {"properties": {"observable": {"const": "total_cl"}, "convergence": {"properties": {"state": {"const": "settled"}}}}}
+        ]
+      }},
+        {"if": {"properties": {"config": {"enum": ["E1_sharp", "E2_sharp"]}}}, "then": {"properties": {"observable": {"const": "pressure_cl"}}}},
+        {"if": {"properties": {"config": {"enum": ["E1", "E2", "E3"]}}}, "then": {"properties": {"observable": {"const": "total_cl"}}}}]
+    },
+    "artifact": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"$ref": "#/$defs/sha"}}
+    },
+    "components": {
+      "type": "object", "additionalProperties": false, "required": ["total", "elements"],
+      "properties": {
+        "total": {"anyOf": [{"$ref": "#/$defs/coefficient"}, {"type": "null"}]},
+        "elements": {"type": "array", "minItems": 1, "maxItems": 3, "items": {"$ref": "#/$defs/element"}}
+      }
+    },
+    "convergence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["state", "raw_class", "coordinate", "statistics", "reason"],
+      "properties": {
+        "state": {"enum": ["settled", "diverged", "not_settled", "unavailable"]},
+        "raw_class": {"type": "string", "description": "T2-0c VALID, UNSTEADY (>0.005 raw-tail relative Cl std after plateau), SOLVER_FAIL, MESH_FAILED or INFRA_LOSS."}, "coordinate": {"const": "SIMPLE iteration (not physical time)"},
+        "statistics": {"type": "object"}, "reason": {"type": "string"}
+      }
+    }
+  }
+}

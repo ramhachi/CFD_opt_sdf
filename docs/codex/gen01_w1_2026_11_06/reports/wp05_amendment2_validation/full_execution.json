@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+    "-m",
+    "pytest",
+    "--ignore=tests/test_lbm_metal.py",
+    "-q",
+    "-rf",
+    "-p",
+    "no:cacheprovider",
+    "--junitxml=docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment2_validation/full.xml"
+  ],
+  "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-05-tr00-rans",
+  "ended_utc": "2026-11-07T10:27:02.528950+00:00",
+  "exit_code": 1,
+  "log": "docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment2_validation/full.log",
+  "started_utc": "2026-11-07T10:13:20.394365+00:00",
+  "status": "finished",
+  "wall_s": 822.1389852499124
+}

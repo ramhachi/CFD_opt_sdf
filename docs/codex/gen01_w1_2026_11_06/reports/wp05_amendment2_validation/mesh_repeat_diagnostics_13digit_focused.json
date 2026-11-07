@@ -1,0 +1,749 @@
+{
+  "bl_thickness_m": 0.007749542399999998,
+  "element_sections_equal": false,
+  "evidence_class": "DEVELOPMENT_SYNTHETIC_MESH_REPEAT_DIAGNOSTIC",
+  "fixed_policy_significant_digits": 13,
+  "generator_sha256": {
+    "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+    "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+    "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+    "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+  },
+  "gmsh_options": {
+    "General.NumThreads": 1,
+    "Mesh.Reproducible": 1
+  },
+  "interpretation": "A few-ULP core-coordinate difference can move a core node before or after a ground column in the immutable raw x-coordinate sort, changing node IDs and therefore element text. Row-wise maximum displacement includes this ID permutation; nearest-coordinate distance is the geometric discrepancy. This is a diagnostic, not any change to solver input.",
+  "matching_of_saved_changed_node_rows": {
+    "max_nearest_coordinate_displacement_m": 1.0005885009434223e-14,
+    "note": "Comparison uses saved changed-coordinate rows. Full element equivalence after remapping cannot be assessed from this reduced receipt.",
+    "permuted_node_ids": 14,
+    "unique_bijective_matches": true
+  },
+  "mesh_shas": [
+    "37e1d1a28518379bdcb539a7171029ef59ca40f24b9fba9d70d769f3d2738595",
+    "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e"
+  ],
+  "node_id_row_max_displacement_m": 0.01467730265052,
+  "nodes": [
+    {
+      "id": 3207,
+      "original": [
+        -0.05160386174003,
+        0.02950188280553,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        -0.05160386174003,
+        0.02950188280552,
+        0.0
+      ]
+    },
+    {
+      "id": 3208,
+      "original": [
+        -0.05160386174003,
+        0.02950188280553,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        -0.05160386174003,
+        0.02950188280552,
+        0.002
+      ]
+    },
+    {
+      "id": 3349,
+      "original": [
+        -0.03584580096726,
+        0.01511247910381,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        -0.03584580096725,
+        0.01511247910381,
+        0.0
+      ]
+    },
+    {
+      "id": 3350,
+      "original": [
+        -0.03584580096726,
+        0.01511247910381,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        -0.03584580096725,
+        0.01511247910381,
+        0.002
+      ]
+    },
+    {
+      "id": 3355,
+      "original": [
+        -0.03455290391839,
+        0.02082678462745,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        -0.03455290391838,
+        0.02082678462745,
+        0.0
+      ]
+    },
+    {
+      "id": 3356,
+      "original": [
+        -0.03455290391839,
+        0.02082678462745,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        -0.03455290391838,
+        0.02082678462745,
+        0.002
+      ]
+    },
+    {
+      "id": 3383,
+      "original": [
+        -0.03182652167514,
+        0.03412054111965,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        -0.03182652167513,
+        0.03412054111965,
+        0.0
+      ]
+    },
+    {
+      "id": 3384,
+      "original": [
+        -0.03182652167514,
+        0.03412054111965,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        -0.03182652167513,
+        0.03412054111965,
+        0.002
+      ]
+    },
+    {
+      "id": 3483,
+      "original": [
+        -0.02108907824059,
+        0.01867256904147,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        -0.02108907824058,
+        0.01867256904147,
+        0.0
+      ]
+    },
+    {
+      "id": 3484,
+      "original": [
+        -0.02108907824059,
+        0.01867256904147,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        -0.02108907824058,
+        0.01867256904147,
+        0.002
+      ]
+    },
+    {
+      "id": 3681,
+      "original": [
+        -0.008844738307107,
+        0.02709121263867,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        -0.008844738307106,
+        0.02709121263867,
+        0.0
+      ]
+    },
+    {
+      "id": 3682,
+      "original": [
+        -0.008844738307107,
+        0.02709121263867,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        -0.008844738307106,
+        0.02709121263867,
+        0.002
+      ]
+    },
+    {
+      "id": 4111,
+      "original": [
+        -0.002227945028775,
+        0.04266345604733,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        -0.002227945028774,
+        0.04266345604733,
+        0.0
+      ]
+    },
+    {
+      "id": 4112,
+      "original": [
+        -0.002227945028775,
+        0.04266345604733,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        -0.002227945028774,
+        0.04266345604733,
+        0.002
+      ]
+    },
+    {
+      "id": 4321,
+      "original": [
+        -0.0005511844463345,
+        0.031305400082,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        -0.000551184446334,
+        0.031305400082,
+        0.0
+      ]
+    },
+    {
+      "id": 4322,
+      "original": [
+        -0.0005511844463345,
+        0.031305400082,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        -0.000551184446334,
+        0.031305400082,
+        0.002
+      ]
+    },
+    {
+      "id": 4489,
+      "original": [
+        0.0005021471349917,
+        0.01455839980353,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        0.0005021471349918,
+        0.01455839980353,
+        0.0
+      ]
+    },
+    {
+      "id": 4490,
+      "original": [
+        0.0005021471349917,
+        0.01455839980353,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        0.0005021471349918,
+        0.01455839980353,
+        0.002
+      ]
+    },
+    {
+      "id": 4735,
+      "original": [
+        0.002695777400885,
+        0.02335554407082,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        0.002695777400886,
+        0.02335554407082,
+        0.0
+      ]
+    },
+    {
+      "id": 4736,
+      "original": [
+        0.002695777400885,
+        0.02335554407082,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        0.002695777400886,
+        0.02335554407082,
+        0.002
+      ]
+    },
+    {
+      "id": 5359,
+      "original": [
+        0.009488936833954,
+        0.0197603375968,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        0.009488936833955,
+        0.0197603375968,
+        0.0
+      ]
+    },
+    {
+      "id": 5360,
+      "original": [
+        0.009488936833954,
+        0.0197603375968,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        0.009488936833955,
+        0.0197603375968,
+        0.002
+      ]
+    },
+    {
+      "id": 6203,
+      "original": [
+        0.02014066496054,
+        0.01467730265052,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        0.02014066496054,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "id": 6204,
+      "original": [
+        0.02014066496054,
+        0.01467730265052,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        0.02014066496054,
+        0.0,
+        0.002
+      ]
+    },
+    {
+      "id": 6205,
+      "original": [
+        0.02014066496054,
+        0.0,
+        0.0
+      ],
+      "physical_membership": [
+        "ground",
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        0.02014066496054,
+        0.0006000000055575,
+        0.0
+      ]
+    },
+    {
+      "id": 6206,
+      "original": [
+        0.02014066496054,
+        0.0,
+        0.002
+      ],
+      "physical_membership": [
+        "ground",
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        0.02014066496054,
+        0.0006000000055575,
+        0.002
+      ]
+    },
+    {
+      "id": 6207,
+      "original": [
+        0.02014066496054,
+        0.0006000000055575,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        0.02014066496054,
+        0.001320000009515,
+        0.0
+      ]
+    },
+    {
+      "id": 6208,
+      "original": [
+        0.02014066496054,
+        0.0006000000055575,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        0.02014066496054,
+        0.001320000009515,
+        0.002
+      ]
+    },
+    {
+      "id": 6209,
+      "original": [
+        0.02014066496054,
+        0.001320000009515,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        0.02014066496054,
+        0.002184000011849,
+        0.0
+      ]
+    },
+    {
+      "id": 6210,
+      "original": [
+        0.02014066496054,
+        0.001320000009515,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        0.02014066496054,
+        0.002184000011849,
+        0.002
+      ]
+    },
+    {
+      "id": 6211,
+      "original": [
+        0.02014066496054,
+        0.002184000011849,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        0.02014066496054,
+        0.004464960013708,
+        0.0
+      ]
+    },
+    {
+      "id": 6212,
+      "original": [
+        0.02014066496054,
+        0.002184000011849,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        0.02014066496054,
+        0.004464960013708,
+        0.002
+      ]
+    },
+    {
+      "id": 6213,
+      "original": [
+        0.02014066496054,
+        0.004464960013708,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        0.02014066496054,
+        0.0077495424,
+        0.0
+      ]
+    },
+    {
+      "id": 6214,
+      "original": [
+        0.02014066496054,
+        0.004464960013708,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        0.02014066496054,
+        0.0077495424,
+        0.002
+      ]
+    },
+    {
+      "id": 6215,
+      "original": [
+        0.02014066496054,
+        0.0077495424,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        0.02014066496054,
+        0.01467730265052,
+        0.0
+      ]
+    },
+    {
+      "id": 6216,
+      "original": [
+        0.02014066496054,
+        0.0077495424,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        0.02014066496054,
+        0.01467730265052,
+        0.002
+      ]
+    },
+    {
+      "id": 7813,
+      "original": [
+        0.0411070941812,
+        0.02962494422738,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        0.0411070941812,
+        0.02962494422737,
+        0.0
+      ]
+    },
+    {
+      "id": 7814,
+      "original": [
+        0.0411070941812,
+        0.02962494422738,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        0.0411070941812,
+        0.02962494422737,
+        0.002
+      ]
+    },
+    {
+      "id": 9117,
+      "original": [
+        0.05861518793673,
+        0.05194831384248,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        0.05861518793673,
+        0.05194831384247,
+        0.0
+      ]
+    },
+    {
+      "id": 9118,
+      "original": [
+        0.05861518793673,
+        0.05194831384248,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        0.05861518793673,
+        0.05194831384247,
+        0.002
+      ]
+    },
+    {
+      "id": 13157,
+      "original": [
+        0.1122549247158,
+        0.07165050343266,
+        0.0
+      ],
+      "physical_membership": [
+        "front",
+        "fluid"
+      ],
+      "repeat": [
+        0.1122549247158,
+        0.07165050343267,
+        0.0
+      ]
+    },
+    {
+      "id": 13158,
+      "original": [
+        0.1122549247158,
+        0.07165050343266,
+        0.002
+      ],
+      "physical_membership": [
+        "back",
+        "fluid"
+      ],
+      "repeat": [
+        0.1122549247158,
+        0.07165050343267,
+        0.002
+      ]
+    }
+  ],
+  "nodes_changed": 42,
+  "quality_equal": true,
+  "source_test": "focused test_eight_med30_realisations_are_distinct_and_fresh_process_repeatable"
+}

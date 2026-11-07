@@ -1,0 +1,13 @@
+{
+  "evidence_class": "HISTORICAL_INVALID_GEOMETRY_REGRESSION_FIXTURE",
+  "fixture_path": "tests/topo2d00/fixtures/wp4_attempt2_E2_sharp.json.gz",
+  "fixture_sha256": "a90907129fab8c0d34d72fbf3676a1ab403c80e3e7e5a3605b43a04cadd460a4",
+  "minimum_segment_mm": {
+    "flap1": 0.06475176843573167,
+    "main": 0.005721421046434482
+  },
+  "scope": "Data-only committed WP4 attempt-2 snapshot; no sibling code executed; input intentionally invalid under Amendment 3.",
+  "source_commit": "ba3164c7df4ce5a68cd0ce44be6bdc2c3489f2b9",
+  "source_path": "docs/harness/topo2d00_scenes/E2_sharp.json",
+  "source_sha256": "b89e77a44cca8a9f5434d390dd9422c01c49be33f4445f242d07e0917a863341"
+}

@@ -1,0 +1,26 @@
+{
+  "dependency_manifests_modified": false,
+  "executable": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+  "optional_schema_validator": "temporary /private/tmp/wp05-schema-validator, not added to project dependencies",
+  "platform": "macOS-26.3.1-arm64-arm-64bit",
+  "python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]",
+  "source_test_sha256": {
+    "scripts/topo2d00/build_tr00_kernels.py": "4aed4acfed138accd3c0970c2dac0e591b9426a5f4f57fe51c3f57d2a39f767e",
+    "scripts/topo2d00/collect_rans.py": "4e8c6017c7850315fca9f16afd14bc1a896454930069127e3fa14d656f7c029c",
+    "scripts/topo2d00/digitize_cp.py": "73e24c0087505c380914df61f6e4827c961f16c4de8c60d4b589cb5543f0482e",
+    "scripts/topo2d00/run_rans.py": "35d672fc6119e4197ce4a70d6f4cd6a0d518d071fb25b645ad6ec4860226a0d5",
+    "scripts/topo2d00/t2d_foam_case.py": "f17ad32dc8b0792f051aa4be4b0838574a54c0a32bb485ab5a87a29dc2567a00",
+    "scripts/topo2d00/t2d_multibody_case.py": "df39dc6bfd75b8b38a4a8a85f5ce03e450497852af98bf2283cf19e1e521a3c6",
+    "tests/topo2d00/test_build_tr00_kernels.py": "d558dcc756c8d52d7ec2170888de3d9944657d3dcb3ddec9513c0aa10921a009",
+    "tests/topo2d00/test_collect_rans.py": "9c5dc7607713c0d08b0f7b3bb274c3702fbe70ce8d7fea70d8dc8783e8dcf4f7",
+    "tests/topo2d00/test_digitize_cp.py": "e8abd17adfb2dea91dd9e64dddcd79e4d9eafe7b00f260063a6c5a9d3f86b0d4",
+    "tests/topo2d00/test_multibody_case.py": "31a5adb4970593c0a422a708a1cc975bfd3b9720eb2bfdbcf8287b75a27b8bed"
+  },
+  "versions": {
+    "gmsh": "4.15.2",
+    "mlx": "0.32.2",
+    "numpy": "2.5.2",
+    "pytest": "9.1.1",
+    "scipy": "1.18.1"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "archive": "mesh_repeat_artifacts.tar.gz",
+  "archive_sha256": "5263f30a57771e1a55626f659a026962a9ac2a4ebcb381d0a0807daf959a5202",
+  "evidence_class": "RETAINED_FAILED_FOCUSED_SYNTHETIC_MESH_PAIR",
+  "files": [
+    {
+      "bytes": 154371,
+      "path": "geometry.json",
+      "sha256": "ff4956ad81b655127360c65b42ea096482ee76dff300249b3db530e537189180"
+    },
+    {
+      "bytes": 10578,
+      "path": "k0/case_manifest.json",
+      "sha256": "d1f97beb5d90543f6dfa93f6cca031811569b1a6153288de7662caf419a976d1"
+    },
+    {
+      "bytes": 10661,
+      "path": "k1/case_manifest.json",
+      "sha256": "b02d1f241a512dbb9100143fc26317caf79c71f1c684da7f14fa71a9023a43f0"
+    },
+    {
+      "bytes": 10672,
+      "path": "k2/case_manifest.json",
+      "sha256": "b85b095afc507abce1dcfb00529b18c046dd3d6d086ac2e9ffc0266d7dc93ac8"
+    },
+    {
+      "bytes": 10674,
+      "path": "k3/case_manifest.json",
+      "sha256": "bb86731419843dd3c1265b7f3652b340490285ed27a807741725e435a868b68b"
+    },
+    {
+      "bytes": 6561108,
+      "path": "k3/mesh.msh",
+      "sha256": "de7a9b9bca604bf44e7da6b708809f48f070c564244c2a47794694cb0d8b992c"
+    },
+    {
+      "bytes": 10651,
+      "path": "k4/case_manifest.json",
+      "sha256": "e46223b6701375d19fa156d03057325c2a1e615bf3bd0794c014c5f5afe848c6"
+    },
+    {
+      "bytes": 10649,
+      "path": "k5/case_manifest.json",
+      "sha256": "5d5c3b720e51a4d2fe0b819e340ebbc7f41e32c34f22c76b30637f2bb109d87a"
+    },
+    {
+      "bytes": 10653,
+      "path": "k6/case_manifest.json",
+      "sha256": "fb8be76f2bb82dcdb8d34c621927684abb10e7915efc7d07f2c3529c5b8be5b5"
+    },
+    {
+      "bytes": 10675,
+      "path": "k7/case_manifest.json",
+      "sha256": "1fb0705b6989fe6010ac3019c6155f26764129d68aad1c0b7c9e823f482011dd"
+    },
+    {
+      "bytes": 10675,
+      "path": "repeat3/case_manifest.json",
+      "sha256": "144b11f2ecfc5519cf3bf4d1c0b24699f4cac15dc51d847fd9f2c37296c4d5cc"
+    },
+    {
+      "bytes": 6560740,
+      "path": "repeat3/mesh.msh",
+      "sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a"
+    }
+  ],
+  "original_pytest_temporary_directory": "/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-505/test_eight_med30_realisations_0",
+  "receipt": "mesh_realisations.json",
+  "scope": "Exact geometry and all nine manifests; exact raw mesh bytes retained only for failing index-3 pair. No solver was run."
+}

@@ -1,0 +1,194 @@
+{
+  "branch": "feat/gen01-w1-05-tr00-rans",
+  "compileall": {
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "compileall",
+      "src",
+      "tests"
+    ],
+    "exit_code": 0,
+    "log": "compileall.log.gz"
+  },
+  "ended_utc": "2026-11-07T10:30:59.907897+00:00",
+  "evidence_class": "FINAL_WORKSPACE_READBACK",
+  "git_diff_check": {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": ""
+  },
+  "git_mutations_performed": false,
+  "intended_file_count": 52,
+  "intended_file_inventory": "commit_files.txt",
+  "protected_file_checks": [
+    {
+      "current_sha_matches_receipt": true,
+      "path": "scripts/t20_case.py",
+      "unchanged_from_base": true
+    },
+    {
+      "current_sha_matches_receipt": true,
+      "path": "scripts/t20_foam.py",
+      "unchanged_from_base": true
+    },
+    {
+      "current_sha_matches_receipt": true,
+      "path": "scripts/t20c_case.py",
+      "unchanged_from_base": true
+    },
+    {
+      "current_sha_matches_receipt": true,
+      "path": "scripts/t20d_case.py",
+      "unchanged_from_base": true
+    },
+    {
+      "current_sha_matches_receipt": true,
+      "path": "scripts/build_t20b_kernel.py",
+      "unchanged_from_base": true
+    },
+    {
+      "current_sha_matches_receipt": true,
+      "path": "infra/kaggle/kernel_t20b_cpu/runner.py",
+      "unchanged_from_base": true
+    },
+    {
+      "current_sha_matches_receipt": true,
+      "path": "scripts/local_openfoam.py",
+      "unchanged_from_base": true
+    },
+    {
+      "current_sha_matches_receipt": true,
+      "path": "tests/conftest.py",
+      "unchanged_from_base": true
+    },
+    {
+      "current_sha_matches_receipt": true,
+      "path": "pyproject.toml",
+      "unchanged_from_base": true
+    },
+    {
+      "current_sha_matches_receipt": true,
+      "path": "docs/phase_plan.md",
+      "unchanged_from_base": true
+    },
+    {
+      "current_sha_matches_receipt": true,
+      "path": "docs/STATE.md",
+      "unchanged_from_base": true
+    },
+    {
+      "current_sha_matches_receipt": true,
+      "path": "docs/gen_system_plan_2026_11_01.md",
+      "unchanged_from_base": true
+    },
+    {
+      "current_sha_matches_receipt": true,
+      "path": "docs/topo2d00_registration_2026_11_01.md",
+      "unchanged_from_base": true
+    },
+    {
+      "current_sha_matches_receipt": true,
+      "path": "docs/local_openfoam_env_gate_2026_10_20.md",
+      "unchanged_from_base": true
+    },
+    {
+      "current_sha_matches_receipt": true,
+      "path": "docs/eval_valid01_reference_audit_2026_10_22.md",
+      "unchanged_from_base": true
+    },
+    {
+      "current_sha_matches_receipt": true,
+      "path": "docs/evidence/t20c_registered_2026_10_20/README.md",
+      "unchanged_from_base": true
+    },
+    {
+      "current_sha_matches_receipt": true,
+      "path": "docs/evidence/gen01_plan_2026_11_01/research/facts_for_w1_drafts.md",
+      "unchanged_from_base": true
+    },
+    {
+      "current_sha_matches_receipt": true,
+      "path": "scripts/analyze_t20b.py",
+      "unchanged_from_base": true
+    },
+    {
+      "current_sha_matches_receipt": true,
+      "path": "scripts/analyze_t20c.py",
+      "unchanged_from_base": true
+    }
+  ],
+  "ready_for_execution": false,
+  "retained_mesh_artifact_readback": true,
+  "scope": "Code and artifact integrity only. N2 remains BLOCKED; no OpenFOAM, smoke, kernel regeneration, Kaggle, freeze, commit or push.",
+  "source_commit": "45917d8cc93fea6ba17897b914d8ac82f4d930fb",
+  "source_dirty": true,
+  "source_inventory_checks": [
+    {
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_measurement_schema.json",
+      "sha256_matches": true
+    },
+    {
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_result_schema.json",
+      "sha256_matches": true
+    },
+    {
+      "path": "scripts/topo2d00/build_tr00_kernels.py",
+      "sha256_matches": true
+    },
+    {
+      "path": "scripts/topo2d00/collect_rans.py",
+      "sha256_matches": true
+    },
+    {
+      "path": "scripts/topo2d00/digitize_cp.py",
+      "sha256_matches": true
+    },
+    {
+      "path": "scripts/topo2d00/run_rans.py",
+      "sha256_matches": true
+    },
+    {
+      "path": "scripts/topo2d00/t2d_foam_case.py",
+      "sha256_matches": true
+    },
+    {
+      "path": "scripts/topo2d00/t2d_multibody_case.py",
+      "sha256_matches": true
+    },
+    {
+      "path": "tests/topo2d00/fixtures/README.md",
+      "sha256_matches": true
+    },
+    {
+      "path": "tests/topo2d00/fixtures/wp4_attempt2_E2_sharp.json.gz",
+      "sha256_matches": true
+    },
+    {
+      "path": "tests/topo2d00/test_build_tr00_kernels.py",
+      "sha256_matches": true
+    },
+    {
+      "path": "tests/topo2d00/test_collect_rans.py",
+      "sha256_matches": true
+    },
+    {
+      "path": "tests/topo2d00/test_digitize_cp.py",
+      "sha256_matches": true
+    },
+    {
+      "path": "tests/topo2d00/test_multibody_case.py",
+      "sha256_matches": true
+    },
+    {
+      "path": "tests/topo2d00/test_run_rans.py",
+      "sha256_matches": true
+    }
+  ],
+  "started_utc": "2026-11-07T10:30:59.506789+00:00"
+}
