@@ -67,3 +67,11 @@ review 全文：`/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/git
 9. E2 の smoke と kernel 再生成は、WP4 の 3 回目（sliver 修正後）の幾何が来てから Claude が指示する。今回は実装・テスト・報告まで。
 10. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。
 11. **commit／push は Claude が host で行う。** worktree は `45917d8c`。報告に commit すべきファイルの一覧を書く。
+
+## Amendment 3（2026-11-07。3 回目（PR #87、host commit 済み）の N2 保留への回答と、登録 Amendment 4 §1 の適用。この節が本文と Amendment 1・2 より優先する）
+
+1. **realisation の契約（登録 Amendment 6）。** 保存した mesh（SHA）が正式入力。index k の手続き（始点回転＋Halton shift）は provenance であって再現性の保証ではない。テストは **8 個の SHA が pairwise distinct** を要求し、fresh-process の再生成は `GMSH_REPEAT_IDENTICAL`／`GMSH_REPEAT_DIFFERS`（セル数差と SHA 差付き）の **記録**にする（assert しない）。赤く残した assertion をこの形に直し、失敗集合を空にする。manifest と docstring の文言も合わせる。Kaggle kernel は mesh（または SHA と gmsh log）を出力に含める。
+2. **多角形の表現（登録 Amendment 4 §1）。** `load_geometry` は **終点を重複しない開いた頂点列**を受理し（閉じる辺は暗黙）、重複した終点は拒否する。内部の contour にだけ閉点を足す。WP4 の 3 回目の scene JSON（開いた表現、sliver なし）を branch 内の fixture として保存し、10 scene × fine30／med30 が guard を通ることをテストする。
+3. **E2 の smoke**：WP4 の 3 回目の幾何（fixture）で E2_sharp／E2 の mesh-only と SA-WF 200 反復 smoke をローカル Docker で実行し、checkMesh と proxy の表を報告に載せる（本番 kernel の render はまだしない：WP4 の 4 回目が analyzer を変えるので、幾何 SHA が固まってから）。
+4. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。
+5. **commit／push は Claude が host で行う。** 報告に commit すべきファイルの一覧を書く。
