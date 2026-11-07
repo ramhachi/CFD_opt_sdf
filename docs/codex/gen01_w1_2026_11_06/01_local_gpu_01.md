@@ -57,3 +57,37 @@
 6. 必読文書のうち、`docs/opencode_handoff_2026_09.md`、`docs/problem_register_2026_09.md`、`docs/problem_resolution_plan_2026_09.md` は **目次と該当節（harness、GPU、Kaggle、PROC-01）だけ**でよい。全文通読は不要。
 
 これで矛盾は解消しているはずなので、今回は BLOCKED にせず実装まで進めること。新たな矛盾が見つかった場合だけ、その箇所を具体的に示して止める。
+
+## Amendment 2（2026-11-06。2 回目の試み（PARTIAL、未 commit の 29 ファイル）への回答。この節が本文と Amendment 1 より優先する）
+
+1. **`julia/CFDSDFWaterLily/src` は登録済みの directory pin。** `campaign_build.BASE_PINS` がこのディレクトリの hash（全ファイルの `相対パス  sha256` 行の SHA）を取り、DIAG5／GRID01／GRID02／LOWDIM01／02a／03／STEP01 の freeze がその値を bind している（2 回目に失敗した 10 node はすべてこれ）。したがって **src/ にはファイルを 1 つも足さず、1 byte も変えない。** `CFDSDFWaterLily.jl` への `include("Checkpoint.jl")` は戻す（自分の未 commit 変更を `git checkout -- julia/CFDSDFWaterLily/src/CFDSDFWaterLily.jl` で戻すのは許可）。`Checkpoint.jl` は **`julia/CFDSDFWaterLily/gen01/Checkpoint.jl`** に移し、job・selftest・tests から `Base.include(CFDSDFWaterLily, joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "gen01", "Checkpoint.jl"))` で読む（既存 job が `V16PhysicalProfile.jl` 等を `Base.include(CFDSDFWaterLily, …)` している流儀）。`julia/CFDSDFWaterLily/gen01/README.md` に「`src/` は registered directory pin なので GEN-01 の追加モジュールはここに置き、job から `Base.include` する」と 2〜3 行書く。local campaign の kernel `pins` にそのパスを明示し、`check_include_closure` が通ることをテストで示す。以後の WP（FORCE-00 の `Force00.jl` など）も同じ置き場所。
+2. **歴史テストの例外は不要・不許可。** 保護テスト（DIAG5／GRID01／GRID02／GRIDRES01／LOWDIM／STEP01 の test file、`tests/conftest.py`）は 1 つも変えない。`tests/test_harness_replay.py` の変更も戻す（1 の後は元のまま通るはず。通らなければ理由を報告して止める）。
+3. `campaign_schema.py`／`campaign_build.py`／`campaign_verify.py` の opt-in 変更は維持してよい。ただし `campaign_schema.py` は `BASE_PINS` の 1 つなので、harness v1.1 の登録 freeze（UNC-01／FID-01／SCREEN-01 の prerun_freeze・verify table・`harness_tool_sha256`）に関するテストが全体 pytest で base と同じ結果であることを確認する。失敗が出るなら schema の編集をやめ、`backend_profiles.py`／`scripts/local_gpu.py` 側で `backend_profile` キーを剥がしてから `validate_campaign` に渡し、`expected_summary` の `gpu_name` は local 側の wrapper で差し替える設計に変える（既存 schema のバイトは不変）。
+4. **全体 pytest の取り方。** `tests/test_lbm_metal.py` は sandbox で `mlx.core` の import が abort するので、base と実装後の **両方**を `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で **完走**させる。base は `git worktree add --detach /private/tmp/wp01-base-e3dcdf61 e3dcdf61`（`.venv` は主リポジトリの `.venv` への symlink）。両者の失敗 node 集合を報告に載せる。途中で止めた記録は baseline にならない。
+5. **commit／push は Claude が host で行う。** Codex の sandbox は `.git` 配下を書けない（`--add-dir` でも不可。2 回とも `index.lock: Operation not permitted`）。Codex は `git add`／`git commit`／`/tmp` の clone 経由の push を **しない**。代わりに報告の「作ったもの」に、commit すべきファイルの完全な一覧（変更・新規・戻したもの）を書く。Claude が同じ worktree から commit・push・`gh pr create --draft` を行う。
+6. 1 回目の記録 `reports/wp01_attempt1_blocked/` は残す。報告 `wp01_local_gpu_01_report.md` と `wp01_local_gpu_01_validation.json` を更新し、受け入れ条件（GPU 実行は user が後で回すので DONE の妨げにならない）を満たせば状態を DONE にする。新たな矛盾が見つかった場合だけ、その箇所を具体的に示して止める。
+
+## Amendment 3（2026-11-06。3 回目（DONE 報告、PR #88、`e6c57e7b`）への Opus source review の回答。この節が本文と Amendment 1・2 より優先する）
+
+review 全文：`/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/codex/gen01_w1_2026_11_06/reviews/wp01_review_1_opus.md`（読む）。仕様の判断は同じ worktree の `docs/local_gpu_env_gate_2026_11_01.md` **§11 Amendment 2**（読む）。verdict は INTEGRATE_AFTER_FIXES。次を直す。
+
+1. **BLOCKER B1。** `src/cfd_harness/campaign_schema.py`・`campaign_build.py`・`campaign_verify.py` を **`git checkout e3dcdf61 -- <3 files>` で byte 単位に戻す**（自分の変更を戻すだけなので許可）。local の論理は `backend_profiles.py` と `scripts/local_gpu.py` に全部移す：`adapt_runner` は runner の `SC.validate_campaign(campaign)` 呼び出しの前に `backend_profile` キーを剥がし、`backend_profiles.py` を pinned checkout のパスから読み込む；module は local campaign の top-level `pins` に入れる（`pins()` の hook ではなく）；`render_local` は `B.pin_block`／`B.pins` を使い B を編集しない；`verify_local` が harness の検査を local の selector／probe／`gpu_name` で wrap する。review の「Fix (preferred)」の 4 点そのもの。
+2. **M1。** `tests/test_harness_registered_reverify.py`：commit 済みの UNC-01 U01 の smoke と formal の出力を **現在の tree** で `verify` し、commit 済み table と byte 一致を assert する（review が手で確認した手順をテストにする）。3 回目の報告の「T4 契約は byte 不変」という主張は誤りだったと報告に明記し訂正する。
+3. **M2。** gate の PASS 規則を §5 どおりにする（C3／C4 は記述のみ。FAIL／INCOMPLETE でも PASS を妨げない。別に報告）。
+4. **M3。** C6 を §11 Amendment 2 §3 のとおり実装する（solver-active サンプルだけで clock、VRAM 規則、任意 telemetry 欠落は INCOMPLETE、既定値を gate.json に記録）。合成テストは「idle を含むと FAIL するが solver-active だけなら PASS」の両方を持つ。
+5. **C3 anchor（m7）**：§11 Amendment 2 §4 のとおり reference summary から導出し記録する。per-sample 最大相対差も記録。
+6. **初回実行前の identity（m1／m2／m3／m4／m5／m9／m10／N1／m8）**：§11 Amendment 2 §5 のとおり。`Checkpoint.jl` の identity は必須（`identity=""` の既定を外し、`restore_checkpoint!` で照合）。`sim_step!(sim, t_end)` では `length(Δt)==step+1` が成り立たないことを docstring に書く（WP4 向け）。UUID fallback は LOCAL だけ。bench は lock SHA と VRAM を記録し、TGV が WaterLily の benchmark suite ではない旨を書く。
+7. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。3 つの tool file の `git diff e3dcdf61 --stat -- src/cfd_harness/campaign_*.py` が空であることも報告に書く。
+8. **commit／push は Claude が host で行う。** worktree は `e6c57e7b`（PR #88）。報告に commit すべきファイルの完全な一覧（戻したもの・変更・新規）を書く。
+
+## Amendment 4（2026-11-07。4 回目（PR #88、`ab801695`）への 2 回目の Opus review の回答。round-1 の BLOCKER／MAJOR は全部 closed。この節が本文と Amendment 1〜3 より優先する。小さな修正だけ）
+
+review 全文：`/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/codex/gen01_w1_2026_11_06/reviews/wp01_review_2_opus.md`。仕様の判断は同じ worktree の `docs/local_gpu_env_gate_2026_11_01.md` **§11.7 Amendment 3**（読む）。
+
+1. **n1。** `WSL_INTEROP` を C1／C5 の identity 比較から除外する（記録は残す。除外した名前を `gate.json` に列挙）。
+2. **n2。** C6 の VRAM 規則は「最初の 60 秒の後に 2 サンプル以上ある solver-active 区間」だけに適用し、repeat ごとに 1 区間以上を要求、短い group は記録して skip（INCOMPLETE にしない）。テストを足す。
+3. **n3。** C6 の必須 telemetry は `memory.used`・`utilization.gpu`・`clocks.sm`。`power.draw`・`temperature.gpu` は記録のみ。identity UUID は NVML が無ければ CUDA probe の UUID（記録付き）。
+4. **n4。** watchdog CSV の schema 検査を set equality に戻す。
+5. **n5。** `finished_utc` を `written_utc` に改名（full-pytest と source-stability の record）。
+6. 重点テスト（5 ファイル）と `tests/test_harness_registered_reverify.py` を回す。全体 pytest は **不要**（変更は gate script・backend_profiles・テスト・記録だけ。`git diff e3dcdf61 -- src/cfd_harness/campaign_*.py` が空のままであることだけ報告する）。
+7. **commit／push は Claude が host で行う。** worktree は `ab801695`。報告に commit すべきファイルの一覧を書く。
