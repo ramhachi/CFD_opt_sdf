@@ -1,4 +1,18 @@
-# WP1：LOCAL-GPU-01 設計メモ（Amendment 3）
+# WP1：LOCAL-GPU-01 設計メモ（Amendment 4）
+
+## Amendment 4 の小修正（2026-11-07、実装前）
+
+開始 HEAD は `ab801695`、作業 tree は clean。review worktree の `wp01_review_2_opus.md` 全文と LOCAL-GPU-01 §11.7 Amendment 3 を読み、以下を今回の変更範囲とする。下の Amendment 3 設計は経緯として残すが、競合する telemetry と検証の記述は本節で置き換える。
+
+- n1：filtered environment の記録と wrapper/runner の照合は完全なまま保持する。C1/C5 の run 間比較だけで、backend module が宣言する `WSL_INTEROP` を除外し、除外名を gate.json に記録する。ほかの WSL/CUDA/Julia 環境差は引き続き拒否する。
+- n2：VRAM は最初の60秒以降に2サンプル以上ある active group だけを評価する。短い group は理由・sample 数付きで記録して skip し、repeat ごとに少なくとも1区間を要求する。必要な memory 値の欠測と短い group を混同しない。
+- n3：必須の minute telemetry は memory.used / utilization.gpu / clocks.sm。power.draw / temperature.gpu は CSV と取得記録を残すだけで判定に使わない。NVML UUID が欠ける sample は同じ repeat の検証済み CUDA-probe UUID と SHA へ bind し、fallback の sample 番号と由来を gate.json に残す。VRAM の分母は観測された device total、取得不能なら同一 lock に bind された容量を使用し、容量自体が不明なら評価不能と記録する。
+- n4：watchdog header は重複を拒否した set equality とし、列順は拘束しない。
+- n5：前回 full-pytest と source-stability の `finished_utc` を `written_utc` に改名する。日時の値と実行ログ/JUnit/過去の source hash は変更しない。参照する SHA を更新し、今回の検証と過去の全体実行を明確に分ける。
+
+先に合成回帰テストを失敗させ、gate/backend を修正した後、重点5ファイル（登録済み current-tree 再検証を含む）、compileall、diff --check、`git diff e3dcdf61 -- src/cfd_harness/campaign_*.py` が空であることを確認する。全体 pytest と GPU/Julia workload は Amendment 4 の範囲外として実行しない。checkpoint API と job は変更しない。変更・新規ファイルを報告へ完全列挙し、git add/commit/push は host Claude に引き継ぐ。
+
+OpenCode Go MCP は未提供、CLI の models 確認も既定 log の FileSystem.open で起動失敗した。global 設定・追加課金は変更せず、親が小修正とテストを行い、read-only native worker が保護範囲と最終差分を独立確認する。WSL2 の起動/JIT遅延、実 NVML の欠測、bind mount 要否、R5 の GPU 別 process 再開と R6 の実機安定性は未確認のままである。
 
 2026-11-06。開始 HEAD は PR #88 の `e6c57e7b`、登録済み tool の基準は `e3dcdf6188df6079e197eb28f7fcba1451ec512d`。ユーザーの Amendment 3 と、review worktree の LOCAL-GPU-01 §11 Amendment 2 を優先する。道具・合成テスト・短い CPU 検証のみを行い、実機 GPU、Kaggle、登録、凍結、roadmap 改定は行わない。
 

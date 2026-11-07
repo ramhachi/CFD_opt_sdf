@@ -261,6 +261,64 @@ def test_c1_requires_the_same_runner_for_each_repeat(evidence, run_name):
     assert "runner" in result["criteria"]["C1"]["reason"]
 
 
+def test_c1_c5_exclude_wsl_interop_only_between_runs_and_keep_the_snapshot(evidence):
+    _, runs, _, _ = evidence
+    snapshots = {}
+    for index, name in enumerate(("R1a", "R1b", "R2a", "R2b", "R3", "R5")):
+        run = runs / name
+        for path in (run / "local_run.json", run / "kernel/run_identity.json"):
+            doc = json.loads(path.read_text())
+            doc["filtered_environment"]["WSL_INTEROP"] = f"/run/WSL/{index}_interop"
+            write_json(path, doc)
+        rehash_run(run)
+        snapshots[name] = json.loads((run / "local_run.json").read_text())["filtered_environment"]
+    prior = runs / "R5/resume_input/prior_local_run.json"
+    doc = json.loads(prior.read_text())
+    doc["filtered_environment"]["WSL_INTEROP"] = "/run/WSL/interrupted_interop"
+    write_json(prior, doc)
+    path = runs / "R5/local_run.json"
+    rec = json.loads(path.read_text())
+    rec["resume"]["interrupted_run_sha256"] = digest(prior)
+    write_json(path, rec)
+    result = evaluate(evidence)
+    assert result["status"] == "PASS"
+    assert result["excluded_identity_environment_variables"] == ["WSL_INTEROP"]
+    for name, snapshot in snapshots.items():
+        assert json.loads((runs / name / "local_run.json").read_text())["filtered_environment"] == snapshot
+        assert G.BP.filtered_environment(snapshot) == snapshot
+
+
+@pytest.mark.parametrize("name,criterion", [("R1b", "C1"), ("R5", "C5"), ("prior", "C5")])
+@pytest.mark.parametrize("key", ["WSLENV", "CUDA_LAUNCH_BLOCKING"])
+def test_identity_comparison_still_rejects_nonvolatile_environment_changes(evidence, name, criterion, key):
+    _, runs, _, _ = evidence
+    if name == "prior":
+        paths = [runs / "R5/resume_input/prior_local_run.json"]
+    else:
+        paths = [runs / name / "local_run.json", runs / name / "kernel/run_identity.json"]
+    for path in paths:
+        doc = json.loads(path.read_text())
+        doc["filtered_environment"][key] = "changed"
+        write_json(path, doc)
+    if name == "prior":
+        path = runs / "R5/local_run.json"
+        rec = json.loads(path.read_text())
+        rec["resume"]["interrupted_run_sha256"] = digest(paths[0])
+        write_json(path, rec)
+    else:
+        rehash_run(runs / name)
+    assert evaluate(evidence)["criteria"][criterion]["status"] == "FAIL"
+
+
+def test_volatile_environment_must_still_match_within_the_same_run(evidence):
+    path = evidence[1] / "R1b/local_run.json"
+    rec = json.loads(path.read_text())
+    rec["filtered_environment"]["WSL_INTEROP"] = "/run/WSL/wrapper_only_interop"
+    write_json(path, rec)
+    result = evaluate(evidence)["criteria"]["C1"]
+    assert result["status"] == "FAIL" and "wrapper/runner filtered environment differs" in result["reason"]
+
+
 def test_c1_tolerance_and_fail(evidence):
     _, runs, _, _ = evidence
     force_csv(runs / "R1b/kernel/states/parent/flow_16.forces.csv", factor=1 + 5e-7)
@@ -530,7 +588,7 @@ def test_c5_prior_checkpoint_must_be_the_checkpoint_actually_loaded(evidence):
     assert evaluate(evidence)["criteria"]["C5"]["status"] == "FAIL"
 
 
-@pytest.mark.parametrize("column,value", [("clocks_sm_mhz", "1700"), ("power_draw_w", "nan"),
+@pytest.mark.parametrize("column,value", [("clocks_sm_mhz", "1700"), ("memory_used_mib", "nan"),
                                              ("driver_reset", "true"), ("error", "nvidia-smi failed")])
 def test_c6_stability_failures(evidence, column, value):
     update_watch(evidence, lambda rows: rows[-1].update({column: value}))
@@ -588,11 +646,73 @@ def test_c6_missing_ten_second_peak_is_incomplete(evidence):
     assert evaluate(evidence)["criteria"]["C6"]["status"] == "INCOMPLETE"
 
 
-@pytest.mark.parametrize("column", ["clocks_sm_mhz", "temperature_gpu_c", "power_draw_w", "memory_used_mib",
-                                    "memory_total_mib", "utilization_gpu_pct", "gpu_uuid"])
+@pytest.mark.parametrize("short_samples", [1, 2])
+def test_c6_short_active_groups_are_recorded_and_skipped(evidence, short_samples):
+    def split_groups(rows):
+        rows[short_samples].update(utilization_gpu_pct="0")
+        rows[-2].update(utilization_gpu_pct="0")  # Leaves a one-sample group at the end.
+
+    update_watch(evidence, split_groups)
+    result = evaluate(evidence)["criteria"]["C6"]
+    assert result["status"] == "PASS" and result["missing_evidence"] == []
+    skipped = result["vram_skipped_intervals"]
+    assert {item["run"] for item in skipped} == {"R6/repeat_001", "R6/repeat_002"}
+    assert skipped[0]["samples"] == short_samples and skipped[0]["mature_samples"] == short_samples - 1
+    assert skipped[-1]["samples"] == 1 and skipped[-1]["mature_samples"] == 0
+    assert {item["run"] for item in result["vram_intervals"]} == {"R6/repeat_001", "R6/repeat_002"}
+
+
+def test_c6_each_repeat_needs_an_interval_with_two_mature_samples(evidence):
+    update_watch(evidence, lambda rows: [row.update(utilization_gpu_pct="0") for row in rows[2:180]])
+    result = evaluate(evidence)["criteria"]["C6"]
+    assert result["status"] == "INCOMPLETE"
+    assert any("R6/repeat_001" in item and "at least one" in item for item in result["missing_evidence"])
+    assert len(result["vram_skipped_intervals"]) == 1
+    assert result["vram_skipped_intervals"][0]["mature_samples"] == 1
+
+
+@pytest.mark.parametrize("column", ["clocks_sm_mhz", "memory_used_mib", "utilization_gpu_pct"])
 def test_c6_missing_telemetry_is_incomplete(evidence, column):
     update_watch(evidence, lambda rows: rows[10].update({column: "", "missing_reason": f"{column}: NVML unavailable"}))
     assert evaluate(evidence)["criteria"]["C6"]["status"] == "INCOMPLETE"
+
+
+@pytest.mark.parametrize("column", ["power_draw_w", "temperature_gpu_c"])
+@pytest.mark.parametrize("value", ["", "[N/A]", "nan"])
+def test_c6_power_and_temperature_are_recorded_only(evidence, column, value):
+    update_watch(evidence, lambda rows: rows[10].update({column: value}))
+    result = evaluate(evidence)["criteria"]["C6"]
+    assert result["status"] == "PASS"
+    assert set(result["record_only_telemetry_fields"]) == {"power.draw", "temperature.gpu"}
+
+
+@pytest.mark.parametrize("uuid", ["", "N/A", "[N/A]", "[Not Supported]"])
+def test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe(evidence, uuid):
+    update_watch(evidence, lambda rows: rows[10].update(gpu_uuid=uuid, missing_reason="uuid: NVML unavailable"))
+    result = evaluate(evidence)["criteria"]["C6"]
+    assert result["status"] == "PASS"
+    identity = result["telemetry_identity"]["R6/repeat_001"]
+    assert identity["cuda_probe_fallback_samples"] == [10]
+    assert identity["cuda_uuid"] == "GPU-test"
+    assert identity["cuda_probe_sha256"] == digest(evidence[1] / "R6/repeat_001/kernel/gpu_device_probe.json")
+    assert identity["fallback_source"] == "gpu_device_probe.json:default_device_uuid"
+
+
+def test_c6_uuid_fallback_covers_all_samples_but_refuses_a_different_nvml_uuid(evidence):
+    update_watch(evidence, lambda rows: [row.update(gpu_uuid="") for row in rows])
+    result = evaluate(evidence)["criteria"]["C6"]
+    assert result["status"] == "PASS"
+    assert sum(len(item["cuda_probe_fallback_samples"]) for item in result["telemetry_identity"].values()) == result["samples"]
+    update_watch(evidence, lambda rows: rows[10].update(gpu_uuid="GPU-other"))
+    assert evaluate(evidence)["criteria"]["C6"]["status"] == "FAIL"
+
+
+def test_c6_device_capacity_can_come_from_the_locked_gpu_identity(evidence):
+    update_watch(evidence, lambda rows: [row.update(memory_total_mib="") for row in rows])
+    result = evaluate(evidence)["criteria"]["C6"]
+    assert result["status"] == "PASS"
+    assert result["vram_device_total_mib"] == 12282
+    assert result["vram_device_total_source"] == "locked_gpu_identity"
 
 
 def test_c6_missing_telemetry_does_not_hide_nonfinite_or_reset(evidence):
@@ -600,18 +720,22 @@ def test_c6_missing_telemetry_does_not_hide_nonfinite_or_reset(evidence):
     assert evaluate(evidence)["criteria"]["C6"]["status"] == "FAIL"
 
 
-def test_c6_real_collector_missing_markers_are_incomplete(evidence):
+@pytest.mark.parametrize("field", ["power.draw", "temperature.gpu", "uuid"])
+def test_c6_record_only_collector_missing_markers_do_not_block(evidence, field):
     _, runs, _, _ = evidence
-    update_watch(evidence, lambda rows: rows[10].update(power_draw_w="", missing_reason="power.draw unavailable"))
+    column = {"power.draw": "power_draw_w", "temperature.gpu": "temperature_gpu_c", "uuid": "gpu_uuid"}[field]
+    update_watch(evidence, lambda rows: rows[10].update({column: "", "missing_reason": f"{field} unavailable"}))
     path = runs / "R6/watchdog_status.json"
     status = json.loads(path.read_text())
-    status["telemetry_errors"] = [{"incomplete": "power.draw unavailable"}]
+    status["telemetry_errors"] = [{"incomplete": f"{field} unavailable"}]
     write_json(path, status)
-    assert evaluate(evidence)["criteria"]["C6"]["status"] == "INCOMPLETE"
+    result = evaluate(evidence)["criteria"]["C6"]
+    assert result["status"] == "PASS"
+    assert result["telemetry_acquisition_notes"] == status["telemetry_errors"]
 
 
 @pytest.mark.parametrize("missing_column", ["power_draw_w", "memory_used_mib"])
-def test_actual_telemetry_collector_missing_reaches_gate_as_incomplete(evidence, tmp_path, monkeypatch, missing_column):
+def test_actual_telemetry_collector_missing_uses_required_field_policy(evidence, tmp_path, monkeypatch, missing_column):
     import local_gpu as L
 
     # Execute the real parser, collector and status writer against a deterministic NVML response.
@@ -642,7 +766,47 @@ def test_actual_telemetry_collector_missing_reaches_gate_as_incomplete(evidence,
     status = json.loads(status_path.read_text())
     status["telemetry_errors"] = actual_status["telemetry_errors"]
     write_json(status_path, status)
-    assert evaluate(evidence)["criteria"]["C6"]["status"] == "INCOMPLETE"
+    expected = "PASS" if missing_column == "power_draw_w" else "INCOMPLETE"
+    assert evaluate(evidence)["criteria"]["C6"]["status"] == expected
+
+
+@pytest.mark.parametrize("field", ["power.draw", "temperature.gpu"])
+def test_c6_record_only_collector_invalid_values_do_not_block(evidence, field):
+    message = f"{field}: nan (non-finite or out-of-range numeric value)"
+    update_watch(evidence, lambda rows: rows[10].update(error=message))
+    path = evidence[1] / "R6/watchdog_status.json"
+    status = json.loads(path.read_text())
+    status["telemetry_errors"] = [{"error": message}]
+    write_json(path, status)
+    assert evaluate(evidence)["criteria"]["C6"]["status"] == "PASS"
+
+
+@pytest.mark.parametrize("schema", ["missing_error", "missing_driver_reset", "extra", "duplicate", "reordered"])
+def test_c6_watchdog_schema_requires_exact_column_set(evidence, schema):
+    path = evidence[1] / "R6/watchdog.csv"
+    with path.open(newline="") as handle:
+        rows = list(csv.DictReader(handle))
+    columns = list(G.WATCHDOG_COLUMNS)
+    if schema.startswith("missing_"):
+        columns.remove(schema.removeprefix("missing_"))
+    elif schema == "extra":
+        columns.append("unknown")
+    elif schema == "duplicate":
+        columns.append(columns[0])
+    else:
+        columns.reverse()
+    with path.open("w", newline="") as handle:
+        writer = csv.DictWriter(handle, columns, extrasaction="ignore")
+        writer.writeheader()
+        writer.writerows(rows)
+    status_path = path.with_name("watchdog_status.json")
+    status = json.loads(status_path.read_text())
+    status["watchdog_sha256"] = digest(path)
+    write_json(status_path, status)
+    result = evaluate(evidence)["criteria"]["C6"]
+    assert result["status"] == ("PASS" if schema == "reordered" else "FAIL")
+    if schema != "reordered":
+        assert "schema differs" in result["reason"]
 
 
 def test_c6_unobservable_reset_and_short_duration_incomplete(evidence):

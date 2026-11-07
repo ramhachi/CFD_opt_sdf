@@ -1,5 +1,126 @@
 {
-  "amendment": 3,
+  "amendment": 4,
+  "amendment4_checks": {
+    "artifact": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/checks.json",
+    "independent_source_review_findings": [],
+    "registered_freeze_count": 12,
+    "status": "PASS",
+    "verified_source_sha256": {
+      "scripts/local_gpu_gate.py": "09af2220c2454da2ef367a48657493b0a2beba8db9ca2f1d13dd37d81f1442a4",
+      "src/cfd_harness/backend_profiles.py": "a2a6eab89b3f588d4d266a80b3df1dea8e6bcc8c9f281a8aa7c7a98c249c7a71",
+      "tests/test_local_gpu_gate.py": "70590be949b3ba85b327439cfcefbe2a1ff8725402af7ef33839b1ac03cb39f5"
+    }
+  },
+  "amendment4_gate_contract": {
+    "excluded_identity_environment_variables": [
+      "WSL_INTEROP"
+    ],
+    "nvml_uuid_fallback": "same-repeat validated gpu_device_probe.json:default_device_uuid, with probe SHA and sample indices",
+    "record_only_telemetry_fields": [
+      "power.draw",
+      "temperature.gpu"
+    ],
+    "required_telemetry_fields": [
+      "memory.used",
+      "utilization.gpu",
+      "clocks.sm"
+    ],
+    "vram_group_rule": "skip groups with fewer than two samples after first 60 seconds; require at least one eligible group per repeat",
+    "watchdog_schema": "exact column set, order-independent, duplicates rejected"
+  },
+  "amendment4_record_corrections": {
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest-result.json": {
+      "change": "finished_utc renamed to written_utc; timestamp value and other data preserved",
+      "new_sha256": "3c73a5306be70eec9ab03f458c99776bf9ff4f25e2c75ff9cdffd4fb810d7ec5",
+      "old_sha256": "694b18009314355b1b767ed530892845bd6d46216cf25300afc3c2fb5377cf38",
+      "written_utc": "2026-11-07T09:07:43.676102+00:00"
+    },
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/source-stability.json": {
+      "change": "finished_utc renamed to written_utc; timestamp value and other data preserved",
+      "new_sha256": "3ed113646cee4189f05e17e48fd1d8de0e3fe6d3fb1b82a3b690db8a0e68eadc",
+      "old_sha256": "041f20fa1274f18074777662344f2a29d3717c50f47c467ec889f8215c2548c0",
+      "written_utc": "2026-11-07T09:07:43.854143+00:00"
+    }
+  },
+  "amendment4_tdd": {
+    "after": {
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_local_gpu_gate.py",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.xml"
+      ],
+      "complete": true,
+      "evidence_class": "synthetic regression tests after the Amendment 4 implementation; no GPU",
+      "failed_nodes": [],
+      "finished_utc": "2026-11-07T09:29:52.028770+00:00",
+      "junit_path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.xml",
+      "junit_sha256": "912b81225f6aad52e610354944ad2a3ebc3e3c2ef6e7d6f631de8c81b28a8f8b",
+      "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.txt",
+      "log_sha256": "bba76196fb359610be20fe1e76166ce5792d7f9326882a737736852952559954",
+      "returncode": 0,
+      "started_utc": "2026-11-07T09:29:43.009201+00:00",
+      "tests": 108,
+      "wall_seconds": 9.01953504094854
+    },
+    "before": {
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_local_gpu_gate.py",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before.xml"
+      ],
+      "complete": true,
+      "evidence_class": "synthetic regression tests before the Amendment 4 implementation; no GPU",
+      "failed_nodes": [
+        "tests.test_local_gpu_gate::test_c1_c5_exclude_wsl_interop_only_between_runs_and_keep_the_snapshot",
+        "tests.test_local_gpu_gate::test_c6_short_active_groups_are_recorded_and_skipped[1]",
+        "tests.test_local_gpu_gate::test_c6_short_active_groups_are_recorded_and_skipped[2]",
+        "tests.test_local_gpu_gate::test_c6_each_repeat_needs_an_interval_with_two_mature_samples",
+        "tests.test_local_gpu_gate::test_c6_power_and_temperature_are_recorded_only[-power_draw_w]",
+        "tests.test_local_gpu_gate::test_c6_power_and_temperature_are_recorded_only[-temperature_gpu_c]",
+        "tests.test_local_gpu_gate::test_c6_power_and_temperature_are_recorded_only[[N/A]-power_draw_w]",
+        "tests.test_local_gpu_gate::test_c6_power_and_temperature_are_recorded_only[[N/A]-temperature_gpu_c]",
+        "tests.test_local_gpu_gate::test_c6_power_and_temperature_are_recorded_only[nan-power_draw_w]",
+        "tests.test_local_gpu_gate::test_c6_power_and_temperature_are_recorded_only[nan-temperature_gpu_c]",
+        "tests.test_local_gpu_gate::test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[]",
+        "tests.test_local_gpu_gate::test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[N/A]",
+        "tests.test_local_gpu_gate::test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[[N/A]]",
+        "tests.test_local_gpu_gate::test_c6_nvml_uuid_falls_back_to_the_same_run_cuda_probe[[Not Supported]]",
+        "tests.test_local_gpu_gate::test_c6_uuid_fallback_covers_all_samples_but_refuses_a_different_nvml_uuid",
+        "tests.test_local_gpu_gate::test_c6_device_capacity_can_come_from_the_locked_gpu_identity",
+        "tests.test_local_gpu_gate::test_c6_record_only_collector_missing_markers_do_not_block[power.draw]",
+        "tests.test_local_gpu_gate::test_c6_record_only_collector_missing_markers_do_not_block[temperature.gpu]",
+        "tests.test_local_gpu_gate::test_c6_record_only_collector_missing_markers_do_not_block[uuid]",
+        "tests.test_local_gpu_gate::test_actual_telemetry_collector_missing_uses_required_field_policy[power_draw_w]",
+        "tests.test_local_gpu_gate::test_c6_record_only_collector_invalid_values_do_not_block[power.draw]",
+        "tests.test_local_gpu_gate::test_c6_record_only_collector_invalid_values_do_not_block[temperature.gpu]",
+        "tests.test_local_gpu_gate::test_c6_watchdog_schema_requires_exact_column_set[missing_error]",
+        "tests.test_local_gpu_gate::test_c6_watchdog_schema_requires_exact_column_set[missing_driver_reset]"
+      ],
+      "finished_utc": "2026-11-07T09:27:46.128813+00:00",
+      "junit_path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before.xml",
+      "junit_sha256": "3f2b5f3ade586e91f1f4abd737f53bad6effd739f647b7e7291438257893f825",
+      "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before.txt",
+      "log_sha256": "9bfb0e9ada125d08bb5fc283f750ffb2c9a1476b37e8cf640020ad5a0dc2fae1",
+      "returncode": 1,
+      "started_utc": "2026-11-07T09:27:29.073022+00:00",
+      "tests": 108,
+      "wall_seconds": 17.055648165987805
+    }
+  },
+  "artifact_scope": {
+    "wp01_amendment3_validation": "Historical execution data; only full-pytest/source-stability write-time key names were corrected for n5.",
+    "wp01_amendment4_validation": "Current amendment TDD, focused pytest, compileall and immutable-source checks."
+  },
   "artifact_sha256": {
     "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-pytest.txt": "cde20831d0dd3d8a3996c2622f995ef30efc9445898361b2f3873b777c9b1c2f",
     "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-pytest.xml": "b22bb44783b65135a445b03adf333323dc7c5fdd926d4a389ace30cbe03eccfd",
@@ -12,15 +133,26 @@
     "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest-result.json": "19993d2add506fef62702b436db530584dbf2bfc6ac5732829ff06fbb6721576",
     "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.txt": "8fe398814bc67b8818145cc78230570b35a80c2cadeb21a84109f6f846e528e4",
     "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.xml": "cef334789d65a2ffb3e57eb5507c01989209e8cb398a6a9ea0e45c034c182a33",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest-result.json": "694b18009314355b1b767ed530892845bd6d46216cf25300afc3c2fb5377cf38",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest-result.json": "3c73a5306be70eec9ab03f458c99776bf9ff4f25e2c75ff9cdffd4fb810d7ec5",
     "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.txt": "aa86bb3b6278af7af683850a4eee35146450999ba6e1e5356e85d901117baf0c",
     "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.xml": "462a1b45fad474bd95f2673dccfdb01f3e280572fdb37c55d62edf10213b9e64",
     "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/mac-capture.txt": "87d9f25959be07fd9b97ea40e46c5bfb42eb44b2bc65c886c81e9d3349352585",
     "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/protected-paths.json": "fd464c0fb3dca1fa8ce4c9904a3033aa1cb9cc649aa0b8e87fa58dae9d2d001c",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/source-stability.json": "041f20fa1274f18074777662344f2a29d3717c50f47c467ec889f8215c2548c0",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/source-stability.json": "3ed113646cee4189f05e17e48fd1d8de0e3fe6d3fb1b82a3b690db8a0e68eadc",
     "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu-result.json": "e52f2e269d968795eaa4052e5ebfddc396ef0857ffb720b9105cc6caabf1048d",
     "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.txt": "731dbfa1fa267685446c70612091eab35243ac5eeb2d27d867974d5496d05e8a",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.xml": "05732ebabc4bff4d6ac8b454e76e431bb381f35d8e59e645e69de264c55ccdd5"
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.xml": "05732ebabc4bff4d6ac8b454e76e431bb381f35d8e59e645e69de264c55ccdd5",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/checks.json": "b0a48fa95b3fbb3405651407444d71ad1f099e0a7a17f4f5d03a99b8f1a08d79",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/compileall.txt": "721ef6850162b06dcdc7b199456a7be2482f05e57d52807584da2922c15796d5",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest-result.json": "c0b98a6ba82d7c590c431c68eb59d23acb95c1d1d19daab90c94cfdee5d0ce57",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest.txt": "b869bf6a5bd82ad17e5662ceb72695074eef5a72383788bcf6a7749de07b922f",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest.xml": "5343b07f2e30a8dc8dda41674bb717291e1e75b1e0f90b5d6d8b11912491fff5",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after-result.json": "b7e42b52bac6e081040ef12077ca2f956411445ef5aa2d35fad669bfa07ab75e",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.txt": "bba76196fb359610be20fe1e76166ce5792d7f9326882a737736852952559954",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.xml": "912b81225f6aad52e610354944ad2a3ebc3e3c2ef6e7d6f631de8c81b28a8f8b",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before-result.json": "7cc5ac5813a66b1933d9f33f9671aceddee29ffa9f9b2aec814104fb9955109c",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before.txt": "9bfb0e9ada125d08bb5fc283f750ffb2c9a1476b37e8cf640020ad5a0dc2fae1",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before.xml": "3f2b5f3ade586e91f1f4abd737f53bad6effd739f647b7e7291438257893f825"
   },
   "base": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
   "cpu_validation": {
@@ -300,7 +432,8 @@
       "returncode": 2,
       "stderr": "",
       "wall_seconds": 1.1988305830163881
-    }
+    },
+    "scope": "Historical CPU validation from Amendment 3; Julia source is unchanged and CPU solver selftests were not rerun for Amendment 4."
   },
   "focused_pytest": {
     "command": [
@@ -315,27 +448,28 @@
       "tests/test_harness_registered_reverify.py",
       "-p",
       "no:cacheprovider",
-      "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.xml"
+      "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest.xml"
     ],
     "complete": true,
     "counts": {
       "errors": 0,
       "failures": 0,
-      "passed": 169,
+      "passed": 197,
       "skipped": 0,
-      "tests": 169
+      "tests": 197
     },
     "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu",
+    "evidence_class": "CPU/synthetic tooling verification; includes current-tree registered-output byte re-verification; no GPU",
     "failed_nodes": [],
-    "finished_utc": "2026-11-06T09:00:04.849452+00:00",
-    "junit_path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.xml",
-    "junit_sha256": "cef334789d65a2ffb3e57eb5507c01989209e8cb398a6a9ea0e45c034c182a33",
-    "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.txt",
-    "log_sha256": "8fe398814bc67b8818145cc78230570b35a80c2cadeb21a84109f6f846e528e4",
+    "finished_utc": "2026-11-07T09:31:03.068390+00:00",
+    "junit_path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest.xml",
+    "junit_sha256": "5343b07f2e30a8dc8dda41674bb717291e1e75b1e0f90b5d6d8b11912491fff5",
+    "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest.txt",
+    "log_sha256": "b869bf6a5bd82ad17e5662ceb72695074eef5a72383788bcf6a7749de07b922f",
     "returncode": 0,
-    "started_utc": "2026-11-06T08:58:16.767669+00:00",
-    "summary": ".........................                                                [100%]\n169 passed in 107.35s (0:01:47)",
-    "wall_seconds": 108.08182825008407
+    "started_utc": "2026-11-07T09:30:47.026486+00:00",
+    "summary": "197 passed in 15.78s",
+    "wall_seconds": 16.041899665957317
   },
   "full_pytest": {
     "base": {
@@ -401,7 +535,6 @@
       },
       "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu",
       "failed_nodes": [],
-      "finished_utc": "2026-11-07T09:07:43.676102+00:00",
       "junit_path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.xml",
       "junit_sha256": "462a1b45fad474bd95f2673dccfdb01f3e280572fdb37c55d62edf10213b9e64",
       "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.txt",
@@ -409,143 +542,42 @@
       "returncode": 0,
       "started_utc": "2026-11-06T09:00:07.970529+00:00",
       "summary": "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n3651 passed, 74 skipped, 7295 warnings in 1933.39s (0:32:13)",
-      "wall_seconds": 1934.9927469580434
+      "wall_seconds": 1934.9927469580434,
+      "written_utc": "2026-11-07T09:07:43.676102+00:00"
     },
-    "new_failed_nodes": []
+    "new_failed_nodes": [],
+    "rerun_for_amendment4": false,
+    "scope": "Historical completed runs before Amendment 4: base e3dcdf61 and implementation corresponding to ab801695. Not rerun for this amendment; not current-tree full-suite evidence."
   },
-  "head_start": "e6c57e7b",
+  "head_start": "ab80169579495bbb8037ef863982cce312a8d9e4",
   "intended_file_sha256": {
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-pytest.txt": "cde20831d0dd3d8a3996c2622f995ef30efc9445898361b2f3873b777c9b1c2f",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-pytest.xml": "b22bb44783b65135a445b03adf333323dc7c5fdd926d4a389ace30cbe03eccfd",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-result.json": "59f1919674dd6c812fd2724feab4f3a0c82ff5e9909a4372dcdcec0ca9da18fe",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/bench-cpu-selftest.txt": "54541da3a04fe77816aa2d79f0dacc2d634f25e5348cddc5b5e5a34409a908c1",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/checkpoint-selftest.txt": "e09c6b455c09591feea752c5a17422247700dbf5492392432e0bdf2c5422c6b4",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/compileall-result.json": "13fe118715e15c4187fd94000767af916f6eeabbf724a22fe37fd5490eeebb3b",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/compileall.txt": "daac1411f93c89479b52d0b5c0065ff3749ddec9b05a33f7c66ff00e1d367c3a",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/cpu-validation.json": "8a425040c39ff86db8095bc086714e2dc6d28b53f50ad10215f0d594316730f5",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest-result.json": "19993d2add506fef62702b436db530584dbf2bfc6ac5732829ff06fbb6721576",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.txt": "8fe398814bc67b8818145cc78230570b35a80c2cadeb21a84109f6f846e528e4",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.xml": "cef334789d65a2ffb3e57eb5507c01989209e8cb398a6a9ea0e45c034c182a33",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest-result.json": "694b18009314355b1b767ed530892845bd6d46216cf25300afc3c2fb5377cf38",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.txt": "aa86bb3b6278af7af683850a4eee35146450999ba6e1e5356e85d901117baf0c",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.xml": "462a1b45fad474bd95f2673dccfdb01f3e280572fdb37c55d62edf10213b9e64",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/mac-capture.txt": "87d9f25959be07fd9b97ea40e46c5bfb42eb44b2bc65c886c81e9d3349352585",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/protected-paths.json": "fd464c0fb3dca1fa8ce4c9904a3033aa1cb9cc649aa0b8e87fa58dae9d2d001c",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/source-stability.json": "041f20fa1274f18074777662344f2a29d3717c50f47c467ec889f8215c2548c0",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu-result.json": "e52f2e269d968795eaa4052e5ebfddc396ef0857ffb720b9105cc6caabf1048d",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.txt": "731dbfa1fa267685446c70612091eab35243ac5eeb2d27d867974d5496d05e8a",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.xml": "05732ebabc4bff4d6ac8b454e76e431bb381f35d8e59e645e69de264c55ccdd5",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_bench_cpu_selftest.json": "72c287628d4b38cf81d4e3507ea68abf6024edfc3b54f41b0e55db811f70756b",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_checkpoint_selftest.json": "782339ce119c5cc6d473bafd161b4d786ebcb598720a163f28c6d2ee4d3d66b9",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_design.md": "63f633ce2338f42c27779cb4ae65ee3182028165cb0979e62c9229df79ee48fc",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_report.md": "62167b59dae429a97a3a21c1b65f32fca6c800b56bd3414b4645560b68f2e3a2",
-    "infra/local_gpu/README.md": "cdfbe1b21cad4893ee75eed1131e550fa2ef444cf281953979130c6b54e15695",
-    "infra/local_gpu/capture_lock.py": "402c3fe5a40f514834a4ffe18142027930cf60fd0d1160494cebd7905b9aaffc",
-    "julia/CFDSDFWaterLily/gen01/Checkpoint.jl": "21d7c9a2ca2c27bbfbecc6ed579417acde0c4dc1ca270c9ee3d5c1da64e13076",
-    "scripts/checkpoint_selftest.jl": "55a9f802d7ce2574076fb1ff6165b10bdb669f6a3110b21f49b7446b8ccaad6c",
-    "scripts/local_gpu.py": "e125c85ba651ee754ead8222952cf20f894b19e8dc9cc9521fe02a0c600bf46c",
-    "scripts/local_gpu_bench.jl": "bc5e9c924bfa8969a0c8dc4c06c25e3b4f33ebfdbc6ff2fab136dc6ab1e8083f",
-    "scripts/local_gpu_bench_windows.ps1": "b4decffd6b36ced832ce4ce5316110880c8e94fd59dce0f043fe3a020e1371e7",
-    "scripts/local_gpu_gate.py": "89450823200f1c0504b695088822da1d9f45da48ec7005e6f069d79f7f1a452a",
-    "scripts/waterlily_local_gpu_job.diff": "d39c1f01ea0ed16774da193249de7c817a0737215c79828cd34a55178b72771e",
-    "scripts/waterlily_local_gpu_job.jl": "173d52353b59e0597fd839a3673f61b8165012077fec4ac902f1155d9cabad24",
-    "src/cfd_harness/backend_profiles.py": "1edb1ecba33fbd5bdf60fce111332d43557a9398a230a7aee56ab480aadef354",
-    "src/cfd_harness/campaign_build.py": "7e3ee902bc3ed020edd5e37cbd9060490f9c0f5119e72a60448edbdcf0688a68",
-    "src/cfd_harness/campaign_schema.py": "4c3c494ed381930d9d1e51b063efbbdcf1fa4586c1ac7e84d2b999a5c984d1b8",
-    "src/cfd_harness/campaign_verify.py": "8db4714799e258e08ce1a2e8ed9de4b5ff90ba3d9fa56513ec6d6997b0e57a2e",
-    "tests/test_harness_registered_reverify.py": "c02491c0e6f75ef7557813520ec50a74473cf268c3c076631c12ef4d061725ef",
-    "tests/test_local_gpu.py": "dcba5a595963e7a4831c27bc4556439dbf27a48cdc8ea24634b0f51f9acbdeed",
-    "tests/test_local_gpu_backend.py": "26ed8b66b7d1577024d09535ebd18cb5103659c3dbd60b171a2923ee98b9ef11",
-    "tests/test_local_gpu_gate.py": "043e866ab6c1b7f6a3c8ac3accfd4b7a79543a99846e08621c5ac6bb6538b728"
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest-result.json": "3c73a5306be70eec9ab03f458c99776bf9ff4f25e2c75ff9cdffd4fb810d7ec5",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/source-stability.json": "3ed113646cee4189f05e17e48fd1d8de0e3fe6d3fb1b82a3b690db8a0e68eadc",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/checks.json": "b0a48fa95b3fbb3405651407444d71ad1f099e0a7a17f4f5d03a99b8f1a08d79",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/compileall.txt": "721ef6850162b06dcdc7b199456a7be2482f05e57d52807584da2922c15796d5",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest-result.json": "c0b98a6ba82d7c590c431c68eb59d23acb95c1d1d19daab90c94cfdee5d0ce57",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest.txt": "b869bf6a5bd82ad17e5662ceb72695074eef5a72383788bcf6a7749de07b922f",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest.xml": "5343b07f2e30a8dc8dda41674bb717291e1e75b1e0f90b5d6d8b11912491fff5",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after-result.json": "b7e42b52bac6e081040ef12077ca2f956411445ef5aa2d35fad669bfa07ab75e",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.txt": "bba76196fb359610be20fe1e76166ce5792d7f9326882a737736852952559954",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.xml": "912b81225f6aad52e610354944ad2a3ebc3e3c2ef6e7d6f631de8c81b28a8f8b",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before-result.json": "7cc5ac5813a66b1933d9f33f9671aceddee29ffa9f9b2aec814104fb9955109c",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before.txt": "9bfb0e9ada125d08bb5fc283f750ffb2c9a1476b37e8cf640020ad5a0dc2fae1",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before.xml": "3f2b5f3ade586e91f1f4abd737f53bad6effd739f647b7e7291438257893f825",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_design.md": "4d39bc42f5276e3e3949b7d5c685bc7d9d14dfebeba9cea119e5ad86d44800b4",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp01_local_gpu_01_report.md": "ea09e04799f440befdf87e1880f5e2761464845d35be6d49bdd7b36151bccc9f",
+    "scripts/local_gpu_gate.py": "09af2220c2454da2ef367a48657493b0a2beba8db9ca2f1d13dd37d81f1442a4",
+    "src/cfd_harness/backend_profiles.py": "a2a6eab89b3f588d4d266a80b3df1dea8e6bcc8c9f281a8aa7c7a98c249c7a71",
+    "tests/test_local_gpu_gate.py": "70590be949b3ba85b327439cfcefbe2a1ff8725402af7ef33839b1ac03cb39f5"
   },
   "intended_files": [
     {
-      "change": "新規",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-pytest.txt"
-    },
-    {
-      "change": "新規",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-pytest.xml"
-    },
-    {
-      "change": "新規",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/base-result.json"
-    },
-    {
-      "change": "新規",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/bench-cpu-selftest.txt"
-    },
-    {
-      "change": "新規",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/checkpoint-selftest.txt"
-    },
-    {
-      "change": "新規",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/compileall-result.json"
-    },
-    {
-      "change": "新規",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/compileall.txt"
-    },
-    {
-      "change": "新規",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/cpu-validation.json"
-    },
-    {
-      "change": "新規",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest-result.json"
-    },
-    {
-      "change": "新規",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.txt"
-    },
-    {
-      "change": "新規",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/focused-pytest.xml"
-    },
-    {
-      "change": "新規",
+      "change": "変更",
       "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest-result.json"
     },
     {
-      "change": "新規",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.txt"
-    },
-    {
-      "change": "新規",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/full-pytest.xml"
-    },
-    {
-      "change": "新規",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/mac-capture.txt"
-    },
-    {
-      "change": "新規",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/protected-paths.json"
-    },
-    {
-      "change": "新規",
+      "change": "変更",
       "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/source-stability.json"
-    },
-    {
-      "change": "新規",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu-result.json"
-    },
-    {
-      "change": "新規",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.txt"
-    },
-    {
-      "change": "新規",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.xml"
-    },
-    {
-      "change": "変更",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_bench_cpu_selftest.json"
-    },
-    {
-      "change": "変更",
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_checkpoint_selftest.json"
     },
     {
       "change": "変更",
@@ -561,86 +593,74 @@
     },
     {
       "change": "変更",
-      "path": "infra/local_gpu/README.md"
-    },
-    {
-      "change": "変更",
-      "path": "infra/local_gpu/capture_lock.py"
-    },
-    {
-      "change": "変更",
-      "path": "julia/CFDSDFWaterLily/gen01/Checkpoint.jl"
-    },
-    {
-      "change": "変更",
-      "path": "scripts/checkpoint_selftest.jl"
-    },
-    {
-      "change": "変更",
-      "path": "scripts/local_gpu.py"
-    },
-    {
-      "change": "変更",
-      "path": "scripts/local_gpu_bench.jl"
-    },
-    {
-      "change": "変更",
-      "path": "scripts/local_gpu_bench_windows.ps1"
-    },
-    {
-      "change": "変更",
       "path": "scripts/local_gpu_gate.py"
-    },
-    {
-      "change": "変更",
-      "path": "scripts/waterlily_local_gpu_job.diff"
-    },
-    {
-      "change": "変更",
-      "path": "scripts/waterlily_local_gpu_job.jl"
     },
     {
       "change": "変更",
       "path": "src/cfd_harness/backend_profiles.py"
     },
     {
-      "change": "復元",
-      "path": "src/cfd_harness/campaign_build.py"
-    },
-    {
-      "change": "復元",
-      "path": "src/cfd_harness/campaign_schema.py"
-    },
-    {
-      "change": "復元",
-      "path": "src/cfd_harness/campaign_verify.py"
+      "change": "変更",
+      "path": "tests/test_local_gpu_gate.py"
     },
     {
       "change": "新規",
-      "path": "tests/test_harness_registered_reverify.py"
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/checks.json"
     },
     {
-      "change": "変更",
-      "path": "tests/test_local_gpu.py"
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/compileall.txt"
     },
     {
-      "change": "変更",
-      "path": "tests/test_local_gpu_backend.py"
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest-result.json"
     },
     {
-      "change": "変更",
-      "path": "tests/test_local_gpu_gate.py"
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest.txt"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/focused-pytest.xml"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after-result.json"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.txt"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-after.xml"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before-result.json"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before.txt"
+    },
+    {
+      "change": "新規",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment4_validation/tdd-before.xml"
     }
   ],
   "not_performed": [
     "GPU/CUDA workloads",
     "Kaggle/Colab/cloud/paid API",
     "real WSL2 lock or environment gate measurement",
-    "registered evidence or roadmap edits",
-    "protected historical test exceptions"
+    "registered evidence, tool-file or roadmap edits",
+    "protected historical test exceptions",
+    "full pytest rerun (explicit Amendment 4 scope)",
+    "Julia solver selftest rerun (unchanged source; prior evidence retained)",
+    "git add/commit/push or PR mutations"
   ],
   "prior_t4_byte_claim_corrected": true,
   "protected_paths": {
+    "all_campaign_tools_diff_from_e3dcdf61": "",
     "attempt1_records_unchanged": true,
     "base": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
     "checks": [
@@ -652,17 +672,55 @@
         ],
         "returncode": 0,
         "stderr": "",
-        "stdout": ""
+        "stdout": "",
+        "wall_seconds": 0.13506000000052154
       },
       {
         "command": [
-          "sh",
-          "-n",
-          "infra/local_gpu/bind_dataset.sh"
+          "git",
+          "diff",
+          "e3dcdf61",
+          "--",
+          "src/cfd_harness/campaign_*.py"
         ],
         "returncode": 0,
         "stderr": "",
-        "stdout": ""
+        "stdout": "",
+        "wall_seconds": 0.024305833037942648
+      },
+      {
+        "command": [
+          "git",
+          "diff",
+          "--name-only",
+          "--diff-filter=MDRT",
+          "e3dcdf61",
+          "--"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "",
+        "wall_seconds": 0.06281883304473013
+      },
+      {
+        "command": [
+          "git",
+          "diff",
+          "ab801695",
+          "--name-only",
+          "--",
+          "julia",
+          "docs/evidence",
+          "docs/harness",
+          "infra/kaggle",
+          "tests/conftest.py",
+          "tests/test_harness_replay.py",
+          "scripts/waterlily_lowdim02_flow32_job.jl"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "",
+        "wall_seconds": 0.05679000006057322
       }
     ],
     "existing_test_changes": [],
@@ -674,6 +732,20 @@
       "src/cfd_harness/campaign_verify.py": "8db4714799e258e08ce1a2e8ed9de4b5ff90ba3d9fa56513ec6d6997b0e57a2e"
     },
     "protected_scope_changes": [],
+    "registered_freeze_tool_hash_matches": {
+      "docs/evidence/fid01_2026_10_21/freeze1.json": true,
+      "docs/evidence/screen01_2026_10_30/freeze1.json": true,
+      "docs/evidence/unc01_2026_10_20/freeze1.json": true,
+      "docs/harness/fid01_campaign.prerun_freeze.json": true,
+      "docs/harness/fid01_f48_campaign.prerun_freeze.json": true,
+      "docs/harness/job02_gate_campaign.prerun_freeze.json": true,
+      "docs/harness/screen01_campaign.prerun_freeze.json": true,
+      "docs/harness/screen01_f48_campaign.prerun_freeze.json": true,
+      "docs/harness/screen01_f_campaign.prerun_freeze.json": true,
+      "docs/harness/screen01_g2_campaign.prerun_freeze.json": true,
+      "docs/harness/unc01_u01_campaign.prerun_freeze.json": true,
+      "docs/harness/unc01_u2_campaign.prerun_freeze.json": true
+    },
     "registered_prerun_freezes_with_identical_tool_hashes": {
       "docs/harness/fid01_campaign.prerun_freeze.json": true,
       "docs/harness/fid01_f48_campaign.prerun_freeze.json": true,
@@ -693,14 +765,15 @@
     "auto_merge": false,
     "git_add_attempted": false,
     "git_commit_attempted": false,
-    "owner": "Claude on host per Amendment 3",
+    "owner": "Claude on host per Amendment 4",
     "pr": "#88 (already exists; host updates)",
     "push_attempted": false
   },
-  "schema_version": 3,
+  "schema_version": 4,
   "source_stability": {
     "artifact": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/source-stability.json",
     "changed": [],
+    "scope": "Historical before/after inventory of the Amendment 3 full-suite run; not a claim that this inventory equals the modified Amendment 4 sources.",
     "source_files": 927,
     "status": "COMPLETE"
   },
@@ -731,17 +804,18 @@
     "log": "docs/codex/gen01_w1_2026_11_06/reports/wp01_amendment3_validation/standalone-local-gpu.txt",
     "log_sha256": "731dbfa1fa267685446c70612091eab35243ac5eeb2d27d867974d5496d05e8a",
     "returncode": 0,
+    "scope": "Historical 25-test standalone run; tests/test_local_gpu.py is also included in the current 197-test focused run.",
     "started_utc": "2026-11-06T09:00:04.853511+00:00",
     "summary": ".........................                                                [100%]\n25 passed in 2.19s",
     "wall_seconds": 2.7903375839814544
   },
   "status": "DONE",
-  "updated_utc": "2026-11-07T09:07:46.506075+00:00",
+  "updated_utc": "2026-11-07T09:35:34.251623+00:00",
   "worker_routing": {
-    "actual_model": "native inherited workers",
+    "actual_model": "native parent + inherited read-only review worker",
     "attempt_number": 1,
     "global_configuration_or_paid_usage_changed": false,
-    "reason": "MCP unavailable; CLI models failed FileSystem.open(default log)",
+    "reason": "OpenCode Go MCP unavailable; CLI models failed FileSystem.open(default log)",
     "requested_model": "OpenCode Go model discovery / cheap_worker"
   }
 }

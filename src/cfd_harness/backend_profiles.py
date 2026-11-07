@@ -22,6 +22,8 @@ CHECKPOINT_REL = "julia/CFDSDFWaterLily/gen01/Checkpoint.jl"
 DEFAULT, LOCAL = "kaggle_t4", "local_rtx4070ti"
 LOCAL_GPU_NAME = "NVIDIA GeForce RTX 4070 Ti"
 RUNTIME_ENV_PREFIXES = ("JULIA_", "CUDA_", "NVIDIA_", "WSL")
+# LOCAL-GPU-01 §11.7: record session sockets, but do not compare them across runs.
+VOLATILE_ENVIRONMENT_KEYS = ("WSL_INTEROP",)
 RESERVED_LOCAL_ENV_PREFIXES = RUNTIME_ENV_PREFIXES + ("LOCAL_GPU_",)
 
 

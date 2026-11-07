@@ -286,9 +286,16 @@ def _read_run(directory, lock_sha, environment, repo):
                              "summary.json": sha(summary_path)}}
 
 
+def run_identity(record):
+    identity = {key: record[key] for key in RUN_IDENTITY_KEYS}
+    identity["filtered_environment"] = {key: value for key, value in identity["filtered_environment"].items()
+                                        if key not in BP.VOLATILE_ENVIRONMENT_KEYS}
+    return identity
+
+
 def compare_samples(a, b):
     left, right = a["rows"], b["rows"]
-    require(a["campaign"] == b["campaign"] and all(a["record"][key] == b["record"][key] for key in RUN_IDENTITY_KEYS),
+    require(a["campaign"] == b["campaign"] and run_identity(a["record"]) == run_identity(b["record"]),
             "paired run campaign/source/runner/environment differs")
     require(all(a["summary"][key] == b["summary"][key] for key in SUMMARY_IDENTITY_KEYS), "paired run case/geometry/placement/scaling differs")
     require(len(left) == len(right), "force sample counts differ")
@@ -454,7 +461,7 @@ def c5(read, classification):
     if classification not in ("BITWISE", "TOLERANCE"):
         raise Missing("C1 has not established a reproducibility class")
     original, resumed = read("R3"), read("R5")
-    require(all(original["record"][key] == resumed["record"][key] for key in RUN_IDENTITY_KEYS), "R3/R5 campaign/source/runner/environment differs")
+    require(run_identity(original["record"]) == run_identity(resumed["record"]), "R3/R5 campaign/source/runner/environment differs")
     require(all(original["summary"][key] == resumed["summary"][key] for key in SUMMARY_IDENTITY_KEYS), "R3/R5 geometry/placement/scaling differs")
     resume = resumed["record"].get("resume")
     if not resume:
@@ -466,7 +473,7 @@ def c5(read, classification):
     checked_sha(checkpoint, resume["checkpoint_sha256"])
     checked_sha(prior_path, resume["interrupted_run_sha256"])
     prior = load(prior_path)
-    require(all(prior[key] == resumed["record"][key] for key in RUN_IDENTITY_KEYS), "interrupted run campaign/source/runner/environment differs from R5")
+    require(run_identity(prior) == run_identity(resumed["record"]), "interrupted run campaign/source/runner/environment differs from R5")
     require(type(prior["returncode"]) is int and prior["returncode"] in (-9, -15, 137, 143)
             and prior["done"] is False and prior["lock_sha256"] == resumed["record"]["lock_sha256"], "R5 interruption is not a recorded killed run on this lock")
     original_checkpoint = resume["interrupted_checkpoint_path"]
@@ -502,7 +509,7 @@ def c6(read, runs):
     with watch.open(newline="") as handle:
         reader = csv.DictReader(handle)
         columns = reader.fieldnames or []
-        require(len(columns) == len(set(columns)) and set(columns) <= set(WATCHDOG_COLUMNS), "watchdog CSV schema differs")
+        require(len(columns) == len(set(columns)) and set(columns) == set(WATCHDOG_COLUMNS), "watchdog CSV schema differs")
         rows = list(reader)
     if not rows:
         raise Missing("R6 watchdog has no samples")
@@ -511,37 +518,49 @@ def c6(read, runs):
     require(isinstance(status["driver_reset_monitor"].get("source"), str)
             and status["driver_reset_monitor"]["source"], "driver-reset monitor source is absent")
     missing = [] if available else ["driver reset monitor is unavailable"]
+
+    def blocking_messages(message, unavailable=False):
+        # The collector joins field-labelled NVML diagnostics with semicolons.
+        # §11.7 makes power/temperature record-only; absent UUID/capacity can
+        # be supplied by the same run's CUDA probe / locked device identity.
+        require(isinstance(message, str) and message.strip(), "invalid telemetry diagnostic")
+        ignored = ("power.draw", "temperature.gpu") + (("uuid", "memory.total") if unavailable else ())
+        return [item.strip() for item in message.split(";") if item.strip()
+                and re.split(r"[:\s]", item.strip(), maxsplit=1)[0] not in ignored]
+
     for error in status.get("telemetry_errors", []):
         if isinstance(error, dict) and error.get("incomplete"):
-            missing.append(f"telemetry acquisition incomplete: {error['incomplete']}")
+            missing.extend(f"telemetry acquisition incomplete: {message}"
+                           for message in blocking_messages(error["incomplete"], unavailable=True))
         else:
-            raise ValueError(f"R6 telemetry acquisition error: {error}")
+            require(isinstance(error, dict) and not blocking_messages(error.get("error")), f"R6 telemetry acquisition error: {error}")
     elapsed, samples = [], []
 
-    def telemetry(row, key):
+    def telemetry(row, key, required=True):
         value = row.get(key, "")
         if value in (None, "", "N/A", "[N/A]", "[Not Supported]"):
-            missing.append(f"sample {len(samples)}: missing {key}")
+            if required:
+                missing.append(f"sample {len(samples)}: missing {key}")
             return None
         return finite(value, key)
 
     for row in rows:
-        require(not row.get("error"), f"R6 telemetry failed: {row.get('error')}")
+        require(not row.get("error") or not blocking_messages(row["error"]), f"R6 telemetry failed: {row.get('error')}")
         reset = row.get("driver_reset", "")
         require(reset in ("true", "false", ""), "unknown driver-reset observation")
         require(reset != "true", "R6 driver reset observed")
         if row.get("reset_monitor_error") or reset == "":
             missing.append(f"sample {len(samples)}: driver reset monitor is unavailable")
         elapsed.append(finite(row["elapsed_s"], "watchdog elapsed"))
-        sample = {key: telemetry(row, key) for key in ("clocks_sm_mhz", "memory_used_mib", "memory_total_mib",
-                                                       "temperature_gpu_c", "power_draw_w", "utilization_gpu_pct")}
+        sample = {key: telemetry(row, key) for key in ("clocks_sm_mhz", "memory_used_mib", "utilization_gpu_pct")}
+        sample["memory_total_mib"] = telemetry(row, "memory_total_mib", required=False)
         uuid = row.get("gpu_uuid", "")
         if uuid in (None, "", "N/A", "[N/A]", "[Not Supported]"):
-            missing.append(f"sample {len(samples)}: missing GPU UUID")
+            uuid = ""
         else:
             require(isinstance(uuid, str) and uuid.startswith("GPU-") and len(uuid) > 4, "invalid telemetry GPU UUID")
         sample["gpu_uuid"] = uuid
-        for key in ("clocks_sm_mhz", "memory_used_mib", "power_draw_w"):
+        for key in ("clocks_sm_mhz", "memory_used_mib"):
             require(sample[key] is None or sample[key] >= 0, f"invalid negative {key}")
         require(sample["memory_total_mib"] is None or sample["memory_total_mib"] > 0, "invalid device VRAM total")
         require(sample["utilization_gpu_pct"] is None or 0 <= sample["utilization_gpu_pct"] <= 100, "invalid GPU utilization")
@@ -558,12 +577,24 @@ def c6(read, runs):
     original = read("R3")
     expected_dims, expected_uuid = original["summary"]["flow_dims"], original["cuda_uuid"]
     for sample in samples:
-        require(not sample["gpu_uuid"] or sample["gpu_uuid"] in ("N/A", "[N/A]", "[Not Supported]", expected_uuid), "watchdog GPU UUID differs from CUDA probe")
+        require(not sample["gpu_uuid"] or sample["gpu_uuid"] == expected_uuid, "watchdog GPU UUID differs from CUDA probe")
     totals = [sample["memory_total_mib"] for sample in samples if sample["memory_total_mib"] is not None]
     require(not totals or all(total == totals[0] for total in totals), "device total VRAM changes during R6")
+    total_source = "watchdog.csv:memory_total_mib"
+    if not totals:
+        capacity = original["record"]["gpu_identity"].get("memory_total")
+        match = re.fullmatch(r"(\d+(?:\.\d+)?)\s+MiB", capacity) if isinstance(capacity, str) else None
+        if match:
+            totals = [finite(match[1], "locked device VRAM total", positive=True)]
+            total_source = "locked_gpu_identity"
+        else:
+            missing.append("device total VRAM capacity is unavailable for the stability rule")
+    for sample in samples:
+        require(sample["memory_used_mib"] is None or not totals or sample["memory_used_mib"] <= totals[0], "observed VRAM exceeds device total")
     for path in records:
         run = read(str(path.parent.relative_to(Path(runs))))
         require(run["summary"]["case_id"] == "flow_32" and run["summary"]["flow_dims"] == expected_dims, "R6 repeat is not R3-sized")
+        require(run["cuda_uuid"] == expected_uuid, "R6 repeat CUDA UUID differs from R3")
         rec = run["record"]
         started, finished = utc(rec["started_utc"]), utc(rec["finished_utc"])
         wall = finite(rec["wall_seconds"], "R6 repeat wall", positive=True)
@@ -579,7 +610,8 @@ def c6(read, runs):
         active_intervals.sort()
         require(all(right[0] >= left[1] for left, right in zip(active_intervals, active_intervals[1:])), "solver-active intervals overlap")
         workloads.append({"run": str(path.parent.relative_to(Path(runs))), "start": started, "finish": finished,
-                          "active_intervals": active_intervals, "peak_vram_mib": rec.get("peak_vram_mib")})
+                          "active_intervals": active_intervals, "peak_vram_mib": rec.get("peak_vram_mib"),
+                          "cuda_uuid": run["cuda_uuid"], "cuda_probe_sha256": sha(run["output"] / "gpu_device_probe.json")})
     intervals.sort()
     require(all(right[0] >= left[1] for left, right in zip(intervals, intervals[1:])), "R6 workload runs overlap")
     if any((right[0] - left[1]).total_seconds() > DEVELOPMENT_DEFAULTS["workload_gap_allowance_seconds"] for left, right in zip(intervals, intervals[1:])):
@@ -598,6 +630,7 @@ def c6(read, runs):
         missing.append("R6 60-second watchdog coverage exceeds development sample allowances")
     workloads.sort(key=lambda item: item["start"])
     active_indices, stability_intervals, repeat_peaks, mature_peaks = [], [], {}, {}
+    skipped_intervals, telemetry_identity, assigned_identity_samples = [], {}, set()
     for workload in workloads:
         peak_vram = workload["peak_vram_mib"]
         if peak_vram is None or isinstance(peak_vram, dict):
@@ -606,10 +639,16 @@ def c6(read, runs):
             peak_vram = finite(peak_vram, "recorded repeat VRAM peak")
             require(peak_vram >= 0 and (not totals or peak_vram <= totals[0]), "invalid recorded repeat VRAM peak")
             repeat_peaks[workload["run"]] = peak_vram
-        groups, current = [], []
+        groups, current, fallback_samples, nvml_samples = [], [], [], 0
         for index, (second, sample) in enumerate(zip(elapsed, samples)):
             timestamp = monitor_start + datetime.timedelta(seconds=second)
             in_workload = workload["start"] <= timestamp < workload["finish"] or timestamp == workload["finish"] == workloads[-1]["finish"]
+            if in_workload:
+                assigned_identity_samples.add(index)
+                if sample["gpu_uuid"]:
+                    nvml_samples += 1
+                else:
+                    fallback_samples.append(index)
             from_interval = any(start <= timestamp <= end for start, end in workload["active_intervals"])
             active = in_workload and (from_interval or (sample["utilization_gpu_pct"] is not None and sample["utilization_gpu_pct"] >= 50))
             if active:
@@ -624,7 +663,11 @@ def c6(read, runs):
             groups.append(current)
         if not groups:
             missing.append(f"{workload['run']}: no solver-active samples")
+        telemetry_identity[workload["run"]] = {"cuda_uuid": workload["cuda_uuid"],
+            "cuda_probe_sha256": workload["cuda_probe_sha256"], "nvml_samples": nvml_samples,
+            "cuda_probe_fallback_samples": fallback_samples, "fallback_source": "gpu_device_probe.json:default_device_uuid"}
         peak_values = []
+        qualifying_intervals = 0
         for group in groups:
             active_indices.extend(group)
             # The start is measured from telemetry unless a recorded solver interval starts earlier.
@@ -632,6 +675,12 @@ def c6(read, runs):
             starts = [start for start, end in workload["active_intervals"] if start <= first_time <= end]
             active_start = min([first_time, *starts])
             mature = [index for index in group if (monitor_start + datetime.timedelta(seconds=elapsed[index]) - active_start).total_seconds() >= 60]
+            if len(mature) < 2:
+                skipped_intervals.append({"run": workload["run"], "started_utc": active_start.isoformat(),
+                    "last_sample_elapsed_s": elapsed[group[-1]], "samples": len(group), "mature_samples": len(mature),
+                    "reason": "fewer than two samples after the first 60 seconds; VRAM interval skipped"})
+                continue
+            qualifying_intervals += 1
             values = [samples[index]["memory_used_mib"] for index in mature if samples[index]["memory_used_mib"] is not None]
             if len(values) < 2 or not totals:
                 missing.append(f"{workload['run']}: insufficient VRAM samples after the first 60 seconds of an active interval")
@@ -642,6 +691,8 @@ def c6(read, runs):
                                         "mature_samples": len(values), "vram_min_mib": min(values), "vram_max_mib": max(values),
                                         "range_fraction_of_device_total": variation})
             peak_values.extend(values)
+        if not qualifying_intervals:
+            missing.append(f"{workload['run']}: needs at least one solver-active interval with two samples after the first 60 seconds")
         if peak_values:
             mature_peaks[workload["run"]] = max(peak_values)
     active_clocks = [samples[index]["clocks_sm_mhz"] for index in active_indices if samples[index]["clocks_sm_mhz"] is not None]
@@ -668,10 +719,18 @@ def c6(read, runs):
             "clock_observations_mhz": {"first": active_clocks[:1], "peak": max(active_clocks, default=None), "minimum": min(active_clocks, default=None)},
             "clock_drop_fraction": clock_drop, "clock_rule": "maximum historical-peak drawdown over solver-active samples only; utilization>=50% OR recorded solver interval",
             "vram_min_mib": min(vram, default=None), "vram_max_mib": max(vram, default=None),
-            "vram_rule": "after first 60 seconds: interval range/device total<=0.05; across repeats (max peak-min peak)/max peak<=0.02",
+            "vram_device_total_mib": totals[0] if totals else None, "vram_device_total_source": total_source if totals else None,
+            "vram_rule": "intervals with at least two samples after first 60 seconds: range/device total<=0.05; at least one interval per repeat; across repeats (max peak-min peak)/max peak<=0.02",
             "vram_peak_scope": "per-repeat local_run.json peak_vram_mib uses all 10-second wrapper samples, including startup; mature watchdog peaks are separate descriptive readouts",
             "vram_intervals": stability_intervals, "vram_repeat_peaks_mib": repeat_peaks, "vram_mature_watchdog_peaks_mib": mature_peaks,
+            "vram_skipped_intervals": skipped_intervals,
             "vram_repeat_peak_variation": repeat_variation,
+            "required_telemetry_fields": ["memory.used", "utilization.gpu", "clocks.sm"],
+            "record_only_telemetry_fields": ["power.draw", "temperature.gpu"],
+            "telemetry_acquisition_notes": status.get("telemetry_errors", []),
+            "telemetry_identity": telemetry_identity,
+            "missing_nvml_uuid_samples_outside_workloads": [index for index, sample in enumerate(samples)
+                if not sample["gpu_uuid"] and index not in assigned_identity_samples],
             "development_defaults": DEVELOPMENT_DEFAULTS,
             "driver_reset_monitor": status["driver_reset_monitor"],
             "reset_scope": "no reset observed by this monitor; other reset/event classes are not physically excluded",
@@ -717,7 +776,8 @@ def evaluate(runs=RUNS, *, lock=LOCK, repo=ROOT):
     lock_result = part(read_lock, lock)
     if isinstance(lock_result, dict):
         return {"status": lock_result["status"], "failed_criteria": ["lock"] if lock_result["status"] == "FAIL" else [],
-                "incomplete_criteria": ["lock"] if lock_result["status"] == "INCOMPLETE" else [], "criteria": {"lock": lock_result}}
+                "incomplete_criteria": ["lock"] if lock_result["status"] == "INCOMPLETE" else [], "criteria": {"lock": lock_result},
+                "excluded_identity_environment_variables": list(BP.VOLATILE_ENVIRONMENT_KEYS)}
     lock_sha, environment = lock_result
     cache = {}
 
@@ -739,6 +799,7 @@ def evaluate(runs=RUNS, *, lock=LOCK, repo=ROOT):
               "evidence_class": "engineering environment capability gate; no physics qualification",
               "lock_sha256": lock_sha, "gpu_identity": environment["gpu"],
               "common_cuda_uuid": criteria["C_identity"].get("cuda_uuid"),
+              "excluded_identity_environment_variables": list(BP.VOLATILE_ENVIRONMENT_KEYS),
               "used_gpu_count_evidence": "gpu_device_probe.json:logical_device_count",
               "development_defaults": DEVELOPMENT_DEFAULTS,
               "comparator_sha256": sha(Path(__file__)),
