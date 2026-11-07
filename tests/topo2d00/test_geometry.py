@@ -23,6 +23,59 @@ from cfd_gen.topo2d.geometry import (
 DX = 223.4 / 120
 
 
+@pytest.mark.parametrize("configuration,dx,height", [
+    ("E1", DX, 100), ("E2", DX, 100), ("E3", DX, 100),
+    ("E1_sharp", DX, 100), ("E2_sharp", DX, 100), ("E3_sharp", DX, 100),
+    ("E1", 223.4 / 180, 100), ("E2", 223.4 / 180, 100),
+    ("E1", DX, 80), ("E2", DX, 80),
+])
+def test_all_scene_variants_have_no_slivers_and_only_two_angle_exemptions(configuration, dx, height):
+    scene = build_scene(configuration, height_mm=height, dx_mm=dx)
+    for element in scene["elements"]:
+        polygon = np.array(element["polygon_mm"])
+        assert not np.array_equal(polygon[0], polygon[-1])
+        assert len(np.unique(polygon, axis=0)) == len(polygon)
+        # Independently include the closing edge and its neighbours.
+        edges = np.roll(polygon, -1, axis=0) - polygon
+        lengths = np.linalg.norm(edges, axis=1)
+        assert lengths.min() >= .1 - 1e-9
+        assert lengths.max() <= 1 + 1e-9
+        ratios = lengths / np.roll(lengths, 1)
+        assert np.maximum(ratios, 1 / ratios).max() <= 3 + 1e-9
+        cosine = (edges * np.roll(edges, 1, axis=0)).sum(axis=1) / (lengths * np.roll(lengths, 1))
+        turns = np.degrees(np.arccos(np.clip(cosine, -1, 1)))
+        te = [0, len(element["suction_mm"]) + len(element["pressure_mm"]) - 2]
+        assert np.delete(turns, te).max() <= 5 + 1e-9
+        assert element["sampling"]["min_segment_mm"] == pytest.approx(lengths.min())
+        assert element["sampling"]["max_adjacent_segment_ratio"] == pytest.approx(np.maximum(ratios, 1 / ratios).max())
+
+
+@pytest.mark.parametrize("defect,reason", [
+    ("duplicate", "duplicat"), ("sliver", "0.1 mm"),
+    ("long", "1 mm"), ("ratio", "length ratio"), ("turn", "turning angle"),
+])
+def test_gate_rejects_each_registered_polygon_sampling_defect(defect, reason):
+    scene = build_scene("E1", height_mm=100, dx_mm=DX)
+    polygon = np.array(scene["elements"][0]["polygon_mm"])
+    # Use a smooth aft surface, away from the LE and the two TE cap corners.
+    j = len(scene["elements"][0]["suction_mm"]) // 3
+    if defect == "duplicate":
+        polygon = np.vstack((polygon, polygon[:1]))
+    elif defect in ("sliver", "ratio"):
+        edge = polygon[j + 1] - polygon[j]
+        length = .005 if defect == "sliver" else .11
+        polygon = np.insert(polygon, j + 1, polygon[j] + length * edge / np.linalg.norm(edge), axis=0)
+    elif defect == "long":
+        polygon[j] += 2 * (polygon[j] - polygon[j - 1])
+    else:
+        edge = polygon[j + 1] - polygon[j - 1]
+        normal = np.array([-edge[1], edge[0]]) / np.linalg.norm(edge)
+        polygon[j] += .15 * normal
+    scene["elements"][0]["polygon_mm"] = polygon.tolist()
+    with pytest.raises(GeometryError, match=reason):
+        validate_scene(scene)
+
+
 @pytest.mark.parametrize("configuration", ["E1", "E2", "E3", "E2_sharp", "E3_sharp"])
 def test_spline_density_and_arclength_cap_are_registered(configuration):
     scene = build_scene(configuration, height_mm=100, dx_mm=DX)
@@ -57,7 +110,7 @@ def test_series_has_closed_disjoint_polygons_and_prescribed_height(configuration
     assert scene["normalizations"]["h_over_c"] == 100 / 380
     for element in scene["elements"]:
         polygon = np.asarray(element["polygon_mm"])
-        np.testing.assert_array_equal(polygon[0], polygon[-1])
+        assert not np.array_equal(polygon[0], polygon[-1])
     assert min(np.asarray(scene["elements"][0]["polygon_mm"])[:, 1]) == pytest.approx(100)
     for gap in scene["gates"]["pair_gaps_mm"]:
         assert gap["distance_mm"] >= 4 * DX - 1e-9
@@ -141,12 +194,12 @@ def test_gate_rejects_too_small_height_or_gap_and_bad_inputs():
 def test_gate_rejects_self_intersection_nonclosure_and_thin_controlled_region():
     scene = build_scene("E1", height_mm=100, dx_mm=DX)
     bad = json.loads(json.dumps(scene))
-    bad["elements"][0]["polygon_mm"] = [[0, 100], [2, 102], [0, 102], [2, 100], [0, 100]]
+    bad["elements"][0]["polygon_mm"] = [[0, 100], [2, 102], [0, 102], [2, 100]]
     with pytest.raises(GeometryError, match="self.intersection"):
         validate_scene(bad)
     bad = json.loads(json.dumps(scene))
-    bad["elements"][0]["polygon_mm"][-1][0] += 1
-    with pytest.raises(GeometryError, match="closed"):
+    bad["elements"][0]["polygon_mm"].append(bad["elements"][0]["polygon_mm"][0])
+    with pytest.raises(GeometryError, match="duplicated"):
         validate_scene(bad)
     bad = json.loads(json.dumps(scene))
     bad["t_min_mm"] = 100

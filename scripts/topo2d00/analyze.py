@@ -26,10 +26,13 @@ RCONFIGS = CONFIGS + ("E1_sharp", "E2_sharp")
 READOUTS = ("cur", "nds", "cv")
 RESPONSES = ("downforce", "drag")
 REYNOLDS = (1000, 3000)
+# Registration Amendment 3 section 3 orders cell states, independently of
+# the study's ordered scientific labels (which have no MESH_FAILED label).
+CELL_SEVERITY = {"SETTLED": 0, "NUMERICAL": 1, "MESH_FAILED": 2, "INCOMPLETE": 3}
 SHA = re.compile(r"[0-9a-f]{64}\Z")
 LIMITATIONS = [
     "No physical, grid-independent, FSAE or 3D qualification is implied.",
-    "CONCORDANT_PARTIAL is shadowed by DISCORDANT under global-AND resolved ranking.",
+    "CONCORDANT_PARTIAL requires registration clarification: Amendment 3's exactly-one-Re rule is unreachable under earlier global UNRESOLVED and resolved-rank DISCORDANT precedence.",
     "RETENTION_12 uses delta-method relative-increment variances followed by Fieller; it is not an exact nested-ratio interval.",
     "The uncertainty model treats placement phases and equal-duration batches as sampling units; iid adequacy requires registration review.",
     "The confirmation grid re-thickens at its own 4dx; its contrast includes geometry and grid changes.",
@@ -148,6 +151,10 @@ def cell_id(cell):
     return cell["model"] + "/" + cell["family"]
 
 
+def worst_cell_state(states):
+    return max(states, key=CELL_SEVERITY.__getitem__, default="SETTLED")
+
+
 def rstat(values):
     x = np.asarray(values, dtype=float)
     require(x.ndim == 1 and len(x) >= 2 and np.isfinite(x).all(), "at least two finite samples required")
@@ -258,8 +265,10 @@ def rans_diagnostics(rans):
             values = [r["forces"][config] for r in rows if r["forces"][config] is not None]
             duplicate = len(hashes) == 8 and len(set(hashes)) < 8
             states = {r["status"][config] for r in rows}
-            status = ("NUMERICAL" if "NUMERICAL" in states else "MESH_FAILED" if "MESH_FAILED" in states else
-                      "DEGENERATE_REALISATIONS" if duplicate else "COMPLETE" if states == {"SETTLED"} and len(hashes) == 8 else "INCOMPLETE")
+            state = worst_cell_state(states)
+            status = ("INCOMPLETE" if state == "INCOMPLETE" else "DEGENERATE_REALISATIONS" if duplicate else
+                      state if state != "SETTLED" else
+                      "COMPLETE" if len(hashes) == 8 else "INCOMPLETE")
             result[cell_id(cell)][config] = {
                 "status": status,
                 "distinct_meshes": len(set(hashes)), "measured_realisations": len(values),
@@ -326,7 +335,8 @@ def tr00(rans):
                          for c in ("E1_sharp", "E2_sharp"))
         point = (float(np.mean(rarrays(cell, "E2_sharp", "downforce") - rarrays(cell, "E1_sharp", "downforce")))
                  if all(r["forces"][c] is not None for r in cell["realisations"] for c in ("E1_sharp", "E2_sharp")) else None)
-        record = {"label": "NUMERICAL" if "NUMERICAL" in statuses else "MESH_FAILED" if "MESH_FAILED" in statuses else "INCOMPLETE",
+        state = worst_cell_state(statuses + (["INCOMPLETE"] if degenerate else []))
+        record = {"label": state if state != "SETTLED" else "INCOMPLETE",
                   "delta": None, "ratio_ci90": None, "point_estimate": point,
                   "reason": "DEGENERATE_REALISATIONS" if degenerate else None, "observable": "pressure_cl"}
         if set(statuses) == {"SETTLED"} and not degenerate:
@@ -413,13 +423,17 @@ def analyze_input(data):
         return result
     required_w = [r for r in data["waterlily"] if r["height_mm"] == 100 and r["role"] in ("primary", "confirmation")]
     statuses = [r["status"][c] for cell in qualified for r in cell["realisations"] for c in CONFIGS]
-    if ("NUMERICAL" in statuses or any(not r["finite"] for r in data["waterlily"])
-            or any(r["complete"] and not r["ok"] for r in required_w)):
-        result["label"] = "NUMERICAL"
-        return result
     degenerate_main = any(result["rans_diagnostics"][cell_id(c)][config]["status"] == "DEGENERATE_REALISATIONS" for c in qualified for config in CONFIGS)
-    if data["cap_hit"] or "INCOMPLETE" in statuses or "MESH_FAILED" in statuses or degenerate_main or any(not r["complete"] for r in required_w):
-        result["label"] = "INCOMPLETE"
+    # A nonfinite run is a measured numerical failure even when it could not
+    # complete its window. Separate cap/incomplete records still outrank it.
+    statuses.extend("NUMERICAL" for r in data["waterlily"] if not r["finite"])
+    statuses.extend("NUMERICAL" if not r["ok"] else "SETTLED" for r in required_w if r["complete"])
+    statuses.extend("INCOMPLETE" for r in required_w if not r["complete"] and r["finite"])
+    if data["cap_hit"] or degenerate_main:
+        statuses.append("INCOMPLETE")
+    state = worst_cell_state(statuses)
+    if state != "SETTLED":
+        result["label"] = "INCOMPLETE" if state in ("INCOMPLETE", "MESH_FAILED") else "NUMERICAL"
         return result
     readout = data["controls"].get("primary_readout", "cur")
     groups = {re: select_runs(data, re, count=16, readout=readout)[0] for re in REYNOLDS}

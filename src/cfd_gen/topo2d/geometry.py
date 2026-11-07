@@ -7,8 +7,10 @@ The source's quoted gap must not be mistaken for minimum Euclidean clearance.
 
 The retained LE cap extends 2% of nominal chord in surface arc length from LE.
 Natural cubic splines interpolate the source contour (T2-0's rule), keeping its
-finite TE. Surfaces are sampled at <=1 mm arc length and <=5 degree non-cap
-turns. The normal-thickness floor applies from the original maximum thickness
+finite TE. Polygon segments are 0.1–1 mm, adjacent lengths differ by <=3,
+and turns are <=5 degrees except at the two TE cap corners. The implicit
+closing edge is included in every check; no closing vertex is duplicated.
+The normal-thickness floor applies from the original maximum thickness
 station aft, including TE; the cap and smoothstep ramp are disclosed.
 """
 from __future__ import annotations
@@ -33,6 +35,8 @@ C_MM = 380.0
 SCHEMA = "topo2d-scene-v1"
 TOL = 1e-9
 MAX_ARC_MM = 1.0
+MIN_SEGMENT_MM = 0.1
+MAX_ADJACENT_RATIO = 3.0
 MAX_TURN_DEG = 5.0
 
 
@@ -65,13 +69,34 @@ def _turns(curve):
     return np.degrees(np.arccos(np.clip(cosine, -1, 1)))
 
 
+def _sampling_gate(polygon, cap_vertices):
+    """Check the four registered bounds cyclically, including the closing edge."""
+    p = np.asarray(polygon, dtype=float)
+    if len(np.unique(p, axis=0)) != len(p):
+        raise GeometryError("polygon has a duplicated vertex, including its closing endpoint")
+    edges = np.roll(p, -1, axis=0) - p
+    lengths = np.linalg.norm(edges, axis=1)
+    if lengths.min() < MIN_SEGMENT_MM - TOL:
+        raise GeometryError("polygon segment below 0.1 mm")
+    if lengths.max() > MAX_ARC_MM + TOL:
+        raise GeometryError("polygon segment exceeds 1 mm")
+    ratios = lengths / np.roll(lengths, 1)
+    ratio = float(np.maximum(ratios, 1 / ratios).max())
+    if ratio > MAX_ADJACENT_RATIO + TOL:
+        raise GeometryError("polygon adjacent-segment length ratio exceeds 3")
+    cosine = np.einsum("ij,ij->i", edges, np.roll(edges, 1, axis=0)) / (lengths * np.roll(lengths, 1))
+    turns = np.degrees(np.arccos(np.clip(cosine, -1, 1)))
+    maximum_turn = float(np.delete(turns, cap_vertices).max())
+    if maximum_turn > MAX_TURN_DEG + TOL:
+        raise GeometryError("polygon non-cap turning angle exceeds 5 degrees")
+    return {"min_segment_mm": float(lengths.min()), "max_segment_mm": float(lengths.max()),
+            "max_adjacent_segment_ratio": ratio, "max_noncap_turn_deg": maximum_turn}
+
+
 def _sampling_metrics(suction, pressure, chord_mm):
-    # Only the two TE closure corners are exempt. Also resolve the preserved
-    # LE cap smoothly, so WP5's independent surface-density gate can consume
-    # the exact same polygon without knowing our thickening-cap convention.
-    turns = _turns(np.vstack((suction[::-1], pressure[1:])))
-    return {"max_segment_mm": float(np.linalg.norm(np.diff(_closed_from_surfaces(suction, pressure), axis=0), axis=1).max()),
-            "max_noncap_turn_deg": float(turns.max()),
+    # Only the two TE corners are exempt, not the preserved leading-edge cap.
+    polygon = _closed_from_surfaces(suction, pressure)
+    return {**_sampling_gate(polygon, [0, len(suction) + len(pressure) - 2]),
             "leading_edge_cap_arc_mm": .02 * chord_mm,
             "trailing_edge_cap": "straight finite-thickness closure"}
 
@@ -92,10 +117,12 @@ def _cross(a, b):
 
 def _polygon(polygon):
     p = np.asarray(polygon, dtype=np.float64)
-    if p.ndim != 2 or p.shape[1] != 2 or len(p) < 4 or not np.isfinite(p).all():
+    if p.ndim != 2 or p.shape[1] != 2 or len(p) < 3 or not np.isfinite(p).all():
         raise GeometryError("polygon must contain finite two-dimensional vertices")
+    # Geometry files use an implicit closing edge. Retain explicit closure as
+    # an input convenience for the general SDF helpers, never in scene JSON.
     if not np.array_equal(p[0], p[-1]):
-        raise GeometryError("polygon must be explicitly closed")
+        p = np.vstack((p, p[:1]))
     if np.any(np.linalg.norm(np.diff(p, axis=0), axis=1) <= TOL):
         raise GeometryError("polygon has a zero-length edge")
     return p
@@ -359,7 +386,9 @@ def _closed_from_surfaces(s, p, *, densify_cap=True):
     # Keep the finite TE, and subdivide its straight closure too. Both closure
     # corners are explicit caps, not spurious aerodynamic surface vertices.
     divisions = max(1, math.ceil(np.linalg.norm(p[-1] - s[-1]) / MAX_ARC_MM)) if densify_cap else 1
-    cap = np.linspace(p[-1], s[-1], divisions + 1)[1:]
+    # Exclude both endpoints: pressure TE is already present; the suction TE
+    # is polygon[0] and is joined implicitly, never duplicated as a last point.
+    cap = np.linspace(p[-1], s[-1], divisions + 1)[1:-1]
     polygon = np.vstack((s[::-1], p[1:], cap))
     return polygon
 
@@ -371,7 +400,9 @@ def _resampled_table(filename, source_sha):
     airfoil_points itself fixes COORDS/CHORD and collapses the finite TE. Reuse
     its CubicSpline(chordal arc, contour, bc_type='natural') rule instead. The
     two monotone PCHIP maps only pair surface stations; they do not change the
-    contour spline. Refinement checks true spline arc by quadrature and turns.
+    contour spline. Distribute a common arc/curvature monitor separately within
+    each source interval, keeping every table point without unioning nearly
+    coincident sample grids. Final polygon gates check the actual output.
     """
     path = ROOT / "data" / "zz2003" / filename
     if hashlib.sha256(path.read_bytes()).hexdigest() != source_sha:
@@ -382,34 +413,41 @@ def _resampled_table(filename, source_sha):
     sa, pa = _arc(s), _arc(p)
     contour = np.vstack((s[::-1], p[1:]))
     spline = CubicSpline(_arc(contour), contour, bc_type="natural")
-    derivative = spline.derivative()
     smap, pmap = PchipInterpolator(q, sa), PchipInterpolator(q, pa)
-    # Include every source pair; the spline interpolates the printed numbers.
-    stations = np.unique(np.r_[q, np.linspace(0, q[-1], math.ceil(max(sa[-1], pa[-1]) / .65) + 1)])
-    chord = C1_MM if filename.startswith("main") else 165.7
-    for _ in range(16):
-        st, pt = sa[-1] - smap(stations), sa[-1] + pmap(stations)
-        lower, upper = spline(st), spline(pt)
-        lower[0] = upper[0] = s[0]
-        lower[-1], upper[-1] = s[-1], p[-1]
-        bad = np.zeros(len(stations) - 1, dtype=bool)
-        arc_max = 0.0
-        for parameters in (st, pt):
-            lengths = [quad(lambda u: float(np.linalg.norm(derivative(u))), min(a, b), max(a, b),
-                            epsabs=1e-10, epsrel=1e-10)[0] for a, b in zip(parameters[:-1], parameters[1:])]
-            arc_max = max(arc_max, max(lengths))
-            bad |= np.asarray(lengths) > MAX_ARC_MM
-        for curve in (lower, upper):
-            # Extra margin accommodates the offset curve at the same stations.
-            indices = np.flatnonzero(_turns(curve) > 3) + 1
-            bad[indices - 1] = True
-            bad[indices] = True
-        if _turns(np.array([lower[1], lower[0], upper[1]]))[0] > 3:
-            bad[0] = True
-        if not bad.any():
-            return lower, upper, float(arc_max)
-        stations = np.sort(np.r_[stations, (stations[:-1][bad] + stations[1:][bad]) / 2])
-    raise GeometryError("spline resampling did not meet arc/turn bounds")
+    # These sampling targets leave room for offsets and the E3 half-scale;
+    # the registered acceptance bounds remain 0.1–1 mm, 5 degrees and ratio 3.
+    u = np.unique(np.r_[q, np.linspace(0, q[-1], math.ceil(max(sa[-1], pa[-1]) / .01) + 1)])
+    monitor = np.zeros(len(u))
+    for mapping, sign in ((smap, -1), (pmap, 1)):
+        parameter = sa[-1] + sign * mapping(u)
+        dpar, ddpar = sign * mapping(u, 1), sign * mapping(u, 2)
+        first = spline(parameter, 1) * dpar[:, None]
+        second = spline(parameter, 2) * dpar[:, None] ** 2 + spline(parameter, 1) * ddpar[:, None]
+        speed = np.linalg.norm(first, axis=1)
+        if np.any(speed <= 0):
+            raise GeometryError("singular spline parameterization")
+        rotation = np.abs(_cross(first, second)) / speed ** 2
+        monitor = np.maximum(monitor, np.maximum(speed / .65, rotation / math.radians(3.5)))
+    metric = np.r_[0, np.cumsum(np.diff(u) * (monitor[1:] + monitor[:-1]) / 2)]
+    knots = np.interp(q, u, metric)
+    intervals = []
+    for i, (a, b) in enumerate(zip(knots[:-1], knots[1:])):
+        part = np.interp(np.linspace(a, b, math.ceil(b - a) + 1)[:-1], metric, u)
+        part[0] = q[i]
+        intervals.append(part)
+    stations = np.r_[np.concatenate(intervals), q[-1]]
+    st, pt = sa[-1] - smap(stations), sa[-1] + pmap(stations)
+    lower, upper = spline(st), spline(pt)
+    lower[0] = upper[0] = s[0]
+    lower[-1], upper[-1] = s[-1], p[-1]
+    # Independent speed integral bounds the spline arc, not just its chord.
+    derivative = spline.derivative()
+    arc_max = max(quad(lambda v: float(np.linalg.norm(derivative(v))), min(a, b), max(a, b),
+                       epsabs=1e-10, epsrel=1e-10)[0]
+                  for parameters in (st, pt) for a, b in zip(parameters[:-1], parameters[1:]))
+    if arc_max > MAX_ARC_MM + TOL:
+        raise GeometryError("spline arc spacing exceeds 1 mm")
+    return lower, upper, float(arc_max)
 
 
 def _source_table(filename):
@@ -504,6 +542,8 @@ def validate_scene(scene):
     if scene["normalizations"] != normalizations:
         raise GeometryError("source normalization/height identity mismatch")
     if scene.get("sampling") != {"method": "natural-cubic-spline-arclength", "max_arc_mm": MAX_ARC_MM,
+                                 "min_segment_mm": MIN_SEGMENT_MM, "max_adjacent_segment_ratio": MAX_ADJACENT_RATIO,
+                                 "closure": "implicit; no duplicated terminal vertex",
                                  "max_noncap_turn_deg": MAX_TURN_DEG, "leading_edge_cap_chord_fraction": .02}:
         raise GeometryError("spline sampling contract mismatch")
     if len(scene["placement"]["transformations"]) != len(profiles):
@@ -524,6 +564,8 @@ def validate_scene(scene):
         name, raw_s, raw_p, chord, nominal = source
         if e["name"] != name:
             raise GeometryError("source element names/order mismatch")
+        if len(np.unique(np.asarray(e["polygon_mm"]), axis=0)) != len(e["polygon_mm"]):
+            raise GeometryError(f"{name}: duplicated polygon vertex, including closing endpoint")
         p = _polygon(e["polygon_mm"])
         if _self_intersects(p):
             raise GeometryError(f"{e['name']}: polygon self-intersection")
@@ -532,7 +574,8 @@ def validate_scene(scene):
         s, upper = np.asarray(e["suction_mm"]), np.asarray(e["pressure_mm"])
         if s.shape != raw_s.shape or upper.shape != raw_p.shape:
             raise GeometryError(f"{name}: source paired row counts differ")
-        if not np.array_equal(p, _closed_from_surfaces(s, upper)):
+        if not np.array_equal(p[:-1], _closed_from_surfaces(s, upper)):
+            _sampling_gate(e["polygon_mm"], [0, len(s) + len(upper) - 2])
             raise GeometryError(f"{e['name']}: polygon/surface identity mismatch")
         if (not np.allclose(e["leading_edge_mm"], s[0], atol=TOL, rtol=0)
                 or not np.allclose(e["trailing_edge_midpoint_mm"], (s[-1] + upper[-1]) / 2, atol=TOL, rtol=0)):
@@ -694,6 +737,8 @@ def build_scene(configuration, *, height_mm, dx_mm, t_min_cells=4, g_min_cells=4
         "normalizations": {"c1_mm": C1_MM, "c_mm": C_MM,
                            "h_over_c1": height / C1_MM, "h_over_c": height / C_MM},
         "sampling": {"method": "natural-cubic-spline-arclength", "max_arc_mm": MAX_ARC_MM,
+                     "min_segment_mm": MIN_SEGMENT_MM, "max_adjacent_segment_ratio": MAX_ADJACENT_RATIO,
+                     "closure": "implicit; no duplicated terminal vertex",
                      "max_noncap_turn_deg": MAX_TURN_DEG, "leading_edge_cap_chord_fraction": .02},
         "placement": {"overlap_mm": float(overlap_mm), "gap_mm": float(gap_mm),
                       "gap_reference": "upstream trailing-edge midpoint",

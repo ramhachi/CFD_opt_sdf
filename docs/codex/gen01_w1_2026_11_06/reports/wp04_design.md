@@ -1,5 +1,41 @@
 # WP4 設計メモ
 
+## Amendment 3 対応設計（attempt 3、2026-11-07）
+
+基点 `ba3164c7`、開始差分なし。README と AGENTS が要求する governing 文書は
+read-only worker と分担して全文確認した。登録 Amendment 1–3 は follow-ups worktree
+`CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/topo2d00_registration_2026_11_01.md`
+の本文を参照し、編集しない。旧 validation は保持し、今回の CPU/software 証拠は
+`reports/wp04_validation_amend3/` に新規保存する。commit／push は Claude host が担当する。
+
+- 幾何: source を通る自然 CubicSpline を維持し、source station と均等 station の和集合を
+  廃止する（最短 0.005648 mm の原因）。曲率に合わせた再標本化で線分 0.1–1 mm、
+  隣接長比 ≤3、TE cap 2頂点以外の折れ角 ≤5° を生成・gate・独立テストで確認する。
+  E3 の半弦と thickening 後の曲線でも検査し、最後の線分まで周期的に扱う。
+  scene JSON は終点を重複しない閉曲線の頂点列とし、Python と Julia の SDF は
+  最後→最初の辺を必ず評価する。元の4Δx、弧長 cap、camber、TE中点、gap規則は維持する。
+  全10 scene、SHA を含む campaign、図を再生成する。既存 scipy/numpy 以外は追加しない。
+- 高さ: scene の height_mm を export／campaign identity の唯一の出所とし、declared
+  configuration／height が一致しなければ CFD 前と verify 時に拒否する。
+  h80 scene と両方の正規化を回帰検査する。WP5 generator 自体は変更しない。
+- 状態: analyzer／独立 checker の cell 集約を INCOMPLETE > MESH_FAILED > NUMERICAL >
+  SETTLED にする。科学的ラベル表と cell state は区別し、新しいラベルは追加しない。
+  observable をまたぐ差分、identity不整合、既存written-once規則を維持する。
+- PARTIAL: 両側の順位が全て確定一致なら符号も一致するため、片側だけ符号一致する
+  データには他側の未解決または順位不一致が必要になる。先行 UNRESOLVED／DISCORDANT
+  との整合について、片側の未解決を許す Amendment 3 の解釈をユーザーへ確認中。
+  回答前にこの dependent label 変更を確定しない。severity／幾何／高さは独立して進める。
+
+担当: parent は geometry.py／geometry tests／Julia閉辺／scene再生成／図／統合検証・報告。
+analyzer worker は analyze.py／check.py／対応tests。height worker は scene_campaign.py／
+campaign tests。OpenCode Go MCP は未提供、CLI は通常のlog書込み権限で失敗し、隔離XDGでは
+Provider not found: opencode-go。追加課金・global設定変更なしで native worker に fallback。
+
+TDDで欠陥を先に確認し、targeted pytest、CPU selftest（GPU未初期化）、compileall、
+`.venv/bin/python -m pytest --ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` を完走させる。
+base はユーザー指定 host の `e3dcdf61`、3482 passed／74 skipped／0 failed。
+結果側の全失敗node集合を記録し、期待の空集合と比較する。旧凍結closure／pinは変更しない。
+
 ## Amendment 1・2 対応設計（attempt 2、2026-11-06）
 
 基点は `88fea06e`、開始時の差分は空。今回の authority は follow-ups worktree の

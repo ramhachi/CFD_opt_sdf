@@ -17,7 +17,7 @@ from scipy.stats import chi2, t
 
 LIMITATIONS = [
     "No physical, grid-independent, FSAE or 3D qualification is implied.",
-    "CONCORDANT_PARTIAL is shadowed by DISCORDANT under global-AND resolved ranking.",
+    "CONCORDANT_PARTIAL requires registration clarification: Amendment 3's exactly-one-Re rule is unreachable under earlier global UNRESOLVED and resolved-rank DISCORDANT precedence.",
     "RETENTION_12 uses delta-method relative-increment variances followed by Fieller; it is not an exact nested-ratio interval.",
     "The uncertainty model treats placement phases and equal-duration batches as sampling units; iid adequacy requires registration review.",
     "The confirmation grid re-thickens at its own 4dx; its contrast includes geometry and grid changes.",
@@ -259,12 +259,13 @@ def tr_cells(payload):
                  if measured else None)
         block = dict(label="TR00_FAIL", delta=None, ratio_ci90=None, point_estimate=point,
                      reason="DEGENERATE_REALISATIONS" if degenerate else None, observable="pressure_cl")
-        if "NUMERICAL" in statuses:
-            block["label"] = "NUMERICAL"
+        # Amendment 3 cell severity precedes the downstream scientific label.
+        if len(rows) != 8 or "INCOMPLETE" in statuses or degenerate:
+            block["label"] = "INCOMPLETE"
         elif "MESH_FAILED" in statuses:
             block["label"] = "MESH_FAILED"
-        elif len(rows) != 8 or "INCOMPLETE" in statuses or degenerate:
-            block["label"] = "INCOMPLETE"
+        elif "NUMERICAL" in statuses:
+            block["label"] = "NUMERICAL"
         else:
             stat = classical([number(row["forces"]["E2_sharp"]["downforce"]) -
                               number(row["forces"]["E1_sharp"]["downforce"]) for row in rows])
@@ -335,10 +336,16 @@ def check(payload):
             values = [r["forces"][config] for r in cell["realisations"] if r["forces"][config] is not None]
             hashes = [r["mesh_sha256"][config] for r in cell["realisations"] if r["mesh_sha256"][config] is not None]
             states = {r["status"][config] for r in cell["realisations"]}
-            if "NUMERICAL" in states or "MESH_FAILED" in states:
-                status = "NUMERICAL" if "NUMERICAL" in states else "MESH_FAILED"
+            if "INCOMPLETE" in states:
+                status = "INCOMPLETE"
             elif len(hashes) == 8 and len(set(hashes)) < 8:
+                # Repeated meshes are an incomplete realisation experiment,
+                # even when failed runs retain diagnostic coefficients.
                 status = "DEGENERATE_REALISATIONS"
+            elif "MESH_FAILED" in states:
+                status = "MESH_FAILED"
+            elif "NUMERICAL" in states:
+                status = "NUMERICAL"
             else:
                 status = "COMPLETE" if len(hashes) == 8 and states == {"SETTLED"} else "INCOMPLETE"
             result["rans_diagnostics"][key][config] = dict(
@@ -359,14 +366,17 @@ def check(payload):
              "explicit run flags required")
     states = [r["status"][c] for values in qualified.values() for r in values for c in CONFIGS]
     need(set(states) <= {"SETTLED", "NUMERICAL", "INCOMPLETE", "MESH_FAILED"}, "unknown primary R status")
+    degenerate_main = any(result["rans_diagnostics"][key][c]["status"] == "DEGENERATE_REALISATIONS" for key in qualified for c in CONFIGS)
+    # complete=false also transports a measured nonfinite run; only finite
+    # unfinished rows are independent incomplete states. An explicit cap wins.
+    if (payload["cap_hit"] or any(not r["complete"] and r["finite"] for r in required)
+            or "INCOMPLETE" in states or "MESH_FAILED" in states or degenerate_main):
+        result["label"] = "INCOMPLETE"
+        return result
     if (any(not r["finite"] for r in rows)
             or any(r["complete"] and not r["ok"] for r in required)
             or "NUMERICAL" in states):
         result["label"] = "NUMERICAL"
-        return result
-    degenerate_main = any(result["rans_diagnostics"][key][c]["status"] == "DEGENERATE_REALISATIONS" for key in qualified for c in CONFIGS)
-    if payload["cap_hit"] or any(not r["complete"] for r in required) or "INCOMPLETE" in states or "MESH_FAILED" in states or degenerate_main:
-        result["label"] = "INCOMPLETE"
         return result
     for reynolds in (1000, 3000):
         phase_sets = [set(select(rows, c, reynolds)) for c in CONFIGS]

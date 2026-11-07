@@ -60,6 +60,12 @@ function selftest(out)
     mkpath(out)
     isempty(readdir(out)) || error("selftest output directory already contains files")
     started=time()
+    # The scene file omits a duplicate terminal vertex. This probe is nearest
+    # to the last->first edge, so an open-path SDF cannot pass accidentally.
+    square=Topo2D.PolygonSDF([(0.0f0,0.0f0),(2.0f0,0.0f0),(2.0f0,2.0f0),(0.0f0,2.0f0)])
+    @test square(WaterLily.SVector(-0.25f0,1.0f0),0)==0.25f0
+    @test square(WaterLily.SVector(1.0f0,1.0f0),0)==-1.0f0
+    @test square(WaterLily.SVector(0.0f0,1.0f0),0)==0.0f0
     @test_throws Topo2D.NumericalFailure Topo2D.provider_readouts(()->throw(ArgumentError("non-finite CV momentum term")))
     @test_throws ArgumentError Topo2D.provider_readouts(()->throw(ArgumentError("box violates the physical-domain inset")))
     summaries=Dict{String,Any}()

@@ -68,7 +68,7 @@ def test_checker_priority_and_missing_input():
     value["waterlily"][0]["finite"] = False
     assert C.check(value)["label"] == "NUMERICAL"
     value["cap_hit"] = True
-    assert C.check(value)["label"] == "NUMERICAL"
+    assert C.check(value)["label"] == "INCOMPLETE"
     value["waterlily"][0]["finite"] = True
     assert C.check(value)["label"] == "INCOMPLETE"
     value = planted()
@@ -79,6 +79,67 @@ def test_checker_priority_and_missing_input():
     value["waterlily"][0]["readouts"]["cur"]["downforce"] += .1
     with pytest.raises(ValueError, match="batch means"):
         C.check(value)
+
+
+@pytest.mark.parametrize("states,expected", [
+    (("SETTLED", "NUMERICAL"), "NUMERICAL"),
+    (("SETTLED", "MESH_FAILED"), "MESH_FAILED"),
+    (("SETTLED", "INCOMPLETE"), "INCOMPLETE"),
+    (("NUMERICAL", "MESH_FAILED"), "MESH_FAILED"),
+    (("NUMERICAL", "INCOMPLETE"), "INCOMPLETE"),
+    (("MESH_FAILED", "INCOMPLETE"), "INCOMPLETE"),
+])
+@pytest.mark.parametrize("arm", ["E3", "E1_sharp"])
+def test_checker_amendment3_severity_from_raw_realisation_states(states, expected, arm):
+    data = planted()
+    for row, state in zip(data["rans"]["cells"][0]["realisations"], states):
+        row["status"][arm] = state
+        if state != "SETTLED":
+            row["forces"][arm] = row["mesh_sha256"][arm] = None
+    result = C.check(data)
+    assert result["rans_diagnostics"]["SA/fine30"][arm]["status"] == expected
+    if arm.endswith("_sharp"):
+        assert result["label"] == "TR_UNQUALIFIED"
+        assert result["tr00"]["cells"]["SA/fine30"]["label"] == expected
+    else:
+        assert result["label"] == ("NUMERICAL" if expected == "NUMERICAL" else "INCOMPLETE")
+    data["rans"]["cells"][0]["realisations"].reverse()
+    assert C.compare(result, C.check(data)) == []
+
+
+@pytest.mark.parametrize("incomplete_source", ["cap", "waterlily", "rans"])
+def test_checker_cap_or_required_incomplete_wins_over_measured_numeric_failure(incomplete_source):
+    data = planted()
+    data["waterlily"][0].update(ok=False, finite=False, complete=False,
+                               readouts={name: None for name in ("cur", "nds", "cv")})
+    assert C.check(data)["label"] == "NUMERICAL"
+    if incomplete_source == "cap":
+        data["cap_hit"] = True
+    elif incomplete_source == "waterlily":
+        data["waterlily"][1].update(ok=False, complete=False)
+    else:
+        row = data["rans"]["cells"][0]["realisations"][0]
+        row["status"]["E2"] = "INCOMPLETE"
+        row["forces"]["E2"] = row["mesh_sha256"]["E2"] = None
+    assert C.check(data)["label"] == "INCOMPLETE"
+
+
+@pytest.mark.parametrize("arm", ["E3", "E1_sharp"])
+@pytest.mark.parametrize("failure", ["NUMERICAL", "MESH_FAILED"])
+def test_checker_duplicate_meshes_outrank_retained_failed_run_diagnostics(arm, failure):
+    data = planted()
+    cell = data["rans"]["cells"][0]
+    for row in cell["realisations"]:
+        row["mesh_sha256"][arm] = "b" * 64
+    cell["realisations"][0]["status"][arm] = failure
+    result = C.check(data)
+    assert result["label"] == ("TR_UNQUALIFIED" if arm.endswith("_sharp") else "INCOMPLETE")
+    diagnostic = result["rans_diagnostics"]["SA/fine30"][arm]
+    assert diagnostic["status"] == "DEGENERATE_REALISATIONS"
+    assert diagnostic["distinct_meshes"] == 1
+    assert diagnostic["point_estimate"] is not None and diagnostic["ci90"] is None
+    if arm.endswith("_sharp"):
+        assert result["tr00"]["cells"]["SA/fine30"]["label"] == "INCOMPLETE"
 
 
 @pytest.mark.parametrize("target", ["waterlily", "readout", "main", "sharp", "reference"])
@@ -180,6 +241,8 @@ def test_zero_baseline_does_not_block_reported_only_retention(zero_side):
     ("drag_unresolved_ratio", "CONCORDANT"), ("drag_unresolved_sign", "CONCORDANT"),
     ("degenerate_main", "INCOMPLETE"), ("degenerate_sharp", "TR_UNQUALIFIED"),
     ("mesh_failed", "INCOMPLETE"),
+    ("numeric_with_cap", "INCOMPLETE"),
+    ("mixed_main_states", "INCOMPLETE"), ("mixed_sharp_states", "TR_UNQUALIFIED"),
 ])
 def test_independent_implementations_agree_on_force_tables(case, expected):
     # Importing both at the comparison boundary shares no implementation code.
@@ -237,6 +300,16 @@ def test_independent_implementations_agree_on_force_tables(case, expected):
         row = data["rans"]["cells"][0]["realisations"][0]
         row["status"]["E3"] = "MESH_FAILED"
         row["forces"]["E3"] = row["mesh_sha256"]["E3"] = None
+    elif case == "numeric_with_cap":
+        data["cap_hit"] = True
+        data["waterlily"][0].update(ok=False, finite=False, complete=False,
+                                   readouts={name: None for name in ("cur", "nds", "cv")})
+    elif case in ("mixed_main_states", "mixed_sharp_states"):
+        arm = "E3" if case == "mixed_main_states" else "E1_sharp"
+        for row, status in zip(data["rans"]["cells"][0]["realisations"],
+                               ("NUMERICAL", "MESH_FAILED", "INCOMPLETE")):
+            row["status"][arm] = status
+            row["forces"][arm] = row["mesh_sha256"][arm] = None
     if case.startswith("drag_unresolved_"):
         for row in data["waterlily"]:
             row["readouts"]["cur"]["drag"] = .1

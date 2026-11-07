@@ -1,0 +1,40 @@
+{
+  "actual_model": "native Codex session / inherited native workers",
+  "attempt_number": 3,
+  "attempts": [
+    {
+      "actual_model": null,
+      "attempt_number": 1,
+      "command": [
+        "opencode",
+        "models",
+        "opencode-go"
+      ],
+      "reason": "FileSystem.open failed at /Users/sota/.local/share/opencode/log/opencode.log",
+      "requested_model": "OpenCode Go catalog"
+    },
+    {
+      "actual_model": null,
+      "attempt_number": 2,
+      "command": [
+        "opencode",
+        "models",
+        "opencode-go"
+      ],
+      "isolated_xdg": true,
+      "reason": "Provider not found: opencode-go under isolated writable XDG data/cache dirs",
+      "requested_model": "OpenCode Go catalog"
+    }
+  ],
+  "global_config_changed": false,
+  "mcp_tool_available": false,
+  "native_delegation": [
+    "governing/technical full reads and independent geometry review",
+    "analyzer/checker severity and tests",
+    "scene campaign height/closure and tests"
+  ],
+  "opencode_go_run_called": false,
+  "paid_api_enabled": false,
+  "reason": "OpenCode Go catalog unavailable; no model/quota routing possible",
+  "requested_model": null
+}

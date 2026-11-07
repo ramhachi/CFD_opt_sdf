@@ -338,11 +338,11 @@ def test_unresolved_drag_is_reported_without_adding_an_acceptance_gate(sign_only
         assert result["agreement"][re]["RANK_AGREE"]
 
 
-def test_numeric_and_cap_precedence_and_required_realisation_outcomes():
+def test_incomplete_cap_precedes_numeric_and_required_realisation_outcomes():
     payload = S.input_table()
     payload["cap_hit"] = True
     payload["waterlily"][0]["finite"] = False
-    assert A.analyze_input(payload)["label"] == "NUMERICAL"
+    assert A.analyze_input(payload)["label"] == "INCOMPLETE"
     payload = S.input_table()
     row = payload["rans"]["cells"][0]["realisations"][0]
     row["status"]["E3"] = "INCOMPLETE"
@@ -351,6 +351,79 @@ def test_numeric_and_cap_precedence_and_required_realisation_outcomes():
     assert A.analyze_input(payload)["label"] == "INCOMPLETE"
     row["status"]["E3"] = "NUMERICAL"
     assert A.analyze_input(payload)["label"] == "NUMERICAL"
+
+
+@pytest.mark.parametrize("states,expected", [
+    (("SETTLED", "NUMERICAL"), "NUMERICAL"),
+    (("SETTLED", "MESH_FAILED"), "MESH_FAILED"),
+    (("SETTLED", "INCOMPLETE"), "INCOMPLETE"),
+    (("NUMERICAL", "MESH_FAILED"), "MESH_FAILED"),
+    (("NUMERICAL", "INCOMPLETE"), "INCOMPLETE"),
+    (("MESH_FAILED", "INCOMPLETE"), "INCOMPLETE"),
+])
+@pytest.mark.parametrize("arm", ["E3", "E1_sharp"])
+def test_amendment3_cell_severity_is_independent_of_realisation_order(states, expected, arm):
+    payload = S.input_table()
+    for cell in payload["rans"]["cells"]:
+        for row, state in zip(cell["realisations"], states):
+            row["status"][arm] = state
+            if state != "SETTLED":
+                row["forces"][arm] = row["mesh_sha256"][arm] = None
+    result = A.analyze_input(payload)
+    for diagnostic in result["rans_diagnostics"].values():
+        assert diagnostic[arm]["status"] == expected
+    if arm.endswith("_sharp"):
+        # The study's TR gate still precedes its scientific outcome labels.
+        assert result["label"] == "TR_UNQUALIFIED"
+        assert all(cell["label"] == expected for cell in result["tr00"]["cells"].values())
+    else:
+        assert result["label"] == ("NUMERICAL" if expected == "NUMERICAL" else "INCOMPLETE")
+    for cell in payload["rans"]["cells"]:
+        cell["realisations"].reverse()
+    reversed_result = A.analyze_input(payload)
+    assert reversed_result["label"] == result["label"]
+    for name in result["rans_diagnostics"]:
+        assert reversed_result["rans_diagnostics"][name][arm]["status"] == expected
+        assert reversed_result["tr00"]["cells"][name]["label"] == result["tr00"]["cells"][name]["label"]
+
+
+@pytest.mark.parametrize("incomplete_source", ["cap", "waterlily", "rans"])
+def test_required_incomplete_state_precedes_independent_waterlily_numeric_failure(incomplete_source):
+    payload = S.input_table()
+    failure = payload["waterlily"][0]
+    failure.update(finite=False, ok=False, complete=False,
+                   readouts={name: None for name in ("cur", "nds", "cv")})
+    # A nonfinite run is NUMERICAL even though no complete window was recorded.
+    assert A.analyze_input(payload)["label"] == "NUMERICAL"
+    if incomplete_source == "cap":
+        payload["cap_hit"] = True
+    elif incomplete_source == "waterlily":
+        payload["waterlily"][1].update(complete=False, ok=False)
+    else:
+        row = payload["rans"]["cells"][0]["realisations"][0]
+        row["status"]["E2"] = "INCOMPLETE"
+        row["forces"]["E2"] = row["mesh_sha256"]["E2"] = None
+    assert A.analyze_input(payload)["label"] == "INCOMPLETE"
+
+
+@pytest.mark.parametrize("arm", ["E3", "E1_sharp"])
+@pytest.mark.parametrize("failure", ["NUMERICAL", "MESH_FAILED"])
+def test_degenerate_realisations_remain_incomplete_with_retained_failure_diagnostics(arm, failure):
+    payload = S.input_table()
+    for cell in payload["rans"]["cells"]:
+        for row in cell["realisations"]:
+            row["mesh_sha256"][arm] = "b" * 64
+        # An unsuccessful run may legitimately retain finite diagnostic forces
+        # and its mesh SHA. Those do not restore eight distinct realisations.
+        cell["realisations"][0]["status"][arm] = failure
+    result = A.analyze_input(payload)
+    assert result["label"] == ("TR_UNQUALIFIED" if arm.endswith("_sharp") else "INCOMPLETE")
+    for diagnostic in result["rans_diagnostics"].values():
+        assert diagnostic[arm]["status"] == "DEGENERATE_REALISATIONS"
+        assert diagnostic[arm]["distinct_meshes"] == 1
+        assert diagnostic[arm]["point_estimate"] is not None and diagnostic[arm]["ci90"] is None
+    if arm.endswith("_sharp"):
+        assert all(cell["label"] == "INCOMPLETE" for cell in result["tr00"]["cells"].values())
 
 
 def test_smoke_formal_input_is_rejected_without_trusting_success_flags(tmp_path):

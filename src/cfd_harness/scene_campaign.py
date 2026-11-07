@@ -74,8 +74,13 @@ def validate_campaign(c):
     SC.req(used == set(c["states"]), "unreferenced scene state")
 
 
-def scene_wire(path, expected_sha):
-    """Validated text bridge to Julia; Python stdlib reads JSON (no new Julia dep)."""
+def _scene_declaration(scene, declared):
+    SC.req(scene["configuration"] == declared["configuration"], "declared scene configuration differs from JSON")
+    SC.req(SC.finite(scene["height_mm"]) == SC.finite(declared["height_mm"]), "declared scene height differs from JSON")
+
+
+def scene_record(path, expected_sha, declared=None):
+    """Read one hash-bound geometry, optionally binding the study declaration."""
     path = Path(path)
     SC.req(SC.sha256_path(path) == expected_sha, "scene hash mismatch")
     s = SC.jload(path)
@@ -87,12 +92,34 @@ def scene_wire(path, expected_sha):
     SC.req(dx > 0 and s["normalizations"]["c1_mm"] == 223.4 and s["normalizations"]["c_mm"] == 380, "scene scale contract")
     elements = s["elements"]
     SC.req(len(elements) == int(s["configuration"][1]) and len({e["name"] for e in elements}) == len(elements), "scene element count/names")
-    lines = [s["schema"], s["configuration"], repr(dx), repr(ground), repr(SC.finite(s["height_mm"])), str(len(elements))]
     for e in elements:
         poly = e["polygon_mm"]
-        SC.req(SC.NAME.fullmatch(e["name"]) and len(poly) >= 4 and poly[0] == poly[-1], "scene polygon must be closed")
+        SC.req(SC.NAME.fullmatch(e["name"]) and len(poly) >= 4 and poly[0] != poly[-1], "scene polygon must use implicit closure without a duplicated endpoint")
         SC.req(all(len(p) == 2 and all(math.isfinite(SC.finite(v)) for v in p) for p in poly), "scene polygon coordinates")
-        SC.req(all(a != b for a, b in zip(poly, poly[1:])), "scene polygon zero-length edge")
+        SC.req(all(a != b for a, b in zip(poly, poly[1:] + poly[:1])), "scene polygon zero-length edge")
+    if declared is not None:
+        _scene_declaration(s, declared)
+    return s
+
+
+def _scene_records(rows, repo):
+    """Gate each geometry once while binding every declared run identity."""
+    scenes = {}
+    for row in rows:
+        key = row["scene_path"], row["scene_sha256"]
+        if key not in scenes:
+            scenes[key] = scene_record(Path(repo) / key[0], key[1])
+        _scene_declaration(scenes[key], row["topo2d"])
+    return scenes
+
+
+def scene_wire(path, expected_sha):
+    """Validated text bridge to Julia; the vertex list closes cyclically."""
+    s = scene_record(path, expected_sha)
+    elements = s["elements"]
+    lines = [s["schema"], s["configuration"], repr(SC.finite(s["dx_mm"])), repr(SC.finite(s["ground_z_mm"])), repr(SC.finite(s["height_mm"])), str(len(elements))]
+    for e in elements:
+        poly = e["polygon_mm"]
         lines += [e["name"], str(len(poly)), *(f"{p[0]!r} {p[1]!r}" for p in poly)]
         probes = e["bulk_core_probe_stations_mm"]
         lines += [str(len(probes)), *(f"{p[0]!r} {p[1]!r}" for p in probes)]
@@ -187,11 +214,8 @@ def source_paths(backend="cpu", repo=ROOT):
 
 def scene_pins(c, campaign_rel, kernel, repo=ROOT, backend="cuda"):
     paths = {*source_paths(backend, repo), *SC.TOOL_FILES, campaign_rel, *c["pins"], c["kernels"][kernel]["job"]}
-    scenes = {(c["states"][run["state"]]["scene_path"], c["states"][run["state"]]["scene_sha256"])
-              for run in c["kernels"][kernel]["runs"]}
-    for path, digest in sorted(scenes):
-        scene_wire(Path(repo) / path, digest)
-        paths.add(path)
+    scenes = _scene_records((c["states"][run["state"]] for run in c["kernels"][kernel]["runs"]), repo)
+    paths.update(path for path, _ in scenes)
     return {p: SC.sha256_path(Path(repo) / p) for p in sorted(paths)}
 
 
@@ -278,16 +302,17 @@ def make_campaign(repo=ROOT):
     """Unfrozen three-kernel declaration; windows intentionally require pre-run data."""
     repo = Path(repo)
     states, kernels = {}, {}
-    scene_hashes = {}
+    scene_inputs = {}
 
-    def scene_hash(relative):
+    def scene_input(relative):
         # One generation reuses a geometry across phases and Re. Gate each
         # distinct input once here; run/verify still recheck the actual files.
-        if relative not in scene_hashes:
+        if relative not in scene_inputs:
             digest = SC.sha256_path(repo / relative)
-            scene_wire(repo / relative, digest)
-            scene_hashes[relative] = digest
-        return scene_hashes[relative]
+            scene_inputs[relative] = digest, scene_record(repo / relative, digest)
+        return scene_inputs[relative]
+    primary_height = scene_input("docs/harness/topo2d00_scenes/E1.json")[1]["height_mm"]
+    secondary_height = scene_input("docs/harness/topo2d00_scenes/E1_h80.json")[1]["height_mm"]
     # JOB-02's R2 placement mechanism, centered and extended with exact mirrors
     # in (x,z). Every configuration uses the identical phase at a given grid.
     r2 = (0.7548776662, 0.5698402910)  # scripts/unc01_build.py:48, JOB-02 mechanism
@@ -301,24 +326,29 @@ def make_campaign(repo=ROOT):
         runs = []
         for phase, vector in enumerate(fractions[:nphases], 1):
             for config in configs:
-                name = f"{config}_h100_re{re}_{grid}_k{phase:02d}"
                 relative = f"docs/harness/topo2d00_scenes/{config}{'_fine' if resolution == 180 else ''}.json"
-                states[name] = {"kind": "scene", "scene_path": relative, "scene_sha256": scene_hash(relative),
-                                "topo2d": {"configuration": config, "height_mm": 100.0, "reynolds": float(re), "grid": grid, "phase": str(phase), "role": role}}
+                digest, scene = scene_input(relative)
+                _scene_declaration(scene, {"configuration": config, "height_mm": primary_height})
+                height = scene["height_mm"]
+                name = f"{config}_h{height:g}_re{re}_{grid}_k{phase:02d}"
+                states[name] = {"kind": "scene", "scene_path": relative, "scene_sha256": digest,
+                                "topo2d": {"configuration": scene["configuration"], "height_mm": height, "reynolds": float(re), "grid": grid, "phase": str(phase), "role": role}}
                 runs.append({"state": name, "env": {SC.ORIGIN_ENV: f"{vector[0] * dx:.17g},0,{vector[1] * dx:.17g}"}})
         extras = []
         if resolution == 120:
-            extras += [(config, 80.0, phase, "secondary") for phase in range(1, 5) for config in ("E1", "E2")]
+            extras += [(config, "_h80", secondary_height, phase, "secondary") for phase in range(1, 5) for config in ("E1", "E2")]
         if key == "re3000":
-            extras += [("E1", 100.0, 1, "determinism")]
-            extras += [(config, 100.0, phase, "domain") for phase in (1, 2) for config in ("E1", "E2")]
-        for config, height, phase, extra_role in extras:
+            extras += [("E1", "", primary_height, 1, "determinism")]
+            extras += [(config, "", primary_height, phase, "domain") for phase in (1, 2) for config in ("E1", "E2")]
+        for config, suffix, declared_height, phase, extra_role in extras:
             vector = fractions[phase - 1]
+            relative = f"docs/harness/topo2d00_scenes/{config}{suffix}.json"
+            digest, scene = scene_input(relative)
+            _scene_declaration(scene, {"configuration": config, "height_mm": declared_height})
+            height = scene["height_mm"]
             name = f"{config}_h{height:g}_re{re}_{grid}_k{phase:02d}_{extra_role}"
-            relative = f"docs/harness/topo2d00_scenes/{config}{'_h80' if height == 80 else ''}.json"
-            digest = scene_hash(relative)
             states[name] = {"kind": "scene", "scene_path": relative, "scene_sha256": digest,
-                            "topo2d": {"configuration": config, "height_mm": height, "reynolds": float(re), "grid": grid, "phase": str(phase), "role": extra_role}}
+                            "topo2d": {"configuration": scene["configuration"], "height_mm": height, "reynolds": float(re), "grid": grid, "phase": str(phase), "role": extra_role}}
             env = {SC.ORIGIN_ENV: f"{vector[0] * dx:.17g},0,{vector[1] * dx:.17g}"}
             if extra_role == "domain":
                 env["TOPO2D_TOP_FACTOR"] = "1.5"
@@ -356,6 +386,7 @@ def _run_kernel(campaign_path, kernel, output_dir, *, window, count, repo, julia
     SC.req(kernel in c["kernels"] and not output_dir.exists(), "unknown kernel or existing CPU smoke output")
     k = c["kernels"][kernel]
     SC.req(1 <= count <= len(k["runs"]) and all(math.isfinite(v) for v in window) and 0 <= window[0] < window[1], "CPU smoke run/window")
+    _scene_records((c["states"][run["state"]] for run in k["runs"][:count]), repo)
     output_dir.mkdir(parents=True)
     paths = [str(Path(campaign_path).resolve().relative_to(repo)), *source_paths(backend, repo), *SC.TOOL_FILES]
     paths += [c["states"][r["state"]]["scene_path"] for r in k["runs"][:count]]
@@ -567,7 +598,7 @@ def verify(campaign_path, kernel_dirs, freeze_path=None, smoke=False, repo=ROOT,
             name = SC.run_name(run)
             row = c["states"][run["state"]]
             scene_path = repo / SC.safe_rel(row["scene_path"])
-            scene_wire(scene_path, row["scene_sha256"])
+            scene_record(scene_path, row["scene_sha256"], row["topo2d"])
             case = kernel["case"]
             state_dir = d / "states" / name
             config = row["topo2d"]["configuration"]
@@ -707,8 +738,7 @@ def main(argv=None):
     elif args.command == "validate":
         campaign = SC.jload(args.campaign)
         validate_campaign(campaign)
-        for row in {r["scene_sha256"]: r for r in campaign["states"].values()}.values():
-            scene_wire(ROOT / row["scene_path"], row["scene_sha256"])
+        _scene_records(campaign["states"].values(), ROOT)
         print("PASS: unfrozen harness v1.1 scene extension; formal execution requires external freeze and qualified backend")
     elif args.command == "render":
         text = render(args.campaign, args.source_commit, args.kernel, args.smoke)

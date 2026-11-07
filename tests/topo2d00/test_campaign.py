@@ -83,6 +83,80 @@ def test_scene_wire_recomputes_gates_even_with_a_fresh_hash(tmp_path):
         S.scene_wire(path, SC.sha256_path(path))
 
 
+def test_secondary_scene_export_preserves_height_and_unique_closing_vertex():
+    root = Path(__file__).resolve().parents[2]
+    path = root / "docs/harness/topo2d00_scenes/E1_h80.json"
+    scene = SC.jload(path)
+    wire = S.scene_wire(path, SC.sha256_path(path)).splitlines()
+    assert wire[1] == "E1" and float(wire[4]) == scene["height_mm"] == 80
+    assert scene["normalizations"]["h_over_c1"] == 80 / 223.4
+    assert scene["normalizations"]["h_over_c"] == 80 / 380
+    assert scene["elements"][0]["polygon_mm"][0] != scene["elements"][0]["polygon_mm"][-1]
+
+
+def test_scene_record_rejects_declared_configuration_or_height_mismatch():
+    root = Path(__file__).resolve().parents[2]
+    path = root / "docs/harness/topo2d00_scenes/E1_h80.json"
+    sha = SC.sha256_path(path)
+    assert S.scene_record(path, sha, {"configuration": "E1", "height_mm": 80})["height_mm"] == 80
+    for declaration in ({"configuration": "E1", "height_mm": 100}, {"configuration": "E2", "height_mm": 80}):
+        with pytest.raises(ValueError, match="declared scene"):
+            S.scene_record(path, sha, declaration)
+
+
+def test_campaign_derives_secondary_height_from_scene_json(tmp_path):
+    from cfd_gen.topo2d.geometry import build_scene
+    root = Path(__file__).resolve().parents[2]
+    folder = tmp_path / "docs/harness/topo2d00_scenes"
+    shutil.copytree(root / "docs/harness/topo2d00_scenes", folder)
+    # The filename selects the study arm; identity comes from the JSON.
+    for configuration in ("E1", "E2"):
+        scene = build_scene(configuration, height_mm=75, dx_mm=223.4 / 120)
+        (folder / f"{configuration}_h80.json").write_text(json.dumps(scene))
+    campaign = S.make_campaign(repo=tmp_path)
+    secondary = {name: row for name, row in campaign["states"].items() if row["topo2d"]["role"] == "secondary"}
+    assert len(secondary) == 16
+    assert all(row["topo2d"]["height_mm"] == 75 and "_h75_" in name for name, row in secondary.items())
+    scene = build_scene("E2", height_mm=76, dx_mm=223.4 / 120)
+    (folder / "E2_h80.json").write_text(json.dumps(scene))
+    with pytest.raises(ValueError, match="declared scene.*height"):
+        S.make_campaign(repo=tmp_path)
+
+
+def test_campaign_height_mismatch_refused_before_launch_or_output(tmp_path, monkeypatch):
+    campaign = S.make_campaign()
+    kernel = campaign["kernels"]["re1000"]
+    kernel["runs"] = kernel["runs"][:1]
+    name = kernel["runs"][0]["state"]
+    state = campaign["states"][name]
+    state["topo2d"]["height_mm"] += 1
+    campaign["kernels"], campaign["states"] = {"re1000": kernel}, {name: state}
+    root = Path(__file__).resolve().parents[2]
+    scene = tmp_path / state["scene_path"]
+    scene.parent.mkdir(parents=True)
+    shutil.copy2(root / state["scene_path"], scene)
+    path = tmp_path / "docs/harness/height_mismatch.json"
+    path.write_text(json.dumps(campaign))
+    monkeypatch.setattr(S.subprocess, "run", lambda *args, **kwargs: pytest.fail("mismatched scene launched"))
+    output = tmp_path / "output"
+    with pytest.raises(ValueError, match="declared scene.*height"):
+        S.run_cpu_smoke(path, "re1000", output, window=[0.5, 4.5], repo=tmp_path)
+    assert not output.exists()
+    with pytest.raises(ValueError, match="declared scene.*height"):
+        S.scene_pins(campaign, "docs/harness/topo2d00_campaign.json", "re1000")
+
+
+def test_cli_checks_each_height_when_phases_share_one_scene(tmp_path):
+    campaign = S.make_campaign()
+    shared = [row for row in campaign["states"].values() if row["scene_path"].endswith("/E1_h80.json")]
+    assert len(shared) > 1
+    shared[1]["topo2d"]["height_mm"] += 1
+    path = tmp_path / "height_mismatch.json"
+    path.write_text(json.dumps(campaign))
+    with pytest.raises(ValueError, match="declared scene.*height"):
+        S.main(["validate", str(path)])
+
+
 def test_extended_force_csv_reconstruction_and_batch_endpoints(tmp_path):
     path = tmp_path / "forces.csv"
     cols = [*SC.FORCE_COLUMNS, "cur_drag_solver", "cur_downforce_solver", "nds_drag_solver", "nds_downforce_solver", "cv_drag_solver", "cv_downforce_solver"]

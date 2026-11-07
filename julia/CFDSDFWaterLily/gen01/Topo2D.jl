@@ -46,8 +46,9 @@ distance-function kinks. No finite differences or trilinear grid intervene.
 function (poly::PolygonSDF)(x, t)
     best = oftype(x[1], Inf)
     winding = 0
-    for i in 1:length(poly.vertices)-1
-        a, b = poly.vertices[i], poly.vertices[i+1]
+    for i in eachindex(poly.vertices)
+        a = poly.vertices[i]
+        b = poly.vertices[i == length(poly.vertices) ? 1 : i+1]
         ex, ez = b[1]-a[1], b[2]-a[2]
         px, pz = x[1]-a[1], x[2]-a[2]
         q = clamp((px*ex+pz*ez)/(ex*ex+ez*ez), zero(px), one(px))

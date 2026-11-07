@@ -1,0 +1,96 @@
+{
+  "all_10_scene_periodic_sampling_gates_pass": true,
+  "base_commit": "ba3164c7",
+  "blocked_requirement": {
+    "counterexample": "partial_precedence_counterexample.json",
+    "name": "CONCORDANT_PARTIAL reachability",
+    "reason": "Amendment3 exact-one-Re rule is preempted by earlier UNRESOLVED unless its scope/precedence is clarified; no user answer received",
+    "source_rule_changed": false
+  },
+  "checker_cli": {
+    "discrepancies": [],
+    "pass": true,
+    "written_once_refusal": true
+  },
+  "commit_push_owner": "Claude host per user Amendment3 section6",
+  "compileall": true,
+  "completed_at_utc": "2026-11-07T10:05:59.201074+00:00",
+  "cpu_selftest": {
+    "checkpoint_window_equal": true,
+    "cuda_module_loaded": false,
+    "failed": 0,
+    "moving_ground_evolved_u_equals_U": true,
+    "passed": 59,
+    "seconds": 95.4,
+    "wp1_integration": true,
+    "wp2_integration": true
+  },
+  "delivered_source_and_report_sha256": {
+    "data/zz2003/flap_table4.dat": "8dd4c9582f265b5585f926bc98377fea0b1648b0cf9f0e7ceebce27148def89a",
+    "data/zz2003/main_element_table3.dat": "66bbf8b5caa90f78f52c0851503077b83bab3fd803709858885d8387c05695d8",
+    "data/zz2003/single_element_table2.dat": "04934133a6c085e2f10e0a8e688e91fbd53dc8fc8b999a07433d351d8e152cfe",
+    "docs/codex/gen01_w1_2026_11_06/reports/topo2d00_geometry.png": "db1c42c0baa93c0b9b71012c95cfbe79009dbb26c4cb7fc2f30c368925312a72",
+    "docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_result_schema.json": "ce5c4c90f821aa5dcf3d63493096a16cad6f72395c461f434307a7dcd3ceb5a7",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp04_design.md": "5a26efad8f94c1eadcfff163b76599739b3ed6bba1e111892abdfad267ea9f5e",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp04_report.md": "e29a277480b35245b680ffbf442f4e7ec3feff67ee9c876b4b94911b7b473d4b",
+    "docs/harness/topo2d00_campaign.json": "731b35295fe14a9b5313e8297208cbc6fe9b88e8484e980e7224daee1b774d2d",
+    "docs/harness/topo2d00_scenes/E1.json": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85",
+    "docs/harness/topo2d00_scenes/E1_fine.json": "d57f5947590401517748eff77ccb289d2f4c382d1ee0a3c99a7e636307d6cabb",
+    "docs/harness/topo2d00_scenes/E1_h80.json": "bab24c97a260015b557a2ca14c9344f64f5bb4880091a39493031a38bfb3318e",
+    "docs/harness/topo2d00_scenes/E1_sharp.json": "c4a2ce56ef6f7cfbaa0e8a8f41a267afce4b1e99880a79bb512e80eb6b921612",
+    "docs/harness/topo2d00_scenes/E2.json": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7",
+    "docs/harness/topo2d00_scenes/E2_fine.json": "05cff8029f675219768411d382cc59d6d5e461881b20db6b8d9ab8093763c2e0",
+    "docs/harness/topo2d00_scenes/E2_h80.json": "71afd0f92e499f73c194c4327089a2c89a747e63f76a16c48fc7e0d051009a41",
+    "docs/harness/topo2d00_scenes/E2_sharp.json": "bc416012668448c414594fe8381306123e162bb669c1c7f063a6498cdb6ed5d5",
+    "docs/harness/topo2d00_scenes/E3.json": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1",
+    "docs/harness/topo2d00_scenes/E3_sharp.json": "f48ec5464152bb2432ccdc1ffff88faa07cc826bb87ff78135cf0d9b49c001c2",
+    "julia/CFDSDFWaterLily/gen01/Topo2D.jl": "8ff3782ca0e3889fb903b8c420582b5305c0db56a899fc2f27d09357648ac8ad",
+    "scripts/topo2d00/analyze.py": "0d7b9ba3ae46f6b3c22dad8893e1995d293ebe5299e7b3ab09bfe035e6928564",
+    "scripts/topo2d00/check.py": "251f6cf347c14755e4a9a452a6df20c16d1f1d32efa671abe98527ccb1365fb9",
+    "scripts/topo2d00/plot_geometry.py": "3eba0919e11bdde5e7e9f6a61e4ad38ba478a0842a19b59d132fd546ab0c1ea9",
+    "scripts/topo2d_selftest.jl": "8451cfc4f29df0c4959d692201a24a0d0860e81b51443b8e3b770930c0595c46",
+    "src/cfd_gen/topo2d/geometry.py": "5f12918df81581ad04eeafb051c4598e128310f7e627062e71c8a03bb78890d1",
+    "src/cfd_harness/scene_campaign.py": "cdacb3690e4ed6ab0725efe8a21a6486451787ca12fff0ee1098a29531b79ac7",
+    "tests/topo2d00/test_analyze.py": "fac9c89d361750835f40906ef91dee68289a148ade38596e830e0d775688c0d5",
+    "tests/topo2d00/test_campaign.py": "4cde5ee233e8f942fd8347d4c59dd81ab2780821278db44b5a2f15b389e0d1ce",
+    "tests/topo2d00/test_check.py": "a5aacb64005c7307c3342e5766b3838e3d8b0a13a110b5421b10e2df2434d321",
+    "tests/topo2d00/test_geometry.py": "e64b6f2b3a435e155555e30664cbd7e9aef2ea823428c4fd76a3e62a517f5c9b"
+  },
+  "diff_check": true,
+  "evidence_classes": [
+    "CPU_CAPABILITY_ONLY",
+    "GEOMETRY_SOFTWARE_ONLY",
+    "SYNTHETIC_SOFTWARE_ONLY",
+    "READ_ONLY_INTEGRATION_PREFLIGHT"
+  ],
+  "freeze_created": false,
+  "full_pytest": {
+    "failed": 0,
+    "failed_nodes": [],
+    "passed": 3701,
+    "process_seconds": 1002.528512208024,
+    "same_failure_set_as_supplied_base": true,
+    "seconds": 1001.69,
+    "skipped": 74,
+    "source_unchanged": true,
+    "warnings": 7295
+  },
+  "geometry_png_visually_checked": true,
+  "gpu_executed": false,
+  "protected_source_closure_unchanged": true,
+  "rans_executed": false,
+  "schema": "wp04-amend3-validation-v1",
+  "stage_commit_push_performed": false,
+  "status": "PARTIAL",
+  "targeted_pytest": {
+    "failed": 0,
+    "passed": 219,
+    "seconds": 85.01
+  },
+  "wp5_geometry_readback": {
+    "accepted": 0,
+    "cases": 20,
+    "latest_record": "wp5_geometry_readback_v2.json",
+    "reason": "Current WP5 adapter requires old explicit closing endpoint; change belongs to WP5"
+  }
+}
