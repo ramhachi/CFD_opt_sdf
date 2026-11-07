@@ -1,0 +1,16 @@
+{
+  "cpu_venv": "/private/tmp/force00-cpu-venv",
+  "excluded_optional_gpu_entries": [
+    "mlx",
+    "mlx-0.32.2.dist-info",
+    "mlx_metal-0.32.2.dist-info"
+  ],
+  "original_base_completed": false,
+  "original_base_exit_code": 134,
+  "other_site_package_entries_preserved": 104,
+  "package_transfer": "stdlib venv plus symlinks to existing site-package entries; no package install or shared-environment mutation",
+  "python_version": "3.12.13",
+  "reason": "mlx.core native import aborted in sandbox during original full-suite test_lbm_metal; CPU-only validation omits optional Metal backend",
+  "schema": "force00_cpu_python_environment_v1",
+  "source_site_packages": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages"
+}

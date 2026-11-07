@@ -1,8 +1,10 @@
 diff --git a/scripts/waterlily_lowdim02_flow32_job.jl b/scripts/waterlily_force00_job.jl
-index da3ab45d..be817ebc 100644
+index da3ab45d..9925f1fa 100644
 --- a/scripts/waterlily_lowdim02_flow32_job.jl
 +++ b/scripts/waterlily_force00_job.jl
-@@ -35,0 +36,14 @@ env_tuple(name, ::Type{T}, fallback) where {T} =
+@@ -8,0 +9 @@ include(joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "CFDSDFWater
++Base.include(CFDSDFWaterLily, joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "gen01", "Force00.jl"))
+@@ -35,0 +37,14 @@ env_tuple(name, ::Type{T}, fallback) where {T} =
 +# FORCE-00 boxes use inclusive pressure-cell indices; no implicit measuring box.
 +function force00_cv_box(raw=ENV["FORCE00_CV_BOX"])
 +    fields = split(raw, ',')
@@ -17,22 +19,22 @@ index da3ab45d..be817ebc 100644
 +end
 +const FORCE00_CV_BOX = force00_cv_box()
 +
-@@ -83 +97 @@ function interpolate_force_row(left, right, t)
+@@ -83 +98 @@ function interpolate_force_row(left, right, t)
 -    ntuple(i -> i == 2 ? Float64(t) : left[i] + alpha * (right[i] - left[i]), 13)
 +    ntuple(i -> i == 2 ? Float64(t) : left[i] + alpha * (right[i] - left[i]), length(left))
-@@ -131 +145 @@ function write_force_csv(path, rows)
+@@ -131 +146 @@ function write_force_csv(path, rows)
 -        println(io, "step,t_u_l,fx_solver,fy_solver,fz_solver,drag_solver,downforce_solver,pressure_fx_solver,pressure_fy_solver,pressure_fz_solver,viscous_fx_solver,viscous_fy_solver,viscous_fz_solver")
 +        println(io, "step,t_u_l,fx_solver,fy_solver,fz_solver,drag_solver,downforce_solver,pressure_fx_solver,pressure_fy_solver,pressure_fz_solver,viscous_fx_solver,viscous_fy_solver,viscous_fz_solver,cur_fx_solver,cur_fy_solver,cur_fz_solver,cur_drag_solver,cur_downforce_solver,nds_fx_solver,nds_fy_solver,nds_fz_solver,nds_drag_solver,nds_downforce_solver,cv_fx_solver,cv_fy_solver,cv_fz_solver,cv_drag_solver,cv_downforce_solver")
-@@ -142,0 +157,2 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
+@@ -142,0 +158,2 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
 +    # This registered geometry is static; validate the explicit measuring box once.
 +    CFDSDFWaterLily.validate_force_box(sim, FORCE00_CV_BOX; body=bodies.candidate)
-@@ -145 +161 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
+@@ -145 +162 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
 -    history = Vector{NTuple{13,Float64}}()
 +    history = Vector{NTuple{28,Float64}}()
-@@ -162,0 +179,2 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
+@@ -162,0 +180,2 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
 +            readouts = CFDSDFWaterLily.force_readouts(sim, FORCE00_CV_BOX;
 +                body=bodies.candidate, validate_box=false)
-@@ -168,0 +187,7 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
+@@ -168,0 +188,7 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
 +                # Duplicate the original arithmetic for byte-identical R_cur columns.
 +                Float64(total[1]), Float64(total[2]), Float64(total[3]),
 +                Float64(total[1]), Float64(-total[3]),
@@ -40,6 +42,6 @@ index da3ab45d..be817ebc 100644
 +                Float64(readouts.nds[1]), Float64(-readouts.nds[3]),
 +                Float64(readouts.cv[1]), Float64(readouts.cv[2]), Float64(readouts.cv[3]),
 +                Float64(readouts.cv[1]), Float64(-readouts.cv[3]),
-@@ -241,0 +267,2 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
+@@ -241,0 +268,2 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
 +        force00_cv_box_lower=first.(FORCE00_CV_BOX),
 +        force00_cv_box_upper=last.(FORCE00_CV_BOX),

@@ -1,0 +1,24 @@
+{
+  "branch": "feat/gen01-w1-02-force00",
+  "branch_ref_updated": false,
+  "commit_created": false,
+  "git_push_completed": false,
+  "github_api_blob_create": {
+    "blob_sha_returned": false,
+    "error": "MCP tool call requires approval, but approval policy is never",
+    "isError": true,
+    "status": "DENIED_BEFORE_EXECUTION",
+    "tool": "mcp__codex_apps__github_create_blob"
+  },
+  "local_git_stage": {
+    "cached_diff_empty_after_attempt": true,
+    "error": "fatal: Unable to create '/Users/sota/projects/FomulaTMU/CFD2026_09/.git/worktrees/CFD2026_09-wp-02-force00/index.lock': Operation not permitted",
+    "status": "DENIED"
+  },
+  "local_head": "21d1e8e7cb14e096f648e2e4de0ec30c8dafdd2c",
+  "remote_head_confirmed": "21d1e8e7cb14e096f648e2e4de0ec30c8dafdd2c",
+  "schema": "force00_publication_boundary_v1",
+  "temporary_publication_checkout_used": false,
+  "user_commit_push_authorization": "Already provided; execution policy denied the actions. No additional authorization is inferred or requested for the same action.",
+  "worktree_files_preserved": true
+}

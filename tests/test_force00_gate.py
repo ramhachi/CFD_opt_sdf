@@ -7,6 +7,7 @@ import hashlib
 import importlib.util
 import json
 from pathlib import Path
+import shutil
 
 import pytest
 
@@ -74,7 +75,8 @@ def evidence(tmp_path, gate):
             "burn_in_t_u_l": 80.0, "t_end_target": 120.0, "sample_every_solver_steps": 8,
             "waterlily_version": "1.8.0", "waterlily_backend": "KernelAbstractions", "gpu_name": "Tesla T4",
             "finite_u": True, "finite_p": True, "finite_forces": True,
-            "force_csv_sha256": digest(csv), "steps": 40,
+            "force_csv_sha256": digest(csv), "steps": 40, "force_samples": 5,
+            "t_end_reached": 121.0,
             "force00_cv_box_lower": [7, 7, 7], "force00_cv_box_upper": [40, 40, 40],
         }
         summary_path = out / (relative + ".json")
@@ -239,13 +241,18 @@ def test_final_solver_step_can_be_sampled_off_cadence(gate, evidence):
     repo, out, refs = evidence
     item = json.loads((out / "force00_runs.json").read_text())["runs"][0]
     path = out / item["forces_csv"]
-    lines = path.read_text().splitlines(); fields = lines[-1].split(","); fields[0] = "41.0"
-    lines[-1] = ",".join(fields); path.write_text("\n".join(lines) + "\n")
+    lines = path.read_text().splitlines(); fields = lines[-1].split(",")
+    fields[1] = "119.0"; lines[-1] = ",".join(fields)
+    fields[0], fields[1] = "41.0", "121.0"; lines.append(",".join(fields))
+    path.write_text("\n".join(lines) + "\n")
     summary = out / item["summary_json"]
-    data = json.loads(summary.read_text()); data.update(steps=41, force_csv_sha256=digest(path))
+    data = json.loads(summary.read_text()); data.update(steps=41, force_samples=6, force_csv_sha256=digest(path))
     write_json(summary, data)
     key = (item["run"], item["phase_id"], item["state"])
-    refs[key]["legacy"] = refs[key]["legacy"].replace(b"40.0,121.0", b"41.0,121.0")
+    legacy = refs[key]["legacy"].splitlines()
+    final = legacy[-1].replace(b"40.0,121.0", b"41.0,121.0")
+    legacy[-1] = legacy[-1].replace(b"40.0,121.0", b"40.0,119.0")
+    refs[key]["legacy"] = b"\n".join([*legacy, final]) + b"\n"
     manifest(repo, out)
     assert evaluate(gate, evidence)["criteria"]["C1"]["status"] == "PASS"
     # An intermediate sample off cadence is never the final-horizon exception.
@@ -253,6 +260,38 @@ def test_final_solver_step_can_be_sampled_off_cadence(gate, evidence):
     path.write_text("\n".join(lines) + "\n"); data["force_csv_sha256"] = digest(path)
     write_json(summary, data); manifest(repo, out)
     with pytest.raises(ValueError, match="cadence"):
+        evaluate(gate, evidence)
+
+
+@pytest.mark.parametrize("defect", ["missing_regular", "missing_first", "steps", "sample_count",
+                                  "end_time", "early_endpoint", "steps_type", "count_type"])
+def test_f3_history_cadence_and_summary_fail_closed(gate, evidence, defect):
+    # F3 has no C1 byte reference: missing samples must fail at the history
+    # boundary even when every retained step is divisible by eight.
+    repo, out, _ = evidence
+    item = next(item for item in json.loads((out / "force00_runs.json").read_text())["runs"]
+                if item["run"] == "F3")
+    path, summary = out / item["forces_csv"], out / item["summary_json"]
+    lines, data = path.read_text().splitlines(), json.loads(summary.read_text())
+    if defect in ("missing_regular", "missing_first"):
+        del lines[2 if defect == "missing_regular" else 1]
+        data["force_samples"] -= 1
+    elif defect == "steps":
+        data["steps"] = 48
+    elif defect == "sample_count":
+        data["force_samples"] -= 1
+    elif defect == "end_time":
+        data["t_end_reached"] = 120.0
+    elif defect == "early_endpoint":
+        fields = lines[-2].split(","); fields[1] = "120.5"; lines[-2] = ",".join(fields)
+    elif defect == "steps_type":
+        data["steps"] = 40.0
+    else:
+        data["force_samples"] = 5.0
+    path.write_text("\n".join(lines) + "\n")
+    data["force_csv_sha256"] = digest(path)
+    write_json(summary, data); manifest(repo, out)
+    with pytest.raises(ValueError):
         evaluate(gate, evidence)
 
 
@@ -347,6 +386,31 @@ def test_invalid_derived_value_does_not_create_partial_gate(gate, evidence, monk
     assert not (out / "gate.json").exists()
 
 
+@pytest.mark.parametrize("missing_input", ["manifest", "run_catalog", "run_csv"])
+def test_cpu_validation_reports_are_not_discovered(gate, evidence, missing_input):
+    repo, out, _ = evidence
+    reports = repo / "docs/codex/gen01_w1_2026_11_06/reports/wp02_validation"
+    # Even a complete, correctly hashed decoy must not fill missing production
+    # inputs from a sibling reports directory. The gate reads its root only.
+    shutil.copytree(out, reports)
+    manifest(repo, reports)
+    if missing_input == "manifest":
+        (out / "SHA256SUMS").unlink()
+    elif missing_input == "run_catalog":
+        (out / "force00_runs.json").unlink()
+        manifest(repo, out)
+    else:
+        item = next(item for item in json.loads((out / "force00_runs.json").read_text())["runs"]
+                    if item["run"] == "F3")
+        (out / item["forces_csv"]).unlink()
+        manifest(repo, out)
+    result = evaluate(gate, evidence)
+    assert result["status"] == "INCOMPLETE"
+    assert result["adopted_readout"] == "NONE"
+    assert result["missing"]
+    assert not (out / "gate.json").exists()
+
+
 def test_registered_reference_catalog_reads_sha_and_missing_camber_sigma(gate):
     refs, sigma, provenance = gate.registered_references(ROOT)
     assert set(refs) == set(gate.EXPECTED_RUNS)
@@ -354,6 +418,17 @@ def test_registered_reference_catalog_reads_sha_and_missing_camber_sigma(gate):
     assert refs[("F2", "k15", gate.PARENT)]["grid"] == "flow_32"
     assert sigma is None
     assert "camber_m19.7" in provenance["sigma_d_missing"]
+    for ref in refs.values():
+        if "legacy" not in ref:
+            continue
+        rows = [dict(zip(gate.FORCE_COLUMNS, map(float, line.decode().split(","))))
+                for line in ref["legacy"].splitlines()[1:]]
+        summary = ref["summary"]
+        assert len(rows) == summary["force_samples"] == (summary["steps"] + 7) // 8
+        assert all(row["step"] == min(8 * (index + 1), summary["steps"])
+                   for index, row in enumerate(rows))
+        assert rows[-1]["t_u_l"] == summary["t_end_reached"] >= 120.0
+        assert all(row["t_u_l"] < 120.0 for row in rows[:-1])
 
 
 def test_production_uniform_provenance_binds_area_sources_and_placements(gate, evidence):

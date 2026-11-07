@@ -1,0 +1,32 @@
+{
+  "schema": "force00_uniform_determinism_v1",
+  "byte_identical": true,
+  "runs": [
+    {
+      "command": [
+        "julia",
+        "--project=julia/CFDSDFWaterLily",
+        "-O1",
+        "scripts/force00_uniform_pressure.jl",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/uniform_pressure.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds_including_jit": 143.86897887499072,
+      "sha256": "058acdc88dce3602f995a7826b81603d186bf23c9dbc1b11ad778a4f4a65ca49",
+      "bytes": 72963
+    },
+    {
+      "command": [
+        "julia",
+        "--project=julia/CFDSDFWaterLily",
+        "-O1",
+        "scripts/force00_uniform_pressure.jl",
+        "docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/uniform_pressure-repeat.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds_including_jit": 118.6494772080332,
+      "sha256": "058acdc88dce3602f995a7826b81603d186bf23c9dbc1b11ad778a4f4a65ca49",
+      "bytes": 72963
+    }
+  ]
+}

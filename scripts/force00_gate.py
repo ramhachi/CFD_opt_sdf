@@ -50,7 +50,8 @@ EXPECTED_RUNS = tuple(("F1", p, PARENT) for p in F1_PHASES) + tuple(
 IDENTITY_KEYS = ("case_id", "flow_dims", "flow_spacing_m", "density_kg_m3", "freestream_mps",
                  "state_sha256", "phi_fortran_sha256", "canonical_sdf_origin_m")
 UNIFORM_LOCAL_SOURCES = ("scripts/force00_uniform_pressure.jl", "scripts/force00_uniform_inputs.py",
-    "julia/CFDSDFWaterLily/Project.toml", "julia/CFDSDFWaterLily/Manifest.toml", *(
+    "julia/CFDSDFWaterLily/Project.toml", "julia/CFDSDFWaterLily/Manifest.toml",
+    "julia/CFDSDFWaterLily/gen01/Force00.jl", *(
         "julia/CFDSDFWaterLily/src/" + name for name in (
             "CFDSDFWaterLily.jl", "Runtime.jl", "Forces.jl", "Simulation.jl", "GridSDFBody.jl", "WaterLilyBody.jl",
             "WaterLilyNormalFloorBody.jl", "CandidateCWaterLilyBody.jl", "V16W4Sensitivity.jl")))
@@ -257,7 +258,7 @@ def read_run(item, evidence, manifest, reference):
     lower, upper = summary.get("force00_cv_box_lower"), summary.get("force00_cv_box_upper")
     require(all(isinstance(v, list) and len(v) == 3 and all(type(i) is int for i in v) for v in (lower, upper)), "missing/invalid CV box index record")
     # Flow allocates two ghost cells: two physical cells of inset require
-    # lower>=4 and upper<=size(p)-3==flow_dims-1, as in Forces.jl.
+    # lower>=4 and upper<=size(p)-3==flow_dims-1, as in Force00.jl.
     require(all(4 <= lo <= hi <= dim - 1 for lo, hi, dim in zip(lower, upper, summary["flow_dims"])), "CV box violates ordered two-cell domain inset")
     lines = raw.splitlines(keepends=True)
     require(lines and tuple(lines[0].decode().strip().split(",")) == ALL_COLUMNS, "FORCE-00 CSV schema mismatch")
@@ -278,8 +279,16 @@ def read_run(item, evidence, manifest, reference):
         rows.append(row)
     require(len(rows) >= 4, "insufficient force history")
     require(all(b["step"] > a["step"] and b["t_u_l"] > a["t_u_l"] for a, b in zip(rows, rows[1:])), "force step/time is not strictly increasing")
-    require(all(row["step"] % 8 == 0 or (index == len(rows) - 1 and row["t_u_l"] >= 120.0
-                and row["step"] == summary.get("steps")) for index, row in enumerate(rows)), "force sampling cadence differs")
+    steps, samples = summary.get("steps"), summary.get("force_samples")
+    require(type(steps) is int and steps > 0, "invalid final solver step")
+    require(type(samples) is int and samples == len(rows) == (steps + 7) // 8,
+            "force sample count/cadence differs from completed steps")
+    # Every regular sample is required, followed only by a final off-cadence
+    # endpoint when needed. F3 cannot rely on C1's legacy-byte comparison.
+    require(all(row["step"] == min(8 * (index + 1), steps) for index, row in enumerate(rows)),
+            "force sampling cadence differs")
+    require(rows[-1]["t_u_l"] == finite(summary.get("t_end_reached"), "t_end_reached") >= 120.0
+            and all(row["t_u_l"] < 120.0 for row in rows[:-1]), "force final time/horizon mismatch")
     scale = finite(summary["density_kg_m3"], "density") * finite(summary["freestream_mps"][0], "velocity") ** 2 * finite(summary["flow_spacing_m"], "spacing") ** 2
     require(scale > 0, "nonpositive physical force scale")
     means = {}

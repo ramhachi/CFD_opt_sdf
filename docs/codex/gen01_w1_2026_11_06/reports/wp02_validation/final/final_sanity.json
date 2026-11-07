@@ -1,0 +1,30 @@
+{
+  "schema": "force00_amendment2_final_sanity_v1",
+  "head": "21d1e8e7cb14e096f648e2e4de0ec30c8dafdd2c",
+  "branch": "feat/gen01-w1-02-force00",
+  "production_evidence_absent": true,
+  "src_force00_absent": true,
+  "src_base_diff_empty": true,
+  "venv_symlink": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv",
+  "removed_proposals_absent": true,
+  "no_commit_push_or_pr_mutation": true,
+  "diff_check": {
+    "command": "git diff --check",
+    "exit_code": 0,
+    "output": ""
+  },
+  "source_sha256": {
+    "julia/CFDSDFWaterLily/gen01/Force00.jl": "84c58a6f029d2dd9705d95020151cec564c7141414cdcb2b3d06283fdf275927",
+    "julia/CFDSDFWaterLily/gen01/README.md": "7987420ccd1377fcc9f0052eaf630de7bc0dafb4242ee241377d3f73f524ac6e",
+    "scripts/force00_gate.py": "9e24e2ae2f89f1b0c17265bf3e0682010c8c65b0f969d96e19f06990cb691325",
+    "scripts/force00_job_regression.jl": "712970d45fa36d7810e6918e1d25cdadbefa105ff915c2b8fe3832a84ec993c7",
+    "scripts/force00_selftest.jl": "53682f4794af8cd1127c222406d9908e7d372b12cf3851799cdc2b93ee8c4d2a",
+    "scripts/force00_uniform_inputs.py": "6d6207c6f97f4b625cb37a4145f5ced92d5e9f02f2f0e1b2175422f30d6f9acf",
+    "scripts/force00_uniform_pressure.jl": "e005bf27ac97f3ad53b5a5388f64f620ca4c08cd8dc9e796fbf6279433df40f9",
+    "scripts/waterlily_force00_dispatch.jl": "f983db0a876038068684687005dccd34b2757eae111d1dacffa4cf12ffc76383",
+    "scripts/waterlily_force00_job.jl": "449318a31e7e615ef264de9fc7b45165f8f29cea68061fc725017fa95248fcdf",
+    "scripts/waterlily_force00_job.diff": "fc0e1e120622c58c1e3942b25083b4d6a7900582e33a255fc81e6c2166f81e95",
+    "tests/test_force00_gate.py": "987e55a6eba2177b644873dd591cbb2db74c9705f66461e71a26278296fb7fb5",
+    "tests/test_force00_uniform_inputs.py": "7c50860e22d5c974cdfb575fd00e902e85ae9affab74d7a1c0612bca0b858a17"
+  }
+}

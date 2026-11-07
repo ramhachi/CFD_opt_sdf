@@ -6,6 +6,7 @@ using CUDA
 using SHA
 
 include(joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "CFDSDFWaterLily.jl"))
+Base.include(CFDSDFWaterLily, joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "gen01", "Force00.jl"))
 using .CFDSDFWaterLily
 using .CFDSDFWaterLily.GridSDFBody
 using WaterLily

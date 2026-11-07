@@ -1,0 +1,58 @@
+{
+  "all_existing_base_files_unchanged": true,
+  "base_commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+  "continuation_commit": "21d1e8e7cb14e096f648e2e4de0ec30c8dafdd2c",
+  "force00_relocated_definitions_byte_identical_to_first_attempt": true,
+  "force00_source_sha256": "84c58a6f029d2dd9705d95020151cec564c7141414cdcb2b3d06283fdf275927",
+  "job_diff_matches_exact_no_index_diff": true,
+  "module_include_strategy": "Opt-in Base.include from new entrypoints; registered module unchanged",
+  "proposal_applied_and_deleted": true,
+  "protected_files": [
+    {
+      "byte_identical_to_base": true,
+      "bytes": 1527,
+      "path": "julia/CFDSDFWaterLily/src/Forces.jl",
+      "sha256": "0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e"
+    },
+    {
+      "byte_identical_to_base": true,
+      "bytes": 160,
+      "path": "julia/CFDSDFWaterLily/src/CFDSDFWaterLily.jl",
+      "sha256": "996224432490df72726e208ad36d1a68657b506ba4058d79a0f9eb72154d4e9e"
+    },
+    {
+      "byte_identical_to_base": true,
+      "bytes": 58,
+      "path": "julia/CFDSDFWaterLily/Project.toml",
+      "sha256": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27"
+    },
+    {
+      "byte_identical_to_base": true,
+      "bytes": 11015,
+      "path": "julia/CFDSDFWaterLily/Manifest.toml",
+      "sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c"
+    },
+    {
+      "byte_identical_to_base": true,
+      "bytes": 19906,
+      "path": "scripts/waterlily_lowdim02_flow32_job.jl",
+      "sha256": "418796ce258e8f9e9945332d18869104a53f74000a96b609d4f4b42c82a21683"
+    },
+    {
+      "byte_identical_to_base": true,
+      "bytes": 2387,
+      "path": "scripts/quick_tie.jl",
+      "sha256": "865f31f9b0f359f3d0293405c2b6908cdda017b47e24685dc9d558db61cb96e3"
+    },
+    {
+      "byte_identical_to_base": true,
+      "bytes": 5929,
+      "path": "tests/conftest.py",
+      "sha256": "58418a11355ab4dce6e11abcedf8bfaf9d7ec029321e2abcb0b6b666bad467eb"
+    }
+  ],
+  "relocated_definitions_bytes": 12239,
+  "relocated_definitions_sha256": "8badaf6aac22daec39d3bd2b0fc808c93250a717da19aa6c00385354ee6f0800",
+  "schema": "force00_source_pin_preservation_v1",
+  "status": "PASS"
+}

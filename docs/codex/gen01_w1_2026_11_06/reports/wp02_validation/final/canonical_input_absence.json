@@ -1,0 +1,71 @@
+{
+  "schema": "force00_gate_v1",
+  "evidence_class": "engineering_capability_gate",
+  "status": "INCOMPLETE",
+  "adopted_readout": "NONE",
+  "criteria": {
+    "C1": {
+      "status": "INCOMPLETE"
+    },
+    "C2": {
+      "status": "INCOMPLETE"
+    },
+    "C3": {
+      "status": "INCOMPLETE"
+    },
+    "C4": {
+      "status": "INCOMPLETE"
+    },
+    "C5": {
+      "status": "INCOMPLETE"
+    }
+  },
+  "readouts": {
+    "R_nds": "INCOMPLETE",
+    "R_cv": "INCOMPLETE"
+  },
+  "missing": [
+    "FORCE-00 SHA256SUMS"
+  ],
+  "provenance": {
+    "reference_artifacts": [
+      {
+        "path": "docs/evidence/unc01_2026_10_20/u01/smoke/smoke_verify_table.json",
+        "sha256": "409552a13fff4b63fe82079cd90886bfc59a8d6371784eac284b23d9e01cb104"
+      },
+      {
+        "path": "docs/evidence/unc01_2026_10_20/u01/state_force_table.json",
+        "sha256": "8804272bcb6ec90f64c0f95b23955ce18db31e6a01e33976ec7c2ff6a696b7f2"
+      },
+      {
+        "path": "docs/evidence/unc01_2026_10_20/u2/verify/table_f24.json",
+        "sha256": "a8c5f4426c6d6858a5049236700534e03e5255343a3b33de26096fe51af2b9b1"
+      },
+      {
+        "path": "docs/evidence/screen01_2026_10_30/wl/verify/table_f32a.json",
+        "sha256": "f78e4096b8926c1e260fe0d68b805deeda62b6ed5d871e478beb6389a55dedee"
+      },
+      {
+        "path": "docs/evidence/screen01_2026_10_30/wl/verify/table_f32b.json",
+        "sha256": "4a5c53f76705f3e5b097e8c2d83ec1bdc3d3fd321ed74e44e07dca5f64f04873"
+      }
+    ],
+    "reference_matrix": {
+      "F1": "UNC-01 U01 smoke k0, U01 formal half, U2 k1..k6",
+      "F2": "SCREEN-01 f32a k13/14 and f32b k15/16",
+      "F3": "FID-01 tier-A k7..k10"
+    },
+    "sigma_d_missing": "UNC-01 analysis.json grids.flow_32.differences has no v18__camber_m19.7; no mode transfer permitted",
+    "sigma_d_source": {
+      "path": "docs/evidence/unc01_2026_10_20/analysis.json",
+      "sha256": "ee71c6d6983fee72a171c9188c117a478dafe51e2fd1488f15448321687f8e24",
+      "unit": "N",
+      "mode": "v18__camber_m19.7"
+    },
+    "manifest_sha256": {
+      "docs/evidence/unc01_2026_10_20/SHA256SUMS": "9a9d1bc92db59f6c68c4035413773adbb7dca23dec253322b5803e27c95a2828",
+      "docs/evidence/screen01_2026_10_30/SHA256SUMS": "528a11306f3ab028888b810435e63e58f95087fc1f9b37acb5164c0076c4b141",
+      "docs/evidence/fid01_2026_10_21/SHA256SUMS": "06b4d6258439d1d93ea1fca241dfb9aa9bd961765f35a956cd20444b625a32e0"
+    }
+  }
+}

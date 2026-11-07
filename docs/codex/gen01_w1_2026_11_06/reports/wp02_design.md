@@ -1,112 +1,113 @@
 # WP2 FORCE-00 design
 
-Base: `e3dcdf61`, branch `feat/gen01-w1-02-force00`; initial working tree clean.
-This is an implementation record, not a registration or roadmap amendment.
+## Current decision: Amendment 2 (2026-11-06)
 
-## Authority and scope
+Continue the existing uncommitted work at HEAD `21d1e8e7` on
+`feat/gen01-w1-02-force00`. Amendment 2 supersedes the prior placement,
+publication and baseline instructions. Claude on the host owns commit,
+push and PR #84 updates. No Git publication, temporary checkout, API blobs,
+GPU execution, registration, qualification change or roadmap change is part
+of this continuation.
 
-Read the W1 README first. The repository instructions, handoff, documentation
-map, phase plan, issue ledger, resolution plan, STATE, branching strategy,
-GEN-01 rev 3.1, FORCE-00 rev 0, research facts, existing Julia bodies and
-WaterLily 1.8.0 source govern this work. Team members share the reading and
-summarize their assigned complete documents. `phase_plan.md` remains the sole
-execution authority. All existing evidence, registered jobs, pinned manifests,
-criteria, qualification flags and frozen conclusions remain unchanged.
+The team read W1's README first, the five AGENTS authority documents in
+full (including all 7,782 lines of phase_plan), STATE, branching, GEN-01
+rev 3.1, FORCE-00 rev 0, research facts, the specified body/quadrature code,
+pinned WaterLily 1.8.0 code, W2a and registered UNC/FID/SCREEN inputs.
+The current user's amendments determine implementation scope. Phase_plan
+remains the roadmap/status/order authority and the problem register the
+issue ledger; frozen campaign conclusions are unchanged.
 
-Only local CPU tests and geometry calculations run. No GPU, cloud, Kaggle,
-paid API, freezing or registration. OpenCode Go MCP is absent; CLI model
-discovery failed on its protected log path and, with temporary XDG paths,
-reported `Provider not found: opencode-go`. Native workers cover distinct
-numeric, job and gate tasks; the parent integrates and verifies their files.
+## Placement and preserved contracts
 
-## Interfaces
+The whole `julia/CFDSDFWaterLily/src/` directory is pinned by
+`campaign_build.BASE_PINS` and historical freezes. Both `Forces.jl` and the
+module also have whole-file SHA pins. Restore the complete src tree to
+`e3dcdf61`, with no new src file or include. Apply the supplied tree-pin
+patch with its proposed `force00/` path changed to **`gen01/Force00.jl`**.
+Four new entrypoints explicitly opt in with `Base.include`; uniform and
+regression provenance refer to this same new file. Add the three-line
+gen01 README. Future FORCE-00 campaign freezes must explicitly pin the
+new gen01 source; do not modify historical manifests or conftest.
 
-- Append to `src/Forces.jl`: exact stored-moment `nds_telescoping(sim)`;
-  pressure/viscous/body nds forces; Cartesian control-volume force and a term
-  helper; `force_readouts(sim, box)` returning `cur`, `nds`, `cv` body forces.
-- A box is a tuple of inclusive pressure-cell `UnitRange`s. Its faces lie at
-  `first(range)-2` and `last(range)-1` in WaterLily coordinates. Require two
-  physical cells to the domain boundary and four cells to immersed geometry.
-  Optional candidate/body arguments are needed because the existing job's
-  legacy force integrates only the candidate, while its solver includes ground.
-- The raw nds array is the specified forward difference of `flow.μ₀`.
-  Integrate interior/candidate support, excluding artificial domain-boundary
-  moment jumps imposed by `BC!`; never remeasure or modify solver moments.
-- CV quadrature interpolates staggered velocity and pressure to faces, uses
-  `WaterLily.S` for viscous traction, and cell-centered velocity differences
-  over `flow.Δt[end-1]` for storage. Unit density and solver units match legacy
-  conventions. All sums and output vectors use Float64.
-- Copy the registered job literally, preserve its first 13 CSV columns and
-  sampling/window semantics, append `cur_`, `nds_`, `cv_` Cartesian components,
-  drag and downforce; read the required box from `FORCE00_CV_BOX`.
-- Uniform-pressure JSON has per-placement U1/U2 rows with `run`, `body`,
-  `grid` or `radius_cells`, `phase_id`, `projected_area`, `cur`, `nds`, `cv`.
-  Include source hashes and recomputable max/RMS summaries. No timestamps.
-- Gate reads `force00_runs.json` plus CSV/summary files and uniform-pressure
-  rows. It validates registration/source hashes, compares legacy CSV bytes,
-  recomputes endpoint-clipped time-weighted means, and writes `gate.json`
-  exclusively. Missing required evidence is `INCOMPLETE`, never an adoption.
+Move every CPU record from `docs/evidence/force00_2026_11/` to
+`reports/wp02_validation/`, preserving the original attempt data and
+separating current source-bound captures in `final/`. The production
+FORCE-00 evidence directory must not exist. Remove the applied tree-pin
+proposal, the previously applied preserve-pins proposal, and the obsolete
+whole-working-tree binary patch. Record exact moves and commit targets.
 
-## Files and validation
+## Numerical interfaces
 
-Owned additions: `scripts/force00_{uniform_pressure,selftest,job_regression}.jl`,
-`scripts/waterlily_force00_job.{jl,diff}`, `scripts/force00_gate.py`,
-`tests/test_force00_gate.py`, new FORCE-00 CPU artifacts and this report pair.
-The only existing source changed is the explicitly requested append to
-`julia/CFDSDFWaterLily/src/Forces.jl`.
+- `nds_telescoping(sim)` returns the stored-moment forward differences,
+  promoting each mu0 operand to Float64 before subtraction. It neither
+  measures an SDF nor changes the flow. Its raw field includes the normal
+  domain-BC jumps; the integral helpers exclude those artificial jumps.
+- `pressure_force_nds`, `viscous_force_nds` and `force_on_body_nds` reuse
+  the existing outward-reaction and negative body-force conventions.
+- `control_volume_terms(sim, box)` and `control_volume_force(sim, box)`
+  handle 2D/3D, interpolate staggered u and p to box faces, average the
+  neighboring WaterLily.S tensors, and use cell-centered `(u-u0)/dt_previous`
+  with `Delta_t[end-1]`. All reductions accumulate in Float64.
+- A box is a tuple of inclusive pressure-cell UnitRanges. Faces are at
+  `first(range)-2` and `last(range)-1` in solver coordinates, at least two
+  cells inside the domain and four sampled SDF cells from scene bodies.
+  `validate_force_box` also requires complete nonempty candidate support.
+- `force_readouts(sim, box; body=sim.body, validate_box=true)` returns
+  `(cur, nds, cv)` body-force vectors and restores legacy flow.f scratch
+  even on failure. Candidate-plus-ground jobs pass `body=candidate`.
+  GPU-compatible kernels use existing WaterLily.@loop/backend reductions;
+  GPU compilation and execution remain unverified in this CPU-only task.
 
-Baseline full pytest starts before edits (`/tmp/force00-baseline-pytest.log`).
-TDD covers off-grid circle/sphere moment closure <=1e-12, interior/exterior
-moment values, analytic affine-flow CV terms in 2D/3D, and legacy byte equality.
-CPU job comparison executes parsed production function bodies with explicitly
-shortened test endpoints/CPU telemetry; this tests the sampling path, not T4
-reproducibility. Run U1/U2 twice and compare bytes and hashes. Test all gate
-criteria and adoption/incomplete/write-once/error paths with synthetic data.
-Finally compileall, full pytest failure-set comparison and diff checks.
+## Jobs, geometry and gate
 
-## Open facts to resolve without inventing evidence
+Copy the registered flow32 job without modifying it. Preserve its first
+13 CSV columns, cadence, endpoint-clipped window, force signs and phases;
+append cur/nds/cv times five force/projection columns and accept/record an
+explicit `FORCE00_CV_BOX`. A separate optional launcher changes only the
+case inventory and predicate for F1's flow24. CPU regression executes the
+actual parsed production measurement functions using identical flow16
+inputs, shortened test windows, cadence1 and CPU telemetry.
 
-- Rev 0's C4 table says 15%, its adoption sentence says 10%; user clarification
-  is pending. Both measures can be computed before choosing an adoption band.
-- U01 contains k0/half, U2 contains k1..k6. The eight-phase provenance must be
-  explicit. SCREEN k13/k14 are in f32a, k15/k16 in f32b, despite the prompt's
-  collective f32a label. Read the actual tables, never fabricate entries.
-- UNC-01 does not contain the exact `camber_m19.7` sigma row requested by C5.
-  Preserve missing provenance as INCOMPLETE unless an authoritative matching
-  mode/estimator is established; a FID sigma is not an UNC sigma.
-- FID's registered 32 Halton vectors already have three components. Reuse
-  those exact registered shifts and add eight z-only placements generated by
-  the existing source rule, documenting the extension rather than copying
-  numbers or silently discarding registered z components.
-- Projected area for U1 is the parent's registered planform projection in
-  physical units converted to solver cells, not the historical coefficient
-  normalization area. Record this convention and source.
-- Whether the #293 built-in/CV offset of 7–9% occurs on this parent remains
-  unknown until the user's GPU F1–F3 runs. CPU capability is not physics
-  qualification or an adoption decision.
+U1/U2 reuse the existing v18 loader, raw phi, GridSDF/Candidate-C bodies,
+SHA-verified 32 FID shifts and existing Halton generator for eight extra
+z-only phases. U2 uses the W2a analytic sphere at R=8/16/32, with its physical
+radius preserved and empty far field cropped. Serialize sorted JSON without
+timestamps or output-path content and refuse existing outputs.
 
-## Observed source-pin blocker
+The gate reads only explicitly selected-root inputs and listed artifacts;
+no recursive discovery or fallback to CPU reports. Check hashes, identities,
+complete eight-step histories, endpoint/summary agreement and registered
+window means before C1-C5. C1 compares the original CSV prefix as bytes.
+C4 adopts the user-confirmed 15% band and reports the 10% diagnostic.
+Missing exact UNC camber_m19.7 sigma_d stays INCOMPLETE, without a proxy.
+C5's numerical comparison is descriptive. Among complete passing readouts,
+prefer CV, otherwise nds, otherwise NONE. `gate.json` is exclusive/write-once.
+The canonical gate is not run while F1-F3 are absent.
 
-`Forces.jl` is pinned as a whole file by the existing W2a source manifest
-(`0e5a6b9d…205adc8e`). Appending the requested definitions changes it to
-`5ac23a1e…60b011e`, although its original 1,527 bytes are exactly preserved.
-The source-manifest test passes on an independent copy of base `e3dcdf61`
-and fails on the implementation. Thus the literal requested file placement
-conflicts with the requirement to keep the baseline failure set unchanged.
-No frozen manifest/test or existing qualification evidence was rewritten.
+Reference discrepancies are explicit: F1 combines U01 smoke k0, formal
+half and U2 k1..k6; F2 k13/14 come from f32a, k15/16 from f32b. These are
+verified existing references, not fabricated additional rows or new phases.
 
-User clarification is pending: move the extensions into a new, explicitly
-included `Force00.jl` (recommended), or explicitly allow the added source-pin
-failures. `wp02_preserve_pins.proposed.diff` is a prepared, unapplied patch for
-the first choice; `git apply --check` passes. It preserves the numerical
-definitions and the existing module/Forces bytes, updates new entrypoints and
-the new provenance reader, and requires regenerating the job diff and CPU
-captures after application. No approval is inferred from elapsed time.
+## Validation and independent review
 
-The initial baseline process read edited files after it started, so its
-results and the interrupted earlier full-suite attempts are excluded from
-base comparison. A separate copy of every tracked base file (with independent
-copy-on-write inodes) is used for the clean baseline. The exact whole-suite
-failure-set comparison remains unfinished while the file-placement decision
-is pending. The requested seconds of cold Julia selftest startup is also
-unmet; the observed independent checksets took 160.9 seconds including JIT.
+Use the original existing `.venv`, without substitutions or installs.
+Check focused Python gate/input tests and W2a/directory pins, CPU Julia
+selftest, two byte-identical U1/U2 runs, small CPU production-job regression,
+compileall and diff whitespace. Finish only the result full pytest with
+`--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` and a reporting-only
+JUnit output. The user supplied the completed host baseline at `e3dcdf61`:
+3482 passed, 74 skipped, zero failures. Record both failure-node sets,
+commands, durations, hashes and evidence classes; do not reuse interrupted
+historical runs as the baseline. Julia process timings include JIT; a few
+seconds is not a cold-start requirement under the amendments.
+
+OpenCode Go MCP is absent; CLI discovery failed on its protected log path
+and isolated-XDG discovery returned `Provider not found: opencode-go`.
+Native read-only reviewers split gate/input, numerical source and
+roadmap/pin review. The root applies the scoped relocation and checks
+actual diffs/outputs. No paid direct model API is used. Record review
+findings independently from run results.
+
+WP2 is DONE only after all CPU acceptance checks and the failure-set
+comparison pass. GPU F1-F3, the #293 7-9% gap on this project's parent,
+parent phase SD and readout adoption remain unknown until user execution.

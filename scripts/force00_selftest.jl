@@ -4,6 +4,7 @@ using Test
 using LinearAlgebra: norm, tr
 using WaterLily
 include(joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "CFDSDFWaterLily.jl"))
+Base.include(CFDSDFWaterLily, joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "gen01", "Force00.jl"))
 using .CFDSDFWaterLily: nds_telescoping, pressure_force_nds, viscous_force_nds,
     force_on_body_nds, control_volume_terms, control_volume_force, force_readouts,
     validate_force_box

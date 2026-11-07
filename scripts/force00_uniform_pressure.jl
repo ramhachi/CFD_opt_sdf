@@ -4,11 +4,13 @@ using WaterLily, LinearAlgebra, SHA, TOML
 const ROOT = normpath(joinpath(@__DIR__, ".."))
 const LOCAL_SOURCES = ("scripts/force00_uniform_pressure.jl", "scripts/force00_uniform_inputs.py",
     "julia/CFDSDFWaterLily/Project.toml", "julia/CFDSDFWaterLily/Manifest.toml",
+    "julia/CFDSDFWaterLily/gen01/Force00.jl",
     ("julia/CFDSDFWaterLily/src/" * name for name in (
         "CFDSDFWaterLily.jl", "Runtime.jl", "Forces.jl", "Simulation.jl", "GridSDFBody.jl", "WaterLilyBody.jl",
         "WaterLilyNormalFloorBody.jl", "CandidateCWaterLilyBody.jl", "V16W4Sensitivity.jl"))...)
 const START_SOURCE_HASHES = Dict(file => bytes2hex(sha256(read(joinpath(ROOT,file)))) for file in LOCAL_SOURCES)
 include(joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "CFDSDFWaterLily.jl"))
+Base.include(CFDSDFWaterLily, joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "gen01", "Force00.jl"))
 using .CFDSDFWaterLily
 using .CFDSDFWaterLily.GridSDFBody
 for file in ("WaterLilyNormalFloorBody.jl", "CandidateCWaterLilyBody.jl", "V16W4Sensitivity.jl")

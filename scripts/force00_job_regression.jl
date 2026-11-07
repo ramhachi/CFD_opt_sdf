@@ -11,6 +11,7 @@ using WaterLily
 const FORCE00_REPO = normpath(joinpath(@__DIR__, ".."))
 include(joinpath(@__DIR__, "waterlily_force00_dispatch.jl"))
 include(joinpath(FORCE00_REPO, "julia", "CFDSDFWaterLily", "src", "CFDSDFWaterLily.jl"))
+Base.include(CFDSDFWaterLily, joinpath(FORCE00_REPO, "julia", "CFDSDFWaterLily", "gen01", "Force00.jl"))
 for source in ("V16PhysicalProfile.jl", "WaterLilyNormalFloorBody.jl",
                "CandidateCWaterLilyBody.jl", "V16W4Sensitivity.jl")
     Base.include(CFDSDFWaterLily,
@@ -205,6 +206,7 @@ function main()
       "registered_source_sha256":"$(bytes2hex(sha256(read(baseline_source))))",
       "force00_source_sha256":"$(bytes2hex(sha256(read(variant_source))))",
       "force_module_sha256":"$(bytes2hex(sha256(read(joinpath(FORCE00_REPO,"julia","CFDSDFWaterLily","src","Forces.jl")))))",
+      "force00_module_sha256":"$(bytes2hex(sha256(read(joinpath(FORCE00_REPO,"julia","CFDSDFWaterLily","gen01","Force00.jl")))))",
       "parent_phi_fortran_sha256":"$phi_f_sha",
       "registered_csv_sha256":"$(bytes2hex(sha256(original)))",
       "force00_projected_csv_sha256":"$(bytes2hex(sha256(projected)))",

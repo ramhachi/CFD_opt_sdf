@@ -1,0 +1,184 @@
+{
+  "actual_gate_written": false,
+  "closure": {
+    "R_cur": {
+      "groups": {
+        "U1/flow_24": {
+          "count": 40,
+          "hundredfold_reduction_descriptive": false,
+          "max_norm": 20.032020200933726,
+          "max_relative_to_projected_area": 0.02086405667855183,
+          "pass": false,
+          "reduction_factor_vs_cur": 1.0,
+          "relative_threshold": 0.0001,
+          "rms_norm": 12.982502160786142
+        },
+        "U1/flow_32": {
+          "count": 40,
+          "hundredfold_reduction_descriptive": false,
+          "max_norm": 33.52205717381142,
+          "max_relative_to_projected_area": 0.01963935378385821,
+          "pass": false,
+          "reduction_factor_vs_cur": 1.0,
+          "relative_threshold": 0.0001,
+          "rms_norm": 23.093060121110156
+        },
+        "U2/16": {
+          "count": 8,
+          "hundredfold_reduction_descriptive": false,
+          "max_norm": 0.938702754658205,
+          "max_relative_to_projected_area": 0.0011671811210768126,
+          "pass": false,
+          "reduction_factor_vs_cur": 1.0,
+          "relative_threshold": 0.001,
+          "rms_norm": 0.892755356430639
+        },
+        "U2/32": {
+          "count": 8,
+          "hundredfold_reduction_descriptive": false,
+          "max_norm": 0.447844477824882,
+          "max_relative_to_projected_area": 0.00013921223121530991,
+          "pass": true,
+          "reduction_factor_vs_cur": 1.0,
+          "relative_threshold": 0.001,
+          "rms_norm": 0.33707141539549773
+        },
+        "U2/8": {
+          "count": 8,
+          "hundredfold_reduction_descriptive": false,
+          "max_norm": 0.23750021698444648,
+          "max_relative_to_projected_area": 0.0011812291724522617,
+          "pass": false,
+          "reduction_factor_vs_cur": 1.0,
+          "relative_threshold": 0.001,
+          "rms_norm": 0.20498709074600302
+        }
+      },
+      "status": "FAIL_CLOSURE"
+    },
+    "R_cv": {
+      "groups": {
+        "U1/flow_24": {
+          "count": 40,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 0.0,
+          "max_relative_to_projected_area": 0.0,
+          "pass": true,
+          "reduction_factor_vs_cur": null,
+          "relative_threshold": 0.0001,
+          "rms_norm": 0.0
+        },
+        "U1/flow_32": {
+          "count": 40,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 0.0,
+          "max_relative_to_projected_area": 0.0,
+          "pass": true,
+          "reduction_factor_vs_cur": null,
+          "relative_threshold": 0.0001,
+          "rms_norm": 0.0
+        },
+        "U2/16": {
+          "count": 8,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 0.0,
+          "max_relative_to_projected_area": 0.0,
+          "pass": true,
+          "reduction_factor_vs_cur": null,
+          "relative_threshold": 0.001,
+          "rms_norm": 0.0
+        },
+        "U2/32": {
+          "count": 8,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 0.0,
+          "max_relative_to_projected_area": 0.0,
+          "pass": true,
+          "reduction_factor_vs_cur": null,
+          "relative_threshold": 0.001,
+          "rms_norm": 0.0
+        },
+        "U2/8": {
+          "count": 8,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 0.0,
+          "max_relative_to_projected_area": 0.0,
+          "pass": true,
+          "reduction_factor_vs_cur": null,
+          "relative_threshold": 0.001,
+          "rms_norm": 0.0
+        }
+      },
+      "status": "PASS"
+    },
+    "R_nds": {
+      "groups": {
+        "U1/flow_24": {
+          "count": 40,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 1.1608925366079802e-13,
+          "max_relative_to_projected_area": 1.2091105858792878e-16,
+          "pass": true,
+          "reduction_factor_vs_cur": 172557059066512.9,
+          "relative_threshold": 0.0001,
+          "rms_norm": 4.711629669390523e-14
+        },
+        "U1/flow_32": {
+          "count": 40,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 1.8392412655928278e-13,
+          "max_relative_to_projected_area": 1.0775445469100873e-16,
+          "pass": true,
+          "reduction_factor_vs_cur": 182260249380640.78,
+          "relative_threshold": 0.0001,
+          "rms_norm": 9.424932044270335e-14
+        },
+        "U2/16": {
+          "count": 8,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 1.5583775705348016e-13,
+          "max_relative_to_projected_area": 1.9376835433918161e-16,
+          "pass": true,
+          "reduction_factor_vs_cur": 6023589997744.016,
+          "relative_threshold": 0.001,
+          "rms_norm": 1.1364158360279093e-13
+        },
+        "U2/32": {
+          "count": 8,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 9.098302021585842e-13,
+          "max_relative_to_projected_area": 2.8282026181218185e-16,
+          "pass": true,
+          "reduction_factor_vs_cur": 492228634268.6416,
+          "relative_threshold": 0.001,
+          "rms_norm": 4.368173649956146e-13
+        },
+        "U2/8": {
+          "count": 8,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 5.867455159979668e-14,
+          "max_relative_to_projected_area": 2.918232787752537e-16,
+          "pass": true,
+          "reduction_factor_vs_cur": 4047755125669.669,
+          "relative_threshold": 0.001,
+          "rms_norm": 4.51541929732456e-14
+        }
+      },
+      "status": "PASS"
+    }
+  },
+  "evidence_class": "CPU geometry closure; not complete FORCE-00 gate",
+  "missing_sigma_reason": "UNC-01 analysis.json grids.flow_32.differences has no v18__camber_m19.7; no mode transfer permitted",
+  "placement_count": 104,
+  "rows_identical_to_first_attempt": true,
+  "schema": "force00_cpu_closure_check_v1",
+  "sigma_d_n": null,
+  "sigma_provenance": {
+    "mode": "v18__camber_m19.7",
+    "path": "docs/evidence/unc01_2026_10_20/analysis.json",
+    "sha256": "ee71c6d6983fee72a171c9188c117a478dafe51e2fd1488f15448321687f8e24",
+    "unit": "N"
+  },
+  "source_bound": true,
+  "uniform_provenance": "PASS"
+}
