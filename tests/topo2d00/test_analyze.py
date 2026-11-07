@@ -25,6 +25,7 @@ S = load(HERE / "synthetic.py", "topo_synthetic")
 def test_paired_statistics_and_bounded_retention():
     result = A.analyze_input(S.input_table())
     assert result["label"] == "CONCORDANT"
+    assert result["agreement"]["1000"]["required_pairs"] == ["12", "23"]
     stat = result["waterlily"]["1000"]["12"]["downforce"]
     assert stat["mean"] == pytest.approx(1)
     assert stat["sigma"] == max(stat["sigma_a"], stat["sigma_b"])
@@ -242,7 +243,7 @@ def test_unresolved_re_precedes_partial_concordance():
     assert result["agreement"]["3000"]["state"] == "CONCORDANT"
 
 
-def test_only_registered_12_23_intervals_are_required_by_amendment5():
+def test_amendment7_nonmonotone_order_requires_resolved_13_on_both_sides():
     payload = S.input_table()
     for config, value in (("E1", 1.), ("E2", 3.), ("E3", 1.00001)):
         S.set_force(payload, config, value)
@@ -250,13 +251,99 @@ def test_only_registered_12_23_intervals_are_required_by_amendment5():
             for row in cell["realisations"]:
                 row["forces"][config]["downforce"] = value
     result = A.analyze_input(payload)
-    assert result["label"] == "CONCORDANT"
+    assert result["label"] == "UNRESOLVED"
     for re in ("1000", "3000"):
-        # E1->E3 sorted-rank interval is unresolved in W; Amendment 5's
-        # required list is fixed to 12/23. Keep this diagnostic visible.
-        assert result["agreement"][re]["state"] == "CONCORDANT"
+        assert result["agreement"][re]["required_pairs"] == ["12", "23", "13"]
+        assert result["agreement"][re]["state"] == "UNRESOLVED"
         assert not result["agreement"][re]["RANK_AGREE"]
     checker = load(ROOT / "scripts/topo2d00/check.py", "topo_fixed_required_intervals")
+    assert checker.compare(result, checker.check(payload)) == []
+
+
+@pytest.mark.parametrize("e2", [-1., 3.], ids=["E2-worst", "E2-best"])
+def test_amendment7_review_hprime_never_orders_unresolved_13(e2):
+    payload = S.input_table()
+    for config, value in (("E1", 1.), ("E2", e2), ("E3", 1.0001)):
+        S.set_force(payload, config, value)
+    for cell in payload["rans"]["cells"]:
+        for i, row in enumerate(cell["realisations"]):
+            row["forces"]["E1"]["downforce"] = 1.
+            row["forces"]["E2"]["downforce"] = e2
+            row["forces"]["E3"]["downforce"] = .9995 + (i - 3.5) * .0044
+    result = A.analyze_input(payload)
+    assert result["label"] == "UNRESOLVED"
+    for re in ("1000", "3000"):
+        assert result["agreement"][re]["state"] == "UNRESOLVED"
+        w = result["waterlily"][re]
+        assert all(A.sign(w[p]["downforce"]["ci90"]) != 0 for p in ("12", "23"))
+        assert w["13"]["downforce"]["mean"] == pytest.approx(.0001)
+        assert w["13"]["downforce"]["ci90"] == pytest.approx([-.00025784, .00045784], abs=2e-8)
+    for stats in result["rans"].values():
+        assert all(A.sign(stats[p]["downforce"]["ci90"]) != 0 for p in ("12", "23"))
+        assert stats["13"]["downforce"]["mean"] == pytest.approx(-.0005)
+        assert stats["13"]["downforce"]["ci90"][0] < 0 < stats["13"]["downforce"]["ci90"][1]
+    checker = load(ROOT / "scripts/topo2d00/check.py", "topo_hprime_checker")
+    assert checker.compare(result, checker.check(payload)) == []
+
+
+@pytest.mark.parametrize("nonmonotone_side", ["W", "R", "both"])
+def test_amendment7_any_nonmonotone_cell_requires_13_on_both_sides(nonmonotone_side):
+    payload = S.input_table()
+    if nonmonotone_side in ("W", "both"):
+        for config, value in (("E1", 1.), ("E2", 3.), ("E3", 2.)):
+            S.set_force(payload, config, value)
+    if nonmonotone_side in ("R", "both"):
+        # Only one qualified cell triggers the extra requirement, including
+        # the other three (monotone) cells under the worst-cell rule.
+        for row in payload["rans"]["cells"][0]["realisations"]:
+            for config, value in (("E1", 1.), ("E2", 3.), ("E3", 2.)):
+                row["forces"][config]["downforce"] = value
+    result = A.analyze_input(payload)
+    assert result["label"] == "DISCORDANT"
+    for re in ("1000", "3000"):
+        assert result["agreement"][re]["required_pairs"] == ["12", "23", "13"]
+        assert result["agreement"][re]["state"] == "DISCORDANT"
+    assert len(result["rans"]) == 4
+    checker = load(ROOT / "scripts/topo2d00/check.py", "topo_any_cell_checker")
+    assert checker.compare(result, checker.check(payload)) == []
+
+
+def test_amendment7_resolved_13_opposite_order_is_discordant():
+    payload = S.input_table()
+    for config, value in (("E1", 1.), ("E2", 3.), ("E3", 1.2)):
+        S.set_force(payload, config, value)
+    for cell in payload["rans"]["cells"]:
+        for row in cell["realisations"]:
+            for config, value in (("E1", 1.), ("E2", 3.), ("E3", .8)):
+                row["forces"][config]["downforce"] = value
+    result = A.analyze_input(payload)
+    assert result["label"] == "DISCORDANT"
+    for re in ("1000", "3000"):
+        assert result["agreement"][re]["SIGN_AGREE_12"]
+        assert not result["agreement"][re]["RANK_AGREE"]
+        assert result["waterlily"][re]["13"]["downforce"]["ci90"][0] > 0
+    assert all(c["13"]["downforce"]["ci90"][1] < 0 for c in result["rans"].values())
+    checker = load(ROOT / "scripts/topo2d00/check.py", "topo_resolved13_checker")
+    assert checker.compare(result, checker.check(payload)) == []
+
+
+def test_amendment7_one_qualified_cell_with_unresolved_13_is_worst_case():
+    payload = S.input_table()
+    cell = payload["rans"]["cells"][0]
+    for i, row in enumerate(cell["realisations"]):
+        row["forces"]["E1"]["downforce"] = 1.
+        row["forces"]["E2"]["downforce"] = 3.
+        row["forces"]["E3"]["downforce"] = .9995 + (i - 3.5) * .0044
+    result = A.analyze_input(payload)
+    assert result["label"] == "UNRESOLVED"
+    for re in ("1000", "3000"):
+        assert result["agreement"][re]["required_pairs"] == ["12", "23", "13"]
+        assert result["agreement"][re]["state"] == "UNRESOLVED"
+        assert A.sign(result["waterlily"][re]["13"]["downforce"]["ci90"]) == 1
+    assert A.sign(result["rans"]["SA-WF/fine30"]["13"]["downforce"]["ci90"]) == 0
+    assert all(A.sign(stats["13"]["downforce"]["ci90"]) == 1
+               for name, stats in result["rans"].items() if name != "SA-WF/fine30")
+    checker = load(ROOT / "scripts/topo2d00/check.py", "topo_worst_required13_checker")
     assert checker.compare(result, checker.check(payload)) == []
 
 
@@ -341,7 +428,7 @@ def test_domain_p2_detects_shift_above_three_point_pooled_standard_errors():
 def test_controls_are_measured_or_explicitly_not_judged():
     payload = S.input_table()
     result = A.analyze_input(payload)
-    assert result["controls"]["domain"] == {"status": "NOT_JUDGED", "z": None}
+    assert result["controls"]["domain"] == {"status": "DOMAIN_NOT_JUDGED", "z": None}
     assert result["controls"]["readout"]["1000"]["nds"] is None
     for row in list(payload["waterlily"]):
         if row["role"] == "primary" and row["reynolds"] == 3000 and row["configuration"] in ("E1", "E2") and row["phase"] in ("0", "1"):
@@ -356,6 +443,54 @@ def test_controls_are_measured_or_explicitly_not_judged():
     result = A.analyze_input(payload)
     assert result["controls"]["determinism"] == {"judged": True, "pass": False}
     assert result["label"] == "CONCORDANT"  # no invented control-to-label policy
+
+
+@pytest.mark.parametrize("problem", ["incomplete", "timeout", "missing_readout", "single_phase", "unpaired", "missing_primary"])
+def test_amendment7_unavailable_domain_is_descriptive_and_never_refuses(problem):
+    payload = S.input_table()
+    domain = []
+    for config in ("E1", "E2"):
+        for phase in ("0", "1"):
+            base = next(r for r in payload["waterlily"] if r["role"] == "primary"
+                        and r["configuration"] == config and r["reynolds"] == 3000 and r["phase"] == phase)
+            row = json.loads(json.dumps(base))
+            row["role"] = "domain"
+            if config == "E2":
+                S.set_readout(row, "downforce", row["readouts"]["cur"]["downforce"] + .5)
+            domain.append(row)
+    if problem == "incomplete":
+        domain[0]["complete"] = False
+    elif problem == "timeout":
+        domain[0].update(complete=False, ok=False, readouts={k: None for k in A.READOUTS})
+    elif problem == "missing_readout":
+        domain[0]["readouts"]["cur"] = None
+    elif problem == "single_phase":
+        domain = [r for r in domain if r["phase"] == "0"]
+    elif problem == "unpaired":
+        domain.pop()
+    else:
+        for row in domain:
+            row["phase"] = str(int(row["phase"]) + 16)
+    payload["waterlily"].extend(domain)
+    result = A.analyze_input(payload)
+    assert result["label"] == "CONCORDANT"
+    assert result["controls"]["domain"] == {"status": "DOMAIN_NOT_JUDGED", "z": None}
+    checker = load(ROOT / "scripts/topo2d00/check.py", "topo_unavailable_domain_checker")
+    assert checker.compare(result, checker.check(payload)) == []
+
+
+def test_amendment7_complete_domain_without_shift_is_consistent():
+    payload = S.input_table()
+    for row in list(payload["waterlily"]):
+        if row["role"] == "primary" and row["reynolds"] == 3000 and row["configuration"] in ("E1", "E2") and row["phase"] in ("0", "1"):
+            duplicate = json.loads(json.dumps(row))
+            duplicate["role"] = "domain"
+            payload["waterlily"].append(duplicate)
+    result = A.analyze_input(payload)
+    assert result["label"] == "CONCORDANT"
+    assert result["controls"]["domain"] == {"status": "CONSISTENT", "z": 0.}
+    checker = load(ROOT / "scripts/topo2d00/check.py", "topo_complete_domain_checker")
+    assert checker.compare(result, checker.check(payload)) == []
 
 
 def test_worst_cell_is_not_averaged_and_drag_sign_is_report_only():
@@ -1077,6 +1212,47 @@ def test_cap_markers_are_unmeasured_and_only_reverified_cap_is_used(formal_bound
     assert len(data["waterlily"]) == len(rows) - 2
     assert {r["status"] for r in provenance["unmeasured_cap"]} == {"INCOMPLETE_TIMEOUT", "UNRUN_CAP"}
     assert provenance["cap_receipts"][0]["sha256"] == digest
+
+
+@pytest.mark.parametrize("reason", ["STATE_TIMEOUT", "SOLVER_WALL_CAP", "WALL_TIME_OVERRUN"])
+@pytest.mark.parametrize("other_cap", [None, "primary", "study"])
+def test_amendment7_formal_domain_only_cap_does_not_block_study(formal_boundary, reason, other_cap):
+    """Authenticated normalization contract; raw receipt admission is harness-owned."""
+    f = formal_boundary
+    claimed = A.load_json(f["table"])
+    rows = claimed["state_forces_n"]["kernel"]
+    base = json.loads(json.dumps(next(iter(rows.values()))))
+    base["topo2d"].update(role="domain", reynolds=3000)
+    record = {"schema": "topo2d-cap-receipt-v1", "reason": reason, "state": "domain_timeout"}
+    path = f["root"] / "cap_receipt.json"
+    path.write_text(json.dumps(record))
+    digest = A.sha256(path)
+    if reason == "WALL_TIME_OVERRUN":
+        rows["domain_timeout"] = base  # Finished force data remain measured.
+    else:
+        rows["domain_timeout"] = {"topo2d": base["topo2d"], "scene_sha256": base["scene_sha256"],
+                                  "status": "INCOMPLETE_TIMEOUT" if reason == "STATE_TIMEOUT" else "UNRUN_CAP",
+                                  "cap_receipt_sha256": digest}
+    if other_cap == "primary":
+        first = rows["0"]
+        rows["0"] = {"topo2d": first["topo2d"], "scene_sha256": first["scene_sha256"],
+                     "status": "UNRUN_CAP", "cap_receipt_sha256": digest}
+    claimed.update(cap_hit=True, cap_receipts={"kernel": {"sha256": digest, "record": record}})
+    f["actual"].clear()
+    f["actual"].update(claimed)
+    f["table"].write_text(json.dumps(claimed))
+    f["spec"]["cap_hit"] = other_cap == "study"
+    f["spec"]["inputs"].update({"table.json": A.sha256(f["table"]), "cap_receipt.json": digest})
+    f["save"]()
+    data, provenance = A.load_formal_inputs([f["table"]], f["rans"], f["freeze"])
+    assert data["identity_valid"] and data["cap_hit"] is (other_cap is not None)
+    result = A.analyze_input(data)
+    assert result["label"] == ("CONCORDANT" if other_cap is None else "INCOMPLETE")
+    assert result["controls"]["domain"] == {"status": "DOMAIN_NOT_JUDGED", "z": None}
+    assert provenance["cap_receipts"][0]["sha256"] == digest
+    assert any(r["topo2d"]["role"] == "domain" for r in provenance["unmeasured_cap"]) is (reason != "WALL_TIME_OVERRUN")
+    checker = load(ROOT / "scripts/topo2d00/check.py", "topo_formal_domain_cap_checker")
+    assert checker.compare(result, checker.check(data)) == []
 
 
 @pytest.mark.parametrize("reason", ["STATE_TIMEOUT", "SOLVER_WALL_CAP", "WALL_TIME_OVERRUN"])

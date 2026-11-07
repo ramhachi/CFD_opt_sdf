@@ -1,0 +1,46 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/topo2d00",
+    "-p",
+    "no:cacheprovider",
+    "-rf",
+    "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/targeted_junit.xml",
+    "-o",
+    "junit_family=xunit1"
+  ],
+  "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily",
+  "source_sha256_before": {
+    "scripts/topo2d00/analyze.py": "1bda288c92c9791eeb992ac57bea1ac9606792f3c29dc7074422f7c1297fa63c",
+    "scripts/topo2d00/check.py": "68f2194eb5b4fc9072808978cdc3ddd4103155e408ca1f6e8eb0de6916779f90",
+    "scripts/topo2d00/prerun_window.py": "46f7e82b4ecf5c42f277e5148dcc5f937e67b09f9d83a1bb704957a9397c69ee",
+    "src/cfd_harness/scene_campaign.py": "8a036d0c5e07047e2e20aad43a3ce6876a8bbb7008f70b63c8e28b55fb99ba00",
+    "tests/topo2d00/synthetic.py": "1f527e6f1f9f6aa0725ba15e4c57a90550888a9d8dd4acb256c7317f18323661",
+    "tests/topo2d00/test_analyze.py": "7763c37b0974a35466d8ba1fd4c31de194ab69a462b7a7fecd599bab52633468",
+    "tests/topo2d00/test_campaign.py": "eb46fcfbc608637be4ed3f3166c5370e21e8503b39c131135bf20b4b8c31ad20",
+    "tests/topo2d00/test_check.py": "5984b792b704800014424c749aa52137f779025a2c7e1045edd34cbb2cf6e276",
+    "tests/topo2d00/test_geometry.py": "f543db40d21b18f3567cad4cb325c1182811e59703d3ca552e9e1be68efef507",
+    "tests/topo2d00/test_prerun_window.py": "bb5d6193ab9ddcbcf42a746fe5ad19fc05fa5b8d47e951a130f6c3f2eae646b7",
+    "tests/topo2d00/test_source.py": "509c1bad405c8224f62e161185b0a86c67ebcedc653cd1ee4d84f6f740a43551"
+  },
+  "evidence_class": "software_contract_no_physical_qualification",
+  "exit_code": 1,
+  "wall_seconds": 68.961829167,
+  "source_sha256_after": {
+    "scripts/topo2d00/analyze.py": "1bda288c92c9791eeb992ac57bea1ac9606792f3c29dc7074422f7c1297fa63c",
+    "scripts/topo2d00/check.py": "68f2194eb5b4fc9072808978cdc3ddd4103155e408ca1f6e8eb0de6916779f90",
+    "scripts/topo2d00/prerun_window.py": "46f7e82b4ecf5c42f277e5148dcc5f937e67b09f9d83a1bb704957a9397c69ee",
+    "src/cfd_harness/scene_campaign.py": "8a036d0c5e07047e2e20aad43a3ce6876a8bbb7008f70b63c8e28b55fb99ba00",
+    "tests/topo2d00/synthetic.py": "1f527e6f1f9f6aa0725ba15e4c57a90550888a9d8dd4acb256c7317f18323661",
+    "tests/topo2d00/test_analyze.py": "7763c37b0974a35466d8ba1fd4c31de194ab69a462b7a7fecd599bab52633468",
+    "tests/topo2d00/test_campaign.py": "eb46fcfbc608637be4ed3f3166c5370e21e8503b39c131135bf20b4b8c31ad20",
+    "tests/topo2d00/test_check.py": "5984b792b704800014424c749aa52137f779025a2c7e1045edd34cbb2cf6e276",
+    "tests/topo2d00/test_geometry.py": "f543db40d21b18f3567cad4cb325c1182811e59703d3ca552e9e1be68efef507",
+    "tests/topo2d00/test_prerun_window.py": "bb5d6193ab9ddcbcf42a746fe5ad19fc05fa5b8d47e951a130f6c3f2eae646b7",
+    "tests/topo2d00/test_source.py": "509c1bad405c8224f62e161185b0a86c67ebcedc653cd1ee4d84f6f740a43551"
+  },
+  "source_unchanged_during_run": true
+}

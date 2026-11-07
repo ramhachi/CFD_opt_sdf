@@ -1,5 +1,38 @@
 # WP4 設計メモ
 
+## Amendment 6 対応設計（attempt 5、2026-11-07）
+
+基点 `0741a474`、開始時の差分は空。今回の authority は follow-ups worktree の
+登録 Amendment 7 と `reviews/wp04_review_2_opus.md`。以下は古い設計記録の同項目に優先する。
+job・幾何・scene・既存 evidence・登録本文は変更しない。commit／push は Claude host が担当する。
+
+- N1: Re ごとの必要区間は Δ12／Δ23。W または qualified R cell の点順位で E2 が
+  最良／最悪になる場合は、両側の Δ13 も必要とする。必要区間が0を含めば UNRESOLVED。
+  順位の逆転は両側 resolved の同じ対についてだけ判定する。独立 checker も別実装で再計算する。
+- N2: burn 候補は最初の sample 時刻から50 c1/U刻み、100 block の平均と残りの平均を
+  残りの20 block batch-means SE の±2倍で比較する。B は80以上、合格なしは130と
+  BURN_IN_FALLBACK。S0 は10／20／40 block の length×標本分散の最大の点推定。
+  W は50刻み、400でclipして WINDOW_CAPPED。候補・両flag・式・単位・series SHAを記録する。
+  200 seed AR(1)（review設定、W_true=50／100／150）で拒否率0、中央値/真値≤1.5を検査する。
+- N3: DOMAIN は記述のみ。未完了・timeout・単一位相・不足する対や readout は
+  DOMAIN_NOT_JUDGED とし、研究ラベルの計算を妨げない。analyzer/checker双方を回帰検査する。
+- GPU smoke runbook に force sample あたりの wall time を追加する。GPU は今回実行しない。
+
+OpenCode Go MCP は未提供。CLI の log/cache/state を `/private/tmp/wp04-opencode/` に隔離し、
+既存 auth を read-only symlink で参照することで現在のモデル一覧を取得できた。
+coding worker は `opencode-go/glm-5.3-flash`、read-only 文書確認は
+`opencode-go/deepseek-v4.1-flash` を初期選択する。global 設定・追加課金は変更しない。
+解析と窓推定を別ファイルの worker に分担し、parent が差分と証拠を最終確認する。
+実行要求3件はすべて provider の `api_key_expired`／HTTP401 で処理開始前に終了した。
+Go の実作業成果はなく、認証を変えず native worker へ切り替えた。
+必読 governing 文書は全て省略のない分割で全文確認した。phase_plan は1–3891／3892–7782行を
+別workerで担当し、残りの文書はread-only workerが全文確認した。
+
+検証: targeted regression（変更前の失敗確認）→ tests/topo2d00 全体 → branch 内 WP1 を使う
+CPU Julia selftest（TOPO2D_*／W4_*／CUDA_* の外部設定なし）→ compileall → diff check。
+今回の明示指示により全体 pytest は不要。記録は新規 `wp04_validation_amend6/` に保存し、
+過去の検証記録は保持する。凍結・本測定・研究上の資格付与は行わない。
+
 ## Amendment 5 対応設計（attempt 4、2026-11-07）
 
 基点 `db36e4e5`（WP1／WP3 統合済み）、開始差分は空。今回の authority は

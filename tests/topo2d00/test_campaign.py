@@ -187,8 +187,7 @@ def test_scene_formal_runner_is_explicitly_unavailable():
 def test_parent_window_registered_formula_and_cap():
     assert S.parent_window(2, 0, 80) == [80, 130]
     assert S.parent_window(2, 0.046, 80) == [80, 180]
-    with pytest.raises(ValueError, match="400"):
-        S.parent_window(2, 1, 80)
+    assert S.parent_window(2, 1, 80) == [80, 480]
     with pytest.raises(ValueError, match="parent"):
         S.parent_window(0, 1, 80)
 

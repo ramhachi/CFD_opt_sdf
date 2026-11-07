@@ -282,13 +282,12 @@ def render(campaign_path, source_commit, kernel, smoke=False, repo=ROOT):
     return text
 
 
-def parent_window(mean_downforce, s0_upper, burn_in):
-    """TOPO section 5's fixed 50 c1/U rounding, 1.5% SE target, 400 cap."""
-    mean, s0, burn = SC.finite(mean_downforce), SC.finite(s0_upper), SC.finite(burn_in)
+def parent_window(mean_downforce, s0_point, burn_in):
+    """Amendment 7: point S0, 50 c1/U rounding, 1.5% target, clip at 400."""
+    mean, s0, burn = SC.finite(mean_downforce), SC.finite(s0_point), SC.finite(burn_in)
     SC.req(mean != 0 and s0 >= 0 and burn >= 80, "invalid parent window statistics")
     width = max(50, 50 * math.ceil(s0 / (0.015 * abs(mean))**2 / 50))
-    SC.req(width <= 400, "parent window exceeds the registered 400 c1/U cap")
-    return [burn, burn + width]
+    return [burn, burn + min(400, width)]
 
 
 def formal_context(c, campaign_path, kernel, freeze, repo=ROOT, *, prerun=False):

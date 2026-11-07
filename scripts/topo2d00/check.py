@@ -19,7 +19,7 @@ from scipy.stats import t
 
 LIMITATIONS = [
     "No physical, grid-independent, FSAE or 3D qualification is implied.",
-    "Concordance is judged per Re using the required downforce 12/23 intervals, then combined under registration Amendment 5; other sorted-rank interval resolution is descriptive.",
+    "Concordance is judged per Re under registration Amendment 7: downforce 12/23 are required on both sides, and 13 is also required if W or any qualified R cell is non-monotone; only jointly resolved pairs determine ordering. Re states combine under Amendment 5.",
     "RETENTION_12 uses delta-method relative-increment variances followed by Fieller; it is not an exact nested-ratio interval.",
     "The uncertainty model treats placement phases and equal-duration batches as sampling units; iid adequacy requires registration review.",
     "The confirmation grid re-thickens at its own 4dx; its contrast includes geometry and grid changes.",
@@ -215,7 +215,7 @@ def initial():
         observables=dict(waterlily="total_cl", rans_main="total_cl", tr00="pressure_cl"),
         rans_diagnostics={}, thickening_alone={},
         controls=dict(determinism=dict(judged=False, **{"pass": None}),
-                      domain=dict(status="NOT_JUDGED", z=None), readout={}, manipulation={}),
+                      domain=dict(status="DOMAIN_NOT_JUDGED", z=None), readout={}, manipulation={}),
         limitations=list(LIMITATIONS))
 
 
@@ -411,23 +411,6 @@ def pair(rows, reynolds, a="E1", b="E2", role="primary", grid="main", phases=Non
     return [x[k] for k in keys], [y[k] for k in keys]
 
 
-def rank_w(rows, reynolds, readout="cur"):
-    means = {c: float(np.mean([number(row["readouts"][readout]["downforce"])
-                              for row in select(rows, c, reynolds).values()])) for c in CONFIGS}
-    order = sorted(CONFIGS, key=means.get)
-    return order, all(resolved(paired_w(*pair(rows, reynolds, a, b), "downforce", readout))
-                      for a, b in zip(order, order[1:]))
-
-
-def rank_r(rows):
-    means = {c: float(np.mean([number(row["forces"][c]["downforce"]) for row in rows]))
-             for c in CONFIGS}
-    order = sorted(CONFIGS, key=means.get)
-    return order, all(resolved(classical([number(row["forces"][b]["downforce"]) -
-                                         number(row["forces"][a]["downforce"]) for row in rows]))
-                      for a, b in zip(order, order[1:]))
-
-
 def check(payload):
     need(payload["schema"] == "topo2d00-input-v1", "normalized input schema")
     need(type(payload["identity_valid"]) is bool and type(payload["cap_hit"]) is bool,
@@ -501,31 +484,37 @@ def check(payload):
         need(isinstance(row["scene_sha256"], str) and len(row["scene_sha256"]) == 64,
              "scene identity missing")
         need(row["readouts"].get(readout) is not None, "primary readout required")
-    wranks = {}
-    rranks = {}
     for re in (1000, 3000):
         result["waterlily"][str(re)] = {}
-        for key, a, b in (("12", "E1", "E2"), ("23", "E2", "E3")):
+        for key, a, b in (("12", "E1", "E2"), ("23", "E2", "E3"), ("13", "E1", "E3")):
             p = pair(rows, re, a, b)
             result["waterlily"][str(re)][key] = {q: paired_w(*p, q, readout) for q in RESPONSES}
-        wranks[re] = rank_w(rows, re, readout)
     for key, values in sorted(qualified.items()):
         result["rans"][key] = {}
-        for transition, a, b in (("12", "E1", "E2"), ("23", "E2", "E3")):
+        for transition, a, b in (("12", "E1", "E2"), ("23", "E2", "E3"), ("13", "E1", "E3")):
             result["rans"][key][transition] = {
                 q: classical([number(row["forces"][b][q]) - number(row["forces"][a][q])
                               for row in values]) for q in RESPONSES}
-        rranks[key] = rank_r(values)
     for re in (1000, 3000):
         per_cell = {}
         wstats = result["waterlily"][str(re)]
+        required_pairs = ["12", "23"]
+        for stats in [wstats, *result["rans"].values()]:
+            a, b = (stats[k]["downforce"]["mean"] for k in ("12", "23"))
+            if (a > 0 and b < 0) or (a < 0 and b > 0):
+                required_pairs.append("13")
+                break
         u, vu = relative_w(*pair(rows, re), readout)
         for key, values in sorted(qualified.items()):
             rstats = result["rans"][key]
             v, vv = relative_r(values)
+            ready = all(resolved(stats[p]["downforce"]) for stats in (wstats, rstats) for p in required_pairs)
+            opposite = any(resolved(wstats[p]["downforce"]) and resolved(rstats[p]["downforce"])
+                           and (wstats[p]["downforce"]["mean"] > 0) != (rstats[p]["downforce"]["mean"] > 0)
+                           for p in ("12", "23", "13"))
             per_cell[key] = {
                 "SIGN_AGREE_12": same_sign(wstats["12"]["downforce"], rstats["12"]["downforce"]),
-                "RANK_AGREE": wranks[re][1] and rranks[key][1] and wranks[re][0] == rranks[key][0],
+                "RANK_AGREE": ready and not opposite,
                 "DRAG_SIGN_AGREE_12": same_sign(wstats["12"]["drag"], rstats["12"]["drag"]),
                 "RETENTION_12": dict(relative_w=u, variance_w=vu, relative_r=v, variance_r=vv,
                                      fieller=(dict(kind="undefined_zero_baseline", intervals=[])
@@ -536,12 +525,13 @@ def check(payload):
             field: all(c[field] for c in per_cell.values())
             for field in ("SIGN_AGREE_12", "RANK_AGREE", "DRAG_SIGN_AGREE_12")}
         result["agreement"][str(re)]["cells"] = per_cell
-        required_at_re = [wstats[k]["downforce"] for k in ("12", "23")]
-        required_at_re.extend(stats[k]["downforce"] for stats in result["rans"].values() for k in ("12", "23"))
+        result["agreement"][str(re)]["required_pairs"] = required_pairs
+        required_at_re = [wstats[k]["downforce"] for k in required_pairs]
+        required_at_re.extend(stats[k]["downforce"] for stats in result["rans"].values() for k in required_pairs)
         if not all(resolved(stat) for stat in required_at_re):
             state = "UNRESOLVED"
         elif (not result["agreement"][str(re)]["SIGN_AGREE_12"]
-              or any(wranks[re][0] != rank[0] for rank in rranks.values())):
+              or not result["agreement"][str(re)]["RANK_AGREE"]):
             state = "DISCORDANT"
         else:
             state = "CONCORDANT"
@@ -573,10 +563,14 @@ def check(payload):
                        and row.get("force_csv_sha256") == base.get("force_csv_sha256")
                        and row["ok"] and row["finite"] and row["complete"])
         controls["determinism"] = dict(judged=True, **{"pass": bool(passed)})
-    domains = [r for r in rows if r["role"] == "domain" and r["reynolds"] == 3000]
+    domains = [r for r in rows if r["role"] == "domain" and r["reynolds"] == 3000
+               and r["height_mm"] == 100 and r["grid"] == "main"]
     if domains:
         a, b = select(domains, "E1", 3000, "domain"), select(domains, "E2", 3000, "domain")
-        if len(a) >= 2 and set(a) == set(b) and all(r["ok"] and r["finite"] and r["complete"] for r in [*a.values(), *b.values()]):
+        originals = [select(rows, c, 3000) for c in ("E1", "E2")]
+        if ({r["configuration"] for r in domains} == {"E1", "E2"}
+                and len(a) >= 2 and set(a) == set(b) and all(set(a) <= set(original) for original in originals)
+                and all(r["ok"] and r["finite"] and r["complete"] and r["readouts"].get(readout) is not None for r in domains)):
             dp = pair(domains, 3000, role="domain")
             mp = pair(rows, 3000, phases=set(a))
             ds, ms = paired_w(*dp, "downforce", readout), paired_w(*mp, "downforce", readout)

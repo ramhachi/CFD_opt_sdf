@@ -1,0 +1,17 @@
+{
+  "role": "development_static_review_not_preregistered_source_approval",
+  "reviewer": "independent native Codex read-only worker",
+  "source_sha256": {
+    "scripts/topo2d00/analyze.py": "1bda288c92c9791eeb992ac57bea1ac9606792f3c29dc7074422f7c1297fa63c",
+    "scripts/topo2d00/check.py": "68f2194eb5b4fc9072808978cdc3ddd4103155e408ca1f6e8eb0de6916779f90",
+    "scripts/topo2d00/prerun_window.py": "46f7e82b4ecf5c42f277e5148dcc5f937e67b09f9d83a1bb704957a9397c69ee",
+    "src/cfd_harness/scene_campaign.py": "8a036d0c5e07047e2e20aad43a3ce6876a8bbb7008f70b63c8e28b55fb99ba00"
+  },
+  "tests_run_by_reviewer": false,
+  "findings": {
+    "N1": "No additional implementation defect found; nonmonotone required13 and resolved-pair ordering match Amendment7",
+    "N2": "Formula and stationary AR1 generator match Amendment7; the trueW50 median acceptance remains unmet, no retuning or xfail authorized",
+    "N3": "DOMAIN readiness and receipt-affected role scoping match; explicit study/nonDOMAIN caps preserved"
+  },
+  "outcome": "N2_ACCEPTANCE_UNMET; other reviewed implementation paths consistent with registration"
+}

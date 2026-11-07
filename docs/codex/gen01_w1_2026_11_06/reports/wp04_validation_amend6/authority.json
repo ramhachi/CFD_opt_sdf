@@ -1,0 +1,43 @@
+{
+  "task_start_commit": "0741a474d2c9c297820b0c14332cfb395e4caecc",
+  "branch": "feat/gen01-w1-04-topo2d-waterlily",
+  "authority": {
+    "registration": {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/topo2d00_registration_2026_11_01.md",
+      "sha256": "a1e036ab9ef43f26681dcd8e12826d147383f04d37644eb646df601fc3828f5d"
+    },
+    "review": {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/codex/gen01_w1_2026_11_06/reviews/wp04_review_2_opus.md",
+      "sha256": "404e5f01710869b9d4975334afa147ea0a0b9b529511df6c5329d3324a9f2bac"
+    }
+  },
+  "governing_reading": {
+    "complete": true,
+    "protocol": "Full nontruncated chunks across three workers; phase_plan1-3891 and3892-7782; remaining governing documents in read-only worker."
+  },
+  "worker_routing": {
+    "model_catalogue": "queried live through OpenCode CLI with isolated XDG state and existing read-only auth reference",
+    "attempts": [
+      {
+        "requested_model": "opencode-go/deepseek-v4.1-flash",
+        "actual_model": null,
+        "reason": "HTTP401 api_key_expired; no completed worker task",
+        "attempt_number": 1
+      },
+      {
+        "requested_model": "opencode-go/glm-5.3-flash",
+        "actual_model": null,
+        "reason": "HTTP401 api_key_expired; no completed worker task",
+        "attempt_number": 1
+      },
+      {
+        "requested_model": "opencode-go/glm-5.3-flash",
+        "actual_model": null,
+        "reason": "HTTP401 api_key_expired; no completed worker task",
+        "attempt_number": 1
+      }
+    ],
+    "fallback": "native workers; no authentication/global configuration/paid API changes"
+  },
+  "evidence_class": "software_contract_no_physical_qualification"
+}

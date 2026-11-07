@@ -59,6 +59,60 @@ def test_checker_planted_force_table_and_detected_tampering():
     assert differences[0].startswith("waterlily.1000.12.downforce.mean:")
 
 
+@pytest.mark.parametrize("resolved13", [False, True], ids=["review-hprime", "opposite-resolved-13"])
+@pytest.mark.parametrize("e2", [-1., 3.], ids=["E2-worst", "E2-best"])
+def test_checker_amendment7_orders_only_resolved_required_pairs(resolved13, e2):
+    data = planted()
+    for row in data["waterlily"]:
+        value = {"E1": 1., "E2": e2,
+                 "E3": 1.2 if resolved13 else 1.0001 + (int(row["phase"]) - 7.5) * .0001}[row["configuration"]]
+        force = row["readouts"]["cur"]
+        force["downforce"] = value
+        for batch in force["batches"]:
+            batch["downforce"] = value
+    for i, row in enumerate(data["rans"]["cells"][0]["realisations"]):
+        for config, value in (("E1", 1.), ("E2", e2),
+                              ("E3", .8 if resolved13 else .9995 + (i - 3.5) * .0044)):
+            row["forces"][config]["downforce"] = value
+    result = C.check(data)
+    assert result["label"] == ("DISCORDANT" if resolved13 else "UNRESOLVED")
+    for re in ("1000", "3000"):
+        assert result["agreement"][re]["required_pairs"] == ["12", "23", "13"]
+        assert result["agreement"][re]["state"] == result["label"]
+        assert result["agreement"][re]["SIGN_AGREE_12"]
+        assert not result["agreement"][re]["RANK_AGREE"]
+        assert C.resolved(result["waterlily"][re]["13"]["downforce"]) is resolved13
+    assert C.resolved(result["rans"]["SA/fine30"]["13"]["downforce"]) is resolved13
+
+
+@pytest.mark.parametrize("problem", ["incomplete", "timeout", "missing_readout", "single_phase", "unpaired", "missing_primary"])
+def test_checker_amendment7_unavailable_domain_is_not_judged(problem):
+    data = planted()
+    domain = []
+    for row in data["waterlily"]:
+        if row["role"] == "primary" and row["reynolds"] == 3000 and row["configuration"] in ("E1", "E2") and row["phase"] in ("0", "1"):
+            value = deepcopy(row)
+            value["role"] = "domain"
+            domain.append(value)
+    if problem == "incomplete":
+        domain[0]["complete"] = False
+    elif problem == "timeout":
+        domain[0].update(complete=False, ok=False, readouts=dict(cur=None, nds=None, cv=None))
+    elif problem == "missing_readout":
+        domain[0]["readouts"]["cur"] = None
+    elif problem == "single_phase":
+        domain = [r for r in domain if r["phase"] == "0"]
+    elif problem == "unpaired":
+        domain.pop()
+    else:
+        for row in domain:
+            row["phase"] = str(int(row["phase"]) + 16)
+    data["waterlily"].extend(domain)
+    result = C.check(data)
+    assert result["label"] == "CONCORDANT"
+    assert result["controls"]["domain"] == dict(status="DOMAIN_NOT_JUDGED", z=None)
+
+
 def test_checker_priority_and_missing_input():
     value = planted()
     value["identity_valid"] = False

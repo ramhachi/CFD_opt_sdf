@@ -1,0 +1,76 @@
+[
+  {
+    "burn_in_fallback_count": 0,
+    "dt": 0.05,
+    "horizon": 520,
+    "mean": 0.17,
+    "median_burn_in": 80.0,
+    "median_window": 100.0,
+    "rejection_rate": 0.0,
+    "seeds": 200,
+    "stationary_initial_sample": true,
+    "tau": 1.0,
+    "transient_fraction": 0.0,
+    "true_s0": 0.00032512500000000006,
+    "true_window": 50,
+    "window_capped_count": 0,
+    "window_counts": {
+      "50.0": 82,
+      "100.0": 114,
+      "150.0": 4
+    },
+    "median_ratio": 2.0,
+    "within_factor_1_5": false
+  },
+  {
+    "burn_in_fallback_count": 0,
+    "dt": 0.05,
+    "horizon": 520,
+    "mean": 0.17,
+    "median_burn_in": 80.0,
+    "median_window": 150.0,
+    "rejection_rate": 0.0,
+    "seeds": 200,
+    "stationary_initial_sample": true,
+    "tau": 1.0,
+    "transient_fraction": 0.0,
+    "true_s0": 0.0006502500000000001,
+    "true_window": 100,
+    "window_capped_count": 0,
+    "window_counts": {
+      "100.0": 83,
+      "150.0": 93,
+      "200.0": 20,
+      "250.0": 4
+    },
+    "median_ratio": 1.5,
+    "within_factor_1_5": true
+  },
+  {
+    "burn_in_fallback_count": 0,
+    "dt": 0.05,
+    "horizon": 520,
+    "mean": 0.17,
+    "median_burn_in": 80.0,
+    "median_window": 200.0,
+    "rejection_rate": 0.0,
+    "seeds": 200,
+    "stationary_initial_sample": true,
+    "tau": 1.0,
+    "transient_fraction": 0.0,
+    "true_s0": 0.0009753750000000001,
+    "true_window": 150,
+    "window_capped_count": 0,
+    "window_counts": {
+      "100.0": 6,
+      "150.0": 78,
+      "200.0": 70,
+      "250.0": 28,
+      "300.0": 14,
+      "350.0": 3,
+      "400.0": 1
+    },
+    "median_ratio": 1.3333333333333333,
+    "within_factor_1_5": true
+  }
+]

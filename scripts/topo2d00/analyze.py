@@ -33,7 +33,7 @@ CELL_SEVERITY = {"SETTLED": 0, "NUMERICAL": 1, "MESH_FAILED": 2, "INCOMPLETE": 3
 SHA = re.compile(r"[0-9a-f]{64}\Z")
 LIMITATIONS = [
     "No physical, grid-independent, FSAE or 3D qualification is implied.",
-    "Concordance is judged per Re using the required downforce 12/23 intervals, then combined under registration Amendment 5; other sorted-rank interval resolution is descriptive.",
+    "Concordance is judged per Re under registration Amendment 7: downforce 12/23 are required on both sides, and 13 is also required if W or any qualified R cell is non-monotone; only jointly resolved pairs determine ordering. Re states combine under Amendment 5.",
     "RETENTION_12 uses delta-method relative-increment variances followed by Fieller; it is not an exact nested-ratio interval.",
     "The uncertainty model treats placement phases and equal-duration batches as sampling units; iid adequacy requires registration review.",
     "The confirmation grid re-thickens at its own 4dx; its contrast includes geometry and grid changes.",
@@ -503,19 +503,13 @@ def relative_r(cell):
     return ratio, float((((c - b) - ratio * b) / b.mean()).var(ddof=1)) / len(b)
 
 
-def ranking(arrays, statistic):
-    order = sorted(CONFIGS, key=lambda c: (float(np.mean(arrays[c])), c))
-    adjacent = [statistic(a, b) for a, b in zip(order, order[1:])]
-    return order, all(sign(s["ci90"]) != 0 for s in adjacent)
-
-
 def empty_result():
     return {"schema": "topo2d00-analysis-v1", "label": None, "tr00": {"cells": {}, "qualified_cells": []},
             "waterlily": {}, "rans": {}, "agreement": {}, "resolution": {"status": "NOT_JUDGED", "downforce": None},
             "height": {"height_mm": 100.0, "h_over_c1": 100 / 223.4, "h_over_c": 100 / 380.0},
             "observables": {"waterlily": "total_cl", "rans_main": "total_cl", "tr00": "pressure_cl"},
             "rans_diagnostics": {}, "thickening_alone": {},
-            "controls": {"determinism": {"judged": False, "pass": None}, "domain": {"status": "NOT_JUDGED", "z": None},
+            "controls": {"determinism": {"judged": False, "pass": None}, "domain": {"status": "DOMAIN_NOT_JUDGED", "z": None},
                          "readout": {}, "manipulation": {}}, "limitations": list(LIMITATIONS)}
 
 
@@ -550,27 +544,32 @@ def analyze_input(data):
         return result
     readout = data["controls"].get("primary_readout", "cur")
     groups = {re: select_runs(data, re, count=16, readout=readout)[0] for re in REYNOLDS}
-    r_rank = {}
     for cell in qualified:
         name = cell_id(cell)
         result["rans"][name] = {f"{a}{b}": {q: rstat(rarrays(cell, f"E{b}", q) - rarrays(cell, f"E{a}", q)) for q in RESPONSES}
-                                for a, b in ((1, 2), (2, 3))}
-        r_rank[name] = ranking({c: rarrays(cell, c, "downforce") for c in CONFIGS},
-                               lambda a, b: rstat(rarrays(cell, b, "downforce") - rarrays(cell, a, "downforce")))
+                                for a, b in ((1, 2), (2, 3), (1, 3))}
         stat = result["rans"][name]["12"]["downforce"]
         result["controls"]["manipulation"]["R/" + name] = {"z": zvalue(stat["mean"], stat["se"]), "pass": abs(stat["mean"]) > 3 * stat["se"]}
     for re in REYNOLDS:
         w = groups[re]
-        estimates = {f"{a}{b}": {q: wstat(w[f"E{a}"], w[f"E{b}"], readout, q) for q in RESPONSES} for a, b in ((1, 2), (2, 3))}
+        estimates = {f"{a}{b}": {q: wstat(w[f"E{a}"], w[f"E{b}"], readout, q) for q in RESPONSES} for a, b in ((1, 2), (2, 3), (1, 3))}
         result["waterlily"][str(re)] = estimates
-        order, resolved = ranking({c: [r["readouts"][readout]["downforce"] for r in w[c]] for c in CONFIGS}, lambda a, b: wstat(w[a], w[b], readout))
+        point_deltas = [(stats["12"]["downforce"]["mean"], stats["23"]["downforce"]["mean"])
+                        for stats in [estimates, *result["rans"].values()]]
+        nonmonotone = any(min(a, b) < 0 < max(a, b) for a, b in point_deltas)
+        required_pairs = ["12", "23", "13"] if nonmonotone else ["12", "23"]
         wr, wv = relative_w(w["E1"], w["E2"], readout)
-        agreement = {"SIGN_AGREE_12": True, "RANK_AGREE": True, "DRAG_SIGN_AGREE_12": True, "cells": {}}
+        agreement = {"SIGN_AGREE_12": True, "RANK_AGREE": True, "DRAG_SIGN_AGREE_12": True,
+                     "required_pairs": required_pairs, "cells": {}}
         for cell in qualified:
             name = cell_id(cell)
             rr, rv = relative_r(cell)
+            pair_signs = {p: (sign(estimates[p]["downforce"]["ci90"]), sign(result["rans"][name][p]["downforce"]["ci90"]))
+                          for p in ("12", "23", "13")}
+            rank_resolved = all(all(pair_signs[p]) for p in required_pairs)
+            rank_opposite = any(ws * rs == -1 for ws, rs in pair_signs.values())
             record = {"SIGN_AGREE_12": sign(estimates["12"]["downforce"]["ci90"]) != 0 and sign(estimates["12"]["downforce"]["ci90"]) == sign(result["rans"][name]["12"]["downforce"]["ci90"]),
-                      "RANK_AGREE": resolved and r_rank[name][1] and order == r_rank[name][0],
+                      "RANK_AGREE": rank_resolved and not rank_opposite,
                       "DRAG_SIGN_AGREE_12": sign(estimates["12"]["drag"]["ci90"]) != 0 and sign(estimates["12"]["drag"]["ci90"]) == sign(result["rans"][name]["12"]["drag"]["ci90"]),
                       "RETENTION_12": {"relative_w": wr, "variance_w": wv, "relative_r": rr, "variance_r": rv,
                                        "fieller": {"kind": "undefined_zero_baseline", "intervals": []} if wr is None or rr is None else fieller(wr, rr, wv, rv)}}
@@ -578,11 +577,11 @@ def analyze_input(data):
             for key in ("SIGN_AGREE_12", "RANK_AGREE", "DRAG_SIGN_AGREE_12"):
                 agreement[key] = agreement[key] and record[key]
         result["agreement"][str(re)] = agreement
-        required = [estimates[c]["downforce"]["ci90"] for c in ("12", "23")]
-        required += [result["rans"][name][c]["downforce"]["ci90"] for name in result["rans"] for c in ("12", "23")]
+        required = [estimates[c]["downforce"]["ci90"] for c in required_pairs]
+        required += [result["rans"][name][c]["downforce"]["ci90"] for name in result["rans"] for c in required_pairs]
         if any(sign(interval) == 0 for interval in required):
             agreement["state"] = "UNRESOLVED"
-        elif not agreement["SIGN_AGREE_12"] or any(order != rank[0] for rank in r_rank.values()):
+        elif not agreement["SIGN_AGREE_12"] or not agreement["RANK_AGREE"]:
             agreement["state"] = "DISCORDANT"
         else:
             agreement["state"] = "CONCORDANT"
@@ -615,10 +614,16 @@ def analyze_input(data):
                           and row["readouts"] == base["readouts"] and row["scene_sha256"] == base["scene_sha256"]
                           and row.get("force_csv_sha256") == base.get("force_csv_sha256"))
         result["controls"]["determinism"] = {"judged": True, "pass": all(passes)}
-    domain_rows = [r for r in data["waterlily"] if r["role"] == "domain" and r["reynolds"] == 3000 and r["height_mm"] == 100]
-    if domain_rows and {r["configuration"] for r in domain_rows} == {"E1", "E2"}:
-        domain, dp = select_runs(data, 3000, "main", "domain", readout=readout)
-        require(len(dp) >= 2 and set(dp) <= set(main["E1"]), "DOMAIN needs matched primary phase pairs")
+    domain_rows = [r for r in data["waterlily"] if r["role"] == "domain" and r["reynolds"] == 3000
+                   and r["height_mm"] == 100 and r["grid"] == "main"]
+    domain = {c: {str(r["phase"]): r for r in domain_rows if r["configuration"] == c} for c in ("E1", "E2")}
+    dp = sorted(domain["E1"])
+    # Amendment 7 makes unavailable DOMAIN measurements descriptive only.
+    domain_ready = ({r["configuration"] for r in domain_rows} == {"E1", "E2"}
+                    and len(dp) >= 2 and set(dp) == set(domain["E2"]) and set(dp) <= set(main["E1"])
+                    and all(r["ok"] and r["finite"] and r["complete"] and r["readouts"][readout] is not None for r in domain_rows))
+    if domain_ready:
+        domain = {c: [domain[c][p] for p in dp] for c in ("E1", "E2")}
         native = {c: [main[c][p] for p in dp] for c in ("E1", "E2")}
         ds, ns = wstat(domain["E1"], domain["E2"], readout), wstat(native["E1"], native["E2"], readout)
         difference = abs(ds["mean"] - ns["mean"])
@@ -710,7 +715,7 @@ def summary_markdown(record):
                 text += f"| {name} | {contrast} | {response} | {stat['mean']:.10g} | {stat['ci90']} |\n"
     if result.get("rans"):
         text += "\nWorst-case envelopes retain every qualified model/family; they are descriptive envelopes, not pooled confidence intervals. Agreement requires every qualified cell to agree.\n\n"
-        for contrast in ("12", "23"):
+        for contrast in ("12", "23", "13"):
             for response in RESPONSES:
                 intervals = [cell[contrast][response]["ci90"] for cell in result["rans"].values()]
                 text += f"- {contrast} {response}: [{min(i[0] for i in intervals):.10g}, {max(i[1] for i in intervals):.10g}].\n"
@@ -843,7 +848,11 @@ def load_formal_inputs(table_paths, rans_path, freeze_path):
         for kernel, receipt in receipts.items():
             require(isinstance(receipt, dict) and is_sha(receipt.get("sha256")) and isinstance(receipt.get("record"), dict), "verified cap receipt malformed")
             cap_receipts.append({"table": table_path, "kernel": kernel, **receipt})
-        cap_hit = cap_hit or actual.get("cap_hit", False)
+            affected = [row for run, row in actual["state_forces_n"][kernel].items()
+                        if row.get("status") in ("INCOMPLETE_TIMEOUT", "UNRUN_CAP") or run == receipt["record"].get("state")]
+            # Preserve study-wide/required caps. A DOMAIN-only timeout or
+            # overrun is retained in provenance but cannot block the study.
+            cap_hit = cap_hit or not (affected and all(row.get("topo2d", {}).get("role") == "domain" for row in affected))
         for kernel, runs in actual["state_forces_n"].items():
             for run, row in runs.items():
                 topo = row.get("topo2d")

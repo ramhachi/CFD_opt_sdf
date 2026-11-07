@@ -1,0 +1,17 @@
+{
+  "compared_values": 540,
+  "endpoint_method": "np.interp at independently clipped endpoints + np.trapezoid; no production quadrature import",
+  "histories": 20,
+  "irregular_sample_times": true,
+  "maximum_absolute_error": {
+    "mean": 4.440892098500626e-16,
+    "remainder_mean": 8.881784197001252e-16,
+    "remainder_se": 4.614364446098307e-16,
+    "s0_point": 4.9439619065339e-17
+  },
+  "seed_range": [
+    0,
+    19
+  ],
+  "status": "PASS"
+}

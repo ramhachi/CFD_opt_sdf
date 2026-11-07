@@ -2,11 +2,12 @@
 import csv
 import importlib.util
 import json
+import math
 from pathlib import Path
 
 import numpy as np
 import pytest
-from scipy.stats import chi2
+from scipy.signal import lfilter
 
 from cfd_harness import campaign_schema as SC
 
@@ -16,20 +17,31 @@ P = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(P)
 
 
-def series(values):
-    return [{"t_u_l": float(i), "downforce_n_per_m": float(v)} for i, v in enumerate(values)]
+def series(values, times=None):
+    times = np.arange(len(values)) if times is None else times
+    return [{"t_u_l": float(t), "downforce_n_per_m": float(v)} for t, v in zip(times, values)]
+
+
+def independent_mean(rows, start, end):
+    times = np.array([row["t_u_l"] for row in rows])
+    values = np.array([row["downforce_n_per_m"] for row in rows])
+    clipped = np.r_[start, times[(times > start) & (times < end)], end]
+    return np.trapezoid(np.interp(clipped, times, values), clipped) / (end - start)
 
 
 def test_constant_parent_has_zero_s0_and_shortest_registered_window():
     got = P.estimate(series(np.full(521, 2.0)))
     assert got["burn_in"] == 80
     assert got["mean_downforce"] == 2
-    assert got["s0_upper"] == 0
+    assert got["s0_point"] == 0
     assert got["window"] == [80, 130]
     assert got["window_width"] == 50
     assert got["units"] == {"downforce": "N/m", "time": "c1/U", "s0": "(N/m)^2*c1/U"}
-    assert got["formula"]["burn_candidate_starts"] == [0, 100, 200, 300]
-    assert all(row["s0_upper"] == 0 for row in got["spectral_estimates"])
+    assert [row["start"] for row in got["burn_candidates"]] == list(range(0, 421, 50))
+    assert got["flags"] == {"BURN_IN_FALLBACK": False, "WINDOW_CAPPED": False}
+    assert got["formula"]["burn_candidate_origin"] == "first sample time"
+    assert all(row["s0_point"] == 0 for row in got["spectral_estimates"])
+    assert "s0_upper" not in got and "s0_upper_confidence" not in got["formula"]
 
 
 def test_burn_in_excludes_transient_candidate_and_uses_subsequent_blocks():
@@ -38,35 +50,79 @@ def test_burn_in_excludes_transient_candidate_and_uses_subsequent_blocks():
     got = P.estimate(series(values))
     assert got["burn_in"] == 100
     assert got["burn_candidates"][0]["accepted"] is False
-    assert got["burn_candidates"][1]["accepted"] is True
+    assert got["burn_candidates"][1]["accepted"] is False
+    assert got["burn_candidates"][2]["accepted"] is True
+    assert got["flags"]["BURN_IN_FALLBACK"] is False
 
 
-def test_missing_time_zero_sample_skips_candidate_without_extrapolation():
-    got = P.estimate(series(np.full(521, 2.0))[1:])
-    assert got["burn_in"] == 100
-    assert got["burn_candidates"][0] == {"start": 0, "subsequent_count": 4, "accepted": False, "reason": "unbracketed candidate"}
+def test_first_sample_after_step_one_is_the_candidate_origin_without_extrapolation():
+    got = P.estimate(series(np.full(521, 2.0), 0.125 + np.arange(521)))
+    assert got["burn_in"] == 80
+    assert [row["start"] for row in got["burn_candidates"]] == pytest.approx(0.125 + np.arange(9) * 50)
+    assert got["burn_candidates"][0]["accepted"] is True
+    # The final complete 100 block has less than two complete 20 blocks left.
+    assert got["burn_candidates"][-1]["accepted"] is False
+    assert got["burn_candidates"][-1]["reason"] == "fewer than two remainder batches"
+    assert got["flags"]["BURN_IN_FALLBACK"] is False
 
 
-def test_known_batch_series_reproduces_variance_and_chi_squared_upper_bound():
-    # These piecewise-linear samples provide a known deterministic batch-mean
-    # calculation independently of the estimator. An upper confidence bound is
-    # an engineering estimate here, separate from the paired formal sigma_d.
+def test_known_batch_series_reproduces_point_s0_without_a_chi_squared_bound():
     values = 2 + 0.001 * np.sin(np.arange(521) * 1.234)
     got = P.estimate(series(values))
     estimates = []
-    for length in (5, 10, 20, 40, 80):
+    assert [row["block_length"] for row in got["spectral_estimates"]] == [10, 20, 40]
+    for length in (10, 20, 40):
         boundaries = np.arange(got["burn_in"], 521, length)
-        means = np.array([np.trapezoid(values[a:b + 1], dx=1) / length for a, b in zip(boundaries, boundaries[1:])])
-        want = length * np.var(means, ddof=1) * (len(means) - 1) / chi2.ppf(0.1, len(means) - 1)
+        means = np.array([independent_mean(series(values), a, b) for a, b in zip(boundaries, boundaries[1:])])
+        want = length * np.var(means, ddof=1)
         estimates.append(want)
         row = next(row for row in got["spectral_estimates"] if row["block_length"] == length)
-        assert row["s0_upper"] == pytest.approx(want, rel=1e-10, abs=1e-20)
+        assert row["s0_point"] == pytest.approx(want, rel=1e-10, abs=1e-20)
         assert row["batch_count"] == len(means)
-    assert got["s0_upper"] == pytest.approx(max(estimates), rel=1e-10)
+        assert "s0_upper" not in row
+    assert got["s0_point"] == pytest.approx(max(estimates), rel=1e-10)
 
 
-@pytest.mark.parametrize("mutation", ["nonfinite", "reordered", "short", "zero_mean", "no_plateau", "cap"])
-def test_prerun_refuses_nonfinite_missing_nonstationary_or_uncapped_window(mutation):
+def test_burn_band_uses_twice_remainder_twenty_block_batch_means_se():
+    values = np.where((np.arange(521) - 100) // 20 % 2 == 0, 1.0, 3.0)
+    values[:100] = 2.2
+    rows = series(values)
+    got = P.estimate(rows)
+    row = got["burn_candidates"][0]
+    means = np.array([independent_mean(rows, start, start + 20) for start in range(100, 501, 20)])
+    center = independent_mean(rows, 100, 520)
+    se = np.std(means, ddof=1) / math.sqrt(len(means))
+    delta = abs(independent_mean(rows, 0, 100) - center)
+    assert se < delta < 2 * se  # Fails the superseded +/-1 SE criterion.
+    assert row["remainder_mean"] == pytest.approx(center)
+    assert row["remainder_se"] == pytest.approx(se)
+    assert row["remainder_batch_count"] == len(means)
+    assert row["accepted"] is True
+    assert got["burn_in"] == 80
+
+
+def test_no_qualifying_candidate_falls_back_and_large_window_is_clipped():
+    got = P.estimate(series(2 + 0.01 * np.arange(521)))
+    assert got["burn_in"] == 130
+    assert not any(row["accepted"] for row in got["burn_candidates"])
+    assert got["flags"] == {"BURN_IN_FALLBACK": True, "WINDOW_CAPPED": True}
+    assert got["window_width"] == 400
+    assert got["window"] == [130, 530]
+    assert got["uncapped_window_width"] > 400
+
+
+def test_piecewise_linear_endpoint_integration_at_non_sample_boundaries():
+    times = np.r_[0.17 + np.arange(744) * 0.7, 520.44]
+    rows = series(2 + 0.001 * np.sin(times), times)
+    got = P.estimate(rows)
+    assert got["mean_downforce"] == pytest.approx(independent_mean(rows, got["burn_in"], 520), rel=1e-13)
+    for row in got["burn_candidates"]:
+        if "mean" in row:
+            assert row["mean"] == pytest.approx(independent_mean(rows, row["start"], row["start"] + 100), rel=1e-13)
+
+
+@pytest.mark.parametrize("mutation", ["nonfinite", "reordered", "short", "zero_mean"])
+def test_prerun_refuses_nonfinite_missing_or_zero_mean_inputs(mutation):
     rows = series(np.full(521, 2.0))
     if mutation == "nonfinite":
         rows[40]["downforce_n_per_m"] = float("nan")
@@ -76,12 +132,47 @@ def test_prerun_refuses_nonfinite_missing_nonstationary_or_uncapped_window(mutat
         rows.pop()
     elif mutation == "zero_mean":
         rows = series(np.zeros(521))
-    elif mutation == "no_plateau":
-        rows = series(np.arange(521))
-    elif mutation == "cap":
-        rows = series(2 + 100 * np.sin(np.arange(521) * 1.234))
     with pytest.raises(ValueError):
         P.estimate(rows)
+
+
+def ar1_experiment(true_window, *, seeds=200, tau=1.0, transient_fraction=0.0):
+    """Review N2's stationary AR(1), using its exact discrete spectral density."""
+    mean, dt, horizon = 0.17, 0.05, 520
+    phi = math.exp(-dt / tau)
+    s0 = true_window * (0.015 * mean) ** 2
+    variance = s0 / (dt * (1 + phi) / (1 - phi))
+    times = np.arange(round(horizon / dt) + 1) * dt
+    windows, burns, rejections, fallbacks, caps = [], [], [], 0, 0
+    for seed in range(seeds):
+        rng = np.random.default_rng(seed)
+        initial = rng.normal(scale=math.sqrt(variance))
+        tail, _ = lfilter([1], [1, -phi], rng.normal(scale=math.sqrt(variance * (1 - phi ** 2)), size=len(times) - 1), zi=[phi * initial])
+        values = mean + np.r_[initial, tail] + transient_fraction * mean * np.exp(-times / 20)
+        try:
+            got = P.estimate(series(values, times))
+        except ValueError as exc:
+            rejections.append({"seed": seed, "reason": str(exc)})
+            continue
+        windows.append(got["window_width"])
+        burns.append(got["burn_in"])
+        fallbacks += int(got["flags"]["BURN_IN_FALLBACK"])
+        caps += int(got["flags"]["WINDOW_CAPPED"])
+    return {"true_window": true_window, "true_s0": s0, "mean": mean, "tau": tau, "dt": dt,
+            "horizon": horizon, "stationary_initial_sample": True, "transient_fraction": transient_fraction,
+            "seeds": seeds, "rejections": rejections, "rejection_rate": len(rejections) / seeds,
+            "median_window": float(np.median(windows)) if windows else None,
+            "median_burn_in": float(np.median(burns)) if burns else None,
+            "burn_in_fallback_count": fallbacks, "window_capped_count": caps, "windows": windows}
+
+
+@pytest.mark.parametrize("true_window", [50, 100, 150])
+def test_stationary_ar1_two_hundred_seeds_have_no_refusal_and_calibrated_median(true_window, record_property):
+    result = ar1_experiment(true_window)
+    record_property("ar1", json.dumps(result, sort_keys=True))
+    assert result["rejection_rate"] == 0, result
+    # registration amendment 7: W is rounded up to a multiple of 50 c1/U, so the calibration tolerance is one granularity step (prompt amendment 6, corrected 2026-11-07)
+    assert true_window <= result["median_window"] <= true_window + 50, result
 
 
 def write_parent_files(tmp_path):
@@ -123,7 +214,7 @@ def test_parent_record_is_written_once_and_recomputed_from_its_raw_series(tmp_pa
         P.write_record(path, summary, target, repo=tmp_path)
     assert target.read_bytes() == before
     forged = json.loads(before)
-    forged["s0_upper"] = 1
+    forged["s0_point"] = 1
     target.write_text(json.dumps(forged))
     with pytest.raises(ValueError, match="recomputed|differs"):
         P.validate_record(target, repo=tmp_path)
@@ -136,7 +227,7 @@ def test_record_rejects_manual_statistics_and_changed_source_series(tmp_path):
     path.write_text(path.read_text() + "\n")
     with pytest.raises(ValueError, match="hash"):
         P.validate_record(target, repo=tmp_path)
-    target.write_text(json.dumps({"configuration": "E1", "mean_downforce": 2, "s0_upper": 0, "burn_in": 80}))
+    target.write_text(json.dumps({"configuration": "E1", "mean_downforce": 2, "s0_point": 0, "burn_in": 80}))
     with pytest.raises(ValueError, match="schema|hand"):
         P.validate_record(target, repo=tmp_path)
 
