@@ -73,3 +73,9 @@ Zhang & Zerihan（2003）の 2 要素の地面効果翼から 1／2／3 要素�
 4. **`CONCORDANT_PARTIAL`**：登録 Amendment 3 §5 の定義（SIGN_AGREE_12 が片方の Re だけ真、RANK_AGREE は両側 resolved の範囲で真）に analyzer と checker を合わせ、8 ラベルの到達性テストを更新する。
 5. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。
 6. **commit／push は Claude が host で行う。** worktree は `ba3164c7`。報告に commit すべきファイルの一覧を書く。
+
+## Amendment 4（2026-11-07。3 回目（PR #89、host commit 済み）の保留点への回答。小さな追加のみ。Opus review の後に適用する）
+
+1. **`CONCORDANT_PARTIAL`**：登録 Amendment 4 §2 のとおり、優先順位はそのまま（UNRESOLVED が先）。到達するのは「片方の Re で SIGN_AGREE_12 が真、もう片方では両側 resolved で符号が逆、RANK_AGREE は両側 resolved の範囲で真」のケース。WP4 が提案した「片方未解決なら PARTIAL」は採らない。analyzer と checker にこの正確なケースの到達性テストを足す（判定コードの変更が不要ならテストだけ）。
+2. **多角形の表現**：登録 Amendment 4 §1（終点を重複しない開いた頂点列、閉じる辺は暗黙、重複は拒否）を JSON schema と docstring に明記する。
+3. 全体 pytest は不要（テストと docstring だけ）。commit は Claude が host で行う。
