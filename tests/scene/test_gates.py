@@ -73,6 +73,44 @@ def test_fixed_context_still_participates_in_pair_gap_check():
     assert "minimum_gap_violation|p|tyre" in report["gates"]["gap"]["fail_reasons"]
 
 
+def test_fixed_stl_tyre_and_thin_endplate_do_not_own_design_width_or_joints(tmp_path):
+    h = .1
+    # Small closed octagonal tyre stand-in, tangent to ground, hash-bound STL.
+    tyre_mesh = trimesh.creation.cylinder(radius=.4, height=.6, sections=8)
+    tyre_mesh.apply_translation([2., 0., .3])
+    payload = tyre_mesh.export(file_type="stl")
+    path = tmp_path / "tyre.stl"
+    path.write_bytes(payload)
+    tyre = MeshBody("tyre", str(path), hashlib.sha256(payload).hexdigest())
+    panel = EndplatePlate("fixed_panel", -2., 0., .8, .8, .6, 2*h)
+    wing = plate(chord=.8, thickness=4*h, span=.6)
+    scene = Scene((wing,), fixed=(tyre, panel), ground=0)
+    result = evaluate_scene_gates(scene, h=h, dimension=3, policy=policy(required_components=3,
+        envelope={"lower": [-.7, -.5, .6], "upper": [.7, .5, 1.4],
+                  "rule_source": "synthetic movable-wing-only envelope"}))
+    assert result["passed"], result["rejection_reasons"]
+    assert set(result["gates"]["thickness"]["measured"]["components"]) == {wing.id}
+    assert result["gates"]["endplate_joints"]["thresholds"]["required_pairs"] == []
+    assert set(result["gates"]["gap"]["measured"]["pairs"]) == {"p|tyre", "p|fixed_panel"}
+    context = result["context_resolution"]
+    assert context["scope"] == "fixed_context_informational_only"
+    assert context["h_m"] == h
+    assert context["components"]["tyre"]["lower_bound_m"] is None
+    assert context["components"]["tyre"]["sampled_solid_nodes"] > 0
+    assert context["components"]["fixed_panel"]["lower_bound_cells"] == pytest.approx(2)
+    assert result["cfd_evaluations"] == result["budget_charged"] == 0
+
+
+def test_fixed_endplate_cannot_receive_a_design_joint_gap_exemption():
+    wing = plate(span=1, z=1)
+    tip = EndplatePlate("fixed_tip", 0, .5, 1, 1, 1.5, .2)
+    scene = Scene((wing,), fixed=(tip,), ground=-2)
+    result = evaluate_scene_gates(scene, h=.1, dimension=3,
+        policy=policy(joints=((wing.id, tip.id),)))
+    assert "joint_ids_or_types_invalid|p|fixed_tip" in result["gates"]["endplate_joints"]["fail_reasons"]
+    assert "component_overlap|p|fixed_tip" in result["gates"]["gap"]["fail_reasons"]
+
+
 def test_missing_policy_inputs_refuse_admission():
     report = run(policy=SceneGatePolicy())
     assert not report["passed"]
@@ -175,14 +213,14 @@ def test_explicit_endplate_joint_is_required_and_contact_is_verified():
     # Horizontal plate's span terminates at y=.5; the endplate overlaps that tip.
     wing = plate(span=1, z=1)
     tip = EndplatePlate("tip", 0, 0.5, 1, 1, 1.5, 0.4)
-    scene = Scene((wing,), fixed=(tip,), ground=-2)
+    scene = Scene((wing, tip), ground=-2)
     report = evaluate_scene_gates(scene, h=0.1, dimension=3, policy=policy())
     assert report["gates"]["endplate_joints"]["status"] == "fail"
     declared = policy(joints=(("p", "tip"),))
     report = evaluate_scene_gates(scene, h=0.1, dimension=3, policy=declared)
     assert report["gates"]["endplate_joints"]["status"] == "pass"
     assert report["gates"]["gap"]["status"] == "pass"
-    distant = Scene((wing,), fixed=(replace(tip, y=3),), ground=-2)
+    distant = Scene((wing, replace(tip, y=3)), ground=-2)
     report = evaluate_scene_gates(distant, h=0.1, dimension=3, policy=declared)
     assert report["gates"]["endplate_joints"]["status"] == "fail"
 
@@ -230,6 +268,71 @@ def test_exact_4h_thickness_and_gap_admit_all_sixteen_subcell_phases(dimension, 
         policy=policy(required_components=2), phase=phase)
     assert report["passed"], report["rejection_reasons"]
     assert report["gates"]["connectivity"]["measured"]["solid_components"] == 2
+
+
+@pytest.mark.parametrize("case", ["valid", "thin", "resource_limit"])
+def test_sixteen_phase_admission_requires_every_phase_pass_and_retains_reasons(case):
+    from cfd_gen.scene.gates import evaluate_scene_gates_phases
+
+    scene = Scene((plate(thickness=.3 if case == "thin" else .5),), ground=-2)
+    phases = [(i/16, 0, ((5*i) % 16)/16) for i in range(16)]
+    report = evaluate_scene_gates_phases(scene, h=.0001 if case == "resource_limit" else .1,
+        dimension=2, policy=policy(), phases=phases)
+    assert report["passed"] is (case == "valid")
+    assert report["phase_count"] == len(report["phase_reports"]) == 16
+    assert report["scene_sha256"] == scene.scene_sha256
+    assert [row["phase"] for row in report["phase_reports"]] == [list(p) for p in phases]
+    for row in report["phase_reports"]:
+        assert row["result"]["scene_sha256"] == scene.scene_sha256
+        if case != "valid":
+            assert row["result"]["rejection_reasons"]
+    assert {tuple(item["phase"]) for item in report["rejection_reasons"]} == (set() if case == "valid" else set(phases))
+    if case == "resource_limit":
+        assert all(row["result"]["gates"]["sampling"]["status"] == "unmeasured" for row in report["phase_reports"])
+    assert report["cfd_evaluations"] == report["budget_charged"] == 0
+
+
+def test_sixteen_phase_admission_cannot_hide_one_rejected_phase(monkeypatch):
+    import cfd_gen.scene.gates as gates
+
+    phases = [(i/16, 0, ((5*i) % 16)/16) for i in range(16)]
+    original = gates.evaluate_scene_gates
+    visited = []
+    def reject_one(*args, phase, **kwargs):
+        visited.append(tuple(phase))
+        result = original(*args, phase=phase, **kwargs)
+        if tuple(phase) == phases[5]:
+            result["passed"] = False
+            result["rejection_reasons"] = [{"gate": "closed_cavities", "reason": "synthetic_phase_rejection", "status": "fail"}]
+        return result
+    monkeypatch.setattr(gates, "evaluate_scene_gates", reject_one)
+    scene = Scene((plate(),), ground=-2)
+    report = gates.evaluate_scene_gates_phases(scene, h=.1, dimension=2, policy=policy(), phases=phases)
+    assert not report["passed"]
+    assert visited == phases  # The failure cannot short-circuit the remaining record.
+    assert report["rejection_reasons"] == [{"phase": list(phases[5]), "gate": "closed_cavities",
+                                            "reason": "synthetic_phase_rejection", "status": "fail"}]
+
+
+@pytest.mark.parametrize("phases,dimension", [
+    ([], 2), ([(0, 0, 0)] * 16, 2),
+    ([(i/16, 0, 0) for i in range(15)], 2),
+    ([(i/16, 0, 0) for i in range(17)], 2),
+    ([(i/16, .5, 0) for i in range(16)], 2),
+    ([(i/16, 0, float("nan")) for i in range(16)], 3),
+    ([(i/16, 0j, 0) for i in range(16)], 3),
+    ([(i/16, 0) for i in range(16)], 3),
+    (None, 2),
+])
+def test_invalid_common_phase_sets_fail_before_evaluation(monkeypatch, phases, dimension):
+    import cfd_gen.scene.gates as gates
+
+    def unexpected_evaluation(*args, **kwargs):
+        pytest.fail("invalid phase set reached geometry evaluation")
+    monkeypatch.setattr(gates, "evaluate_scene_gates", unexpected_evaluation)
+    with pytest.raises(ValueError, match="phase"):
+        gates.evaluate_scene_gates_phases(Scene((plate(),)), h=.1, dimension=dimension,
+            policy=policy(), phases=phases)
 
 
 def test_explicit_merged_element_distance_contract_exemption_is_recorded():
@@ -371,12 +474,12 @@ def test_all_independent_rejections_are_reported():
     assert {"thickness", "clearance", "envelope"} <= names
 
 
-def test_stl_width_requires_an_external_lower_bound_with_provenance(tmp_path):
+def test_movable_stl_width_requires_an_external_lower_bound_with_provenance(tmp_path):
     path = tmp_path / "fixed_box.stl"
     payload = trimesh.creation.box(extents=(2, 2, 2)).export(file_type="stl")
     path.write_bytes(payload)
     mesh = MeshBody("fixed_mesh", str(path), hashlib.sha256(payload).hexdigest())
-    scene = Scene((plate(x=6, thickness=2, span=2, chord=2),), fixed=(mesh,), ground=-5)
+    scene = Scene((plate(x=6, thickness=2, span=2, chord=2), mesh), ground=-5)
     kwargs = dict(h=.5, dimension=3)
     unknown = evaluate_scene_gates(scene, policy=policy(required_components=2), **kwargs)
     assert unknown["gates"]["thickness"]["status"] == "unmeasured"

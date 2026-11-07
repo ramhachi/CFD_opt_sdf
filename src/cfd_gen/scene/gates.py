@@ -41,19 +41,20 @@ class SceneGatePolicy:
     ``rule_source``. It is supplied by the caller/ProblemSpec, never inferred
     from a v2 CFD domain. Coordinates are x,z or x,y,z in metres. ``domain``
     separately declares a finite clearance box. ``clearance_m`` applies to
-    ground and to that box; at least one target must exist. Envelope, clearance,
-    forbidden masks and roots apply only to movable components, not fixed
-    context. ``joints`` lists (plate/merged wing ID, endplate ID): all such pairs
-    present in the scene require a declaration and sampled contact. A valid
-    declaration exempts that pair
-    from the inter-body gap check, not any other pair.
+    ground and to that box; at least one target must exist. Thickness, envelope,
+    clearance, forbidden masks and roots apply only to movable components, not
+    fixed context. ``joints`` lists (plate/merged wing ID, endplate ID): all such
+    pairs among movable components require a declaration and sampled contact.
+    A valid declaration exempts that pair from the inter-body gap check, not
+    any other pair.
 
     Root/forbidden masks use the sampled state's shape. A named root with
     ``None`` or a required-but-missing forbidden mask is unmeasured. Every
     connected movable solid must have a root owner when roots are declared.
-    Arbitrary STL thickness cannot be inferred from its AABB: an externally
-    established lower width may be supplied in ``minimum_widths_m`` with
-    ``width_source`` provenance; otherwise its thickness is unmeasured.
+    Fixed widths/resolution are reported separately as informational context.
+    Arbitrary movable STL thickness cannot be inferred from its AABB: an
+    externally established lower width may be supplied in ``minimum_widths_m``
+    with ``width_source`` provenance; otherwise its thickness is unmeasured.
     """
 
     minimum_thickness_m: float | None = None
@@ -266,7 +267,7 @@ def _thickness_gate(bodies, dimension, h, policy):
         elif width < minimum - LENGTH_TOLERANCE_M:
             fail.append(f"minimum_thickness_violation|{body.id}")
     return _gate(fail=fail, unmeasured=unmeasured, measured={"components": components,
-                 "scope": "conservative interior sheet/insphere bound plus independent sampled R3; not every boundary chord"},
+                 "scope": "movable_components_only; conservative interior sheet/insphere bound plus independent sampled R3; not every boundary chord"},
                  thresholds={"minimum_thickness_m": minimum, "source": _DEFAULT_SOURCE if policy.minimum_thickness_m is None else "caller_supplied"})
 
 
@@ -330,14 +331,34 @@ def _masks_gate(solid, labels, state, policy, dimension):
     return _gate(fail=fail, unmeasured=unmeasured, measured={"root_node_counts": roots, "scope": "movable_components_only"})
 
 
-def _pair_gate(scene, fields, h, dimension, policy):
-    minimum = 4*h if policy.minimum_gap_m is None else policy.minimum_gap_m
+def _gap_sampling_guard(h, dimension, *bodies):
+    """The shared one-sided gap margin for gates and split warm starts.
+
+    Includes boundary-sampling coverage and the declared 2%-of-thickness
+    distance allowance for each deformed plate. It is a software admission
+    guard, not a RES-00 or continuous-geometry qualification.
+    """
+    h = _nonnegative(h, "h")
+    if h == 0 or type(dimension) is not int or dimension not in (2, 3):
+        raise ValueError("positive h and dimension 2/3 are required")
     # Covers the documented plate tip mesh (including its edge strip). This is
     # sampled software geometry, not a certified continuous mesh clearance.
     guard = (1 + math.sqrt(2) if dimension == 3 else 1) * h / 4
+    def distance_error(body):
+        if isinstance(body, PlateElement):
+            return .02 * body.thickness if body.camber or body.reflex else 0.
+        if isinstance(body, MergedElement):
+            return max(distance_error(p) for p in body.parts)
+        return 0.
+    return guard + sum(distance_error(body) for body in bodies)
+
+
+def _pair_gate(scene, fields, h, dimension, policy):
+    minimum = 4*h if policy.minimum_gap_m is None else policy.minimum_gap_m
+    guard = _gap_sampling_guard(h, dimension)
     bodies = {b.id: b for b in scene.bodies}
     movable = {b.id for b in scene.components}
-    endplates = {b.id for b in scene.bodies if isinstance(b, EndplatePlate)}
+    endplates = {b.id for b in scene.components if isinstance(b, EndplatePlate)}
     elements = {b.id for b in scene.components if isinstance(b, (PlateElement, MergedElement))}
     declared = set(policy.joints)
     required = set(itertools.product(elements, endplates))
@@ -379,14 +400,7 @@ def _pair_gate(scene, fields, h, dimension, policy):
             gaps[key] = {"bbox_lower_bound_m": lower, "method": "conservative_AABB_separation"}
             continue
         d = distance(a, b)
-        def distance_error(body):
-            if isinstance(body, PlateElement):
-                return .02 * body.thickness if body.camber or body.reflex else 0.
-            if hasattr(body, "parts"):
-                return max(distance_error(p) for p in body.parts)
-            return 0.
-        extra = distance_error(a) + distance_error(b)
-        pair_guard = guard + extra
+        pair_guard = _gap_sampling_guard(h, dimension, a, b)
         gaps[key] = {"minimum_sampled_field_m": d, "guard_m": pair_guard, "bbox_lower_bound_m": lower,
                      "method": "boundary_field_samples_with_guard"}
         if d < -LENGTH_TOLERANCE_M or np.any((fields[a.id] < 0) & (fields[b.id] < 0)):
@@ -443,13 +457,16 @@ def _bounds_gates(scene, dimension, policy):
     return envelope, clearance
 
 
-def _report(scene, gates, h, dimension, state=None):
+def _report(scene, gates, h, dimension, state=None, context_resolution=None):
     rejections = [{"gate": name, "reason": reason, "status": status}
                   for name, gate in gates.items() for status, key in (("fail", "fail_reasons"), ("unmeasured", "unmeasured_reasons"))
                   for reason in gate[key]]
     return {"passed": all(g["status"] == "pass" for g in gates.values()), "gates": gates, "rejection_reasons": rejections,
             "cfd_evaluations": 0, "budget_charged": 0, "scene_sha256": scene.scene_sha256,
             "state_sha256": None if state is None else state.state_sha256, "dimension": dimension, "h_m": h,
+            "context_resolution": context_resolution if context_resolution is not None else {
+                "scope": "fixed_context_informational_only", "h_m": h, "components": None,
+                "reason": "scene_not_sampled"},
             "distance_contract_exemptions": [body.id for body in scene.bodies if isinstance(body, MergedElement)],
             "evidence_class": "solver_free_scene_software_unqualified"}
 
@@ -462,7 +479,9 @@ def evaluate_scene_gates(scene, *, h, dimension=3, policy: SceneGatePolicy, phas
     fictitious volume. Missing policy measurements block overall admission.
     Exceeding the 2,000,000-node design sampling cap is recorded unmeasured;
     malformed inputs still raise. Explicit MergedElement IDs are listed as
-    band-distance-contract exemptions, not qualified BDIM geometry.
+    band-distance-contract exemptions, not qualified BDIM geometry. This is a
+    single-phase diagnostic: merge admission requires every report from
+    ``evaluate_scene_gates_phases`` to pass on the 16 common phases.
     """
     h = _nonnegative(h, "h")
     if h == 0 or type(dimension) is not int or dimension not in (2, 3) or not isinstance(policy, SceneGatePolicy):
@@ -511,8 +530,44 @@ def evaluate_scene_gates(scene, *, h, dimension=3, policy: SceneGatePolicy, phas
     movable_labels = ndimage.label(movable_solid, ndimage.generate_binary_structure(dimension, dimension))[0]
     gap, joints = _pair_gate(scene, fields, h, dimension, policy)
     envelope, clearance = _bounds_gates(scene, dimension, policy)
-    gates = {"thickness": _thickness_gate(scene.bodies, dimension, h, policy), "gap": gap,
+    gates = {"thickness": _thickness_gate(scene.components, dimension, h, policy), "gap": gap,
              "opening_defect": opening_defect_gate(finite_phi, h), "connectivity": connectivity,
              "closed_cavities": cavities, "endplate_joints": joints, "envelope": envelope, "clearance": clearance,
              "masks_roots": _masks_gate(movable_solid, movable_labels, state, policy, dimension)}
-    return _report(scene, gates, h, dimension, state)
+    context = {}
+    for body in scene.fixed:
+        width, method = _normal_width(body, dimension, policy)
+        context[body.id] = {"lower_bound_m": width, "lower_bound_cells": None if width is None else width/h,
+                            "method": method, "sampled_solid_nodes": int(np.count_nonzero(fields[body.id] < 0))}
+    return _report(scene, gates, h, dimension, state, {
+        "scope": "fixed_context_informational_only", "h_m": h, "components": context})
+
+
+def evaluate_scene_gates_phases(scene, *, h, dimension=3, policy: SceneGatePolicy, phases) -> dict:
+    """Require all 16 distinct common phases to pass before merge admission.
+
+    Call after proposal generation, before any CFD. The caller declares the
+    checkpoint's common phase set (x,y,z fractions, y=0 in 2D); no winning
+    subset is selected. Invalid sets fail before sampling. All phase reports,
+    including failures/unmeasured and their reasons, are retained in order.
+    This software gate does not make a Birth-1 primal or BDIM claim.
+    """
+    if np.iscomplexobj(phases):
+        raise ValueError("phases cannot be complex")
+    try:
+        phases = np.asarray(phases, dtype=float)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("phases must contain 16 distinct valid x,y,z fractions") from exc
+    if (phases.shape != (16, 3) or not np.isfinite(phases).all()
+        or np.any((phases < 0) | (phases >= 1))
+        or (dimension == 2 and np.any(phases[:, 1] != 0))
+        or len(np.unique(phases, axis=0)) != 16):
+        raise ValueError("phases must contain 16 distinct valid x,y,z fractions; y=0 in 2D")
+    reports = [{"phase": phase.tolist(), "result": evaluate_scene_gates(
+        scene, h=h, dimension=dimension, policy=policy, phase=phase)} for phase in phases]
+    return {"passed": all(row["result"]["passed"] for row in reports), "phase_count": len(reports),
+            "scene_sha256": scene.scene_sha256, "phase_reports": reports,
+            "rejection_reasons": [{"phase": row["phase"], **reason}
+                                  for row in reports for reason in row["result"]["rejection_reasons"]],
+            "cfd_evaluations": 0, "budget_charged": 0,
+            "evidence_class": "solver_free_scene_software_unqualified"}

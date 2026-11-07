@@ -124,3 +124,39 @@ nodes with the host-supplied empty base set, without a new base run or CPU
 profile plugin. Save reproducible commands, JUnit/log artifacts and hashes;
 preserve earlier results as history. Report all intended changed/new paths
 for host staging, and run `git diff --check` without Git mutations.
+
+## Amendment 4 repair addendum (2026-11-07; before code edits)
+
+Start HEAD: `6dcd7c62`, clean `feat/gen01-w1-06-geom-s1` worktree. Read both
+Opus reviews and the review worktree's section 3.1 distance-contract amendment.
+The current task is the small phase-A N1--N4 repair only. Host Claude owns
+staging, commit, push and PR #82; phase B and author-managed plans remain out
+of scope. No edits under `src/cfd_sdf`, `julia/`, `scripts/` or the harness.
+
+- N1: use movable components for thickness and both sides of wing/endplate
+  joint requirements. Retain fixed context in union topology and movable/fixed
+  pair gaps. Report fixed-context width/resolution separately as informational
+  measurements, including an unknown STL width, without imposing design floors.
+- N2: default merge overlap to half the smaller plate thickness (therefore at
+  least t_min/2 for thickness-admissible plates). Keep generation solver-free
+  and proposal-only. Add an explicit gate aggregation over exactly 16 distinct
+  caller-supplied common phases; every phase must pass for merge admission.
+  Test a nonidentical main/flap at approximately 0.35 rad in 2D and 3D.
+- N3: retain explicit-gap split callers. With no explicit gap, require h and
+  derive the default from g_min + the existing gate sampling guard + the same
+  camber/reflex field-error margin. Share the margin calculation rather than
+  duplicating constants. Preserve `(L-t-gap)/2` and the parent's axial footprint.
+  Test N=1..5 at 0, -10 and -20 degrees, with camber, in both dimensions.
+- N4: remove ambiguous scalar thickness-history fallback; retain per-ID floors
+  and per-checkpoint snapshots from the gate helper. A typed nearest-pair
+  convergence failure skips only that pair and emits its IDs/reason in a caller
+  diagnostics list; invalid input and unrelated exceptions still propagate.
+  Record the review's measured 1--2 s/pair and 24--26 s strongly cambered limit
+  as review observations, not new benchmarks.
+
+Regression tests precede implementation. Run `tests/scene`, the directly
+related v2 gate/state/topology tests, compileall and diff-check. Amendment 4
+explicitly waives a new full pytest: retain the prior whole-suite result as
+historical, do not present it as a current run. Preserve historical artifacts,
+record current commands, outcomes, failure nodes and hashes, and enumerate
+every changed/new file for host staging.

@@ -11,6 +11,7 @@ from dataclasses import replace
 import hashlib
 import itertools
 import json
+import logging
 import math
 from collections.abc import Mapping
 
@@ -18,6 +19,7 @@ import numpy as np
 from scipy.optimize import minimize
 from scipy.spatial import cKDTree
 
+from .gates import SceneGatePolicy, _gap_sampling_guard
 from .primitives import PlateElement, _number, _validate_id
 from .scene import MergedElement, Scene, _positive
 
@@ -141,6 +143,10 @@ def knockout_candidates(scene):
         for i,body in enumerate(scene.components) if isinstance(body,(PlateElement,MergedElement))]
 
 
+class NearestBoundaryConvergenceError(RuntimeError):
+    """A proposal-only nearest-boundary refinement exhausted its starts."""
+
+
 def _nearest_boundary_pair(a,b):
     """Numerical nearest zero-surface pair, or None for an existing contact.
 
@@ -196,25 +202,32 @@ def _nearest_boundary_pair(a,b):
             if best is None or distance<best[0]:
                 best = (distance,qa,qb)
     if best is None:
-        raise ValueError("nearest-boundary refinement did not converge")
+        raise NearestBoundaryConvergenceError("nearest-boundary refinement did not converge")
     return None if best[0]<=tolerance else best
 
 
-def merge_candidates(scene,*,max_gap=None,overlap=None):
+def merge_candidates(scene,*,max_gap=None,overlap=None,diagnostics=None):
     """Join separated plate neighbours by a minimal boundary-direction move.
 
     Move b towards a along their numerically closest boundary-point direction
-    by gap + ``overlap`` metres. Default overlap is one quarter of the pair's
-    smaller thickness; default max_gap is their mean thickness. Existing
+    by gap + ``overlap`` metres. Default overlap is half of the pair's smaller
+    thickness (at least t_min/2 for thickness-admissible plates); default
+    max_gap is their mean thickness. Existing
     contacts/overlaps are not proposed. A stays unchanged and child IDs retain
     provenance. The nearest-pair refinement and union field are proposal-only:
-    all scene gates remain mandatory, and the merged overlap is exempt from
-    the individual-primitive distance contract, never BDIM qualified.
+    all 16 shared scene-gate phases must pass before admission. The merged
+    overlap is exempt from the individual-primitive distance contract, never
+    BDIM qualified. A failed nearest-boundary refinement skips only its pair;
+    a supplied ``diagnostics`` list receives deterministic pair IDs and reason,
+    otherwise a warning log records them.
+    Invalid input and unrelated errors still raise.
     """
     if max_gap is not None:
         max_gap = _positive(max_gap,"max_gap",zero=True)
     if overlap is not None:
         overlap = _positive(overlap,"overlap")
+    if diagnostics is not None and not isinstance(diagnostics,list):
+        raise ValueError("diagnostics must be a list or None")
     proposals = []
     for i,j in itertools.combinations(range(len(scene.components)),2):
         a,b = scene.components[i],scene.components[j]
@@ -226,13 +239,21 @@ def merge_candidates(scene,*,max_gap=None,overlap=None):
         radius = (a.thickness+b.thickness)/2 if max_gap is None else max_gap
         if gap>radius+1e-12:
             continue
-        closest = _nearest_boundary_pair(a,b)
+        try:
+            closest = _nearest_boundary_pair(a,b)
+        except NearestBoundaryConvergenceError:
+            reason = "nearest_boundary_refinement_did_not_converge"
+            if diagnostics is not None:
+                diagnostics.append({"pair_ids":[a.id,b.id],"reason":reason})
+            else:
+                logging.getLogger(__name__).warning("merge_pair_skipped|%s|%s|%s",a.id,b.id,reason)
+            continue
         if closest is None:
             continue
         gap,pa,pb = closest
         if gap>radius+1e-12:
             continue
-        delta = min(a.thickness,b.thickness)/4 if overlap is None else overlap
+        delta = min(a.thickness,b.thickness)/2 if overlap is None else overlap
         shift = (pa-pb)*(1+delta/gap)
         moved = replace(b,x=b.x+shift[0],y=b.y+shift[1],z=b.z+shift[2])
         merged = MergedElement(f"merge:{a.id}:{b.id}",(a,moved))
@@ -248,8 +269,9 @@ def thickness_knockout_ids(history,minimum_thickness=None,*,tolerance=1e-12):
     parameter ID -> metres), and optionally ``parameter_floors``. Snapshot the
     latter from gates.thickness_parameter_floors at that checkpoint; it must
     exactly cover the row's thickness IDs. Snapshots handle changing shapes
-    and IDs, and take precedence over the legacy ``minimum_thickness`` scalar
-    or per-ID mapping. Legacy fallback floors must stay fixed throughout the
+    and IDs, and take precedence over a ``minimum_thickness`` per-ID mapping.
+    Scalar floors are invalid: deformation makes the parameter floor specific
+    to each plate. Fallback floors must stay fixed throughout the
     supplied history and cover every row using them. With no fallback every
     row needs its own snapshot. These caller-supplied numbers are validated,
     but cannot authenticate historical geometry without that scene evidence.
@@ -263,9 +285,9 @@ def thickness_knockout_ids(history,minimum_thickness=None,*,tolerance=1e-12):
         if not minimum_thickness:
             raise ValueError("minimum_thickness floors must not be empty")
         floors = {_validate_id(key):_positive(value,"minimum_thickness") for key,value in minimum_thickness.items()}
-        limit = None
     else:
-        limit = None if minimum_thickness is None else _positive(minimum_thickness,"minimum_thickness")
+        if minimum_thickness is not None:
+            raise ValueError("minimum_thickness must be a per-ID mapping or None")
         floors = None
     tolerance = _positive(tolerance,"tolerance",zero=True)
     rows = []
@@ -286,8 +308,6 @@ def thickness_knockout_ids(history,minimum_thickness=None,*,tolerance=1e-12):
             if values.keys()-floors.keys():
                 raise ValueError("historical thickness ID must be known in parameter floors")
             row_floors = {key:floors[key] for key in values}
-        elif limit is not None:
-            row_floors = {key:limit for key in values}
         else:
             raise ValueError("parameter_floors snapshot required without frozen fallback floors")
         for key,value in values.items():
@@ -301,7 +321,7 @@ def thickness_knockout_ids(history,minimum_thickness=None,*,tolerance=1e-12):
         if abs(a[k]-af[k])<=tolerance and abs(b[k]-bf[k])<=tolerance))
 
 
-def element_count_designs(scene,n_max,*,gap):
+def element_count_designs(scene,n_max,*,gap=None,h=None,dimension=3,policy=None):
     """N=1..n_max finite split warm starts; no inner optimization.
 
     Split the longest straight chord L with child chord (L-t-gap)/2, retaining
@@ -309,10 +329,24 @@ def element_count_designs(scene,n_max,*,gap):
     angle and span are retained; camber/reflex scale with child chord to retain
     their dimensionless amplitudes and slope bounds. Impossible positive-child
     requests raise. Registered gates still judge each generated design.
+
+    An explicit ``gap`` retains the caller's declared geometry. Otherwise h is
+    required and the gap is g_min plus the same boundary-sampling guard and
+    deformed-field margin used by the gate. g_min=4h is a development default,
+    not a RES-00 registration. All other policy checks remain mandatory.
     """
     if type(n_max) is not int or n_max<1:
         raise ValueError("n_max must be a positive integer")
-    gap = _positive(gap,"gap",zero=True)
+    if gap is None:
+        h = _positive(h,"h")
+        if type(dimension) is not int or dimension not in (2,3):
+            raise ValueError("dimension must be 2 or 3")
+        policy = SceneGatePolicy() if policy is None else policy
+        if not isinstance(policy,SceneGatePolicy):
+            raise ValueError("policy must be a SceneGatePolicy")
+        minimum = 4*h if policy.minimum_gap_m is None else policy.minimum_gap_m
+    else:
+        gap = _positive(gap,"gap",zero=True)
     if len(scene.components)!=1 or not isinstance(scene.components[0],PlateElement):
         raise ValueError("outer count loop needs one initial plate")
     designs = [scene]
@@ -320,11 +354,14 @@ def element_count_designs(scene,n_max,*,gap):
         current = designs[-1]
         index = max(range(len(current.components)),key=lambda i:current.components[i].chord)
         p = current.components[index]
-        chord = (p.chord-p.thickness-gap)/2
+        # Child t and dimensionless deformation are retained, so their shared
+        # guard is known before computing the child chord.
+        split_gap = minimum+_gap_sampling_guard(h,dimension,p,p) if gap is None else gap
+        chord = (p.chord-p.thickness-split_gap)/2
         if chord<=0:
             raise ValueError("split needs a positive child straight chord")
         # 2*(chord+t)+gap == L+t: both external axial endpoints stay fixed.
-        offset = (chord+p.thickness+gap)/2
+        offset = (chord+p.thickness+split_gap)/2
         children = tuple(replace(p,id=f"{p.id}:split{n}:{k}",chord=chord,
             camber=p.camber*chord/p.chord,reflex=p.reflex*chord/p.chord,
             x=p.x+sign*offset*math.cos(p.angle),z=p.z+sign*offset*math.sin(p.angle)) for k,sign in enumerate((-1,1)))

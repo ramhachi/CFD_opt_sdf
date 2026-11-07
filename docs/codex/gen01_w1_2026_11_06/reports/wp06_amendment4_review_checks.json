@@ -1,0 +1,713 @@
+{
+  "cfd_evaluations": 0,
+  "checked_utc": "2026-11-07T10:09:54.591658+00:00",
+  "closure": {
+    "base_commit": "e3dcdf61",
+    "byte_mismatches": [],
+    "extra_source_paths": [],
+    "file_hashes": [
+      {
+        "path": "julia/CFDSDFWaterLily/src/CFDSDFWaterLily.jl",
+        "sha256": "996224432490df72726e208ad36d1a68657b506ba4058d79a0f9eb72154d4e9e"
+      },
+      {
+        "path": "julia/CFDSDFWaterLily/src/CandidateCWaterLilyBody.jl",
+        "sha256": "2a4b056a1a4a23dc5699ad340faed8ad35bfab4c103302169a93150feedd04c6"
+      },
+      {
+        "path": "julia/CFDSDFWaterLily/src/DeviceGridSDF.jl",
+        "sha256": "2f02c840f4fad5ba5d26d42f4c24bc83f413502b15487427a7dc52f06a80a874"
+      },
+      {
+        "path": "julia/CFDSDFWaterLily/src/Forces.jl",
+        "sha256": "0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e"
+      },
+      {
+        "path": "julia/CFDSDFWaterLily/src/GridSDFBody.jl",
+        "sha256": "fa6aecccecbf140158396c9c8e5f3a6c16d3810f792ba45b9c8f4ee481709058"
+      },
+      {
+        "path": "julia/CFDSDFWaterLily/src/OwnedV16Run.jl",
+        "sha256": "695872cbc31a35fee222c6304e51daa7a193a8dee2c64438ea51b8af658e35fe"
+      },
+      {
+        "path": "julia/CFDSDFWaterLily/src/Runtime.jl",
+        "sha256": "bd830f7f307f7bd5de67642b4e9243ae5586959fd475765b13ef14d19637d458"
+      },
+      {
+        "path": "julia/CFDSDFWaterLily/src/Simulation.jl",
+        "sha256": "99cfc7a30741c17b7e83f4451270e0536e336dd2c79cc1f904492910e8588cc2"
+      },
+      {
+        "path": "julia/CFDSDFWaterLily/src/SurfaceFluxQuadrature.jl",
+        "sha256": "907be4b5fad43636e32f9d37d5f8fce8f46f0962a409a422f2d8b5af79c03cbc"
+      },
+      {
+        "path": "julia/CFDSDFWaterLily/src/V16PhysicalProfile.jl",
+        "sha256": "17011858795ab6521c5ed4eed2702c5553fbc97fbf97d1bf88b370c18851b1be"
+      },
+      {
+        "path": "julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl",
+        "sha256": "f5e6a4743e4d115bb88c0832f1dfe688f2789d8c78f1a3f919b67a7fbc8353a0"
+      },
+      {
+        "path": "julia/CFDSDFWaterLily/src/WaterLilyBody.jl",
+        "sha256": "e5b9329fbf29bc86fa1eb1a5481b255535e255e04418d0d2582f1d33e42df369"
+      },
+      {
+        "path": "julia/CFDSDFWaterLily/src/WaterLilyNormalFloorBody.jl",
+        "sha256": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf"
+      },
+      {
+        "path": "src/cfd_sdf/__init__.py",
+        "sha256": "f37549da1f5349ec8163811c049ab71320890d6a8a0a79e7c23933208849ba95"
+      },
+      {
+        "path": "src/cfd_sdf/__main__.py",
+        "sha256": "41df9ff33d90dafa6210fdb1e8f045b09ae900258357114a424f36d0c845987a"
+      },
+      {
+        "path": "src/cfd_sdf/adjoint.py",
+        "sha256": "28ed71c94651ee04a2d6316a589fd78eb30cc30e8ee013414c5da10558607195"
+      },
+      {
+        "path": "src/cfd_sdf/adjoint_calibration.py",
+        "sha256": "ef7db76e33cc5e6a81bc9858c46756331637e4b9f1305139706daa933bf6970b"
+      },
+      {
+        "path": "src/cfd_sdf/adjoint_topology.py",
+        "sha256": "27b1e3302883bdc49f3e833ef0a52f6bcb9d58eb8159834fb22433ff27d24f20"
+      },
+      {
+        "path": "src/cfd_sdf/analytic_candidate_shapes.py",
+        "sha256": "b02d5cc317a4768630d7e4abb4ba34ee98b1b5961a6982140fd02bcc4a43d1ea"
+      },
+      {
+        "path": "src/cfd_sdf/campaign_assertions.py",
+        "sha256": "e489ceb894fda0e092e926674fb690e13ed3c686ac6f1cb073236945bb89785f"
+      },
+      {
+        "path": "src/cfd_sdf/candidate_c_identity.py",
+        "sha256": "f1da148c9ff11683c3afba7ccb252133dc193a1948d55cd4f418f12f7afbade5"
+      },
+      {
+        "path": "src/cfd_sdf/candidate_constraints.py",
+        "sha256": "882b252ae8196d28ea1725c72067149b67066fa28736dc3edc14d2c88f71c1c5"
+      },
+      {
+        "path": "src/cfd_sdf/canonical_geometry_masks.py",
+        "sha256": "c4942929eace26455c075fab83f75bcf1c1cbf2988fac20d63f04dd799da985e"
+      },
+      {
+        "path": "src/cfd_sdf/canonical_grid_snapshot.py",
+        "sha256": "9752f6f9cd973ba3d7f89d8b423960ae41c28fa6e27c12f762af7fb899b407cb"
+      },
+      {
+        "path": "src/cfd_sdf/canonical_objective.py",
+        "sha256": "81dd3947bb6fcaa04a845b296e37ddb980d7329c1916a9400db511fea092679c"
+      },
+      {
+        "path": "src/cfd_sdf/cfd.py",
+        "sha256": "3d6271b75d921830ec18379a5ec72a0c3355a283709b36b89834371416029fa2"
+      },
+      {
+        "path": "src/cfd_sdf/cli.py",
+        "sha256": "8ea4752447c75fb340fb3896ff0475aee00a832b95e9d72bc53c8a314ab0ae52"
+      },
+      {
+        "path": "src/cfd_sdf/config.py",
+        "sha256": "5fee6612b46b3cc6608fe33cc25fa29770352b88243fd937a631d512dcbb351a"
+      },
+      {
+        "path": "src/cfd_sdf/constraints.py",
+        "sha256": "947cc5153307ffc0aac542ba741b7ef1f183f136fb79d5817909e99e344e3b4c"
+      },
+      {
+        "path": "src/cfd_sdf/convergence_qualification.py",
+        "sha256": "e2acd63268b331232d96876e33e4ac5715e7f086347f899dc6f29567ff23fb8e"
+      },
+      {
+        "path": "src/cfd_sdf/criteria_supersession.py",
+        "sha256": "8a4e33e54290ba97b9357599b0dc711c1d9a4d7f87634d89d0890b5cc58e70a8"
+      },
+      {
+        "path": "src/cfd_sdf/cross_fidelity_ranking.py",
+        "sha256": "53fc130d1eb919156e55bc23cae9c11f59fd985592989ce4455c92e42f771820"
+      },
+      {
+        "path": "src/cfd_sdf/density_optimizer.py",
+        "sha256": "e21bc8afe5b896d07c36420a613cafeee1e594d667ae19a4589d7d5bf664c450"
+      },
+      {
+        "path": "src/cfd_sdf/design/__init__.py",
+        "sha256": "60bbc2cc5fe75a18992c60a8adb7b246b157590fe40264f8285c26e02b25b2a3"
+      },
+      {
+        "path": "src/cfd_sdf/design/genesis.py",
+        "sha256": "c32747ab13565b987f3876577d230f77a86ce9c7452ecf10271866d1083e432e"
+      },
+      {
+        "path": "src/cfd_sdf/design/geometry_gates.py",
+        "sha256": "7bed1368f3a6e724fdddaeec9e21d8dc1bdb7fb76b637546142d0d083752b784"
+      },
+      {
+        "path": "src/cfd_sdf/design/geometry_gates_v2.py",
+        "sha256": "352d145e54cf5330236a9ff13279341e3bb2f59c22a3f81d62a020e713089de4"
+      },
+      {
+        "path": "src/cfd_sdf/design/sdf_reinitialization.py",
+        "sha256": "ea92679041e0286c9d32e20aa542ba0f246ce6390dd43a8fb7ec3c499a94dfa6"
+      },
+      {
+        "path": "src/cfd_sdf/design/sdf_state.py",
+        "sha256": "74c675ed658c85fa2d8f306652d0de712698daf36e4e86f1f508b676c4f96faf"
+      },
+      {
+        "path": "src/cfd_sdf/design/topology_policy.py",
+        "sha256": "f7ead697ef879462cfed5036a6e6af20c1953f767154b9fdbd606f69f83b418b"
+      },
+      {
+        "path": "src/cfd_sdf/design/topology_policy_research.py",
+        "sha256": "e04358de8dee3eac2f887ba11a8c0f427f8b135da81f23c8bc2cbf46f505f107"
+      },
+      {
+        "path": "src/cfd_sdf/design/volume_semantics.py",
+        "sha256": "021c2da0916f1417211764c6d6ffc1d7a45785b41b8ce2f206f31cd710625626"
+      },
+      {
+        "path": "src/cfd_sdf/design/volume_semantics_v2.py",
+        "sha256": "a5f3595babea3994bb3c45618105a327a2790072e88945a4e3b8e78ed82e8fe4"
+      },
+      {
+        "path": "src/cfd_sdf/design_state.py",
+        "sha256": "23b88e99f1191654f9a591be949b10da14515f1933fd5489e15005c56bd87c87"
+      },
+      {
+        "path": "src/cfd_sdf/design_transform.py",
+        "sha256": "d04fd2762806cf320193baedf195a11d696b23212acff5bfabf64b4a8cd90508"
+      },
+      {
+        "path": "src/cfd_sdf/design_transform_declaration.py",
+        "sha256": "acd61f93ee576304173ff8b0f6d5cc4a265a9ca53b658977828368ef27ebef4b"
+      },
+      {
+        "path": "src/cfd_sdf/evidence_audit.py",
+        "sha256": "bed8d4dcb6a95a950243ef39edf0ae814c4fa6f5f87a964c3d214232c2732259"
+      },
+      {
+        "path": "src/cfd_sdf/execution.py",
+        "sha256": "235df7fc8d43e1079b4207571f0cccde768b4c4c9807fd03950c9238f288bbb1"
+      },
+      {
+        "path": "src/cfd_sdf/export_vtk.py",
+        "sha256": "44c152b421415fbc49d047e9a178f7702d40451bb53107ded6d7302872353a72"
+      },
+      {
+        "path": "src/cfd_sdf/extraction_qualification.py",
+        "sha256": "dd798afb730894263279e8f05e7704915e49cbca27f55ce1d1f2720bd0e6f2a2"
+      },
+      {
+        "path": "src/cfd_sdf/extraction_sweep.py",
+        "sha256": "d790cdf454be6f7c11972197c30260ccf51e40bf407f2823a0fd5ae2e8c7d362"
+      },
+      {
+        "path": "src/cfd_sdf/fd08_calibration.py",
+        "sha256": "e24846e833a29265f8405e4ae948c1e8967c2286e58354d8989657bcd5aa68d5"
+      },
+      {
+        "path": "src/cfd_sdf/fd08_contract.py",
+        "sha256": "192099966fa2c6a224a5f1e9afc76ccb6c9704b8caf93c45d476b64a79da3405"
+      },
+      {
+        "path": "src/cfd_sdf/fd08_v2_campaign.py",
+        "sha256": "a7239c1071fae82347f4488cb06d38aabdd58bf25d9ab06ed11daca6a7f0bb91"
+      },
+      {
+        "path": "src/cfd_sdf/fd08_v2_gate.py",
+        "sha256": "4e4af8f3d0817b60e58f8d1a00ed382b2d1e6deed03425f398b5eb81040cc582"
+      },
+      {
+        "path": "src/cfd_sdf/fd_preregistration.py",
+        "sha256": "8b1d3056579f4b72b2310742598f8ead222c372dcc4b5f87be55596d417be3bf"
+      },
+      {
+        "path": "src/cfd_sdf/fixed_grid_artifacts.py",
+        "sha256": "598c25ee110549cd0bebf66d1ffa8e8c49bd4f35a623f8a288cc320712538e6d"
+      },
+      {
+        "path": "src/cfd_sdf/fixed_grid_backend.py",
+        "sha256": "60806e52b087553cd4fbea44abd06adabfab0523c33b6ddf5eb8d8d4472a0b45"
+      },
+      {
+        "path": "src/cfd_sdf/fixed_grid_canonical_state_injection.py",
+        "sha256": "273b25def28c2004bbcbd977427b53f8f8d9fda66e3d90ab94c420fc271ab022"
+      },
+      {
+        "path": "src/cfd_sdf/fixed_grid_connectivity.py",
+        "sha256": "a6de495f7e80816a1a944f2107f3f592e026ede9d39e5130119d24068558be2a"
+      },
+      {
+        "path": "src/cfd_sdf/fixed_grid_contract.py",
+        "sha256": "eb46b9afaa7f48735ad97ccf83b18d843b7498370f460d82a3de4621e7779bd0"
+      },
+      {
+        "path": "src/cfd_sdf/fixed_grid_gradient_gate.py",
+        "sha256": "c2361a6268b6eb32bc23ea6d923b24465b472712cab9bf1d26b0a67abc200b35"
+      },
+      {
+        "path": "src/cfd_sdf/fixed_grid_optimizer.py",
+        "sha256": "c6ae4ca091bc42afb5a8e9cea1aede9187583644ac2a3d95138c9f40680f8a24"
+      },
+      {
+        "path": "src/cfd_sdf/fixed_grid_primal.py",
+        "sha256": "053196beb9096471138588b5b72f143721df31f75f1b19f8bced4e8b03c8ca16"
+      },
+      {
+        "path": "src/cfd_sdf/fixed_grid_sensitivity.py",
+        "sha256": "1d4d12c841b58e04abe3f80e8ab51ac06d0538727ce9ba2cf8e8b7beb6d476eb"
+      },
+      {
+        "path": "src/cfd_sdf/geometry_preflight.py",
+        "sha256": "20ed2661d82185578e1bf235cb5191d3619d0367fd54a7fd837e926da3856e70"
+      },
+      {
+        "path": "src/cfd_sdf/gradient_check.py",
+        "sha256": "c76d8dfb6a7ec3fd365f5c2c95048a0670de7ef778f6bbc80190f256976741a8"
+      },
+      {
+        "path": "src/cfd_sdf/gradients/__init__.py",
+        "sha256": "45604084ba4070849834435cc055d8681832e64cef11b55bd59528727aa8de15"
+      },
+      {
+        "path": "src/cfd_sdf/gradients/base.py",
+        "sha256": "9ddc6d2e29998e925ab615b220ddff5180704af3102e0d4428ac22c38434c2f7"
+      },
+      {
+        "path": "src/cfd_sdf/gradients/directional_comparison.py",
+        "sha256": "bdd038f01a433610f7244fc4f70673896f9934bc665e55d854a322360adb27c6"
+      },
+      {
+        "path": "src/cfd_sdf/gradients/directional_fd.py",
+        "sha256": "ac49c4e3a6f3b14a6c254c6cbdf7dcda26da7e3c62d40d7c735ae473cbc52837"
+      },
+      {
+        "path": "src/cfd_sdf/grid.py",
+        "sha256": "b8dcec2f1539feb5b1a2e3a69d0c9d50b2f75a21c2518d8ded19e3e270ff1f4d"
+      },
+      {
+        "path": "src/cfd_sdf/grid01_contract.py",
+        "sha256": "6d710be48014d66d31881bbfd8e18f8a7cb5af94bda325d99cd86f9bd739d9f0"
+      },
+      {
+        "path": "src/cfd_sdf/grid02_contract.py",
+        "sha256": "4805e5dcd27fda251f541f458ecb83d09eadb2578f3f1b89a06eb2112b273ca2"
+      },
+      {
+        "path": "src/cfd_sdf/handoff.py",
+        "sha256": "0c86f2eb97c411e601fce35aade5725b37d12662cb240266a02cd15ccaa7d2cb"
+      },
+      {
+        "path": "src/cfd_sdf/independent_verification.py",
+        "sha256": "9b129af906f694e262a8cd256e0720619d2c42583b0f38f80557155fd660d9b8"
+      },
+      {
+        "path": "src/cfd_sdf/lbm_benchmark.py",
+        "sha256": "79d696672950617bb0a18e3b8e1278a0f755b7d8ae6ce670372ff49fb856ec1b"
+      },
+      {
+        "path": "src/cfd_sdf/lbm_metal.py",
+        "sha256": "20671bbbbbc050c9128075170336d95529cad970ead8edac640c94aa9f36a21d"
+      },
+      {
+        "path": "src/cfd_sdf/lbm_reference.py",
+        "sha256": "5ffb36e9485e5d20c30df8ace52ba601efca85dabe4613abc8061dad6e3812b6"
+      },
+      {
+        "path": "src/cfd_sdf/lowdim01_contract.py",
+        "sha256": "9f113b2de0adc32011445faf5e9be5e49e533cd184feac617297882fcaf9b346"
+      },
+      {
+        "path": "src/cfd_sdf/lowdim02a_contract.py",
+        "sha256": "1f9e0a8776d8ce31b9f39249111c2bea67e7cafb713ca73bc8bc571b18954304"
+      },
+      {
+        "path": "src/cfd_sdf/lowdim03_contract.py",
+        "sha256": "acf3a7db61bf90f4e3d4eebe07b2a19119f009d0d5fddabdff571de8c38f4d20"
+      },
+      {
+        "path": "src/cfd_sdf/nonlinear_acceptance.py",
+        "sha256": "63a4cfeda8d7c858502e766b1bde999c87303ac52f89a5fca198602b56273d65"
+      },
+      {
+        "path": "src/cfd_sdf/openfoam.py",
+        "sha256": "9c5bb31d15027d5055ac58884774621ec8bbdb29ec2541eecc3dac86eb32ea66"
+      },
+      {
+        "path": "src/cfd_sdf/openfoam_blockmesh_grid.py",
+        "sha256": "68eaf308f92c5f37ec7f5560bdf3144b6e0b325567fbb7ee70c611c53b4e22a8"
+      },
+      {
+        "path": "src/cfd_sdf/openfoam_canonical_field_transfer.py",
+        "sha256": "b824ecd0acf1143021adc620c49223be68ffc24be45cada6b8cebd682ec1a60f"
+      },
+      {
+        "path": "src/cfd_sdf/openfoam_canonical_state_transfer.py",
+        "sha256": "4a10c26d96dce939eb6b47769b6c6297b3d898124f19e64216710b707a01c809"
+      },
+      {
+        "path": "src/cfd_sdf/openfoam_case_renderer.py",
+        "sha256": "7c899908ddc56b9ee17642ba99cc9a8d96078207742cad0b1abaa7515b8ae3ee"
+      },
+      {
+        "path": "src/cfd_sdf/openfoam_cell_order_derivation.py",
+        "sha256": "7d5ee9faa39c5843926beb45b707d270a3260caf421b9c8305686127da59db97"
+      },
+      {
+        "path": "src/cfd_sdf/openfoam_evidence.py",
+        "sha256": "b21dfa9b075f3e4a4071d50ebe45d959b36b6b729684e98d6dd2e053cbdf80ca"
+      },
+      {
+        "path": "src/cfd_sdf/openfoam_field_reconstruction.py",
+        "sha256": "54b38ad43138dcd4a3e20c79b470d918deb92aebd924a8e6a5cb78659fe0d457"
+      },
+      {
+        "path": "src/cfd_sdf/openfoam_grid_transfer.py",
+        "sha256": "5f0b7ff910c40bbf819386d9b603b87d747ca186c407c8f1af9ed3dcb58b7aba"
+      },
+      {
+        "path": "src/cfd_sdf/openfoam_mass_imbalance.py",
+        "sha256": "c419c371fedfdd632a7c262f7d4608715f1be4ae7d8e806f8bb6adb8a59d5455"
+      },
+      {
+        "path": "src/cfd_sdf/openfoam_native_artifacts.py",
+        "sha256": "23229fb20deef41ff2d0db6dd91e68df4357ab758768fd661b125cbbb48f2a48"
+      },
+      {
+        "path": "src/cfd_sdf/openfoam_oracle.py",
+        "sha256": "fc98ed9ed65a8b35949f60551c159e7b76f042dd6bc37fb1e706788aa5056529"
+      },
+      {
+        "path": "src/cfd_sdf/openfoam_response_renderer.py",
+        "sha256": "eb35cc0c23918b0caba605617ba0a447d2eaf4769c3c26460e57184c3d4375f7"
+      },
+      {
+        "path": "src/cfd_sdf/openfoam_sensitivity.py",
+        "sha256": "af48bbe6b0f0d9a6f62fdbc8936c13b0480245155a67a5f0a2a15c48908704b7"
+      },
+      {
+        "path": "src/cfd_sdf/optimization.py",
+        "sha256": "97fb4bd00f7e89c6e5522d1208f92a5ef3e59df49dbb1e8084c5be46a7bcc25b"
+      },
+      {
+        "path": "src/cfd_sdf/oracles/__init__.py",
+        "sha256": "76c41f2fddaee765d38d556f18e99b13c0fdcb97e42f86248f03f0aec66e823f"
+      },
+      {
+        "path": "src/cfd_sdf/oracles/base.py",
+        "sha256": "94b5d85c91cdb52cc7b6b8a2645e55f60035ad1bd298830d63746b8e8af395cc"
+      },
+      {
+        "path": "src/cfd_sdf/parametric.py",
+        "sha256": "c46167677abb0399a3c586d979abfcde4758d0e4b46c000ac8c9f33847564ee9"
+      },
+      {
+        "path": "src/cfd_sdf/path_b_bracket.py",
+        "sha256": "8d43130afe4e51d399b491a9c76bea4ad1e47025ea738cc7ca63198a9549fe3b"
+      },
+      {
+        "path": "src/cfd_sdf/phase2_discreteness_direction.py",
+        "sha256": "b8c7e61a507cd50c5bfed3a790f383cb468b2f000cedb3d8bbf6baddca2e7566"
+      },
+      {
+        "path": "src/cfd_sdf/phase2_inequality_policy.py",
+        "sha256": "3689eb810f913a9df6147557ecce055b2331f8383e89aab16305ddcbbfe3bfea"
+      },
+      {
+        "path": "src/cfd_sdf/phase2_policy.py",
+        "sha256": "57990845c102871d6efac5f615969e25e51261da115dee1348f44c1f921f6293"
+      },
+      {
+        "path": "src/cfd_sdf/porous_force_validation.py",
+        "sha256": "42552b75030abf374c9fab4423ea0204b598bfc4273d67e7803270b24ca45f24"
+      },
+      {
+        "path": "src/cfd_sdf/preflight_v2.py",
+        "sha256": "def81ad1be61e98b199a5e11f48cb69501c7a5b511e1cf5f35a14a545f38c897"
+      },
+      {
+        "path": "src/cfd_sdf/preflight_v4_core.py",
+        "sha256": "32d75a80696f693c7db5d6f0bb7ba15376c7f4e324ecb52720e578a9d52d2a7a"
+      },
+      {
+        "path": "src/cfd_sdf/problem_spec.py",
+        "sha256": "260257ee9c03346d2d6e1a794358fc6f287df36956013b80eeb67d1feaab460f"
+      },
+      {
+        "path": "src/cfd_sdf/problem_spec_compiler.py",
+        "sha256": "0569f8e2d49de0bb32773d7522ec1ad457bf06445c371b9b3880c3aa31c3a75d"
+      },
+      {
+        "path": "src/cfd_sdf/projected_restoration.py",
+        "sha256": "ca85bbf4a74a979ea7e264eb18425f655ecb553718f7b8ff36278b4dd45f99ba"
+      },
+      {
+        "path": "src/cfd_sdf/projection.py",
+        "sha256": "a5950b11c238ac32e2c54c1d5510c0881e007471db4f9c73d5b5b2e00eb1a836"
+      },
+      {
+        "path": "src/cfd_sdf/research_cli.py",
+        "sha256": "ceba4e3447613f2e5cfb2da71614d1be95a10a126f050c9181396cacba3e4acd"
+      },
+      {
+        "path": "src/cfd_sdf/robust_fields.py",
+        "sha256": "a3d0a1d839315b00d453efed177fa80b22c78d9dd6f7d9e9c94d538380b47afa"
+      },
+      {
+        "path": "src/cfd_sdf/runner.py",
+        "sha256": "4558a17aa63570769547ba079bb7a6de74377650575f4b161f67ed11c8edaf4a"
+      },
+      {
+        "path": "src/cfd_sdf/runtime/__init__.py",
+        "sha256": "1111a7318a1bcc7c0e9e64b92a672782fd9dc641860e4b3d46a5792abfd8ebd3"
+      },
+      {
+        "path": "src/cfd_sdf/runtime/fingerprint.py",
+        "sha256": "e7c4419c0a2ca111c34eebb1855a5885e162d6e1ae43c2aaa7ed9b29b0501553"
+      },
+      {
+        "path": "src/cfd_sdf/runtime_diagnostics.py",
+        "sha256": "9b5b6deb30e7d4c4441106a7855ce9d0b89c1c6b6124280ee7cf9d2300f2bd50"
+      },
+      {
+        "path": "src/cfd_sdf/sample_geometry.py",
+        "sha256": "21e85e678849f94b606817574fc77b4eff595ff0452ac3fdb8be2a7747decaaf"
+      },
+      {
+        "path": "src/cfd_sdf/sdf.py",
+        "sha256": "9b685c2cc3e0a39cabe14e08089b0491a98bcdd9c19e30ca0eed49f7c19c9a51"
+      },
+      {
+        "path": "src/cfd_sdf/sensitivity.py",
+        "sha256": "926947d438f5caf21976cb1b2f83b3854dc4e78bcfd60c9158886813bd61a5f2"
+      },
+      {
+        "path": "src/cfd_sdf/shape_feature_metrics.py",
+        "sha256": "00a3efce5e2ab704279623d21c1816b7c2c340a9ad3e2b277fee9607b3d8ff13"
+      },
+      {
+        "path": "src/cfd_sdf/solver_case_compiler.py",
+        "sha256": "dd56bb3394248e3bc6a83f096444b90f51d5331a9fa2c81d2e0c85e5ace387ff"
+      },
+      {
+        "path": "src/cfd_sdf/solver_case_manifest.py",
+        "sha256": "e274bc891a8480505a587c0429f0ffe39b7b18efbd9f73990ed402e43d771847"
+      },
+      {
+        "path": "src/cfd_sdf/stage_s_adjoint_case.py",
+        "sha256": "e9af5d816fb54b35dcac81a5bf471a78f18246eea7ecaf3c1ab7e8cc5305c638"
+      },
+      {
+        "path": "src/cfd_sdf/stage_s_adjoint_qualification.py",
+        "sha256": "39255c1388e9895af11300afe1cf2a5760981fe1e7b14562b2f6eba0ec2eb15d"
+      },
+      {
+        "path": "src/cfd_sdf/stage_s_component_diagnosis.py",
+        "sha256": "15469d8a957893348b69bcbde31d33a7dc618f5a1bf5026eace4452721f692fc"
+      },
+      {
+        "path": "src/cfd_sdf/stage_s_entry.py",
+        "sha256": "9fa0322ce97430bd8cc4c92dfa8699777d9ccb76d886da7ea8bc9e3d615ee46e"
+      },
+      {
+        "path": "src/cfd_sdf/stage_s_geometry_jacobian.py",
+        "sha256": "5725df65e7b2804d45137027f95d63221a0fbd96c95937a36b0802a687ba107a"
+      },
+      {
+        "path": "src/cfd_sdf/stage_s_perturbation.py",
+        "sha256": "adaa54439101ea208333ace7675bfdcf04d351d0736bcb360dbd1be50d9ad9d3"
+      },
+      {
+        "path": "src/cfd_sdf/stage_s_realized_direction.py",
+        "sha256": "7ade35d6aaa232810cd4ef7407071fdb39eb645381c701dd04f81c99218c2308"
+      },
+      {
+        "path": "src/cfd_sdf/stage_s_reduced_basis.py",
+        "sha256": "8a2dc41d2ba6eacc04085d5f71b6432bd1498749dbd0778cb17d86f7c2e7894f"
+      },
+      {
+        "path": "src/cfd_sdf/stage_s_surface_fd.py",
+        "sha256": "78d773b039f8b3f95bb48b38829f0ab5a03e4e5285d97c55b0a6aae8461585b4"
+      },
+      {
+        "path": "src/cfd_sdf/stage_t_candidate_binding.py",
+        "sha256": "431c73533a99375715679f5982ebf09498588ac6478ca7f4fd193e9d1d5a7c9f"
+      },
+      {
+        "path": "src/cfd_sdf/stage_t_loop.py",
+        "sha256": "0e025157a3edd5b90a21c7416a9fa45544139b425aa267d6442d006b36fb0375"
+      },
+      {
+        "path": "src/cfd_sdf/stage_v_domain_preflight.py",
+        "sha256": "8a0e5820df558f55bf4551dcb7d0e77f75c42257af6d262c90119a23838f523a"
+      },
+      {
+        "path": "src/cfd_sdf/stage_v_physical_profile.py",
+        "sha256": "7ceb68ad63a2846c0a33ad9eea7c46dfc9172b49276a0947826a39fef261300d"
+      },
+      {
+        "path": "src/cfd_sdf/step01_contract.py",
+        "sha256": "9e6bc125a3f5f48da1d8e72aacd71da8f58bf45f6ccd567a8346a4d0697b2b0a"
+      },
+      {
+        "path": "src/cfd_sdf/surface_canonicalization.py",
+        "sha256": "3384f2daec3db9a36d3c17e1494670c368a83917627f5372ab1150666301241e"
+      },
+      {
+        "path": "src/cfd_sdf/topology.py",
+        "sha256": "40ed5afc8c543c5ce9616753e4bd16f9968b55253cb575e1052dab17677f983b"
+      },
+      {
+        "path": "src/cfd_sdf/transfer_diagnostic.py",
+        "sha256": "7bd1b0f9614af7653c51db7d6a80ddbf42c130e0fa1b9d08a1253e6f1c6132ab"
+      },
+      {
+        "path": "src/cfd_sdf/validation.py",
+        "sha256": "c6e05d9d709c560774a57ae99a2bec2d89237e4764694817277d7163238ad27a"
+      },
+      {
+        "path": "src/cfd_sdf/xfid_response.py",
+        "sha256": "5d2110ed956c5150b9e57489d2f40defb27fd104a318217d22d1040e7b5407b9"
+      }
+    ],
+    "julia_files": 13,
+    "old_scene_directory_exists": false,
+    "python_files": 130
+  },
+  "cross_review": {
+    "native_events_worker_reviewed_parent_gates": true,
+    "parent_reviewed_events_diff": true,
+    "unresolved_findings": []
+  },
+  "evidence_class": "solver_free_software_development_unqualified",
+  "fixes": {
+    "N1": {
+      "scope": "thickness and both sides of design joint rules use scene.components; context_resolution is informational; finite union topology and movable/fixed gaps retained",
+      "tests": [
+        "test_fixed_stl_tyre_and_thin_endplate_do_not_own_design_width_or_joints",
+        "test_fixed_endplate_cannot_receive_a_design_joint_gap_exemption",
+        "test_explicit_endplate_joint_is_required_and_contact_is_verified",
+        "test_movable_stl_width_requires_an_external_lower_bound_with_provenance"
+      ]
+    },
+    "N2": {
+      "admission": "evaluate_scene_gates_phases requires exactly16 distinct supplied phases and all passed; failures and unmeasured retained",
+      "angle_rad": 0.35,
+      "default_overlap": "min(t_a,t_b)/2 >= t_min/2 for thickness-admissible plates",
+      "dimensions": [
+        2,
+        3
+      ],
+      "h_m": 0.025,
+      "passed_phases_per_dimension": 16,
+      "phases": "4x4 x,z fractions (i/4,j/4), y=((i+j)%4)/4 in 3D, 0 in 2D",
+      "smaller_thickness_over_h": 6,
+      "span_over_h": 6,
+      "test": "test_default_oblique_merge_passes_all_16_declared_phases"
+    },
+    "N3": {
+      "angles_degrees": [
+        0,
+        -10,
+        -20
+      ],
+      "camber_over_chord": 0.0125,
+      "counts": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "default_gap": "g_min + shared sampling guard + .02*(t_a+t_b) when both children deformed",
+      "default_gap_over_h": {
+        "2D": 4.414,
+        "3D": 4.767553390593274
+      },
+      "dimensions": [
+        2,
+        3
+      ],
+      "footprint": "child straight chord=(L-t-gap)/2; parent axial footprint L+t retained",
+      "gate_pass_designs": 30,
+      "h_m": 0.025,
+      "parent_chord_m": 2.4,
+      "reflex_over_chord": 0,
+      "scope": "one declared synthetic family; not arbitrary shape admission or volume preservation",
+      "span_over_h": 4,
+      "test": "test_default_split_gap_admits_angled_cambered_n1_to_n5",
+      "thickness_over_h": 4.1
+    },
+    "N4": {
+      "diagnostics": "pair IDs and reason list or standard warning",
+      "review_observed_seconds_per_pair": [
+        1,
+        2
+      ],
+      "review_observed_strong_camber_seconds_per_pair": [
+        24,
+        26
+      ],
+      "scalar_fallback": "removed; per-ID mapping/checkpoint snapshots only",
+      "skip_exception": "NearestBoundaryConvergenceError only",
+      "tests": [
+        "test_scalar_thickness_floor_is_rejected_even_with_complete_snapshots",
+        "test_merge_skips_only_nonconverged_pair_and_records_deterministic_reason",
+        "test_merge_logs_pair_reason_when_no_diagnostics_list_is_supplied",
+        "test_merge_does_not_swallow_unrelated_errors",
+        "test_nearest_boundary_failure_uses_specific_convergence_exception"
+      ],
+      "timing_not_rebenchmarked": true
+    }
+  },
+  "inputs": [
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/codex/gen01_w1_2026_11_06/reviews/wp06_review_1_opus.md",
+      "sha256": "8a258e4339f7f640dcf9ba64ac6febc5a32c541150b59c1dff6e3eca631ffedf"
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/codex/gen01_w1_2026_11_06/reviews/wp06_review_2_opus.md",
+      "sha256": "01017de5de6ccc42bfe25226b7de2c1a5919b45c0878ad5d38745b209a9c10ab"
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/gen_system_plan_2026_11_01.md",
+      "sha256": "9de3f01ba09594e659c1761d62eaea27502184558162b4dee756407f32c178e0"
+    },
+    {
+      "path": "docs/codex/gen01_w1_2026_11_06/00_README.md",
+      "sha256": "aac0777a7fa81ba8426de39872424634c7b12b1d311eda8663a8e1ffbaa0f542"
+    }
+  ],
+  "kind": "wp06_amendment4_software_review_checks",
+  "phase_b_started": false,
+  "protected_paths_unchanged_since_start": [
+    "src/cfd_sdf",
+    "julia",
+    "scripts",
+    "src/cfd_harness",
+    "docs/evidence",
+    "docs/harness",
+    "docs/phase_plan.md",
+    "docs/STATE.md",
+    "docs/exploratory_index.md",
+    "docs/gen_system_plan_2026_11_01.md"
+  ],
+  "review_2_repro_note": "scratchpad/wp06r2 scripts were not present at the supplied worktree path; independent regressions implement the documented counterexamples",
+  "review_2_repro_scripts_available": false,
+  "source_sha256": {
+    "src/cfd_gen/scene/events.py": "47ea4708d04e473b53a81134b4f089ef34e9ff4517e2edc2962a16a036085b18",
+    "src/cfd_gen/scene/gates.py": "46c060affab337c61a593468fe827db347d809e1bcfb6711ad7e8ca3eb90b875",
+    "tests/scene/test_events.py": "621656ebd13fdb16aa3bee663f4e5186dac9ad42053898d2bb8c8ada263bd429",
+    "tests/scene/test_gates.py": "186fb1e057514020af29295e84b3e10074d077b422d55a3e728a9121ba418908"
+  },
+  "start_commit": "6dcd7c6287f5b2d4fa61361c42de8ffdaf63ef99"
+}
