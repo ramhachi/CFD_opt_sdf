@@ -1,0 +1,103 @@
+{
+  "definition": "largest axis-aligned pressure-cell box at domain inset 2; scene-face SDF >=4; parent mu0<1 support clearance >=5",
+  "field_type": "Float32",
+  "grids": {
+    "flow_24": {
+      "body_clearance_cells": 5,
+      "domain_inset_cells": 2,
+      "flow_dims": [
+        150,
+        72,
+        54
+      ],
+      "lower": [
+        4,
+        4,
+        6
+      ],
+      "mu0_support_count": 6553,
+      "mu0_support_lower": [
+        58,
+        24,
+        21
+      ],
+      "mu0_support_upper": [
+        94,
+        52,
+        37
+      ],
+      "upper": [
+        149,
+        71,
+        53
+      ]
+    },
+    "flow_32": {
+      "body_clearance_cells": 5,
+      "domain_inset_cells": 2,
+      "flow_dims": [
+        200,
+        96,
+        72
+      ],
+      "lower": [
+        4,
+        4,
+        6
+      ],
+      "mu0_support_count": 13180,
+      "mu0_support_lower": [
+        77,
+        32,
+        27
+      ],
+      "mu0_support_upper": [
+        124,
+        68,
+        48
+      ],
+      "upper": [
+        199,
+        95,
+        71
+      ]
+    }
+  },
+  "ground_plane_solver": 0.0,
+  "parent_phi_fortran_sha256": "29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a",
+  "parent_state_sha256": "e7376e3576a045daa4c62353052890c43b4ed8b4562033c889cb1a4580d902bd",
+  "phase_shift_m": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "schema": "force00_boxes_v1",
+  "source_sha256": {
+    "docs/evidence/fid01_2026_10_21/of/criteria/v1_1.json": "5fb0ac3221a6f9385eb6d98b1039915e7e05c68bc7c6a1e09eb5181beac69f26",
+    "docs/evidence/fid01_2026_10_21/of/criteria/v1_2.json": "a635895f5b7e92d5527ee271152a8b8c3c5cc9230fb6c3a83aa01e7aedffe4f1",
+    "docs/evidence/fid01_2026_10_21/of/criteria/v1_3.json": "ba025ea37eeb02e4b9a9f55bb1bbc3fef553765dc9cadd786197bacb79caad72",
+    "docs/evidence/fid01_2026_10_21/of/criteria/v1_4.json": "f56e12903d269925319c175e307d3429dd5a343f4a5d8f3f05aa29653ed47781",
+    "docs/evidence/v18_genesis_2026_10_19/genesis.json": "2fce6a0837a9420ce7b8a4195584c0eba1da753161cf4ec2d2ba89dd5e79eeef",
+    "docs/evidence/v18_genesis_2026_10_19/v18_parent.npz": "36967c90cb48b7fe3475436098b138d4e7998212defb6dcb61bf8cefc52d5890",
+    "docs/evidence/v18_genesis_2026_10_19/v18_parent.phi_f4_fortran.raw": "29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a",
+    "julia/CFDSDFWaterLily/Manifest.toml": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    "julia/CFDSDFWaterLily/Project.toml": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+    "julia/CFDSDFWaterLily/gen01/Force00.jl": "4f3649a5710cb2a51fab1febf3feb3aa9aa38981c99a362965ad971a5b83e7f2",
+    "julia/CFDSDFWaterLily/src/CFDSDFWaterLily.jl": "996224432490df72726e208ad36d1a68657b506ba4058d79a0f9eb72154d4e9e",
+    "julia/CFDSDFWaterLily/src/CandidateCWaterLilyBody.jl": "2a4b056a1a4a23dc5699ad340faed8ad35bfab4c103302169a93150feedd04c6",
+    "julia/CFDSDFWaterLily/src/Forces.jl": "0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e",
+    "julia/CFDSDFWaterLily/src/GridSDFBody.jl": "fa6aecccecbf140158396c9c8e5f3a6c16d3810f792ba45b9c8f4ee481709058",
+    "julia/CFDSDFWaterLily/src/Runtime.jl": "bd830f7f307f7bd5de67642b4e9243ae5586959fd475765b13ef14d19637d458",
+    "julia/CFDSDFWaterLily/src/Simulation.jl": "99cfc7a30741c17b7e83f4451270e0536e336dd2c79cc1f904492910e8588cc2",
+    "julia/CFDSDFWaterLily/src/V16PhysicalProfile.jl": "17011858795ab6521c5ed4eed2702c5553fbc97fbf97d1bf88b370c18851b1be",
+    "julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl": "f5e6a4743e4d115bb88c0832f1dfe688f2789d8c78f1a3f919b67a7fbc8353a0",
+    "julia/CFDSDFWaterLily/src/WaterLilyBody.jl": "e5b9329fbf29bc86fa1eb1a5481b255535e255e04418d0d2582f1d33e42df369",
+    "julia/CFDSDFWaterLily/src/WaterLilyNormalFloorBody.jl": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf",
+    "scripts/force00_boxes.py": "71843ce0b8b619b0bae4533538c7fceaa59d6c240607f007573983276366a840",
+    "scripts/force00_uniform_inputs.py": "4fb792d5da978d5dbc6a1d71f0ec5f719decdb22be9c7ad2707bf59ed4de87f2",
+    "scripts/force00_uniform_pressure.jl": "c967f9bd377a369db74d07b1ef7bd9f451ce2aa06f85ea568b0baf7947f60a6f",
+    "scripts/mode01_v18_prescreen.py": "baa429bec975437459ecb6cea28a328d1dba4ac5b07c979a6eac08027082f71b",
+    "scripts/prepare_kaggle_xfid_gridphase_x3.py": "73b6659804e28fe9f0fbc1a9e86c37d7b76308e096d5f333cb34063bb3151930"
+  },
+  "waterlily_version": "1.8.0"
+}

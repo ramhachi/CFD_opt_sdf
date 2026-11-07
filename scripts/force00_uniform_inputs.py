@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -68,10 +69,14 @@ def inputs() -> dict:
     for path in (genesis / "genesis.json", ROOT / "scripts/mode01_v18_prescreen.py",
                  ROOT / "scripts/prepare_kaggle_xfid_gridphase_x3.py"):
         hashes[path.relative_to(ROOT).as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
+    # W2a's pinned source is the single physical-radius definition for U2/gate.
+    sphere_source = (ROOT / "julia/CFDSDFWaterLily/src/Simulation.jl").read_text()
+    sphere_radius = float(re.search(r"^const SPHERE_RADIUS_M = ([0-9.eE+-]+)$", sphere_source, re.M).group(1))
     return {
         "raw_path": str(raw), "shape": list(state.phi.shape),
         "origin_m": list(state.origin_m), "spacing_m": state.spacing_m,
         "margin_m": 0.15, "planform_area_m2": g["measurements"]["planform_area_m2"],
+        "sphere_radius_m": sphere_radius,
         "placements": rows, "sphere_placements": spheres, "source_sha256": hashes,
     }
 

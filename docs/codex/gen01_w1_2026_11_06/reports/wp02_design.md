@@ -1,5 +1,56 @@
 # WP2 FORCE-00 design
 
+## Current continuation: Amendment 3 (2026-11-07)
+
+Start from clean HEAD `afac79ed`. The owner's Amendment 3 and the review-worktree
+FORCE-00 spec Amendment 1 supersede the historical design below. Claude still
+owns commit/push/PR #84. All changes stay outside the pinned `src/` tree and
+registered jobs/evidence. CPU records go in `wp02_validation/amendment3/`;
+the production FORCE-00 evidence root stays absent.
+
+Before implementation, the Opus review and CPU probe were read. The work is split
+between gate/tests, numerical validation, and the copied job/CPU regression,
+with registration/U1/U2 integration and final verification by the parent.
+OpenCode MCP is absent and CLI discovery failed (protected log, then
+`Provider not found: opencode-go` with temporary XDG data); these are infrastructure
+failures, so native workers are used without paid API fallback.
+
+Required changes and contracts:
+
+- C5's absent exact sigma is descriptive only. Missing C1-C4 inputs, including
+  missing reference artifacts/keys, prevent the exclusive gate write and return
+  a nonzero CLI status. F3 joins the C1 byte regression, so its absent runs are
+  now a C1 blocker independently of C5.
+- `scripts/force00_boxes.py` measures phase-zero parent Candidate-C Float32
+  moments via the CPU uniform runner, derives one largest domain-inset box
+  per grid excluding the moving ground, verifies at least five cells of parent
+  moment-support clearance, and exclusively writes `docs/harness/force00_boxes.json`.
+  The schema is `force00_boxes_v1`, with parent state/raw SHA and `grids[grid]`
+  containing lower/upper bounds, flow dimensions, support bounds and margins.
+  Every phase and both F3 states use those registered bounds. Explicit box
+  overrides require a CPU-test flag and actual Array backend.
+- No implicit `box=nothing` region remains. Box validation additionally requires
+  stored normal-face mu0 to be exactly one, independently of sampled SDF quality.
+- Job `force00_source_sha256` maps the three repository paths for Force00,
+  the job and dispatcher to their hashes. U1 `source_sha256` contains those
+  same paths plus the box registry/generator. The gate requires exact agreement.
+- The W2a physical radius comes from the pinned Simulation.jl constant through
+  uniform inputs, not a second numeric literal in the gate. C4 uses 15 percent
+  with 1e-9 relative tolerance, preserving the 10-percent diagnostic.
+- Add an exact linear-pressure summation-by-parts magnitude check, and a
+  descriptive solved D16/Re100 cylinder check across three nested boxes.
+  Variant timing/VRAM explicitly includes extra readout overhead and is not
+  comparable with registered jobs. Header/usage/DONE name FORCE-00.
+
+Validation: TDD on gate/registry tests, CPU Julia selftest, original-vs-copy
+flow16 byte regression, then two new source-bound U1/U2 runs with byte identity
+and closure <=1e-12. Run compileall, pin checks, exact job-diff readback and
+`pytest --ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` to completion.
+Compare failure IDs against owner-provided base e3dcdf61 (3482 pass/74 skip/0 fail).
+No environment replacement, GPU run, gate write, freeze or adoption is performed.
+DONE requires the complete CPU acceptance set; the project's #293 absolute-force
+gap and GPU kernel compilation remain unknown until F1-F3.
+
 ## Current decision: Amendment 2 (2026-11-06)
 
 Continue the existing uncommitted work at HEAD `21d1e8e7` on

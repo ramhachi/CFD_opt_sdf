@@ -9,55 +9,50 @@ using WaterLily
     WaterLily.SVector{D,T}(ntuple(i -> T(μ₀[I + WaterLily.δ(i, I), i]) - T(μ₀[I, i]), D))
 
 """
-    nds_telescoping(sim)
+    nds_telescoping(sim, box)
 
 The discrete outward body area vector `μ₀[I+δ(i,I),i] - μ₀[I,i]`
-from the moments already stored by `measure!`. Ghost cells are zero. Face
+from the moments already stored by `measure!`. Cells outside `box` are zero. Face
 values are promoted *before* subtraction, so Float32 face differences also
 telescope under Float64 reduction. No SDF is measured and no flow field changes.
 
-This raw field includes WaterLily's zeroed domain faces. The force functions
-below omit those artificial boundary jumps, or integrate an explicit candidate
-box when the scene also contains a ground/body outside that box.
+The explicit pressure-cell box must enclose the complete candidate support,
+exclude other bodies and have `μ₀ == 1` on every normal boundary face. Call
+`validate_force_box` first; an immutable body and box need one preflight only.
 """
-function nds_telescoping(sim)
+function nds_telescoping(sim, box)
     μ₀ = sim.flow.μ₀
     T = promote_type(Float64, eltype(μ₀))
     n = similar(μ₀, T)
     n .= zero(T)
-    WaterLily.@loop n[I, :] .= _force00_nds(I, μ₀, T) over I in WaterLily.inside(sim.flow.p)
+    region = _force00_region(sim, box)
+    WaterLily.@loop n[I, :] .= _force00_nds(I, μ₀, T) over I in region
     return n
 end
 
-function _force00_region(sim, box; domain_inset=1)
+function _force00_region(sim, box)
     p = sim.flow.p
     D = ndims(p)
     D in (2, 3) || throw(ArgumentError("FORCE-00 supports 2D and 3D"))
-    if isnothing(box)
-        # BC! sets normal μ₀ to zero at faces 2 and size(p,i). Exclude
-        # their one-cell jumps; the closed body must be inside this region.
-        return WaterLily.inside(p; buff=2)
-    end
     box isa Tuple && length(box) == D && all(r -> r isa UnitRange{<:Integer} && !isempty(r), box) ||
         throw(ArgumentError("box must be a tuple of nonempty integer cell-index ranges"))
-    all(i -> first(box[i]) >= 2 + domain_inset &&
-             last(box[i]) <= size(p, i) - 1 - domain_inset, 1:D) ||
-        throw(ArgumentError("box violates the $domain_inset-cell physical-domain inset"))
+    all(i -> first(box[i]) >= 4 && last(box[i]) <= size(p, i) - 3, 1:D) ||
+        throw(ArgumentError("box violates the two-cell physical-domain inset"))
     return CartesianIndices(box)
 end
 
 _force00_sum(field, D) = Array(sum(identity, field; dims=ntuple(identity, D)))[:]
 
 """
-    pressure_force_nds(sim; box=nothing)
+    pressure_force_nds(sim; box)
 
 Pressure reaction on the fluid, using stored `μ₀` and Float64 arithmetic.
 `box` contains pressure-cell indices; it must enclose the complete candidate
-support and exclude other bodies. The default omits domain BC jumps and is
-for a closed body entirely inside the domain. Use `force_on_body_nds` for
+support and exclude other bodies. Preflight with `validate_force_box` to
+require `μ₀ == 1` on every normal boundary face. Use `force_on_body_nds` for
 the repository's opposite, physical body-force convention.
 """
-function pressure_force_nds(sim; box=nothing)
+function pressure_force_nds(sim; box)
     p, μ₀ = sim.flow.p, sim.flow.μ₀
     T = promote_type(Float64, eltype(p))
     region = _force00_region(sim, box)
@@ -68,13 +63,14 @@ function pressure_force_nds(sim; box=nothing)
 end
 
 """
-    viscous_force_nds(sim; box=nothing)
+    viscous_force_nds(sim; box)
 
 The existing `-2ν S(I,u)` viscous reaction with the same telescoping area
 vector and region as `pressure_force_nds`. This retains the existing strain
 discretization; it does not supply a wall-resolved shear model.
+Call `validate_force_box` for the same immutable body/box before sampling.
 """
-function viscous_force_nds(sim; box=nothing)
+function viscous_force_nds(sim; box)
     u, μ₀, ν = sim.flow.u, sim.flow.μ₀, sim.flow.ν
     T = promote_type(Float64, eltype(u))
     region = _force00_region(sim, box)
@@ -84,8 +80,8 @@ function viscous_force_nds(sim; box=nothing)
     return _force00_sum(df, ndims(sim.flow.p))
 end
 
-"""`-(pressure_force_nds(sim) + viscous_force_nds(sim))`, force on the body."""
-force_on_body_nds(sim; box=nothing) = -(pressure_force_nds(sim; box) + viscous_force_nds(sim; box))
+"""`-(pressure_force_nds(sim; box) + viscous_force_nds(sim; box))`, force on the body."""
+force_on_body_nds(sim; box) = -(pressure_force_nds(sim; box) + viscous_force_nds(sim; box))
 
 @inline function _force00_cv_face!(values, p, u, ν, I::CartesianIndex{D}, J,
                                   axis, side, ::Type{T}) where {D,T}
@@ -142,6 +138,8 @@ Read-only candidate/box preflight. Require nonempty candidate support and
 enclose every physical pressure-cell centre with candidate SDF `< 2+ϵ`
 (including the solid), matching `measure!`'s narrow-band extent. Check the
 two-cell domain inset and four-cell sampled scene-face clearance as well.
+Every normal box-boundary face must have stored `μ₀ == 1` exactly: this is
+the discrete closure precondition, independent of the SDF's metric quality.
 An explicit `body` selects the candidate when `sim.body` includes ground.
 Only backend reductions reach the host; no solver field is changed.
 
@@ -150,8 +148,7 @@ validate_box=false)` for that same immutable body and box. Moving bodies
 must retain the default validation at each measurement.
 """
 function validate_force_box(sim, box; body=sim.body)
-    cells = _force00_region(sim, box; domain_inset=2)
-    isnothing(box) && throw(ArgumentError("candidate readouts require an explicit box"))
+    cells = _force00_region(sim, box)
     p = sim.flow.p
     T, D = eltype(p), ndims(p)
     ϵ = hasproperty(sim, :ϵ) ? T(sim.ϵ) : one(T)
@@ -167,7 +164,10 @@ function validate_force_box(sim, box; body=sim.body)
     largest == 1 || throw(ArgumentError("candidate has no support in the flow domain"))
     for axis in 1:D, side in (-1, 1)
         face_index = side < 0 ? first(box[axis]) : last(box[axis]) + 1
-        face = CartesianIndices(ntuple(i -> i == axis ? (face_index:face_index) : box[i], D))
+        face_ranges = ntuple(i -> i == axis ? (face_index:face_index) : box[i], D)
+        all(isone, view(sim.flow.μ₀, face_ranges..., axis)) ||
+            throw(ArgumentError("normal box-boundary faces require μ₀ == 1 exactly"))
+        face = CartesianIndices(face_ranges)
         _force00_cv_face_clearance(sim, face, axis, promote_type(Float64, T))
     end
     return box
@@ -197,8 +197,7 @@ are one in solver units. All reductions and products accumulate in Float64.
 Kernels run through WaterLily's existing CPU/GPU `@loop`; no field is changed.
 """
 function control_volume_terms(sim, box)
-    cells = _force00_region(sim, box; domain_inset=2)
-    isnothing(box) && throw(ArgumentError("CV requires an explicit box"))
+    cells = _force00_region(sim, box)
     p, u, u⁰, ν = sim.flow.p, sim.flow.u, sim.flow.u⁰, sim.flow.ν
     D, T = ndims(p), promote_type(Float64, eltype(p))
     length(sim.flow.Δt) >= 2 || throw(ArgumentError("CV storage requires a completed step"))

@@ -1,0 +1,13 @@
+{
+  "csv_sha256": "c48e92cbd81c144df121087f82c2d364870390399238655773ec034ead7df78a",
+  "evidence_class": "CPU short-window source-path regression; not T4 C1 evidence",
+  "force00_source_sha256": {
+    "julia/CFDSDFWaterLily/gen01/Force00.jl": "4f3649a5710cb2a51fab1febf3feb3aa9aa38981c99a362965ad971a5b83e7f2",
+    "scripts/waterlily_force00_dispatch.jl": "e43fe90f6ebb932ab2e6f8649a6092d76dda2dc8d5311779d5bf0b68bc292a1a",
+    "scripts/waterlily_force00_job.jl": "3d98483dffc846b10f2e9920db9505342ef881fd70e0bcb33f66f7f459ccdb73"
+  },
+  "legacy_and_cur_bytes_and_final_arrays_identical": true,
+  "status": "PASS",
+  "summary_source_sha256_equal_to_uniform_and_checkout": true,
+  "telemetry_noncomparability_explicit": true
+}

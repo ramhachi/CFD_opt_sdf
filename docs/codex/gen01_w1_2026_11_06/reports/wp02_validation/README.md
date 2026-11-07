@@ -1,7 +1,8 @@
 # FORCE-00 CPU validation records
 
-`final/` contains the current Amendment 2 acceptance captures for the
-`gen01/Force00.jl` implementation. `wp02_report.md` in the parent directory
+`amendment3/` contains the current source-review-fix acceptance captures for
+`gen01/Force00.jl`. `final/` preserves the preceding Amendment 2 captures and
+must not be used as provenance for the amended source. `wp02_report.md` in the parent directory
 records commands, outcomes, failure sets and the complete host commit list.
 These are CPU software/numerical fixtures, not registered GPU evidence or
 readout adoption. The production `docs/evidence/force00_2026_11/` directory
@@ -31,7 +32,8 @@ readouts = CFDSDFWaterLily.force_readouts(sim, box; body=candidate)
 `cur`, `nds`, `cv` are body-force vectors: drag = +Fx, downforce = -Fz.
 `box` is a tuple of inclusive pressure-cell ranges. It must enclose only
 the candidate support, stay two cells inside domain boundaries, and keep
-four sampled SDF cells from scene bodies including the ground. These are
+four sampled SDF cells from scene bodies including the ground. Every normal
+boundary face must have stored `mu0 == 1` exactly. These are
 sampled geometry checks, not a continuum clearance certificate.
 
 Run from the repository root using fresh output destinations:
@@ -43,6 +45,7 @@ julia --project=julia/CFDSDFWaterLily -O1 scripts/force00_uniform_pressure.jl /t
 cmp /tmp/force00-uniform-new-a.json /tmp/force00-uniform-new-b.json
 julia --project=julia/CFDSDFWaterLily scripts/force00_job_regression.jl /tmp/force00-cpu-job-new
 .venv/bin/python -m pytest -q tests/test_force00_gate.py tests/test_force00_uniform_inputs.py -p no:cacheprovider
+.venv/bin/python -m pytest -q tests/test_force00_boxes.py -p no:cacheprovider
 .venv/bin/python -m compileall src tests
 .venv/bin/python -m pytest --ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider
 ```
@@ -50,7 +53,7 @@ julia --project=julia/CFDSDFWaterLily scripts/force00_job_regression.jl /tmp/for
 The existing Python environment and pinned Julia project/manifest are used
 unchanged. Julia timing receipts include process startup and JIT. No GPU
 solver is invoked. Current raw logs/JUnit are retained losslessly as gzip,
-with both raw and compressed hashes in `final/log_archive.json`.
+with both raw and compressed hashes in the corresponding `log_archive.json`.
 
 U1 has 40 placements on each of flow24/flow32: 32 SHA-verified FID shifts
 and eight additional z-only shifts from the existing Halton generator.
@@ -64,20 +67,26 @@ window, original 13 CSV columns and appended cur tokens, plus final arrays.
 
 ## Later user GPU runs and one-shot gate
 
-The copied job takes the original raw-input/output arguments and requires
-`FORCE00_CV_BOX='lo:hi,lo:hi,lo:hi'`. Its 13 existing columns, cadence8,
+The copied job takes the original raw-input/output arguments and reads
+`docs/harness/force00_boxes.json`. Its 13 existing columns, cadence8,
 [80,120] time-weighted window and phase semantics are preserved. The exact
 delta is `scripts/waterlily_force00_job.diff`. An optional dispatcher uses
-`FORCE00_CASE=flow_24|flow_32` to select the inventory only. Proposed enclosing
-boxes for the current parent are `47:106,11:64,11:46` on flow24 and
-`62:141,14:85,14:61` on flow32; actual geometry preflight must pass.
+`FORCE00_CASE=flow_24|flow_32` to select the inventory only. The registered
+largest enclosing boxes are `4:149,4:71,6:53` on flow24 and
+`4:199,4:95,6:71` on flow32. `scripts/force00_boxes.py` computed them once from
+phase-zero Float32 parent moments and refuses an existing registry. Actual
+geometry preflight must pass for each state/phase. An environment box override
+requires both `FORCE00_CPU_TEST=1` and an actual CPU Array; it is test-only.
+The summary records the Force00/job/dispatcher SHAs, which must match U1.
+Variant wall time and peak VRAM include readout overhead and are explicitly
+incomparable with the registered jobs.
 
 After separate source review/registration and the user's F1-F3 GPU runs,
 create the production evidence directory. Copy the manifest template
 `force00_runs.example.json` as `force00_runs.json`, retain the required
 identities/phases and hash every consumed artifact in repository-relative
 SHA256SUMS. Produce a fresh source-bound uniform-pressure JSON there or copy
-`final/uniform_pressure.json` without changing bytes and list its hash.
+`amendment3/uniform_pressure.json` without changing bytes and list its hash.
 Then run the write-once gate:
 
 ```sh
@@ -87,7 +96,10 @@ Then run the write-once gate:
 F1 references UNC U01 smoke k0/formal half plus U2 k1..k6. F2 uses SCREEN
 f32a k13/14 and f32b k15/16. F3 uses the FID camber_m19.7 pair at k7..k10.
 C4 uses 15% for adoption and reports 10% diagnostically. The exact UNC camber
-sigma_d is absent, so C5 remains INCOMPLETE without a proxy. GPU kernel
+sigma_d is absent, so C5 remains descriptive INCOMPLETE without blocking
+adoption. C1 also byte-regresses all eight F3 parent/candidate CSVs. Missing
+C1-C4 inputs cause a nonzero exit without writing `gate.json`; the one-shot
+write is reserved for a complete decision. GPU kernel
 execution, T4 C1 bytes, phase dependence, parent differences and readout
 adoption remain unverified. Whether #293's 7-9% built-in/CV gap occurs on
 this project's parent is unknown until GPU F1-F3. Frozen study conclusions

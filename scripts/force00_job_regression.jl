@@ -73,11 +73,11 @@ function parent_constants()
     return constants, raw
 end
 
-function cpu_job_module(path, name, output_dir, constants, box)
+function cpu_job_module(path, name, output_dir, constants)
     job = Module(name)
     for (key, value) in pairs(merge(constants, (
         T_END=0.30, BURN_IN=0.15, SAMPLE_EVERY=1, output_dir=output_dir,
-        FORCE00_CV_BOX=box, CFDSDFWaterLily=CFDSDFWaterLily,
+        CFDSDFWaterLily=CFDSDFWaterLily,
         WaterLily=WaterLily, CUDA=Force00CPUTelemetry, sha256=SHA.sha256,
         sim_step! = WaterLily.sim_step!, sim_time=WaterLily.sim_time,
         GridSDF=CFDSDFWaterLily.GridSDFBody.GridSDF,
@@ -92,7 +92,7 @@ function cpu_job_module(path, name, output_dir, constants, box)
     loaded = Set{Symbol}()
     for expression in Meta.parseall(read(path, String); filename=path).args
         key = definition_name(expression)
-        if key in required || key == :force00_cv_box
+        if key in required || key in (:force00_cpu_box, :force00_cv_box, :force00_source_sha256)
             Core.eval(job, key == :stationarity_metrics ? short_stationarity(expression) : expression)
             push!(loaded, key)
         end
@@ -126,7 +126,7 @@ function main()
     constants, raw = parent_constants()
     # At flow_16 this encloses the complete v18 parent, excludes the ground,
     # and is checked by the production CV implementation against four-cell
-    # body clearance and two-cell domain clearance.
+    # body clearance, exact normal-face μ₀ = 1, and two-cell domain clearance.
     box = (31:69, 9:40, 7:30)
     baseline_dir, variant_dir = joinpath.(output, ("registered", "force00"))
     mkpath(baseline_dir)
@@ -147,17 +147,20 @@ function main()
     end
     @test_throws ArgumentError force00_case_expression(:(main()), "flow_48")
     @test_throws ErrorException force00_case_expression(:(function main() end), "flow_24")
-    baseline = cpu_job_module(baseline_source, :Force00BaselineJob, baseline_dir, constants, box)
-    variant = cpu_job_module(variant_source, :Force00VariantJob, variant_dir, constants, box)
+    baseline = cpu_job_module(baseline_source, :Force00BaselineJob, baseline_dir, constants)
+    variant = cpu_job_module(variant_source, :Force00VariantJob, variant_dir, constants)
     case = first(CFDSDFWaterLily.V16W4Sensitivity.w4_cases(
         constants.CANONICAL_ORIGIN_M, constants.CANONICAL_DESIGN_SPACING_M))
     @test case.case_id == "flow_16"
     grid, margin, phi_f_sha, phi_c_sha = call_job(baseline, :load_canonical_grid, raw)
     registered, force00 = cpu_parent_sim(case, grid), cpu_parent_sim(case, grid)
     @test reinterpret(UInt8, vec(registered.sim.flow.u)) == reinterpret(UInt8, vec(force00.sim.flow.u))
-    for (job, owned) in ((baseline, registered), (variant, force00))
-        call_job(job, :run_case_measurement, case, owned, margin,
-            phi_f_sha, phi_c_sha, phi_f_sha, 0)
+    box_text = join(("$(first(r)):$(last(r))" for r in box), ',')
+    withenv("FORCE00_CPU_TEST" => "1", "FORCE00_CV_BOX" => box_text) do
+        for (job, owned) in ((baseline, registered), (variant, force00))
+            call_job(job, :run_case_measurement, case, owned, margin,
+                phi_f_sha, phi_c_sha, phi_f_sha, 0)
+        end
     end
     original = read(joinpath(baseline_dir, "flow_16.forces.csv"), String)
     extended = readlines(joinpath(variant_dir, "flow_16.forces.csv"))
@@ -182,10 +185,64 @@ function main()
         @test reinterpret(UInt8, vec(getproperty(registered.sim.flow, key))) ==
             reinterpret(UInt8, vec(getproperty(force00.sim.flow, key)))
     end
-    @test call_job(variant, :force00_cv_box, "31:69,9:40,7:30") == box
-    @test_throws Exception call_job(variant, :force00_cv_box, "1:2,3:4")
-    @test_throws Exception call_job(variant, :force00_cv_box, "2:1,3:4,5:6")
-    @test_throws Exception call_job(variant, :force00_cv_box, "a:2,3:4,5:6")
+    source_hashes = call_job(variant, :force00_source_sha256)
+    @test length(source_hashes) == 3
+    for (path, digest) in source_hashes
+        @test digest == bytes2hex(sha256(read(joinpath(FORCE00_REPO, path))))
+        @test occursin("\"$path\":\"$digest\"", summary_text)
+    end
+    for flag in ("force00_timing_comparable_to_registered", "force00_peak_vram_comparable_to_registered")
+        @test occursin("\"$flag\":false", summary_text)
+    end
+    @test occursin("\"force00_timing_includes_readout_overhead\":true", summary_text)
+    @test call_job(variant, :force00_cpu_box, box_text) == box
+    @test_throws Exception call_job(variant, :force00_cpu_box, "1:2,3:4")
+    @test_throws Exception call_job(variant, :force00_cpu_box, "2:1,3:4,5:6")
+    @test_throws Exception call_job(variant, :force00_cpu_box, "a:2,3:4,5:6")
+    withenv("FORCE00_CV_BOX" => box_text, "FORCE00_CPU_TEST" => nothing) do
+        @test_throws ArgumentError call_job(variant, :force00_cv_box, case, force00.sim)
+    end
+    withenv("FORCE00_CV_BOX" => box_text, "FORCE00_CPU_TEST" => "1") do
+        @test call_job(variant, :force00_cv_box, case, force00.sim) == box
+        # A non-Array backend is rejected even with the CPU opt-in. This uses
+        # an Array view rather than loading or initializing CUDA on the CPU.
+        non_array = (; flow=(; u=view(force00.sim.flow.u, :, :, :, :)))
+        @test_throws ArgumentError call_job(variant, :force00_cv_box, case, non_array)
+    end
+    # Exercise the exact production registry loader without a GPU or external
+    # process, including both grid identities and fail-closed metadata guards.
+    registry_path = joinpath(FORCE00_REPO, "docs", "harness", "force00_boxes.json")
+    withenv("FORCE00_CV_BOX" => nothing, "FORCE00_CPU_TEST" => nothing) do
+        for production_case in CFDSDFWaterLily.V16W4Sensitivity.w4_cases(
+                constants.CANONICAL_ORIGIN_M, constants.CANONICAL_DESIGN_SPACING_M)
+            production_case.case_id in ("flow_24", "flow_32") || continue
+            registered_box = call_job(variant, :force00_cv_box, production_case, force00.sim)
+            @test all(first(r) <= last(r) for r in registered_box)
+            @test all(i -> first(registered_box[i]) >= 4 &&
+                last(registered_box[i]) <= production_case.flow_dims[i] - 1, 1:3)
+        end
+        @test_throws Exception call_job(variant, :force00_cv_box, case, force00.sim)
+        valid_registration = read(registry_path, String)
+        mktempdir() do scratch
+            bad_path = joinpath(scratch, "boxes.json")
+            production_case = only(c for c in CFDSDFWaterLily.V16W4Sensitivity.w4_cases(
+                constants.CANONICAL_ORIGIN_M, constants.CANONICAL_DESIGN_SPACING_M)
+                if c.case_id == "flow_24")
+            for (old, new) in (("force00_boxes_v1", "force00_boxes_v0"),
+                    (constants.EXPECTED_STATE_SHA256, repeat("0", 64)),
+                    (constants.EXPECTED_PHI_FORTRAN_SHA256, repeat("0", 64)),
+                    (r"\"domain_inset_cells\"\s*:\s*2", "\"domain_inset_cells\":3"),
+                    (r"\"body_clearance_cells\"\s*:\s*5", "\"body_clearance_cells\":4"),
+                    (r"\"flow_dims\"\s*:\s*\[[^\]]+\]", "\"flow_dims\":[1,2,3]"),
+                    (r"\"lower\"\s*:\s*\[[^\]]+\]", "\"lower\":[0,0,0]"))
+                invalid = replace(valid_registration, old => new)
+                @test invalid != valid_registration
+                write(bad_path, invalid)
+                @test_throws Exception Base.invokelatest(() ->
+                    variant.force00_cv_box(production_case, force00.sim; path=bad_path))
+            end
+        end
+    end
     projected_path = joinpath(output, "force00.original_columns.csv")
     write(projected_path, projected)
     receipt = """
@@ -205,6 +262,7 @@ function main()
       "source_ast_changes":"stationarity endpoints only; top-level/main not run; CUDA telemetry stub",
       "registered_source_sha256":"$(bytes2hex(sha256(read(baseline_source))))",
       "force00_source_sha256":"$(bytes2hex(sha256(read(variant_source))))",
+      "force00_dispatch_sha256":"$(bytes2hex(sha256(read(joinpath(@__DIR__,"waterlily_force00_dispatch.jl")))))",
       "force_module_sha256":"$(bytes2hex(sha256(read(joinpath(FORCE00_REPO,"julia","CFDSDFWaterLily","src","Forces.jl")))))",
       "force00_module_sha256":"$(bytes2hex(sha256(read(joinpath(FORCE00_REPO,"julia","CFDSDFWaterLily","gen01","Force00.jl")))))",
       "parent_phi_fortran_sha256":"$phi_f_sha",

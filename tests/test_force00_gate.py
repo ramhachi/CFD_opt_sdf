@@ -43,6 +43,15 @@ def evidence(tmp_path, gate):
     repo = tmp_path / "repo"
     out = repo / "docs/evidence/force00_2026_11"
     out.mkdir(parents=True)
+    source_hashes = {
+        name: hashlib.sha256(name.encode()).hexdigest() for name in (
+            "julia/CFDSDFWaterLily/gen01/Force00.jl", "scripts/waterlily_force00_job.jl",
+            "scripts/waterlily_force00_dispatch.jl")}
+    boxes_path = repo / "docs/harness/force00_boxes.json"
+    write_json(boxes_path, {"schema": "force00_boxes_v1", "parent_state_sha256": "a" * 64,
+        "parent_phi_fortran_sha256": "c" * 64, "grids": {
+            grid: {"lower": [7, 7, 7], "upper": [40, 40, 40], "flow_dims": dims}
+            for grid, dims in (("flow_24", [150, 72, 54]), ("flow_32", [200, 96, 72]))}})
     refs = {}
     for key in gate.EXPECTED_RUNS:
         run, phase, state = key
@@ -78,6 +87,7 @@ def evidence(tmp_path, gate):
             "force_csv_sha256": digest(csv), "steps": 40, "force_samples": 5,
             "t_end_reached": 121.0,
             "force00_cv_box_lower": [7, 7, 7], "force00_cv_box_upper": [40, 40, 40],
+            "force00_source_sha256": source_hashes,
         }
         summary_path = out / (relative + ".json")
         write_json(summary_path, summary)
@@ -93,13 +103,15 @@ def evidence(tmp_path, gate):
         for phase in gate.U1_PHASES:
             uniform.append({"run": "U1", "body": "v18_parent", "grid": grid, "phase_id": phase,
                             "projected_area": 100.0, "cur": [0.1, 0.0, 0.0],
-                            "nds": [1e-14, 0.0, 0.0], "cv": [0.0, 0.0, 0.0]})
+                            "nds": [1e-14, 0.0, 0.0], "cv": [0.0, 0.0, 0.0],
+                            "box_lower": [7, 7, 7], "box_upper": [40, 40, 40]})
     for radius in (8, 16, 32):
         for phase in gate.U2_PHASES:
             uniform.append({"run": "U2", "body": "w2a_sphere", "radius_cells": radius, "phase_id": phase,
                             "projected_area": 3.141592653589793 * radius**2, "cur": [0.29, 0.0, 0.0],
                             "nds": [1e-14, 0.0, 0.0], "cv": [0.0, 0.0, 0.0]})
-    write_json(out / "uniform_pressure.json", {"schema": "force00_uniform_pressure_v1", "rows": uniform})
+    write_json(out / "uniform_pressure.json", {"schema": "force00_uniform_pressure_v1", "rows": uniform,
+        "source_sha256": source_hashes | {"docs/harness/force00_boxes.json": digest(boxes_path)}})
     manifest(repo, out)
     return repo, out, refs
 
@@ -161,6 +173,21 @@ def test_c1_compares_bytes_and_stops(gate, evidence):
     assert result["adopted_readout"] == "NONE"
 
 
+@pytest.mark.parametrize("phase,state", [(f"k{i}", state) for i in range(7, 11)
+                                           for state in ("v18__parent", "v18__camber_m19.7")])
+def test_f3_c1_compares_all_registered_pair_bytes(gate, evidence, phase, state):
+    repo, out, _ = evidence
+    path = out / f"runs/F3/{state}/{phase}.csv"
+    path.write_text(path.read_text().replace("8.0,0.0", "8.00,0.0", 1))
+    summary = path.with_suffix(".json")
+    data = json.loads(summary.read_text()); data["force_csv_sha256"] = digest(path)
+    write_json(summary, data); manifest(repo, out)
+    result = evaluate(gate, evidence)
+    assert result["criteria"]["C1"]["status"] == "FAIL"
+    assert len(result["criteria"]["C1"]["rows"]) == len(gate.EXPECTED_RUNS)
+    assert result["adopted_readout"] == "NONE"
+
+
 def test_c2_recomputes_vector_norm_and_no100x_extra_gate(gate, evidence):
     repo, out, _ = evidence
     path = out / "uniform_pressure.json"
@@ -190,6 +217,19 @@ def test_c4_sign_and15percent_band(gate, evidence, offset, expected):
     assert result["criteria"]["C4"]["adoption_relative_band"] == 0.15
 
 
+@pytest.mark.parametrize("relative,expected", [(0.15, "PASS"), (0.15 * (1 + 0.5e-9), "PASS"),
+                                                (0.15 * (1 + 2e-9), "HOLD")])
+def test_c4_boundary_has_only_registered_relative_tolerance(gate, evidence, relative, expected):
+    # Translation preserves the parent SD; 13.5 is this fixture's mean.
+    offset = 13.5 * relative
+    change_column(gate, evidence, "F1", "cv_downforce_solver", lambda v, _: v + offset)
+    change_column(gate, evidence, "F1", "cv_fz_solver", lambda v, _: v - offset)
+    row = evaluate(gate, evidence)["criteria"]["C4"]["R_cv"]
+    assert row["status"] == expected
+    assert row["within_15_percent"] is (expected == "PASS")
+    assert row["within_10_percent"] is False
+
+
 def test_c5_descriptive_large_change_does_not_block_adoption(gate, evidence):
     change_column(gate, evidence, "F3", "nds_downforce_solver", lambda v, item: v + (2 if item["state"] != gate.PARENT else 0))
     change_column(gate, evidence, "F3", "nds_fz_solver", lambda v, item: v - (2 if item["state"] != gate.PARENT else 0))
@@ -210,9 +250,22 @@ def test_c5_strict_sigma_boundary_and_invalid_sigma(gate, evidence):
             evaluate(gate, evidence, sigma=value)
 
 
-def test_incomplete_runs_and_missing_sigma(gate, evidence):
+def test_missing_sigma_is_descriptive_and_does_not_spend_incomplete_write(gate, evidence):
     repo, out, _ = evidence
-    assert evaluate(gate, evidence, sigma=None)["status"] == "INCOMPLETE"
+    result = evaluate(gate, evidence, sigma=None)
+    assert result["status"] == "PASS"
+    assert result["adopted_readout"] == "R_cv"
+    assert result["criteria"]["C5"]["status"] == "INCOMPLETE"
+    assert result["criteria"]["C5"]["R_nds"]["status"] == "INCOMPLETE"
+    assert result["criteria"]["C5"]["missing"]
+    assert result["missing"] == []
+    written = gate.write_gate(out, repo_root=repo, references=evidence[2], sigma_d_n=None)
+    assert written == result
+    assert json.loads((out / "gate.json").read_text()) == json.loads(json.dumps(result))
+
+
+def test_incomplete_runs_block_c1_and_refuse_write(gate, evidence):
+    repo, out, refs = evidence
     path = out / "force00_runs.json"
     data = json.loads(path.read_text()); data["runs"].pop()
     write_json(path, data); manifest(repo, out)
@@ -220,6 +273,10 @@ def test_incomplete_runs_and_missing_sigma(gate, evidence):
     assert result["status"] == "INCOMPLETE"
     assert result["adopted_readout"] == "NONE"
     assert result["missing"]
+    assert result["criteria"]["C1"]["status"] == "INCOMPLETE"
+    with pytest.raises(ValueError, match="INCOMPLETE"):
+        gate.write_gate(out, repo_root=repo, references=refs, sigma_d_n=0.001)
+    assert not (out / "gate.json").exists()
 
 
 def test_missing_file_and_uniform_placements_are_incomplete(gate, evidence):
@@ -266,8 +323,8 @@ def test_final_solver_step_can_be_sampled_off_cadence(gate, evidence):
 @pytest.mark.parametrize("defect", ["missing_regular", "missing_first", "steps", "sample_count",
                                   "end_time", "early_endpoint", "steps_type", "count_type"])
 def test_f3_history_cadence_and_summary_fail_closed(gate, evidence, defect):
-    # F3 has no C1 byte reference: missing samples must fail at the history
-    # boundary even when every retained step is divisible by eight.
+    # History validation remains mandatory before C1, even when every retained
+    # step is divisible by eight and the byte reference also detects omission.
     repo, out, _ = evidence
     item = next(item for item in json.loads((out / "force00_runs.json").read_text())["runs"]
                 if item["run"] == "F3")
@@ -378,6 +435,111 @@ def test_write_once_refuses_even_before_reading_inputs(gate, evidence):
     assert (out / "gate.json").read_bytes() == original
 
 
+@pytest.mark.parametrize("absent", ["manifest", "uniform", "uniform_field", "run_catalog", "run_csv", "run_summary", "reference", "reference_field", "boxes"])
+def test_missing_c1_to_c4_input_never_writes(gate, evidence, absent):
+    repo, out, refs = evidence
+    item = json.loads((out / "force00_runs.json").read_text())["runs"][-1]
+    key = (item["run"], item["phase_id"], item["state"])
+    if absent == "manifest":
+        (out / "SHA256SUMS").unlink()
+    elif absent == "reference":
+        del refs[key]
+    elif absent == "reference_field":
+        del refs[key]["summary"]["state_sha256"]
+    elif absent == "uniform_field":
+        path = out / "uniform_pressure.json"
+        data = json.loads(path.read_text()); del data["rows"][0]["nds"]
+        write_json(path, data); manifest(repo, out)
+    else:
+        path = {"uniform": out / "uniform_pressure.json", "run_catalog": out / "force00_runs.json",
+                "run_csv": out / item["forces_csv"], "run_summary": out / item["summary_json"],
+                "boxes": repo / "docs/harness/force00_boxes.json"}[absent]
+        path.unlink(); manifest(repo, out)
+    result = evaluate(gate, evidence)
+    assert result["status"] == "INCOMPLETE"
+    assert result["adopted_readout"] == "NONE"
+    with pytest.raises(ValueError, match="INCOMPLETE"):
+        gate.write_gate(out, repo_root=repo, references=refs, sigma_d_n=0.001)
+    assert not (out / "gate.json").exists()
+
+
+@pytest.mark.parametrize("absent", ["uniform", "reference"])
+def test_early_c1_fail_does_not_spend_write_with_missing_inputs(gate, evidence, absent):
+    repo, out, refs = evidence
+    refs[("F1", "k0", gate.PARENT)]["legacy"] += b"changed bytes\n"
+    if absent == "uniform":
+        (out / "uniform_pressure.json").unlink(); manifest(repo, out)
+    else:
+        del refs[("F3", "k10", gate.CANDIDATE)]
+    assert evaluate(gate, evidence)["criteria"]["C1"]["status"] == "FAIL"
+    with pytest.raises(ValueError, match="INCOMPLETE"):
+        gate.write_gate(out, repo_root=repo, references=refs, sigma_d_n=0.001)
+    assert not (out / "gate.json").exists()
+
+
+@pytest.mark.parametrize("run,phase,state", [("F1", "half", "v18__parent"), ("F2", "k14", "v18__parent"),
+                                              ("F3", "k7", "v18__parent"), ("F3", "k10", "v18__camber_m19.7")])
+def test_registered_box_is_identical_across_phases_and_pair(gate, evidence, run, phase, state):
+    repo, out, refs = evidence
+    path = out / f"runs/{run}/{state}/{phase}.json"
+    data = json.loads(path.read_text()); data["force00_cv_box_lower"][0] += 1
+    write_json(path, data); manifest(repo, out)
+    with pytest.raises(ValueError, match="registered CV box"):
+        gate.write_gate(out, repo_root=repo, references=refs, sigma_d_n=0.001)
+    assert not (out / "gate.json").exists()
+
+
+def test_u1_box_must_match_same_grid_registration(gate, evidence):
+    repo, out, _ = evidence
+    path = out / "uniform_pressure.json"
+    data = json.loads(path.read_text()); data["rows"][0]["box_upper"][0] -= 1
+    write_json(path, data); manifest(repo, out)
+    with pytest.raises(ValueError, match="registered CV box"):
+        evaluate(gate, evidence)
+
+
+@pytest.mark.parametrize("defect", ["parent", "phi", "grid_dims", "hash"])
+def test_registered_box_identity_and_u1_binding_fail_closed(gate, evidence, defect):
+    repo, out, _ = evidence
+    path = repo / "docs/harness/force00_boxes.json"
+    data = json.loads(path.read_text())
+    if defect == "parent": data["parent_state_sha256"] = "0" * 64
+    if defect == "phi": data["parent_phi_fortran_sha256"] = "0" * 64
+    if defect == "grid_dims": data["grids"]["flow_32"]["flow_dims"][0] += 1
+    if defect == "hash": data["extra"] = True
+    write_json(path, data)
+    if defect != "hash":
+        uniform_path = out / "uniform_pressure.json"
+        uniform = json.loads(uniform_path.read_text())
+        uniform["source_sha256"]["docs/harness/force00_boxes.json"] = digest(path)
+        write_json(uniform_path, uniform); manifest(repo, out)
+    with pytest.raises(ValueError):
+        evaluate(gate, evidence)
+
+
+@pytest.mark.parametrize("name", ["julia/CFDSDFWaterLily/gen01/Force00.jl", "scripts/waterlily_force00_job.jl",
+                                  "scripts/waterlily_force00_dispatch.jl"])
+@pytest.mark.parametrize("defect", ["changed", "missing"])
+def test_run_source_hashes_must_equal_u1(gate, evidence, name, defect):
+    repo, out, refs = evidence
+    path = out / f"runs/F3/{gate.CANDIDATE}/k10.json"
+    data = json.loads(path.read_text())
+    if defect == "changed": data["force00_source_sha256"][name] = "0" * 64
+    else: del data["force00_source_sha256"][name]
+    write_json(path, data); manifest(repo, out)
+    with pytest.raises(ValueError, match="source SHA-256"):
+        gate.write_gate(out, repo_root=repo, references=refs, sigma_d_n=0.001)
+    assert not (out / "gate.json").exists()
+
+
+def test_cli_missing_inputs_exits_nonzero_and_writes_nothing(gate, evidence, monkeypatch, capsys):
+    _, out, _ = evidence
+    monkeypatch.setattr(gate, "write_gate", lambda *args, **kwargs: (_ for _ in ()).throw(ValueError("INCOMPLETE C1-C4")))
+    assert gate.main(["--evidence-root", str(out)]) != 0
+    assert "INCOMPLETE" in capsys.readouterr().err
+    assert not (out / "gate.json").exists()
+
+
 def test_invalid_derived_value_does_not_create_partial_gate(gate, evidence, monkeypatch):
     _, out, _ = evidence
     monkeypatch.setattr(gate, "evaluate", lambda *args, **kwargs: {"derived_value": float("inf")})
@@ -388,7 +550,7 @@ def test_invalid_derived_value_does_not_create_partial_gate(gate, evidence, monk
 
 @pytest.mark.parametrize("missing_input", ["manifest", "run_catalog", "run_csv"])
 def test_cpu_validation_reports_are_not_discovered(gate, evidence, missing_input):
-    repo, out, _ = evidence
+    repo, out, refs = evidence
     reports = repo / "docs/codex/gen01_w1_2026_11_06/reports/wp02_validation"
     # Even a complete, correctly hashed decoy must not fill missing production
     # inputs from a sibling reports directory. The gate reads its root only.
@@ -408,6 +570,8 @@ def test_cpu_validation_reports_are_not_discovered(gate, evidence, missing_input
     assert result["status"] == "INCOMPLETE"
     assert result["adopted_readout"] == "NONE"
     assert result["missing"]
+    with pytest.raises(ValueError, match="INCOMPLETE"):
+        gate.write_gate(out, repo_root=repo, references=refs, sigma_d_n=0.001)
     assert not (out / "gate.json").exists()
 
 
@@ -416,11 +580,13 @@ def test_registered_reference_catalog_reads_sha_and_missing_camber_sigma(gate):
     assert set(refs) == set(gate.EXPECTED_RUNS)
     assert refs[("F1", "k0", gate.PARENT)]["legacy"].startswith(b"step,t_u_l,")
     assert refs[("F2", "k15", gate.PARENT)]["grid"] == "flow_32"
+    assert all("legacy" in refs[("F3", phase, state)] for phase in gate.F3_PHASES
+               for state in (gate.PARENT, gate.CANDIDATE))
     assert sigma is None
     assert "camber_m19.7" in provenance["sigma_d_missing"]
     for ref in refs.values():
         if "legacy" not in ref:
-            continue
+            pytest.fail("every C1 reference must have registered CSV bytes")
         rows = [dict(zip(gate.FORCE_COLUMNS, map(float, line.decode().split(","))))
                 for line in ref["legacy"].splitlines()[1:]]
         summary = ref["summary"]
@@ -431,6 +597,27 @@ def test_registered_reference_catalog_reads_sha_and_missing_camber_sigma(gate):
         assert all(row["t_u_l"] < 120.0 for row in rows[:-1])
 
 
+@pytest.mark.parametrize("absent", ["analysis", "analysis_field", "sigma_field"])
+def test_missing_c5_registered_source_keeps_complete_c1_catalog(gate, monkeypatch, absent):
+    read = gate.Manifest.json
+
+    def source(manifest, path):
+        if Path(path).name != "analysis.json":
+            return read(manifest, path)
+        if absent == "analysis":
+            raise FileNotFoundError(path)
+        if absent == "analysis_field":
+            return {}
+        return {"grids": {"flow_32": {"differences": {gate.CANDIDATE: {"downforce": {}}}}}}
+
+    monkeypatch.setattr(gate.Manifest, "json", source)
+    refs, sigma, provenance = gate.registered_references(ROOT)
+    assert set(refs) == set(gate.EXPECTED_RUNS)
+    assert all("legacy" in row for row in refs.values())
+    assert sigma is None
+    assert "camber_m19.7" in provenance["sigma_d_missing"]
+
+
 def test_production_uniform_provenance_binds_area_sources_and_placements(gate, evidence):
     # Use real registered geometry/phase provenance but synthetic force vectors.
     from force00_uniform_inputs import inputs
@@ -439,6 +626,7 @@ def test_production_uniform_provenance_binds_area_sources_and_placements(gate, e
     _, out, _ = evidence
     uniform = json.loads((out / "uniform_pressure.json").read_text())
     uniform.update(waterlily_version="1.8.0", field_type="Float64", source_sha256=dict(data["source_sha256"]),
+                   sphere_radius_m=data["sphere_radius_m"],
                    waterlily_source_sha256={name: hashlib.sha256(name.encode()).hexdigest() for name in gate.WATERLILY_SOURCE_FILES})
     for name in gate.UNIFORM_LOCAL_SOURCES:
         uniform["source_sha256"][name] = digest(ROOT / name)
@@ -450,10 +638,10 @@ def test_production_uniform_provenance_binds_area_sources_and_placements(gate, e
             h = refs[("F1", "k0", gate.PARENT)]["summary"]["flow_spacing_m"] if row["grid"] == "flow_24" else 0.025
             row["projected_area"] = data["planform_area_m2"] / h**2
         else:
-            h = 0.5 / row["radius_cells"]
+            h = data["sphere_radius_m"] / row["radius_cells"]
         row["shift_cells"] = [v / h for v in row["shift_m"]]
     gate.validate_uniform_provenance(uniform, ROOT, refs)
-    for defect in ("area", "source", "shift", "cells", "type", "waterlily"):
+    for defect in ("area", "source", "shift", "cells", "type", "waterlily", "sphere_radius"):
         changed = copy.deepcopy(uniform)
         if defect == "area": changed["rows"][0]["projected_area"] *= 1e12
         if defect == "source": changed["source_sha256"]["julia/CFDSDFWaterLily/src/Forces.jl"] = "0" * 64
@@ -461,6 +649,7 @@ def test_production_uniform_provenance_binds_area_sources_and_placements(gate, e
         if defect == "cells": changed["rows"][0]["shift_cells"][0] += 0.5
         if defect == "type": changed["field_type"] = "Float32"
         if defect == "waterlily": changed["waterlily_source_sha256"]["Metrics.jl"] = "malformed"
+        if defect == "sphere_radius": changed["sphere_radius_m"] *= 2
         with pytest.raises(ValueError):
             gate.validate_uniform_provenance(changed, ROOT, refs)
 

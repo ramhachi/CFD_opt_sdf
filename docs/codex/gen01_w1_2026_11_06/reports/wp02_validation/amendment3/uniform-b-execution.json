@@ -1,0 +1,12 @@
+{
+  "command": [
+    "julia",
+    "--project=julia/CFDSDFWaterLily",
+    "-O1",
+    "scripts/force00_uniform_pressure.jl",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/uniform_pressure-repeat.json"
+  ],
+  "evidence_class": "CPU development validation; no GPU measurement",
+  "exit_code": 0,
+  "wall_seconds_including_process_start_and_jit": 46.18407516705338
+}

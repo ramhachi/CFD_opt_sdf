@@ -2,7 +2,8 @@
 # The literal FORCE-00 copy intentionally retains the registered flow_32
 # inventory. This optional launcher selects F1's flow_24 without modifying that
 # copy, any registered job, or any solver/measurement/window/phase expression.
-# Usage: FORCE00_CASE=flow_24 FORCE00_CV_BOX='lo:hi,lo:hi,lo:hi' \
+# Boxes are fixed per grid by docs/harness/force00_boxes.json.
+# Usage: FORCE00_CASE=flow_24 \
 #   julia --project=julia/CFDSDFWaterLily scripts/waterlily_force00_dispatch.jl \
 #   <phi_fortran.raw> <output_dir>
 

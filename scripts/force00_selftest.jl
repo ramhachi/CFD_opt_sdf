@@ -23,24 +23,64 @@ end
 @testset "stored mu0 telescoping, off-grid 2D/3D" begin
     for D in (2, 3), T in (Float32, Float64)
         sim = sphere_sim(Val(D), T)
+        box = ntuple(_ -> 7:27, D)
+        @test validate_force_box(sim, box) == box
         sim.flow.p .= one(T)
         sim.flow.u .= zero(T)
         # measure! fills only the narrow band: far interior stays zero and
         # far exterior stays one (excluding solver boundary-condition faces).
         @test all(sim.flow.μ₀[CartesianIndex(ntuple(_ -> 17, D)), :] .== 0)
         @test all(sim.flow.μ₀[CartesianIndex(ntuple(_ -> 7, D)), :] .== 1)
-        n = nds_telescoping(sim)
+        @test all(I -> sim.flow.σ[I] > T(3) ?
+            all(isone, sim.flow.μ₀[I, :]) : sim.flow.σ[I] < T(-3) ?
+            all(iszero, sim.flow.μ₀[I, :]) : true,
+            WaterLily.inside(sim.flow.p; buff=2))
+        n = nds_telescoping(sim, box)
         @test all(I -> all(i -> n[I, i] ==
             Float64(sim.flow.μ₀[I + WaterLily.δ(i, I), i]) - Float64(sim.flow.μ₀[I, i]),
-            1:D), WaterLily.inside(sim.flow.p))
-        @test norm(pressure_force_nds(sim)) <= 1e-12
-        @test iszero(norm(viscous_force_nds(sim)))
-        @test norm(force_on_body_nds(sim)) <= 1e-12
-        # A linear pressure probes the sign and rejects artificial domain-wall
-        # terms that a unit-pressure closure alone would conceal.
-        WaterLily.apply!(x -> T(0.125) * x[1], sim.flow.p)
-        @test pressure_force_nds(sim)[1] > 0
+            1:D), CartesianIndices(box))
+        @test all(I -> I in CartesianIndices(box) || all(iszero, n[I, :]),
+            CartesianIndices(sim.flow.p))
+        @test norm(pressure_force_nds(sim; box)) <= 1e-12
+        @test iszero(norm(viscous_force_nds(sim; box)))
+        @test norm(force_on_body_nds(sim; box)) <= 1e-12
+        # For q = 1-μ₀ with q=0 on both end faces, summation by parts gives
+        # Σ p[I](μ₀[I+δᵢ,i]-μ₀[I,i]) = ∂ᵢp Σ q[I,i]. Binary coefficients
+        # make the prescribed pressure exact even in Float32.
+        gradp = [T(2.0^(i - 4)) for i in 1:D]
+        WaterLily.apply!(x -> sum(gradp .* x) + T(2), sim.flow.p)
+        expected = [Float64(gradp[i]) * sum(I ->
+            1.0 - Float64(sim.flow.μ₀[I, i]), CartesianIndices(box)) for i in 1:D]
+        @test pressure_force_nds(sim; box) ≈ expected atol=1e-12 rtol=1e-14
+        @test force_on_body_nds(sim; box) ≈ -expected atol=1e-12 rtol=1e-14
     end
+end
+
+@testset "explicit box and exact boundary moment preconditions" begin
+    sim = sphere_sim(Val(2))
+    box = (7:27, 7:27)
+    @test_throws MethodError nds_telescoping(sim)
+    @test_throws UndefKeywordError pressure_force_nds(sim)
+    @test_throws UndefKeywordError viscous_force_nds(sim)
+    @test_throws UndefKeywordError force_on_body_nds(sim)
+    @test_throws MethodError force_readouts(sim)
+    @test_throws ArgumentError nds_telescoping(sim, nothing)
+    @test_throws ArgumentError pressure_force_nds(sim; box=nothing)
+    @test_throws ArgumentError viscous_force_nds(sim; box=nothing)
+    @test_throws ArgumentError force_on_body_nds(sim; box=nothing)
+    @test_throws ArgumentError control_volume_force(sim, nothing)
+    @test_throws ArgumentError force_readouts(sim, nothing)
+    for axis in 1:2, side in (-1, 1)
+        I = CartesianIndex(ntuple(i -> i == axis ?
+            (side < 0 ? first(box[i]) : last(box[i]) + 1) : first(box[i]), 2))
+        @test sim.flow.μ₀[I, axis] == 1.0
+        # The geometry remains valid; only the stored closure precondition
+        # changes, by one ulp. A distance-based proxy would miss this.
+        sim.flow.μ₀[I, axis] = prevfloat(1.0)
+        @test_throws ArgumentError validate_force_box(sim, box)
+        sim.flow.μ₀[I, axis] = 1.0
+    end
+    @test validate_force_box(sim, box) == box
 end
 
 @testset "Cartesian CV affine-field momentum balance" begin
@@ -121,7 +161,7 @@ end
     flow = deepcopy(candidate_sim.flow)
     WaterLily.measure!(flow, scene)
     sim = (; flow, body=scene)
-    box = (7:27, 7:27) # bottom face at5: fourcellsabovegroundat1
+    box = (7:27, 7:27) # Bottom face at 5: four cells above the ground at 1.
     push!(flow.Δt, 0.25)
     WaterLily.apply!(x -> 0.1 * x[1] + 0.2 * x[2], flow.p)
     @test validate_force_box(sim, box; body=candidate) == box
@@ -138,6 +178,61 @@ end
     @test reinterpret(UInt8, result.cur) == reinterpret(UInt8, expected)
     @test flow.f == snapshot
     @test result == force_readouts(sim, box; body=candidate, validate_box=false)
+end
+
+@testset "solved cylinder nested-box diagnostic (descriptive)" begin
+    # Re100, D16 CPU fixture. This probes the solver's end-of-step pressure
+    # and u⁰ time levels; it is not a project-parent or benchmark qualification.
+    diameter = 16f0
+    center = WaterLily.SA[48.3f0, 48.7f0]
+    body = AutoBody((x, t) -> sqrt(sum(abs2, x - center)) - diameter / 2)
+    sim = Simulation((192, 96), (1f0, 0f0), diameter;
+        ν=diameter / 100, body, T=Float32)
+    boxes = [(32:66, 32:66), (24:90, 20:78), (16:140, 12:86)]
+    foreach(box -> validate_force_box(sim, box), boxes)
+    for _ in 1:1500
+        sim_step!(sim)
+    end
+    function sample()
+        first_box = force_readouts(sim, boxes[1]; validate_box=false)
+        cv = hcat(first_box.cv,
+            (control_volume_force(sim, box) for box in boxes[2:end])...)
+        return (; cur=first_box.cur, nds=first_box.nds, cv)
+    end
+    previous = sample()
+    initial_time = previous_time = Float64(WaterLily.time(sim.flow))
+    cur_integral, nds_integral, cv_integral = zeros(2), zeros(2), zeros(2, 3)
+    lift_difference_integral = 0.0
+    for step in 1:800
+        sim_step!(sim)
+        step % 8 == 0 || continue
+        current_time = Float64(WaterLily.time(sim.flow))
+        current = sample()
+        dt = current_time - previous_time
+        cur_integral .+= dt / 2 .* (previous.cur + current.cur)
+        nds_integral .+= dt / 2 .* (previous.nds + current.nds)
+        cv_integral .+= dt / 2 .* (previous.cv + current.cv)
+        lift_difference_integral += dt / 2 *
+            ((previous.cv[2, 1] - previous.cv[2, 3])^2 +
+             (current.cv[2, 1] - current.cv[2, 3])^2)
+        previous, previous_time = current, current_time
+    end
+    window = previous_time - initial_time
+    cur_mean, nds_mean, cv_mean = cur_integral / window,
+        nds_integral / window, cv_integral / window
+    @test all(isfinite, vcat(cur_mean, nds_mean, vec(cv_mean)))
+    @test window > 0
+    # Record spread, without inventing a precision threshold for instantaneous
+    # box agreement. Storage and pressure time-level offsets average differently.
+    drag_means = cv_mean[1, :]
+    relative_spread = (maximum(drag_means) - minimum(drag_means)) /
+        abs(sum(drag_means) / length(drag_means))
+    println("FORCE00_CYLINDER_BOX_DIAGNOSTIC ", (; diameter_cells=16, reynolds=100,
+        warmup_steps=1500, sampled_steps=800, sample_interval_steps=8,
+        window_solver_time=window, boxes, cur_mean, nds_mean,
+        cv_means=collect(eachcol(cv_mean)), cv_drag_relative_spread=relative_spread,
+        cv_vs_cur_relative=drag_means ./ cur_mean[1] .- 1,
+        instantaneous_box1_box3_lift_rms=sqrt(lift_difference_integral / window)))
 end
 
 println("FORCE00_SELFTEST_PASS (CPU only)")

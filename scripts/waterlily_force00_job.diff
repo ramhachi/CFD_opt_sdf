@@ -1,12 +1,22 @@
 diff --git a/scripts/waterlily_lowdim02_flow32_job.jl b/scripts/waterlily_force00_job.jl
-index da3ab45d..9925f1fa 100644
+index da3ab45d..811d26e3 100644
 --- a/scripts/waterlily_lowdim02_flow32_job.jl
 +++ b/scripts/waterlily_force00_job.jl
+@@ -1,3 +1,3 @@
+-# LOWDIM-02A job: the W4 Candidate C evaluator and measurement contract unchanged, restricted to the
+-# registered flow_32 case and applied to one registered canonical-lattice state per invocation.
+-# Copied from scripts/waterlily_xfid_candidate_c_job.jl; only the case inventory and messages differ (flow_24 -> flow_32).
++# FORCE-00 job: the registered LOWDIM-02A evaluator, with cur/nds/cv readouts.
++# Its solver, legacy force columns, window and placement semantics are unchanged.
++# Use waterlily_force00_dispatch.jl with FORCE00_CASE=flow_24 or flow_32.
 @@ -8,0 +9 @@ include(joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "CFDSDFWater
 +Base.include(CFDSDFWaterLily, joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "gen01", "Force00.jl"))
-@@ -35,0 +37,14 @@ env_tuple(name, ::Type{T}, fallback) where {T} =
+@@ -30 +31 @@ using .CFDSDFWaterLily.V16W4Sensitivity
+-length(ARGS) == 2 || error("usage: waterlily_lowdim02_flow32_job.jl <phi_fortran.raw> <output_dir>")
++length(ARGS) == 2 || error("usage: waterlily_force00_job.jl <phi_fortran.raw> <output_dir> (FORCE-00 flow_32; dispatcher selects flow_24)")
+@@ -35,0 +37,62 @@ env_tuple(name, ::Type{T}, fallback) where {T} =
 +# FORCE-00 boxes use inclusive pressure-cell indices; no implicit measuring box.
-+function force00_cv_box(raw=ENV["FORCE00_CV_BOX"])
++function force00_cpu_box(raw)
 +    fields = split(raw, ',')
 +    length(fields) == 3 || error("FORCE00_CV_BOX requires lo:hi,lo:hi,lo:hi")
 +    ntuple(3) do i
@@ -17,24 +27,73 @@ index da3ab45d..9925f1fa 100644
 +        lo:hi
 +    end
 +end
-+const FORCE00_CV_BOX = force00_cv_box()
 +
-@@ -83 +98 @@ function interpolate_force_row(left, right, t)
++function force00_cv_box(case, sim;
++        path=joinpath(@__DIR__, "..", "docs", "harness", "force00_boxes.json"))
++    if haskey(ENV, "FORCE00_CV_BOX")
++        get(ENV, "FORCE00_CPU_TEST", "") == "1" && sim.flow.u isa Array ||
++            throw(ArgumentError("FORCE00_CV_BOX is allowed only for an explicit CPU Array test (FORCE00_CPU_TEST=1)"))
++        return force00_cpu_box(ENV["FORCE00_CV_BOX"])
++    end
++    text = read(path, String)
++    # The registered schema has only flat per-grid objects. Scope every numeric
++    # field to the selected grid, and reject missing/duplicate fields.
++    function field(pattern, source, label)
++        matches = collect(eachmatch(pattern, source))
++        length(matches) == 1 || error("FORCE-00 box registration requires exactly one $label")
++        only(matches).captures[1]
++    end
++    hash_field(source, key) = field(Regex("\"$key\"\\s*:\\s*\"([0-9a-f]{64})\""), source, key)
++    field(r"\"schema\"\s*:\s*\"([^\"]+)\"", text, "schema") == "force00_boxes_v1" ||
++        error("FORCE-00 box registration schema mismatch")
++    parent = read(joinpath(@__DIR__, "..", "docs", "evidence", "v18_genesis_2026_10_19", "genesis.json"), String)
++    hash_field(text, "parent_state_sha256") == hash_field(parent, "state_sha256") ||
++        error("FORCE-00 box registration parent state SHA mismatch")
++    hash_field(text, "parent_phi_fortran_sha256") == hash_field(parent, "phi_fortran_order_sha256") ||
++        error("FORCE-00 box registration parent phi SHA mismatch")
++    case.case_id in ("flow_24", "flow_32") || error("FORCE-00 has no registered box for $(case.case_id)")
++    grid = field(Regex("\"$(case.case_id)\"\\s*:\\s*\\{([^{}]*)\\}", "s"), text, case.case_id)
++    triple(key) = Tuple(parse.(Int, split(field(
++        Regex("\"$key\"\\s*:\\s*\\[([^\\]]+)\\]"), grid, key), ',')))
++    integer(key) = parse(Int, field(Regex("\"$key\"\\s*:\\s*(\\d+)(?=\\s*(?:,|\\z))"), grid, key))
++    lower, upper = triple("lower"), triple("upper")
++    dims = triple("flow_dims")
++    support_lower, support_upper = triple("mu0_support_lower"), triple("mu0_support_upper")
++    all(length(x) == 3 for x in (lower, upper, dims, support_lower, support_upper)) ||
++        error("FORCE-00 box registration requires three axes")
++    dims == case.flow_dims || error("FORCE-00 registered box flow dimensions mismatch")
++    integer("domain_inset_cells") == 2 && integer("body_clearance_cells") == 5 ||
++        error("FORCE-00 registered box margins mismatch")
++    all(i -> 4 <= lower[i] <= support_lower[i] - 5 && support_lower[i] <= support_upper[i] &&
++             support_upper[i] + 5 <= upper[i] <= dims[i] - 1, 1:3) ||
++        error("FORCE-00 registered box violates the declared domain/support margins")
++    return ntuple(i -> lower[i]:upper[i], 3)
++end
++
++function force00_source_sha256()
++    root = normpath(joinpath(@__DIR__, ".."))
++    Dict(path => bytes2hex(sha256(read(joinpath(root, path)))) for path in (
++        "julia/CFDSDFWaterLily/gen01/Force00.jl", "scripts/waterlily_force00_job.jl",
++        "scripts/waterlily_force00_dispatch.jl"))
++end
++
+@@ -83 +146 @@ function interpolate_force_row(left, right, t)
 -    ntuple(i -> i == 2 ? Float64(t) : left[i] + alpha * (right[i] - left[i]), 13)
 +    ntuple(i -> i == 2 ? Float64(t) : left[i] + alpha * (right[i] - left[i]), length(left))
-@@ -131 +146 @@ function write_force_csv(path, rows)
+@@ -131 +194 @@ function write_force_csv(path, rows)
 -        println(io, "step,t_u_l,fx_solver,fy_solver,fz_solver,drag_solver,downforce_solver,pressure_fx_solver,pressure_fy_solver,pressure_fz_solver,viscous_fx_solver,viscous_fy_solver,viscous_fz_solver")
 +        println(io, "step,t_u_l,fx_solver,fy_solver,fz_solver,drag_solver,downforce_solver,pressure_fx_solver,pressure_fy_solver,pressure_fz_solver,viscous_fx_solver,viscous_fy_solver,viscous_fz_solver,cur_fx_solver,cur_fy_solver,cur_fz_solver,cur_drag_solver,cur_downforce_solver,nds_fx_solver,nds_fy_solver,nds_fz_solver,nds_drag_solver,nds_downforce_solver,cv_fx_solver,cv_fy_solver,cv_fz_solver,cv_drag_solver,cv_downforce_solver")
-@@ -142,0 +158,2 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
+@@ -142,0 +206,3 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
 +    # This registered geometry is static; validate the explicit measuring box once.
-+    CFDSDFWaterLily.validate_force_box(sim, FORCE00_CV_BOX; body=bodies.candidate)
-@@ -145 +162 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
++    force00_box = force00_cv_box(case, sim)
++    CFDSDFWaterLily.validate_force_box(sim, force00_box; body=bodies.candidate)
+@@ -145 +211 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
 -    history = Vector{NTuple{13,Float64}}()
 +    history = Vector{NTuple{28,Float64}}()
-@@ -162,0 +180,2 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
-+            readouts = CFDSDFWaterLily.force_readouts(sim, FORCE00_CV_BOX;
+@@ -162,0 +229,2 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
++            readouts = CFDSDFWaterLily.force_readouts(sim, force00_box;
 +                body=bodies.candidate, validate_box=false)
-@@ -168,0 +188,7 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
+@@ -168,0 +237,7 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
 +                # Duplicate the original arithmetic for byte-identical R_cur columns.
 +                Float64(total[1]), Float64(total[2]), Float64(total[3]),
 +                Float64(total[1]), Float64(-total[3]),
@@ -42,6 +101,24 @@ index da3ab45d..9925f1fa 100644
 +                Float64(readouts.nds[1]), Float64(-readouts.nds[3]),
 +                Float64(readouts.cv[1]), Float64(readouts.cv[2]), Float64(readouts.cv[3]),
 +                Float64(readouts.cv[1]), Float64(-readouts.cv[3]),
-@@ -241,0 +268,2 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
-+        force00_cv_box_lower=first.(FORCE00_CV_BOX),
-+        force00_cv_box_upper=last.(FORCE00_CV_BOX),
+@@ -241,0 +317,7 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
++        force00_cv_box_lower=first.(force00_box),
++        force00_cv_box_upper=last.(force00_box),
++        force00_source_sha256=force00_source_sha256(),
++        force00_timing_includes_readout_overhead=true,
++        force00_timing_comparable_to_registered=false,
++        force00_peak_vram_comparable_to_registered=false,
++        force00_telemetry_scope="wall_seconds and peak_vram_bytes include FORCE-00 readout overhead; not comparable with registered runs",
+@@ -308,0 +391,7 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
++            elseif value isa AbstractDict
++                print(io, "{")
++                for (i, (path, digest)) in enumerate(sort!(collect(pairs(value)); by=first))
++                    i > 1 && print(io, ",")
++                    print(io, "\"", path, "\":\"", digest, "\"")
++                end
++                print(io, "}")
+@@ -366,2 +455,2 @@ function main()
+-    write(joinpath(output_dir, "W4_JOB_DONE"), "The registered LOWDIM-02A flow_32 case returned; host verification required.\n")
+-    println("W4_$(uppercase(CANONICAL_STATE_LABEL))_SENSITIVITY_DONE cases=", length(cases))
++    write(joinpath(output_dir, "W4_JOB_DONE"), "FORCE-00 $(only(EXPECTED_CASE_IDS)) returned; host verification required.\n")
++    println("FORCE00_$(uppercase(CANONICAL_STATE_LABEL))_DONE cases=", length(cases))

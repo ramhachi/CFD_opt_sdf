@@ -1,303 +1,251 @@
-# WP2 FORCE-00 報告
+# WP2 FORCE-00 報告 — Amendment 3
 
 ## 状態
 
-**DONE**
+**DONE — Amendment 3 の実装・CPU 受け入れ検証を完了。**
 
-継続開始 HEAD は `21d1e8e7`、branch は `feat/gen01-w1-02-force00`。
-最新の Amendment 2 を適用した。実装の配置決定待ちは解消済みで、
-`src/` の directory pin と file pin を保持した。
-commit・push・PR #84 の本文／ready 操作は Amendment 2 に従い Claude が
-host で行う。今回、その Git／GitHub 変更は試していない。新しい PR、
-一時 checkout、API blob、課金はない。HEAD は変更していない。
+継続開始 HEAD は `afac79ed177f774965be07460b2b66bfc3bcf943`、branch は
+`feat/gen01-w1-02-force00`。開始時の作業ツリーは clean だった。
+ユーザーの Amendment 3 と、指定 review worktree の仕様 Amendment 1 を適用した。
+commit・push・PR #84 の本文／ready 操作は、最新指示どおり Claude が host で行う。
+今回 HEAD／GitHub は変更していない。
 
-GPU F1〜F3 は未実施。ここでの DONE は CPU 実装の受け入れ条件に限る。
-本番 `docs/evidence/force00_2026_11/` と `gate.json` は存在しない。
-CPU fixture とソースレビューから、採用や物理 qualification は判断しない。
+GPU F1〜F3 と本番 gate は実行していない。本番
+`docs/evidence/force00_2026_11/` と `gate.json` は存在しない。
+CPU 記録はすべて `wp02_validation/amendment3/` に置き、従来の
+`wp02_validation/final/` は Amendment 2 の履歴として保持した。
 
-## 作ったもの（commit 対象の完全な一覧）
+## 作ったもの（commit 対象）
 
-HEAD `21d1e8e7` からの変更・復元・新規 source/document は次のとおり。
-機械可読の完全な stage 対象一覧は
-`wp02_validation/final/commit_inventory.json` にも保存した。
+今回の変更は `afac79ed` からの差分。過去 attempt で済んだ移動・削除を
+今回の作業として数え直していない。機械可読の完全な対象一覧は
+`wp02_validation/amendment3/commit_inventory.json`、末尾に同じ全件を掲載する。
 
-- `julia/CFDSDFWaterLily/gen01/Force00.jl`：新規。元の未追跡 src/Force00.jl から移動。保存 μ₀ の nds、圧力・粘性、2D/3D CV、box 検証、3 読み出し。
-- `julia/CFDSDFWaterLily/gen01/README.md`：新規。凍結 src 外の opt-in module の読み込み規則。
-- `julia/CFDSDFWaterLily/src/Forces.jl`：復元。HEAD の FORCE-00 追加を除き、e3dcdf61 の bytes に戻した。
-- `scripts/force00_gate.py`：変更。gen01 provenance、完全 cadence／endpoint／summary 検証。C1〜C5、write-once、採用規則。
-- `scripts/force00_job_regression.jl`：変更。gen01 include／SHA 参照。元 job と新 job の実 measurement 関数で CPU byte 回帰。
-- `scripts/force00_selftest.jl`：変更。gen01 opt-in。CPU の解析場・閉包・legacy bytes・solver 状態など 78 checks。
-- `scripts/force00_uniform_pressure.jl`：変更。gen01 include／source provenance。決定的 U1/U2 JSON、104 配置、既存出力拒否。
-- `scripts/waterlily_force00_job.jl`：変更。gen01 opt-in。登録 job のコピー、元 13 列を保持、3 読み出しの各 5 列と明示 box。
-- `scripts/waterlily_force00_job.diff`：再生成。登録 job と新規 copy の正確な git diff --no-index --unified=0。
-- `tests/test_force00_gate.py`：変更。44 tests。C1〜C5、採用、INCOMPLETE、書込拒否、cadence、不正入力、reports 非探索。
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_design.md`：更新。Amendment 2 を反映した現在の設計と検証計画。
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_report.md`：更新。本報告。
+- 新規 `scripts/force00_boxes.py`、`docs/harness/force00_boxes.json`、`tests/test_force00_boxes.py`：phase 0 の親の実測 μ₀ support から各 grid の box を一度だけ作る。既存出力は拒否。
+- 変更 `julia/CFDSDFWaterLily/gen01/Force00.jl`：暗黙 box を廃止し、`validate_force_box` に全法線面の厳密な `μ₀ == 1` を追加。
+- 変更 `scripts/force00_selftest.jl`：線形圧力の summation-by-parts の大きさ、box／μ₀ の拒否検査、解いた D16・Re100 円柱の入れ子 box 診断を追加。
+- 変更 `scripts/force00_uniform_inputs.py`、`scripts/force00_uniform_pressure.jl`：球半径の単一定義、登録 box、job／dispatcher の SHA、box 支援測定、全配置の境界 preflight。
+- 変更 `scripts/waterlily_force00_job.jl`、`scripts/waterlily_force00_dispatch.jl`、`scripts/waterlily_force00_job.diff`、`scripts/force00_job_regression.jl`：登録 box、CPU 専用 env override、source SHA、timing／VRAM 非互換、FORCE-00 表記、回帰検証。
+- 変更 `scripts/force00_gate.py`、`tests/test_force00_gate.py`：C5 を採用の阻害条件から除外、C1〜C4 不足時の書込拒否、F3 byte 回帰、box と source の結び付け、C4 境界許容。
+- 変更 `wp02_design.md`、本報告、`wp02_validation/README.md`、`wp02_validation/SHA256SUMS`：最新の設計・再現手順・検証結果・完全な commit 一覧。
+- 新規 `wp02_validation/amendment3/` の全記録：コマンド、exit code、wall time、raw log／JUnit の lossless gzip、CSV／summary、SHA、比較・レビュー記録。
 
-次の 3 ファイルは適用後に削除した。
-`wp02_preserve_pins.proposed.diff` のみ HEAD で追跡済みだったため削除を commit する。
-残る 2 件は継続開始時の未追跡ファイルで、削除後の Git diff には現れない。
+今回の移動元→移動先、復元、削除は **なし**。`src/` は開始時から baseline と一致し、
+そのまま保った。`Forces.jl`、module、Project／Manifest、登録 job、conftest、既存 evidence、
+roadmap／STATE／登録／仕様本文は変更していない。
 
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_preserve_pins.proposed.diff`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_tree_pin.proposed.diff`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_complete_working_tree.patch`
+## インターフェース
 
-既存 entrypoint が使う `scripts/force00_uniform_inputs.py`、
-`scripts/waterlily_force00_dispatch.jl`、`tests/test_force00_uniform_inputs.py`
-は前回 HEAD で commit 済みで、今回の追加 commit には差分がない。
-その loader、Halton generator、dispatcher の既存実装を引き続き再利用する。
-
-CPU 記録の移動元→移動先は次の全件。過去の raw JSON/CSV/log と旧 manifest
-は bytes を保持して移動し、旧 path・旧失敗・旧環境は historical として
-`wp02_validation/README.md` に明記した。追跡済みの旧 path の削除と新 path の追加を
-同じ host commit に含める。Amendment 1 の未追跡記録もすべて移動先を追加する。
-
-| 移動元 | 移動先 |
-| --- | --- |
-| `docs/evidence/force00_2026_11/README.md` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/README.attempt1.md` |
-| `docs/evidence/force00_2026_11/SHA256SUMS` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/SHA256SUMS.attempt1` |
-| `docs/evidence/force00_2026_11/amendment1/README.md` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/README.md` |
-| `docs/evidence/force00_2026_11/amendment1/SHA256SUMS` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/SHA256SUMS` |
-| `docs/evidence/force00_2026_11/amendment1/cpu_job_regression/force00/flow_16.forces.csv` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/cpu_job_regression/force00/flow_16.forces.csv` |
-| `docs/evidence/force00_2026_11/amendment1/cpu_job_regression/force00/flow_16.summary.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/cpu_job_regression/force00/flow_16.summary.json` |
-| `docs/evidence/force00_2026_11/amendment1/cpu_job_regression/force00.original_columns.csv` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/cpu_job_regression/force00.original_columns.csv` |
-| `docs/evidence/force00_2026_11/amendment1/cpu_job_regression/registered/flow_16.forces.csv` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/cpu_job_regression/registered/flow_16.forces.csv` |
-| `docs/evidence/force00_2026_11/amendment1/cpu_job_regression/registered/flow_16.summary.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/cpu_job_regression/registered/flow_16.summary.json` |
-| `docs/evidence/force00_2026_11/amendment1/cpu_job_regression/regression.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/cpu_job_regression/regression.json` |
-| `docs/evidence/force00_2026_11/amendment1/uniform_pressure.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/uniform_pressure.json` |
-| `docs/evidence/force00_2026_11/amendment1/validation/aborted-full-base-mlx.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/aborted-full-base-mlx.log.gz` |
-| `docs/evidence/force00_2026_11/amendment1/validation/aborted-full-feature-mlx.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/aborted-full-feature-mlx.log.gz` |
-| `docs/evidence/force00_2026_11/amendment1/validation/closure_check.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/closure_check.json` |
-| `docs/evidence/force00_2026_11/amendment1/validation/compileall-cpu.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/compileall-cpu.log.gz` |
-| `docs/evidence/force00_2026_11/amendment1/validation/compileall.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/compileall.log.gz` |
-| `docs/evidence/force00_2026_11/amendment1/validation/cpu_environment.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/cpu_environment.json` |
-| `docs/evidence/force00_2026_11/amendment1/validation/cpu_log_archive.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/cpu_log_archive.json` |
-| `docs/evidence/force00_2026_11/amendment1/validation/cpu_validation.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/cpu_validation.json` |
-| `docs/evidence/force00_2026_11/amendment1/validation/diagnostic-tree-pin.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/diagnostic-tree-pin.log.gz` |
-| `docs/evidence/force00_2026_11/amendment1/validation/final_review.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/final_review.json` |
-| `docs/evidence/force00_2026_11/amendment1/validation/focused.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/focused.log.gz` |
-| `docs/evidence/force00_2026_11/amendment1/validation/full-base.junit.xml.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/full-base.junit.xml.gz` |
-| `docs/evidence/force00_2026_11/amendment1/validation/full-base.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/full-base.log.gz` |
-| `docs/evidence/force00_2026_11/amendment1/validation/full-feature.junit.xml.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/full-feature.junit.xml.gz` |
-| `docs/evidence/force00_2026_11/amendment1/validation/full-feature.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/full-feature.log.gz` |
-| `docs/evidence/force00_2026_11/amendment1/validation/full_base.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/full_base.json` |
-| `docs/evidence/force00_2026_11/amendment1/validation/full_suite_comparison.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/full_suite_comparison.json` |
-| `docs/evidence/force00_2026_11/amendment1/validation/job-regression.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/job-regression.log.gz` |
-| `docs/evidence/force00_2026_11/amendment1/validation/pin.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/pin.log.gz` |
-| `docs/evidence/force00_2026_11/amendment1/validation/publication_boundary.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/publication_boundary.json` |
-| `docs/evidence/force00_2026_11/amendment1/validation/review.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/review.json` |
-| `docs/evidence/force00_2026_11/amendment1/validation/selftest.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/selftest.log.gz` |
-| `docs/evidence/force00_2026_11/amendment1/validation/source_pin_preservation.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/source_pin_preservation.json` |
-| `docs/evidence/force00_2026_11/amendment1/validation/tree_pin_conflict.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/tree_pin_conflict.json` |
-| `docs/evidence/force00_2026_11/amendment1/validation/uniform-run1.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/uniform-run1.log.gz` |
-| `docs/evidence/force00_2026_11/amendment1/validation/uniform-run2.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/uniform-run2.log.gz` |
-| `docs/evidence/force00_2026_11/amendment1/validation/uniform_determinism.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment1/validation/uniform_determinism.json` |
-| `docs/evidence/force00_2026_11/cpu_job_regression/force00/flow_16.forces.csv` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/cpu_job_regression/force00/flow_16.forces.csv` |
-| `docs/evidence/force00_2026_11/cpu_job_regression/force00/flow_16.summary.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/cpu_job_regression/force00/flow_16.summary.json` |
-| `docs/evidence/force00_2026_11/cpu_job_regression/force00.original_columns.csv` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/cpu_job_regression/force00.original_columns.csv` |
-| `docs/evidence/force00_2026_11/cpu_job_regression/registered/flow_16.forces.csv` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/cpu_job_regression/registered/flow_16.forces.csv` |
-| `docs/evidence/force00_2026_11/cpu_job_regression/registered/flow_16.summary.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/cpu_job_regression/registered/flow_16.summary.json` |
-| `docs/evidence/force00_2026_11/cpu_job_regression/regression.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/cpu_job_regression/regression.json` |
-| `docs/evidence/force00_2026_11/force00_runs.example.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/force00_runs.example.json` |
-| `docs/evidence/force00_2026_11/uniform_pressure.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/uniform_pressure.json` |
-| `docs/evidence/force00_2026_11/validation/compileall.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/validation/compileall.log.gz` |
-| `docs/evidence/force00_2026_11/validation/focused-tests.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/validation/focused-tests.log.gz` |
-| `docs/evidence/force00_2026_11/validation/gate-tests.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/validation/gate-tests.log.gz` |
-| `docs/evidence/force00_2026_11/validation/interrupted-full-early.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/validation/interrupted-full-early.log.gz` |
-| `docs/evidence/force00_2026_11/validation/interrupted-full-review.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/validation/interrupted-full-review.log.gz` |
-| `docs/evidence/force00_2026_11/validation/interrupted-inplace-baseline.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/validation/interrupted-inplace-baseline.log.gz` |
-| `docs/evidence/force00_2026_11/validation/interrupted-isolated-base.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/validation/interrupted-isolated-base.log.gz` |
-| `docs/evidence/force00_2026_11/validation/log_archive.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/validation/log_archive.json` |
-| `docs/evidence/force00_2026_11/validation/review.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/validation/review.json` |
-| `docs/evidence/force00_2026_11/validation/selftest.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/validation/selftest.log.gz` |
-| `docs/evidence/force00_2026_11/validation/source-pin-base.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/validation/source-pin-base.log.gz` |
-| `docs/evidence/force00_2026_11/validation/source-pin-current.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/validation/source-pin-current.log.gz` |
-| `docs/evidence/force00_2026_11/validation/source_pin_conflict.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/validation/source_pin_conflict.json` |
-| `docs/evidence/force00_2026_11/validation/uniform-run1.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/validation/uniform-run1.log.gz` |
-| `docs/evidence/force00_2026_11/validation/uniform-run2.log.gz` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/validation/uniform-run2.log.gz` |
-| `docs/evidence/force00_2026_11/validation/uniform_determinism.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/validation/uniform_determinism.json` |
-| `docs/evidence/force00_2026_11/validation/validation.json` | `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/validation/validation.json` |
-
-移動以外の新規 CPU 記録・索引は次の全件。raw log／JUnit の gzip は内容を変えず、
-raw と gzip 両方の SHA を `final/log_archive.json` に保存する。
-
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/README.md`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/SHA256SUMS`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/canonical_input_absence.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/closure_check.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/commit_inventory.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/compileall-execution.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/compileall.log.gz`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/cpu_job_regression/force00.original_columns.csv`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/cpu_job_regression/force00/flow_16.forces.csv`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/cpu_job_regression/force00/flow_16.summary.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/cpu_job_regression/registered/flow_16.forces.csv`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/cpu_job_regression/registered/flow_16.summary.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/cpu_job_regression/regression.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/final_sanity.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/focused_checks.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/full-pytest-execution.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/full-pytest.junit.xml.gz`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/full-pytest.log.gz`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/full_suite_comparison.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/job-regression-execution.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/job-regression.log.gz`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/log_archive.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/relocation_verification.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/selftest-execution.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/selftest.log.gz`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/source_preservation.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/source_review.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/uniform-a.log.gz`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/uniform-b.log.gz`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/uniform_determinism.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/uniform_pressure-repeat.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/uniform_pressure.json`
-- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/relocation.json`
-
-## インターフェース（他 WP が使う関数・CLI・ファイル形式）
-
-既存 module は変更せず、caller が一度だけ明示的に読み込む。
+凍結済み module を読み、caller 側から一度だけ opt in する。
 
 ```julia
 Base.include(CFDSDFWaterLily,
     joinpath(repo_root, "julia", "CFDSDFWaterLily", "gen01", "Force00.jl"))
-CFDSDFWaterLily.nds_telescoping(sim)
-CFDSDFWaterLily.pressure_force_nds(sim; box=nothing)
-CFDSDFWaterLily.viscous_force_nds(sim; box=nothing)
-CFDSDFWaterLily.force_on_body_nds(sim; box=nothing)
+CFDSDFWaterLily.nds_telescoping(sim, box)
+CFDSDFWaterLily.pressure_force_nds(sim; box)
+CFDSDFWaterLily.viscous_force_nds(sim; box)
+CFDSDFWaterLily.force_on_body_nds(sim; box)
 CFDSDFWaterLily.validate_force_box(sim, box; body=candidate)
 CFDSDFWaterLily.control_volume_terms(sim, box)
 CFDSDFWaterLily.control_volume_force(sim, box)
 CFDSDFWaterLily.force_readouts(sim, box; body=candidate)
 ```
 
-最後の関数は `(cur=…, nds=…, cv=…)` の物体力。既存規約どおり
-`cur = -WaterLily.total_force(sim)`、drag = +Fx、downforce = -Fz。
-候補＋地面の場では `body=candidate` を渡す。`box` は圧力セルの inclusive な
-`UnitRange` の tuple。物理面は `first(range)-2` と `last(range)-1`、
-領域から 2 セル・scene から sampled SDF で 4 セル以上離し、候補の全 support を囲む。
-μ₀ 自体を変えず Float64 にしてから差を取り、CV も Float64 の和を使う。
-`flow.f` は例外時も復元する。GPU 配列は `@loop` と backend reduction に対応する書き方だが、
-GPU compile／実行の確認は今回行っていない。
+`box=nothing` の既定経路はない。box は圧力セルの inclusive `UnitRange` tuple、
+法線面の index は lower と upper+1、solver 座標は lower−2 と upper−1。
+`validate_force_box` は 2 セルの domain inset、候補の全 support、scene-SDF の面上 4 セル、
+保存 μ₀ の全法線面が厳密に 1 であることを検査する。静止する body／box は最初に検証し、
+以後 `validate_box=false` で読む。`cur/nds/cv` は物体力、drag = +Fx、downforce = −Fz。
+`cur = -WaterLily.total_force(sim)`、候補＋地面では従来どおり candidate だけを積分する。
+Float64 の差と和、CV の `u⁰`／`Δt[end−1]`、`flow.f` の復元は保持した。
 
-`waterlily_force00_job.jl <phi.raw> <output_dir>` は
-`FORCE00_CV_BOX='lo:hi,lo:hi,lo:hi'` を必須とし、元 13 CSV 列の後ろに
-cur／nds／cv の `(fx,fy,fz,drag,downforce)_solver` を追加する。
-元の cadence8、[80,120] endpoint-clipped time-weighted window、phase の式は保持する。
-F1 flow24 の選択は追加 dispatcher の `FORCE00_CASE=flow_24|flow_32` で行い、
-case inventory と単一 predicate 以外は変更しない。
+`scripts/force00_boxes.py` は CPU の `measure!` により親 phase 0 の Float32 μ₀ support を
+求め、親 state／raw SHA とともに `docs/harness/force00_boxes.json` を排他的に生成した。
+最大の domain-inset box を取り、地面を含めない下側 z 面だけ solver z=4 に置く。
+親 support の法線面への最小距離は flow24 が 15 セル、flow32 が 21 セルで、要求の 5 セル以上。
+登録ファイルが存在すれば、測定を開始する前に拒否する。
 
-`force00_uniform_pressure.jl [new-output.json]` は既存 v18 loader／raw phi と
-GridSDF/Candidate-C を使い、FID 登録 32 個＋次の 4 mirror pairs の z-only 8 個を読む。
-親は 2 格子で 80 配置、W2a 解析球は R=8/16/32 の各 8 配置。
-流れを解かず `p=1, u=u⁰=0`。JSON の cur／nds は圧力反作用積分、CV は物体力で、
-どちらも正解は零。既存出力を拒否し、timestamp を出力しない。
+| grid | lower | upper | phase-0 μ₀ support lower | support upper |
+| --- | --- | --- | --- | --- |
+| flow_24 | [4,4,6] | [149,71,53] | [58,24,21] | [94,52,37] |
+| flow_32 | [4,4,6] | [199,95,71] | [77,32,27] | [124,68,48] |
 
-`force00_gate.py --evidence-root <directory>` は直下の
-`uniform_pressure.json`、`force00_runs.json`（schema `force00_runs_v1`）、
-repository-relative `SHA256SUMS` とそこに列挙された run CSV／summary のみ読む。
-reports を再帰探索しない。`gate.json` は排他的に一度だけ書く。
-欠け run／欠け exact UNC sigma は INCOMPLETE。C4 は 15% を採用帯、10% を診断値とし、
-完備した合格 readout は CV 優先、次に nds、なければ NONE。
+job はこの登録ファイルを grid ごとに読み、全位相と F3 の親／候補に同一 bounds を使う。
+`FORCE00_CV_BOX` の override は `FORCE00_CPU_TEST=1` と実際の CPU Array の両方を要求。
+`FORCE00_CASE=flow_24|flow_32` を指定する dispatcher は inventory と単一 predicate だけを変える。
+登録 job の元 13 列、cadence 8、[80,120] の endpoint-clipped time-weighted window、位相の式は保持。
+summary の `force00_source_sha256` は Force00／job／dispatcher の 3 path→SHA の mapping。
+wall time／peak VRAM は追加読出しの費用を含むため、登録 job と比較できないと summary に明記した。
+`W4_JOB_DONE` filename は harness 互換のため保持し、内容は実際の grid と FORCE-00 を表す。
+
+`force00_uniform_pressure.jl [new-output.json]` は、既存 loader、SHA-verified FID 32 shifts、
+同じ Halton 生成器の追加 z-only 8 shifts を使う。親は 2 grid×40、球は 3 radius×8、計 104 配置。
+`p=1,u=u⁰=0` で流れを解かない。球の物理半径は pinned `Simulation.jl` の `SPHERE_RADIUS_M` を
+Python 入力 reader から読み、gate の重複数値を除いた。U1／U2 とも明示 box を検証する。
+
+`force00_gate.py --evidence-root <directory>` は列挙された artifact と repository-relative
+SHA256SUMS だけを読む。CPU reports の subdir は探索しない。
+C1〜C4 の入力不足、欠け file／reference／field は非零終了し、`gate.json` を書かない。
+C1 の FAIL と別入力の不足が同時に起きても書込拒否。C5 の exact σ_d 不足だけなら
+`criteria.C5.status=INCOMPLETE` を残し、C1〜C4 が通る readout の採用は可能。
+両方 PASS は R_cv、片方 PASS はそれ、無ければ NONE。C4 は 15%＋1e-9 の相対境界許容、10% は診断。
+C1 は F1／F2 に加え FID k7〜k10 の親／camber_m19.7 の 8 CSV も byte 回帰し、計 20 run を要求。
+全 summary の bounds は登録値に一致し、3 source SHA は U1 の記録に一致しなければ拒否する。
 
 ## テスト（コマンド、結果、artifact、hash と evidence class）
 
-環境は既存 `.venv -> /Users/sota/projects/FomulaTMU/CFD2026_09/.venv` のまま。
-付け替え・一時 CPU 環境・依存追加・Julia Project/Manifest の変更はない。
-Julia 1.12.6 / WaterLily 1.8.0、CPU Array、Julia 1 thread。
-以下の CPU 結果は `wp02_validation/final/` に保存した。
+既存 `.venv -> /Users/sota/projects/FomulaTMU/CFD2026_09/.venv` をそのまま使った。
+Julia 1.12.6／WaterLily 1.8.0、CPU Array。依存追加、環境の付け替え、pin の変更はない。
+Julia wall time は process start と JIT を含む。全体 pytest と同時実行した検証があるため、
+これらの秒数を性能 benchmark として扱わない。cold JIT を「数秒」条件に含めない点は Amendment 1 に従う。
 
-| コマンド | 結果 |
+| command | result |
 | --- | --- |
-| `julia --project=julia/CFDSDFWaterLily -O0 scripts/force00_selftest.jl` | 78/78 PASS、exit0、JIT 込み 29.47 秒 |
-| `julia --project=julia/CFDSDFWaterLily -O1 scripts/force00_uniform_pressure.jl <new-output.json>` を 2 回 | 104 配置、exit0、143.87 秒／118.65 秒。JSON は byte 同一 |
-| `julia --project=julia/CFDSDFWaterLily scripts/force00_job_regression.jl <new-output-dir>` | PASS、exit0、80.65 秒。元 13 列、追加 cur、最終 flow 配列が byte 同一 |
-| `.venv/bin/python -m pytest -q -p no:cacheprovider tests/test_force00_gate.py tests/test_force00_uniform_inputs.py` | 46 PASS（gate44＋inputs2）、10.59 秒 |
-| `.venv/bin/python -m pytest -q -p no:cacheprovider tests/test_candidate_c_w2a_plan.py::test_candidate_c_w2a_source_manifest_and_criteria_hashes_resolve tests/test_grad_g2_diag5_prereg.py::test_driver_pins_agree_with_the_freeze` | 2 PASS、0.10 秒 |
+| `.venv/bin/python scripts/force00_boxes.py` | 登録成功。親 support、最大 box、combined scene の CPU preflight を検査。既存出力拒否もテスト済み |
+| `julia --project=julia/CFDSDFWaterLily scripts/force00_selftest.jl` | 116/116 PASS、exit0、58.16 秒（JIT 込み） |
+| `julia --project=julia/CFDSDFWaterLily -O1 scripts/force00_uniform_pressure.jl <new-output.json>` ×2 | 両方 exit0、104 配置、54.28／46.18 秒。86,828 bytes が同一 |
+| `julia --startup-file=no --project=julia/CFDSDFWaterLily scripts/force00_job_regression.jl <new-output-dir>` | PASS、15.30 秒。13 samples、元 13 列／追加 cur／最終 flow 配列が byte 同一 |
+| `.venv/bin/python -m pytest -q -p no:cacheprovider tests/test_force00_gate.py tests/test_force00_boxes.py tests/test_force00_uniform_inputs.py` ＋ W2a／directory-pin の 2 tests | 100 PASS（gate86＋boxes10＋inputs2＋pins2）、21.18 秒 |
 | `.venv/bin/python -m compileall src tests` | exit0 |
-| `.venv/bin/python -m pytest --ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` | **3528 passed / 74 skipped / 0 failed / 0 errors**、exit 0、1983.90 秒で完走。 |
-| `git diff --check` | PASS（最終 receipt も確認） |
+| `.venv/bin/python -m pytest --ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` | **3580 passed / 74 skipped / 0 failed / 0 errors**、exit0、1149.41 秒で完走 |
+| `git diff --check`、`git diff e3dcdf61 -- julia/CFDSDFWaterLily/src`、job `.diff` の byte readback | PASS、src diff は空、添付 diff は fresh no-index diff と同一 |
 
-全体 pytest には結果記録だけの `--junitxml=…/full-pytest.junit.xml` を追加した。
-Amendment 2 指定どおり Metal test file だけを ignore し、conftest や既存 test は変えていない。
-base はユーザーが提供した host `e3dcdf61: 3482 passed / 74 skipped / 0 failed`。
-今回 base worktree は作らず、旧 attempt の中断記録・一時環境の run は比較に使わない。
-base の失敗 node 集合は `[]`（ユーザー提供 host 結果）、result の失敗 node 集合は `[]`。一致は `true`。
+全体 pytest に記録専用の `--junitxml=.../full-pytest.junit.xml` を追加した。
+base は user 提供の完走済み host `e3dcdf61`：3482 passed／74 skipped／0 failed、失敗 node 集合 `[]`。
+中断した過去実行や一時 CPU 環境は比較に使わない。結果側の失敗 node 集合も `[]`。両者の集合は同一（`true`）。
+全体実行開始後、gate test の既存 decoy case に書込拒否の assertion だけを追加したため、
+その最終 test body は上記 focused 100 PASS でも検証した。gate／数値／job 実装は開始後に変更していない。
 
-閉包の実測（solver units、p=1）。C2 の projected-area 閾値も nds／CV とも PASS。
+U1／U2 の測定（solver units、p=1）：
 
 | group | R_cur max norm | R_nds max norm | R_nds RMS norm | R_cv max norm |
 | --- | ---: | ---: | ---: | ---: |
-| U1_flow_24 | 20.0320202 | 1.16089254e-13 | 4.71162967e-14 | 0.0 |
-| U1_flow_32 | 33.5220572 | 1.83924127e-13 | 9.42493204e-14 | 0.0 |
-| U2_R8 | 0.237500217 | 5.86745516e-14 | 4.5154193e-14 | 0.0 |
-| U2_R16 | 0.938702755 | 1.55837757e-13 | 1.13641584e-13 | 0.0 |
-| U2_R32 | 0.447844478 | 9.09830202e-13 | 4.36817365e-13 | 0.0 |
+| U1 flow24 | 20.0320202 | 1.16089254e-13 | 4.71162967e-14 | 0.0 |
+| U1 flow32 | 33.5220572 | 1.83924127e-13 | 9.42493204e-14 | 0.0 |
+| U2 R8 | 0.237500217 | 5.86745516e-14 | 4.51541930e-14 | 0.0 |
+| U2 R16 | 0.938702755 | 1.55837757e-13 | 1.13641584e-13 | 0.0 |
+| U2 R32 | 0.447844478 | 9.09830202e-13 | 4.36817365e-13 | 0.0 |
 
-全 104 配置の R_nds 最大は `9.0983020215858424e-13` ≤ `1e-12`。
-一様場の CV はすべて厳密な零。自己テストは別途 off-grid 2D 円／3D 球、
-Float32／Float64 moments、μ₀ band 内外、線形圧力の向き、線形速度の各 CV 項、
-非零の二次速度粘性、legacy bytes、後続 solver の同一性も確認する。
-issue #369 の円 8.5e-3／2.7e-3／2.9e-2、球 R16=0.29 は JSON に併記した。
-配置が異なるため、この upstream 表の exact replay としては扱わない。
+R_nds の全配置最大は `9.098302021585842e-13` ≤ `1e-12`。
+本番 validator で uniform provenance、登録 box と全 20 reference の SHA を直接照合し、
+C2 の projected-area 閾値は nds／CV とも PASS。CV はこの静的な一様場では構成上零となるので、
+この C2 だけから solved flow の妥当性は結論しない。issue #369 の表は JSON に併記し、
+異なる off-grid fixture の記述的な比較として扱う。
 
-主要 hash:
+解いた円柱は D16・Re100、1500 warm-up＋800 sampled steps、cadence8、時間重み付き平均。
+R_cv mean drag は 12.8221663／12.8280682／12.8255013、box 間 spread 0.0460181%。
+R_cur は 11.3992262、R_nds は 11.3965941。CV はこの fixture で cur より 12.48〜12.53% 大きい。
+box1 と box3 の瞬時 lift 差 RMS は 0.2590345 で、平均力の box 非依存性とは区別した。
+この診断に新しい合否閾値やプロジェクト親への転用はない。
 
-- uniform JSON（72,963 bytes、2 回同じ SHA-256）：`058acdc88dce3602f995a7826b81603d186bf23c9dbc1b11ad778a4f4a65ca49`
-- 元 job CSV と新 job の元 13 列の SHA-256：`c48e92cbd81c144df121087f82c2d364870390399238655773ec034ead7df78a`（両方同じ）
-- gen01/Force00.jl：`84c58a6f029d2dd9705d95020151cec564c7141414cdcb2b3d06283fdf275927`
-- 復元した Forces.jl：`0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e`
+主要 SHA-256：
 
-`source_preservation.json` では **src 全 13 ファイルの集合と bytes が e3dcdf61 と同一**、
-`git diff e3dcdf61 -- julia/CFDSDFWaterLily/src` が空と記録した。
-Forces／module／Project／Manifest／登録 job／conftest の SHA も base と一致。
-`waterlily_force00_job.diff` は実際の no-index diff と byte 同一。
-元 job を編集していない。raw log と JUnit の所在・内容 hash は log_archive／SHA256SUMS、
-移動一覧は relocation、完全な commit target は commit_inventory に記録してある。
+- uniform JSON（2 回同じ）：`fc76ee6d3143d9aec9f385756be41b009002790a33fc04086ec780bf84ad369b`
+- 元／projected CSV：`c48e92cbd81c144df121087f82c2d364870390399238655773ec034ead7df78a`
+- Force00.jl：`4f3649a5710cb2a51fab1febf3feb3aa9aa38981c99a362965ad971a5b83e7f2`
+- job：`3d98483dffc846b10f2e9920db9505342ef881fd70e0bcb33f66f7f459ccdb73`
+- dispatcher：`e43fe90f6ebb932ab2e6f8649a6092d76dda2dc8d5311779d5bf0b68bc292a1a`
+- 不変 Forces.jl：`0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e`
 
-独立レビューは native の numerical／gate／authority-pins の 3 役で行い、
-修正必須の問題なし。親側は実ファイル・diff・hash・CPU 実行結果で照合した。
-OpenCode Go MCP はなく、CLI は log 権限失敗後、隔離 XDG でも
-`Provider not found: opencode-go`。Go 委譲済みとは扱っていない。
-model routing と review の記録は `source_review.json`。
+src の全 13 ファイルの集合と bytes が e3dcdf61 と同一であることを
+`source_preservation.json` に記録した。Julia numerical、gate、job と親の registry／uniform を
+別 worker が相互に read-only review し、現登録値に対する must-fix は残っていない。
+OpenCode MCP はなく、CLI は log 権限失敗、隔離 XDG で `Provider not found: opencode-go`。
+Go への委譲済みとはせず、native worker と実 diff／出力で確認した。追加課金 API は使っていない。
 
 ## 仕様からの逸脱と理由
 
-- `Forces.jl` への追加、`src/Force00.jl`、module include は frozen file/directory pin を変えるため行わず、最新 Amendment 2 の `gen01/` と caller Base.include を適用した。
-- CPU 記録は Amendment 2 指定の reports 配下。本番 evidence root は作らない。旧 manifest 内の path は historical として保持した。
-- Julia の cold-process runtime は JIT 込みで報告した。Amendment 1/2 が cold JIT を数秒条件から除外している。
-- 全体 pytest は host 提供 base と比較し、結果側で Metal file を ignore。既存 `.venv` の変更はない。
-- F1 の 8 phase は U01 smoke k0・formal half と U2 k1..k6。F2 の k13/14 は f32a、k15/16 は f32b。登録 artifact の実在／hash に従う。
-- exact `camber_m19.7` UNC sigma は登録 evidence にないため、C5 は INCOMPLETE。C4 は 15% 採用・10% 診断。ともにユーザー amendment の指定どおり。
-- commit／push／PR 操作は host Claude に引き継ぐ。必要な作業ツリー変更と検証記録を残す。
+- 最新 Amendment 2／3 の `gen01/` と caller Base.include を継続し、frozen src は 1 byte も変えていない。
+- `nds_telescoping(sim)` も Amendment 3 の box 必須化に合わせ `nds_telescoping(sim, box)` にした。
+- 全体 test は最新指示の Metal file ignore と user 提供 host base を使用し、追加の base worktree は作らない。
+- F1 は登録 artifact の U01 smoke k0／formal half＋U2 k1〜k6、F2 は f32a k13/14＋f32b k15/16。
+- commit／push／PR 操作は Claude host に引き継ぐ。
 
 ## 未確認の仮定
 
-GPU 配列向けの kernel compile／実行、T4 での F1/F2 C1 regression、
-full-window mean、位相 SD、C4 の符号と帯、F3 対差分は未確認。
-**#293 の「組み込みと control volume は 7〜9% ずれる」が本プロジェクトの親で
-どうかは GPU F1〜F3 実行まで分からない。** CPU の短時間回帰から推定しない。
+**#293 の「組み込みと control volume は 7〜9% ずれる」が本プロジェクトの親でどうかは、
+GPU F1〜F3 実行まで分からない。** 今回の円柱診断の約 12.5% を v18 の値として扱わない。
+GPU kernel の compile／実行、T4 での C1 bytes、位相 SD、C4 の帯、F3 対差分、readout 採用は未確認。
+F1〜F3 は仕様 Amendment 1 に従い Kaggle T4 の reference identity が必要。
 
-W2a 球は解析 branch の半径・SDF を使い、空の遠方領域を crop した geometry-only fixture。
-W2a の solved-flow domain や upstream の同一配置を再現する証拠ではない。
-box の SDF sampled clearance は非 metric SDF の連続幾何証明ではない。
-exact UNC camber sigma の不足は C5 の既知の入力欠落であり、推測で埋めていない。
+CPU support は実測 Float32 μ₀ 配列だが、CPU GridSDF の map は Float64 で、GPU device_copy は
+map 自体も Float32。GPU 幾何演算の bitwise replay とは主張しない。現登録は最小 15／21 セルの余裕を持ち、
+本番も全法線面 μ₀＝1 と scene-SDF の preflight を必ず通す。
+job の support 上側検査は generator の法線面 upper+1 より 1 セル保守的で、現登録の余裕では影響しない。
+非 metric SDF の sampled clearance は連続幾何の証明ではない。
+
+球は pinned W2a 解析半径を使い遠方を crop した geometry-only fixture。
+W2a solved-flow domain／upstream の同一配置の再現、物理 qualification、grid convergence、
+過去の SCREEN／FID／UNC 結論の変更を意味しない。
 
 ## Claude／ユーザーへの提案する追記
 
-roadmap／STATE／exploratory_index／登録／gate／spec 本文は編集していない。
-仕様 rev 0 の owner 側整理候補は、gen01 placement、C4 15%＋10% diagnostic、
-F1/F2 の実 reference matrix、C5 sigma provenance の明記。
-読み出し採用・qualification flag・凍結 study の再判定は GPU evidence と owner 判定を待つ。
-将来の campaign freeze は `gen01/Force00.jl` を include closure に明示 pin する必要がある。
-現 checkout の W1 README には gen01 追記が見当たらず、今回の直接の根拠は Amendment 2。
-必要なら owner 側で共通 README を同期する。
+roadmap／STATE／exploratory_index／仕様本文は編集していない。
+owner 側で指定 review worktree の仕様 Amendment 1 と共通 README の gen01 規則を統合するときに、
+C5 非阻害、15%＋境界許容、登録 box、F3 C1、3 source SHA、T4 backend を整合させる。
+将来の FORCE-00 campaign freeze では gen01 source、job、dispatcher、box registry、gate を明示 pin する。
+正式登録・採用・qualification flag の判断は GPU evidence と owner に属する。
 
 ## 次に要るもの
 
-Claude が上の完全一覧を stage して既存 branch に commit／push し、既存 Draft PR #84 の
-本文と ready 状態を今回の受け入れ結果に合わせて更新する。新しい PR は不要。
-ユーザーが後で F1〜F3 を GPU で実行し、本番 evidence と SHA256SUMS を用意する。
-C5 の exact sigma provenance が解決した後、one-shot gate を判定する。
-この CPU タスクでは gate.json、GPU run、正式登録、採用は作成・実行していない。
+Claude が下の完全一覧の意図したファイルだけを stage し、
+既存 branch で commit／push、既存 PR #84 の本文／ready 状態を更新する。
+ユーザーが後で F1〜F3 を実行して本番 artifact と SHA256SUMS を揃える。
+C1〜C4 が完備した時だけ gate を一度書く。C5 の未登録 exact σ_d は採用を止めない。
+
+## 完全な commit 対象一覧（afac79ed から）
+
+移動／復元／削除はなし。次の **52 ファイル**を host で commit する。
+
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_design.md`：変更
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_report.md`：変更
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/README.md`：変更
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/SHA256SUMS`：変更
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/README.md`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/SHA256SUMS`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/box-registration.log.gz`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/closure_check.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/commit_inventory.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/compileall-execution.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/compileall.log.gz`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/cpu_job_regression.log.gz`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/cpu_job_regression/force00.original_columns.csv`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/cpu_job_regression/force00/flow_16.forces.csv`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/cpu_job_regression/force00/flow_16.summary.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/cpu_job_regression/registered/flow_16.forces.csv`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/cpu_job_regression/registered/flow_16.summary.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/cpu_job_regression/regression.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/cylinder_box_diagnostic.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/final_sanity.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/focused-execution.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/focused.log.gz`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/full-pytest-execution.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/full-pytest.junit.xml.gz`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/full-pytest.log.gz`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/full_suite_comparison.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/job_regression_readback.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/log_archive.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/selftest-execution.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/selftest.log.gz`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/source_preservation.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/source_review.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/uniform-a-execution.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/uniform-a.log.gz`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/uniform-b-execution.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/uniform-b.log.gz`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/uniform_determinism.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/uniform_pressure-repeat.json`：新規
+- `docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/uniform_pressure.json`：新規
+- `docs/harness/force00_boxes.json`：新規
+- `julia/CFDSDFWaterLily/gen01/Force00.jl`：変更
+- `scripts/force00_boxes.py`：新規
+- `scripts/force00_gate.py`：変更
+- `scripts/force00_job_regression.jl`：変更
+- `scripts/force00_selftest.jl`：変更
+- `scripts/force00_uniform_inputs.py`：変更
+- `scripts/force00_uniform_pressure.jl`：変更
+- `scripts/waterlily_force00_dispatch.jl`：変更
+- `scripts/waterlily_force00_job.diff`：変更
+- `scripts/waterlily_force00_job.jl`：変更
+- `tests/test_force00_boxes.py`：新規
+- `tests/test_force00_gate.py`：変更

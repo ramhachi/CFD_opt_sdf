@@ -1,6 +1,6 @@
-# LOWDIM-02A job: the W4 Candidate C evaluator and measurement contract unchanged, restricted to the
-# registered flow_32 case and applied to one registered canonical-lattice state per invocation.
-# Copied from scripts/waterlily_xfid_candidate_c_job.jl; only the case inventory and messages differ (flow_24 -> flow_32).
+# FORCE-00 job: the registered LOWDIM-02A evaluator, with cur/nds/cv readouts.
+# Its solver, legacy force columns, window and placement semantics are unchanged.
+# Use waterlily_force00_dispatch.jl with FORCE00_CASE=flow_24 or flow_32.
 
 using CUDA
 using SHA
@@ -28,14 +28,14 @@ using .CFDSDFWaterLily: GridSDFWaterLilyBody, V16_PROFILE_POINT_SHAPE,
 using .CFDSDFWaterLily.DeviceGridSDF
 using .CFDSDFWaterLily.V16W4Sensitivity
 
-length(ARGS) == 2 || error("usage: waterlily_lowdim02_flow32_job.jl <phi_fortran.raw> <output_dir>")
+length(ARGS) == 2 || error("usage: waterlily_force00_job.jl <phi_fortran.raw> <output_dir> (FORCE-00 flow_32; dispatcher selects flow_24)")
 phi_raw_path, output_dir = ARGS
 
 env_tuple(name, ::Type{T}, fallback) where {T} =
     haskey(ENV, name) ? Tuple(parse.(T, split(ENV[name], ","))) : fallback
 
 # FORCE-00 boxes use inclusive pressure-cell indices; no implicit measuring box.
-function force00_cv_box(raw=ENV["FORCE00_CV_BOX"])
+function force00_cpu_box(raw)
     fields = split(raw, ',')
     length(fields) == 3 || error("FORCE00_CV_BOX requires lo:hi,lo:hi,lo:hi")
     ntuple(3) do i
@@ -46,7 +46,55 @@ function force00_cv_box(raw=ENV["FORCE00_CV_BOX"])
         lo:hi
     end
 end
-const FORCE00_CV_BOX = force00_cv_box()
+
+function force00_cv_box(case, sim;
+        path=joinpath(@__DIR__, "..", "docs", "harness", "force00_boxes.json"))
+    if haskey(ENV, "FORCE00_CV_BOX")
+        get(ENV, "FORCE00_CPU_TEST", "") == "1" && sim.flow.u isa Array ||
+            throw(ArgumentError("FORCE00_CV_BOX is allowed only for an explicit CPU Array test (FORCE00_CPU_TEST=1)"))
+        return force00_cpu_box(ENV["FORCE00_CV_BOX"])
+    end
+    text = read(path, String)
+    # The registered schema has only flat per-grid objects. Scope every numeric
+    # field to the selected grid, and reject missing/duplicate fields.
+    function field(pattern, source, label)
+        matches = collect(eachmatch(pattern, source))
+        length(matches) == 1 || error("FORCE-00 box registration requires exactly one $label")
+        only(matches).captures[1]
+    end
+    hash_field(source, key) = field(Regex("\"$key\"\\s*:\\s*\"([0-9a-f]{64})\""), source, key)
+    field(r"\"schema\"\s*:\s*\"([^\"]+)\"", text, "schema") == "force00_boxes_v1" ||
+        error("FORCE-00 box registration schema mismatch")
+    parent = read(joinpath(@__DIR__, "..", "docs", "evidence", "v18_genesis_2026_10_19", "genesis.json"), String)
+    hash_field(text, "parent_state_sha256") == hash_field(parent, "state_sha256") ||
+        error("FORCE-00 box registration parent state SHA mismatch")
+    hash_field(text, "parent_phi_fortran_sha256") == hash_field(parent, "phi_fortran_order_sha256") ||
+        error("FORCE-00 box registration parent phi SHA mismatch")
+    case.case_id in ("flow_24", "flow_32") || error("FORCE-00 has no registered box for $(case.case_id)")
+    grid = field(Regex("\"$(case.case_id)\"\\s*:\\s*\\{([^{}]*)\\}", "s"), text, case.case_id)
+    triple(key) = Tuple(parse.(Int, split(field(
+        Regex("\"$key\"\\s*:\\s*\\[([^\\]]+)\\]"), grid, key), ',')))
+    integer(key) = parse(Int, field(Regex("\"$key\"\\s*:\\s*(\\d+)(?=\\s*(?:,|\\z))"), grid, key))
+    lower, upper = triple("lower"), triple("upper")
+    dims = triple("flow_dims")
+    support_lower, support_upper = triple("mu0_support_lower"), triple("mu0_support_upper")
+    all(length(x) == 3 for x in (lower, upper, dims, support_lower, support_upper)) ||
+        error("FORCE-00 box registration requires three axes")
+    dims == case.flow_dims || error("FORCE-00 registered box flow dimensions mismatch")
+    integer("domain_inset_cells") == 2 && integer("body_clearance_cells") == 5 ||
+        error("FORCE-00 registered box margins mismatch")
+    all(i -> 4 <= lower[i] <= support_lower[i] - 5 && support_lower[i] <= support_upper[i] &&
+             support_upper[i] + 5 <= upper[i] <= dims[i] - 1, 1:3) ||
+        error("FORCE-00 registered box violates the declared domain/support margins")
+    return ntuple(i -> lower[i]:upper[i], 3)
+end
+
+function force00_source_sha256()
+    root = normpath(joinpath(@__DIR__, ".."))
+    Dict(path => bytes2hex(sha256(read(joinpath(root, path)))) for path in (
+        "julia/CFDSDFWaterLily/gen01/Force00.jl", "scripts/waterlily_force00_job.jl",
+        "scripts/waterlily_force00_dispatch.jl"))
+end
 
 const CANONICAL_STATE_LABEL = get(ENV, "W4_CANONICAL_STATE_LABEL", "v16")
 const EXPECTED_STATE_SHA256 = get(ENV, "W4_STATE_SHA256",
@@ -156,7 +204,8 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
     validate_w4_case(case; canonical_design_origin_m=CANONICAL_ORIGIN_M,
         canonical_design_spacing_m=CANONICAL_DESIGN_SPACING_M)
     # This registered geometry is static; validate the explicit measuring box once.
-    CFDSDFWaterLily.validate_force_box(sim, FORCE00_CV_BOX; body=bodies.candidate)
+    force00_box = force00_cv_box(case, sim)
+    CFDSDFWaterLily.validate_force_box(sim, force00_box; body=bodies.candidate)
     println("W4_CASE_STARTED ", case.case_id)
     flush(stdout)
     history = Vector{NTuple{28,Float64}}()
@@ -177,7 +226,7 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
             pressure = -(WaterLily.pressure_force(sim.flow, bodies.candidate))
             viscous = -(WaterLily.viscous_force(sim.flow, bodies.candidate))
             total = pressure + viscous
-            readouts = CFDSDFWaterLily.force_readouts(sim, FORCE00_CV_BOX;
+            readouts = CFDSDFWaterLily.force_readouts(sim, force00_box;
                 body=bodies.candidate, validate_box=false)
             push!(history, (
                 Float64(step), Float64(sim_time(sim)), Float64(total[1]),
@@ -265,8 +314,13 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
         ground_model="moving planar half-space on the expanded flow-domain bottom at world z=-0.9 m, with +x wall velocity 1 m/s",
         force_integration_body="CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))",
         force_projection_semantics="drag=+Fx; downforce=-Fz",
-        force00_cv_box_lower=first.(FORCE00_CV_BOX),
-        force00_cv_box_upper=last.(FORCE00_CV_BOX),
+        force00_cv_box_lower=first.(force00_box),
+        force00_cv_box_upper=last.(force00_box),
+        force00_source_sha256=force00_source_sha256(),
+        force00_timing_includes_readout_overhead=true,
+        force00_timing_comparable_to_registered=false,
+        force00_peak_vram_comparable_to_registered=false,
+        force00_telemetry_scope="wall_seconds and peak_vram_bytes include FORCE-00 readout overhead; not comparable with registered runs",
         source_profile_equivalent=false,
         physical_profile_qualified=false,
         t_end_target=T_END,
@@ -334,6 +388,13 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
                 print(io, "\"", value, "\"")
             elseif value isa Tuple
                 print(io, json_array(value))
+            elseif value isa AbstractDict
+                print(io, "{")
+                for (i, (path, digest)) in enumerate(sort!(collect(pairs(value)); by=first))
+                    i > 1 && print(io, ",")
+                    print(io, "\"", path, "\":\"", digest, "\"")
+                end
+                print(io, "}")
             else
                 print(io, json_number(value))
             end
@@ -391,8 +452,8 @@ function main()
             CUDA.synchronize()
         end
     end
-    write(joinpath(output_dir, "W4_JOB_DONE"), "The registered LOWDIM-02A flow_32 case returned; host verification required.\n")
-    println("W4_$(uppercase(CANONICAL_STATE_LABEL))_SENSITIVITY_DONE cases=", length(cases))
+    write(joinpath(output_dir, "W4_JOB_DONE"), "FORCE-00 $(only(EXPECTED_CASE_IDS)) returned; host verification required.\n")
+    println("FORCE00_$(uppercase(CANONICAL_STATE_LABEL))_DONE cases=", length(cases))
     flush(stdout)
 end
 

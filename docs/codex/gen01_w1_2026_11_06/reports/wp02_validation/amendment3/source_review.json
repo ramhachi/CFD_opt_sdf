@@ -1,0 +1,79 @@
+{
+  "basis_commit": "afac79ed",
+  "governance_team_reading": {
+    "handoff_full_lines": 2290,
+    "phase_plan_raw_line_ranges": [
+      [
+        1,
+        500
+      ],
+      [
+        501,
+        3000
+      ],
+      [
+        3001,
+        5000
+      ],
+      [
+        5001,
+        7475
+      ],
+      [
+        7476,
+        7782
+      ]
+    ],
+    "problem_register_full_lines": 2109,
+    "root_read": "README/STATE/branching/resolution plan/GEN plan/spec/facts; task sources and supplied review"
+  },
+  "independent_reviews": [
+    {
+      "must_fix_findings": [],
+      "reviewer": "julia worker",
+      "scope": "numerical diff and parent registry/uniform integration"
+    },
+    {
+      "must_fix_findings": [],
+      "reviewer": "jobs worker",
+      "scope": "complete gate/test review against M1,m1,m2,m5,C4"
+    },
+    {
+      "must_fix_findings": [],
+      "reviewer": "gate worker",
+      "scope": "job/dispatcher/regression/registry parser and exact job diff"
+    }
+  ],
+  "limitations": [
+    "CPU GridSDF map arithmetic is not bitwise GPU device_copy arithmetic; actual moment support measured on CPU Float32 arrays. Registered margin15/21 cells; production exact-face and scene checks still required.",
+    "Job upper-support guard is conservatively one cell stricter than generator normal-face margin; current registered bounds unaffected.",
+    "GPU compilation and F1-F3 not run; no readout adoption or qualification conclusion.",
+    "Gate decoy test body strengthened after full-suite launch; final focused100 run passes; implementation stable throughout full run."
+  ],
+  "owner_decisions": "user Amendment3 and review-worktree FORCE-00 spec Amendment1",
+  "provided_review": "wp02_review_1_opus.md in user-specified github-local-status-review-66bea1 worktree",
+  "routing": {
+    "actual_resource": "native Codex inherited model workers",
+    "attempt_number": 2,
+    "global_configuration_modified": false,
+    "paid_direct_api_used": false,
+    "reason": "MCP unavailable; CLI log access failure, then provider_not_found",
+    "requested_resource": "OpenCode Go (dynamic model catalog)"
+  },
+  "schema": "force00_amendment3_source_review_v1",
+  "source_sha256": {
+    "docs/harness/force00_boxes.json": "9b8fbf8f75df13d5f269b023e1bae543e1e4583649522e4e61daf6ba215784dc",
+    "julia/CFDSDFWaterLily/gen01/Force00.jl": "4f3649a5710cb2a51fab1febf3feb3aa9aa38981c99a362965ad971a5b83e7f2",
+    "scripts/force00_boxes.py": "71843ce0b8b619b0bae4533538c7fceaa59d6c240607f007573983276366a840",
+    "scripts/force00_gate.py": "9acaa4e217f6b2048062902284012a09d6185292e758697358e1ee1214e9be81",
+    "scripts/force00_job_regression.jl": "0e7d1b62bc81dcae0ed46e5b57dae1448231e2b52830d7c83f48c031b07e383f",
+    "scripts/force00_selftest.jl": "ec210afc13cce19f63cb62f52e4c11df4aabbc9f17e7ef77412ec7e2476496b1",
+    "scripts/force00_uniform_inputs.py": "4fb792d5da978d5dbc6a1d71f0ec5f719decdb22be9c7ad2707bf59ed4de87f2",
+    "scripts/force00_uniform_pressure.jl": "c967f9bd377a369db74d07b1ef7bd9f451ce2aa06f85ea568b0baf7947f60a6f",
+    "scripts/waterlily_force00_dispatch.jl": "e43fe90f6ebb932ab2e6f8649a6092d76dda2dc8d5311779d5bf0b68bc292a1a",
+    "scripts/waterlily_force00_job.diff": "cb1ba601fd9e81c5e6e816eb7410a67a20198fc0f7227304f7f7ce26074ff9db",
+    "scripts/waterlily_force00_job.jl": "3d98483dffc846b10f2e9920db9505342ef881fd70e0bcb33f66f7f459ccdb73",
+    "tests/test_force00_boxes.py": "1685d7bd2f0ac922af7b65355d966cda4c4642c1b027fd3e1ced32a68759b0e4",
+    "tests/test_force00_gate.py": "76073e5d8a91f7940e8e8981086a3f1010543d05707b42a47e16c946fb171931"
+  }
+}
