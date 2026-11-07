@@ -1,0 +1,36 @@
+........................................................................ [  2%]
+........................................................................ [  4%]
+.........................................................s.............. [  6%]
+........................................................................ [  8%]
+........................................................................ [ 10%]
+........................................................................ [ 12%]
+..........................................s............................. [ 14%]
+........................................................................ [ 16%]
+..........................................s............................. [ 18%]
+s.....................sss.s...............................sss........sss [ 20%]
+ss........................................sssssss.....s................. [ 22%]
+........................................................................ [ 24%]
+.............................................................
+=============================== warnings summary ===============================
+scripts/screen01/screen01_pool.py:110
+  /Users/sota/projects/FomulaTMU/CFD2026_09-wp-06-geom-s1/scripts/screen01/screen01_pool.py:110: UserWarning: The balance properties of Sobol' points require n to be a power of 2.
+    return x_to_u(qmc.Sobol(d=3, scramble=True, seed=seed).random(n))
+
+tests/test_extraction_qualification.py: 369 warnings
+tests/test_extraction_sweep.py: 1221 warnings
+tests/test_fixed_grid_backend.py: 9 warnings
+tests/test_fixed_grid_canonical_state_injection.py: 221 warnings
+tests/test_fixed_grid_connectivity.py: 190 warnings
+tests/test_fixed_grid_contract.py: 520 warnings
+tests/test_fixed_grid_optimizer.py: 506 warnings
+tests/test_fixed_grid_primal.py: 276 warnings
+tests/test_fixed_grid_sensitivity.py: 369 warnings
+  /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/vtkmodules/util/numpy_support.py:244: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    result.shape = shape
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! KeyboardInterrupt !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/numpy/_core/multiarray.py:751: KeyboardInterrupt
+(to show a full traceback on KeyboardInterrupt use --full-trace)
+901 passed, 24 skipped, 3682 warnings in 778.01s (0:12:58)

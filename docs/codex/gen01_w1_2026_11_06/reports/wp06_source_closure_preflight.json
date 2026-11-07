@@ -1,0 +1,31 @@
+{
+  "base": {
+    "required_not_in_frozen": [],
+    "validation": "PASS"
+  },
+  "baseline_commit": "08e0ea3823168c330b3023aeb508734584a57edb",
+  "current": {
+    "required_not_in_frozen": [
+      "src/cfd_sdf/scene/__init__.py",
+      "src/cfd_sdf/scene/events.py",
+      "src/cfd_sdf/scene/gates.py",
+      "src/cfd_sdf/scene/primitives.py",
+      "src/cfd_sdf/scene/scene.py"
+    ],
+    "validation": "ValueError: frozen file/source closure is incomplete"
+  },
+  "evidence_class": "solver_free_contract_diagnostic_not_acceptance",
+  "reader_definition": "scripts/analyze_grid02.py:105-116",
+  "reader_rejection": "scripts/analyze_grid02.py:165-167",
+  "sha256": {
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_source_closure_preflight.py": "13571ed20b28ba0743f8369dedb5ce8fa42e2988b055df98f8ed9ae58b514ad0",
+    "docs/evidence/grid02_trend_2026_10_16/prerun_freeze.json": "67eab367d2171b6211c32809a421129a6465fb21c4eaf9df0d9ae75fdafbc0d8",
+    "scripts/analyze_grid02.py": "ecaf3cfe2aac7bd0a8062bd62e55ac08812d9ff5dcd1171ce8a5004cb6090260",
+    "src/cfd_sdf/scene/__init__.py": "4c041ba31a842626864404f27bb800591a0fe06ddb856a55f228de585751dcaa",
+    "src/cfd_sdf/scene/events.py": "3cbeb61fa79646ce107128d801d2a189fa32521674e527096ddb2446f5730524",
+    "src/cfd_sdf/scene/gates.py": "6dd86d1b948a6230a3a7a2ce2820b5607ae0bfa7800d4d689173af6f278c6ebb",
+    "src/cfd_sdf/scene/primitives.py": "9de5dc7ee2cda19300b93847da4df0c6e6e78b8cff05cb825e3a9fc24a434de0",
+    "src/cfd_sdf/scene/scene.py": "e086a177da087153bb9378fab2987177cc31cf613cae3847b6dee6d364ebb69d"
+  },
+  "status": "SOURCE_CLOSURE_CONFLICT_CONFIRMED"
+}
