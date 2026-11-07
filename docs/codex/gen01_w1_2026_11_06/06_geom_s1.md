@@ -89,3 +89,14 @@ review 全文：`/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/git
 13. **n2。** 報告の「v18 と 1e-3c 以内」は無変形板だけの話と明記する。
 14. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。
 15. **commit／push は Claude が host で行う。** worktree は `6536cbf0`。報告に commit すべきファイルの完全な一覧を書く。
+
+## Amendment 4（2026-11-07。4 回目（PR #82、`6dcd7c62`）への 2 回目の Opus review の回答。round-1 は 13 closed・1 partial。この節が本文と Amendment 1〜3 より優先する。小さな修正だけ。フェーズ B はまだ始めない）
+
+review 全文：`/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/codex/gen01_w1_2026_11_06/reviews/wp06_review_2_opus.md`。
+
+1. **N1。** 厚さ gate と端板接合 gate も **可動部品だけ**に適用する（M1 と同じ範囲。`scene.bodies` ではなく `scene.components`）。fixed の STL／端板は gate の対象外で、context の解像度は別の記録項目に残す。fixed STL タイヤ＋fixed 端板＋翼の scene が通るテストを足す。
+2. **N2。** merge 提案は **16 位相すべて**で gate を通ることを要求する（提案の採否が位相に依存しないように）。既定の重なり δ は **t_min/2 以上**（review の反例では δ = t/2 で 16/16）。斜めの接合（約 0.35 rad の main＋flap）での 16 位相テストを足す。
+3. **N3。** 分割の既定 gap を「g_min ＋ gate の guard ＋ キャンバーの余裕」にし、角度付き（0、−10°、−20°）かつキャンバー付きの N=1..5 が 2D／3D で gate を通るテストを足す。報告の「N=1..5 がすべて合格」は条件（角度・キャンバー）を明記した文に直す。
+4. **N4。** `thickness_knockout_ids` の scalar fallback は平板（camber = reflex = 0）に限定するか削除する。`_nearest_boundary_pair` が収束しない対は **その対だけ skip して理由を記録**し、scene 全体の merge 提案を止めない。所要時間（1〜2 s／対、強いキャンバーで 24〜26 s）は README の既知の限界に書く。
+5. `tests/scene` と関連の重点テストを回す。全体 pytest は **不要**（変更は scene package とテストだけ。`src/cfd_sdf`・`julia/`・`scripts/` を触らないことだけ報告する）。
+6. **commit／push は Claude が host で行う。** worktree は `6dcd7c62`。報告に commit すべきファイルの一覧を書く。
