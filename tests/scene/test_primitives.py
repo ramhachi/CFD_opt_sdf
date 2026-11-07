@@ -118,6 +118,33 @@ def test_box_sphere_exact_and_generic_field_semantics():
         np.testing.assert_allclose(box.phi(approaches), -0.6, atol=2e-9, rtol=0)
 
 
+def test_anisotropic_box_continuation_is_continuous_but_not_ray_monotone():
+    box = BoxBody("ellipsoid", (0, 0, 0), (2, .8, .4))
+    # The deep-interior continuation is not an exact distance: depth can first
+    # increase along an outward ray, although the centre limit is continuous.
+    np.testing.assert_allclose(box.phi([[0, 0, 0], [1, 0, 0], [2, 0, 0]]), [-.4, -1., 0.])
+    np.testing.assert_allclose(box.phi(1e-10 * np.eye(3)), -.4, atol=2e-10, rtol=0)
+
+
+def test_primitive_numeric_inputs_normalize_negative_zero():
+    bodies = [PlateElement("p", -0., -0., 1, .1, angle=-0., camber=-0., reflex=-0., y=-0.),
+              EndplatePlate("e", -0., -0., -0., 1, 1, .1),
+              BoxBody("b", (-0., -0., -0.), (1, 2, 3))]
+    for body in bodies:
+        assert "-0.0" not in json.dumps(body.to_dict())
+
+
+@pytest.mark.parametrize("bad_id", ["", "with space", "nonascii_ü", "has|separator", None])
+def test_all_primitive_ids_use_the_stable_ascii_contract(bad_id):
+    factories = [lambda: PlateElement(bad_id, 0, 0, 1, .1),
+                 lambda: EndplatePlate(bad_id, 0, 0, 0, 1, 1, .1),
+                 lambda: BoxBody(bad_id, (0, 0, 0), (1, 1, 1)),
+                 lambda: MeshBody(bad_id, "unused.stl", "0" * 64)]
+    for factory in factories:
+        with pytest.raises(ValueError, match="ASCII identifier"):
+            factory()
+
+
 def test_mesh_winding_sign_hash_and_mutation(tmp_path):
     path = tmp_path / "box.stl"
     path.write_bytes(trimesh.creation.box(extents=(1, 1, 1)).export(file_type="stl"))

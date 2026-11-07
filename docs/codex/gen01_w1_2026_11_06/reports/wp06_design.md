@@ -1,6 +1,6 @@
-# WP6 GEOM-S1 phase A design (Amendments 1 and 2)
+# WP6 GEOM-S1 phase A design (Amendments 1, 2 and 3)
 
-Current instructions are in the Amendment 2 migration addendum below. It supersedes the original source paths, baseline-run procedure and Git-delivery commands retained here as attempt-2 history. Use `cfd_gen.scene`; the host owns all staging/commit/push/PR actions. Current results belong in `wp06_report.md` and `wp06_validation.json`.
+Current instructions are in the Amendment 3 repair addendum below. It supersedes the earlier implementation descriptions and procedures retained here as history. Use `cfd_gen.scene`; the host owns all staging/commit/push/PR actions. Current results belong in `wp06_report.md` and `wp06_validation.json`.
 
 Start: `08e0ea38`; branch: `feat/gen01-w1-06-geom-s1`. Phase B is a separate PR after phase A. The old attempt is preserved byte-for-byte in `wp06_attempt1_blocked/`.
 
@@ -52,3 +52,75 @@ Start HEAD: `9aa93169`; branch: `feat/gen01-w1-06-geom-s1`. Move only the phase-
 Add only a minimal `src/cfd_gen/__init__.py` and the requested namespace README. Preserve the previous attempts and source-closure diagnostic as historical evidence. No algorithms, existing gates, frozen evidence, v2 parser, harness or phase-B code are changed. Verify all moved source bytes against start HEAD, allowing exactly the three import-line substitutions, and run the small scene slice before the final suite.
 
 For this amendment the host (Claude) owns staging, commit, push and Draft PR #82 delivery; Codex performs filesystem moves/edits only and never uses git mutation/index/ref commands. The parent runs compileall and exactly one final whole suite with `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider`, comparing its failure nodes with the host-provided base `e3dcdf61` (3482 passed, 74 skipped, zero failures); no new base run, CPU-profile plugin or historical-test exception is used.
+
+## Amendment 3 repair addendum (2026-11-06; before code edits)
+
+Start HEAD: `6536cbf0`, clean worktree, branch `feat/gen01-w1-06-geom-s1`.
+Read the complete Opus source review in the supplied review worktree and that
+worktree's GEN-01 section 3.1 paragraph dated 2026-11-06 b. Phase A only:
+the host owns commit/push and PR #82; phase B, historical closures, v2 gates,
+specification bodies, Julia jobs and harness sources remain read-only.
+
+Repair the shared operations, with regression tests first:
+
+- Bounds/clearance and mask/root ownership judge movable components only;
+  finite-union topology and movable/fixed pair clearance keep their existing
+  scopes. A fixed tyre touching ground must not invalidate an admissible wing.
+- Merge neighbours by a nearest-boundary direction and only gap plus an
+  explicitly declared overlap delta; retain child provenance and record merged
+  IDs as `distance_contract_exemptions`. This exemption does not qualify BDIM.
+- Split with child straight chord `(L-t-gap)/2`, retaining the parent's axial
+  footprint; reject impossible positive-chord requests. N=1..5 must pass the
+  development 4h gates in a resolved, declared synthetic case.
+- A sampled pair distance below g_min is a definite gap failure; the guard is
+  one-sided above g_min. Derive per-ID plate-parameter floors from the same
+  conservative normal-width calculation used by the thickness gate, and pass
+  those floors to the two-checkpoint knock-out classifier. Each checkpoint can
+  retain its own `parameter_floors` snapshot when camber/reflex or IDs change;
+  the scalar/map fallback is for floors frozen over the supplied history.
+  Classifier results are parameter IDs, including merged children, rather
+  than an automatic instruction to remove a top-level scene component.
+- Limit wing/endplate joint declarations and knock-out proposals to plate or
+  merged wing elements. Signed downstream vertical offsets allow both above
+  and below trailing edges, with an explicit allowed-quadrant policy.
+- Normalize negative zero, exclude STL path locators from geometric identity
+  (retain STL SHA and transport paths), share one ASCII ID validator, and use
+  `|` for ID-bearing gate reason/pair separators.
+- Convert design-sampling overflow into an enumerated gate `unmeasured`
+  record with scene hash and null state hash. Keep malformed inputs as errors.
+  Document 2,000,000 design nodes, 8,000,000 R3 refined nodes, and the mesh
+  O(points*triangles) plus repeated full-file hashing limit before MW-01.
+
+Tests cover valid Birth-0 admission, t=4h/gap=4h at 16 phases, fixed context
+including masks/roots, N>=3, a non-identical main/flap merge, per-ID history,
+hash portability, invalid IDs and resource-limit reports. The v18 1e-3c
+fallback parity applies only to undeformed plates; deformed zero-set/distance
+tests remain separate. Existing 2D/3D section/projection sharing is retained;
+Julia must port 2 sides x 6 starts x 13 iterations and independently measure
+Float32/AD cost/accuracy. r_c is absent; h and development floors are not a
+registered RES-00 result.
+
+OpenCode Go MCP is unavailable. CLI catalog was recovered using task-local
+writable XDG runtime directories and a local read-only auth-file symlink,
+without changing global configuration or enabling direct paid APIs. Current
+catalog includes DeepSeek V4.1 Flash and GLM-5.3-Flash; quota is not reported.
+Use scoped Go workers for reading/implementation where calls succeed, and
+verify their diffs/results independently. Record model/infra failures rather
+than claiming worker success. Keep worker file ownership disjoint.
+
+The actual Go read-worker calls returned connection failure, then HTTP 401
+`api_key_expired`; no source work was returned. Native scoped workers handle
+events and identity/sampling, and the parent handles gates, integration and
+evidence. Their cross-review also identified a qualification detail: the
+one-sided definite-gap proof applies to distance/projection fields, not a
+general BoxBody gradient-normalized field. Nonexact boxes keep `unmeasured`
+before threshold classification unless a conservative AABB separation proves
+admission; negative signs/node overlap still prove a real overlap.
+
+Run focused regression slices while fixing, then all scene tests, compileall,
+and exactly one completed final whole pytest with the Amendment 3 command
+(`--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider`). Compare failure
+nodes with the host-supplied empty base set, without a new base run or CPU
+profile plugin. Save reproducible commands, JUnit/log artifacts and hashes;
+preserve earlier results as history. Report all intended changed/new paths
+for host staging, and run `git diff --check` without Git mutations.

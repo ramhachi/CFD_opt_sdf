@@ -28,12 +28,17 @@ def _number(value, name, positive=False):
         raise ValueError(f"{name} must be a finite number") from exc
     if not np.isfinite(value) or (positive and value <= 0):
         raise ValueError(f"{name} must be finite" + (" and positive" if positive else ""))
+    return 0.0 if value == 0 else value
+
+
+def _validate_id(value):
+    if not isinstance(value, str) or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]*", value) is None:
+        raise ValueError("id must be a nonempty stable ASCII identifier")
     return value
 
 
 def _validate(instance, positive=()):
-    if not isinstance(instance.id, str) or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]*", instance.id) is None:
-        raise ValueError("id must be a nonempty stable ASCII identifier")
+    _validate_id(instance.id)
     for name in instance.__dataclass_fields__:
         if name != "id" and not name.startswith("_"):
             object.__setattr__(instance, name, _number(getattr(instance, name), name, name in positive))
@@ -267,6 +272,8 @@ class BoxBody:
     exact SDF for general radii/exponent. In the deep interior (norm<.5), a
     smoothstep blends the normalizer to 1/min(radii), giving a continuous
     centre value phi=-min(radii) instead of a direction-dependent limit.
+    This continuation is not monotone along outward rays and can overstate
+    interior depth; continuity does not make it an exact distance there.
     Equal radii and exponent=2 take an exact sphere/circle distance shortcut.
     A 2D call evaluates the centred x,z section, not a finite-y extrusion.
     """
@@ -276,8 +283,7 @@ class BoxBody:
     exponent: float = 2.0
 
     def __post_init__(self):
-        if not isinstance(self.id, str) or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]*", self.id) is None:
-            raise ValueError("id must be a nonempty stable ASCII identifier")
+        _validate_id(self.id)
         for name in ("center", "radii"):
             values = getattr(self, name)
             if not isinstance(values, (tuple, list, np.ndarray)) or len(values) != 3:
@@ -349,6 +355,9 @@ class MeshBody:
     Meshes must be closed, consistently oriented and positive-volume. SHA256
     is mandatory; construction, phi and serialization verify the current STL
     bytes. The loaded geometry is an internal snapshot of those same bytes.
+    Each phi call re-hashes the entire STL and signs distances in
+    O(points*triangles) work. Boundary sampling loops over triangles in Python;
+    neither path is qualified for car-body mesh sizes before MW-01.
     """
     id: str
     path: str
@@ -356,8 +365,7 @@ class MeshBody:
     _mesh: trimesh.Trimesh = field(init=False, repr=False, compare=False)
 
     def __post_init__(self):
-        if not isinstance(self.id, str) or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]*", self.id) is None:
-            raise ValueError("id must be a nonempty stable ASCII identifier")
+        _validate_id(self.id)
         if not isinstance(self.path, (str, Path)) or not str(self.path):
             raise ValueError("path must identify an STL file")
         object.__setattr__(self, "path", str(self.path))
@@ -380,6 +388,7 @@ class MeshBody:
         return payload
 
     def phi(self, points):
+        """Re-hash the full STL, then use O(points*triangles) winding work."""
         points = _points(points, (3,))
         self._verified_bytes()
         flat = points.reshape(-1, 3)
@@ -418,7 +427,11 @@ class MeshBody:
         return {"kind": "mesh", "id": self.id, "parameters": {"path": self.path, "sha256": self.sha256}}
 
     def boundary_points(self, spacing, dimension=3):
-        """Deterministic barycentric triangle samples with edge steps<=spacing."""
+        """Barycentric samples, edge steps<=spacing; Python loops per triangle.
+
+        The full STL is re-hashed first. Sample count also grows with face area
+        divided by spacing squared; this is a small-mesh diagnostic path.
+        """
         spacing = _spacing(spacing)
         _dimension(dimension)
         if dimension != 3:

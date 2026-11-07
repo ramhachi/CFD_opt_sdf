@@ -1,873 +1,1176 @@
 {
   "artifact_sha256": {
-    "docs/codex/gen01_w1_2026_11_06/reports/wp06_amendment2_source_closure.json": "2c24df855db2e3bd3cd70ffea1b29b7ce5223ce07baf25f7cd98e29336d7275d",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.json": "41d2c24c15402f4724a783c51f115d79abd7a39bb9bef9d36e2778c2c28bcfe9",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.py": "c16eb219fca26271ad58be1b4f7e1b736cb564039d68ba8a9db127b632f0e99c",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp06_design.md": "e1b295682d6cdcdcf80aa83460f6666e96e5daf6c8cf9eeed0c97b32f0bbbf4e",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp06_report.md": "20e11bde23311715921eea722ba72137a5253776bad532f1e320b9e734d6053e",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-closure-pytest.log.gz": "2c997d99155ecd8a551cbb5a7b912d3179f011121585cda0ce79a8afe7cffcd2",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-closure-pytest.xml.gz": "2c812e4a03eb0e1828a26349f448df66ce220cf734163491fd4034f9cc95e0fa",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-compileall.log.gz": "14365e40593061947e9188cb46194d3275bb5f324b7c9cb232051dd03daf995b",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-full-pytest.log.gz": "f91f4f4c78da43305f87acce8c95b4ece6a14d3f785a4f2db2a35253c1fb2e39",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-full-pytest.xml.gz": "f5cb122281cce7956ae50f532e1b11c8f14d1510dda74f7a871f9bb29bfd3171",
-    "src/cfd_gen/README.md": "822e9013a0c98006ded6054eed26b12112254a099a07452cf4eb2c2e4a05b379",
-    "src/cfd_gen/__init__.py": "58671457aa4e97078672298ab97ab42c73451817d308b6bfe1cfff5ea063c750",
-    "src/cfd_gen/scene/__init__.py": "4c041ba31a842626864404f27bb800591a0fe06ddb856a55f228de585751dcaa",
-    "src/cfd_gen/scene/events.py": "3cbeb61fa79646ce107128d801d2a189fa32521674e527096ddb2446f5730524",
-    "src/cfd_gen/scene/gates.py": "0df1f7160d6aceb239384996cda0d8b6e877a28de6061db561aaac1731dbd23f",
-    "src/cfd_gen/scene/primitives.py": "9de5dc7ee2cda19300b93847da4df0c6e6e78b8cff05cb825e3a9fc24a434de0",
-    "src/cfd_gen/scene/scene.py": "5b660834417bba3c6b4c63b2e64fd4d4feb28357d943889355c0f26dee98751e",
-    "tests/scene/test_birth.py": "b5961995ec066d363c7e3b2df0e69cdbcec9c7175921530ae3205b50d86a2b1b",
-    "tests/scene/test_events.py": "03c17da41341f6c2792531c9e2d1829b18574f1821458eb345de0ff639951fe6",
-    "tests/scene/test_gates.py": "e69acc12f819427c31cd7a9ca75ea7c9a7821a2d28e4bbabc608ce93cc119c42",
-    "tests/scene/test_primitives.py": "343b9fb52ec203ebb55972a8bcf49386b763fffad0a8e695a66aa6e2e93575d5",
-    "tests/scene/test_scene.py": "e9dd80ee08f81e5490da6544931127df594cbaf99ea2d7b3635e74576a947764"
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_amendment3_review_checks.json": "6dc467c5e8f90d5b3fa3ac5f010e8c5c2ab855b4e63f9fbbc3845b214ad27245",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.json": "3b62c9bd6c6935bd4ec9711d41f0fba84b21f38c57fa6d0f3f391d6401423a82",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_design.md": "05abae35b4b4271649334274c16b2b10c6b1ea6b3737c388915eeb74ebd6cd88",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_report.md": "1fbcf346c9b7b0f9872c8a2ed3efb992f046aa6166e14ee1fdd8f2974a0d7995",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-compileall.log.gz": "5f72c1c5a7d7743b13e4ec579c9eb12af4cba1c07cd7b3ba6dda4f6a93ff7520",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-full-pytest.log.gz": "7644f47b049a21674e88b0cb73587b99a8fb07df96c3ed90c805b6d2d13cf82c",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-full-pytest.xml.gz": "b94dddcae30e8b9627cccf851cd492b37b112db692ccea894973ccc902082766",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-red-gates.log.gz": "bd5be4722a39e4c991b0b9f260ddfd69d4e1a2f98fe15251cac6c1c7bb083fff",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-scene-pytest.log.gz": "e30a4fe43f33be006b713b48edd2124d428423c8127f7e05e3e1178c26c21856",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-scene-pytest.xml.gz": "069350269a1d45d46c13982d06b4ee2b0a0d83c893a949abd63a9f9001cb3a00",
+    "src/cfd_gen/README.md": "3e88a8956751b149e1ca369715463201f6f21f5f4ff09cf0d5f421a814359f70",
+    "src/cfd_gen/scene/events.py": "16a0a11539ecdf5bd4419102dd8c41c7c2e07dd0c6f58fcd458945c3a1d70071",
+    "src/cfd_gen/scene/gates.py": "5dac38fb9260f18bce1edf54b94f5b830ebb8d18c1659953ed41a1ddf9ba0d02",
+    "src/cfd_gen/scene/primitives.py": "5f2bebc80a08ed024a53cb42e298feb559db96089409153c733e8e68536fd45f",
+    "src/cfd_gen/scene/scene.py": "24edb51b930a4dfa5fb01ae263ade921288d8c65870ad0e3b686213cd516c410",
+    "tests/scene/test_birth.py": "3c8ae49b138462bec6776b75b8b44c514562fd3594e7173268afd8c61d3ac0b8",
+    "tests/scene/test_events.py": "996e3aa81e73eb91f1bde7b1b096ac9a01c1fd13afe15953ba4c36affa138577",
+    "tests/scene/test_gates.py": "0b1c3650ff79b87ebc967efa3ab70f567a56e764e84642ceea0972ae0dd669b3",
+    "tests/scene/test_primitives.py": "083c3282672fe4fd12caa02c80de59cd07c863638b6e40e3d520f02bba8d2682",
+    "tests/scene/test_scene.py": "c692c859ece996c5b58641e815dda3ebaf1073e9b271c3c4f9d6cd053263a34b"
   },
   "band_diagnostic": {
     "all_cases_pass": true,
     "cases": 50,
     "max_error_over_t": 5.040873270172855e-05,
     "max_median_gradient_error": 2.107147789587316e-12,
-    "numerical_results_equal_attempt2": true,
-    "scope": "finite sampled band; not a global convergence or physical qualification"
+    "numerical_results_equal_amendment2": true,
+    "scope": "finite sampled band at c=1m t=.1m h=.025m; undeformed-only v18 field parity; no global/physical qualification"
   },
   "branch": "feat/gen01-w1-06-geom-s1",
-  "checked_utc": "2026-11-06T08:41:59.398340+00:00",
+  "checked_utc": "2026-11-07T09:27:49.476200+00:00",
   "commands": {
     "band": ".venv/bin/python docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.py",
-    "closure": ".venv/bin/python -m pytest -q -p no:cacheprovider tests/test_grid02_evidence.py::test_the_analysis_is_the_registered_one_and_reproduces_from_the_kept_output tests/test_grid02_prereg.py::test_the_real_freeze_validates_with_the_analyzer_and_is_sidecar_bound tests/test_grid02_prereg.py::test_every_file_the_freeze_binds_is_committed_at_head_once_it_exists tests/test_lowdim03_prereg.py::test_every_file_the_freeze_binds_is_committed_at_head_and_the_runner_constants_are_pinned --junitxml=/private/tmp/wp06-amendment2-closure-pytest.xml",
     "compileall": ".venv/bin/python -m compileall src tests",
-    "full": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python -m pytest --ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider --junitxml=/private/tmp/wp06-amendment2-full-pytest.xml",
-    "scene_worker": ".venv/bin/python -m pytest -q tests/scene -p no:cacheprovider",
+    "full": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python -m pytest --ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider --junitxml=/private/tmp/wp06-amendment3-full-pytest.xml",
+    "scene": ".venv/bin/python -m pytest -q tests/scene -p no:cacheprovider --junitxml=/private/tmp/wp06-amendment3-scene-pytest.xml",
     "whitespace": "git diff --check"
   },
   "compileall": {
+    "command": ".venv/bin/python -m compileall src tests",
     "exit_code": 0
   },
   "compressed_test_artifacts": [
     {
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-compileall.log.gz",
-      "sha256": "14365e40593061947e9188cb46194d3275bb5f324b7c9cb232051dd03daf995b",
-      "uncompressed_sha256": "7c67cb098ddd03612a5977b461d5e917f690cdee6c955e2d71dbd5817a0d8d27",
-      "uncompressed_size_bytes": 826
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-compileall.log.gz",
+      "sha256": "5f72c1c5a7d7743b13e4ec579c9eb12af4cba1c07cd7b3ba6dda4f6a93ff7520",
+      "uncompressed_sha256": "4c07774fa56e8e7fb1381c18c9a3a6e3f9a0efa6b29252db6cada42d3f2cfbac",
+      "uncompressed_size_bytes": 742
     },
     {
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-closure-pytest.log.gz",
-      "sha256": "2c997d99155ecd8a551cbb5a7b912d3179f011121585cda0ce79a8afe7cffcd2",
-      "uncompressed_sha256": "6a2f5b7f905c2fa15287ebc652f020d18c5175c9f678a1243aad86cd43ecca40",
-      "uncompressed_size_bytes": 109
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-scene-pytest.log.gz",
+      "sha256": "e30a4fe43f33be006b713b48edd2124d428423c8127f7e05e3e1178c26c21856",
+      "uncompressed_sha256": "49de04bcd1af424ef1a631cd97c8e220534ed8675d3443e72e835e02b29f1265",
+      "uncompressed_size_bytes": 261
     },
     {
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-closure-pytest.xml.gz",
-      "sha256": "2c812e4a03eb0e1828a26349f448df66ce220cf734163491fd4034f9cc95e0fa",
-      "uncompressed_sha256": "887738999f6b85fca4e940f419490abbd7210223510039a1659df496e1009e43",
-      "uncompressed_size_bytes": 847
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-scene-pytest.xml.gz",
+      "sha256": "069350269a1d45d46c13982d06b4ee2b0a0d83c893a949abd63a9f9001cb3a00",
+      "uncompressed_sha256": "7a18d9e569b3b5020a2028bac3beb7839822fe00314733cb5abac42113d42ad3",
+      "uncompressed_size_bytes": 25805
     },
     {
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-full-pytest.log.gz",
-      "sha256": "f91f4f4c78da43305f87acce8c95b4ece6a14d3f785a4f2db2a35253c1fb2e39",
-      "uncompressed_sha256": "e5d6b2e37dcd199955f9c79904ae3b25ad74513266d294f236f820583aac9277",
-      "uncompressed_size_bytes": 7271
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-red-gates.log.gz",
+      "sha256": "bd5be4722a39e4c991b0b9f260ddfd69d4e1a2f98fe15251cac6c1c7bb083fff",
+      "uncompressed_sha256": "9e46398c7c3a7ec9c01c8b6ee575d13d944a6ea5830bd4dc2def4956399b7eda",
+      "uncompressed_size_bytes": 9842
     },
     {
-      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-full-pytest.xml.gz",
-      "sha256": "f5cb122281cce7956ae50f532e1b11c8f14d1510dda74f7a871f9bb29bfd3171",
-      "uncompressed_sha256": "258b170d84b17136fcf64f2ae0f9c509c436c662d50c9886901705cdd876df78",
-      "uncompressed_size_bytes": 521856
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-full-pytest.log.gz",
+      "sha256": "7644f47b049a21674e88b0cb73587b99a8fb07df96c3ed90c805b6d2d13cf82c",
+      "uncompressed_sha256": "5ead9158cfd49f0ef3538bdf4434800c0e30492c9f0077be413ee22e7adca248",
+      "uncompressed_size_bytes": 7430
+    },
+    {
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-full-pytest.xml.gz",
+      "sha256": "b94dddcae30e8b9627cccf851cd492b37b112db692ccea894973ccc902082766",
+      "uncompressed_sha256": "84dd8d5cdbebacb8b4e5577eab7af5c81bb67527a94784a70aecc7795dd841d7",
+      "uncompressed_size_bytes": 536775
     }
   ],
   "cpu_profile_plugin_used": false,
+  "cross_review": {
+    "both_repaired_and_regression_tested": true,
+    "material_findings": [
+      "nonexact_BoxBody_field_gap_proof",
+      "checkpoint_specific_parameter_floor_provenance"
+    ]
+  },
   "evidence_class": "solver_free_software_and_development_diagnostic",
   "execution_routing": [
     {
       "actual_model": null,
       "attempt_number": 1,
-      "reason": "MCP absent; CLI log permission failure",
-      "requested_model": "OpenCode Go catalog; no model selected"
+      "reason": "OpenCode Go MCP absent; normal CLI log path outside sandbox",
+      "requested_model": null
     },
     {
       "actual_model": null,
       "attempt_number": 2,
-      "reason": "writable XDG_DATA_HOME: Provider not found: opencode-go",
-      "requested_model": "OpenCode Go catalog; no model selected"
+      "reason": "task-local XDG catalog initially provider_not_found without original auth access",
+      "requested_model": null
     },
     {
-      "actual_model": "native inherited Codex scoped worker",
+      "actual_model": null,
       "attempt_number": 3,
-      "reason": "Go catalog unavailable; migration-only fallback",
-      "requested_model": "OpenCode Go worker pool"
+      "reason": "catalog recovered using local auth symlink; no global config edits",
+      "requested_model": null
+    },
+    {
+      "actual_model": null,
+      "attempt_number": 1,
+      "reason": "API connection failure; no worker result",
+      "requested_model": "opencode-go/deepseek-v4.1-flash"
+    },
+    {
+      "actual_model": null,
+      "attempt_number": 2,
+      "reason": "HTTP401 api_key_expired; no worker result",
+      "requested_model": "opencode-go/deepseek-v4.1-flash"
+    },
+    {
+      "actual_model": "native_codex_inherited",
+      "attempt_number": 3,
+      "reason": "provider authentication unavailable; scoped events and identity/sampling workers with parent gates/integration",
+      "requested_model": "OpenCode Go workers"
     }
   ],
   "full_pytest": {
-    "completed": true,
-    "error_node_ids": [],
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "--ignore=tests/test_lbm_metal.py",
+      "-q",
+      "-rf",
+      "-p",
+      "no:cacheprovider",
+      "--junitxml=/private/tmp/wp06-amendment3-full-pytest.xml"
+    ],
+    "completed_utc": "2026-11-07T09:27:36.434869+00:00",
+    "elapsed_seconds": 934.9234007910127,
+    "error_nodes": [],
     "errors": 0,
     "exit_code": 0,
-    "failed": 0,
-    "failure_node_ids": [],
-    "failure_set_equal_to_host_base": true,
-    "passed": 3568,
-    "scene_tests_passed": 86,
-    "seconds": 1035.366,
+    "failed_nodes": [],
+    "failure_set_equal_host_base": true,
+    "failures": 0,
+    "junit_seconds": 925.883,
+    "passed": 3680,
+    "passed_non_scene_equal_host_base": true,
+    "previous_warning_log_path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-full-pytest.log.gz",
     "skipped": 74,
-    "skipped_node_ids": [
-      "tests/screen01/test_screen01_build.py::test_freeze1_content",
-      "tests/test_canonical_objective.py::test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign",
-      "tests/test_fd08_calibration.py::test_calibration_retry_registration_uses_append_only_round_paths",
-      "tests/test_fd08_v2_formal_amend2.py::test_actual_candidate_matches_every_amend1_scientific_field_and_state_byte",
-      "tests/test_fd08_v2_formal_amend2.py::test_actual_complete_mounted_payload_passes_registered_runner_state_consumer",
-      "tests/test_fd08_v2_formal_amend2.py::test_actual_formal_bytes_are_disjoint_from_exact_49_calibration_inputs",
-      "tests/test_fd08_v2_formal_amend2.py::test_fresh_actual_execution_checkout_matches_all_bound_source_inputs",
-      "tests/test_fd08_v2_formal_amend3.py::test_actual_candidate_matches_every_amend2_scientific_field_and_state_byte",
-      "tests/test_fd08_v2_formal_amend3.py::test_actual_complete_mounted_payload_passes_registered_runner_state_consumer",
-      "tests/test_fd08_v2_formal_amend3.py::test_actual_formal_bytes_are_disjoint_from_exact_49_calibration_inputs",
-      "tests/test_fd08_v2_formal_amend3.py::test_fresh_actual_execution_checkout_matches_all_bound_source_inputs",
-      "tests/test_fd08_v2_formal_lineage.py::test_actual_25_state_science_and_frozen_fit_copy_are_unchanged",
-      "tests/test_fd08_v2_formal_lineage.py::test_dry_run_refuses_to_overwrite_the_historical_failure",
-      "tests/test_fd08_v2_formal_lineage.py::test_formal_execution_and_exact_parent_are_two_identities",
-      "tests/test_fd08_v2_formal_lineage.py::test_fresh_checkout_passes_the_unchanged_runner_source_verification",
-      "tests/test_fd08_v2_formal_lineage.py::test_real_r6_raw_inventory_is_a_49_unique_byte_set_including_baseline",
-      "tests/test_fd08_v2_oracle_scope_record.py::test_changed_pinned_evidence_is_rejected",
-      "tests/test_fd08_v2_oracle_scope_record.py::test_eight_series_cover_four_directions_by_two_responses",
-      "tests/test_fd08_v2_oracle_scope_record.py::test_flags_stay_literally_false_and_record_passes_the_registry_flag_check",
-      "tests/test_fd08_v2_oracle_scope_record.py::test_no_error_gate_is_chosen_here",
-      "tests/test_fd08_v2_oracle_scope_record.py::test_record_is_deterministic",
-      "tests/test_fd08_v2_oracle_scope_record.py::test_regenerated_directions_match_registered_hashes_and_bridge_hashes_are_hex",
-      "tests/test_fd08_v2_oracle_scope_record.py::test_wrong_or_missing_state_is_rejected",
-      "tests/test_fd08_v2_runner_schema.py::test_exact_immutable_r6_v6_mounted_dataset_remains_runner_compatible",
-      "tests/test_kaggle_sdf_directional_fd_v16.py::test_v17_flow24_prerequisites_use_registered_w3_w4_backend_identity",
-      "tests/test_kaggle_sdf_directional_fd_v17_normalfloor.py::test_host_summary_check_requires_the_registered_floor",
-      "tests/test_mode01.py::test_full_gate_bundle_on_parent_and_a_mode",
-      "tests/test_openfoam_blockmesh_grid.py::test_reads_actual_compiled_g2_block_mesh_when_runtime_artifact_is_available",
-      "tests/test_openfoam_field_reconstruction.py::test_runtime_g2_straight_case_reconstructs_final_fields_with_audit_provenance",
-      "tests/test_pq3_3b_campaign_v15.py::test_pinned_evidence_and_margin_mask_hashes_verify",
-      "tests/test_pq3_3b_campaign_v15.py::test_v15_bootstrap_is_deterministic_from_the_pinned_v14_checkpoint",
-      "tests/test_pq3_3b_campaign_v16.py::test_start_state_is_the_recorded_v15_checkpoint_10_unchanged",
-      "tests/test_srcmap02_qualification.py::test_ab_sign_convention_and_unsigned_separation",
-      "tests/test_srcmap02_qualification.py::test_analytic_box_edge_vertex_sign",
-      "tests/test_srcmap02_qualification.py::test_analytic_sphere_sign",
-      "tests/test_srcmap02_qualification.py::test_chunk_assembly",
-      "tests/test_srcmap02_qualification.py::test_exact_zero_and_fail_closed_states",
-      "tests/test_srcmap02_qualification.py::test_order_restoration",
-      "tests/test_srcmap02_qualification.py::test_repeat_hash_equality_and_state_volume_helpers",
-      "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_preflight_reverifies",
-      "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_run_reverifies",
-      "tests/test_stage_s_adjoint_qualification.py::test_registered_qualification_reverifies",
-      "tests/test_stage_s_baseline_v16.py::test_baseline_file_hashes_reverify",
-      "tests/test_stage_s_baseline_v16.py::test_baseline_v2_supersedes_v1_and_binds_the_repaired_judgment",
-      "tests/test_stage_s_component_diagnosis.py::test_registered_component_manifest_reverifies",
-      "tests/test_stage_s_fd_diagnosis.py::test_case_audit_detects_clipping_and_accepts_exact_application",
-      "tests/test_stage_s_fd_diagnosis.py::test_control_point_parsers_and_count_validation",
-      "tests/test_stage_s_fd_diagnosis.py::test_pair_audit_odd_even_and_direction_comparison",
-      "tests/test_stage_s_fd_diagnosis.py::test_registered_d1_audit_reverifies",
-      "tests/test_stage_s_fd_diagnosis.py::test_registered_d2_audit_reverifies",
-      "tests/test_stage_s_perturbation.py::test_baseline_patch_extraction_is_closed_and_oriented",
-      "tests/test_stage_s_perturbation.py::test_fixed_patches_do_not_move_in_a_registered_side",
-      "tests/test_stage_s_perturbation.py::test_registered_side_evidence_reverifies",
-      "tests/test_stage_s_perturbation.py::test_registered_surface_fd_result_reverifies",
-      "tests/test_stage_s_reduced_basis.py::test_registered_manifest_contract_and_reduced_spec",
-      "tests/test_stage_s_v16_contract_audit.py::test_build_manifest_refuses_a_pq2_hash_registration_mismatch",
-      "tests/test_stage_s_v16_contract_audit.py::test_every_recorded_artifact_hash_is_current",
-      "tests/test_stage_s_work_f.py::test_preflight_artifact_passed_and_matches_the_manifest",
-      "tests/test_stage_s_work_f.py::test_registration_binds_the_baseline_and_response_identities",
-      "tests/test_stage_s_work_f.py::test_solver_evidence_qualified_and_reconfirmed_clearance",
-      "tests/test_stage_s_work_f_surface_fd.py::test_evaluation_requires_both_responses_and_resolvable_aligned_directions",
-      "tests/test_stage_s_work_f_surface_fd.py::test_manifest_validation_rejects_missing_roles_and_seeds",
-      "tests/test_stage_s_work_f_surface_fd.py::test_response_manifests_share_the_catalog_and_identity_contract",
-      "tests/test_stage_v16_domain_boundary_contract.py::test_extended_spec_changes_only_domain_and_problem_id",
-      "tests/test_stage_v16_domain_boundary_contract.py::test_registered_artifacts_are_current",
-      "tests/test_stage_v_domain_boundary_factor.py::test_extended_case_bundle_uses_declared_grid_without_sdf_arrays",
-      "tests/test_stage_v_domain_boundary_factor.py::test_extended_domain_reuses_baseline_location_in_mesh",
-      "tests/test_stage_v_domain_boundary_factor.py::test_extended_spec_diff_and_top_block_helper",
-      "tests/test_stage_v_domain_boundary_factor.py::test_registered_run_manifest_contract",
-      "tests/test_stage_v_domain_boundary_factor.py::test_treatment_cases_match_the_registered_definition",
-      "tests/test_stage_v_domain_continuation.py::test_staged_geometry_is_byte_identical_to_base",
-      "tests/test_stage_v_domain_preflight.py::test_recorded_correct_candidate_passes_preflight",
-      "tests/test_stage_v_domain_preflight.py::test_recorded_wrong_candidate_is_rejected_before_meshing",
-      "tests/test_stage_v_qualification.py::test_real_historical_run_without_residual_control_is_not_called_converged"
-    ],
-    "summary": "3568 passed, 74 skipped, 7295 warnings in 1035.57s (0:17:15)",
-    "tests": 3642
+    "started_utc": "2026-11-07T09:12:01.505219+00:00",
+    "terminal_seconds": 934.04,
+    "tests": 3754,
+    "thread_limits": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1"
+    },
+    "warnings": 7295,
+    "warnings_equal_previous_amendment2": true
   },
   "full_suite_runs_this_invocation": 1,
   "git_delivery": {
-    "PR": "https://github.com/ramhachi/CFD_opt_sdf/pull/82",
-    "PR_ready_action": "pending host commit/push and PR update",
     "committed_by_codex": false,
-    "git_add_used": false,
-    "git_mv_used": false,
+    "git_mutation_commands_executed": false,
+    "head": "6536cbf04b86eaf022c0c201a91f548fd4389e94",
     "head_unchanged": true,
-    "index_matches_head": true,
-    "index_or_ref_mutation_by_codex": false,
-    "owner": "Claude on host per Amendment 2 section 3",
+    "new_pr_created": false,
+    "owner": "Claude host",
     "pr_edited_by_codex": false,
+    "pr_number": 82,
     "pushed_by_codex": false,
-    "remote_PR_status_rechecked_this_invocation": false
+    "staged_by_codex": false
   },
   "host_baseline": {
-    "commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+    "baseline_pytest_rerun_by_codex": false,
+    "commit": "e3dcdf61",
     "failed": 0,
-    "failure_node_ids": [],
-    "ignored_module": "tests/test_lbm_metal.py",
+    "failed_nodes": [],
+    "ignore": [
+      "tests/test_lbm_metal.py"
+    ],
     "passed": 3482,
-    "rerun_by_this_invocation": false,
-    "skipped": 74,
-    "source": "user Amendment 2 section 4; Claude host-reported result"
+    "provided_by": "Claude host, user Amendments 2 and 3",
+    "skipped": 74
   },
+  "ignored_modules": [
+    "tests/test_lbm_metal.py"
+  ],
   "intended_commit_paths": [
-    "docs/codex/gen01_w1_2026_11_06/reports/wp06_amendment2_source_closure.json",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_amendment3_review_checks.json",
     "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.json",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.py",
     "docs/codex/gen01_w1_2026_11_06/reports/wp06_design.md",
     "docs/codex/gen01_w1_2026_11_06/reports/wp06_report.md",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-closure-pytest.log.gz",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-closure-pytest.xml.gz",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-compileall.log.gz",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-full-pytest.log.gz",
-    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-full-pytest.xml.gz",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-compileall.log.gz",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-full-pytest.log.gz",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-full-pytest.xml.gz",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-red-gates.log.gz",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-scene-pytest.log.gz",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-scene-pytest.xml.gz",
     "docs/codex/gen01_w1_2026_11_06/reports/wp06_validation.json",
     "src/cfd_gen/README.md",
-    "src/cfd_gen/__init__.py",
-    "src/cfd_gen/scene/__init__.py",
     "src/cfd_gen/scene/events.py",
     "src/cfd_gen/scene/gates.py",
     "src/cfd_gen/scene/primitives.py",
     "src/cfd_gen/scene/scene.py",
-    "src/cfd_sdf/scene/__init__.py",
-    "src/cfd_sdf/scene/events.py",
-    "src/cfd_sdf/scene/gates.py",
-    "src/cfd_sdf/scene/primitives.py",
-    "src/cfd_sdf/scene/scene.py",
     "tests/scene/test_birth.py",
     "tests/scene/test_events.py",
     "tests/scene/test_gates.py",
     "tests/scene/test_primitives.py",
     "tests/scene/test_scene.py"
   ],
-  "kind": "wp06_phase_a_validation",
+  "kind": "wp06_geom_s1_phase_a_amendment3_validation",
+  "known_limits": {
+    "design_sampling_max_nodes": 2000000,
+    "merged_band_distance_contract": "explicit exemption; BDIM effect unmeasured",
+    "mesh_hash_work_per_phi_call": "O(full STL bytes)",
+    "mesh_sign_work": "O(points*triangles)",
+    "nearest_pair_proposal": "deterministic local numerical refinement, no global optimum certificate",
+    "r3_refinement_max_nodes": 8000000,
+    "review_r3_node_count": 18211329,
+    "review_r3_shape": [
+      281,
+      1137,
+      57
+    ]
+  },
+  "moves_this_amendment": [],
   "paid_api_enabled": false,
   "phase_a_acceptance_complete": true,
   "phase_a_implementation_complete": true,
   "phase_b_started": false,
-  "previous_attempt_2": {
-    "recorded_at_commit": "9aa93169155501af0ed9392d376dad5ee5f543e9",
-    "scope": "historical record; its source paths, hashes, CPU profile, blockers and delivery route do not describe this migration",
-    "validation": {
-      "artifact_sha256": {
-        "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.json": "0cb600a4e08ec5faf7efd7d7bdda8eb75e85440e67117e70ad3b60fd9bb5b7e3",
-        "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.py": "f387606885319b48eab57c50655d8c64005819030e4dc8e7b68ceda7e486aee4",
-        "docs/codex/gen01_w1_2026_11_06/reports/wp06_cpu_only_pytest.py": "ace18973554f64720a3df1bd5ea0aab1dc593a097f9bdc23ebfe8211d4734d18",
-        "docs/codex/gen01_w1_2026_11_06/reports/wp06_design.md": "589cc0c4c780c7e55c2b7e38ab2067ebe6396973ec0a4f346c0e600eb8c529d4",
-        "docs/codex/gen01_w1_2026_11_06/reports/wp06_report.md": "f15f2ff4662a661246975dbb779da702603876e08cad8297c8a24ac5a3986a54",
-        "docs/codex/gen01_w1_2026_11_06/reports/wp06_source_closure_preflight.json": "efa957735d29e2b0a7677792a2f858fc4eb284695df35ecdc75fbbb1af2c7df6",
-        "docs/codex/gen01_w1_2026_11_06/reports/wp06_source_closure_preflight.py": "13571ed20b28ba0743f8369dedb5ce8fa42e2988b055df98f8ed9ae58b514ad0",
-        "src/cfd_sdf/scene/__init__.py": "4c041ba31a842626864404f27bb800591a0fe06ddb856a55f228de585751dcaa",
-        "src/cfd_sdf/scene/events.py": "3cbeb61fa79646ce107128d801d2a189fa32521674e527096ddb2446f5730524",
-        "src/cfd_sdf/scene/gates.py": "6dd86d1b948a6230a3a7a2ce2820b5607ae0bfa7800d4d689173af6f278c6ebb",
-        "src/cfd_sdf/scene/primitives.py": "9de5dc7ee2cda19300b93847da4df0c6e6e78b8cff05cb825e3a9fc24a434de0",
-        "src/cfd_sdf/scene/scene.py": "e086a177da087153bb9378fab2987177cc31cf613cae3847b6dee6d364ebb69d",
-        "tests/scene/test_birth.py": "b6d6f00db8ef6fac97acde5f082e3588edc3f6d7adddca2ac3e29a402e48f359",
-        "tests/scene/test_events.py": "ac5834891df0b8deb841b54bad77576b216c604e9de16cc3aa0574e60a18abda",
-        "tests/scene/test_gates.py": "ae4661a22dfb5626552228d2e0521287173309b2e17c6d9d797ece4dee85b9ce",
-        "tests/scene/test_primitives.py": "61fbbcc23d28206a80b0d62024f7007c45472017233cd53f986ea33c4a0eabe2",
-        "tests/scene/test_scene.py": "eb6cb4e007738e3a200e0a6528c6431a64320ede31f464af4d467423b6090ecc"
+  "previous_amendment_2": {
+    "artifact_sha256": {
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_amendment2_source_closure.json": "2c24df855db2e3bd3cd70ffea1b29b7ce5223ce07baf25f7cd98e29336d7275d",
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.json": "41d2c24c15402f4724a783c51f115d79abd7a39bb9bef9d36e2778c2c28bcfe9",
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.py": "c16eb219fca26271ad58be1b4f7e1b736cb564039d68ba8a9db127b632f0e99c",
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_design.md": "e1b295682d6cdcdcf80aa83460f6666e96e5daf6c8cf9eeed0c97b32f0bbbf4e",
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_report.md": "20e11bde23311715921eea722ba72137a5253776bad532f1e320b9e734d6053e",
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-closure-pytest.log.gz": "2c997d99155ecd8a551cbb5a7b912d3179f011121585cda0ce79a8afe7cffcd2",
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-closure-pytest.xml.gz": "2c812e4a03eb0e1828a26349f448df66ce220cf734163491fd4034f9cc95e0fa",
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-compileall.log.gz": "14365e40593061947e9188cb46194d3275bb5f324b7c9cb232051dd03daf995b",
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-full-pytest.log.gz": "f91f4f4c78da43305f87acce8c95b4ece6a14d3f785a4f2db2a35253c1fb2e39",
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-full-pytest.xml.gz": "f5cb122281cce7956ae50f532e1b11c8f14d1510dda74f7a871f9bb29bfd3171",
+      "src/cfd_gen/README.md": "822e9013a0c98006ded6054eed26b12112254a099a07452cf4eb2c2e4a05b379",
+      "src/cfd_gen/__init__.py": "58671457aa4e97078672298ab97ab42c73451817d308b6bfe1cfff5ea063c750",
+      "src/cfd_gen/scene/__init__.py": "4c041ba31a842626864404f27bb800591a0fe06ddb856a55f228de585751dcaa",
+      "src/cfd_gen/scene/events.py": "3cbeb61fa79646ce107128d801d2a189fa32521674e527096ddb2446f5730524",
+      "src/cfd_gen/scene/gates.py": "0df1f7160d6aceb239384996cda0d8b6e877a28de6061db561aaac1731dbd23f",
+      "src/cfd_gen/scene/primitives.py": "9de5dc7ee2cda19300b93847da4df0c6e6e78b8cff05cb825e3a9fc24a434de0",
+      "src/cfd_gen/scene/scene.py": "5b660834417bba3c6b4c63b2e64fd4d4feb28357d943889355c0f26dee98751e",
+      "tests/scene/test_birth.py": "b5961995ec066d363c7e3b2df0e69cdbcec9c7175921530ae3205b50d86a2b1b",
+      "tests/scene/test_events.py": "03c17da41341f6c2792531c9e2d1829b18574f1821458eb345de0ff639951fe6",
+      "tests/scene/test_gates.py": "e69acc12f819427c31cd7a9ca75ea7c9a7821a2d28e4bbabc608ce93cc119c42",
+      "tests/scene/test_primitives.py": "343b9fb52ec203ebb55972a8bcf49386b763fffad0a8e695a66aa6e2e93575d5",
+      "tests/scene/test_scene.py": "e9dd80ee08f81e5490da6544931127df594cbaf99ea2d7b3635e74576a947764"
+    },
+    "band_diagnostic": {
+      "all_cases_pass": true,
+      "cases": 50,
+      "max_error_over_t": 5.040873270172855e-05,
+      "max_median_gradient_error": 2.107147789587316e-12,
+      "numerical_results_equal_attempt2": true,
+      "scope": "finite sampled band; not a global convergence or physical qualification"
+    },
+    "branch": "feat/gen01-w1-06-geom-s1",
+    "checked_utc": "2026-11-06T08:41:59.398340+00:00",
+    "commands": {
+      "band": ".venv/bin/python docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.py",
+      "closure": ".venv/bin/python -m pytest -q -p no:cacheprovider tests/test_grid02_evidence.py::test_the_analysis_is_the_registered_one_and_reproduces_from_the_kept_output tests/test_grid02_prereg.py::test_the_real_freeze_validates_with_the_analyzer_and_is_sidecar_bound tests/test_grid02_prereg.py::test_every_file_the_freeze_binds_is_committed_at_head_once_it_exists tests/test_lowdim03_prereg.py::test_every_file_the_freeze_binds_is_committed_at_head_and_the_runner_constants_are_pinned --junitxml=/private/tmp/wp06-amendment2-closure-pytest.xml",
+      "compileall": ".venv/bin/python -m compileall src tests",
+      "full": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python -m pytest --ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider --junitxml=/private/tmp/wp06-amendment2-full-pytest.xml",
+      "scene_worker": ".venv/bin/python -m pytest -q tests/scene -p no:cacheprovider",
+      "whitespace": "git diff --check"
+    },
+    "compileall": {
+      "exit_code": 0
+    },
+    "compressed_test_artifacts": [
+      {
+        "path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-compileall.log.gz",
+        "sha256": "14365e40593061947e9188cb46194d3275bb5f324b7c9cb232051dd03daf995b",
+        "uncompressed_sha256": "7c67cb098ddd03612a5977b461d5e917f690cdee6c955e2d71dbd5817a0d8d27",
+        "uncompressed_size_bytes": 826
       },
-      "authority_reads": {
-        "docs/STATE.md": {
-          "lines": "1-61",
-          "sha256": "8261732a99c4bf40856655e9aab46370d239dc7fa32fe4c458bbeca6a524bbc3"
-        },
-        "docs/gen_system_plan_2026_11_01.md": {
-          "lines": "1-317",
-          "sha256": "edcbe927e097d0909c206e45819ed188f0d6093b1027237cf3e43dba01ed5efe"
-        },
-        "docs/phase_plan.md": {
-          "lines": "1-7782",
-          "sha256": "e9bc9b97836e4d92a20027453aed2abc82981a25aafbbee70c7420731855cb23"
-        }
+      {
+        "path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-closure-pytest.log.gz",
+        "sha256": "2c997d99155ecd8a551cbb5a7b912d3179f011121585cda0ce79a8afe7cffcd2",
+        "uncompressed_sha256": "6a2f5b7f905c2fa15287ebc652f020d18c5175c9f678a1243aad86cd43ecca40",
+        "uncompressed_size_bytes": 109
       },
-      "base_commit": "08e0ea3823168c330b3023aeb508734584a57edb",
-      "branch": "feat/gen01-w1-06-geom-s1",
-      "commands": {
-        "band": {
-          "cases": 50,
-          "exit_code": 0
-        },
-        "compileall": {
-          "exit_code": 0
-        },
-        "cpu_profile_selfcheck": {
-          "exit_code": 0
-        },
-        "reseed_regression": {
-          "exit_code": 0,
-          "passed": 1,
-          "seconds": 2.98
-        },
-        "scene": {
-          "exit_code": 0,
-          "passed": 86,
-          "seconds": 13.68
-        },
-        "source_closure_preflight": {
-          "acceptance_pass": false,
-          "command": ".venv/bin/python docs/codex/gen01_w1_2026_11_06/reports/wp06_source_closure_preflight.py --baseline /private/tmp/wp06-base-08e0ea38",
-          "exit_code": 0
-        },
-        "staged_diff_check": {
-          "exit_code": 0
-        }
+      {
+        "path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-closure-pytest.xml.gz",
+        "sha256": "2c812e4a03eb0e1828a26349f448df66ce220cf734163491fd4034f9cc95e0fa",
+        "uncompressed_sha256": "887738999f6b85fca4e940f419490abbd7210223510039a1659df496e1009e43",
+        "uncompressed_size_bytes": 847
       },
-      "compressed_test_artifacts": {
-        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-base-cpu-pytest.log.gz": {
-          "encoding": "gzip",
-          "sha256": "65bef2a98f6d5ae0977d2c145a374a28e2c50a9c5aa434731c876c717621f9f4",
-          "uncompressed_bytes": 7167,
-          "uncompressed_sha256": "5e85e81894cf1af476cd0b762de994cf5324ba7d95b8f560ad9737e4d89e9193"
-        },
-        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-base-cpu-pytest.xml.gz": {
-          "encoding": "gzip",
-          "sha256": "91aae1293c435ccf9a9d61bcb7a8bee45557a122a6a62e45c4905bd5594f0be2",
-          "uncompressed_bytes": 511763,
-          "uncompressed_sha256": "207920d8261d7cbdda4e1b724da6363a185af06321b92ecbf5532a48d1402fec"
-        },
-        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-base-pytest.log.gz": {
-          "encoding": "gzip",
-          "sha256": "db501b32feb0247fb1eb510a5ccbc4e1c294fe544fafba613bf001bc3e1390de",
-          "uncompressed_bytes": 10966,
-          "uncompressed_sha256": "b074205d6da6bc76fbe85a55f3ae3276b95929a18e6a9d1af6628d12b734947e"
-        },
-        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-compileall.log.gz": {
-          "encoding": "gzip",
-          "sha256": "2df7d38eb742754e8ade16676d9ba820cd08a6dcc833f233140c1c1d902b2dcf",
-          "uncompressed_bytes": 679,
-          "uncompressed_sha256": "cbc17e0e396f2a619886f20e0b3b53d32b281e7ba0149c560b399a959aa0b3b9"
-        },
-        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-cpu-pytest.log.gz": {
-          "encoding": "gzip",
-          "sha256": "473c5beff010ee1b3dfa92144dc4265a898b808450667932684586aea82ca323",
-          "uncompressed_bytes": 15208,
-          "uncompressed_sha256": "634633ebfc26e0a8b7412ca38444b9833e90753680bd424e7d03053d63f09a9d"
-        },
-        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-cpu-pytest.xml.gz": {
-          "encoding": "gzip",
-          "sha256": "9582af493fd6c36a385a38d7aaf257dbd2942556197a6e5ca9ddaa6097f1fa09",
-          "uncompressed_bytes": 532444,
-          "uncompressed_sha256": "75a687470c6e0af614bbfe21c6c24a3269ab67c6d903da05d8ce3fc506562809"
-        },
-        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-pytest.log.gz": {
-          "encoding": "gzip",
-          "sha256": "741691eca2586109bbdeb836a3b38616dc5dc68d8f83231b7199f086e39a8a83",
-          "uncompressed_bytes": 4653,
-          "uncompressed_sha256": "4690618d1c5539be29d0d5c385990e70b5fd67b4baf252a0ce0ec2b2a93781ea"
-        },
-        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-pytest.xml.gz": {
-          "encoding": "gzip",
-          "sha256": "b50c3bfb36413951364a5215776b53404f0059b08523d0bceedfc3b43e5ecf16",
-          "uncompressed_bytes": 201968,
-          "uncompressed_sha256": "361653a5be9bfccf0587572452bf7ee5a8365e3c6436c2a348d1c5d30a6de70a"
-        },
-        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-post-commit-recheck.log.gz": {
-          "encoding": "gzip",
-          "sha256": "d88b67a0c71fdb3486731c9709de30ace4966ffa2f9f3bb1c01e39088f1f4233",
-          "uncompressed_bytes": 4877,
-          "uncompressed_sha256": "7ed0986850a002345b495ac338efeb00e65890899334d9427cfe46cc717328cb"
-        },
-        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-post-commit-recheck.xml.gz": {
-          "encoding": "gzip",
-          "sha256": "a0fa9c37d10514545ae18a06c667f15e9c2d7b6d5c1d8a52217438c1ed075380",
-          "uncompressed_bytes": 5325,
-          "uncompressed_sha256": "a4f0599b1027972b93d54e52fa5689fec7a022c019358d7fc2839a99e2989209"
-        },
-        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-scene-tests.log.gz": {
-          "encoding": "gzip",
-          "sha256": "d30a798893d9594ec47038ba84c048a4a09d3b3b6881962b0a2855b0094790b2",
-          "uncompressed_bytes": 180,
-          "uncompressed_sha256": "481e48ef2990daefb3e7456fcf94d73aacae900333909b25f19ef0feb07b57f8"
-        },
-        "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-scene-tests.xml.gz": {
-          "encoding": "gzip",
-          "sha256": "2b18c4b4f925d90e58aabf7db3625ee390d435200a88d85582d89e80d8ed7de4",
-          "uncompressed_bytes": 10885,
-          "uncompressed_sha256": "51c7b168a410ade251df4c1df131e3217396ba87abd531e43248ee44f7a37ada"
-        }
+      {
+        "path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-full-pytest.log.gz",
+        "sha256": "f91f4f4c78da43305f87acce8c95b4ece6a14d3f785a4f2db2a35253c1fb2e39",
+        "uncompressed_sha256": "e5d6b2e37dcd199955f9c79904ae3b25ad74513266d294f236f820583aac9277",
+        "uncompressed_size_bytes": 7271
       },
-      "cpu_pytest": {
-        "base": {
-          "collected": 3562,
-          "completed": true,
-          "executed_source_base_commit": "08e0ea3823168c330b3023aeb508734584a57edb",
-          "exit_code": 0,
-          "failed": 0,
-          "failure_node_ids": [],
-          "junit": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-base-cpu-pytest.xml.gz",
-          "log": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-base-cpu-pytest.log.gz",
-          "passed": 3482,
-          "seconds_pytest_summary": 3344.06,
-          "skipped": 80,
-          "skipped_node_ids": [
-            "tests/screen01/test_screen01_build.py::test_freeze1_content",
-            "tests/test_canonical_objective.py::test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign",
-            "tests/test_fd08_calibration.py::test_calibration_retry_registration_uses_append_only_round_paths",
-            "tests/test_fd08_v2_formal_amend2.py::test_actual_candidate_matches_every_amend1_scientific_field_and_state_byte",
-            "tests/test_fd08_v2_formal_amend2.py::test_actual_complete_mounted_payload_passes_registered_runner_state_consumer",
-            "tests/test_fd08_v2_formal_amend2.py::test_actual_formal_bytes_are_disjoint_from_exact_49_calibration_inputs",
-            "tests/test_fd08_v2_formal_amend2.py::test_fresh_actual_execution_checkout_matches_all_bound_source_inputs",
-            "tests/test_fd08_v2_formal_amend3.py::test_actual_candidate_matches_every_amend2_scientific_field_and_state_byte",
-            "tests/test_fd08_v2_formal_amend3.py::test_actual_complete_mounted_payload_passes_registered_runner_state_consumer",
-            "tests/test_fd08_v2_formal_amend3.py::test_actual_formal_bytes_are_disjoint_from_exact_49_calibration_inputs",
-            "tests/test_fd08_v2_formal_amend3.py::test_fresh_actual_execution_checkout_matches_all_bound_source_inputs",
-            "tests/test_fd08_v2_formal_lineage.py::test_actual_25_state_science_and_frozen_fit_copy_are_unchanged",
-            "tests/test_fd08_v2_formal_lineage.py::test_dry_run_refuses_to_overwrite_the_historical_failure",
-            "tests/test_fd08_v2_formal_lineage.py::test_formal_execution_and_exact_parent_are_two_identities",
-            "tests/test_fd08_v2_formal_lineage.py::test_fresh_checkout_passes_the_unchanged_runner_source_verification",
-            "tests/test_fd08_v2_formal_lineage.py::test_real_r6_raw_inventory_is_a_49_unique_byte_set_including_baseline",
-            "tests/test_fd08_v2_oracle_scope_record.py::test_changed_pinned_evidence_is_rejected",
-            "tests/test_fd08_v2_oracle_scope_record.py::test_eight_series_cover_four_directions_by_two_responses",
-            "tests/test_fd08_v2_oracle_scope_record.py::test_flags_stay_literally_false_and_record_passes_the_registry_flag_check",
-            "tests/test_fd08_v2_oracle_scope_record.py::test_no_error_gate_is_chosen_here",
-            "tests/test_fd08_v2_oracle_scope_record.py::test_record_is_deterministic",
-            "tests/test_fd08_v2_oracle_scope_record.py::test_regenerated_directions_match_registered_hashes_and_bridge_hashes_are_hex",
-            "tests/test_fd08_v2_oracle_scope_record.py::test_wrong_or_missing_state_is_rejected",
-            "tests/test_fd08_v2_runner_schema.py::test_exact_immutable_r6_v6_mounted_dataset_remains_runner_compatible",
-            "tests/test_kaggle_sdf_directional_fd_v16.py::test_v17_flow24_prerequisites_use_registered_w3_w4_backend_identity",
-            "tests/test_kaggle_sdf_directional_fd_v17_normalfloor.py::test_host_summary_check_requires_the_registered_floor",
-            "tests/test_lbm_metal.py::test_metal_non_float32_is_explicitly_rejected",
-            "tests/test_lbm_metal.py::test_metal_periodic_step_matches_cpu_on_rectangular_grid",
-            "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.0]",
-            "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.5]",
-            "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.6]",
-            "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[bad]",
-            "tests/test_mode01.py::test_full_gate_bundle_on_parent_and_a_mode",
-            "tests/test_openfoam_blockmesh_grid.py::test_reads_actual_compiled_g2_block_mesh_when_runtime_artifact_is_available",
-            "tests/test_openfoam_field_reconstruction.py::test_runtime_g2_straight_case_reconstructs_final_fields_with_audit_provenance",
-            "tests/test_pq3_3b_campaign_v15.py::test_pinned_evidence_and_margin_mask_hashes_verify",
-            "tests/test_pq3_3b_campaign_v15.py::test_v15_bootstrap_is_deterministic_from_the_pinned_v14_checkpoint",
-            "tests/test_pq3_3b_campaign_v16.py::test_start_state_is_the_recorded_v15_checkpoint_10_unchanged",
-            "tests/test_srcmap02_qualification.py::test_ab_sign_convention_and_unsigned_separation",
-            "tests/test_srcmap02_qualification.py::test_analytic_box_edge_vertex_sign",
-            "tests/test_srcmap02_qualification.py::test_analytic_sphere_sign",
-            "tests/test_srcmap02_qualification.py::test_chunk_assembly",
-            "tests/test_srcmap02_qualification.py::test_exact_zero_and_fail_closed_states",
-            "tests/test_srcmap02_qualification.py::test_order_restoration",
-            "tests/test_srcmap02_qualification.py::test_repeat_hash_equality_and_state_volume_helpers",
-            "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_preflight_reverifies",
-            "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_run_reverifies",
-            "tests/test_stage_s_adjoint_qualification.py::test_registered_qualification_reverifies",
-            "tests/test_stage_s_baseline_v16.py::test_baseline_file_hashes_reverify",
-            "tests/test_stage_s_baseline_v16.py::test_baseline_v2_supersedes_v1_and_binds_the_repaired_judgment",
-            "tests/test_stage_s_component_diagnosis.py::test_registered_component_manifest_reverifies",
-            "tests/test_stage_s_fd_diagnosis.py::test_case_audit_detects_clipping_and_accepts_exact_application",
-            "tests/test_stage_s_fd_diagnosis.py::test_control_point_parsers_and_count_validation",
-            "tests/test_stage_s_fd_diagnosis.py::test_pair_audit_odd_even_and_direction_comparison",
-            "tests/test_stage_s_fd_diagnosis.py::test_registered_d1_audit_reverifies",
-            "tests/test_stage_s_fd_diagnosis.py::test_registered_d2_audit_reverifies",
-            "tests/test_stage_s_perturbation.py::test_baseline_patch_extraction_is_closed_and_oriented",
-            "tests/test_stage_s_perturbation.py::test_fixed_patches_do_not_move_in_a_registered_side",
-            "tests/test_stage_s_perturbation.py::test_registered_side_evidence_reverifies",
-            "tests/test_stage_s_perturbation.py::test_registered_surface_fd_result_reverifies",
-            "tests/test_stage_s_reduced_basis.py::test_registered_manifest_contract_and_reduced_spec",
-            "tests/test_stage_s_v16_contract_audit.py::test_build_manifest_refuses_a_pq2_hash_registration_mismatch",
-            "tests/test_stage_s_v16_contract_audit.py::test_every_recorded_artifact_hash_is_current",
-            "tests/test_stage_s_work_f.py::test_preflight_artifact_passed_and_matches_the_manifest",
-            "tests/test_stage_s_work_f.py::test_registration_binds_the_baseline_and_response_identities",
-            "tests/test_stage_s_work_f.py::test_solver_evidence_qualified_and_reconfirmed_clearance",
-            "tests/test_stage_s_work_f_surface_fd.py::test_evaluation_requires_both_responses_and_resolvable_aligned_directions",
-            "tests/test_stage_s_work_f_surface_fd.py::test_manifest_validation_rejects_missing_roles_and_seeds",
-            "tests/test_stage_s_work_f_surface_fd.py::test_response_manifests_share_the_catalog_and_identity_contract",
-            "tests/test_stage_v16_domain_boundary_contract.py::test_extended_spec_changes_only_domain_and_problem_id",
-            "tests/test_stage_v16_domain_boundary_contract.py::test_registered_artifacts_are_current",
-            "tests/test_stage_v_domain_boundary_factor.py::test_extended_case_bundle_uses_declared_grid_without_sdf_arrays",
-            "tests/test_stage_v_domain_boundary_factor.py::test_extended_domain_reuses_baseline_location_in_mesh",
-            "tests/test_stage_v_domain_boundary_factor.py::test_extended_spec_diff_and_top_block_helper",
-            "tests/test_stage_v_domain_boundary_factor.py::test_registered_run_manifest_contract",
-            "tests/test_stage_v_domain_boundary_factor.py::test_treatment_cases_match_the_registered_definition",
-            "tests/test_stage_v_domain_continuation.py::test_staged_geometry_is_byte_identical_to_base",
-            "tests/test_stage_v_domain_preflight.py::test_recorded_correct_candidate_passes_preflight",
-            "tests/test_stage_v_domain_preflight.py::test_recorded_wrong_candidate_is_rejected_before_meshing",
-            "tests/test_stage_v_qualification.py::test_real_historical_run_without_residual_control_is_not_called_converged"
-          ],
-          "summary": "3482 passed, 80 skipped, 7295 warnings in 3344.06s (0:55:44)"
-        },
-        "failure_sets_identical": false,
-        "final": {
-          "collected": 3648,
-          "completed": true,
-          "executed_source_base_commit": "08e0ea3823168c330b3023aeb508734584a57edb",
-          "exit_code": 1,
-          "failed": 4,
-          "failure_node_ids": [
-            "tests/test_grid02_evidence.py::test_the_analysis_is_the_registered_one_and_reproduces_from_the_kept_output",
-            "tests/test_grid02_prereg.py::test_every_file_the_freeze_binds_is_committed_at_head_once_it_exists",
-            "tests/test_grid02_prereg.py::test_the_real_freeze_validates_with_the_analyzer_and_is_sidecar_bound",
-            "tests/test_lowdim03_prereg.py::test_every_file_the_freeze_binds_is_committed_at_head_and_the_runner_constants_are_pinned"
-          ],
-          "junit": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-cpu-pytest.xml.gz",
-          "log": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-cpu-pytest.log.gz",
-          "passed": 3564,
-          "seconds_pytest_summary": 3304.66,
-          "skipped": 80,
-          "skipped_node_ids": [
-            "tests/screen01/test_screen01_build.py::test_freeze1_content",
-            "tests/test_canonical_objective.py::test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign",
-            "tests/test_fd08_calibration.py::test_calibration_retry_registration_uses_append_only_round_paths",
-            "tests/test_fd08_v2_formal_amend2.py::test_actual_candidate_matches_every_amend1_scientific_field_and_state_byte",
-            "tests/test_fd08_v2_formal_amend2.py::test_actual_complete_mounted_payload_passes_registered_runner_state_consumer",
-            "tests/test_fd08_v2_formal_amend2.py::test_actual_formal_bytes_are_disjoint_from_exact_49_calibration_inputs",
-            "tests/test_fd08_v2_formal_amend2.py::test_fresh_actual_execution_checkout_matches_all_bound_source_inputs",
-            "tests/test_fd08_v2_formal_amend3.py::test_actual_candidate_matches_every_amend2_scientific_field_and_state_byte",
-            "tests/test_fd08_v2_formal_amend3.py::test_actual_complete_mounted_payload_passes_registered_runner_state_consumer",
-            "tests/test_fd08_v2_formal_amend3.py::test_actual_formal_bytes_are_disjoint_from_exact_49_calibration_inputs",
-            "tests/test_fd08_v2_formal_amend3.py::test_fresh_actual_execution_checkout_matches_all_bound_source_inputs",
-            "tests/test_fd08_v2_formal_lineage.py::test_actual_25_state_science_and_frozen_fit_copy_are_unchanged",
-            "tests/test_fd08_v2_formal_lineage.py::test_dry_run_refuses_to_overwrite_the_historical_failure",
-            "tests/test_fd08_v2_formal_lineage.py::test_formal_execution_and_exact_parent_are_two_identities",
-            "tests/test_fd08_v2_formal_lineage.py::test_fresh_checkout_passes_the_unchanged_runner_source_verification",
-            "tests/test_fd08_v2_formal_lineage.py::test_real_r6_raw_inventory_is_a_49_unique_byte_set_including_baseline",
-            "tests/test_fd08_v2_oracle_scope_record.py::test_changed_pinned_evidence_is_rejected",
-            "tests/test_fd08_v2_oracle_scope_record.py::test_eight_series_cover_four_directions_by_two_responses",
-            "tests/test_fd08_v2_oracle_scope_record.py::test_flags_stay_literally_false_and_record_passes_the_registry_flag_check",
-            "tests/test_fd08_v2_oracle_scope_record.py::test_no_error_gate_is_chosen_here",
-            "tests/test_fd08_v2_oracle_scope_record.py::test_record_is_deterministic",
-            "tests/test_fd08_v2_oracle_scope_record.py::test_regenerated_directions_match_registered_hashes_and_bridge_hashes_are_hex",
-            "tests/test_fd08_v2_oracle_scope_record.py::test_wrong_or_missing_state_is_rejected",
-            "tests/test_fd08_v2_runner_schema.py::test_exact_immutable_r6_v6_mounted_dataset_remains_runner_compatible",
-            "tests/test_kaggle_sdf_directional_fd_v16.py::test_v17_flow24_prerequisites_use_registered_w3_w4_backend_identity",
-            "tests/test_kaggle_sdf_directional_fd_v17_normalfloor.py::test_host_summary_check_requires_the_registered_floor",
-            "tests/test_lbm_metal.py::test_metal_non_float32_is_explicitly_rejected",
-            "tests/test_lbm_metal.py::test_metal_periodic_step_matches_cpu_on_rectangular_grid",
-            "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.0]",
-            "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.5]",
-            "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.6]",
-            "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[bad]",
-            "tests/test_mode01.py::test_full_gate_bundle_on_parent_and_a_mode",
-            "tests/test_openfoam_blockmesh_grid.py::test_reads_actual_compiled_g2_block_mesh_when_runtime_artifact_is_available",
-            "tests/test_openfoam_field_reconstruction.py::test_runtime_g2_straight_case_reconstructs_final_fields_with_audit_provenance",
-            "tests/test_pq3_3b_campaign_v15.py::test_pinned_evidence_and_margin_mask_hashes_verify",
-            "tests/test_pq3_3b_campaign_v15.py::test_v15_bootstrap_is_deterministic_from_the_pinned_v14_checkpoint",
-            "tests/test_pq3_3b_campaign_v16.py::test_start_state_is_the_recorded_v15_checkpoint_10_unchanged",
-            "tests/test_srcmap02_qualification.py::test_ab_sign_convention_and_unsigned_separation",
-            "tests/test_srcmap02_qualification.py::test_analytic_box_edge_vertex_sign",
-            "tests/test_srcmap02_qualification.py::test_analytic_sphere_sign",
-            "tests/test_srcmap02_qualification.py::test_chunk_assembly",
-            "tests/test_srcmap02_qualification.py::test_exact_zero_and_fail_closed_states",
-            "tests/test_srcmap02_qualification.py::test_order_restoration",
-            "tests/test_srcmap02_qualification.py::test_repeat_hash_equality_and_state_volume_helpers",
-            "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_preflight_reverifies",
-            "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_run_reverifies",
-            "tests/test_stage_s_adjoint_qualification.py::test_registered_qualification_reverifies",
-            "tests/test_stage_s_baseline_v16.py::test_baseline_file_hashes_reverify",
-            "tests/test_stage_s_baseline_v16.py::test_baseline_v2_supersedes_v1_and_binds_the_repaired_judgment",
-            "tests/test_stage_s_component_diagnosis.py::test_registered_component_manifest_reverifies",
-            "tests/test_stage_s_fd_diagnosis.py::test_case_audit_detects_clipping_and_accepts_exact_application",
-            "tests/test_stage_s_fd_diagnosis.py::test_control_point_parsers_and_count_validation",
-            "tests/test_stage_s_fd_diagnosis.py::test_pair_audit_odd_even_and_direction_comparison",
-            "tests/test_stage_s_fd_diagnosis.py::test_registered_d1_audit_reverifies",
-            "tests/test_stage_s_fd_diagnosis.py::test_registered_d2_audit_reverifies",
-            "tests/test_stage_s_perturbation.py::test_baseline_patch_extraction_is_closed_and_oriented",
-            "tests/test_stage_s_perturbation.py::test_fixed_patches_do_not_move_in_a_registered_side",
-            "tests/test_stage_s_perturbation.py::test_registered_side_evidence_reverifies",
-            "tests/test_stage_s_perturbation.py::test_registered_surface_fd_result_reverifies",
-            "tests/test_stage_s_reduced_basis.py::test_registered_manifest_contract_and_reduced_spec",
-            "tests/test_stage_s_v16_contract_audit.py::test_build_manifest_refuses_a_pq2_hash_registration_mismatch",
-            "tests/test_stage_s_v16_contract_audit.py::test_every_recorded_artifact_hash_is_current",
-            "tests/test_stage_s_work_f.py::test_preflight_artifact_passed_and_matches_the_manifest",
-            "tests/test_stage_s_work_f.py::test_registration_binds_the_baseline_and_response_identities",
-            "tests/test_stage_s_work_f.py::test_solver_evidence_qualified_and_reconfirmed_clearance",
-            "tests/test_stage_s_work_f_surface_fd.py::test_evaluation_requires_both_responses_and_resolvable_aligned_directions",
-            "tests/test_stage_s_work_f_surface_fd.py::test_manifest_validation_rejects_missing_roles_and_seeds",
-            "tests/test_stage_s_work_f_surface_fd.py::test_response_manifests_share_the_catalog_and_identity_contract",
-            "tests/test_stage_v16_domain_boundary_contract.py::test_extended_spec_changes_only_domain_and_problem_id",
-            "tests/test_stage_v16_domain_boundary_contract.py::test_registered_artifacts_are_current",
-            "tests/test_stage_v_domain_boundary_factor.py::test_extended_case_bundle_uses_declared_grid_without_sdf_arrays",
-            "tests/test_stage_v_domain_boundary_factor.py::test_extended_domain_reuses_baseline_location_in_mesh",
-            "tests/test_stage_v_domain_boundary_factor.py::test_extended_spec_diff_and_top_block_helper",
-            "tests/test_stage_v_domain_boundary_factor.py::test_registered_run_manifest_contract",
-            "tests/test_stage_v_domain_boundary_factor.py::test_treatment_cases_match_the_registered_definition",
-            "tests/test_stage_v_domain_continuation.py::test_staged_geometry_is_byte_identical_to_base",
-            "tests/test_stage_v_domain_preflight.py::test_recorded_correct_candidate_passes_preflight",
-            "tests/test_stage_v_domain_preflight.py::test_recorded_wrong_candidate_is_rejected_before_meshing",
-            "tests/test_stage_v_qualification.py::test_real_historical_run_without_residual_control_is_not_called_converged"
-          ],
-          "source_bytes_bound_to_commit": "248255ce6d3be04d23d6061d7d9ceee6894bffe1",
-          "summary": "4 failed, 3564 passed, 80 skipped, 7295 warnings in 3304.66s (0:55:04)"
-        },
-        "metal_ids_skipped": 6,
-        "new_scene_tests_passed_in_full_run": 86,
-        "profile": "docs/codex/gen01_w1_2026_11_06/reports/wp06_cpu_only_pytest.py",
-        "profile_sha256": "ace18973554f64720a3df1bd5ea0aab1dc593a097f9bdc23ebfe8211d4734d18",
-        "skipped_sets_identical": true,
-        "threads": {
-          "OMP_NUM_THREADS": 1,
-          "OPENBLAS_NUM_THREADS": 1,
-          "VECLIB_MAXIMUM_THREADS": 1
-        }
+      {
+        "path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-full-pytest.xml.gz",
+        "sha256": "f5cb122281cce7956ae50f532e1b11c8f14d1510dda74f7a871f9bb29bfd3171",
+        "uncompressed_sha256": "258b170d84b17136fcf64f2ae0f9c509c436c662d50c9886901705cdd876df78",
+        "uncompressed_size_bytes": 521856
+      }
+    ],
+    "cpu_profile_plugin_used": false,
+    "evidence_class": "solver_free_software_and_development_diagnostic",
+    "execution_routing": [
+      {
+        "actual_model": null,
+        "attempt_number": 1,
+        "reason": "MCP absent; CLI log permission failure",
+        "requested_model": "OpenCode Go catalog; no model selected"
       },
-      "evidence_class": "solver_free_software_and_development_diagnostic",
-      "execution_routing": {
-        "actual_model": "native inherited Codex workers",
+      {
+        "actual_model": null,
         "attempt_number": 2,
-        "paid_api_enabled": false,
-        "reason": "MCP absent; CLI log permission failure; isolated XDG provider not found",
-        "requested_model": "OpenCode Go catalog, no model selected"
+        "reason": "writable XDG_DATA_HOME: Provider not found: opencode-go",
+        "requested_model": "OpenCode Go catalog; no model selected"
       },
-      "full_run_failure_classification": {
-        "immutable_historical_source_closure": [
-          "tests/test_grid02_evidence.py::test_the_analysis_is_the_registered_one_and_reproduces_from_the_kept_output",
-          "tests/test_grid02_prereg.py::test_the_real_freeze_validates_with_the_analyzer_and_is_sidecar_bound"
-        ],
-        "uncommitted_source_pending_commit": [
-          "tests/test_grid02_prereg.py::test_every_file_the_freeze_binds_is_committed_at_head_once_it_exists",
-          "tests/test_lowdim03_prereg.py::test_every_file_the_freeze_binds_is_committed_at_head_and_the_runner_constants_are_pinned"
-        ]
-      },
-      "git_delivery": {
-        "PR": "https://github.com/ramhachi/CFD_opt_sdf/pull/82",
-        "PR_body_matches_final_report": true,
-        "PR_readback_after_source_push": {
-          "autoMergeRequest": null,
-          "baseRefName": "codex/kaggle-batch-migration",
-          "body_matches_report": true,
-          "body_sha256_without_trailing_newlines": "af8dcc680b23428322a8d553210d8563065257a4705d8985b122d1dd3ac9a832",
-          "headRefName": "feat/gen01-w1-06-geom-s1",
-          "headRefOid": "248255ce6d3be04d23d6061d7d9ceee6894bffe1",
-          "isDraft": true,
-          "state": "OPEN",
-          "title": "WP6 phase A: scenes and geometry gates (historical closure blocker)",
-          "url": "https://github.com/ramhachi/CFD_opt_sdf/pull/82"
-        },
-        "PR_ready": false,
-        "auto_merge_enabled": false,
-        "default_index_lock": "denied",
-        "default_index_sync": {
-          "exit_code": 128,
-          "paths": [
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_attempt1_blocked/wp06_design.md",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_attempt1_blocked/wp06_pytest_interrupted.log",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_attempt1_blocked/wp06_report.md",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_attempt1_blocked/wp06_sdf_preflight.json",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_attempt1_blocked/wp06_sdf_preflight.py",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_attempt1_blocked/wp06_validation.json",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.json",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.py",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_cpu_only_pytest.py",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_design.md",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_pytest_interrupted.log",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_report.md",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_sdf_preflight.json",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_sdf_preflight.py",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_source_closure_preflight.json",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_source_closure_preflight.py",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-base-cpu-pytest.log.gz",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-base-cpu-pytest.xml.gz",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-base-pytest.log.gz",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-compileall.log.gz",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-cpu-pytest.log.gz",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-cpu-pytest.xml.gz",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-pytest.log.gz",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-pytest.xml.gz",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-scene-tests.log.gz",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-scene-tests.xml.gz",
-            "docs/codex/gen01_w1_2026_11_06/reports/wp06_validation.json",
-            "src/cfd_sdf/scene/__init__.py",
-            "src/cfd_sdf/scene/events.py",
-            "src/cfd_sdf/scene/gates.py",
-            "src/cfd_sdf/scene/primitives.py",
-            "src/cfd_sdf/scene/scene.py",
-            "tests/scene/test_birth.py",
-            "tests/scene/test_events.py",
-            "tests/scene/test_gates.py",
-            "tests/scene/test_primitives.py",
-            "tests/scene/test_scene.py"
-          ],
-          "stderr": "fatal: Unable to create '/Users/sota/projects/FomulaTMU/CFD2026_09/.git/worktrees/CFD2026_09-wp-06-geom-s1/index.lock': Operation not permitted\n",
-          "stdout": ""
-        },
-        "default_index_synchronized": false,
-        "method": "git write-tree, git commit-tree, git update-ref with exact expected old ref and verified ancestor, fast-forward git push",
-        "new_clone_used": false,
-        "normal_commit_error": "COMMIT_EDITMSG: Operation not permitted",
-        "shared_gitdir": "/Users/sota/projects/FomulaTMU/CFD2026_09/.git/worktrees/CFD2026_09-wp-06-geom-s1",
-        "source_commit": "248255ce6d3be04d23d6061d7d9ceee6894bffe1",
-        "source_commit_parent": "08e0ea3823168c330b3023aeb508734584a57edb",
-        "source_commit_pushed": true,
-        "source_remote_readback": "248255ce6d3be04d23d6061d7d9ceee6894bffe1",
-        "status": "source pushed; Draft PR body read back equal to final report; post-commit diagnostics recorded",
-        "temporary_index": "/private/tmp/wp06-index",
-        "temporary_index_clean_after_source_commit": true
-      },
-      "kind": "wp06_phase_a_validation",
-      "phase_a_acceptance_complete": false,
-      "phase_a_implementation_complete": true,
-      "phase_b_started": false,
-      "post_commit_targeted_recheck": {
-        "commit": "248255ce6d3be04d23d6061d7d9ceee6894bffe1",
-        "exit_code": 1,
-        "failed": 2,
-        "failure_node_ids": [
-          "tests/test_grid02_evidence.py::test_the_analysis_is_the_registered_one_and_reproduces_from_the_kept_output",
-          "tests/test_grid02_prereg.py::test_the_real_freeze_validates_with_the_analyzer_and_is_sidecar_bound"
-        ],
-        "junit": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-post-commit-recheck.xml.gz",
-        "log": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-post-commit-recheck.log.gz",
-        "passed": 2,
-        "passed_node_ids": [
-          "tests/test_grid02_prereg.py::test_every_file_the_freeze_binds_is_committed_at_head_once_it_exists",
-          "tests/test_lowdim03_prereg.py::test_every_file_the_freeze_binds_is_committed_at_head_and_the_runner_constants_are_pinned"
-        ],
-        "reason": "same tested source; only HEAD membership changed; both intrinsic historical source-closure failures remain",
-        "seconds": 16.93,
-        "status": "complete",
-        "whole_suite_repeated": false
-      },
-      "review": {
-        "archived_attempt1_bytes_equal_base": true,
-        "fixed_findings": [
-          "deformed raw v18 error exceeds2%t: improved same-zero-set field",
-          "Box centre continuity",
-          "seed ID collision after merge",
-          "state hash and bitwise field verification",
-          "clipped finite solid cannot prove no cavity"
-        ],
-        "independent_math_and_code_review": true,
-        "independent_source_closure_reproduction": true
-      },
-      "runtime": {
-        "machine": "arm64",
-        "packages": {
-          "numpy": "2.5.2",
-          "pytest": "9.1.1",
-          "scipy": "1.18.1",
-          "trimesh": "5.1.0"
-        },
-        "python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]",
-        "system": "Darwin"
-      },
-      "schema_version": 1,
-      "scientific_scope": {
-        "cfd_evaluation_by_scene_or_events": 0,
-        "existing_qualification_flags_changed": false,
-        "legacy_cpu_preflights_in_full_pytest": true,
-        "new_scene_cfd_campaigns": 0,
-        "new_scene_gpu_evaluations": 0,
-        "physical_or_BDIM_qualification": false,
-        "topology_birth_primal_qualified": false,
-        "unrestricted_existing_metal_import_attempted": true
-      },
-      "source_closure_conflict": {
-        "base": {
-          "required_not_in_frozen": [],
-          "validation": "PASS"
-        },
-        "baseline_commit": "08e0ea3823168c330b3023aeb508734584a57edb",
-        "current": {
-          "required_not_in_frozen": [
-            "src/cfd_sdf/scene/__init__.py",
-            "src/cfd_sdf/scene/events.py",
-            "src/cfd_sdf/scene/gates.py",
-            "src/cfd_sdf/scene/primitives.py",
-            "src/cfd_sdf/scene/scene.py"
-          ],
-          "validation": "ValueError: frozen file/source closure is incomplete"
-        },
-        "evidence_class": "solver_free_contract_diagnostic_not_acceptance",
-        "reader_definition": "scripts/analyze_grid02.py:105-116",
-        "reader_rejection": "scripts/analyze_grid02.py:165-167",
-        "sha256": {
+      {
+        "actual_model": "native inherited Codex scoped worker",
+        "attempt_number": 3,
+        "reason": "Go catalog unavailable; migration-only fallback",
+        "requested_model": "OpenCode Go worker pool"
+      }
+    ],
+    "full_pytest": {
+      "completed": true,
+      "error_node_ids": [],
+      "errors": 0,
+      "exit_code": 0,
+      "failed": 0,
+      "failure_node_ids": [],
+      "failure_set_equal_to_host_base": true,
+      "passed": 3568,
+      "scene_tests_passed": 86,
+      "seconds": 1035.366,
+      "skipped": 74,
+      "skipped_node_ids": [
+        "tests/screen01/test_screen01_build.py::test_freeze1_content",
+        "tests/test_canonical_objective.py::test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign",
+        "tests/test_fd08_calibration.py::test_calibration_retry_registration_uses_append_only_round_paths",
+        "tests/test_fd08_v2_formal_amend2.py::test_actual_candidate_matches_every_amend1_scientific_field_and_state_byte",
+        "tests/test_fd08_v2_formal_amend2.py::test_actual_complete_mounted_payload_passes_registered_runner_state_consumer",
+        "tests/test_fd08_v2_formal_amend2.py::test_actual_formal_bytes_are_disjoint_from_exact_49_calibration_inputs",
+        "tests/test_fd08_v2_formal_amend2.py::test_fresh_actual_execution_checkout_matches_all_bound_source_inputs",
+        "tests/test_fd08_v2_formal_amend3.py::test_actual_candidate_matches_every_amend2_scientific_field_and_state_byte",
+        "tests/test_fd08_v2_formal_amend3.py::test_actual_complete_mounted_payload_passes_registered_runner_state_consumer",
+        "tests/test_fd08_v2_formal_amend3.py::test_actual_formal_bytes_are_disjoint_from_exact_49_calibration_inputs",
+        "tests/test_fd08_v2_formal_amend3.py::test_fresh_actual_execution_checkout_matches_all_bound_source_inputs",
+        "tests/test_fd08_v2_formal_lineage.py::test_actual_25_state_science_and_frozen_fit_copy_are_unchanged",
+        "tests/test_fd08_v2_formal_lineage.py::test_dry_run_refuses_to_overwrite_the_historical_failure",
+        "tests/test_fd08_v2_formal_lineage.py::test_formal_execution_and_exact_parent_are_two_identities",
+        "tests/test_fd08_v2_formal_lineage.py::test_fresh_checkout_passes_the_unchanged_runner_source_verification",
+        "tests/test_fd08_v2_formal_lineage.py::test_real_r6_raw_inventory_is_a_49_unique_byte_set_including_baseline",
+        "tests/test_fd08_v2_oracle_scope_record.py::test_changed_pinned_evidence_is_rejected",
+        "tests/test_fd08_v2_oracle_scope_record.py::test_eight_series_cover_four_directions_by_two_responses",
+        "tests/test_fd08_v2_oracle_scope_record.py::test_flags_stay_literally_false_and_record_passes_the_registry_flag_check",
+        "tests/test_fd08_v2_oracle_scope_record.py::test_no_error_gate_is_chosen_here",
+        "tests/test_fd08_v2_oracle_scope_record.py::test_record_is_deterministic",
+        "tests/test_fd08_v2_oracle_scope_record.py::test_regenerated_directions_match_registered_hashes_and_bridge_hashes_are_hex",
+        "tests/test_fd08_v2_oracle_scope_record.py::test_wrong_or_missing_state_is_rejected",
+        "tests/test_fd08_v2_runner_schema.py::test_exact_immutable_r6_v6_mounted_dataset_remains_runner_compatible",
+        "tests/test_kaggle_sdf_directional_fd_v16.py::test_v17_flow24_prerequisites_use_registered_w3_w4_backend_identity",
+        "tests/test_kaggle_sdf_directional_fd_v17_normalfloor.py::test_host_summary_check_requires_the_registered_floor",
+        "tests/test_mode01.py::test_full_gate_bundle_on_parent_and_a_mode",
+        "tests/test_openfoam_blockmesh_grid.py::test_reads_actual_compiled_g2_block_mesh_when_runtime_artifact_is_available",
+        "tests/test_openfoam_field_reconstruction.py::test_runtime_g2_straight_case_reconstructs_final_fields_with_audit_provenance",
+        "tests/test_pq3_3b_campaign_v15.py::test_pinned_evidence_and_margin_mask_hashes_verify",
+        "tests/test_pq3_3b_campaign_v15.py::test_v15_bootstrap_is_deterministic_from_the_pinned_v14_checkpoint",
+        "tests/test_pq3_3b_campaign_v16.py::test_start_state_is_the_recorded_v15_checkpoint_10_unchanged",
+        "tests/test_srcmap02_qualification.py::test_ab_sign_convention_and_unsigned_separation",
+        "tests/test_srcmap02_qualification.py::test_analytic_box_edge_vertex_sign",
+        "tests/test_srcmap02_qualification.py::test_analytic_sphere_sign",
+        "tests/test_srcmap02_qualification.py::test_chunk_assembly",
+        "tests/test_srcmap02_qualification.py::test_exact_zero_and_fail_closed_states",
+        "tests/test_srcmap02_qualification.py::test_order_restoration",
+        "tests/test_srcmap02_qualification.py::test_repeat_hash_equality_and_state_volume_helpers",
+        "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_preflight_reverifies",
+        "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_run_reverifies",
+        "tests/test_stage_s_adjoint_qualification.py::test_registered_qualification_reverifies",
+        "tests/test_stage_s_baseline_v16.py::test_baseline_file_hashes_reverify",
+        "tests/test_stage_s_baseline_v16.py::test_baseline_v2_supersedes_v1_and_binds_the_repaired_judgment",
+        "tests/test_stage_s_component_diagnosis.py::test_registered_component_manifest_reverifies",
+        "tests/test_stage_s_fd_diagnosis.py::test_case_audit_detects_clipping_and_accepts_exact_application",
+        "tests/test_stage_s_fd_diagnosis.py::test_control_point_parsers_and_count_validation",
+        "tests/test_stage_s_fd_diagnosis.py::test_pair_audit_odd_even_and_direction_comparison",
+        "tests/test_stage_s_fd_diagnosis.py::test_registered_d1_audit_reverifies",
+        "tests/test_stage_s_fd_diagnosis.py::test_registered_d2_audit_reverifies",
+        "tests/test_stage_s_perturbation.py::test_baseline_patch_extraction_is_closed_and_oriented",
+        "tests/test_stage_s_perturbation.py::test_fixed_patches_do_not_move_in_a_registered_side",
+        "tests/test_stage_s_perturbation.py::test_registered_side_evidence_reverifies",
+        "tests/test_stage_s_perturbation.py::test_registered_surface_fd_result_reverifies",
+        "tests/test_stage_s_reduced_basis.py::test_registered_manifest_contract_and_reduced_spec",
+        "tests/test_stage_s_v16_contract_audit.py::test_build_manifest_refuses_a_pq2_hash_registration_mismatch",
+        "tests/test_stage_s_v16_contract_audit.py::test_every_recorded_artifact_hash_is_current",
+        "tests/test_stage_s_work_f.py::test_preflight_artifact_passed_and_matches_the_manifest",
+        "tests/test_stage_s_work_f.py::test_registration_binds_the_baseline_and_response_identities",
+        "tests/test_stage_s_work_f.py::test_solver_evidence_qualified_and_reconfirmed_clearance",
+        "tests/test_stage_s_work_f_surface_fd.py::test_evaluation_requires_both_responses_and_resolvable_aligned_directions",
+        "tests/test_stage_s_work_f_surface_fd.py::test_manifest_validation_rejects_missing_roles_and_seeds",
+        "tests/test_stage_s_work_f_surface_fd.py::test_response_manifests_share_the_catalog_and_identity_contract",
+        "tests/test_stage_v16_domain_boundary_contract.py::test_extended_spec_changes_only_domain_and_problem_id",
+        "tests/test_stage_v16_domain_boundary_contract.py::test_registered_artifacts_are_current",
+        "tests/test_stage_v_domain_boundary_factor.py::test_extended_case_bundle_uses_declared_grid_without_sdf_arrays",
+        "tests/test_stage_v_domain_boundary_factor.py::test_extended_domain_reuses_baseline_location_in_mesh",
+        "tests/test_stage_v_domain_boundary_factor.py::test_extended_spec_diff_and_top_block_helper",
+        "tests/test_stage_v_domain_boundary_factor.py::test_registered_run_manifest_contract",
+        "tests/test_stage_v_domain_boundary_factor.py::test_treatment_cases_match_the_registered_definition",
+        "tests/test_stage_v_domain_continuation.py::test_staged_geometry_is_byte_identical_to_base",
+        "tests/test_stage_v_domain_preflight.py::test_recorded_correct_candidate_passes_preflight",
+        "tests/test_stage_v_domain_preflight.py::test_recorded_wrong_candidate_is_rejected_before_meshing",
+        "tests/test_stage_v_qualification.py::test_real_historical_run_without_residual_control_is_not_called_converged"
+      ],
+      "summary": "3568 passed, 74 skipped, 7295 warnings in 1035.57s (0:17:15)",
+      "tests": 3642
+    },
+    "full_suite_runs_this_invocation": 1,
+    "git_delivery": {
+      "PR": "https://github.com/ramhachi/CFD_opt_sdf/pull/82",
+      "PR_ready_action": "pending host commit/push and PR update",
+      "committed_by_codex": false,
+      "git_add_used": false,
+      "git_mv_used": false,
+      "head_unchanged": true,
+      "index_matches_head": true,
+      "index_or_ref_mutation_by_codex": false,
+      "owner": "Claude on host per Amendment 2 section 3",
+      "pr_edited_by_codex": false,
+      "pushed_by_codex": false,
+      "remote_PR_status_rechecked_this_invocation": false
+    },
+    "host_baseline": {
+      "commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+      "failed": 0,
+      "failure_node_ids": [],
+      "ignored_module": "tests/test_lbm_metal.py",
+      "passed": 3482,
+      "rerun_by_this_invocation": false,
+      "skipped": 74,
+      "source": "user Amendment 2 section 4; Claude host-reported result"
+    },
+    "intended_commit_paths": [
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_amendment2_source_closure.json",
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.json",
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.py",
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_design.md",
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_report.md",
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-closure-pytest.log.gz",
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-closure-pytest.xml.gz",
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-compileall.log.gz",
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-full-pytest.log.gz",
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-full-pytest.xml.gz",
+      "docs/codex/gen01_w1_2026_11_06/reports/wp06_validation.json",
+      "src/cfd_gen/README.md",
+      "src/cfd_gen/__init__.py",
+      "src/cfd_gen/scene/__init__.py",
+      "src/cfd_gen/scene/events.py",
+      "src/cfd_gen/scene/gates.py",
+      "src/cfd_gen/scene/primitives.py",
+      "src/cfd_gen/scene/scene.py",
+      "src/cfd_sdf/scene/__init__.py",
+      "src/cfd_sdf/scene/events.py",
+      "src/cfd_sdf/scene/gates.py",
+      "src/cfd_sdf/scene/primitives.py",
+      "src/cfd_sdf/scene/scene.py",
+      "tests/scene/test_birth.py",
+      "tests/scene/test_events.py",
+      "tests/scene/test_gates.py",
+      "tests/scene/test_primitives.py",
+      "tests/scene/test_scene.py"
+    ],
+    "kind": "wp06_phase_a_validation",
+    "paid_api_enabled": false,
+    "phase_a_acceptance_complete": true,
+    "phase_a_implementation_complete": true,
+    "phase_b_started": false,
+    "previous_attempt_2": {
+      "recorded_at_commit": "9aa93169155501af0ed9392d376dad5ee5f543e9",
+      "scope": "historical record; its source paths, hashes, CPU profile, blockers and delivery route do not describe this migration",
+      "validation": {
+        "artifact_sha256": {
+          "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.json": "0cb600a4e08ec5faf7efd7d7bdda8eb75e85440e67117e70ad3b60fd9bb5b7e3",
+          "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.py": "f387606885319b48eab57c50655d8c64005819030e4dc8e7b68ceda7e486aee4",
+          "docs/codex/gen01_w1_2026_11_06/reports/wp06_cpu_only_pytest.py": "ace18973554f64720a3df1bd5ea0aab1dc593a097f9bdc23ebfe8211d4734d18",
+          "docs/codex/gen01_w1_2026_11_06/reports/wp06_design.md": "589cc0c4c780c7e55c2b7e38ab2067ebe6396973ec0a4f346c0e600eb8c529d4",
+          "docs/codex/gen01_w1_2026_11_06/reports/wp06_report.md": "f15f2ff4662a661246975dbb779da702603876e08cad8297c8a24ac5a3986a54",
+          "docs/codex/gen01_w1_2026_11_06/reports/wp06_source_closure_preflight.json": "efa957735d29e2b0a7677792a2f858fc4eb284695df35ecdc75fbbb1af2c7df6",
           "docs/codex/gen01_w1_2026_11_06/reports/wp06_source_closure_preflight.py": "13571ed20b28ba0743f8369dedb5ce8fa42e2988b055df98f8ed9ae58b514ad0",
-          "docs/evidence/grid02_trend_2026_10_16/prerun_freeze.json": "67eab367d2171b6211c32809a421129a6465fb21c4eaf9df0d9ae75fdafbc0d8",
-          "scripts/analyze_grid02.py": "ecaf3cfe2aac7bd0a8062bd62e55ac08812d9ff5dcd1171ce8a5004cb6090260",
           "src/cfd_sdf/scene/__init__.py": "4c041ba31a842626864404f27bb800591a0fe06ddb856a55f228de585751dcaa",
           "src/cfd_sdf/scene/events.py": "3cbeb61fa79646ce107128d801d2a189fa32521674e527096ddb2446f5730524",
           "src/cfd_sdf/scene/gates.py": "6dd86d1b948a6230a3a7a2ce2820b5607ae0bfa7800d4d689173af6f278c6ebb",
           "src/cfd_sdf/scene/primitives.py": "9de5dc7ee2cda19300b93847da4df0c6e6e78b8cff05cb825e3a9fc24a434de0",
-          "src/cfd_sdf/scene/scene.py": "e086a177da087153bb9378fab2987177cc31cf613cae3847b6dee6d364ebb69d"
+          "src/cfd_sdf/scene/scene.py": "e086a177da087153bb9378fab2987177cc31cf613cae3847b6dee6d364ebb69d",
+          "tests/scene/test_birth.py": "b6d6f00db8ef6fac97acde5f082e3588edc3f6d7adddca2ac3e29a402e48f359",
+          "tests/scene/test_events.py": "ac5834891df0b8deb841b54bad77576b216c604e9de16cc3aa0574e60a18abda",
+          "tests/scene/test_gates.py": "ae4661a22dfb5626552228d2e0521287173309b2e17c6d9d797ece4dee85b9ce",
+          "tests/scene/test_primitives.py": "61fbbcc23d28206a80b0d62024f7007c45472017233cd53f986ea33c4a0eabe2",
+          "tests/scene/test_scene.py": "eb6cb4e007738e3a200e0a6528c6431a64320ede31f464af4d467423b6090ecc"
         },
-        "status": "SOURCE_CLOSURE_CONFLICT_CONFIRMED"
-      },
-      "status": "BLOCKED_NEW_HISTORICAL_SOURCE_CLOSURE_CONFLICT",
-      "unrestricted_pytest": {
-        "base": {
-          "completed": false,
-          "exit_code": 134,
-          "junit_written": false,
-          "log": "/private/tmp/wp06-base-pytest.log",
-          "reason": "mlx.core import abort in tests/test_lbm_metal.py"
+        "authority_reads": {
+          "docs/STATE.md": {
+            "lines": "1-61",
+            "sha256": "8261732a99c4bf40856655e9aab46370d239dc7fa32fe4c458bbeca6a524bbc3"
+          },
+          "docs/gen_system_plan_2026_11_01.md": {
+            "lines": "1-317",
+            "sha256": "edcbe927e097d0909c206e45819ed188f0d6093b1027237cf3e43dba01ed5efe"
+          },
+          "docs/phase_plan.md": {
+            "lines": "1-7782",
+            "sha256": "e9bc9b97836e4d92a20027453aed2abc82981a25aafbbee70c7420731855cb23"
+          }
         },
-        "final": {
-          "completed": false,
-          "exit_code": 2,
-          "log": "/private/tmp/wp06-final-pytest.log",
-          "passed": 1435,
-          "reason": "SIGINT before known Metal initialization after baseline abort",
-          "seconds": 1754.81,
-          "skipped": 24
-        }
-      },
-      "validated_source_commit": "248255ce6d3be04d23d6061d7d9ceee6894bffe1"
-    }
+        "base_commit": "08e0ea3823168c330b3023aeb508734584a57edb",
+        "branch": "feat/gen01-w1-06-geom-s1",
+        "commands": {
+          "band": {
+            "cases": 50,
+            "exit_code": 0
+          },
+          "compileall": {
+            "exit_code": 0
+          },
+          "cpu_profile_selfcheck": {
+            "exit_code": 0
+          },
+          "reseed_regression": {
+            "exit_code": 0,
+            "passed": 1,
+            "seconds": 2.98
+          },
+          "scene": {
+            "exit_code": 0,
+            "passed": 86,
+            "seconds": 13.68
+          },
+          "source_closure_preflight": {
+            "acceptance_pass": false,
+            "command": ".venv/bin/python docs/codex/gen01_w1_2026_11_06/reports/wp06_source_closure_preflight.py --baseline /private/tmp/wp06-base-08e0ea38",
+            "exit_code": 0
+          },
+          "staged_diff_check": {
+            "exit_code": 0
+          }
+        },
+        "compressed_test_artifacts": {
+          "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-base-cpu-pytest.log.gz": {
+            "encoding": "gzip",
+            "sha256": "65bef2a98f6d5ae0977d2c145a374a28e2c50a9c5aa434731c876c717621f9f4",
+            "uncompressed_bytes": 7167,
+            "uncompressed_sha256": "5e85e81894cf1af476cd0b762de994cf5324ba7d95b8f560ad9737e4d89e9193"
+          },
+          "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-base-cpu-pytest.xml.gz": {
+            "encoding": "gzip",
+            "sha256": "91aae1293c435ccf9a9d61bcb7a8bee45557a122a6a62e45c4905bd5594f0be2",
+            "uncompressed_bytes": 511763,
+            "uncompressed_sha256": "207920d8261d7cbdda4e1b724da6363a185af06321b92ecbf5532a48d1402fec"
+          },
+          "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-base-pytest.log.gz": {
+            "encoding": "gzip",
+            "sha256": "db501b32feb0247fb1eb510a5ccbc4e1c294fe544fafba613bf001bc3e1390de",
+            "uncompressed_bytes": 10966,
+            "uncompressed_sha256": "b074205d6da6bc76fbe85a55f3ae3276b95929a18e6a9d1af6628d12b734947e"
+          },
+          "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-compileall.log.gz": {
+            "encoding": "gzip",
+            "sha256": "2df7d38eb742754e8ade16676d9ba820cd08a6dcc833f233140c1c1d902b2dcf",
+            "uncompressed_bytes": 679,
+            "uncompressed_sha256": "cbc17e0e396f2a619886f20e0b3b53d32b281e7ba0149c560b399a959aa0b3b9"
+          },
+          "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-cpu-pytest.log.gz": {
+            "encoding": "gzip",
+            "sha256": "473c5beff010ee1b3dfa92144dc4265a898b808450667932684586aea82ca323",
+            "uncompressed_bytes": 15208,
+            "uncompressed_sha256": "634633ebfc26e0a8b7412ca38444b9833e90753680bd424e7d03053d63f09a9d"
+          },
+          "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-cpu-pytest.xml.gz": {
+            "encoding": "gzip",
+            "sha256": "9582af493fd6c36a385a38d7aaf257dbd2942556197a6e5ca9ddaa6097f1fa09",
+            "uncompressed_bytes": 532444,
+            "uncompressed_sha256": "75a687470c6e0af614bbfe21c6c24a3269ab67c6d903da05d8ce3fc506562809"
+          },
+          "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-pytest.log.gz": {
+            "encoding": "gzip",
+            "sha256": "741691eca2586109bbdeb836a3b38616dc5dc68d8f83231b7199f086e39a8a83",
+            "uncompressed_bytes": 4653,
+            "uncompressed_sha256": "4690618d1c5539be29d0d5c385990e70b5fd67b4baf252a0ce0ec2b2a93781ea"
+          },
+          "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-pytest.xml.gz": {
+            "encoding": "gzip",
+            "sha256": "b50c3bfb36413951364a5215776b53404f0059b08523d0bceedfc3b43e5ecf16",
+            "uncompressed_bytes": 201968,
+            "uncompressed_sha256": "361653a5be9bfccf0587572452bf7ee5a8365e3c6436c2a348d1c5d30a6de70a"
+          },
+          "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-post-commit-recheck.log.gz": {
+            "encoding": "gzip",
+            "sha256": "d88b67a0c71fdb3486731c9709de30ace4966ffa2f9f3bb1c01e39088f1f4233",
+            "uncompressed_bytes": 4877,
+            "uncompressed_sha256": "7ed0986850a002345b495ac338efeb00e65890899334d9427cfe46cc717328cb"
+          },
+          "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-post-commit-recheck.xml.gz": {
+            "encoding": "gzip",
+            "sha256": "a0fa9c37d10514545ae18a06c667f15e9c2d7b6d5c1d8a52217438c1ed075380",
+            "uncompressed_bytes": 5325,
+            "uncompressed_sha256": "a4f0599b1027972b93d54e52fa5689fec7a022c019358d7fc2839a99e2989209"
+          },
+          "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-scene-tests.log.gz": {
+            "encoding": "gzip",
+            "sha256": "d30a798893d9594ec47038ba84c048a4a09d3b3b6881962b0a2855b0094790b2",
+            "uncompressed_bytes": 180,
+            "uncompressed_sha256": "481e48ef2990daefb3e7456fcf94d73aacae900333909b25f19ef0feb07b57f8"
+          },
+          "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-scene-tests.xml.gz": {
+            "encoding": "gzip",
+            "sha256": "2b18c4b4f925d90e58aabf7db3625ee390d435200a88d85582d89e80d8ed7de4",
+            "uncompressed_bytes": 10885,
+            "uncompressed_sha256": "51c7b168a410ade251df4c1df131e3217396ba87abd531e43248ee44f7a37ada"
+          }
+        },
+        "cpu_pytest": {
+          "base": {
+            "collected": 3562,
+            "completed": true,
+            "executed_source_base_commit": "08e0ea3823168c330b3023aeb508734584a57edb",
+            "exit_code": 0,
+            "failed": 0,
+            "failure_node_ids": [],
+            "junit": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-base-cpu-pytest.xml.gz",
+            "log": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-base-cpu-pytest.log.gz",
+            "passed": 3482,
+            "seconds_pytest_summary": 3344.06,
+            "skipped": 80,
+            "skipped_node_ids": [
+              "tests/screen01/test_screen01_build.py::test_freeze1_content",
+              "tests/test_canonical_objective.py::test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign",
+              "tests/test_fd08_calibration.py::test_calibration_retry_registration_uses_append_only_round_paths",
+              "tests/test_fd08_v2_formal_amend2.py::test_actual_candidate_matches_every_amend1_scientific_field_and_state_byte",
+              "tests/test_fd08_v2_formal_amend2.py::test_actual_complete_mounted_payload_passes_registered_runner_state_consumer",
+              "tests/test_fd08_v2_formal_amend2.py::test_actual_formal_bytes_are_disjoint_from_exact_49_calibration_inputs",
+              "tests/test_fd08_v2_formal_amend2.py::test_fresh_actual_execution_checkout_matches_all_bound_source_inputs",
+              "tests/test_fd08_v2_formal_amend3.py::test_actual_candidate_matches_every_amend2_scientific_field_and_state_byte",
+              "tests/test_fd08_v2_formal_amend3.py::test_actual_complete_mounted_payload_passes_registered_runner_state_consumer",
+              "tests/test_fd08_v2_formal_amend3.py::test_actual_formal_bytes_are_disjoint_from_exact_49_calibration_inputs",
+              "tests/test_fd08_v2_formal_amend3.py::test_fresh_actual_execution_checkout_matches_all_bound_source_inputs",
+              "tests/test_fd08_v2_formal_lineage.py::test_actual_25_state_science_and_frozen_fit_copy_are_unchanged",
+              "tests/test_fd08_v2_formal_lineage.py::test_dry_run_refuses_to_overwrite_the_historical_failure",
+              "tests/test_fd08_v2_formal_lineage.py::test_formal_execution_and_exact_parent_are_two_identities",
+              "tests/test_fd08_v2_formal_lineage.py::test_fresh_checkout_passes_the_unchanged_runner_source_verification",
+              "tests/test_fd08_v2_formal_lineage.py::test_real_r6_raw_inventory_is_a_49_unique_byte_set_including_baseline",
+              "tests/test_fd08_v2_oracle_scope_record.py::test_changed_pinned_evidence_is_rejected",
+              "tests/test_fd08_v2_oracle_scope_record.py::test_eight_series_cover_four_directions_by_two_responses",
+              "tests/test_fd08_v2_oracle_scope_record.py::test_flags_stay_literally_false_and_record_passes_the_registry_flag_check",
+              "tests/test_fd08_v2_oracle_scope_record.py::test_no_error_gate_is_chosen_here",
+              "tests/test_fd08_v2_oracle_scope_record.py::test_record_is_deterministic",
+              "tests/test_fd08_v2_oracle_scope_record.py::test_regenerated_directions_match_registered_hashes_and_bridge_hashes_are_hex",
+              "tests/test_fd08_v2_oracle_scope_record.py::test_wrong_or_missing_state_is_rejected",
+              "tests/test_fd08_v2_runner_schema.py::test_exact_immutable_r6_v6_mounted_dataset_remains_runner_compatible",
+              "tests/test_kaggle_sdf_directional_fd_v16.py::test_v17_flow24_prerequisites_use_registered_w3_w4_backend_identity",
+              "tests/test_kaggle_sdf_directional_fd_v17_normalfloor.py::test_host_summary_check_requires_the_registered_floor",
+              "tests/test_lbm_metal.py::test_metal_non_float32_is_explicitly_rejected",
+              "tests/test_lbm_metal.py::test_metal_periodic_step_matches_cpu_on_rectangular_grid",
+              "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.0]",
+              "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.5]",
+              "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.6]",
+              "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[bad]",
+              "tests/test_mode01.py::test_full_gate_bundle_on_parent_and_a_mode",
+              "tests/test_openfoam_blockmesh_grid.py::test_reads_actual_compiled_g2_block_mesh_when_runtime_artifact_is_available",
+              "tests/test_openfoam_field_reconstruction.py::test_runtime_g2_straight_case_reconstructs_final_fields_with_audit_provenance",
+              "tests/test_pq3_3b_campaign_v15.py::test_pinned_evidence_and_margin_mask_hashes_verify",
+              "tests/test_pq3_3b_campaign_v15.py::test_v15_bootstrap_is_deterministic_from_the_pinned_v14_checkpoint",
+              "tests/test_pq3_3b_campaign_v16.py::test_start_state_is_the_recorded_v15_checkpoint_10_unchanged",
+              "tests/test_srcmap02_qualification.py::test_ab_sign_convention_and_unsigned_separation",
+              "tests/test_srcmap02_qualification.py::test_analytic_box_edge_vertex_sign",
+              "tests/test_srcmap02_qualification.py::test_analytic_sphere_sign",
+              "tests/test_srcmap02_qualification.py::test_chunk_assembly",
+              "tests/test_srcmap02_qualification.py::test_exact_zero_and_fail_closed_states",
+              "tests/test_srcmap02_qualification.py::test_order_restoration",
+              "tests/test_srcmap02_qualification.py::test_repeat_hash_equality_and_state_volume_helpers",
+              "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_preflight_reverifies",
+              "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_run_reverifies",
+              "tests/test_stage_s_adjoint_qualification.py::test_registered_qualification_reverifies",
+              "tests/test_stage_s_baseline_v16.py::test_baseline_file_hashes_reverify",
+              "tests/test_stage_s_baseline_v16.py::test_baseline_v2_supersedes_v1_and_binds_the_repaired_judgment",
+              "tests/test_stage_s_component_diagnosis.py::test_registered_component_manifest_reverifies",
+              "tests/test_stage_s_fd_diagnosis.py::test_case_audit_detects_clipping_and_accepts_exact_application",
+              "tests/test_stage_s_fd_diagnosis.py::test_control_point_parsers_and_count_validation",
+              "tests/test_stage_s_fd_diagnosis.py::test_pair_audit_odd_even_and_direction_comparison",
+              "tests/test_stage_s_fd_diagnosis.py::test_registered_d1_audit_reverifies",
+              "tests/test_stage_s_fd_diagnosis.py::test_registered_d2_audit_reverifies",
+              "tests/test_stage_s_perturbation.py::test_baseline_patch_extraction_is_closed_and_oriented",
+              "tests/test_stage_s_perturbation.py::test_fixed_patches_do_not_move_in_a_registered_side",
+              "tests/test_stage_s_perturbation.py::test_registered_side_evidence_reverifies",
+              "tests/test_stage_s_perturbation.py::test_registered_surface_fd_result_reverifies",
+              "tests/test_stage_s_reduced_basis.py::test_registered_manifest_contract_and_reduced_spec",
+              "tests/test_stage_s_v16_contract_audit.py::test_build_manifest_refuses_a_pq2_hash_registration_mismatch",
+              "tests/test_stage_s_v16_contract_audit.py::test_every_recorded_artifact_hash_is_current",
+              "tests/test_stage_s_work_f.py::test_preflight_artifact_passed_and_matches_the_manifest",
+              "tests/test_stage_s_work_f.py::test_registration_binds_the_baseline_and_response_identities",
+              "tests/test_stage_s_work_f.py::test_solver_evidence_qualified_and_reconfirmed_clearance",
+              "tests/test_stage_s_work_f_surface_fd.py::test_evaluation_requires_both_responses_and_resolvable_aligned_directions",
+              "tests/test_stage_s_work_f_surface_fd.py::test_manifest_validation_rejects_missing_roles_and_seeds",
+              "tests/test_stage_s_work_f_surface_fd.py::test_response_manifests_share_the_catalog_and_identity_contract",
+              "tests/test_stage_v16_domain_boundary_contract.py::test_extended_spec_changes_only_domain_and_problem_id",
+              "tests/test_stage_v16_domain_boundary_contract.py::test_registered_artifacts_are_current",
+              "tests/test_stage_v_domain_boundary_factor.py::test_extended_case_bundle_uses_declared_grid_without_sdf_arrays",
+              "tests/test_stage_v_domain_boundary_factor.py::test_extended_domain_reuses_baseline_location_in_mesh",
+              "tests/test_stage_v_domain_boundary_factor.py::test_extended_spec_diff_and_top_block_helper",
+              "tests/test_stage_v_domain_boundary_factor.py::test_registered_run_manifest_contract",
+              "tests/test_stage_v_domain_boundary_factor.py::test_treatment_cases_match_the_registered_definition",
+              "tests/test_stage_v_domain_continuation.py::test_staged_geometry_is_byte_identical_to_base",
+              "tests/test_stage_v_domain_preflight.py::test_recorded_correct_candidate_passes_preflight",
+              "tests/test_stage_v_domain_preflight.py::test_recorded_wrong_candidate_is_rejected_before_meshing",
+              "tests/test_stage_v_qualification.py::test_real_historical_run_without_residual_control_is_not_called_converged"
+            ],
+            "summary": "3482 passed, 80 skipped, 7295 warnings in 3344.06s (0:55:44)"
+          },
+          "failure_sets_identical": false,
+          "final": {
+            "collected": 3648,
+            "completed": true,
+            "executed_source_base_commit": "08e0ea3823168c330b3023aeb508734584a57edb",
+            "exit_code": 1,
+            "failed": 4,
+            "failure_node_ids": [
+              "tests/test_grid02_evidence.py::test_the_analysis_is_the_registered_one_and_reproduces_from_the_kept_output",
+              "tests/test_grid02_prereg.py::test_every_file_the_freeze_binds_is_committed_at_head_once_it_exists",
+              "tests/test_grid02_prereg.py::test_the_real_freeze_validates_with_the_analyzer_and_is_sidecar_bound",
+              "tests/test_lowdim03_prereg.py::test_every_file_the_freeze_binds_is_committed_at_head_and_the_runner_constants_are_pinned"
+            ],
+            "junit": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-cpu-pytest.xml.gz",
+            "log": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-cpu-pytest.log.gz",
+            "passed": 3564,
+            "seconds_pytest_summary": 3304.66,
+            "skipped": 80,
+            "skipped_node_ids": [
+              "tests/screen01/test_screen01_build.py::test_freeze1_content",
+              "tests/test_canonical_objective.py::test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign",
+              "tests/test_fd08_calibration.py::test_calibration_retry_registration_uses_append_only_round_paths",
+              "tests/test_fd08_v2_formal_amend2.py::test_actual_candidate_matches_every_amend1_scientific_field_and_state_byte",
+              "tests/test_fd08_v2_formal_amend2.py::test_actual_complete_mounted_payload_passes_registered_runner_state_consumer",
+              "tests/test_fd08_v2_formal_amend2.py::test_actual_formal_bytes_are_disjoint_from_exact_49_calibration_inputs",
+              "tests/test_fd08_v2_formal_amend2.py::test_fresh_actual_execution_checkout_matches_all_bound_source_inputs",
+              "tests/test_fd08_v2_formal_amend3.py::test_actual_candidate_matches_every_amend2_scientific_field_and_state_byte",
+              "tests/test_fd08_v2_formal_amend3.py::test_actual_complete_mounted_payload_passes_registered_runner_state_consumer",
+              "tests/test_fd08_v2_formal_amend3.py::test_actual_formal_bytes_are_disjoint_from_exact_49_calibration_inputs",
+              "tests/test_fd08_v2_formal_amend3.py::test_fresh_actual_execution_checkout_matches_all_bound_source_inputs",
+              "tests/test_fd08_v2_formal_lineage.py::test_actual_25_state_science_and_frozen_fit_copy_are_unchanged",
+              "tests/test_fd08_v2_formal_lineage.py::test_dry_run_refuses_to_overwrite_the_historical_failure",
+              "tests/test_fd08_v2_formal_lineage.py::test_formal_execution_and_exact_parent_are_two_identities",
+              "tests/test_fd08_v2_formal_lineage.py::test_fresh_checkout_passes_the_unchanged_runner_source_verification",
+              "tests/test_fd08_v2_formal_lineage.py::test_real_r6_raw_inventory_is_a_49_unique_byte_set_including_baseline",
+              "tests/test_fd08_v2_oracle_scope_record.py::test_changed_pinned_evidence_is_rejected",
+              "tests/test_fd08_v2_oracle_scope_record.py::test_eight_series_cover_four_directions_by_two_responses",
+              "tests/test_fd08_v2_oracle_scope_record.py::test_flags_stay_literally_false_and_record_passes_the_registry_flag_check",
+              "tests/test_fd08_v2_oracle_scope_record.py::test_no_error_gate_is_chosen_here",
+              "tests/test_fd08_v2_oracle_scope_record.py::test_record_is_deterministic",
+              "tests/test_fd08_v2_oracle_scope_record.py::test_regenerated_directions_match_registered_hashes_and_bridge_hashes_are_hex",
+              "tests/test_fd08_v2_oracle_scope_record.py::test_wrong_or_missing_state_is_rejected",
+              "tests/test_fd08_v2_runner_schema.py::test_exact_immutable_r6_v6_mounted_dataset_remains_runner_compatible",
+              "tests/test_kaggle_sdf_directional_fd_v16.py::test_v17_flow24_prerequisites_use_registered_w3_w4_backend_identity",
+              "tests/test_kaggle_sdf_directional_fd_v17_normalfloor.py::test_host_summary_check_requires_the_registered_floor",
+              "tests/test_lbm_metal.py::test_metal_non_float32_is_explicitly_rejected",
+              "tests/test_lbm_metal.py::test_metal_periodic_step_matches_cpu_on_rectangular_grid",
+              "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.0]",
+              "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.5]",
+              "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[0.6]",
+              "tests/test_lbm_metal.py::test_metal_rejects_invalid_bgk_viscosity[bad]",
+              "tests/test_mode01.py::test_full_gate_bundle_on_parent_and_a_mode",
+              "tests/test_openfoam_blockmesh_grid.py::test_reads_actual_compiled_g2_block_mesh_when_runtime_artifact_is_available",
+              "tests/test_openfoam_field_reconstruction.py::test_runtime_g2_straight_case_reconstructs_final_fields_with_audit_provenance",
+              "tests/test_pq3_3b_campaign_v15.py::test_pinned_evidence_and_margin_mask_hashes_verify",
+              "tests/test_pq3_3b_campaign_v15.py::test_v15_bootstrap_is_deterministic_from_the_pinned_v14_checkpoint",
+              "tests/test_pq3_3b_campaign_v16.py::test_start_state_is_the_recorded_v15_checkpoint_10_unchanged",
+              "tests/test_srcmap02_qualification.py::test_ab_sign_convention_and_unsigned_separation",
+              "tests/test_srcmap02_qualification.py::test_analytic_box_edge_vertex_sign",
+              "tests/test_srcmap02_qualification.py::test_analytic_sphere_sign",
+              "tests/test_srcmap02_qualification.py::test_chunk_assembly",
+              "tests/test_srcmap02_qualification.py::test_exact_zero_and_fail_closed_states",
+              "tests/test_srcmap02_qualification.py::test_order_restoration",
+              "tests/test_srcmap02_qualification.py::test_repeat_hash_equality_and_state_volume_helpers",
+              "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_preflight_reverifies",
+              "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_run_reverifies",
+              "tests/test_stage_s_adjoint_qualification.py::test_registered_qualification_reverifies",
+              "tests/test_stage_s_baseline_v16.py::test_baseline_file_hashes_reverify",
+              "tests/test_stage_s_baseline_v16.py::test_baseline_v2_supersedes_v1_and_binds_the_repaired_judgment",
+              "tests/test_stage_s_component_diagnosis.py::test_registered_component_manifest_reverifies",
+              "tests/test_stage_s_fd_diagnosis.py::test_case_audit_detects_clipping_and_accepts_exact_application",
+              "tests/test_stage_s_fd_diagnosis.py::test_control_point_parsers_and_count_validation",
+              "tests/test_stage_s_fd_diagnosis.py::test_pair_audit_odd_even_and_direction_comparison",
+              "tests/test_stage_s_fd_diagnosis.py::test_registered_d1_audit_reverifies",
+              "tests/test_stage_s_fd_diagnosis.py::test_registered_d2_audit_reverifies",
+              "tests/test_stage_s_perturbation.py::test_baseline_patch_extraction_is_closed_and_oriented",
+              "tests/test_stage_s_perturbation.py::test_fixed_patches_do_not_move_in_a_registered_side",
+              "tests/test_stage_s_perturbation.py::test_registered_side_evidence_reverifies",
+              "tests/test_stage_s_perturbation.py::test_registered_surface_fd_result_reverifies",
+              "tests/test_stage_s_reduced_basis.py::test_registered_manifest_contract_and_reduced_spec",
+              "tests/test_stage_s_v16_contract_audit.py::test_build_manifest_refuses_a_pq2_hash_registration_mismatch",
+              "tests/test_stage_s_v16_contract_audit.py::test_every_recorded_artifact_hash_is_current",
+              "tests/test_stage_s_work_f.py::test_preflight_artifact_passed_and_matches_the_manifest",
+              "tests/test_stage_s_work_f.py::test_registration_binds_the_baseline_and_response_identities",
+              "tests/test_stage_s_work_f.py::test_solver_evidence_qualified_and_reconfirmed_clearance",
+              "tests/test_stage_s_work_f_surface_fd.py::test_evaluation_requires_both_responses_and_resolvable_aligned_directions",
+              "tests/test_stage_s_work_f_surface_fd.py::test_manifest_validation_rejects_missing_roles_and_seeds",
+              "tests/test_stage_s_work_f_surface_fd.py::test_response_manifests_share_the_catalog_and_identity_contract",
+              "tests/test_stage_v16_domain_boundary_contract.py::test_extended_spec_changes_only_domain_and_problem_id",
+              "tests/test_stage_v16_domain_boundary_contract.py::test_registered_artifacts_are_current",
+              "tests/test_stage_v_domain_boundary_factor.py::test_extended_case_bundle_uses_declared_grid_without_sdf_arrays",
+              "tests/test_stage_v_domain_boundary_factor.py::test_extended_domain_reuses_baseline_location_in_mesh",
+              "tests/test_stage_v_domain_boundary_factor.py::test_extended_spec_diff_and_top_block_helper",
+              "tests/test_stage_v_domain_boundary_factor.py::test_registered_run_manifest_contract",
+              "tests/test_stage_v_domain_boundary_factor.py::test_treatment_cases_match_the_registered_definition",
+              "tests/test_stage_v_domain_continuation.py::test_staged_geometry_is_byte_identical_to_base",
+              "tests/test_stage_v_domain_preflight.py::test_recorded_correct_candidate_passes_preflight",
+              "tests/test_stage_v_domain_preflight.py::test_recorded_wrong_candidate_is_rejected_before_meshing",
+              "tests/test_stage_v_qualification.py::test_real_historical_run_without_residual_control_is_not_called_converged"
+            ],
+            "source_bytes_bound_to_commit": "248255ce6d3be04d23d6061d7d9ceee6894bffe1",
+            "summary": "4 failed, 3564 passed, 80 skipped, 7295 warnings in 3304.66s (0:55:04)"
+          },
+          "metal_ids_skipped": 6,
+          "new_scene_tests_passed_in_full_run": 86,
+          "profile": "docs/codex/gen01_w1_2026_11_06/reports/wp06_cpu_only_pytest.py",
+          "profile_sha256": "ace18973554f64720a3df1bd5ea0aab1dc593a097f9bdc23ebfe8211d4734d18",
+          "skipped_sets_identical": true,
+          "threads": {
+            "OMP_NUM_THREADS": 1,
+            "OPENBLAS_NUM_THREADS": 1,
+            "VECLIB_MAXIMUM_THREADS": 1
+          }
+        },
+        "evidence_class": "solver_free_software_and_development_diagnostic",
+        "execution_routing": {
+          "actual_model": "native inherited Codex workers",
+          "attempt_number": 2,
+          "paid_api_enabled": false,
+          "reason": "MCP absent; CLI log permission failure; isolated XDG provider not found",
+          "requested_model": "OpenCode Go catalog, no model selected"
+        },
+        "full_run_failure_classification": {
+          "immutable_historical_source_closure": [
+            "tests/test_grid02_evidence.py::test_the_analysis_is_the_registered_one_and_reproduces_from_the_kept_output",
+            "tests/test_grid02_prereg.py::test_the_real_freeze_validates_with_the_analyzer_and_is_sidecar_bound"
+          ],
+          "uncommitted_source_pending_commit": [
+            "tests/test_grid02_prereg.py::test_every_file_the_freeze_binds_is_committed_at_head_once_it_exists",
+            "tests/test_lowdim03_prereg.py::test_every_file_the_freeze_binds_is_committed_at_head_and_the_runner_constants_are_pinned"
+          ]
+        },
+        "git_delivery": {
+          "PR": "https://github.com/ramhachi/CFD_opt_sdf/pull/82",
+          "PR_body_matches_final_report": true,
+          "PR_readback_after_source_push": {
+            "autoMergeRequest": null,
+            "baseRefName": "codex/kaggle-batch-migration",
+            "body_matches_report": true,
+            "body_sha256_without_trailing_newlines": "af8dcc680b23428322a8d553210d8563065257a4705d8985b122d1dd3ac9a832",
+            "headRefName": "feat/gen01-w1-06-geom-s1",
+            "headRefOid": "248255ce6d3be04d23d6061d7d9ceee6894bffe1",
+            "isDraft": true,
+            "state": "OPEN",
+            "title": "WP6 phase A: scenes and geometry gates (historical closure blocker)",
+            "url": "https://github.com/ramhachi/CFD_opt_sdf/pull/82"
+          },
+          "PR_ready": false,
+          "auto_merge_enabled": false,
+          "default_index_lock": "denied",
+          "default_index_sync": {
+            "exit_code": 128,
+            "paths": [
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_attempt1_blocked/wp06_design.md",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_attempt1_blocked/wp06_pytest_interrupted.log",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_attempt1_blocked/wp06_report.md",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_attempt1_blocked/wp06_sdf_preflight.json",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_attempt1_blocked/wp06_sdf_preflight.py",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_attempt1_blocked/wp06_validation.json",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.json",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.py",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_cpu_only_pytest.py",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_design.md",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_pytest_interrupted.log",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_report.md",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_sdf_preflight.json",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_sdf_preflight.py",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_source_closure_preflight.json",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_source_closure_preflight.py",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-base-cpu-pytest.log.gz",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-base-cpu-pytest.xml.gz",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-base-pytest.log.gz",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-compileall.log.gz",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-cpu-pytest.log.gz",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-cpu-pytest.xml.gz",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-pytest.log.gz",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-final-pytest.xml.gz",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-scene-tests.log.gz",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-scene-tests.xml.gz",
+              "docs/codex/gen01_w1_2026_11_06/reports/wp06_validation.json",
+              "src/cfd_sdf/scene/__init__.py",
+              "src/cfd_sdf/scene/events.py",
+              "src/cfd_sdf/scene/gates.py",
+              "src/cfd_sdf/scene/primitives.py",
+              "src/cfd_sdf/scene/scene.py",
+              "tests/scene/test_birth.py",
+              "tests/scene/test_events.py",
+              "tests/scene/test_gates.py",
+              "tests/scene/test_primitives.py",
+              "tests/scene/test_scene.py"
+            ],
+            "stderr": "fatal: Unable to create '/Users/sota/projects/FomulaTMU/CFD2026_09/.git/worktrees/CFD2026_09-wp-06-geom-s1/index.lock': Operation not permitted\n",
+            "stdout": ""
+          },
+          "default_index_synchronized": false,
+          "method": "git write-tree, git commit-tree, git update-ref with exact expected old ref and verified ancestor, fast-forward git push",
+          "new_clone_used": false,
+          "normal_commit_error": "COMMIT_EDITMSG: Operation not permitted",
+          "shared_gitdir": "/Users/sota/projects/FomulaTMU/CFD2026_09/.git/worktrees/CFD2026_09-wp-06-geom-s1",
+          "source_commit": "248255ce6d3be04d23d6061d7d9ceee6894bffe1",
+          "source_commit_parent": "08e0ea3823168c330b3023aeb508734584a57edb",
+          "source_commit_pushed": true,
+          "source_remote_readback": "248255ce6d3be04d23d6061d7d9ceee6894bffe1",
+          "status": "source pushed; Draft PR body read back equal to final report; post-commit diagnostics recorded",
+          "temporary_index": "/private/tmp/wp06-index",
+          "temporary_index_clean_after_source_commit": true
+        },
+        "kind": "wp06_phase_a_validation",
+        "phase_a_acceptance_complete": false,
+        "phase_a_implementation_complete": true,
+        "phase_b_started": false,
+        "post_commit_targeted_recheck": {
+          "commit": "248255ce6d3be04d23d6061d7d9ceee6894bffe1",
+          "exit_code": 1,
+          "failed": 2,
+          "failure_node_ids": [
+            "tests/test_grid02_evidence.py::test_the_analysis_is_the_registered_one_and_reproduces_from_the_kept_output",
+            "tests/test_grid02_prereg.py::test_the_real_freeze_validates_with_the_analyzer_and_is_sidecar_bound"
+          ],
+          "junit": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-post-commit-recheck.xml.gz",
+          "log": "docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-post-commit-recheck.log.gz",
+          "passed": 2,
+          "passed_node_ids": [
+            "tests/test_grid02_prereg.py::test_every_file_the_freeze_binds_is_committed_at_head_once_it_exists",
+            "tests/test_lowdim03_prereg.py::test_every_file_the_freeze_binds_is_committed_at_head_and_the_runner_constants_are_pinned"
+          ],
+          "reason": "same tested source; only HEAD membership changed; both intrinsic historical source-closure failures remain",
+          "seconds": 16.93,
+          "status": "complete",
+          "whole_suite_repeated": false
+        },
+        "review": {
+          "archived_attempt1_bytes_equal_base": true,
+          "fixed_findings": [
+            "deformed raw v18 error exceeds2%t: improved same-zero-set field",
+            "Box centre continuity",
+            "seed ID collision after merge",
+            "state hash and bitwise field verification",
+            "clipped finite solid cannot prove no cavity"
+          ],
+          "independent_math_and_code_review": true,
+          "independent_source_closure_reproduction": true
+        },
+        "runtime": {
+          "machine": "arm64",
+          "packages": {
+            "numpy": "2.5.2",
+            "pytest": "9.1.1",
+            "scipy": "1.18.1",
+            "trimesh": "5.1.0"
+          },
+          "python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]",
+          "system": "Darwin"
+        },
+        "schema_version": 1,
+        "scientific_scope": {
+          "cfd_evaluation_by_scene_or_events": 0,
+          "existing_qualification_flags_changed": false,
+          "legacy_cpu_preflights_in_full_pytest": true,
+          "new_scene_cfd_campaigns": 0,
+          "new_scene_gpu_evaluations": 0,
+          "physical_or_BDIM_qualification": false,
+          "topology_birth_primal_qualified": false,
+          "unrestricted_existing_metal_import_attempted": true
+        },
+        "source_closure_conflict": {
+          "base": {
+            "required_not_in_frozen": [],
+            "validation": "PASS"
+          },
+          "baseline_commit": "08e0ea3823168c330b3023aeb508734584a57edb",
+          "current": {
+            "required_not_in_frozen": [
+              "src/cfd_sdf/scene/__init__.py",
+              "src/cfd_sdf/scene/events.py",
+              "src/cfd_sdf/scene/gates.py",
+              "src/cfd_sdf/scene/primitives.py",
+              "src/cfd_sdf/scene/scene.py"
+            ],
+            "validation": "ValueError: frozen file/source closure is incomplete"
+          },
+          "evidence_class": "solver_free_contract_diagnostic_not_acceptance",
+          "reader_definition": "scripts/analyze_grid02.py:105-116",
+          "reader_rejection": "scripts/analyze_grid02.py:165-167",
+          "sha256": {
+            "docs/codex/gen01_w1_2026_11_06/reports/wp06_source_closure_preflight.py": "13571ed20b28ba0743f8369dedb5ce8fa42e2988b055df98f8ed9ae58b514ad0",
+            "docs/evidence/grid02_trend_2026_10_16/prerun_freeze.json": "67eab367d2171b6211c32809a421129a6465fb21c4eaf9df0d9ae75fdafbc0d8",
+            "scripts/analyze_grid02.py": "ecaf3cfe2aac7bd0a8062bd62e55ac08812d9ff5dcd1171ce8a5004cb6090260",
+            "src/cfd_sdf/scene/__init__.py": "4c041ba31a842626864404f27bb800591a0fe06ddb856a55f228de585751dcaa",
+            "src/cfd_sdf/scene/events.py": "3cbeb61fa79646ce107128d801d2a189fa32521674e527096ddb2446f5730524",
+            "src/cfd_sdf/scene/gates.py": "6dd86d1b948a6230a3a7a2ce2820b5607ae0bfa7800d4d689173af6f278c6ebb",
+            "src/cfd_sdf/scene/primitives.py": "9de5dc7ee2cda19300b93847da4df0c6e6e78b8cff05cb825e3a9fc24a434de0",
+            "src/cfd_sdf/scene/scene.py": "e086a177da087153bb9378fab2987177cc31cf613cae3847b6dee6d364ebb69d"
+          },
+          "status": "SOURCE_CLOSURE_CONFLICT_CONFIRMED"
+        },
+        "status": "BLOCKED_NEW_HISTORICAL_SOURCE_CLOSURE_CONFLICT",
+        "unrestricted_pytest": {
+          "base": {
+            "completed": false,
+            "exit_code": 134,
+            "junit_written": false,
+            "log": "/private/tmp/wp06-base-pytest.log",
+            "reason": "mlx.core import abort in tests/test_lbm_metal.py"
+          },
+          "final": {
+            "completed": false,
+            "exit_code": 2,
+            "log": "/private/tmp/wp06-final-pytest.log",
+            "passed": 1435,
+            "reason": "SIGINT before known Metal initialization after baseline abort",
+            "seconds": 1754.81,
+            "skipped": 24
+          }
+        },
+        "validated_source_commit": "248255ce6d3be04d23d6061d7d9ceee6894bffe1"
+      }
+    },
+    "runtime": {
+      "machine": "arm64",
+      "python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]",
+      "system": "Darwin"
+    },
+    "scene_worker": {
+      "evidence_origin": "scoped worker tool result; full JUnit independently confirms all 86 pass",
+      "exit_code": 0,
+      "passed": 86,
+      "seconds": 20.71
+    },
+    "schema_version": 2,
+    "scientific_scope": {
+      "existing_qualification_flags_changed": false,
+      "legacy_cpu_preflights_in_full_pytest": true,
+      "new_scene_cfd_evaluations": 0,
+      "new_scene_gpu_evaluations": 0,
+      "physical_or_BDIM_qualification": false,
+      "topology_birth_primal_qualified": false
+    },
+    "source_closure": {
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_amendment2_source_closure.json",
+      "sha256": "2c24df855db2e3bd3cd70ffea1b29b7ce5223ce07baf25f7cd98e29336d7275d",
+      "status": "PASS"
+    },
+    "source_closure_pytest": {
+      "completed": true,
+      "error_node_ids": [],
+      "errors": 0,
+      "exit_code": 0,
+      "failed": 0,
+      "failure_node_ids": [],
+      "passed": 4,
+      "seconds": 60.584,
+      "skipped": 0,
+      "skipped_node_ids": [],
+      "tests": 4
+    },
+    "source_manifest_sha256": "d84ede411a985dbd9abc4a1708e6789505db08de90563813ceb300c9af4dc34d",
+    "source_sha256": {
+      "src/cfd_gen/README.md": "822e9013a0c98006ded6054eed26b12112254a099a07452cf4eb2c2e4a05b379",
+      "src/cfd_gen/__init__.py": "58671457aa4e97078672298ab97ab42c73451817d308b6bfe1cfff5ea063c750",
+      "src/cfd_gen/scene/__init__.py": "4c041ba31a842626864404f27bb800591a0fe06ddb856a55f228de585751dcaa",
+      "src/cfd_gen/scene/events.py": "3cbeb61fa79646ce107128d801d2a189fa32521674e527096ddb2446f5730524",
+      "src/cfd_gen/scene/gates.py": "0df1f7160d6aceb239384996cda0d8b6e877a28de6061db561aaac1731dbd23f",
+      "src/cfd_gen/scene/primitives.py": "9de5dc7ee2cda19300b93847da4df0c6e6e78b8cff05cb825e3a9fc24a434de0",
+      "src/cfd_gen/scene/scene.py": "5b660834417bba3c6b4c63b2e64fd4d4feb28357d943889355c0f26dee98751e",
+      "tests/scene/test_birth.py": "b5961995ec066d363c7e3b2df0e69cdbcec9c7175921530ae3205b50d86a2b1b",
+      "tests/scene/test_events.py": "03c17da41341f6c2792531c9e2d1829b18574f1821458eb345de0ff639951fe6",
+      "tests/scene/test_gates.py": "e69acc12f819427c31cd7a9ca75ea7c9a7821a2d28e4bbabc608ce93cc119c42",
+      "tests/scene/test_primitives.py": "343b9fb52ec203ebb55972a8bcf49386b763fffad0a8e695a66aa6e2e93575d5",
+      "tests/scene/test_scene.py": "e9dd80ee08f81e5490da6544931127df594cbaf99ea2d7b3635e74576a947764"
+    },
+    "start_commit": "9aa93169155501af0ed9392d376dad5ee5f543e9",
+    "status": "DONE_PHASE_A",
+    "thread_limits": {
+      "MKL_NUM_THREADS": 1,
+      "OMP_NUM_THREADS": 1,
+      "OPENBLAS_NUM_THREADS": 1,
+      "VECLIB_MAXIMUM_THREADS": 1
+    },
+    "validated_source_commit": null,
+    "validation_target": "uncommitted worktree after Amendment 2; source SHA256 below"
   },
-  "runtime": {
-    "machine": "arm64",
-    "python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]",
-    "system": "Darwin"
-  },
-  "scene_worker": {
-    "evidence_origin": "scoped worker tool result; full JUnit independently confirms all 86 pass",
-    "exit_code": 0,
-    "passed": 86,
-    "seconds": 20.71
-  },
-  "schema_version": 2,
-  "scientific_scope": {
-    "existing_qualification_flags_changed": false,
-    "legacy_cpu_preflights_in_full_pytest": true,
-    "new_scene_cfd_evaluations": 0,
-    "new_scene_gpu_evaluations": 0,
-    "physical_or_BDIM_qualification": false,
-    "topology_birth_primal_qualified": false
-  },
-  "source_closure": {
-    "path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_amendment2_source_closure.json",
-    "sha256": "2c24df855db2e3bd3cd70ffea1b29b7ce5223ce07baf25f7cd98e29336d7275d",
-    "status": "PASS"
-  },
-  "source_closure_pytest": {
-    "completed": true,
-    "error_node_ids": [],
+  "scene_pytest": {
+    "command": ".venv/bin/python -m pytest -q tests/scene -p no:cacheprovider --junitxml=/private/tmp/wp06-amendment3-scene-pytest.xml",
     "errors": 0,
     "exit_code": 0,
-    "failed": 0,
-    "failure_node_ids": [],
-    "passed": 4,
-    "seconds": 60.584,
+    "failures": 0,
+    "junit_seconds": 8.618,
+    "passed": 198,
     "skipped": 0,
-    "skipped_node_ids": [],
-    "tests": 4
+    "terminal_seconds": 22.33,
+    "tests": 198
   },
-  "source_manifest_sha256": "d84ede411a985dbd9abc4a1708e6789505db08de90563813ceb300c9af4dc34d",
+  "schema_version": 3,
+  "scientific_scope": {
+    "birth0": "software geometry/policy fixtures",
+    "birth1": "software preparation only, no actual primal responses",
+    "budget_charged": 0,
+    "four_h": "development default pending RES-00 registration",
+    "julia_gpu_float32_ad": "unmeasured",
+    "merged_distance_contract": "explicit exemptions; BDIM band effect unmeasured",
+    "new_scene_cfd_evaluations": 0,
+    "qualification_flags_changed": false,
+    "shape_update_allowed_changed": false,
+    "whole_suite_scope": "existing local CPU preflight regressions included; no new scene CFD campaign or GPU measurement"
+  },
+  "source_closure": {
+    "changed_vs_host_base": [],
+    "historical_source_exceptions_added": false,
+    "julia_files_equal_host_base": 13,
+    "old_scene_directory_absent": true,
+    "python_files_equal_host_base": 130,
+    "record_path": "docs/codex/gen01_w1_2026_11_06/reports/wp06_amendment3_review_checks.json"
+  },
+  "source_manifest_sha256": "314490cf2dab155b56c478b604ff08fbe19bd3393a301f97058145f7cc4cdb92",
   "source_sha256": {
-    "src/cfd_gen/README.md": "822e9013a0c98006ded6054eed26b12112254a099a07452cf4eb2c2e4a05b379",
     "src/cfd_gen/__init__.py": "58671457aa4e97078672298ab97ab42c73451817d308b6bfe1cfff5ea063c750",
     "src/cfd_gen/scene/__init__.py": "4c041ba31a842626864404f27bb800591a0fe06ddb856a55f228de585751dcaa",
-    "src/cfd_gen/scene/events.py": "3cbeb61fa79646ce107128d801d2a189fa32521674e527096ddb2446f5730524",
-    "src/cfd_gen/scene/gates.py": "0df1f7160d6aceb239384996cda0d8b6e877a28de6061db561aaac1731dbd23f",
-    "src/cfd_gen/scene/primitives.py": "9de5dc7ee2cda19300b93847da4df0c6e6e78b8cff05cb825e3a9fc24a434de0",
-    "src/cfd_gen/scene/scene.py": "5b660834417bba3c6b4c63b2e64fd4d4feb28357d943889355c0f26dee98751e",
-    "tests/scene/test_birth.py": "b5961995ec066d363c7e3b2df0e69cdbcec9c7175921530ae3205b50d86a2b1b",
-    "tests/scene/test_events.py": "03c17da41341f6c2792531c9e2d1829b18574f1821458eb345de0ff639951fe6",
-    "tests/scene/test_gates.py": "e69acc12f819427c31cd7a9ca75ea7c9a7821a2d28e4bbabc608ce93cc119c42",
-    "tests/scene/test_primitives.py": "343b9fb52ec203ebb55972a8bcf49386b763fffad0a8e695a66aa6e2e93575d5",
-    "tests/scene/test_scene.py": "e9dd80ee08f81e5490da6544931127df594cbaf99ea2d7b3635e74576a947764"
+    "src/cfd_gen/scene/events.py": "16a0a11539ecdf5bd4419102dd8c41c7c2e07dd0c6f58fcd458945c3a1d70071",
+    "src/cfd_gen/scene/gates.py": "5dac38fb9260f18bce1edf54b94f5b830ebb8d18c1659953ed41a1ddf9ba0d02",
+    "src/cfd_gen/scene/primitives.py": "5f2bebc80a08ed024a53cb42e298feb559db96089409153c733e8e68536fd45f",
+    "src/cfd_gen/scene/scene.py": "24edb51b930a4dfa5fb01ae263ade921288d8c65870ad0e3b686213cd516c410",
+    "tests/scene/test_birth.py": "3c8ae49b138462bec6776b75b8b44c514562fd3594e7173268afd8c61d3ac0b8",
+    "tests/scene/test_events.py": "996e3aa81e73eb91f1bde7b1b096ac9a01c1fd13afe15953ba4c36affa138577",
+    "tests/scene/test_gates.py": "0b1c3650ff79b87ebc967efa3ab70f567a56e764e84642ceea0972ae0dd669b3",
+    "tests/scene/test_primitives.py": "083c3282672fe4fd12caa02c80de59cd07c863638b6e40e3d520f02bba8d2682",
+    "tests/scene/test_scene.py": "c692c859ece996c5b58641e815dda3ebaf1073e9b271c3c4f9d6cd053263a34b"
   },
-  "start_commit": "9aa93169155501af0ed9392d376dad5ee5f543e9",
-  "status": "DONE_PHASE_A",
-  "thread_limits": {
-    "MKL_NUM_THREADS": 1,
-    "OMP_NUM_THREADS": 1,
-    "OPENBLAS_NUM_THREADS": 1,
-    "VECLIB_MAXIMUM_THREADS": 1
+  "source_unchanged_since_scene_and_full_run_start": true,
+  "start_commit": "6536cbf04b86eaf022c0c201a91f548fd4389e94",
+  "status": "DONE",
+  "tested_python_file_sha256": {
+    "src/cfd_gen/scene/events.py": "16a0a11539ecdf5bd4419102dd8c41c7c2e07dd0c6f58fcd458945c3a1d70071",
+    "src/cfd_gen/scene/gates.py": "5dac38fb9260f18bce1edf54b94f5b830ebb8d18c1659953ed41a1ddf9ba0d02",
+    "src/cfd_gen/scene/primitives.py": "5f2bebc80a08ed024a53cb42e298feb559db96089409153c733e8e68536fd45f",
+    "src/cfd_gen/scene/scene.py": "24edb51b930a4dfa5fb01ae263ade921288d8c65870ad0e3b686213cd516c410",
+    "tests/scene/test_birth.py": "3c8ae49b138462bec6776b75b8b44c514562fd3594e7173268afd8c61d3ac0b8",
+    "tests/scene/test_events.py": "996e3aa81e73eb91f1bde7b1b096ac9a01c1fd13afe15953ba4c36affa138577",
+    "tests/scene/test_gates.py": "0b1c3650ff79b87ebc967efa3ab70f567a56e764e84642ceea0972ae0dd669b3",
+    "tests/scene/test_primitives.py": "083c3282672fe4fd12caa02c80de59cd07c863638b6e40e3d520f02bba8d2682",
+    "tests/scene/test_scene.py": "c692c859ece996c5b58641e815dda3ebaf1073e9b271c3c4f9d6cd053263a34b"
   },
   "validated_source_commit": null,
-  "validation_target": "uncommitted worktree after Amendment 2; source SHA256 below"
+  "validation_target": "working tree with source_sha256; host has not committed current repairs",
+  "whitespace": {
+    "exit_code": 0
+  }
 }

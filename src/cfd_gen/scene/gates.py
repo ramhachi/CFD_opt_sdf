@@ -26,7 +26,8 @@ from scipy import ndimage
 
 from cfd_sdf.design.geometry_gates import LENGTH_TOLERANCE_M, _gate
 from cfd_sdf.design.sdf_state import SDFDesignState
-from .primitives import BoxBody, EndplatePlate, MeshBody, PlateElement
+from .primitives import BoxBody, EndplatePlate, MeshBody, PlateElement, _validate_id
+from .scene import MergedElement, SceneSamplingLimit
 
 _DEFAULT_SOURCE = "development_default_4h_not_RES00_registered"
 _MAX_REFINED_NODES = 8_000_000
@@ -40,14 +41,16 @@ class SceneGatePolicy:
     ``rule_source``. It is supplied by the caller/ProblemSpec, never inferred
     from a v2 CFD domain. Coordinates are x,z or x,y,z in metres. ``domain``
     separately declares a finite clearance box. ``clearance_m`` applies to
-    ground and to that box; at least one target must exist. ``joints`` lists
-    (element ID, endplate ID): all such pairs present in the scene require a
-    declaration and sampled contact. A valid declaration exempts that pair
+    ground and to that box; at least one target must exist. Envelope, clearance,
+    forbidden masks and roots apply only to movable components, not fixed
+    context. ``joints`` lists (plate/merged wing ID, endplate ID): all such pairs
+    present in the scene require a declaration and sampled contact. A valid
+    declaration exempts that pair
     from the inter-body gap check, not any other pair.
 
     Root/forbidden masks use the sampled state's shape. A named root with
     ``None`` or a required-but-missing forbidden mask is unmeasured. Every
-    connected finite solid must have a root owner when roots are declared.
+    connected movable solid must have a root owner when roots are declared.
     Arbitrary STL thickness cannot be inferred from its AABB: an externally
     established lower width may be supplied in ``minimum_widths_m`` with
     ``width_source`` provenance; otherwise its thickness is unmeasured.
@@ -77,18 +80,22 @@ class SceneGatePolicy:
             raise ValueError("required_components must be a positive integer or None")
         if not isinstance(self.root_masks, Mapping) or not isinstance(self.minimum_widths_m, Mapping):
             raise ValueError("root_masks and minimum_widths_m must be mappings")
-        if any(not isinstance(k, str) or not k.strip() for k in self.root_masks):
-            raise ValueError("root IDs must be nonempty strings")
+        for name in self.root_masks:
+            _validate_id(name)
         for name, width in self.minimum_widths_m.items():
-            if not isinstance(name, str) or not name.strip() or _nonnegative(width, "declared width") == 0:
-                raise ValueError("declared widths must have IDs and positive values")
+            _validate_id(name)
+            if _nonnegative(width, "declared width") == 0:
+                raise ValueError("declared widths must have positive values")
         if self.minimum_widths_m and (not isinstance(self.width_source, str) or not self.width_source.strip()):
             raise ValueError("declared widths require width_source provenance")
         if type(self.require_forbidden_mask) is not bool:
             raise ValueError("require_forbidden_mask must be boolean")
         pairs = tuple(tuple(pair) for pair in self.joints)
-        if any(len(pair) != 2 or any(not isinstance(v, str) or not v.strip() for v in pair) for pair in pairs):
+        if any(len(pair) != 2 for pair in pairs):
             raise ValueError("joints must be element/endplate ID pairs")
+        for pair in pairs:
+            for name in pair:
+                _validate_id(name)
         if len(set(pairs)) != len(pairs):
             raise ValueError("duplicate joint declaration")
         object.__setattr__(self, "joints", pairs)
@@ -170,8 +177,10 @@ def opening_defect_gate(phi: np.ndarray, h: float) -> dict:
     crop = tuple(slice(max(int(a) - 3, 0), min(int(b) + 4, n)) for a, b, n in zip(idx.min(0), idx.max(0), phi.shape))
     phi = phi[crop]
     refined_shape = tuple((n - 1) * 4 + 1 for n in phi.shape)
-    if math.prod(refined_shape) > _MAX_REFINED_NODES:
-        return _gate(unmeasured=["R3_refinement_resource_limit"], measured={"refined_shape": list(refined_shape)}, thresholds=thresholds)
+    node_count = math.prod(refined_shape)
+    if node_count > _MAX_REFINED_NODES:
+        return _gate(unmeasured=["R3_refinement_resource_limit"], measured={"refined_shape": list(refined_shape),
+                     "node_count": node_count, "max_nodes": _MAX_REFINED_NODES}, thresholds=thresholds)
     coordinates = np.meshgrid(*[np.arange(n, dtype=float) / 4 for n in refined_shape], indexing="ij")
     body = ndimage.map_coordinates(phi, coordinates, order=1) < 0
     defects = [_opening_defect(mask, h / 4, 0.75 * h) for mask in (body, ~body)]
@@ -216,16 +225,46 @@ def _normal_width(body, dimension, policy):
     return None, "no_qualified_width_lower_bound"
 
 
+def _parameter_floor(plate, minimum, policy):
+    # The section width is t/sqrt(1+max(f')**2), linear in the thickness
+    # parameter. Span is an independent constraint that changing t cannot fix.
+    width, _ = _normal_width(plate, 2, policy)
+    return minimum * (plate.thickness / width)
+
+
+def thickness_parameter_floors(scene, *, h, dimension=3, policy: SceneGatePolicy):
+    """Per-ID plate thickness-parameter floors, shared with knock-out history.
+
+    The floor is derived from the gate's conservative normal section width,
+    not from the raw t parameter alone. Merged children retain their own IDs
+    and floors. In 3D a too-short fixed span remains a separate gate failure;
+    increasing thickness cannot remedy it. 4h is a development default only.
+    """
+    h = _nonnegative(h, "h")
+    if h == 0 or type(dimension) is not int or dimension not in (2, 3) or not isinstance(policy, SceneGatePolicy):
+        raise ValueError("positive h, dimension 2/3 and SceneGatePolicy are required")
+    minimum = 4*h if policy.minimum_thickness_m is None else policy.minimum_thickness_m
+    return {part.id: _parameter_floor(part, minimum, policy)
+            for body in scene.components
+            for part in (body.parts if isinstance(body, MergedElement) else (body,))
+            if isinstance(part, PlateElement)}
+
+
 def _thickness_gate(bodies, dimension, h, policy):
     minimum = 4*h if policy.minimum_thickness_m is None else policy.minimum_thickness_m
     fail, unmeasured, components = [], [], {}
     for body in bodies:
         width, method = _normal_width(body, dimension, policy)
         components[body.id] = {"lower_bound_m": width, "method": method}
+        if isinstance(body, PlateElement):
+            components[body.id]["parameter_floor_m"] = _parameter_floor(body, minimum, policy)
+        elif isinstance(body, MergedElement):
+            components[body.id]["parameter_floors_m"] = {
+                part.id: _parameter_floor(part, minimum, policy) for part in body.parts}
         if width is None:
-            unmeasured.append(f"component_width_unmeasured:{body.id}")
+            unmeasured.append(f"component_width_unmeasured|{body.id}")
         elif width < minimum - LENGTH_TOLERANCE_M:
-            fail.append(f"minimum_thickness_violation:{body.id}")
+            fail.append(f"minimum_thickness_violation|{body.id}")
     return _gate(fail=fail, unmeasured=unmeasured, measured={"components": components,
                  "scope": "conservative interior sheet/insphere bound plus independent sampled R3; not every boundary chord"},
                  thresholds={"minimum_thickness_m": minimum, "source": _DEFAULT_SOURCE if policy.minimum_thickness_m is None else "caller_supplied"})
@@ -263,10 +302,10 @@ def _masks_gate(solid, labels, state, policy, dimension):
     fail, unmeasured, roots = [], [], {}
     def checked(mask, name):
         if mask is None:
-            unmeasured.append(f"mask_missing:{name}")
+            unmeasured.append(f"mask_missing|{name}")
             return None
         if not isinstance(mask, np.ndarray) or mask.dtype != np.bool_ or mask.shape != state.shape:
-            unmeasured.append(f"mask_shape_or_dtype_invalid:{name}")
+            unmeasured.append(f"mask_shape_or_dtype_invalid|{name}")
             return None
         return mask[:, 0, :] if dimension == 2 else mask
     if policy.forbidden_mask is not None or policy.require_forbidden_mask:
@@ -275,20 +314,20 @@ def _masks_gate(solid, labels, state, policy, dimension):
             fail.append("material_in_forbidden_mask")
     owner_union = np.zeros(solid.shape, dtype=bool)
     for name, mask in policy.root_masks.items():
-        root = checked(mask, f"root:{name}")
+        root = checked(mask, f"root|{name}")
         if root is None:
             continue
         roots[name] = int(root.sum())
         if not root.any():
-            fail.append(f"required_root_mask_empty:{name}")
+            fail.append(f"required_root_mask_empty|{name}")
         if np.any(root & ~solid):
-            fail.append(f"required_root_not_material:{name}")
+            fail.append(f"required_root_not_material|{name}")
         owner_union |= root
     if policy.root_masks and not unmeasured:
         for label in range(1, int(labels.max()) + 1):
             if not np.any((labels == label) & owner_union):
-                fail.append(f"solid_component_unrooted:{label}")
-    return _gate(fail=fail, unmeasured=unmeasured, measured={"root_node_counts": roots})
+                fail.append(f"solid_component_unrooted|{label}")
+    return _gate(fail=fail, unmeasured=unmeasured, measured={"root_node_counts": roots, "scope": "movable_components_only"})
 
 
 def _pair_gate(scene, fields, h, dimension, policy):
@@ -299,10 +338,10 @@ def _pair_gate(scene, fields, h, dimension, policy):
     bodies = {b.id: b for b in scene.bodies}
     movable = {b.id for b in scene.components}
     endplates = {b.id for b in scene.bodies if isinstance(b, EndplatePlate)}
-    elements = movable - endplates
+    elements = {b.id for b in scene.components if isinstance(b, (PlateElement, MergedElement))}
     declared = set(policy.joints)
     required = set(itertools.product(elements, endplates))
-    joint_fail = [f"joint_declaration_missing:{a}:{b}" for a, b in sorted(required - declared)]
+    joint_fail = [f"joint_declaration_missing|{a}|{b}" for a, b in sorted(required - declared)]
     contacts, gaps, gap_fail, gap_unmeasured = {}, {}, [], []
     valid = set()
     surfaces = {}
@@ -319,23 +358,23 @@ def _pair_gate(scene, fields, h, dimension, policy):
         return float(values.min())
     for a, b in sorted(declared):
         if a not in elements or b not in endplates:
-            joint_fail.append(f"joint_ids_or_types_invalid:{a}:{b}")
+            joint_fail.append(f"joint_ids_or_types_invalid|{a}|{b}")
             continue
         d = distance(bodies[a], bodies[b])
         overlap = np.any((fields[a] < 0) & (fields[b] < 0))
         contact = d <= LENGTH_TOLERANCE_M or overlap
-        contacts[f"{a}:{b}"] = {"minimum_sampled_field_m": d, "node_overlap": bool(overlap)}
+        contacts[f"{a}|{b}"] = {"minimum_sampled_field_m": d, "node_overlap": bool(overlap)}
         if contact:
             valid.add(frozenset((a, b)))
         else:
-            joint_fail.append(f"joint_contact_missing:{a}:{b}")
+            joint_fail.append(f"joint_contact_missing|{a}|{b}")
     for a, b in itertools.combinations(scene.bodies, 2):
         if not ({a.id, b.id} & movable) or frozenset((a.id, b.id)) in valid:
             continue
         alo, ahi = a.bbox(dimension)
         blo, bhi = b.bbox(dimension)
         lower = float(np.linalg.norm(np.maximum(np.maximum(np.asarray(alo) - bhi, np.asarray(blo) - ahi), 0)))
-        key = f"{a.id}:{b.id}"
+        key = f"{a.id}|{b.id}"
         if lower >= minimum - LENGTH_TOLERANCE_M and lower > 0:
             gaps[key] = {"bbox_lower_bound_m": lower, "method": "conservative_AABB_separation"}
             continue
@@ -351,13 +390,19 @@ def _pair_gate(scene, fields, h, dimension, policy):
         gaps[key] = {"minimum_sampled_field_m": d, "guard_m": pair_guard, "bbox_lower_bound_m": lower,
                      "method": "boundary_field_samples_with_guard"}
         if d < -LENGTH_TOLERANCE_M or np.any((fields[a.id] < 0) & (fields[b.id] < 0)):
-            gap_fail.append(f"component_overlap:{a.id}:{b.id}")
-        elif d < minimum - pair_guard - LENGTH_TOLERANCE_M:
-            gap_fail.append(f"minimum_gap_violation:{a.id}:{b.id}")
+            gap_fail.append(f"component_overlap|{a.id}|{b.id}")
         elif any(isinstance(body, BoxBody) and not (body.exponent == 2 and len(set(body.radii)) == 1) for body in (a, b)):
-            gap_unmeasured.append(f"gap_field_or_surface_coverage_unqualified:{a.id}:{b.id}")
+            # A normalized implicit BoxBody field need not overestimate the
+            # distance. Its sign proves overlap, but d < g_min proves no gap
+            # violation; neither field values nor angular coverage qualify it.
+            gap_unmeasured.append(f"gap_field_or_surface_coverage_unqualified|{a.id}|{b.id}")
+        elif d < minimum - LENGTH_TOLERANCE_M:
+            # A minimum over boundary samples is an upper bound on the true
+            # gap: d < g_min already proves a violation. The sampling guard
+            # applies only above the threshold, where admission is uncertain.
+            gap_fail.append(f"minimum_gap_violation|{a.id}|{b.id}")
         elif d < minimum + pair_guard - LENGTH_TOLERANCE_M:
-            gap_unmeasured.append(f"gap_within_sampling_guard:{a.id}:{b.id}")
+            gap_unmeasured.append(f"gap_within_sampling_guard|{a.id}|{b.id}")
     gap = _gate(fail=gap_fail, unmeasured=gap_unmeasured, measured={"pairs": gaps, "scope": "sampled software geometry; no continuum/BDIM qualification"},
                 thresholds={"minimum_gap_m": minimum, "sampling_guard_m": guard,
                             "source": _DEFAULT_SOURCE if policy.minimum_gap_m is None else "caller_supplied"})
@@ -367,7 +412,8 @@ def _pair_gate(scene, fields, h, dimension, policy):
 
 
 def _bounds_gates(scene, dimension, policy):
-    lower, upper = (np.asarray(v) for v in scene.bbox(dimension))
+    boxes = [body.bbox(dimension) for body in scene.components]
+    lower, upper = np.min([b[0] for b in boxes], axis=0), np.max([b[1] for b in boxes], axis=0)
     box = _box(policy.envelope, dimension, provenance=True)
     if box is None:
         envelope = _gate(unmeasured=["rules_envelope_or_provenance_missing"])
@@ -376,7 +422,7 @@ def _bounds_gates(scene, dimension, policy):
         envelope = _gate(fail=["outside_rules_envelope"] if outside else (),
                          measured={"body_lower_m": lower.tolist(), "body_upper_m": upper.tolist()},
                          thresholds={"lower_m": box[0].tolist(), "upper_m": box[1].tolist(), "rule_source": _value(policy.envelope, "rule_source"),
-                                     "scope": "conservative primitive bounding boxes"})
+                                     "scope": "movable_components_conservative_primitive_bounding_boxes"})
     measurements = {}
     if scene.ground is not None:
         measurements["ground_m"] = float(lower[-1] - scene.ground)
@@ -390,11 +436,22 @@ def _bounds_gates(scene, dimension, policy):
         unmeasured.append("clearance_target_missing")
     if policy.domain is not None and domain is None:
         unmeasured.append("domain_bounds_missing")
-    fail = [f"minimum_clearance_violation:{name}" for name, v in measurements.items()
+    fail = [f"minimum_clearance_violation|{name}" for name, v in measurements.items()
             if policy.clearance_m is not None and v < policy.clearance_m - LENGTH_TOLERANCE_M]
     clearance = _gate(fail=fail, unmeasured=unmeasured, measured=measurements,
-                      thresholds={"minimum_clearance_m": policy.clearance_m, "scope": "ground/declared_domain; independent_of_rules_envelope"})
+                      thresholds={"minimum_clearance_m": policy.clearance_m, "scope": "movable_components_to_ground/declared_domain; independent_of_rules_envelope"})
     return envelope, clearance
+
+
+def _report(scene, gates, h, dimension, state=None):
+    rejections = [{"gate": name, "reason": reason, "status": status}
+                  for name, gate in gates.items() for status, key in (("fail", "fail_reasons"), ("unmeasured", "unmeasured_reasons"))
+                  for reason in gate[key]]
+    return {"passed": all(g["status"] == "pass" for g in gates.values()), "gates": gates, "rejection_reasons": rejections,
+            "cfd_evaluations": 0, "budget_charged": 0, "scene_sha256": scene.scene_sha256,
+            "state_sha256": None if state is None else state.state_sha256, "dimension": dimension, "h_m": h,
+            "distance_contract_exemptions": [body.id for body in scene.bodies if isinstance(body, MergedElement)],
+            "evidence_class": "solver_free_scene_software_unqualified"}
 
 
 def evaluate_scene_gates(scene, *, h, dimension=3, policy: SceneGatePolicy, phase=(0, 0, 0), state: SDFDesignState | None = None) -> dict:
@@ -403,6 +460,9 @@ def evaluate_scene_gates(scene, *, h, dimension=3, policy: SceneGatePolicy, phas
     Optional state must belong to this scene and grid; passing another field
     under the scene's hash is rejected. 2D state storage is (nx,1,nz), never a
     fictitious volume. Missing policy measurements block overall admission.
+    Exceeding the 2,000,000-node design sampling cap is recorded unmeasured;
+    malformed inputs still raise. Explicit MergedElement IDs are listed as
+    band-distance-contract exemptions, not qualified BDIM geometry.
     """
     h = _nonnegative(h, "h")
     if h == 0 or type(dimension) is not int or dimension not in (2, 3) or not isinstance(policy, SceneGatePolicy):
@@ -413,10 +473,16 @@ def evaluate_scene_gates(scene, *, h, dimension=3, policy: SceneGatePolicy, phas
     if phase.shape != (3,) or not np.isfinite(phase).all() or np.any((phase < 0) | (phase >= 1)) or (dimension == 2 and phase[1] != 0):
         raise ValueError("phase must contain x,y,z fractions in [0,1); y=0 in 2D")
     if not scene.bodies:
-        return {"passed": False, "gates": {"connectivity": _gate(fail=["empty_finite_scene"])},
-                "rejection_reasons": [{"gate": "connectivity", "reason": "empty_finite_scene", "status": "fail"}],
-                "cfd_evaluations": 0, "budget_charged": 0}
-    state = scene.sample(h, dimension=dimension, phase=phase) if state is None else state
+        return _report(scene, {"connectivity": _gate(fail=["empty_finite_scene"])}, h, dimension)
+    if not scene.components:
+        return _report(scene, {"connectivity": _gate(fail=["no_movable_components"])}, h, dimension)
+    if state is None:
+        try:
+            state = scene.sample(h, dimension=dimension, phase=phase)
+        except SceneSamplingLimit as limit:
+            sampling = _gate(unmeasured=["scene_sampling_resource_limit"], measured={
+                "shape": list(limit.shape), "node_count": limit.node_count, "max_nodes": limit.max_nodes})
+            return _report(scene, {"sampling": sampling}, h, dimension)
     if not isinstance(state, SDFDesignState) or state.source_sha256 != scene.scene_sha256 or state.spacing_m != h:
         raise ValueError("state does not belong to scene/grid")
     if state.recompute_sha256() != state.state_sha256:
@@ -435,25 +501,18 @@ def evaluate_scene_gates(scene, *, h, dimension=3, policy: SceneGatePolicy, phas
     if not all(np.isfinite(phi).all() for phi in fields.values()):
         raise ValueError("scene body field must be finite")
     finite_phi = np.minimum.reduce(list(fields.values()))
-    connectivity, cavities, labels = _topology_gates(list(fields.values()), dimension, policy)
+    connectivity, cavities, _ = _topology_gates(list(fields.values()), dimension, policy)
     for body in scene.bodies:
         count = ndimage.label(fields[body.id] < 0, ndimage.generate_binary_structure(dimension, dimension))[1]
         if count != 1:
-            connectivity["fail_reasons"].append(f"component_absent_or_disconnected:{body.id}")
+            connectivity["fail_reasons"].append(f"component_absent_or_disconnected|{body.id}")
             connectivity["status"] = "fail"
-    if not scene.components:
-        connectivity["fail_reasons"].append("no_movable_components")
-        connectivity["status"] = "fail"
+    movable_solid = np.minimum.reduce([fields[body.id] for body in scene.components]) < 0
+    movable_labels = ndimage.label(movable_solid, ndimage.generate_binary_structure(dimension, dimension))[0]
     gap, joints = _pair_gate(scene, fields, h, dimension, policy)
     envelope, clearance = _bounds_gates(scene, dimension, policy)
     gates = {"thickness": _thickness_gate(scene.bodies, dimension, h, policy), "gap": gap,
              "opening_defect": opening_defect_gate(finite_phi, h), "connectivity": connectivity,
              "closed_cavities": cavities, "endplate_joints": joints, "envelope": envelope, "clearance": clearance,
-             "masks_roots": _masks_gate(finite_phi < 0, labels, state, policy, dimension)}
-    rejections = [{"gate": name, "reason": reason, "status": status}
-                  for name, gate in gates.items() for status, key in (("fail", "fail_reasons"), ("unmeasured", "unmeasured_reasons"))
-                  for reason in gate[key]]
-    return {"passed": all(g["status"] == "pass" for g in gates.values()), "gates": gates, "rejection_reasons": rejections,
-            "cfd_evaluations": 0, "budget_charged": 0, "scene_sha256": scene.scene_sha256,
-            "state_sha256": state.state_sha256, "dimension": dimension, "h_m": h,
-            "evidence_class": "solver_free_scene_software_unqualified"}
+             "masks_roots": _masks_gate(movable_solid, movable_labels, state, policy, dimension)}
+    return _report(scene, gates, h, dimension, state)

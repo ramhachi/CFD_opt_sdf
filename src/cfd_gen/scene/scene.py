@@ -11,14 +11,29 @@ from __future__ import annotations
 from dataclasses import dataclass, fields
 import hashlib
 import json
+import math
 
 import numpy as np
 
 from cfd_sdf.design.sdf_state import SDFDesignState
-from .primitives import BoxBody, EndplatePlate, MeshBody, PlateElement, _points, _number, _dimension
+from .primitives import BoxBody, EndplatePlate, MeshBody, PlateElement, _points, _number, _dimension, _validate_id
 
 FIELD_CONTRACT = "geom_s1_amendment1_v1"
 _TYPES = {"plate": PlateElement, "endplate": EndplatePlate, "box": BoxBody, "mesh": MeshBody}
+
+
+class SceneSamplingLimit(ValueError):
+    """A design lattice exceeds its node budget before any lattice allocation.
+
+    ``shape`` is the requested dimensional lattice (x,z in 2D; x,y,z in 3D),
+    before adding the singleton y storage axis of a 2D SDFDesignState.
+    """
+
+    def __init__(self, shape, max_nodes):
+        self.shape = tuple(int(value) for value in shape)
+        self.node_count = math.prod(self.shape)
+        self.max_nodes = max_nodes
+        super().__init__(f"sample shape {self.shape} has {self.node_count} nodes; exceeds max_nodes={max_nodes}")
 
 
 def _positive(value, name, *, zero=False):
@@ -33,15 +48,17 @@ class MergedElement:
     """One explicit element made from overlapping PlateElements.
 
     Child IDs retain the merge's material provenance. This is a union proposal,
-    not a fitted replacement or a topology/primal qualification.
+    not a fitted replacement or a topology/primal qualification. Its min union
+    is not a distance inside overlaps: a merged element is exempt from the
+    band distance contract, and the scene gate records that exemption. BDIM
+    band effects remain unmeasured before MW-01.
     """
 
     id: str
     parts: tuple[PlateElement,...]
 
     def __post_init__(self):
-        if not isinstance(self.id,str) or not self.id.strip():
-            raise ValueError("merged id must be a nonempty string")
+        _validate_id(self.id)
         object.__setattr__(self,"parts",tuple(self.parts))
         if len(self.parts)<2 or not all(isinstance(p,PlateElement) for p in self.parts):
             raise ValueError("a merged element needs at least two plates")
@@ -98,7 +115,10 @@ class Scene:
 
     Ties in labels go to the first body; ground, if present, is the last label.
     IDs, list order, field version and source STL hashes are in the canonical
-    SHA256. File paths are portable scene inputs; mesh bytes are also bound.
+    geometric SHA256. Transport JSON retains mesh path locators for loading;
+    those paths are omitted from the geometric hash, so identical STL bytes
+    have the same identity at different host/worker locations. Numeric inputs
+    normalize negative zero before serialization.
     """
 
     components: tuple
@@ -118,9 +138,7 @@ class Scene:
         if len(set(ids))!=len(ids):
             raise ValueError("scene body and child ids must be unique")
         if self.ground is not None:
-            if isinstance(self.ground,(bool,np.bool_)) or not np.isscalar(self.ground) or not np.isfinite(self.ground):
-                raise ValueError("ground must be a finite z coordinate or None")
-            object.__setattr__(self,"ground",float(self.ground))
+            object.__setattr__(self,"ground",_number(self.ground,"ground"))
 
     @property
     def bodies(self):
@@ -157,12 +175,23 @@ class Scene:
             "ground":None if self.ground is None else {"z":self.ground}}
 
     def to_json(self):
-        """Canonical compact UTF-8 JSON for the future Julia body builder."""
+        """Canonical transport JSON, including STL locators for from_json.
+
+        The geometric scene hash omits only mesh ``path`` values; it still
+        binds their verified SHA256. Without meshes this JSON is exactly the
+        geometric hash payload.
+        """
         return json.dumps(self.to_dict(),sort_keys=True,separators=(",",":"),allow_nan=False)
 
     @property
     def scene_sha256(self):
-        return hashlib.sha256(self.to_json().encode("utf-8")).hexdigest()
+        """Hash the canonical geometry payload independently of STL locations."""
+        payload = self.to_dict()
+        for body in payload["components"]+payload["fixed"]:
+            if body["kind"] == "mesh":
+                del body["parameters"]["path"]
+        encoded = json.dumps(payload,sort_keys=True,separators=(",",":"),allow_nan=False)
+        return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
 
     @classmethod
     def from_json(cls,value):
@@ -195,6 +224,9 @@ class Scene:
         [0,1). 2D uses x,z and stores a singleton y=0, so it has no 3D cell
         volume. This phase is a design sampling diagnostic; Julia owns moving
         the physical scene AND ground together on a fixed flow grid.
+        The default node budget is 2,000,000; an over-budget lattice raises
+        SceneSamplingLimit with its dimensional shape before allocation.
+        Invalid or numerically unrepresentable arguments remain ValueError.
         """
         h = _positive(h,"h")
         _dimension(dimension)
@@ -212,11 +244,20 @@ class Scene:
         if lo.shape!=(dimension,) or hi.shape!=(dimension,) or not np.isfinite([lo,hi]).all() or np.any(hi<=lo):
             raise ValueError("bounds must be finite lower/upper coordinates")
         phase = phase if dimension==3 else phase[[0,2]]
-        origin = (np.floor(lo/h)-padding_cells+phase)*h
-        maximum = (np.ceil(hi/h)+padding_cells+phase)*h
-        shape = np.rint((maximum-origin)/h).astype(np.int64)+1
-        if np.prod(shape,dtype=object)>max_nodes:
-            raise ValueError("sample would exceed max_nodes")
+        scaled_lo,scaled_hi = [tuple(float(value)/h for value in bound) for bound in (lo,hi)]
+        if not all(math.isfinite(value) for value in scaled_lo+scaled_hi):
+            raise ValueError("bounds/h must define finite lattice coordinates")
+        lower,upper = [tuple(operation(value) for value in bound)
+            for operation,bound in ((math.floor,scaled_lo),(math.ceil,scaled_hi))]
+        # Python integers keep a huge requested shape from wrapping through int64.
+        shape = tuple(b-a+2*padding_cells+1 for a,b in zip(lower,upper))
+        if math.prod(shape)>max_nodes:
+            raise SceneSamplingLimit(shape,max_nodes)
+        with np.errstate(over="ignore",invalid="ignore"):
+            origin = (np.asarray(lower,dtype=float)-padding_cells+phase)*h
+            maximum = origin+(np.asarray(shape)-1)*h
+        if not np.isfinite([origin,maximum]).all():
+            raise ValueError("sample lattice coordinates must be finite")
         axes = [o+np.arange(n)*h for o,n in zip(origin,shape)]
         p = np.stack(np.meshgrid(*axes,indexing="ij"),axis=-1)
         phi = self.phi(p)

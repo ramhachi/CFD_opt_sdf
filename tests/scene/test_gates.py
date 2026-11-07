@@ -48,6 +48,31 @@ def test_valid_control_and_zero_solver_budget():
     assert report["gates"]["thickness"]["thresholds"]["source"] == "development_default_4h_not_RES00_registered"
 
 
+def test_fixed_tyre_touching_ground_is_outside_design_constraint_scope():
+    wing = plate()
+    tyre = BoxBody("tyre", (4, 0, 0.6), (0.6, 0.6, 0.6))
+    scene = Scene((wing,), fixed=(tyre,), ground=0)
+    state = scene.sample(.1, dimension=2)
+    points = Scene.grid_points(state)[..., [0, 2]]
+    movable, fixed = wing.phi(points) < 0, tyre.phi(points) < 0
+    p = policy(required_components=2,
+        envelope={"lower": [-1, -1, .6], "upper": [1, 1, 1.4], "rule_source": "synthetic wing-only rules box"},
+        domain={"lower": [-1, -1, .5], "upper": [1, 1, 1.5]},
+        forbidden_mask=fixed, require_forbidden_mask=True, root_masks={"wing_mount": movable})
+    report = run(scene, state=state, policy=p)
+    assert report["passed"], report["rejection_reasons"]
+    assert report["gates"]["connectivity"]["measured"]["solid_components"] == 2
+    assert report["gates"]["clearance"]["measured"]["ground_m"] == pytest.approx(.75)
+
+
+def test_fixed_context_still_participates_in_pair_gap_check():
+    wing = plate()
+    tyre = BoxBody("tyre", (0, 0, .1), (.3, .3, .3))
+    report = run(Scene((wing,), fixed=(tyre,), ground=-2), policy=policy(required_components=2))
+    assert report["gates"]["gap"]["status"] == "fail"
+    assert "minimum_gap_violation|p|tyre" in report["gates"]["gap"]["fail_reasons"]
+
+
 def test_missing_policy_inputs_refuse_admission():
     report = run(policy=SceneGatePolicy())
     assert not report["passed"]
@@ -78,7 +103,18 @@ def test_containment_is_overlap_even_without_boundary_crossing():
     outer, inner = plate("outer", thickness=0.8), plate("inner", chord=0.4, thickness=0.2)
     report = run(Scene((outer, inner), ground=-2))
     assert report["gates"]["gap"]["status"] == "fail"
-    assert "component_overlap:outer:inner" in report["gates"]["gap"]["fail_reasons"]
+    assert "component_overlap|outer|inner" in report["gates"]["gap"]["fail_reasons"]
+
+
+def test_rejection_separator_is_unambiguous_for_colon_containing_ids():
+    a = plate("main:split2:0")
+    b = replace(a, id="main:split2:1", x=.1)
+    report = run(Scene((a, b), ground=-2))
+    reason = f"component_overlap|{a.id}|{b.id}"
+    assert reason in report["gates"]["gap"]["fail_reasons"]
+    assert reason.split("|") == ["component_overlap", a.id, b.id]
+    with pytest.raises(ValueError, match="identifier"):
+        policy(root_masks={"bad|root": None})
 
 
 def test_gap_near_limit_without_certifying_aabb_lower_bound_is_unmeasured():
@@ -88,6 +124,18 @@ def test_gap_near_limit_without_certifying_aabb_lower_bound_is_unmeasured():
     b = plate("b", angle=angle, x=-normal_offset*np.sin(angle), z=1+normal_offset*np.cos(angle))
     report = run(Scene((a, b), ground=-2), policy=policy(required_components=2))
     assert report["gates"]["gap"]["status"] == "unmeasured"
+
+
+def test_sampled_gap_below_limit_is_definite_failure_without_symmetric_guard():
+    angle = np.pi / 4
+    normal_offset = .5 + .39
+    a = plate("a", angle=angle)
+    b = plate("b", angle=angle, x=-normal_offset*np.sin(angle), z=1+normal_offset*np.cos(angle))
+    report = run(Scene((a, b), ground=-2), policy=policy(required_components=2))
+    gate = report["gates"]["gap"]
+    assert gate["measured"]["pairs"]["a|b"]["minimum_sampled_field_m"] < .4
+    assert "minimum_gap_violation|a|b" in gate["fail_reasons"]
+    assert gate["status"] == "fail"
 
 
 def test_connectivity_and_individual_disappearance():
@@ -139,6 +187,14 @@ def test_explicit_endplate_joint_is_required_and_contact_is_verified():
     assert report["gates"]["endplate_joints"]["status"] == "fail"
 
 
+def test_box_component_does_not_require_a_wing_endplate_joint():
+    pod = BoxBody("pod", (0, 0, 1), (.5, .5, .5))
+    ep = EndplatePlate("ep", 4, 0, 1, 1, 1, .5)
+    report = run(Scene((pod,), fixed=(ep,), ground=-2), policy=policy(required_components=2))
+    assert report["gates"]["endplate_joints"]["status"] == "pass"
+    assert report["gates"]["endplate_joints"]["thresholds"]["required_pairs"] == []
+
+
 def test_root_and_forbidden_masks_and_declared_missing_masks():
     scene = Scene((plate(),), ground=-2)
     state = scene.sample(0.1, dimension=2)
@@ -161,6 +217,99 @@ def test_topology_has_no_r0_subcell_component_alias(phase):
     report = run(phase=phase)
     assert report["gates"]["connectivity"]["measured"]["solid_components"] == 1
     assert report["gates"]["opening_defect"]["status"] == "pass"
+
+
+@pytest.mark.parametrize("dimension", [2, 3])
+@pytest.mark.parametrize("index", range(16))
+def test_exact_4h_thickness_and_gap_admit_all_sixteen_subcell_phases(dimension, index):
+    a = plate("main", thickness=.4, span=.6)
+    b = replace(a, id="flap", z=a.z+.8)
+    scene = Scene((a, b), ground=-2)
+    phase = (index/16, 0 if dimension == 2 else ((3*index) % 16)/16, ((5*index) % 16)/16)
+    report = evaluate_scene_gates(scene, h=.1, dimension=dimension,
+        policy=policy(required_components=2), phase=phase)
+    assert report["passed"], report["rejection_reasons"]
+    assert report["gates"]["connectivity"]["measured"]["solid_components"] == 2
+
+
+def test_explicit_merged_element_distance_contract_exemption_is_recorded():
+    from cfd_gen.scene.scene import MergedElement
+
+    a = plate("a")
+    merged = MergedElement("merge:a:b", (a, replace(a, id="b", x=.4)))
+    report = run(Scene((merged,), ground=-2))
+    assert report["passed"], report["rejection_reasons"]
+    assert report["distance_contract_exemptions"] == [merged.id]
+
+
+@pytest.mark.parametrize("scene", [Scene(()), Scene((), ground=0), Scene((), fixed=(plate(),))])
+def test_no_design_scene_keeps_report_hash_schema(scene):
+    report = run(scene)
+    assert not report["passed"]
+    assert report["scene_sha256"] == scene.scene_sha256
+    assert report["state_sha256"] is None
+    assert report["distance_contract_exemptions"] == []
+
+
+def test_design_lattice_resource_limit_is_unmeasured_without_allocating():
+    scene = Scene((plate(chord=3, span=3),), ground=-2)
+    report = evaluate_scene_gates(scene, h=.001, dimension=3, policy=policy())
+    assert not report["passed"]
+    assert report["gates"]["sampling"]["status"] == "unmeasured"
+    assert report["gates"]["sampling"]["unmeasured_reasons"] == ["scene_sampling_resource_limit"]
+    measured = report["gates"]["sampling"]["measured"]
+    assert measured["node_count"] > measured["max_nodes"] == 2_000_000
+    assert report["scene_sha256"] == scene.scene_sha256
+    assert report["state_sha256"] is None
+    assert report["cfd_evaluations"] == report["budget_charged"] == 0
+
+
+def test_mw01_sized_r3_crop_is_explicitly_unmeasured():
+    wing = plate(chord=.3, thickness=.02, span=1.4)
+    report = evaluate_scene_gates(Scene((wing,), ground=0), h=.005, dimension=3, policy=policy())
+    gate = report["gates"]["opening_defect"]
+    assert gate["status"] == "unmeasured"
+    assert gate["unmeasured_reasons"] == ["R3_refinement_resource_limit"]
+    assert gate["measured"]["node_count"] > gate["measured"]["max_nodes"] == 8_000_000
+
+
+def test_gate_and_knockout_share_element_parameter_floors():
+    from cfd_gen.scene.gates import thickness_parameter_floors
+    from cfd_gen.scene.events import thickness_knockout_ids
+
+    h = .025
+    flat = plate("flat", chord=1, thickness=4*h, z=0)
+    curved = replace(flat, id="curved", camber=.06, reflex=-.04, x=2)
+    scene = Scene((flat, curved), ground=-2)
+    floors = thickness_parameter_floors(scene, h=h, dimension=2, policy=policy())
+    assert floors[flat.id] == pytest.approx(4*h)
+    assert floors[curved.id] > 4*h
+    scene = replace(scene, components=tuple(replace(p, thickness=floors[p.id]) for p in scene.components))
+    gate = evaluate_scene_gates(scene, h=h, dimension=2, policy=policy(required_components=2))["gates"]["thickness"]
+    assert gate["status"] == "pass"
+    for p in scene.components:
+        assert gate["measured"]["components"][p.id]["parameter_floor_m"] == pytest.approx(floors[p.id])
+    history = [{"checkpoint": k, "thickness": floors} for k in (1, 2)]
+    assert thickness_knockout_ids(history, floors) == ("curved", "flat")
+
+
+def test_checkpoint_floor_provenance_tracks_changed_camber_and_removed_ids():
+    from cfd_gen.scene.gates import thickness_parameter_floors
+    from cfd_gen.scene.events import thickness_knockout_ids
+
+    h = .025
+    flat = plate("wing", chord=1, thickness=4*h)
+    curved = replace(flat, camber=.06, reflex=-.04)
+    snapshots = [thickness_parameter_floors(Scene((p,)), h=h, dimension=2, policy=policy())
+                 for p in (flat, curved)]
+    assert snapshots[1]["wing"] > snapshots[0]["wing"]
+    history = [{"checkpoint": i, "thickness": dict(floors), "parameter_floors": floors}
+               for i, floors in enumerate(snapshots, 1)]
+    assert thickness_knockout_ids(history) == ("wing",)
+    # A removed parameter is valid history, and cannot become a candidate at
+    # the next checkpoint. Its old per-checkpoint floor stays available.
+    history.append({"checkpoint": 3, "thickness": {}, "parameter_floors": {}})
+    assert thickness_knockout_ids(history) == ()
 
 
 def test_opening_solid_void_counterexamples_and_empty_convention():
@@ -205,7 +354,7 @@ def test_every_solid_component_requires_root_owner_when_roots_declared():
     points = scene.grid_points(state)[..., [0, 2]]
     root[scene.components[0].phi(points) < 0] = True
     report = run(scene, state=state, policy=policy(required_components=2, root_masks={"one_mount": root}))
-    assert "solid_component_unrooted:2" in report["gates"]["masks_roots"]["fail_reasons"]
+    assert "solid_component_unrooted|2" in report["gates"]["masks_roots"]["fail_reasons"]
 
 
 def test_ground_is_excluded_from_finite_component_count():
@@ -241,7 +390,17 @@ def test_uncertified_superellipsoid_gap_does_not_pass_from_field_samples():
     b = BoxBody("b", (3, 0, 2), (2, .8, .4))
     report = run(Scene((a, b), ground=-2), policy=policy(required_components=2))
     assert report["gates"]["gap"]["status"] == "unmeasured"
-    assert "gap_field_or_surface_coverage_unqualified:a:b" in report["gates"]["gap"]["unmeasured_reasons"]
+    assert "gap_field_or_surface_coverage_unqualified|a|b" in report["gates"]["gap"]["unmeasured_reasons"]
+
+
+def test_unqualified_box_field_below_gap_limit_is_not_a_definite_distance_proof():
+    a = BoxBody("a", (0, 0, 1), (2, .8, .4))
+    b = BoxBody("b", (3, 0, 2), (2, .8, .4))
+    report = run(Scene((a, b), ground=-2), policy=policy(required_components=2, minimum_gap_m=1))
+    gate = report["gates"]["gap"]
+    assert 0 < gate["measured"]["pairs"]["a|b"]["minimum_sampled_field_m"] < 1
+    assert gate["status"] == "unmeasured"
+    assert gate["fail_reasons"] == []
 
 
 def test_r3_matches_existing_study_exactly_in_3d():

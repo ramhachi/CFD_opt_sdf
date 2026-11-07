@@ -1,91 +1,107 @@
-# WP6 GEOM-S1 フェーズ A 報告（Amendment 2）
+# WP6 GEOM-S1 フェーズ A 報告（Amendment 3）
 
 ## 状態
 
-**DONE（フェーズ A：scene と gate の移設・再検証完了）**。開始点は `9aa93169155501af0ed9392d376dad5ee5f543e9`、branch は `feat/gen01-w1-06-geom-s1`。`cfd_sdf.scene` を `cfd_gen.scene` へ移し、歴史的 source closure への追加を取り除いた。今回の全体 pytest の失敗 node 集合は `[]` で、Claude が host で取得した base の `[]` と同一。フェーズ B は未着手。
+**DONE（フェーズ A：Opus source review の修正・再検証）**。開始点は `6536cbf04b86eaf022c0c201a91f548fd4389e94`、branch は `feat/gen01-w1-06-geom-s1`。review の MAJOR 4 件と Amendment 3 の指定項目を修正し、追加の相互レビューで見つかった BoxBody gap の距離根拠と履歴の時点別 floor も修正した。結果側の全体 pytest は **3680 passed / 74 skipped / 0 failed / 0 errors**。失敗 node 集合 **[]** は host 提供 base の `[]` と同一。フェーズ B は未着手。
 
-この状態は作業ツリー上のソフトウェア受け入れ完了を表す。Amendment 2 §3 に従い、Codex は `git mv`、`git add`、commit、push、index/ref 更新、PR 編集を行っていない。下記のファイルを Claude が host で commit・push し、既存 Draft PR [#82](https://github.com/ramhachi/CFD_opt_sdf/pull/82) の本文更新・ready 化を行う。今回、remote の PR 状態は変更していない。
+これは作業ツリー上のソフトウェア受け入れ判定であり、登録・物理 qualification・Birth-1 primal の完了を表さない。Amendment 3 §15 に従い、Codex は staging、commit、push、index/ref 更新、PR 編集を行っていない。HEAD は開始 commit のまま。Claude が host で下記だけを commit・push し、既存 PR [#82](https://github.com/ramhachi/CFD_opt_sdf/pull/82) を更新する。
 
-## 作ったもの（commit すべき完全な一覧）
+## 作ったもの（今回 commit すべき完全な一覧）
 
-移動はファイルシステムの `mv` で実施した。通常 index は変更していないため、host が stage するまで Git 上では削除と未追跡追加に見える。
+今回は移動なし。`6536cbf0` からの変更・新規ファイルを列挙する。歴史的な `cfd_sdf.scene` → `cfd_gen.scene` の移設は開始 commit に含まれており、今回の変更ではない。
 
 | 区分 | 完全なパスと内容 |
 | --- | --- |
-| 移動 | `src/cfd_sdf/scene/__init__.py` → `src/cfd_gen/scene/__init__.py`：公開型。内容は byte 一致。 |
-| 移動 | `src/cfd_sdf/scene/primitives.py` → `src/cfd_gen/scene/primitives.py`：板・端板・箱・固定 STL。内容は byte 一致。 |
-| 移動・変更 | `src/cfd_sdf/scene/scene.py` → `src/cfd_gen/scene/scene.py`：union、lattice、JSON/hash。既存 `SDFDesignState` の import 1 行だけ絶対 import に変更。 |
-| 移動 | `src/cfd_sdf/scene/events.py` → `src/cfd_gen/scene/events.py`：seed/knock-out/merge、履歴、分割 warm start。内容は byte 一致。 |
-| 移動・変更 | `src/cfd_sdf/scene/gates.py` → `src/cfd_gen/scene/gates.py`：scene gate。既存 helper/state の import 2 行だけ絶対 import に変更。 |
-| 新規 | `src/cfd_gen/__init__.py`：GEN-01 top-level package の最小定義。 |
-| 新規 | `src/cfd_gen/README.md`：歴史 freeze の列挙対象と、GEN-01 新コードの Python/Julia 配置を 3 行で記載。 |
-| 変更 | `tests/scene/test_birth.py`：import 先だけを `cfd_gen.scene` へ変更。 |
-| 変更 | `tests/scene/test_events.py`：import 先だけを変更。 |
-| 変更 | `tests/scene/test_gates.py`：import 先だけを変更。 |
-| 変更 | `tests/scene/test_primitives.py`：import 先だけを変更。 |
-| 変更 | `tests/scene/test_scene.py`：import 先だけを変更。 |
-| 変更 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.py`：import と診断対象の source path だけを変更。 |
-| 変更 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.json`：新しい source path/hash で再生成。50 ケースの数値は前回と完全一致。 |
-| 変更 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_design.md`：移設前の Amendment 2 addendum と、現在の指示と履歴の区別。 |
-| 変更 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_report.md`：本報告。 |
-| 変更 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_validation.json`：今回のコマンド、終了値、failure node、artifact/source SHA256、host base の出典、delivery 境界。前回の JSON は履歴として保持。 |
-| 新規 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_amendment2_source_closure.json`：移動前後の SHA256、import 以外の不変性、旧 directory 不在、既存 Python 130 / Julia 13 source の host base との一致、歴史 closure の照合。 |
-| 新規 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-compileall.log.gz`：今回の compileall 完走ログ。 |
-| 新規 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-closure-pytest.log.gz`：closure 関連 4 node の完走ログ。 |
-| 新規 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-closure-pytest.xml.gz`：同 JUnit。 |
-| 新規 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-full-pytest.log.gz`：指定した全体 pytest 1 回分の完走ログ。 |
-| 新規 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment2-full-pytest.xml.gz`：同 JUnit。 |
+| 新規 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_amendment3_review_checks.json`：review/plan/issue入力、修正とテスト対応、130/13 frozen source hash照合。 |
+| 変更 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.json`：今回source/oracle SHAで再生成した50ケース。数値は前回と同一。 |
+| 変更 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_design.md`：実装前のAmendment 3設計、worker境界、レビューで見つかったfloor/Box補足。 |
+| 変更 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_report.md`：本報告、完全一覧、今回の結果・限界・提案。 |
+| 新規 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-compileall.log.gz`：今回の完走ログ/JUnit。圧縮・展開bytesのSHAはvalidationに保存。 |
+| 新規 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-full-pytest.log.gz`：今回の完走ログ/JUnit。圧縮・展開bytesのSHAはvalidationに保存。 |
+| 新規 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-full-pytest.xml.gz`：今回の完走ログ/JUnit。圧縮・展開bytesのSHAはvalidationに保存。 |
+| 新規 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-red-gates.log.gz`：修正前の部分的TDD gate失敗ログ。正式qualificationではない。 |
+| 新規 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-scene-pytest.log.gz`：今回の完走ログ/JUnit。圧縮・展開bytesのSHAはvalidationに保存。 |
+| 新規 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_test_artifacts/wp06-amendment3-scene-pytest.xml.gz`：今回の完走ログ/JUnit。圧縮・展開bytesのSHAはvalidationに保存。 |
+| 変更 | `docs/codex/gen01_w1_2026_11_06/reports/wp06_validation.json`：今回のコマンド/結果/failure node/artifact SHA、開始HEADとhost delivery。 |
+| 変更 | `src/cfd_gen/README.md`：固定文脈と設計の範囲、2M/8M cap、MeshBody計算量、merge/Juliaの限界。 |
+| 変更 | `src/cfd_gen/scene/events.py`：最近方向merge、footprint保存split、時点別floor履歴、翼限定knock-out、符号付き種まき。 |
+| 変更 | `src/cfd_gen/scene/gates.py`：movable限定制約、片側gap guard、共通floor、joint範囲、例外/cap/hash記録。 |
+| 変更 | `src/cfd_gen/scene/primitives.py`：共通ID validator、負ゼロ正規化、BoxBody/MeshBodyの実態に合うdocstring。 |
+| 変更 | `src/cfd_gen/scene/scene.py`：mesh path非依存hash、merged ID、型付きsample資源上限、負ゼロ。 |
+| 変更 | `tests/scene/test_birth.py`：2D/3D Birth-0の有効seedがpolicy gateを通る正の対照。 |
+| 変更 | `tests/scene/test_events.py`：非同一merge、span gap、N1..5、履歴floor、種まきpolicyとknock-outの回帰。 |
+| 変更 | `tests/scene/test_gates.py`：fixed付き、限界16位相、距離根拠、floor履歴、joint/cap/早期拒否schemaの回帰。 |
+| 変更 | `tests/scene/test_primitives.py`：負ゼロ、共有ID、BoxBody continuationの回帰。 |
+| 変更 | `tests/scene/test_scene.py`：STL locatorを変えたhash、merged ID、sampling cap/巨大寸法の回帰。 |
 
-`src/cfd_sdf/scene/` は `__pycache__` を含め存在しない。旧 namespace の shim は置いていない。`pyproject.toml` は既存の `setuptools.packages.find.where = ["src"]` で新 package を列挙できるため変更不要。
+旧 `wp06_attempt1_blocked/`、Amendment 2 の closure JSON、旧ログ/JUnit gzip、旧 CPU profile plugin は変更していない。`src/cfd_sdf/scene/` は生成 bytecode を含め存在せず、旧 namespace の shim はない。`src/cfd_sdf`・`julia/CFDSDFWaterLily/src` の既存 source はすべて host base `e3dcdf61` と byte 一致。v2 parser・v2 gate・harness・WaterLily job・計画本文・登録済み evidence は変更していない。
 
-前回の `wp06_attempt1_blocked/`、`wp06_source_closure_preflight.py/.json`、`wp06_cpu_only_pytest.py` と旧 gzip は変更していない。旧 source-closure reproducer は attempt 2 の当時の tree に対する履歴であり、今回の受け入れコマンドではない。今回 CPU profile plugin は使っていない。
+## 修正と対応する確認
+
+| review 項目 | 修正と確認 |
+| --- | --- |
+| M1 | envelope、ground/domain clearance、forbidden mask、root 所有を `scene.components` に限定。z=0 に接し、翼用の規則箱と domain の外にある固定タイヤを追加しても翼が合格。タイヤに root を要求せず、タイヤ領域の forbidden mask も翼に干渉しない。有限 union の連結性と可動 vs fixed の gap は維持し、近すぎる fixed は拒否する。 |
+| M2 | merge は最近点方向へ gap＋宣言した overlap δ だけ第2板を移動。第1板と child ID を保持する。長さ・厚さ・角度が異なり下流・上方にある main＋flap が、2D/3D とも元 scene 2 solid → merge 後 1 solid で gate に合格し、消えた2 ID を正しく分類する。 |
+| M3 | 分割子の直線弦を `(L-t-gap)/2` に修正し、親の軸方向 footprint `L+t` を保存。camber/reflex は弦比で縮め、相対振幅を保つ。開発既定 t=4h、gap=4h の N=1..5 がすべて gate に合格。正の子弦を作れない要求は例外で拒否。 |
+| m1 | distance/projection 場では標本最小 d が g_min 未満なら確定 fail。guard は g_min より上の片側で受け入れ保留に使う。一般 BoxBody の正規化 implicit 値は真の距離の上界ではないため、重なりの符号証拠または AABB の合格証拠がない限り unmeasured とする。 |
+| m3 | `_normal_width` と同じ算定から部品ごとの parameter floor を導出し、gate と履歴判定で共有。形状/ID が変わる履歴には checkpoint ごとの `parameter_floors` を保存でき、flat → cambered の各時点の床や削除済み ID を現在の床で誤判定しない。 |
+| m7 | 有効 Birth-0 の policy 合格を2D/3Dで検査。t=4h/gap=4h の16位相を2D/3Dで検査。fixed 付き、N≥3、非同一 merge の正の対照を追加。 |
+| M4 | gate が標本化 2,000,000 node 超を `sampling: unmeasured` として理由・要求 shape/count・cap を記録。R3 の独立した 8,000,000 refined-node cap も数値付きで記録。MeshBody の O(P*T)、毎回の STL 全体再 hash と Python triangle loop を README に明記。 |
+| m2 | `MergedElement` ID を全 gate report の `distance_contract_exemptions` に列挙。重なり内部の band 距離契約の例外と BDIM 未測定を docstring/README に明記。 |
+| m4 | joint 規則の翼側と knock-out を `PlateElement`/`MergedElement` に限定。BoxBody と端板の component は knock-out しない。 |
+| m5 | -0.0 を 0.0 に正規化。scene 幾何 hash は STL path を除外し SHA を保持。MergedElement、primitive、履歴、policy の ID に共通 validator を使う。ID は `:` を許すので、拒否理由と pair key の区切りは `|`。 |
+| m6/n6 | BoxBody continuation は連続だが ray 単調ではなく、球だけが厳密 SDF であることを明記。`_finite` alias を削除。空/ground-only/fixed-only の早期拒否にも scene/state hash と exemption list を入れる。 |
+| n3 | 下流種まきは正の world x と符号付き world z offset。上/下の許可 policy は明示引数 `allowed_quadrants`、既定は両方。 |
+| n2 | v18 との field 値の 1e-3c 以内という比較を**無変形板のみ**に限定して記載。変形板では零等位面と数値的距離の検査を別に扱う。 |
+
+完全なテスト名と読んだ review/plan/issue のハッシュは `wp06_amendment3_review_checks.json`、実行コマンド・結果・artifact SHA は `wp06_validation.json` に記録する。
 
 ## インターフェース（他 WP が使うもの）
 
-公開 import は `from cfd_gen.scene import PlateElement, EndplatePlate, BoxBody, MeshBody, MergedElement, Scene`。事象は `cfd_gen.scene.events`、gate は `cfd_gen.scene.gates` から import する。既存 state と gate helper は `cfd_sdf.design` から再利用する。
+公開型は `cfd_gen.scene` の `PlateElement, EndplatePlate, BoxBody, MeshBody, MergedElement, Scene`。事象は `cfd_gen.scene.events`、gate は `cfd_gen.scene.gates`。既存 `cfd_sdf.design.SDFDesignState` と helper は import して使う。
 
-`PlateElement(id,x,z,chord,thickness,angle=0,camber=0,reflex=0,span=1,y=0)` は長さ m・角度 rad。chord は v18 の中央直線長 L で、無変形 stadium の全長は L+t。2D `(x,z)` と 3D `(x,y,z)` は同じ断面を使い、3D は flat-tip extrusion で合成する。無変形の板は厳密な SDF。変形時は v18 の零等位面を保つ fixed multistart polynomial projection の数値的な距離近似であり、一般形の BoxBody も勾配正規化した implicit field である。厳密 SDF の主張と区別する。
+`PlateElement(id,x,z,chord,thickness,angle=0,camber=0,reflex=0,span=1,y=0)` は長さ m、角度 rad。chord は v18 の直線中央長 L で、無変形板の軸方向全長は L+t。2D `(x,z)` と3D `(x,y,z)` は同じ断面を使い、3Dは flat-tip extrusion で合成する。無変形板は厳密 SDF、変形板は v18 の零等位面への固定 multistart 数値射影。一般 BoxBody は勾配正規化した implicit field であり、厳密距離ではない。
 
-`Scene(components,fixed=(),ground=None)` は `phi`、`labels`、`sample(h,dimension=2|3,phase=(px,py,pz),bounds=None)`、`label_grid`、canonical `to_json/from_json`、`scene_sha256` を提供する。JSON schema_version=1、field_contract=`geom_s1_amendment1_v1` は移設前と同じ。scene hash と sampled state hash は別。2D は既存 `SDFDesignState` の `(nx,1,nz)` に格納し、面積と 3D 体積を区別する。
+`Scene` の union は負=solid、exact zero=fluid の占有規則。`sample(h,dimension=2|3,phase=(px,py,pz),bounds=None)` は2Dを `(nx,1,nz)` に保存し、面積と3D体積を区別する。既定2,000,000 nodeを超えた直接の sampler 呼出しは `SceneSamplingLimit`（`shape`・`node_count`・`max_nodes` を保持）という専用例外で止まり、`evaluate_scene_gates` がそれだけを捕捉して unmeasured 記録へ変える。欠落・不正な入力の例外は握りつぶさない。
 
-`seed_candidates`、`knockout_candidates`、`merge_candidates`、`downstream_seed_positions`、`thickness_knockout_ids`、`element_count_designs`、`classify_change` は有限の提案・分類だけを返す。`evaluate_scene_gates(...,policy=SceneGatePolicy(...))` は厚さ、gap、solid/void R3、連結、閉空洞、端板接合、出典付き規則箱、clearance、mask/root を判定し、全拒否理由を返す。未測定も受け入れを阻む。CFD 評価回数・予算消費は 0。
+`Scene.to_json()` は STL locator を含む transport JSON。`scene_sha256` は mesh の `path` だけを除いた canonical 幾何 payload の SHA256で、STL の検証済み SHA は含む。mesh がなければ transport JSON の SHA と一致する。mesh があればファイルの保存先に依存せず、host/worker で同じ STL bytes を同じ scene と認識する。sampled state の hash は格子・field・mask・scene source hash を別に束縛する。
 
-Julia/WP4 には各部品の種類・パラメタと JSON SHA を渡し、`AutoBody` callable 内で同じ断面式・projection・extrusion を直接評価し、`SetBody(min,...)` で合成する。Python の格子標本を GPU の三線形補間に置き換える契約ではない。WP4 の polygon SDF は近似した別表面なので、同じ零等位面・厚化・LE/TE 定義をそろえた parity が別途必要。Julia job 自体は変更していない。
+`merge_candidates(scene, *, max_gap=None, overlap=None)` の既定 δ は pair の小さい厚さの1/4、既定 max_gap は平均厚さ。断面の閉集合間距離と span 区間間距離に分け、8個の決定的な始点から既存 SciPy SLSQP で最近点を数値的に求める。再構成した3D witness の零面残差も検査する。これは変形板での大域最小距離の証明ではなく**提案用**。接触/重なり済みの pair は新規 merge にしない。scene gate は必須で、内部 min union の band 例外も記録する。
 
-WaterLily 主線に `r_c` はない（Amendment 1）。h は格子と開発時の幾何下限を規定し、節点変位フィルタの半径ではない。フェーズ B では部品ごとの parameter bounds と刻みを宣言する。t_min=g_min=4h は開発時の既定であり、登録値は RES-00 の梯子で決める。
+`thickness_parameter_floors(scene, *, h, dimension=3, policy)` は可動 plate/merged child ID ごとの t parameter 下限を返す。3D の span 下限は独立であり、t を増やして修復できない。`thickness_knockout_ids(history, minimum_thickness=None, *, tolerance=...)` の row は `checkpoint, thickness` と任意の `parameter_floors`。時点別 snapshot はその row の thickness ID を過不足なく覆い、各時点の床で2連続 checkpoint を判定する。scalar/map fallback は supplied history 全体で床を固定した互換経路。出力は merged child を含む**parameter ID**であり、top-level component の自動削除指示ではない。履歴の geometry 自体の認証は対応する scene 証拠を caller が保持する必要がある。
 
-## テスト（今回の結果）
+`downstream_seed_positions(scene, downstream, vertical_offsets, *, allowed_quadrants=("above","below"))` は、正 z が上、負 z が下。offset の0・非有限値、不正 policy は拒否し、許可していない象限は列から除く。`seed_candidates/knockout_candidates/merge_candidates/element_count_designs/classify_change` は有限提案/分類で、CFDや採否や予算消費を行わない。
 
-| 対象 | コマンド・出典 | 結果 |
+Julia/WP4 は AutoBody callable 内で同じ断面と射影を直接評価し、SetBody(min,...) で合成する必要がある。変形断面は **2面×6始点×13 Newton反復**。Python の標本格子を三線形補間して代用する契約ではない。WP4 polygon distance は別の近似表面なので、零面・厚化・LE/TE 定義を合わせた別検査が必要。Julia job は編集していない。Float32/AD と GPU cost は未測定。
+
+WaterLily 主線に r_c はない。h は標本化と開発時の厚さ/間隙下限を規定し、変位フィルタ半径ではない。t_min=g_min=4h は開発時の既定で、登録値は RES-00 の梯子で決める。フェーズ B は bounds/刻みを `src/cfd_gen/problem_spec_v3.py` で宣言する別 PR。
+
+## テスト
+
+| 対象 | 実行コマンド/出典 | 結果 |
 | --- | --- | --- |
-| scene / Birth-0 / Birth-1 のソフトウェア準備 | `.venv/bin/python -m pytest -q tests/scene -p no:cacheprovider` | 86 passed、20.71 s（移設 worker の実行結果）。全体 JUnit でも scene 86 件の成功を確認。 |
-| 旧 blocker に関連した 4 node | GRID-02 evidence / prereg 3 件、LOWDIM-03 prereg 1 件。完全な node ID は validation JSON / JUnit に保存 | 4 passed、60.58 s、failure node `[]`。 |
-| compileall | `.venv/bin/python -m compileall src tests` | 終了 0。 |
-| host base | Claude 提供：`e3dcdf61`、Metal module を ignore | 3482 passed / 74 skipped / 0 failed、failure node `[]`。今回 base の再取得なし。 |
-| 結果側の全体 pytest | 下記コマンドを 1 回完走 | 3568 passed / 74 skipped / 0 failed / 0 errors、終了 0、1035.366 s。 |
-| failure node 集合 | 全体 JUnit と `-rf` の結果 | base `[]` / final `[]`、同一。 |
-| source closure | `wp06_amendment2_source_closure.json` | 移動 source 5 件と tests 5 件の許可した import 差分だけ。既存 Python 130 / Julia 13 source の一覧と bytes は host base と一致。GRID-02 登録検証 PASS。 |
-| whitespace | `git diff --check` | 終了 0。新規 text の行末も検査。 |
+| scene 全体・Birth-0・Birth-1のソフトウェア準備 | `.venv/bin/python -m pytest -q tests/scene -p no:cacheprovider --junitxml=/private/tmp/wp06-amendment3-scene-pytest.xml` | **198 passed、終了0**（terminal 22.33 s、JUnit suite 8.618 s）。 |
+| compileall | `.venv/bin/python -m compileall src tests` | 終了0。 |
+| band 診断 | `.venv/bin/python docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.py` | 50ケースすべて成功、数値は Amendment 2 と完全一致。source/oracle SHAを更新。 |
+| host base | Claude提供 `e3dcdf61`、Metal module ignore | 3482 passed / 74 skipped / 0 failed、failure node `[]`。再取得しない。 |
+| 全体 pytest | 下記を1回完走 | **3680 passed / 74 skipped / 0 failed / 0 errors、終了0、934.923 s**。 |
+| failure node 集合 | JUnit と `-rf` log | final `[]` / host base `[]`、同一。 |
+| source closure | `wp06_amendment3_review_checks.json` | Python130/Julia13の全 source が host base とbyte一致。旧scene directory不在。新コードは `src/cfd_gen/` のみ。 |
+| diff check | `git diff --check` | 終了0。 |
 
 ```bash
 env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 MKL_NUM_THREADS=1 \
   .venv/bin/python -m pytest --ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider \
-  --junitxml=/private/tmp/wp06-amendment2-full-pytest.xml
+  --junitxml=/private/tmp/wp06-amendment3-full-pytest.xml
 ```
 
-今回の全体 run は他の module を ignore せず、CPU profile plugin、歴史テストの例外、pin/freeze の変更を使わない。base の再実行、stash、追加 worktree は不要として行っていない。full suite には既存 Julia CPU preflight の回帰検査を含むが、新しい scene の CFD campaign・GPU 測定は 0。ログ/JUnit は gzip（mtime=0）で保存し、圧縮・展開 bytes 両方の SHA256 を validation JSON に記録した。
+全体ログの warnings は7,295件で、前回Amendment 2 のログも7,295件だった。scene単独ログに警告出力はない。
 
-GRID-02 の不足 5 path は移設で消え、新 package は歴史 closure の列挙対象外。LOWDIM-03 の元 freeze には WP6 より前から存在する 4 source の差があるため、「その元 freeze に現在の全 source が含まれる」とは主張しない。今回の記録は既存 reader・列挙対象・該当 bytes が host base と一致し、新たな不足がないことと、変更していない実テストの成功を確認する。
+全体を再実行したのは結果側1回のみ。base の再取得、stash、別worktree、CPU profile plugin、歴史テストの例外、freeze/pin の変更を使っていない。full suite は既存のローカルCPU preflight回帰検査を含むが、新sceneのCFD campaign/GPU測定は0。実行ログ/JUnitはgzip(mtime=0)で保存し、圧縮・展開 bytes 両方のSHA256を記録する。開始 commit の前回報告・validation は Git履歴に残り、今回 validation の `previous_amendment_2` にも前回結果を保持する。
 
-WP4 の E2 polygon SDF はこの開始 tree に未実装のため、指定された v18 fallback を維持。`PlateElement` 2 枚の union と v18 の 2 枚板は `atol=rtol=1e-14` の比較に合格し、要求の 1e-3c 以内を満たす。
+WP4 の E2 polygon はこの開始treeでは未実装のため、指定の v18 fallback を使う。**無変形 PlateElement 2枚**の union と v18板2枚は atol=rtol=1e-14 で一致し、要求の1e-3c以内。変形板は field 値の同一性を要求せず、v18と同じ零面と次の band 距離検査で扱う。
 
-距離 band 診断は次で再現する。
-
-```bash
-.venv/bin/python docs/codex/gen01_w1_2026_11_06/reports/wp06_band_check.py
-```
-
-c=1 m、t=.1 m、h=.025 m、各条件 1700 query、seed=610。band は |computed phi|≤2h。v18 零等位面を独立にパラメタ化し、片側 50001 点と cap の密な点群への最近距離と比較する。3D 対照は断面距離の flat-tip extrusion。表の gradient error は 2D/3D の中央値の大きい方。数値表は今回再生成した 50 ケースから得ており、前回と完全一致する。
+c=1 m、t=.1 m、h=.025 m、各条件1700 query、seed=610。band は |computed phi|≤2h。独立にパラメタ化したv18零面（片側50001点＋caps）への最近点距離と比較し、3Dは flat-tip extrusion を検査。gradient errorは2D/3Dの中央値の大きい方。以下は今回 sourceで再生成した結果。
 
 | camber/c (%) | reflex/c (%) | band 点数 2D / 3D | 最大距離差/t 2D | 最大距離差/t 3D | 最大 median gradient error |
 | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -115,37 +131,37 @@ c=1 m、t=.1 m、h=.025 m、各条件 1700 query、seed=610。band は |computed
 | +6 | +2 | 1002 / 765 | 7.046e-06 | 9.430e-06 | 1.920e-12 |
 | +6 | +4 | 1003 / 764 | 1.574e-06 | 8.354e-06 | 2.079e-12 |
 
-最大距離差/t は 5.04087327017285e-05（許容 0.02）、最大 median |∇φ| 偏差は 2.10714778958732e-12（許容 0.10）。無変形板の |∇φ|=1 は非微分集合を避け、atol=1e-8 で検査。これは有限の標本点・固定 t/c と h/c に対する開発診断であり、全厚さ・全パラメタ空間の距離保証ではない。
-
-前回の検証値は今回と混同せず、`wp06_validation.json` の `previous_attempt_2` に保持する。前回 CPU profile base は 3482 passed / 80 skipped / 0 failed、final は 3564 passed / 80 skipped / 4 failed、commit 後の該当 4 node 再検査は 2 passed / 2 failed だった。今回の全体 run は明示 module ignore に統一しており、旧 80 skip の profile は使っていない。
+最大距離差/tは **5.040873270172855e-05**（許容0.02）、最大 median |∇φ|偏差は **2.107147789587316e-12**（許容0.10）。無変形板は非微分集合を避けて |∇φ|=1 を atol=1e-8 で検査する。有限標本・固定t/c,h/cの開発診断であり、全パラメタ空間の距離保証やBDIM資格ではない。
 
 ## 仕様からの逸脱と理由
 
-Amendment 2 が指定した top-level package へ移設した。移設前の parent-relative `..design` はそのままでは `cfd_gen.design` を探すため、3 行だけ既存 `cfd_sdf.design` の絶対 import に変えた。helper の複製、旧 namespace の alias、歴史 closure の例外は追加していない。scene テストの内容・閾値は変更していない。
+距離の式は review を受けて確定した2026-11-06 bの計画どおり維持した。生の変形v18 implicit値は組合せ振幅で2%tを超えるので、同じ零面への固定射影を使う。内部mergeの min はその例外として明示し、別の距離保証を捏造しない。
 
-距離の扱いは Amendment 1 と前回実装を維持した。生の変形 v18 field は振幅上限の併用で 2%t を超えるため、同じ零等位面の projection を使う。一般 superellipsoid は厳密 SDF と呼ばず一次近似と記す。`min_c phi_c` は union の符号を保つが、重なり内部の真の最短距離とは限らない。独立可動要素の重なりと、宣言した merge/端板接合は gate で区別する。
+nearest-pair merge は既存SciPyの数値最適化を提案用に利用する。解が収束しないときは例外で止め、中央への移動や無根拠の代替へ黙って戻さない。標本化上限だけは gate unmeasured へ変換し、不正入力の fail-closed を保持する。
 
-OpenCode Go MCP は利用不可。通常 CLI catalog は外部 log の書込制限で失敗し、書込可能な一時 XDG 経路は `Provider not found: opencode-go`。native Codex worker が限定した移設を行い、親が source bytes・差分・検証を確認した。認証や global config、追加課金は変更していない。
+OpenCode Go MCPは存在しなかった。通常CLIはsandbox外log書込制限で失敗したが、task-local XDG runtimeと既存authへのローカルread-only symlinkで現行catalogを取得できた。実worker呼出しは接続障害後の再試行で **401 api_key_expired**。worker成果は返っていない。global認証/設定や追加課金を変更せず、native workerにeventsとidentity/samplingを分担し、親がgateと統合検証を行った。相互レビューのBoxBody距離根拠と時点別floorの修正を含め、worker出力だけでは完了にしていない。
 
-## 未確認の仮定・主張の上限
+## 未確認の仮定・既知の限界
 
-- actual primal の Birth-1 は未資格。今回の Birth-1 は要素数・消えた ID・成分数の変化を分類するソフトウェア準備である。
-- 新 scene の Julia/GPU projection、AD、Float32 parity、速度、AutoBody/BDIM の実際の測定は後続 WP。今回その solver を実行していない。
-- 4h は開発既定。登録する厚さ/gap と配置位相に対する応答は RES-00 の梯子で決める。
-- R3・連結・空洞・接触は宣言した標本規約での検査で、任意の連続形状や製造の保証ではない。R3 再利用は GEOM03_NO_GO / R3 未採用の歴史を改定しない。MeshBody の合成検証も SRCMAP-02 #53 の target signer を適格化しない。
-- 実規則の箱、固定 STL/hash、部品の bounds/刻み、v3 宣言、harness v1.2 はフェーズ B。FSAE/FSG 寸法を推測で埋めず、v2 の CFD domain を規則箱の代わりにしていない。
-- 分割 warm start は候補の列であり、体積保存や gate 合格、空力的な改善を保証しない。全 qualification flags と `shape_update_allowed` は変更していない。
+- Birth-1は **software preparation** のみ。実primal応答、採択、統計的改善は未検査。qualification flagとshape_update_allowedは変更しない。
+- 自動design samplingは2,000,000 nodeでunmeasured。R3は8,000,000 refined nodeでunmeasured。reviewの1.4 m span、h=5 mmの例 `[281,1137,57]` は **18,211,329 node** でcap超過。小さな3D fixtureの成功をMW-01規模のgate利用可能性とは呼ばない。
+- MeshBody windingはO(P*T)。P=1,000,000、T=100,000なら **10^11 point/triangle対**。各phi呼出しでSTL全bytesを再read/hashし、boundary生成もPython triangle loop。高速化・3D資源設計はMW-01前の別WP。SRCMAP-02 #53 target signerは依然未資格。
+- merged bandの距離例外はBDIM影響未測定。一般BoxBodyは内部continuationがray単調でなく、距離fieldからの一般gap合格/違反判定も未資格。十分なAABB分離と負符号の重なり証拠を別扱いする。
+- Julia/GPU/Float32/ADのprojection精度・速度、WaterLily AutoBody/BDIMの実測、4hの物理的妥当性は後続gate。RES-00の登録値をここで決めていない。
+- R3・連結・空洞・接触は標本規約に対する検査で、製造/連続位相の保証ではない。既存GEOM03_NO_GO/R3未採用の歴史を変更しない。
+- splitは軸方向footprintを保持するwarm startで、体積保存や任意の変形/配置に対するgate合格、空力改善を保証しない。history floor snapshotはcallerが対応するscene evidenceを保持する必要がある。
+- 実規則の箱、STL/hash、部品bounds/刻み、ProblemSpec v3、harness v1.2はフェーズB。FSAE/FSG寸法を推測で埋めない。
 
 ## Claude／ユーザーへの提案する追記
 
-権威文書の本文は編集していない。追記案：
+権威文書本文は未編集。追記案：
 
-> GEOM-S1 フェーズ A の scene・離散事象提案・scene gate は `cfd_gen.scene` に実装し、solver-free software/contract として検証済み。historical freeze の列挙対象である `src/cfd_sdf` / `julia/CFDSDFWaterLily/src` には GEN-01 新コードを置かない。Birth-0 と Birth-1 のソフトウェア準備を区別し、actual primal の Birth-1・BDIM 解像度・GPU parity は後続 gate に残す。4h は開発既定で、登録は RES-00。r_c は使わず部品 parameter の bounds と刻みを v3 で宣言する。
+> GEOM-S1フェーズAのsource review修正は `cfd_gen.scene` に実装し、scene/全体回帰を検証した。fixed contextとmovable designの制約範囲、最小方向merge、footprint保存split、時点別parameter floorの履歴を明示する。merged bandの距離例外、2M design/8M R3 node cap、MeshBodyのO(P*T)と再hashはMW-01前の既知の限界。Birth-0とBirth-1のsoftware preparationを区別し、physical/BDIM/GPU資格と登録4hは後続gateに残す。
 
-`docs/harness/README.md` への追記案（本文は未編集、v1.2 は未実装）：
+`docs/harness/README.md`への追記案（本文未編集、v1.2未実装）：
 
-> harness v1.2 は新しい `campaign_v12.py` 等の wrapper を優先し、scene JSON の SHA と明示的な Julia job 引数に結び付く scene state、checkpoint ごとの有限 event 候補、地面と共に移す z を含む 3 軸位相を扱う。event は提案記録であり、評価・採否・予算消費は別段階。従来 v1.1 campaign は明示的な version dispatch で保持し、validate/verify の byte 不変を検証する。暗黙に移行しない。
+> harness v1.2は新規wrapper `campaign_v12.py`等を優先し、path locatorを除いたscene geometry SHAとSTL SHA、明示的Julia引数、checkpointごとの有限event候補、地面と共に移すzを含む3軸位相を扱う。transport JSONのファイルSHAとscene geometry SHAを混同しない。eventは提案記録で、評価・採否・予算は別段階。v1.1 campaignは明示version dispatchで保持し、validate/verifyのbyte不変を検査する。
 
 ## 次に要るもの
 
-Claude が host で上記一覧だけを stage・commit・push し、PR #82 を更新して ready にする。新規 PR は作らず、auto-merge は有効にしない。フェーズ B はその後の別 PR とし、ProblemSpec v3 は `src/cfd_gen/problem_spec_v3.py` に置く。今回の呼び出しはフェーズ A の移設と再検証までで完了した。
+Claudeがhostで完全一覧だけをstage/commit/pushし、既存PR #82本文を更新する。新規PR/auto-mergeは作成しない。フェーズBは別PRであり、この呼出しでは始めない。MW-01の前に3D資源設計、MeshBody高速化、Julia projection/Float32/AD検査とmerged bandのBDIM影響を別WPで扱う。

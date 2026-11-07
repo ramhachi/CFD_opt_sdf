@@ -5,10 +5,11 @@ import json
 
 import numpy as np
 import pytest
+import trimesh
 from scipy import ndimage
 
 from cfd_sdf.design.sdf_state import SDFDesignState
-from cfd_gen.scene.primitives import PlateElement
+from cfd_gen.scene.primitives import MeshBody, PlateElement
 from cfd_gen.scene.scene import MergedElement, Scene
 
 
@@ -97,6 +98,86 @@ def test_explicit_merged_element_roundtrip_and_union():
     p = np.array([[0.,0.], [.4,0.], [1.,.3]])
     np.testing.assert_allclose(scene.phi(p), np.minimum(a.phi(p), b.phi(p)))
     assert Scene.from_json(scene.to_json()).scene_sha256 == scene.scene_sha256
+
+
+@pytest.mark.parametrize("bad_id", ["", "with space", "nonascii_ü", "has|separator", None])
+def test_merged_ids_use_the_primitive_ascii_contract(bad_id):
+    with pytest.raises(ValueError, match="ASCII identifier"):
+        MergedElement(bad_id, (plate(), plate("other")))
+    valid = MergedElement("Merged.1:main-other", (plate(), plate("other")))
+    assert Scene.from_json(Scene((valid,)).to_json()).components[0].id == valid.id
+
+
+def test_negative_zero_has_one_scene_identity_including_ground_and_merge():
+    scene = Scene((MergedElement("merged", (plate(), plate("other"))),), ground=0.)
+    negative = replace(scene, components=(MergedElement("merged", (
+        replace(plate(), x=-0., z=-0., y=-0., angle=-0., camber=-0., reflex=-0.), plate("other"))),), ground=-0.)
+    assert scene.to_json() == negative.to_json()
+    assert scene.scene_sha256 == negative.scene_sha256
+    assert "-0.0" not in negative.to_json()
+
+
+@pytest.mark.parametrize("fixed", [False, True])
+def test_mesh_scene_identity_uses_bytes_while_transport_keeps_paths(tmp_path, fixed):
+    payload = trimesh.creation.box().export(file_type="stl")
+    sha = hashlib.sha256(payload).hexdigest()
+    scenes = []
+    for name in ("host.stl", "worker.stl"):
+        path = tmp_path / name
+        path.write_bytes(payload)
+        body = MeshBody("mesh", str(path), sha)
+        scene = Scene((), (body,)) if fixed else Scene((body,))
+        scenes.append(scene)
+        assert Scene.from_json(scene.to_json()).bodies[0].path == str(path)
+    assert scenes[0].to_json() != scenes[1].to_json()
+    assert scenes[0].scene_sha256 == scenes[1].scene_sha256
+    changed_path = tmp_path / "changed.stl"
+    changed_path.write_bytes(trimesh.creation.box(extents=(2, 1, 1)).export(file_type="stl"))
+    changed = MeshBody("mesh", str(changed_path), hashlib.sha256(changed_path.read_bytes()).hexdigest())
+    assert (Scene((), (changed,)) if fixed else Scene((changed,))).scene_sha256 != scenes[0].scene_sha256
+
+
+@pytest.mark.parametrize("dimension", [2, 3])
+@pytest.mark.parametrize("max_nodes", [2_000_000, 10])
+def test_sample_resource_limit_reports_shape_before_allocation(monkeypatch, dimension, max_nodes):
+    from cfd_gen.scene.scene import SceneSamplingLimit
+
+    def unexpected_allocation(*args, **kwargs):
+        pytest.fail("over-budget sampling must stop before lattice allocation")
+
+    monkeypatch.setattr(np, "arange", unexpected_allocation)
+    monkeypatch.setattr(np, "meshgrid", unexpected_allocation)
+    shape = (2001, 2001) if dimension == 2 else (201, 201, 201)
+    with pytest.raises(SceneSamplingLimit) as caught:
+        Scene((plate(),)).sample(1., dimension=dimension, padding_cells=0,
+            bounds=(np.zeros(dimension), np.array(shape) - 1), max_nodes=max_nodes)
+    assert caught.value.shape == shape
+    assert caught.value.node_count == np.prod(shape)
+    assert caught.value.max_nodes == max_nodes
+
+
+def test_sample_large_shape_does_not_overflow_int64():
+    from cfd_gen.scene.scene import SceneSamplingLimit
+
+    with pytest.raises(SceneSamplingLimit) as caught:
+        Scene((plate(),)).sample(1., dimension=2, padding_cells=0, bounds=((0., 0.), (1e20, 1e20)))
+    assert caught.value.shape == (10**20 + 1, 10**20 + 1)
+    assert caught.value.node_count == (10**20 + 1)**2
+
+
+def test_sample_at_resource_bound_and_invalid_arguments():
+    from cfd_gen.scene.scene import SceneSamplingLimit
+
+    scene = Scene((plate(),))
+    state = scene.sample(1., dimension=2, padding_cells=0, bounds=((0., 0.), (1., 1.)), max_nodes=4)
+    assert state.shape == (2, 1, 2)
+    for kwargs in ({"h": 0.}, {"h": 1., "max_nodes": True},
+                   {"h": 1., "phase": (0., float("nan"), 0.)},
+                   {"h": 1., "dimension": 2, "bounds": ((0., 0.), (0., 1.))},
+                   {"h": 1e-308, "dimension": 2, "bounds": ((-1e308, -1e308), (1e308, 1e308))}):
+        with pytest.raises(ValueError) as caught:
+            scene.sample(**kwargs)
+        assert not isinstance(caught.value, SceneSamplingLimit)
 
 
 def test_v18_two_plate_control_uses_same_section_and_extrusion():

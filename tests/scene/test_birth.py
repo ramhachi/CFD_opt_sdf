@@ -61,6 +61,28 @@ def test_birth0_invalid_thin_and_forbidden_seed_are_rejected_before_cfd():
     assert result["cfd_evaluations"]==0 and result["budget_charged"]==0
 
 
+@pytest.mark.parametrize("dimension", [2, 3])
+def test_birth0_valid_seed_obeys_policy_before_any_cfd(dimension):
+    parent = Scene((PlateElement("main", 0, 0, 1, .2, span=.6),), ground=-1)
+    proposed = seed_candidates(parent, {"chord": [.4], "thickness": [.15], "camber": [0.]}, [(1.55, -.25)])[0]
+    h = .0375
+    state = proposed.sample(h, dimension=dimension)
+    points = Scene.grid_points(state)
+    if dimension == 2:
+        points = points[..., [0, 2]]
+    roots = {p.id: p.phi(points) < 0 for p in proposed.components}
+    # Deliberately require the same policy classes as the invalid Birth-0
+    # controls: roots, forbidden material, clearance and minimum features.
+    p = SceneGatePolicy(required_components=2, clearance_m=.1, root_masks=roots,
+        forbidden_mask=np.zeros(state.shape, dtype=bool), require_forbidden_mask=True,
+        envelope={"lower": [-1, -1, -.8], "upper": [3, 1, 1],
+                  "rule_source": "synthetic Birth-0 rules box; not physical FSAE qualification"})
+    report = evaluate_scene_gates(proposed, h=h, dimension=dimension, policy=p, state=state)
+    assert report["passed"], report["rejection_reasons"]
+    assert report["gates"]["connectivity"]["measured"]["solid_components"] == 2
+    assert report["cfd_evaluations"] == report["budget_charged"] == 0
+
+
 def test_birth1_software_preparation_classifies_counts_and_deleted_identity():
     a = PlateElement("main",0.,0.,1.,.2,span=.6)
     parent = Scene((a,))
