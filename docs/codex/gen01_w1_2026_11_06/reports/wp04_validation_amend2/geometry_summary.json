@@ -1,0 +1,1311 @@
+{
+  "cells": {
+    "confirmation": {
+      "c1": 180,
+      "flap": 133.50940017905103,
+      "half_flap": 66.75470008952551,
+      "nominal_gap": 9.668755595344674
+    },
+    "main": {
+      "c1": 120,
+      "flap": 89.006266786034,
+      "half_flap": 44.503133393017,
+      "nominal_gap": 6.445837063563115
+    }
+  },
+  "environment": {
+    "numpy": "2.5.2",
+    "platform": "macOS-26.3.1-arm64-arm-64bit",
+    "python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "scipy": "1.18.1"
+  },
+  "evidence_class": "GEOMETRY_SOFTWARE_ONLY",
+  "main_vs_t20_max_abs_columns_mm": [
+    0.05233999999998673,
+    0.8170199999999976,
+    0.04599999999999227,
+    0.8549799999999994
+  ],
+  "scenes": {
+    "E1.json": {
+      "configuration": "E1",
+      "dx_mm": 1.8616666666666668,
+      "elements": [
+        {
+          "actual_chord_cells": 120.24002859149128,
+          "name": "main",
+          "nominal_cells": 120.0,
+          "nominal_chord_mm": 223.4,
+          "sampling": {
+            "leading_edge_cap_arc_mm": 4.468,
+            "max_noncap_turn_deg": 2.9811200042150787,
+            "max_segment_mm": 0.9308339190469455,
+            "trailing_edge_cap": "straight finite-thickness closure"
+          },
+          "source_chord_mm": 223.84685322782627,
+          "thickening": {
+            "bdim_core_qualified": false,
+            "bulk_width_envelope": "smooth L8 norm of source normal width and t_min; projection/ray correction only increases it",
+            "cap_radius_claim": "unchanged interpolating spline samples in the 2% chord surface-arc cap",
+            "controlled_from_camber_fraction": 0.22387606591637002,
+            "controlled_from_index": 140,
+            "controlled_min_thickness_mm": 7.44667135237545,
+            "extra_normal_offset_mm": 0.0,
+            "global_positive_thickness_claim": false,
+            "max_tangential_reconstruction_mm": 0.83261590248844,
+            "max_thickness_ratio": 4.594753666196127,
+            "method": "camber-normal-arclength-v2",
+            "original_max_thickness_mm": 28.1886936424304,
+            "paired_projection_min_thickness_mm": 7.44667135237545,
+            "preserved_cap_arc_mm": 4.468,
+            "preserved_cap_pairs": 26,
+            "ramp": "smoothstep in camber arc from surface-arc cap end to original maximum-thickness station",
+            "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+            "source_vertices_only_normal_translated": false,
+            "t_min_mm": 7.446666666666667,
+            "te_midpoint_preserved": true,
+            "thickness_metric": "actual polygon width along each controlled camber-segment normal"
+          },
+          "vertices": 883
+        }
+      ],
+      "g_min_mm": 7.446666666666667,
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 100.0,
+        "controlled_minima": [
+          {
+            "element": "main",
+            "thickness_mm": 7.446671352375452
+          }
+        ],
+        "overlap": false,
+        "pair_gaps_mm": [],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": true,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "placement": {
+        "combined_chord_mm": 223.84685322782627,
+        "combined_incidence_deg": 3.4549901830136722,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0
+      },
+      "sha256": "3b5a0312385b6cc99961c6b002680e00cb2f6dc51e9964ae39b6c099d0bcb8a8",
+      "sources": [
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/main_element_table3.dat",
+          "sha256": "66bbf8b5caa90f78f52c0851503077b83bab3fd803709858885d8387c05695d8",
+          "spline_max_arc_mm": 0.6976684864506079,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        },
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/flap_table4.dat",
+          "sha256": "8dd4c9582f265b5585f926bc98377fea0b1648b0cf9f0e7ceebce27148def89a",
+          "spline_max_arc_mm": 0.6663963147685544,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        }
+      ],
+      "t_min_mm": 7.446666666666667
+    },
+    "E1_fine.json": {
+      "configuration": "E1",
+      "dx_mm": 1.241111111111111,
+      "elements": [
+        {
+          "actual_chord_cells": 180.36004288723694,
+          "name": "main",
+          "nominal_cells": 180.0,
+          "nominal_chord_mm": 223.4,
+          "sampling": {
+            "leading_edge_cap_arc_mm": 4.468,
+            "max_noncap_turn_deg": 2.981121474711384,
+            "max_segment_mm": 0.9929048999659171,
+            "trailing_edge_cap": "straight finite-thickness closure"
+          },
+          "source_chord_mm": 223.84685322782627,
+          "thickening": {
+            "bdim_core_qualified": false,
+            "bulk_width_envelope": "smooth L8 norm of source normal width and t_min; projection/ray correction only increases it",
+            "cap_radius_claim": "unchanged interpolating spline samples in the 2% chord surface-arc cap",
+            "controlled_from_camber_fraction": 0.22387606591637002,
+            "controlled_from_index": 140,
+            "controlled_min_thickness_mm": 4.9645244998295786,
+            "extra_normal_offset_mm": 0.0,
+            "global_positive_thickness_claim": false,
+            "max_tangential_reconstruction_mm": 0.83261590248844,
+            "max_thickness_ratio": 3.063216579208364,
+            "method": "camber-normal-arclength-v2",
+            "original_max_thickness_mm": 28.1886936424304,
+            "paired_projection_min_thickness_mm": 4.9645244998295786,
+            "preserved_cap_arc_mm": 4.468,
+            "preserved_cap_pairs": 26,
+            "ramp": "smoothstep in camber arc from surface-arc cap end to original maximum-thickness station",
+            "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+            "source_vertices_only_normal_translated": false,
+            "t_min_mm": 4.964444444444444,
+            "te_midpoint_preserved": true,
+            "thickness_metric": "actual polygon width along each controlled camber-segment normal"
+          },
+          "vertices": 880
+        }
+      ],
+      "g_min_mm": 4.964444444444444,
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 100.0,
+        "controlled_minima": [
+          {
+            "element": "main",
+            "thickness_mm": 4.9645244998295635
+          }
+        ],
+        "overlap": false,
+        "pair_gaps_mm": [],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": true,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "placement": {
+        "combined_chord_mm": 223.84685322782627,
+        "combined_incidence_deg": 3.454990183013665,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0
+      },
+      "sha256": "36a920bfc1c5c7fd7acc285a0ac7ac62931300eaea518e797ce3d44eb3657294",
+      "sources": [
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/main_element_table3.dat",
+          "sha256": "66bbf8b5caa90f78f52c0851503077b83bab3fd803709858885d8387c05695d8",
+          "spline_max_arc_mm": 0.6976684864506079,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        },
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/flap_table4.dat",
+          "sha256": "8dd4c9582f265b5585f926bc98377fea0b1648b0cf9f0e7ceebce27148def89a",
+          "spline_max_arc_mm": 0.6663963147685544,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        }
+      ],
+      "t_min_mm": 4.964444444444444
+    },
+    "E1_h80.json": {
+      "configuration": "E1",
+      "dx_mm": 1.8616666666666668,
+      "elements": [
+        {
+          "actual_chord_cells": 120.24002859149128,
+          "name": "main",
+          "nominal_cells": 120.0,
+          "nominal_chord_mm": 223.4,
+          "sampling": {
+            "leading_edge_cap_arc_mm": 4.468,
+            "max_noncap_turn_deg": 2.9811200042150787,
+            "max_segment_mm": 0.9308339190469455,
+            "trailing_edge_cap": "straight finite-thickness closure"
+          },
+          "source_chord_mm": 223.84685322782627,
+          "thickening": {
+            "bdim_core_qualified": false,
+            "bulk_width_envelope": "smooth L8 norm of source normal width and t_min; projection/ray correction only increases it",
+            "cap_radius_claim": "unchanged interpolating spline samples in the 2% chord surface-arc cap",
+            "controlled_from_camber_fraction": 0.22387606591637002,
+            "controlled_from_index": 140,
+            "controlled_min_thickness_mm": 7.44667135237545,
+            "extra_normal_offset_mm": 0.0,
+            "global_positive_thickness_claim": false,
+            "max_tangential_reconstruction_mm": 0.83261590248844,
+            "max_thickness_ratio": 4.594753666196127,
+            "method": "camber-normal-arclength-v2",
+            "original_max_thickness_mm": 28.1886936424304,
+            "paired_projection_min_thickness_mm": 7.44667135237545,
+            "preserved_cap_arc_mm": 4.468,
+            "preserved_cap_pairs": 26,
+            "ramp": "smoothstep in camber arc from surface-arc cap end to original maximum-thickness station",
+            "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+            "source_vertices_only_normal_translated": false,
+            "t_min_mm": 7.446666666666667,
+            "te_midpoint_preserved": true,
+            "thickness_metric": "actual polygon width along each controlled camber-segment normal"
+          },
+          "vertices": 883
+        }
+      ],
+      "g_min_mm": 7.446666666666667,
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 80.0,
+        "controlled_minima": [
+          {
+            "element": "main",
+            "thickness_mm": 7.446671352375452
+          }
+        ],
+        "overlap": false,
+        "pair_gaps_mm": [],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": true,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 80.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.21052631578947367,
+        "h_over_c1": 0.35810205908683973
+      },
+      "placement": {
+        "combined_chord_mm": 223.84685322782627,
+        "combined_incidence_deg": 3.4549901830136687,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0
+      },
+      "sha256": "41d4e234d7bd354ba883c497a3f7636e3c8064de360265f321103a7da8f9b3ea",
+      "sources": [
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/main_element_table3.dat",
+          "sha256": "66bbf8b5caa90f78f52c0851503077b83bab3fd803709858885d8387c05695d8",
+          "spline_max_arc_mm": 0.6976684864506079,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        },
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/flap_table4.dat",
+          "sha256": "8dd4c9582f265b5585f926bc98377fea0b1648b0cf9f0e7ceebce27148def89a",
+          "spline_max_arc_mm": 0.6663963147685544,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        }
+      ],
+      "t_min_mm": 7.446666666666667
+    },
+    "E1_sharp.json": {
+      "configuration": "E1_sharp",
+      "dx_mm": 1.8616666666666668,
+      "elements": [
+        {
+          "actual_chord_cells": 120.24002859149128,
+          "name": "main",
+          "nominal_cells": 120.0,
+          "nominal_chord_mm": 223.4,
+          "sampling": {
+            "leading_edge_cap_arc_mm": 4.468,
+            "max_noncap_turn_deg": 2.9762017555127582,
+            "max_segment_mm": 0.8360000000000127,
+            "trailing_edge_cap": "straight finite-thickness closure"
+          },
+          "source_chord_mm": 223.84685322782627,
+          "thickening": {
+            "global_positive_thickness_claim": false,
+            "max_thickness_ratio": 1.0,
+            "method": "unthickened-source"
+          },
+          "vertices": 877
+        }
+      ],
+      "g_min_mm": 7.446666666666667,
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 100.0,
+        "controlled_minima": [],
+        "overlap": false,
+        "pair_gaps_mm": [],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": false,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "placement": {
+        "combined_chord_mm": 223.84685322782627,
+        "combined_incidence_deg": 3.4549901830136687,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0
+      },
+      "sha256": "f217a0e2180ae161be2cad69551de568f289b0191657f342add876c22fe1fc85",
+      "sources": [
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/main_element_table3.dat",
+          "sha256": "66bbf8b5caa90f78f52c0851503077b83bab3fd803709858885d8387c05695d8",
+          "spline_max_arc_mm": 0.6976684864506079,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        },
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/flap_table4.dat",
+          "sha256": "8dd4c9582f265b5585f926bc98377fea0b1648b0cf9f0e7ceebce27148def89a",
+          "spline_max_arc_mm": 0.6663963147685544,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        }
+      ],
+      "t_min_mm": 7.446666666666667
+    },
+    "E2.json": {
+      "configuration": "E2",
+      "dx_mm": 1.8616666666666668,
+      "elements": [
+        {
+          "actual_chord_cells": 120.24002859149128,
+          "name": "main",
+          "nominal_cells": 120.0,
+          "nominal_chord_mm": 223.4,
+          "sampling": {
+            "leading_edge_cap_arc_mm": 4.468,
+            "max_noncap_turn_deg": 2.9811200042150787,
+            "max_segment_mm": 0.9308339190469455,
+            "trailing_edge_cap": "straight finite-thickness closure"
+          },
+          "source_chord_mm": 223.84685322782627,
+          "thickening": {
+            "bdim_core_qualified": false,
+            "bulk_width_envelope": "smooth L8 norm of source normal width and t_min; projection/ray correction only increases it",
+            "cap_radius_claim": "unchanged interpolating spline samples in the 2% chord surface-arc cap",
+            "controlled_from_camber_fraction": 0.22387606591637002,
+            "controlled_from_index": 140,
+            "controlled_min_thickness_mm": 7.44667135237545,
+            "extra_normal_offset_mm": 0.0,
+            "global_positive_thickness_claim": false,
+            "max_tangential_reconstruction_mm": 0.83261590248844,
+            "max_thickness_ratio": 4.594753666196127,
+            "method": "camber-normal-arclength-v2",
+            "original_max_thickness_mm": 28.1886936424304,
+            "paired_projection_min_thickness_mm": 7.44667135237545,
+            "preserved_cap_arc_mm": 4.468,
+            "preserved_cap_pairs": 26,
+            "ramp": "smoothstep in camber arc from surface-arc cap end to original maximum-thickness station",
+            "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+            "source_vertices_only_normal_translated": false,
+            "t_min_mm": 7.446666666666667,
+            "te_midpoint_preserved": true,
+            "thickness_metric": "actual polygon width along each controlled camber-segment normal"
+          },
+          "vertices": 883
+        },
+        {
+          "actual_chord_cells": 88.88713581134832,
+          "name": "flap1",
+          "nominal_cells": 89.006266786034,
+          "nominal_chord_mm": 165.7,
+          "sampling": {
+            "leading_edge_cap_arc_mm": 3.314,
+            "max_noncap_turn_deg": 3.0216988232785167,
+            "max_segment_mm": 0.9308333378260315,
+            "trailing_edge_cap": "straight finite-thickness closure"
+          },
+          "source_chord_mm": 165.47821783546013,
+          "thickening": {
+            "bdim_core_qualified": false,
+            "bulk_width_envelope": "smooth L8 norm of source normal width and t_min; projection/ray correction only increases it",
+            "cap_radius_claim": "unchanged interpolating spline samples in the 2% chord surface-arc cap",
+            "controlled_from_camber_fraction": 0.18003918997930835,
+            "controlled_from_index": 93,
+            "controlled_min_thickness_mm": 7.446666666666638,
+            "extra_normal_offset_mm": 0.0,
+            "global_positive_thickness_claim": false,
+            "max_tangential_reconstruction_mm": 3.465512108410283,
+            "max_thickness_ratio": 8.86673450263757,
+            "method": "camber-normal-arclength-v2",
+            "original_max_thickness_mm": 13.402557072786253,
+            "paired_projection_min_thickness_mm": 7.446666666666631,
+            "preserved_cap_arc_mm": 3.314,
+            "preserved_cap_pairs": 17,
+            "ramp": "smoothstep in camber arc from surface-arc cap end to original maximum-thickness station",
+            "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+            "source_vertices_only_normal_translated": false,
+            "t_min_mm": 7.446666666666667,
+            "te_midpoint_preserved": true,
+            "thickness_metric": "actual polygon width along each controlled camber-segment normal"
+          },
+          "vertices": 651
+        }
+      ],
+      "g_min_mm": 7.446666666666667,
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 100.0,
+        "controlled_minima": [
+          {
+            "element": "main",
+            "thickness_mm": 7.446671352375452
+          },
+          {
+            "element": "flap1",
+            "thickness_mm": 7.446666666666612
+          }
+        ],
+        "overlap": false,
+        "pair_gaps_mm": [
+          {
+            "distance_mm": 8.574110195806458,
+            "elements": [
+              "main",
+              "flap1"
+            ]
+          }
+        ],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": true,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "placement": {
+        "combined_chord_mm": 379.4280708587508,
+        "combined_incidence_deg": 14.436775101558881,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0
+      },
+      "sha256": "a8f7001a2348acef8ac96099cef0f894279cb6f319d9241a61b14d89e45342bc",
+      "sources": [
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/main_element_table3.dat",
+          "sha256": "66bbf8b5caa90f78f52c0851503077b83bab3fd803709858885d8387c05695d8",
+          "spline_max_arc_mm": 0.6976684864506079,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        },
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/flap_table4.dat",
+          "sha256": "8dd4c9582f265b5585f926bc98377fea0b1648b0cf9f0e7ceebce27148def89a",
+          "spline_max_arc_mm": 0.6663963147685544,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        }
+      ],
+      "t_min_mm": 7.446666666666667
+    },
+    "E2_fine.json": {
+      "configuration": "E2",
+      "dx_mm": 1.241111111111111,
+      "elements": [
+        {
+          "actual_chord_cells": 180.36004288723694,
+          "name": "main",
+          "nominal_cells": 180.0,
+          "nominal_chord_mm": 223.4,
+          "sampling": {
+            "leading_edge_cap_arc_mm": 4.468,
+            "max_noncap_turn_deg": 2.981121474711384,
+            "max_segment_mm": 0.9929048999659171,
+            "trailing_edge_cap": "straight finite-thickness closure"
+          },
+          "source_chord_mm": 223.84685322782627,
+          "thickening": {
+            "bdim_core_qualified": false,
+            "bulk_width_envelope": "smooth L8 norm of source normal width and t_min; projection/ray correction only increases it",
+            "cap_radius_claim": "unchanged interpolating spline samples in the 2% chord surface-arc cap",
+            "controlled_from_camber_fraction": 0.22387606591637002,
+            "controlled_from_index": 140,
+            "controlled_min_thickness_mm": 4.9645244998295786,
+            "extra_normal_offset_mm": 0.0,
+            "global_positive_thickness_claim": false,
+            "max_tangential_reconstruction_mm": 0.83261590248844,
+            "max_thickness_ratio": 3.063216579208364,
+            "method": "camber-normal-arclength-v2",
+            "original_max_thickness_mm": 28.1886936424304,
+            "paired_projection_min_thickness_mm": 4.9645244998295786,
+            "preserved_cap_arc_mm": 4.468,
+            "preserved_cap_pairs": 26,
+            "ramp": "smoothstep in camber arc from surface-arc cap end to original maximum-thickness station",
+            "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+            "source_vertices_only_normal_translated": false,
+            "t_min_mm": 4.964444444444444,
+            "te_midpoint_preserved": true,
+            "thickness_metric": "actual polygon width along each controlled camber-segment normal"
+          },
+          "vertices": 880
+        },
+        {
+          "actual_chord_cells": 133.3307037170225,
+          "name": "flap1",
+          "nominal_cells": 133.50940017905103,
+          "nominal_chord_mm": 165.7,
+          "sampling": {
+            "leading_edge_cap_arc_mm": 3.314,
+            "max_noncap_turn_deg": 3.0224330610133117,
+            "max_segment_mm": 0.9928890117074363,
+            "trailing_edge_cap": "straight finite-thickness closure"
+          },
+          "source_chord_mm": 165.47821783546013,
+          "thickening": {
+            "bdim_core_qualified": false,
+            "bulk_width_envelope": "smooth L8 norm of source normal width and t_min; projection/ray correction only increases it",
+            "cap_radius_claim": "unchanged interpolating spline samples in the 2% chord surface-arc cap",
+            "controlled_from_camber_fraction": 0.18003918997930835,
+            "controlled_from_index": 93,
+            "controlled_min_thickness_mm": 4.964444444444422,
+            "extra_normal_offset_mm": 0.0,
+            "global_positive_thickness_claim": false,
+            "max_tangential_reconstruction_mm": 3.465512108410283,
+            "max_thickness_ratio": 5.911156694779191,
+            "method": "camber-normal-arclength-v2",
+            "original_max_thickness_mm": 13.402557072786253,
+            "paired_projection_min_thickness_mm": 4.964444444444421,
+            "preserved_cap_arc_mm": 3.314,
+            "preserved_cap_pairs": 17,
+            "ramp": "smoothstep in camber arc from surface-arc cap end to original maximum-thickness station",
+            "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+            "source_vertices_only_normal_translated": false,
+            "t_min_mm": 4.964444444444444,
+            "te_midpoint_preserved": true,
+            "thickness_metric": "actual polygon width along each controlled camber-segment normal"
+          },
+          "vertices": 648
+        }
+      ],
+      "g_min_mm": 4.964444444444444,
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 100.0,
+        "controlled_minima": [
+          {
+            "element": "main",
+            "thickness_mm": 4.9645244998295635
+          },
+          {
+            "element": "flap1",
+            "thickness_mm": 4.964444444444398
+          }
+        ],
+        "overlap": false,
+        "pair_gaps_mm": [
+          {
+            "distance_mm": 9.806835287504201,
+            "elements": [
+              "main",
+              "flap1"
+            ]
+          }
+        ],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": true,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "placement": {
+        "combined_chord_mm": 379.42793409562563,
+        "combined_incidence_deg": 14.436694880861344,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0
+      },
+      "sha256": "e0d982bcd550ec1bfde0b64db52e9b861e6b80065c7d9c72723ab4c380912c0b",
+      "sources": [
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/main_element_table3.dat",
+          "sha256": "66bbf8b5caa90f78f52c0851503077b83bab3fd803709858885d8387c05695d8",
+          "spline_max_arc_mm": 0.6976684864506079,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        },
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/flap_table4.dat",
+          "sha256": "8dd4c9582f265b5585f926bc98377fea0b1648b0cf9f0e7ceebce27148def89a",
+          "spline_max_arc_mm": 0.6663963147685544,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        }
+      ],
+      "t_min_mm": 4.964444444444444
+    },
+    "E2_h80.json": {
+      "configuration": "E2",
+      "dx_mm": 1.8616666666666668,
+      "elements": [
+        {
+          "actual_chord_cells": 120.24002859149128,
+          "name": "main",
+          "nominal_cells": 120.0,
+          "nominal_chord_mm": 223.4,
+          "sampling": {
+            "leading_edge_cap_arc_mm": 4.468,
+            "max_noncap_turn_deg": 2.9811200042150787,
+            "max_segment_mm": 0.9308339190469455,
+            "trailing_edge_cap": "straight finite-thickness closure"
+          },
+          "source_chord_mm": 223.84685322782627,
+          "thickening": {
+            "bdim_core_qualified": false,
+            "bulk_width_envelope": "smooth L8 norm of source normal width and t_min; projection/ray correction only increases it",
+            "cap_radius_claim": "unchanged interpolating spline samples in the 2% chord surface-arc cap",
+            "controlled_from_camber_fraction": 0.22387606591637002,
+            "controlled_from_index": 140,
+            "controlled_min_thickness_mm": 7.44667135237545,
+            "extra_normal_offset_mm": 0.0,
+            "global_positive_thickness_claim": false,
+            "max_tangential_reconstruction_mm": 0.83261590248844,
+            "max_thickness_ratio": 4.594753666196127,
+            "method": "camber-normal-arclength-v2",
+            "original_max_thickness_mm": 28.1886936424304,
+            "paired_projection_min_thickness_mm": 7.44667135237545,
+            "preserved_cap_arc_mm": 4.468,
+            "preserved_cap_pairs": 26,
+            "ramp": "smoothstep in camber arc from surface-arc cap end to original maximum-thickness station",
+            "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+            "source_vertices_only_normal_translated": false,
+            "t_min_mm": 7.446666666666667,
+            "te_midpoint_preserved": true,
+            "thickness_metric": "actual polygon width along each controlled camber-segment normal"
+          },
+          "vertices": 883
+        },
+        {
+          "actual_chord_cells": 88.88713581134832,
+          "name": "flap1",
+          "nominal_cells": 89.006266786034,
+          "nominal_chord_mm": 165.7,
+          "sampling": {
+            "leading_edge_cap_arc_mm": 3.314,
+            "max_noncap_turn_deg": 3.021698823278275,
+            "max_segment_mm": 0.9308333378260315,
+            "trailing_edge_cap": "straight finite-thickness closure"
+          },
+          "source_chord_mm": 165.47821783546013,
+          "thickening": {
+            "bdim_core_qualified": false,
+            "bulk_width_envelope": "smooth L8 norm of source normal width and t_min; projection/ray correction only increases it",
+            "cap_radius_claim": "unchanged interpolating spline samples in the 2% chord surface-arc cap",
+            "controlled_from_camber_fraction": 0.18003918997930835,
+            "controlled_from_index": 93,
+            "controlled_min_thickness_mm": 7.446666666666638,
+            "extra_normal_offset_mm": 0.0,
+            "global_positive_thickness_claim": false,
+            "max_tangential_reconstruction_mm": 3.465512108410283,
+            "max_thickness_ratio": 8.86673450263757,
+            "method": "camber-normal-arclength-v2",
+            "original_max_thickness_mm": 13.402557072786253,
+            "paired_projection_min_thickness_mm": 7.446666666666631,
+            "preserved_cap_arc_mm": 3.314,
+            "preserved_cap_pairs": 17,
+            "ramp": "smoothstep in camber arc from surface-arc cap end to original maximum-thickness station",
+            "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+            "source_vertices_only_normal_translated": false,
+            "t_min_mm": 7.446666666666667,
+            "te_midpoint_preserved": true,
+            "thickness_metric": "actual polygon width along each controlled camber-segment normal"
+          },
+          "vertices": 651
+        }
+      ],
+      "g_min_mm": 7.446666666666667,
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 80.0,
+        "controlled_minima": [
+          {
+            "element": "main",
+            "thickness_mm": 7.446671352375452
+          },
+          {
+            "element": "flap1",
+            "thickness_mm": 7.446666666666623
+          }
+        ],
+        "overlap": false,
+        "pair_gaps_mm": [
+          {
+            "distance_mm": 8.574110195806433,
+            "elements": [
+              "main",
+              "flap1"
+            ]
+          }
+        ],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": true,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 80.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.21052631578947367,
+        "h_over_c1": 0.35810205908683973
+      },
+      "placement": {
+        "combined_chord_mm": 379.4280708587508,
+        "combined_incidence_deg": 14.436775101558878,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0
+      },
+      "sha256": "6e2722a77f5d6dec2b93ca62d970fa17e15e9c9fbc73892187da26d02d0618fb",
+      "sources": [
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/main_element_table3.dat",
+          "sha256": "66bbf8b5caa90f78f52c0851503077b83bab3fd803709858885d8387c05695d8",
+          "spline_max_arc_mm": 0.6976684864506079,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        },
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/flap_table4.dat",
+          "sha256": "8dd4c9582f265b5585f926bc98377fea0b1648b0cf9f0e7ceebce27148def89a",
+          "spline_max_arc_mm": 0.6663963147685544,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        }
+      ],
+      "t_min_mm": 7.446666666666667
+    },
+    "E2_sharp.json": {
+      "configuration": "E2_sharp",
+      "dx_mm": 1.8616666666666668,
+      "elements": [
+        {
+          "actual_chord_cells": 120.24002859149128,
+          "name": "main",
+          "nominal_cells": 120.0,
+          "nominal_chord_mm": 223.4,
+          "sampling": {
+            "leading_edge_cap_arc_mm": 4.468,
+            "max_noncap_turn_deg": 2.9762017555127582,
+            "max_segment_mm": 0.8360000000000127,
+            "trailing_edge_cap": "straight finite-thickness closure"
+          },
+          "source_chord_mm": 223.84685322782627,
+          "thickening": {
+            "global_positive_thickness_claim": false,
+            "max_thickness_ratio": 1.0,
+            "method": "unthickened-source"
+          },
+          "vertices": 877
+        },
+        {
+          "actual_chord_cells": 88.88713581134832,
+          "name": "flap1",
+          "nominal_cells": 89.006266786034,
+          "nominal_chord_mm": 165.7,
+          "sampling": {
+            "leading_edge_cap_arc_mm": 3.314,
+            "max_noncap_turn_deg": 2.9721878860879727,
+            "max_segment_mm": 0.6663962466594786,
+            "trailing_edge_cap": "straight finite-thickness closure"
+          },
+          "source_chord_mm": 165.47821783546013,
+          "thickening": {
+            "global_positive_thickness_claim": false,
+            "max_thickness_ratio": 1.0,
+            "method": "unthickened-source"
+          },
+          "vertices": 645
+        }
+      ],
+      "g_min_mm": 7.446666666666667,
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 100.0,
+        "controlled_minima": [],
+        "overlap": false,
+        "pair_gaps_mm": [
+          {
+            "distance_mm": 11.441236835283442,
+            "elements": [
+              "main",
+              "flap1"
+            ]
+          }
+        ],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": false,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "placement": {
+        "combined_chord_mm": 379.4345409863775,
+        "combined_incidence_deg": 14.440569698598654,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0
+      },
+      "sha256": "b89e77a44cca8a9f5434d390dd9422c01c49be33f4445f242d07e0917a863341",
+      "sources": [
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/main_element_table3.dat",
+          "sha256": "66bbf8b5caa90f78f52c0851503077b83bab3fd803709858885d8387c05695d8",
+          "spline_max_arc_mm": 0.6976684864506079,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        },
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/flap_table4.dat",
+          "sha256": "8dd4c9582f265b5585f926bc98377fea0b1648b0cf9f0e7ceebce27148def89a",
+          "spline_max_arc_mm": 0.6663963147685544,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        }
+      ],
+      "t_min_mm": 7.446666666666667
+    },
+    "E3.json": {
+      "configuration": "E3",
+      "dx_mm": 1.8616666666666668,
+      "elements": [
+        {
+          "actual_chord_cells": 120.24002859149128,
+          "name": "main",
+          "nominal_cells": 120.0,
+          "nominal_chord_mm": 223.4,
+          "sampling": {
+            "leading_edge_cap_arc_mm": 4.468,
+            "max_noncap_turn_deg": 2.9811200042150787,
+            "max_segment_mm": 0.9308339190469455,
+            "trailing_edge_cap": "straight finite-thickness closure"
+          },
+          "source_chord_mm": 223.84685322782627,
+          "thickening": {
+            "bdim_core_qualified": false,
+            "bulk_width_envelope": "smooth L8 norm of source normal width and t_min; projection/ray correction only increases it",
+            "cap_radius_claim": "unchanged interpolating spline samples in the 2% chord surface-arc cap",
+            "controlled_from_camber_fraction": 0.22387606591637002,
+            "controlled_from_index": 140,
+            "controlled_min_thickness_mm": 7.44667135237545,
+            "extra_normal_offset_mm": 0.0,
+            "global_positive_thickness_claim": false,
+            "max_tangential_reconstruction_mm": 0.83261590248844,
+            "max_thickness_ratio": 4.594753666196127,
+            "method": "camber-normal-arclength-v2",
+            "original_max_thickness_mm": 28.1886936424304,
+            "paired_projection_min_thickness_mm": 7.44667135237545,
+            "preserved_cap_arc_mm": 4.468,
+            "preserved_cap_pairs": 26,
+            "ramp": "smoothstep in camber arc from surface-arc cap end to original maximum-thickness station",
+            "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+            "source_vertices_only_normal_translated": false,
+            "t_min_mm": 7.446666666666667,
+            "te_midpoint_preserved": true,
+            "thickness_metric": "actual polygon width along each controlled camber-segment normal"
+          },
+          "vertices": 883
+        },
+        {
+          "actual_chord_cells": 44.44356790567416,
+          "name": "flap1",
+          "nominal_cells": 44.503133393017,
+          "nominal_chord_mm": 82.85,
+          "sampling": {
+            "leading_edge_cap_arc_mm": 1.657,
+            "max_noncap_turn_deg": 2.913719362235834,
+            "max_segment_mm": 0.9308333333509116,
+            "trailing_edge_cap": "straight finite-thickness closure"
+          },
+          "source_chord_mm": 82.73910891773006,
+          "thickening": {
+            "bdim_core_qualified": false,
+            "bulk_width_envelope": "smooth L8 norm of source normal width and t_min; projection/ray correction only increases it",
+            "cap_radius_claim": "unchanged interpolating spline samples in the 2% chord surface-arc cap",
+            "controlled_from_camber_fraction": 0.18003918997930835,
+            "controlled_from_index": 93,
+            "controlled_min_thickness_mm": 7.446666666666661,
+            "extra_normal_offset_mm": 0.0,
+            "global_positive_thickness_claim": false,
+            "max_tangential_reconstruction_mm": 1.7327560542051432,
+            "max_thickness_ratio": 17.733469005275555,
+            "method": "camber-normal-arclength-v2",
+            "original_max_thickness_mm": 6.701278536393126,
+            "paired_projection_min_thickness_mm": 7.446666666666661,
+            "preserved_cap_arc_mm": 1.657,
+            "preserved_cap_pairs": 17,
+            "ramp": "smoothstep in camber arc from surface-arc cap end to original maximum-thickness station",
+            "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+            "source_vertices_only_normal_translated": false,
+            "t_min_mm": 7.446666666666667,
+            "te_midpoint_preserved": true,
+            "thickness_metric": "actual polygon width along each controlled camber-segment normal"
+          },
+          "vertices": 651
+        },
+        {
+          "actual_chord_cells": 44.44356790567416,
+          "name": "flap2",
+          "nominal_cells": 44.503133393017,
+          "nominal_chord_mm": 82.85,
+          "sampling": {
+            "leading_edge_cap_arc_mm": 1.657,
+            "max_noncap_turn_deg": 2.91371936223183,
+            "max_segment_mm": 0.9308333333508999,
+            "trailing_edge_cap": "straight finite-thickness closure"
+          },
+          "source_chord_mm": 82.73910891773006,
+          "thickening": {
+            "bdim_core_qualified": false,
+            "bulk_width_envelope": "smooth L8 norm of source normal width and t_min; projection/ray correction only increases it",
+            "cap_radius_claim": "unchanged interpolating spline samples in the 2% chord surface-arc cap",
+            "controlled_from_camber_fraction": 0.18003918997930835,
+            "controlled_from_index": 93,
+            "controlled_min_thickness_mm": 7.446666666666662,
+            "extra_normal_offset_mm": 0.0,
+            "global_positive_thickness_claim": false,
+            "max_tangential_reconstruction_mm": 1.732756054205137,
+            "max_thickness_ratio": 17.73346900527549,
+            "method": "camber-normal-arclength-v2",
+            "original_max_thickness_mm": 6.7012785363931275,
+            "paired_projection_min_thickness_mm": 7.446666666666658,
+            "preserved_cap_arc_mm": 1.657,
+            "preserved_cap_pairs": 17,
+            "ramp": "smoothstep in camber arc from surface-arc cap end to original maximum-thickness station",
+            "ray_minimum_rule": "segment endpoints, polygon-vertex projections and camber-boundary events; interval-inside checks and affine width proof",
+            "source_vertices_only_normal_translated": false,
+            "t_min_mm": 7.446666666666667,
+            "te_midpoint_preserved": true,
+            "thickness_metric": "actual polygon width along each controlled camber-segment normal"
+          },
+          "vertices": 651
+        }
+      ],
+      "g_min_mm": 7.446666666666667,
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 100.0,
+        "controlled_minima": [
+          {
+            "element": "main",
+            "thickness_mm": 7.446671352375452
+          },
+          {
+            "element": "flap1",
+            "thickness_mm": 7.44666666666664
+          },
+          {
+            "element": "flap2",
+            "thickness_mm": 7.446666666666626
+          }
+        ],
+        "overlap": false,
+        "pair_gaps_mm": [
+          {
+            "distance_mm": 8.395085500791076,
+            "elements": [
+              "main",
+              "flap1"
+            ]
+          },
+          {
+            "distance_mm": 77.61954993766393,
+            "elements": [
+              "main",
+              "flap2"
+            ]
+          },
+          {
+            "distance_mm": 8.936260068787785,
+            "elements": [
+              "flap1",
+              "flap2"
+            ]
+          }
+        ],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": true,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "placement": {
+        "combined_chord_mm": 374.67747240471095,
+        "combined_incidence_deg": 14.594635525624273,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0
+      },
+      "sha256": "aff70efbfabc0a6d03931e76615e9ec361add2af5e59efbd6b9e8fb36a81c03a",
+      "sources": [
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/main_element_table3.dat",
+          "sha256": "66bbf8b5caa90f78f52c0851503077b83bab3fd803709858885d8387c05695d8",
+          "spline_max_arc_mm": 0.6976684864506079,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        },
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/flap_table4.dat",
+          "sha256": "8dd4c9582f265b5585f926bc98377fea0b1648b0cf9f0e7ceebce27148def89a",
+          "spline_max_arc_mm": 0.6663963147685544,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        }
+      ],
+      "t_min_mm": 7.446666666666667
+    },
+    "E3_sharp.json": {
+      "configuration": "E3_sharp",
+      "dx_mm": 1.8616666666666668,
+      "elements": [
+        {
+          "actual_chord_cells": 120.24002859149128,
+          "name": "main",
+          "nominal_cells": 120.0,
+          "nominal_chord_mm": 223.4,
+          "sampling": {
+            "leading_edge_cap_arc_mm": 4.468,
+            "max_noncap_turn_deg": 2.9762017555127582,
+            "max_segment_mm": 0.8360000000000127,
+            "trailing_edge_cap": "straight finite-thickness closure"
+          },
+          "source_chord_mm": 223.84685322782627,
+          "thickening": {
+            "global_positive_thickness_claim": false,
+            "max_thickness_ratio": 1.0,
+            "method": "unthickened-source"
+          },
+          "vertices": 877
+        },
+        {
+          "actual_chord_cells": 44.44356790567416,
+          "name": "flap1",
+          "nominal_cells": 44.503133393017,
+          "nominal_chord_mm": 82.85,
+          "sampling": {
+            "leading_edge_cap_arc_mm": 1.657,
+            "max_noncap_turn_deg": 2.9721878860884634,
+            "max_segment_mm": 0.5133517312720447,
+            "trailing_edge_cap": "straight finite-thickness closure"
+          },
+          "source_chord_mm": 82.73910891773006,
+          "thickening": {
+            "global_positive_thickness_claim": false,
+            "max_thickness_ratio": 1.0,
+            "method": "unthickened-source"
+          },
+          "vertices": 644
+        },
+        {
+          "actual_chord_cells": 44.44356790567416,
+          "name": "flap2",
+          "nominal_cells": 44.503133393017,
+          "nominal_chord_mm": 82.85,
+          "sampling": {
+            "leading_edge_cap_arc_mm": 1.657,
+            "max_noncap_turn_deg": 2.972187886090917,
+            "max_segment_mm": 0.5133517312720447,
+            "trailing_edge_cap": "straight finite-thickness closure"
+          },
+          "source_chord_mm": 82.73910891773006,
+          "thickening": {
+            "global_positive_thickness_claim": false,
+            "max_thickness_ratio": 1.0,
+            "method": "unthickened-source"
+          },
+          "vertices": 644
+        }
+      ],
+      "g_min_mm": 7.446666666666667,
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 100.0,
+        "controlled_minima": [],
+        "overlap": false,
+        "pair_gaps_mm": [
+          {
+            "distance_mm": 11.225845448996004,
+            "elements": [
+              "main",
+              "flap1"
+            ]
+          },
+          {
+            "distance_mm": 78.3254358418564,
+            "elements": [
+              "main",
+              "flap2"
+            ]
+          },
+          {
+            "distance_mm": 12.499105422157035,
+            "elements": [
+              "flap1",
+              "flap2"
+            ]
+          }
+        ],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": false,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "placement": {
+        "combined_chord_mm": 374.61149394957215,
+        "combined_incidence_deg": 14.555829386224351,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0
+      },
+      "sha256": "4fe72e0793a4ae35f5d6f123007e527240faccd0d63f556489ab6dfc0ca4a3cb",
+      "sources": [
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/main_element_table3.dat",
+          "sha256": "66bbf8b5caa90f78f52c0851503077b83bab3fd803709858885d8387c05695d8",
+          "spline_max_arc_mm": 0.6976684864506079,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        },
+        {
+          "normalization_chord_mm": 380.0,
+          "path": "data/zz2003/flap_table4.dat",
+          "sha256": "8dd4c9582f265b5585f926bc98377fea0b1648b0cf9f0e7ceebce27148def89a",
+          "spline_max_arc_mm": 0.6663963147685544,
+          "url": "https://eprints.soton.ac.uk/426058/1/00192634.pdf",
+          "verification": "UNVERIFIED_OCR"
+        }
+      ],
+      "t_min_mm": 7.446666666666667
+    }
+  },
+  "schema": "wp04-amend2-geometry-summary-v1"
+}

@@ -1,0 +1,52 @@
+# Source: Jonathan D. C. Zerihan (2001), An Investigation into the Aerodynamics of Wings in Ground Effect. University of Southampton PhD thesis.
+# Official PDF: https://eprints.soton.ac.uk/426058/1/00192634.pdf
+# Table 2; printed page 25; PDF page 43 (1-based, inferred from known 18-page front matter).
+# Retrieval: official indexed PDF OCR via web search/open on 2026-11-06; direct curl returned HTTP 401.
+# Units: nondimensional x/c and y/c, c = 223.4 mm.
+# Attitude: reference incidence 1 degree quoted (true incidence 3.45 degrees).
+# Columns: suction_x_c suction_y_c pressure_x_c pressure_y_c; each surface ordered LE to TE.
+# UNVERIFIED: OCR numbers have not been checked against table or Figure 1 pixels in this session.
+0.0000 0.0000 0.0000 0.0000 # UNVERIFIED: OCR, no page-image check
+0.0010 -0.0076 0.0010 0.0079 # UNVERIFIED: OCR, no page-image check
+0.0020 -0.0107 0.0020 0.0109 # UNVERIFIED: OCR, no page-image check
+0.0049 -0.0168 0.0051 0.0173 # UNVERIFIED: OCR, no page-image check
+0.0099 -0.0228 0.0101 0.0232 # UNVERIFIED: OCR, no page-image check
+0.0149 -0.0266 0.0151 0.0271 # UNVERIFIED: OCR, no page-image check
+0.0199 -0.0294 0.0201 0.0300 # UNVERIFIED: OCR, no page-image check
+0.0249 -0.0320 0.0251 0.0313 # UNVERIFIED: OCR, no page-image check
+0.0298 -0.0345 0.0301 0.0322 # UNVERIFIED: OCR, no page-image check
+0.0348 -0.0369 0.0351 0.0330 # UNVERIFIED: OCR, no page-image check
+0.0398 -0.0393 0.0401 0.0338 # UNVERIFIED: OCR, no page-image check
+0.0448 -0.0416 0.0451 0.0346 # UNVERIFIED: OCR, no page-image check
+0.0498 -0.0438 0.0501 0.0354 # UNVERIFIED: OCR, no page-image check
+0.0548 -0.0460 0.0551 0.0361 # UNVERIFIED: OCR, no page-image check
+0.0598 -0.0481 0.0601 0.0369 # UNVERIFIED: OCR, no page-image check
+0.0698 -0.0520 0.0701 0.0382 # UNVERIFIED: OCR, no page-image check
+0.0797 -0.0557 0.0801 0.0395 # UNVERIFIED: OCR, no page-image check
+0.0897 -0.0591 0.0902 0.0407 # UNVERIFIED: OCR, no page-image check
+0.0997 -0.0622 0.1002 0.0417 # UNVERIFIED: OCR, no page-image check
+0.1197 -0.0676 0.1202 0.0436 # UNVERIFIED: OCR, no page-image check
+0.1396 -0.0718 0.1402 0.0451 # UNVERIFIED: OCR, no page-image check
+0.1596 -0.0750 0.1602 0.0463 # UNVERIFIED: OCR, no page-image check
+0.1796 -0.0769 0.1802 0.0472 # UNVERIFIED: OCR, no page-image check
+0.1996 -0.0778 0.2002 0.0480 # UNVERIFIED: OCR, no page-image check
+0.2496 -0.0762 0.2501 0.0498 # UNVERIFIED: OCR, no page-image check
+0.2996 -0.0732 0.3001 0.0515 # UNVERIFIED: OCR, no page-image check
+0.3496 -0.0692 0.3501 0.0527 # UNVERIFIED: OCR, no page-image check
+0.3996 -0.0645 0.4001 0.0534 # UNVERIFIED: OCR, no page-image check
+0.4496 -0.0590 0.4501 0.0537 # UNVERIFIED: OCR, no page-image check
+0.4996 -0.0526 0.5001 0.0535 # UNVERIFIED: OCR, no page-image check
+0.5497 -0.0454 0.5501 0.0529 # UNVERIFIED: OCR, no page-image check
+0.5997 -0.0373 0.6001 0.0518 # UNVERIFIED: OCR, no page-image check
+0.6497 -0.0285 0.6500 0.0503 # UNVERIFIED: OCR, no page-image check
+0.6997 -0.0188 0.7000 0.0482 # UNVERIFIED: OCR, no page-image check
+0.7498 -0.0083 0.7500 0.0456 # UNVERIFIED: OCR, no page-image check
+0.7998 0.0031 0.8000 0.0438 # UNVERIFIED: OCR, no page-image check
+0.8498 0.0152 0.8500 0.0443 # UNVERIFIED: OCR, no page-image check
+0.8999 0.0282 0.9000 0.0479 # UNVERIFIED: OCR, no page-image check
+0.9199 0.0336 0.9200 0.0502 # UNVERIFIED: OCR, no page-image check
+0.9399 0.0392 0.9400 0.0530 # UNVERIFIED: OCR, no page-image check
+0.9599 0.0449 0.9600 0.0562 # UNVERIFIED: OCR, no page-image check
+0.9799 0.0507 0.9800 0.0599 # UNVERIFIED: OCR, no page-image check
+0.9900 0.0537 0.9900 0.0619 # UNVERIFIED: OCR, no page-image check
+1.0000 0.0567 1.0000 0.0640 # UNVERIFIED: OCR, no page-image check

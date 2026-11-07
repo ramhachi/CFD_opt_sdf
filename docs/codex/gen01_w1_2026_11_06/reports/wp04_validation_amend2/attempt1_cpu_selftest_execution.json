@@ -1,0 +1,41 @@
+{
+  "argv": [
+    "julia",
+    "--startup-file=no",
+    "--project=julia/CFDSDFWaterLily",
+    "scripts/topo2d_selftest.jl",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend2/cpu_selftest"
+  ],
+  "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily",
+  "environment": {
+    "JULIA_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "TOPO2D_PROVIDER_ORIGIN_RECORD": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend2/provider_origins.json",
+    "TOPO2D_PYTHON": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/.venv/bin/python",
+    "TOPO2D_WP1_TEST_ORIGIN": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/julia/CFDSDFWaterLily/gen01/Checkpoint.jl",
+    "TOPO2D_WP1_TEST_SOURCE": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp04-amend2-providers-al3j7f0d/Checkpoint.jl",
+    "TOPO2D_WP2_TEST_ORIGIN": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-02-force00/julia/CFDSDFWaterLily/gen01/Force00.jl",
+    "TOPO2D_WP2_TEST_SOURCE": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp04-amend2-providers-al3j7f0d/Force00.jl"
+  },
+  "evidence_class": "CPU_CAPABILITY_ONLY",
+  "exit_code": 1,
+  "logs": {
+    "cpu_selftest.stderr.log": "c1f9be97a106fe62a8ebb28db71850874d4e516c6d6dfe90b4adb25eb8987fc1",
+    "cpu_selftest.stdout.log": "60162a7297fe4e496021a16b13dd8226b7ba92cdb209954670596e4e5bf9b361"
+  },
+  "provider_origins": {
+    "WP1": {
+      "origin_path": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/julia/CFDSDFWaterLily/gen01/Checkpoint.jl",
+      "sha256": "21d7c9a2ca2c27bbfbecc6ed579417acde0c4dc1ca270c9ee3d5c1da64e13076",
+      "snapshot_path": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp04-amend2-providers-al3j7f0d/Checkpoint.jl"
+    },
+    "WP2": {
+      "origin_path": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-02-force00/julia/CFDSDFWaterLily/gen01/Force00.jl",
+      "sha256": "84c58a6f029d2dd9705d95020151cec564c7141414cdcb2b3d06283fdf275927",
+      "snapshot_path": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp04-amend2-providers-al3j7f0d/Force00.jl"
+    }
+  },
+  "wall_seconds": 262.6945128440857
+}

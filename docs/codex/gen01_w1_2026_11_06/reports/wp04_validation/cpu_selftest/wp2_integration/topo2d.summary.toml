@@ -1,0 +1,74 @@
+backend = "WaterLily CPU"
+batch_count = 4
+case_id = "topo2d"
+cd_time_weighted = 8.23707540823416
+checkpoint_note = "WP1 source-pinned finite-column payload, explicit missing-column mask, fresh-simulation restore and default remeasurement"
+checkpoint_provider = "WP1_DATA_ONLY_FINITE_COLUMN_ADAPTER"
+cl_time_weighted = 20.32716449159119
+downforce_time_weighted_n_per_m = 2.270544273710736
+drag_time_weighted_n_per_m = 0.9200813230997558
+finite_forces = true
+finite_p = true
+finite_u = true
+flow_dims = [320, 160]
+flow_origin_m = [-0.022340000000000002, 0.0, -0.014893333333333335]
+force_csv_sha256 = "8762022754682e49077c68912b20ae6b3c30ad0ee9ebf7dc442c5a6fbf8bf0a3"
+force_projection_semantics = "drag=+Fx; downforce=-Fz"
+force_scale_n_per_m = 0.0018616666666666669
+force_unit = "N/m"
+ground_plane_solver = 8.0
+ground_velocity_solver = [1.0, 0.0]
+phase_shift_m = [0.0, 0.0, 0.0]
+readout_note = "WP2 force_readouts: explicit wing-only body and validated immutable box"
+reference_chord_mm = 223.4
+reynolds = 200.0
+sample_every_solver_steps = 1
+scene_sha256 = "9a7811e19cab1fdd673b15e112cb622c3da7186fb56099b13ab1a4d41e2fbd3f"
+schema = "topo2d-job-summary-v1"
+smoke = true
+solver_length = 120.0
+steps = 14
+t_end_reached = 0.015257642604410648
+top_factor = 1.0
+wall_seconds = 22.717080116271973
+window_t_u_l = [0.003, 0.015]
+
+[readout_available]
+cur = true
+cv = true
+nds = true
+
+[runtime]
+julia_version = "1.12.6"
+memory = "Array"
+scalar_type = "Float32"
+scheme = "quick"
+threads = 1
+waterlily_version = "1.8.0"
+
+[source_sha256]
+"/private/tmp/topo2d00_wp4_provider_inputs_final/Checkpoint.jl" = "f79b8a5ba191f04ad97933c363f2126841604e19196a350d3abc960c340112ff"
+"/private/tmp/topo2d00_wp4_provider_inputs_final/Force00.jl" = "84c58a6f029d2dd9705d95020151cec564c7141414cdcb2b3d06283fdf275927"
+"data/zz2003/flap_table4.dat" = "8dd4c9582f265b5585f926bc98377fea0b1648b0cf9f0e7ceebce27148def89a"
+"data/zz2003/main_element_table3.dat" = "66bbf8b5caa90f78f52c0851503077b83bab3fd803709858885d8387c05695d8"
+"data/zz2003/single_element_table2.dat" = "04934133a6c085e2f10e0a8e688e91fbd53dc8fc8b999a07433d351d8e152cfe"
+"julia/CFDSDFWaterLily/Manifest.toml" = "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c"
+"julia/CFDSDFWaterLily/Project.toml" = "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27"
+"julia/CFDSDFWaterLily/src/Forces.jl" = "0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e"
+"julia/topo2d/Topo2D.jl" = "cc03749e2d7be4893927076513c757d6b8c2b4b7c20363c455f0a57030caf0bd"
+"scripts/waterlily_topo2d_job.jl" = "a9208b4d21e73c192d8682bf2a50a38627da0c829941e4d148b524ad950db741"
+"src/cfd_harness/campaign_schema.py" = "4c3c494ed381930d9d1e51b063efbbdcf1fa4586c1ac7e84d2b999a5c984d1b8"
+"src/cfd_harness/scene_campaign.py" = "633f3ab1c362dfe454ed14f75b1bc0d319520e75fbd9154d1037ed6238c07dd1"
+"src/cfd_sdf/topo2d/geometry.py" = "070df21d45222864ad322167a2706aeb53f64e41496fde57dd404f4edebd6282"
+
+[stationarity_relative_half_window_drift]
+downforce = 0.4320486341576735
+drag = 0.41189798428175367
+
+[topo2d]
+configuration = "E2"
+grid = "main"
+height_mm = 100.0
+phase = "0"
+reynolds = 200.0
+role = "primary"

@@ -1,0 +1,14 @@
+{
+  "schema": "topo2d-wp5-interface-readback-v1",
+  "verified_utc": "2026-11-06T08:10:02.566852+00:00",
+  "ours": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_result_schema.json",
+  "wp5": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-05-tr00-rans/docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_result_schema.json",
+  "ours_sha256": "04ebcf764568f206071c2d81bf9a32318f0f3283c9cdae596e43f93f0a8016b4",
+  "wp5_sha256": "04ebcf764568f206071c2d81bf9a32318f0f3283c9cdae596e43f93f0a8016b4",
+  "byte_identical": true,
+  "evidence_class": "SOURCE_CONTRACT_ONLY",
+  "writer_sources": {
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-05-tr00-rans/scripts/topo2d00/collect_rans.py": "4e8c6017c7850315fca9f16afd14bc1a896454930069127e3fa14d656f7c029c",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-05-tr00-rans/scripts/topo2d00/digitize_cp.py": "73e24c0087505c380914df61f6e4827c961f16c4de8c60d4b589cb5543f0482e"
+  }
+}

@@ -1,0 +1,113 @@
+cuda_module_loaded = false
+evidence_class = "CPU_CAPABILITY_ONLY"
+schema = "topo2d-cpu-selftest-v1"
+selftest_source_sha256 = "d8e07d122c34cd4b26f9d161080d34bbd27f6b4aecea49c05c13928e3038970f"
+smoke = true
+wall_seconds = 73.56524300575256
+
+[E1]
+finite_forces = true
+flow_dims = [320, 160]
+force_csv_sha256 = "3d2be41f46362b72d06b2c9e268a3d9dc8476f30eb63acdfd4c7417c06ce81e8"
+ground_nearby_u = 1.0
+passed = true
+phase_common_translation = true
+reynolds = 200.0
+scene_sha256 = "c7180cc38d022c279df61a0ef3312658b9d606cbe7e265f5271a35ece7acbdf9"
+steps = 9
+window_t_u_l = [0.003, 0.015]
+
+[E2]
+finite_forces = true
+flow_dims = [320, 160]
+force_csv_sha256 = "cd2310ac0a6c4ab7486cce364871e7d328386158a38e8cf8da3d0b7453583e56"
+ground_nearby_u = 1.0
+passed = true
+phase_common_translation = true
+reynolds = 200.0
+scene_sha256 = "9a7811e19cab1fdd673b15e112cb622c3da7186fb56099b13ab1a4d41e2fbd3f"
+steps = 14
+window_t_u_l = [0.003, 0.015]
+
+[checkpoint]
+checkpoint_sha256 = "e532d3054634ad422045a1cf7fdb0b2586efe4a462c17918d55f5200ee1fae10"
+field_bit_equal = true
+final_step = 9
+passed = true
+saved_step = 3
+window_bit_equal = true
+
+[job_entrypoint]
+force_csv_sha256 = "3d2be41f46362b72d06b2c9e268a3d9dc8476f30eb63acdfd4c7417c06ce81e8"
+passed = true
+preflight_sha256 = "9d7cca6d1e1393bddd22273e12eba33a47ed0216b4949972e92e9f73e2743698"
+
+[phase_core_checks.E1]
+face_probe_count = 576
+largest_face_distance_cells = -1.4713342189788818
+passed = true
+phases = 16
+scope = "geometry-guarded controlled bulk stations; leading and terminal caps excluded"
+
+[phase_core_checks.E2]
+face_probe_count = 928
+largest_face_distance_cells = -1.39030122756958
+passed = true
+phases = 16
+scope = "geometry-guarded controlled bulk stations; leading and terminal caps excluded"
+
+[phase_core_checks.E3]
+face_probe_count = 1216
+largest_face_distance_cells = -1.347543716430664
+passed = true
+phases = 16
+scope = "geometry-guarded controlled bulk stations; leading and terminal caps excluded"
+
+[provider_origin_record]
+path = "/private/tmp/topo2d00_wp4_provider_inputs_final/origins.json"
+sha256 = "29688ec02344a09a0a2cbcd3a5cca88af9fae90d5933f6d09972addb6ce79cc1"
+
+[runtime]
+julia_version = "1.12.6"
+memory = "Array"
+scalar_type = "Float32"
+scheme = "quick"
+threads = 1
+waterlily_version = "1.8.0"
+
+[source_sha256]
+"/private/tmp/topo2d00_wp4_provider_inputs_final/Checkpoint.jl" = "f79b8a5ba191f04ad97933c363f2126841604e19196a350d3abc960c340112ff"
+"/private/tmp/topo2d00_wp4_provider_inputs_final/Force00.jl" = "84c58a6f029d2dd9705d95020151cec564c7141414cdcb2b3d06283fdf275927"
+"data/zz2003/flap_table4.dat" = "8dd4c9582f265b5585f926bc98377fea0b1648b0cf9f0e7ceebce27148def89a"
+"data/zz2003/main_element_table3.dat" = "66bbf8b5caa90f78f52c0851503077b83bab3fd803709858885d8387c05695d8"
+"data/zz2003/single_element_table2.dat" = "04934133a6c085e2f10e0a8e688e91fbd53dc8fc8b999a07433d351d8e152cfe"
+"julia/CFDSDFWaterLily/Manifest.toml" = "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c"
+"julia/CFDSDFWaterLily/Project.toml" = "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27"
+"julia/CFDSDFWaterLily/src/Forces.jl" = "0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e"
+"julia/topo2d/Topo2D.jl" = "cc03749e2d7be4893927076513c757d6b8c2b4b7c20363c455f0a57030caf0bd"
+"scripts/waterlily_topo2d_job.jl" = "a9208b4d21e73c192d8682bf2a50a38627da0c829941e4d148b524ad950db741"
+"src/cfd_harness/campaign_schema.py" = "4c3c494ed381930d9d1e51b063efbbdcf1fa4586c1ac7e84d2b999a5c984d1b8"
+"src/cfd_harness/scene_campaign.py" = "633f3ab1c362dfe454ed14f75b1bc0d319520e75fbd9154d1037ed6238c07dd1"
+"src/cfd_sdf/topo2d/geometry.py" = "070df21d45222864ad322167a2706aeb53f64e41496fde57dd404f4edebd6282"
+
+[wp1_integration]
+checkpoint_sha256 = "c6f74233b1869e6b8e1dae9154dee5ed6120d540a38ba7059ce57333030a5eaa"
+missing_columns_restored_as_nan = true
+passed = true
+provider = "WP1_DATA_ONLY_FINITE_COLUMN_ADAPTER"
+restored_window_means = [115.31849475404098, 90.07270092223607]
+source_origin_path = "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-01-local-gpu/julia/CFDSDFWaterLily/gen01/Checkpoint.jl"
+source_path = "/private/tmp/topo2d00_wp4_provider_inputs_final/Checkpoint.jl"
+source_sha256 = "f79b8a5ba191f04ad97933c363f2126841604e19196a350d3abc960c340112ff"
+window_means = [115.31849475404098, 90.07270092223607]
+
+[wp2_integration]
+finite_cur_nds_cv = true
+force_csv_sha256 = "8762022754682e49077c68912b20ae6b3c30ad0ee9ebf7dc442c5a6fbf8bf0a3"
+host_readouts_verified = true
+passed = true
+source_origin_path = "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-02-force00/julia/CFDSDFWaterLily/src/Force00.jl"
+source_path = "/private/tmp/topo2d00_wp4_provider_inputs_final/Force00.jl"
+source_sha256 = "84c58a6f029d2dd9705d95020151cec564c7141414cdcb2b3d06283fdf275927"
+validated_box_bounds = [[8, 219], [57, 132]]
+wing_only_body = true
