@@ -1,0 +1,43 @@
+{
+  "focused": {
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_grad00.py",
+      "tests/test_grad00_reference.py",
+      "tests/test_grad00_kernels.py",
+      "tests/test_grad00_cpu.py",
+      "-p",
+      "no:cacheprovider",
+      "--junitxml=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/pytest_focused.xml"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 9.722624207963236,
+    "log_sha256": "311f7ec59b1f9de82c279186e624d8f6a0694398eb8509cddbb59ba119233f28"
+  },
+  "compileall": {
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "compileall",
+      "src",
+      "tests"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.154749209061265,
+    "log_sha256": "e96279af0ea553d511deb79e50dc950f8450458dd35eb792ab9a2c0966bccd0e"
+  },
+  "selftest180": {
+    "command": [
+      "julia",
+      "--startup-file=no",
+      "--project=julia/CFDSDFWaterLily",
+      "scripts/grad00_selftest.jl"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 2.5275591659592465,
+    "log_sha256": "08485bdf03650663355b7531bbb0dfebd1b58f04c57cc8121b9136c291ac2544"
+  }
+}

@@ -1,0 +1,10 @@
+┌ Warning: Using WaterLily in serial (ie. JULIA_NUM_THREADS=1) is not recommended because it defaults to serial CPU execution.
+│ Use JULIA_NUM_THREADS=auto, or any number of threads greater than 1, to allow multi-threading in CPU backends.
+│ For a low-overhead single-threaded CPU only backend set: WaterLily.set_backend("SIMD")
+└ @ WaterLily ~/.julia/packages/WaterLily/V6kyE/src/WaterLily.jl:218
+Test Summary:                              | Pass  Total  Time
+report-only preflight tangent localization |   13     13  1.7s
+SYNTHETIC_NO_FLOW_BEGIN job_sha256=bba320e88553bfa026afb715572166c936c763be81a537c601fe59300d15cdbe
+GRAD00_RESULT COMPLETE /Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment3/synthetic/CFDSDFWaterLily110_quick_Float32
+SYNTHETIC_ORCHESTRATION_PASS runs=7 solver_steps=0 inputs_and_indices_verified
+SYNTHETIC_NO_FLOW_OUTPUT /Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment3/synthetic/CFDSDFWaterLily110_quick_Float32

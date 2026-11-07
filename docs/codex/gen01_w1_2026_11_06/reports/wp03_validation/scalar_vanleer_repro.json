@@ -1,0 +1,111 @@
+{
+  "command": [
+    "julia",
+    "-O2",
+    "-t",
+    "10",
+    "--project=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/julia/CFDSDFWaterLily",
+    "/tmp/grad00-validation/scalar_vanleer_repro.jl"
+  ],
+  "exit_code": 0,
+  "wall_s": 10.784767874982208,
+  "script_sha256": "23dd3d1ffd0c3b4e955cdb55281dcb45cae79521ba0cd84df3a1e2c120c46162",
+  "evidence_class": "cpu_scalar_no_flow_demonstration",
+  "flow_steps": 0,
+  "claim_limit": "Demonstrates this scalar tie mechanism; registered-field first onset and causality were not traced.",
+  "sources": [
+    {
+      "name": "WaterLily.Flow",
+      "path": "/Users/sota/.julia/packages/WaterLily/yOkji/src/Flow.jl",
+      "sha256": "6138c88f48b04db7ed6861f1f1bec9c450e04214160caef177d85bdad326b7f0",
+      "line": 5,
+      "excerpt": [
+        {
+          "line": 5,
+          "text": "@fastmath vanLeer(u,c,d) = (c≤min(u,d) || c≥max(u,d)) ? c : c+(d-c)*(c-u)/(d-u)"
+        }
+      ]
+    },
+    {
+      "name": "ForwardDiff.dual_comparator",
+      "path": "/Users/sota/.julia/packages/ForwardDiff/wp23H/src/dual.jl",
+      "sha256": "f5a7c607931630d1215c7082f6232fdc169da74c9d4a697ab87635fd2ddea2c6",
+      "line": 404,
+      "excerpt": [
+        {
+          "line": 404,
+          "text": "    Base.:(<=),"
+        },
+        {
+          "line": 405,
+          "text": "    (value(x) < value(y)) || (value(x) == value(y) && (partials(x) <= partials(y))),"
+        },
+        {
+          "line": 406,
+          "text": "    (value(x) < y) || (value(x) == y && (partials(x) <= zero(partials(x)))),"
+        },
+        {
+          "line": 407,
+          "text": "    (x < value(y)) || (x == value(y) && (zero(partials(y)) <= partials(y))),"
+        }
+      ]
+    }
+  ],
+  "samples": [
+    {
+      "precision": "Float32",
+      "u": {
+        "value": 1,
+        "partial": 1
+      },
+      "c": {
+        "value": 1,
+        "partial": 2
+      },
+      "d": {
+        "value": 1,
+        "partial": 3
+      },
+      "plain_result": 1.0,
+      "dual_value": null,
+      "dual_partial": null,
+      "dual_value_finite": false,
+      "dual_partial_finite": false,
+      "extremum_predicate": false,
+      "d_minus_u_value": 0.0,
+      "d_minus_u_partial": 2.0,
+      "raw_dual_value": "NaN",
+      "raw_dual_partial": "NaN"
+    },
+    {
+      "precision": "Float64",
+      "u": {
+        "value": 1,
+        "partial": 1
+      },
+      "c": {
+        "value": 1,
+        "partial": 2
+      },
+      "d": {
+        "value": 1,
+        "partial": 3
+      },
+      "plain_result": 1.0,
+      "dual_value": null,
+      "dual_partial": null,
+      "dual_value_finite": false,
+      "dual_partial_finite": false,
+      "extremum_predicate": false,
+      "d_minus_u_value": 0.0,
+      "d_minus_u_partial": 2.0,
+      "raw_dual_value": "NaN",
+      "raw_dual_partial": "NaN"
+    }
+  ],
+  "runtime": {
+    "julia": "1.12.6",
+    "waterlily": "1.8.0",
+    "forwarddiff": "1.4.6"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "claim_limit": "Same type and same path, actual frozen build and 20 steps only; no full-window or physical qualification.",
+  "comparisons": {
+    "dual": {
+      "bit_equal": {
+        "primal_p_sha256": true,
+        "primal_u_sha256": true
+      },
+      "capture": "docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/ta1_reference/quick_control.json",
+      "capture_sha256": "92561ac2a62570455b2f3ff7569a19b1b60bbdf93a61dfdf5e249cd9f2d4e065",
+      "copy_preflight": "docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_Float32/preflight.json",
+      "copy_preflight_sha256": "05c68953e269428d687440a93c0b4921523984bb592797acab0a0a34d5fd6ff1",
+      "forwarddiff": "1.4.6",
+      "hashes": {
+        "primal_p_sha256": "99223b6bfc23d49ae8e1965865e25765e65c3ff2a23c1d86f9d06743a499400e",
+        "primal_u_sha256": "fac0ca3c6f84ec2672456c01695a2f6c39f74984abb2f2c8a4dbffbcc92f790a"
+      },
+      "julia": "1.12.6",
+      "pass": true,
+      "steps": 20,
+      "waterlily": "1.8.0"
+    },
+    "plain": {
+      "bit_equal": {
+        "primal_p_sha256": true,
+        "primal_u_sha256": true
+      },
+      "capture": "docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/ta1_plain_reference/quick_plain_control.json",
+      "capture_sha256": "9951e00a243d467e938dd90f23ea38107736918e725f4789c489f0e29f7a66d1",
+      "copy_preflight": "docs/codex/gen01_w1_2026_11_06/reports/wp03_validation/amendment2/CFDSDFWaterLily_quick_Float32/preflight.json",
+      "copy_preflight_sha256": "05c68953e269428d687440a93c0b4921523984bb592797acab0a0a34d5fd6ff1",
+      "forwarddiff": "1.4.6",
+      "hashes": {
+        "primal_p_sha256": "9578cc8ea16f00d8f7e0396a65a73226005e6d49de921743c75470bde8bcda22",
+        "primal_u_sha256": "bbfa47bbf98e046f00dfb0acc9a5a52fe4847e7cde7132faea163e23e1ed5396"
+      },
+      "julia": "1.12.6",
+      "pass": true,
+      "steps": 20,
+      "waterlily": "1.8.0"
+    }
+  },
+  "evidence_class": "cpu_frozen_ta1_20_step_plain_and_dual_value_bit_comparison",
+  "pass": true
+}

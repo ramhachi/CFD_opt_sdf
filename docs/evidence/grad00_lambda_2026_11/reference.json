@@ -1,0 +1,39 @@
+{
+ "definition": "epsilon_m = the largest of the three FD-08 v2 formal interior epsilons of the direction (formal_analysis.json comparisons, all PASS); spread_n_per_m = the FD-08 Model A calibration standard error of the gradient se_g_n_per_m (formal_criteria.json calibration_binding.fits), fx from the drag fit, fz from the downforce fit. Fixed before any GRAD-00 run (GRAD-00 spec amendment 1, 2026-11-06).",
+ "directions": {
+  "D0_interface_offset": {
+   "epsilon_m": 0.003971641173621408,
+   "spread_n_per_m": {
+    "fx": 0.003340882961506817,
+    "fz": 0.02060014270961251
+   }
+  },
+  "D1_filtered_seed11": {
+   "epsilon_m": 0.003971641173621408,
+   "spread_n_per_m": {
+    "fx": 0.0023411868563410834,
+    "fz": 0.003321700208349783
+   }
+  },
+  "D2_filtered_seed2026": {
+   "epsilon_m": 0.003971641173621408,
+   "spread_n_per_m": {
+    "fx": 0.004788957134019947,
+    "fz": 0.0029913937716240396
+   }
+  },
+  "P1_upstream_lobe": {
+   "epsilon_m": 0.003971641173621408,
+   "spread_n_per_m": {
+    "fx": 0.005882931182735196,
+    "fz": 0.010178941059118983
+   }
+  }
+ },
+ "kind": "grad00_fd08_reference",
+ "schema_version": 1,
+ "sources": {
+  "docs/evidence/fd08_v2_formal_2026_10_07_amend3/formal_analysis.json": "3da59ac9b1086ed286cb0109cd669dac804f4fb99785986515ce35db1acf0466",
+  "docs/evidence/fd08_v2_formal_2026_10_07_amend3/formal_criteria.json": "31b29cccc9d3fd6912a910b09694a8230f9ee0aa84e6a418161881ffbcf907be"
+ }
+}

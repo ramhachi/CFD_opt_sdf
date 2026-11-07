@@ -1,0 +1,24 @@
+{
+  "evidence_class": "cpu_project_instantiate_only",
+  "command": [
+    "julia",
+    "-O2",
+    "-t",
+    "10",
+    "--project=/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/julia/CFDSDFWaterLily110",
+    "-e",
+    "using Pkg; Pkg.instantiate(;allow_autoprecomp=false); println(\"INSTANTIATE_ONLY_OK\")"
+  ],
+  "exit_code": 0,
+  "wall_s": 8.153373833047226,
+  "allow_autoprecomp": false,
+  "before_sha256": {
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/julia/CFDSDFWaterLily110/Project.toml": "c4e838eba03286938e60aec8fd690f275b056a39e1b6be0f3e0e22c0334e3448",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/julia/CFDSDFWaterLily110/Manifest.toml": "48b2fb4f83619a9599d69b4f9cb846332a26e702cfea79cae56c3b089ff62388"
+  },
+  "after_sha256": {
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/julia/CFDSDFWaterLily110/Project.toml": "c4e838eba03286938e60aec8fd690f275b056a39e1b6be0f3e0e22c0334e3448",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-03-grad00/julia/CFDSDFWaterLily110/Manifest.toml": "48b2fb4f83619a9599d69b4f9cb846332a26e702cfea79cae56c3b089ff62388"
+  },
+  "project_manifest_unchanged": true
+}

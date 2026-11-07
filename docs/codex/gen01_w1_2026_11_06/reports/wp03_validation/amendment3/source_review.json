@@ -1,0 +1,109 @@
+{
+  "base_commit": "e2dddf06c745cae2a95248d9a74930a20494e2eb",
+  "blocking_findings": [],
+  "deployment_boundary": {
+    "current_render_analyzer_sha_prefix": "992c7073",
+    "current_render_source_commit": "05138c72",
+    "current_renders_usable": false,
+    "infra_files_unchanged": 15,
+    "required_host_action": "Claude must commit/push the implementation, keep it reachable without squash, rerender all five kernels against that full commit with the registered reference, then commit renders before any user-authorized Kaggle push."
+  },
+  "independent_probes": [
+    {
+      "job_lines": 512,
+      "name": "unified_diff_replays_exactly",
+      "result": "PASS",
+      "template_lines": 398
+    },
+    {
+      "labels": {
+        "cds": "ARM_ERROR",
+        "quick": "ARM_ERROR",
+        "quick_nobound": "ARM_ERROR",
+        "vanLeer": "ARM_ERROR"
+      },
+      "name": "all_primary_authenticated_startup_failures_complete_campaign",
+      "next_step": "GRAD01_DRAFT_NOT_ALLOWED",
+      "result": "PASS",
+      "unknown_runtime_and_plain_values_remain_null": true
+    },
+    {
+      "label": "PREFLIGHT_BLOCKED",
+      "name": "real_attempt2_d_preflight_payload",
+      "result": "PASS",
+      "selected_dual_primal_finite": false,
+      "selected_plain_finite": true
+    },
+    {
+      "name": "unverified",
+      "reason": "source pins/verified missing or unequal",
+      "result": "REJECTED_AS_REQUIRED"
+    },
+    {
+      "name": "error_and_done",
+      "reason": "exactly one of DONE or ERROR.txt is required",
+      "result": "REJECTED_AS_REQUIRED"
+    },
+    {
+      "name": "finite_flag_with_null_maximum",
+      "reason": "preflight maximum tangent: expected a finite number",
+      "result": "REJECTED_AS_REQUIRED"
+    },
+    {
+      "name": "unknown_pass_flag",
+      "reason": "preflight pass status missing or invalid",
+      "result": "REJECTED_AS_REQUIRED"
+    },
+    {
+      "name": "wrong_lambda",
+      "reason": "preflight lambda routing mismatch",
+      "result": "REJECTED_AS_REQUIRED"
+    },
+    {
+      "name": "missing_project_pin",
+      "reason": "source pins omit required runtime/consumer files: ['julia/CFDSDFWaterLilyT4/Project.toml']",
+      "result": "REJECTED_AS_REQUIRED"
+    },
+    {
+      "name": "determinism_u_gate_required",
+      "reason": "quick preflight determinism gate failed or absent",
+      "result": "REJECTED_AS_REQUIRED"
+    },
+    {
+      "name": "determinism_p_gate_required",
+      "reason": "quick preflight determinism gate failed or absent",
+      "result": "REJECTED_AS_REQUIRED"
+    }
+  ],
+  "kind": "grad00_amendment3_independent_source_review",
+  "limitations": [
+    "Software/source review only; registered-window boundedness/agreement and T4 behavior remain unmeasured.",
+    "No independent rerun of CPU solves; parent owns the current CPU matrix and full result-side pytest.",
+    "E is a whole-version descriptive comparison; F retains backend/runtime confounds and the observed Float64 pressure-tangent anomaly.",
+    "The shared 60 CPU hour E/F campaign cap is an operator budget; the wrapper enforces at most 60 hours per invocation."
+  ],
+  "protected_unchanged_count": 228,
+  "requirements_checked": {
+    "B1": "Authenticated ERROR without DONE is PREFLIGHT_BLOCKED for finite selected_plain and nonfinite selected_dual; other failures ARM_ERROR. Missing indices preserve declared arm and unknown observed-runtime fields; all primaries require terminal authenticated outputs, not direction-label completeness.",
+    "M1": "NEXT_STEP_ARMS includes quick_nobound, cds, vanLeer, vanLeer_safe; failed/NOT_RUN states cannot qualify.",
+    "frozen_semantics": "Reviewed differences preserve window, force signs, sampling, strict >1e30 gate, 100-step watchdog, 8x wall abort and error propagation. Exact unified-diff replay verified.",
+    "m1": "DISAGREE precedes NOT_EVALUABLE when one component disagrees.",
+    "m2_m3": "CPU E is project110/quick/Float32; CPU E/F and Float32 controls all use D0/D1 seven-run inventories. CUDA remains four-direction thirteen-run.",
+    "m4": "u/p tangent argmax reports are host-only. WaterLily.loc pressure-center or component-staggered positions use the flow affine map; ground distance uses z_plane=0. Outside-design candidate SDF is explicitly marked as the positive extension constant, not geometric distance. Signed represented-interface membership does not establish physical solid depth or a causal mechanism.",
+    "m5": "--check emits the D-prime condition with human decision flag and does not write. --write remains exclusive at campaign end.",
+    "n1": "Repeated quick self-comparison uses determinism_* fields. Separate retained CPU TA1 comparison remains the cross-script evidence."
+  },
+  "reviewed_sha256": {
+    "scripts/analyze_grad00.py": "da28523625ff3899645684b5919dd52f2789013d8568ecf2326bb714875aa474",
+    "scripts/build_grad00_kernels.py": "fff40ee0b881bbc4ecf005c033fd4ae902a5d85f6c4b95f0153d024dce2f933f",
+    "scripts/grad00_orchestration_selftest.jl": "beafbe29b3daac918ab1d8a6e029ac9b9561ae74fcea7f52d9014559d7f97c02",
+    "scripts/run_grad00_cpu.py": "6efe0958ae100f0d57c170b25bbf1726a71d53785302deefd0daa115a3f2dd33",
+    "scripts/waterlily_grad00_lambda_2026_11.diff": "f6b1c3115939900ccf5066afe28de418329cbb1be7e3be14afb29eced9665abc",
+    "scripts/waterlily_grad00_lambda_2026_11.jl": "bba320e88553bfa026afb715572166c936c763be81a537c601fe59300d15cdbe",
+    "tests/test_grad00.py": "8cb5099ecdf8aea91ac4a854309f62c6035ae96f7a4559b39e4c0ccd5f7d74b4",
+    "tests/test_grad00_cpu.py": "c820c7d6c26433878ccc6c07417b093da74f33979a44b5f5c2ecfab86ec3b5b7"
+  },
+  "reviewed_utc": "2026-11-07T09:02:51.634707+00:00",
+  "synthetic_probe_boundary": "Failure/campaign probes reuse deterministic fixture writers and substitute synthetic committed-pin lookup. The independent integrity audit separately checks real Git/current protected bytes, formal archive members, and raw identities. No solver steps or real GPU outputs were produced by this review.",
+  "verdict": "PASS_SOURCE_REVIEW"
+}

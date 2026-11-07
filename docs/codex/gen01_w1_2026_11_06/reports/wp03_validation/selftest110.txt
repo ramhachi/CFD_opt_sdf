@@ -1,0 +1,25 @@
+Precompiling packages...
+   1555.2 ms  ✓ Adapt
+   2721.3 ms  ✓ Preferences
+   3139.9 ms  ✓ PrecompileTools
+   4263.6 ms  ✓ JLLWrappers
+  11724.5 ms  ✓ NaNMath
+   9361.1 ms  ✓ OpenSpecFun_jll
+  19101.2 ms  ✓ IrrationalConstants
+   2728.0 ms  ✓ LogExpFunctions
+   9999.4 ms  ✓ SpecialFunctions
+   1990.3 ms  ✓ DiffRules
+  37183.5 ms  ✓ StaticArrays
+   2779.8 ms  ✓ Adapt → AdaptStaticArraysExt
+   2955.8 ms  ✓ ConstructionBase → ConstructionBaseStaticArraysExt
+  14419.7 ms  ✓ ForwardDiff
+   2795.0 ms  ✓ ForwardDiff → ForwardDiffStaticArraysExt
+  13309.5 ms  ✓ KernelAbstractions
+   3031.2 ms  ✓ KernelAbstractions → LinearAlgebraExt
+  11487.0 ms  ✓ WaterLily
+  18 dependencies successfully precompiled in 74 seconds. 25 already precompiled.
+Precompiling packages...
+  11546.0 ms  ✓ Test (serial)
+  1 dependency successfully precompiled in 12 seconds
+Test Summary:              | Pass  Total  Time
+GRAD-00 convection schemes |   34     34  1.4s

@@ -1,0 +1,100 @@
+{
+  "checks": {
+    "BLOCK_LIMIT": {
+      "byte_equal": true,
+      "sha256": "fc21b7cd5e819106f649fef764dd64dd2e550bc547a538295484d4f2f3986a8f"
+    },
+    "BURN_IN": {
+      "byte_equal": true,
+      "value": "const BURN_IN = 80.0"
+    },
+    "DIRECTIONS": {
+      "byte_equal": true,
+      "value": "const DIRECTIONS = (\"D0_interface_offset\", \"D1_filtered_seed11\", \"D2_filtered_seed2026\", \"P1_upstream_lobe\")"
+    },
+    "ORIGIN": {
+      "byte_equal": true,
+      "value": "const ORIGIN = (-1.0, -0.8, -0.6)"
+    },
+    "PREFLIGHT_STEPS": {
+      "byte_equal": true,
+      "value": "const PREFLIGHT_STEPS = 20"
+    },
+    "SAMPLE_EVERY": {
+      "byte_equal": true,
+      "value": "const SAMPLE_EVERY = 8"
+    },
+    "SERIES": {
+      "byte_equal": true,
+      "value": "const SERIES = (\"fx\", \"fy\", \"fz\", \"pfx\", \"pfy\", \"pfz\", \"vfx\", \"vfy\", \"vfz\")"
+    },
+    "SHAPE": {
+      "byte_equal": true,
+      "value": "const SHAPE = (121, 65, 49)"
+    },
+    "SPACING": {
+      "byte_equal": true,
+      "value": "const SPACING = 0.025"
+    },
+    "TRANSITION": {
+      "byte_equal": true,
+      "value": "const TRANSITION = Float32(1.1444091796875e-4)"
+    },
+    "T_END": {
+      "byte_equal": true,
+      "value": "const T_END = 120.0"
+    },
+    "WALL_FACTOR": {
+      "byte_equal": true,
+      "value": "const WALL_FACTOR = 8.0                # a Dual run longer than WALL_FACTOR x the plain run's total seconds aborts the whole kernel (plan C5, Amendment 2)"
+    },
+    "WATCH_EVERY": {
+      "byte_equal": true,
+      "value": "const WATCH_EVERY = 100"
+    },
+    "WATCH_HEADER": {
+      "byte_equal": true,
+      "value": "const WATCH_HEADER = [\"step\", \"t_u_l\", \"tan_max_u\", \"tan_argmax_u\", \"tan_max_p\", \"tan_argmax_p\", \"last_sample_step\", \"fx\", \"fx_tan\", \"fz\", \"fz_tan\", \"elapsed_s\", \"vram_bytes\"]"
+    },
+    "WINDOW_and_PREFLIGHT_ONLY": {
+      "byte_equal": true,
+      "sha256": "c64d7a3f8cc9c8559476f9fbd297c2edf2caf60e6f4373270f0ce832908ccfd8"
+    },
+    "diff_artifact": {
+      "generator": "Python difflib.unified_diff with stable labels and n=0",
+      "patch_reconstructs_job": true,
+      "regeneration_byte_equal": true,
+      "sha256": "f6b1c3115939900ccf5066afe28de418329cbb1be7e3be14afb29eced9665abc"
+    },
+    "history_header": {
+      "byte_equal": true,
+      "sha256": "81b55d181a5b7ec2a8ad0a681050718e84fa75a9638b376a729797246110b87d"
+    },
+    "load_raw": {
+      "byte_equal": true,
+      "sha256": "472352fd39fdf88c7bed42e4a39c76b1b3744e8bb028437d98fceef965d70f4f"
+    },
+    "sample_row": {
+      "byte_equal": true,
+      "sha256": "ee875eba502afde6e27d1cbef65c74d45107dfa2f729475e0b843d6480c8fb4c"
+    },
+    "summarize": {
+      "byte_equal": true,
+      "sha256": "dd9b20061e3384f8328d59edad778642b8ccffef4cd545615a03fa2d33a22363"
+    },
+    "tangent_max": {
+      "byte_equal": true,
+      "sha256": "4511a3446315cdd3e5f655ae1b2df06462ddde887051377b6c2dfc3f92296e48"
+    },
+    "window_mean": {
+      "byte_equal": true,
+      "sha256": "7cc274e440e94b1eedf66519224c0fc3c8c1dd1944a1d1ef27392ccf3ce74c35"
+    }
+  },
+  "evidence_class": "software_source_comparison",
+  "scope": "Frozen helper/constants/window bytes unchanged; no measured scientific labels",
+  "source_sha256": {
+    "scripts/waterlily_grad00_lambda_2026_11.jl": "bba320e88553bfa026afb715572166c936c763be81a537c601fe59300d15cdbe",
+    "scripts/waterlily_grad_ta1_2026_10_15.jl": "3fe08e42054cef3821a01240d5a7d5beb1c781b0939e7f8d974b03527faa1b15"
+  }
+}

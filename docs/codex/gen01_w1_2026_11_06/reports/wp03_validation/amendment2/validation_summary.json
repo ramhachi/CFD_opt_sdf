@@ -1,0 +1,29 @@
+{
+  "all_original_four_cpu_preflights_passed": false,
+  "amendment_2_implementation": "COMPLETE",
+  "analysis_json_written": false,
+  "base_failure_set_comparison": "host pending",
+  "base_rerun": false,
+  "commit_or_push_performed": false,
+  "cpu_preflights_failed": [
+    "1.8.0/vanLeer/Float32"
+  ],
+  "cpu_preflights_passed": 7,
+  "evidence_class": "software_and_short_cpu_validation_only",
+  "failed_nodes": [],
+  "focused_python_tests": 175,
+  "full_pytest_capped": false,
+  "full_pytest_completed": true,
+  "full_pytest_passed": 3657,
+  "full_pytest_skipped": 74,
+  "generated_infra_modified": false,
+  "head": "0b2261845a5d761e8db34c1ee7b29e520888d11f",
+  "instantiate110_passed": true,
+  "kaggle_or_gpu_execution": false,
+  "protected_files_unchanged": true,
+  "quick_plain_and_dual_value_bit_equal_to_frozen_ta1": true,
+  "registered_window_measurement_performed": false,
+  "vanLeer_safe_dual_finite": true,
+  "vanLeer_safe_plain_bit_equal_to_vanLeer": true,
+  "work_package_status": "PARTIAL"
+}
