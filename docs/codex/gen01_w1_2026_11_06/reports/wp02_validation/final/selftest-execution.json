@@ -1,0 +1,11 @@
+{
+  "command": [
+    "julia",
+    "--project=julia/CFDSDFWaterLily",
+    "-O0",
+    "scripts/force00_selftest.jl"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds_including_jit": 29.4710177090019,
+  "evidence_class": "CPU analytic software fixtures only"
+}

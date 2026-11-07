@@ -1,0 +1,61 @@
+{
+  "schema": "force00_lossless_log_archive_v1",
+  "files": [
+    {
+      "raw_file": "compileall.log",
+      "raw_bytes": 318,
+      "raw_sha256": "9f0347b0711881fdecfb2235e01da14a344f5b661de408466e9c7184c91fbf73",
+      "gzip_file": "compileall.log.gz",
+      "gzip_bytes": 140,
+      "gzip_sha256": "f6b3dd1e2c814d82bff2370c63d1f19b6bb5e54c16f621e60833984646194ab4"
+    },
+    {
+      "raw_file": "job-regression.log",
+      "raw_bytes": 8946,
+      "raw_sha256": "6e4791c9729cce04b749a004252942bb94a756c063116f95eb67ea9b9f49bc6a",
+      "gzip_file": "job-regression.log.gz",
+      "gzip_bytes": 2200,
+      "gzip_sha256": "88e7df8797ddcee88f645fb309fdeb2836466e8a99562d20de4be74fee7b1ec4"
+    },
+    {
+      "raw_file": "selftest.log",
+      "raw_bytes": 535,
+      "raw_sha256": "56f809e5386b0d50d313f9b9f77d0534c560c68d6e969c7dc6e7dcce30d17890",
+      "gzip_file": "selftest.log.gz",
+      "gzip_bytes": 266,
+      "gzip_sha256": "13d522877cfd43a1b1314fd4d53118e33917d3d299cfb852a5a3530913945159"
+    },
+    {
+      "raw_file": "uniform-a.log",
+      "raw_bytes": 300,
+      "raw_sha256": "e9c04744cfe15d8f865f8c0980accee0df424050bea04f23b69496a015b7c882",
+      "gzip_file": "uniform-a.log.gz",
+      "gzip_bytes": 162,
+      "gzip_sha256": "229b3a1a14370632bd024ee62356d6ea554421059f1693106194447b4c78c82d"
+    },
+    {
+      "raw_file": "uniform-b.log",
+      "raw_bytes": 300,
+      "raw_sha256": "e9c04744cfe15d8f865f8c0980accee0df424050bea04f23b69496a015b7c882",
+      "gzip_file": "uniform-b.log.gz",
+      "gzip_bytes": 162,
+      "gzip_sha256": "229b3a1a14370632bd024ee62356d6ea554421059f1693106194447b4c78c82d"
+    },
+    {
+      "raw_file": "full-pytest.log",
+      "raw_bytes": 7271,
+      "raw_sha256": "1ae436e5e64d9202927ddea779f07cfada2b2c1ef2e8fff055e45c34db8371c6",
+      "gzip_file": "full-pytest.log.gz",
+      "gzip_bytes": 1391,
+      "gzip_sha256": "805ecb72a19703888ce417dc876c938f1c65df86cb1ce61dac57ea83b5034c0d"
+    },
+    {
+      "raw_file": "full-pytest.junit.xml",
+      "raw_bytes": 516691,
+      "raw_sha256": "260c0c7845c35b11e5ff23d2e016faf051f758f8a65cd241f6c7ea82343a592f",
+      "gzip_file": "full-pytest.junit.xml.gz",
+      "gzip_bytes": 74875,
+      "gzip_sha256": "0f92134ce6cdd91c3e6b86d69f821e08a4507cab02c4ff1fb29615b4bc93ad97"
+    }
+  ]
+}

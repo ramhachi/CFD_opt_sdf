@@ -1,0 +1,25 @@
+{
+  "base": {
+    "commit": "e3dcdf61",
+    "failed": 0,
+    "failure_nodes": [],
+    "passed": 3482,
+    "skipped": 74,
+    "source": "user-provided completed Claude host execution, Amendment2/3"
+  },
+  "base_provenance": "Owner-provided completed host run; no base checkout or rerun here",
+  "feature": {
+    "elapsed_seconds": 1149.4136249999283,
+    "errors": 0,
+    "exit_code": 0,
+    "failed": 0,
+    "failure_nodes": [],
+    "passed": 3580,
+    "skipped": 74
+  },
+  "final_test_body_coverage": "One existing decoy-test assertion was added after suite launch; final focused100 passes. Implementation source unchanged after suite launch.",
+  "ignore": "tests/test_lbm_metal.py per Amendment3",
+  "same_failure_node_set": true,
+  "schema": "force00_amendment3_full_suite_comparison_v1",
+  "venv": "Original shared .venv; no substitution or installation"
+}

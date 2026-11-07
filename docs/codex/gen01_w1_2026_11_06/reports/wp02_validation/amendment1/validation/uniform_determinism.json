@@ -1,0 +1,25 @@
+{
+  "byte_identical": true,
+  "bytes": 72961,
+  "commands": [
+    "julia --project=julia/CFDSDFWaterLily -O1 scripts/force00_uniform_pressure.jl docs/evidence/force00_2026_11/amendment1/uniform_pressure.json",
+    "julia --project=julia/CFDSDFWaterLily -O1 scripts/force00_uniform_pressure.jl /private/tmp/force00-amend1-uniform2.json"
+  ],
+  "evidence_class": "CPU geometry closure; no flow solution",
+  "placement_count": 104,
+  "schema": "force00_uniform_determinism_v1",
+  "sha256_run1": "eb960d73010f8ce75259516b346cb1da1e221bdeea89b5350437093dddb7256a",
+  "sha256_run2": "eb960d73010f8ce75259516b346cb1da1e221bdeea89b5350437093dddb7256a",
+  "timings": [
+    {
+      "real": 169.84,
+      "sys": 2.69,
+      "user": 79.71
+    },
+    {
+      "real": 175.68,
+      "sys": 3.84,
+      "user": 84.55
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "schema": "force00_amendment2_source_review_v1",
+  "evidence_class": "independent native-agent source review plus root file validation; no GPU measurements",
+  "scope": "Amendment 2 continuation at HEAD 21d1e8e7",
+  "opencode": {
+    "mcp_available": false,
+    "cli_default_error": "FileSystem.open (/Users/sota/.local/share/opencode/log/opencode.log)",
+    "isolated_xdg_catalog_error": "Provider not found: opencode-go",
+    "go_worker_invoked": false,
+    "paid_direct_api_used": false,
+    "fallback": "native read-only reviewers",
+    "routing_attempts": [
+      {
+        "requested_model": "opencode-go model catalog (logical cheap/coding/reviewer roles)",
+        "actual_model": null,
+        "reason": "CLI protected log directory; catalog did not run",
+        "attempt_number": 1
+      },
+      {
+        "requested_model": "opencode-go model catalog (isolated XDG)",
+        "actual_model": "native Codex inherited reviewers after catalog failure",
+        "reason": "provider_not_found; no Go task call made",
+        "attempt_number": 2
+      }
+    ]
+  },
+  "reviews": [
+    {
+      "role": "gate_review",
+      "result": "No actionable defects found",
+      "checks": [
+        "all C1-C5 and adoption cases",
+        "12 actual F1/F2 reference CSV/summary hashes",
+        "absent exact UNC camber sigma remains INCOMPLETE",
+        "explicit evidence-root loading and three negative CPU reports non-discovery cases",
+        "gen01 source provenance"
+      ],
+      "validation": {
+        "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -B -m pytest -q tests/test_force00_gate.py tests/test_force00_uniform_inputs.py -p no:cacheprovider",
+        "passed": 46,
+        "elapsed_seconds": 10.19
+      }
+    },
+    {
+      "role": "numerics_review",
+      "result": "No numerical/source blocker found",
+      "checks": [
+        "stored mu0 operands promoted before subtraction",
+        "outward reaction and body-force signs",
+        "staggered face coordinates and u/p/S interpolation",
+        "previous completed-step storage dt",
+        "scratch restoration and no host scalar indexing in device kernels",
+        "W2a analytic sphere scope",
+        "literal production CSV/sampling preservation"
+      ],
+      "limitations": [
+        "GPU compilation/execution not tested",
+        "parent CV offset unknown until F1-F3"
+      ]
+    },
+    {
+      "role": "authority_review",
+      "result": "gen01 avoids historical src directory pins and commit-at-HEAD inventories",
+      "checks": [
+        "full phase_plan 7782 lines",
+        "campaign_build.BASE_PINS directory membership and recursive include closure",
+        "LOWDIM03/GRID02 inventories and W2a whole-file SHA pins",
+        "tests/conftest has no FORCE00/gen01 exception",
+        "src diff from e3dcdf61 empty"
+      ],
+      "future_requirement": "Pin gen01/Force00.jl explicitly in each future FORCE-00 campaign freeze"
+    }
+  ],
+  "documents_read_in_full_by_team": [
+    "docs/codex/gen01_w1_2026_11_06/00_README.md",
+    "AGENTS.md",
+    "docs/opencode_handoff_2026_09.md",
+    "docs/README.md",
+    "docs/phase_plan.md",
+    "docs/problem_register_2026_09.md",
+    "docs/problem_resolution_plan_2026_09.md",
+    "docs/STATE.md",
+    "docs/git_branching_strategy.md",
+    "docs/gen_system_plan_2026_11_01.md",
+    "docs/force00_force_readout_gate_2026_11_01.md",
+    "docs/evidence/gen01_plan_2026_11_01/research/facts_for_w1_drafts.md"
+  ],
+  "root_verification": [
+    "reviewed final new source and entrypoint paths",
+    "checked actual src/Forces/module/Project/Manifest/registered job/conftest bytes against e3dcdf61",
+    "ran CPU Julia and Python acceptance commands, results recorded separately"
+  ],
+  "publication": "Claude host owns commit/push/PR #84; no Git publication attempted in this continuation"
+}

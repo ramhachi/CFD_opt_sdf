@@ -1,0 +1,177 @@
+{
+  "schema": "force00_cpu_closure_check_v1",
+  "uniform_source_provenance_valid": true,
+  "maximum_nds_norm": 9.098302021585842e-13,
+  "acceptance_limit": 1e-12,
+  "pass": true,
+  "C2": {
+    "R_cur": {
+      "status": "FAIL_CLOSURE",
+      "groups": {
+        "U1/flow_24": {
+          "count": 40,
+          "max_norm": 20.032020200933726,
+          "rms_norm": 12.982502160786142,
+          "max_relative_to_projected_area": 0.02086405667855183,
+          "relative_threshold": 0.0001,
+          "reduction_factor_vs_cur": 1.0,
+          "hundredfold_reduction_descriptive": false,
+          "pass": false
+        },
+        "U1/flow_32": {
+          "count": 40,
+          "max_norm": 33.52205717381142,
+          "rms_norm": 23.093060121110156,
+          "max_relative_to_projected_area": 0.01963935378385821,
+          "relative_threshold": 0.0001,
+          "reduction_factor_vs_cur": 1.0,
+          "hundredfold_reduction_descriptive": false,
+          "pass": false
+        },
+        "U2/8": {
+          "count": 8,
+          "max_norm": 0.23750021698444648,
+          "rms_norm": 0.20498709074600302,
+          "max_relative_to_projected_area": 0.0011812291724522617,
+          "relative_threshold": 0.001,
+          "reduction_factor_vs_cur": 1.0,
+          "hundredfold_reduction_descriptive": false,
+          "pass": false
+        },
+        "U2/16": {
+          "count": 8,
+          "max_norm": 0.938702754658205,
+          "rms_norm": 0.892755356430639,
+          "max_relative_to_projected_area": 0.0011671811210768126,
+          "relative_threshold": 0.001,
+          "reduction_factor_vs_cur": 1.0,
+          "hundredfold_reduction_descriptive": false,
+          "pass": false
+        },
+        "U2/32": {
+          "count": 8,
+          "max_norm": 0.447844477824882,
+          "rms_norm": 0.33707141539549773,
+          "max_relative_to_projected_area": 0.00013921223121530991,
+          "relative_threshold": 0.001,
+          "reduction_factor_vs_cur": 1.0,
+          "hundredfold_reduction_descriptive": false,
+          "pass": true
+        }
+      }
+    },
+    "R_nds": {
+      "status": "PASS",
+      "groups": {
+        "U1/flow_24": {
+          "count": 40,
+          "max_norm": 1.1608925366079802e-13,
+          "rms_norm": 4.711629669390523e-14,
+          "max_relative_to_projected_area": 1.2091105858792878e-16,
+          "relative_threshold": 0.0001,
+          "reduction_factor_vs_cur": 172557059066512.9,
+          "hundredfold_reduction_descriptive": true,
+          "pass": true
+        },
+        "U1/flow_32": {
+          "count": 40,
+          "max_norm": 1.8392412655928278e-13,
+          "rms_norm": 9.424932044270335e-14,
+          "max_relative_to_projected_area": 1.0775445469100873e-16,
+          "relative_threshold": 0.0001,
+          "reduction_factor_vs_cur": 182260249380640.78,
+          "hundredfold_reduction_descriptive": true,
+          "pass": true
+        },
+        "U2/8": {
+          "count": 8,
+          "max_norm": 5.867455159979668e-14,
+          "rms_norm": 4.51541929732456e-14,
+          "max_relative_to_projected_area": 2.918232787752537e-16,
+          "relative_threshold": 0.001,
+          "reduction_factor_vs_cur": 4047755125669.669,
+          "hundredfold_reduction_descriptive": true,
+          "pass": true
+        },
+        "U2/16": {
+          "count": 8,
+          "max_norm": 1.5583775705348016e-13,
+          "rms_norm": 1.1364158360279093e-13,
+          "max_relative_to_projected_area": 1.9376835433918161e-16,
+          "relative_threshold": 0.001,
+          "reduction_factor_vs_cur": 6023589997744.016,
+          "hundredfold_reduction_descriptive": true,
+          "pass": true
+        },
+        "U2/32": {
+          "count": 8,
+          "max_norm": 9.098302021585842e-13,
+          "rms_norm": 4.368173649956146e-13,
+          "max_relative_to_projected_area": 2.8282026181218185e-16,
+          "relative_threshold": 0.001,
+          "reduction_factor_vs_cur": 492228634268.6416,
+          "hundredfold_reduction_descriptive": true,
+          "pass": true
+        }
+      }
+    },
+    "R_cv": {
+      "status": "PASS",
+      "groups": {
+        "U1/flow_24": {
+          "count": 40,
+          "max_norm": 0.0,
+          "rms_norm": 0.0,
+          "max_relative_to_projected_area": 0.0,
+          "relative_threshold": 0.0001,
+          "reduction_factor_vs_cur": null,
+          "hundredfold_reduction_descriptive": true,
+          "pass": true
+        },
+        "U1/flow_32": {
+          "count": 40,
+          "max_norm": 0.0,
+          "rms_norm": 0.0,
+          "max_relative_to_projected_area": 0.0,
+          "relative_threshold": 0.0001,
+          "reduction_factor_vs_cur": null,
+          "hundredfold_reduction_descriptive": true,
+          "pass": true
+        },
+        "U2/8": {
+          "count": 8,
+          "max_norm": 0.0,
+          "rms_norm": 0.0,
+          "max_relative_to_projected_area": 0.0,
+          "relative_threshold": 0.001,
+          "reduction_factor_vs_cur": null,
+          "hundredfold_reduction_descriptive": true,
+          "pass": true
+        },
+        "U2/16": {
+          "count": 8,
+          "max_norm": 0.0,
+          "rms_norm": 0.0,
+          "max_relative_to_projected_area": 0.0,
+          "relative_threshold": 0.001,
+          "reduction_factor_vs_cur": null,
+          "hundredfold_reduction_descriptive": true,
+          "pass": true
+        },
+        "U2/32": {
+          "count": 8,
+          "max_norm": 0.0,
+          "rms_norm": 0.0,
+          "max_relative_to_projected_area": 0.0,
+          "relative_threshold": 0.001,
+          "reduction_factor_vs_cur": null,
+          "hundredfold_reduction_descriptive": true,
+          "pass": true
+        }
+      }
+    }
+  },
+  "missing": [],
+  "sigma_d_n_as_registered": null,
+  "sigma_d_provenance": "UNC-01 analysis.json grids.flow_32.differences has no v18__camber_m19.7; no mode transfer permitted"
+}

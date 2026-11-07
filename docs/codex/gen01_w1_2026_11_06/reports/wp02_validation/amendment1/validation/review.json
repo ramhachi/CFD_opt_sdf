@@ -1,0 +1,89 @@
+{
+  "actual_gate_written": false,
+  "evidence_class": "Independent static source review; CPU execution receipts recorded separately",
+  "findings": [
+    {
+      "basis": "Outward stored-mu0 forward difference; Float64 conversion before subtraction; domain BC jumps omitted from body integration.",
+      "check": "stored moment orientation and precision",
+      "result": "PASS_STATIC"
+    },
+    {
+      "basis": "Staggered face interpolation of u/p; adjacent WaterLily.S average; negative advective/pressure/storage and positive viscous traction in body-force convention; completed dt[end-1].",
+      "check": "control volume formula and indexing",
+      "result": "PASS_STATIC"
+    },
+    {
+      "basis": "2D/3D off-grid Float32/64 closure, affine momentum terms, nonzero quadratic viscous term, pressure gauge, legacy bytes, scratch restore, subsequent step and candidate/ground checks.",
+      "check": "CPU analytic and observational test coverage",
+      "result": "ADEQUATE"
+    },
+    {
+      "basis": "Backend allocations, @loop kernels and backend reductions. No GPU kernel compilation or execution.",
+      "check": "GPU-compatible source structure",
+      "result": "STATIC_ONLY"
+    },
+    {
+      "basis": "Forces and existing module match e3dcdf61 exactly; explicit Base.include uses new Force00 source; relocated numerical suffix byte-identical to first attempt.",
+      "check": "whole-file source pins",
+      "result": "PASS"
+    },
+    {
+      "basis": "32 SHA-verified FID V1 shifts plus next four mirror pairs from existing generator; W2a analytic sphere radius and v18 loader retained.",
+      "check": "uniform placement and fixture provenance",
+      "result": "PASS_STATIC"
+    },
+    {
+      "basis": "Original 13 columns and expressions retained; new sampling and box fields only; short CPU regression executes original source ASTs with documented test substitutions.",
+      "check": "job copy and regression design",
+      "result": "PASS_STATIC"
+    },
+    {
+      "basis": "Previously retained multiples of8 accepted a dropped row; require full sequence, final step/sample count/time agreement. Eight mutation tests failed before fix and pass after fix.",
+      "check": "F3 missing intermediate cadence sample",
+      "result": "FIXED"
+    },
+    {
+      "basis": "Actual 12 legacy reference CSV hashes and all20 identities resolve.15 percent C4 with10 percent diagnostic; missing exact UNC camber sigma -> INCOMPLETE/NONE; C5 numeric comparison remains descriptive.",
+      "check": "C1-C5 and adoption",
+      "result": "PASS_STATIC"
+    }
+  ],
+  "gpu_executed": false,
+  "limitations": [
+    "CPU fixtures and source-path regression do not qualify parent target physics.",
+    "GPU kernel compilation, F1/F2 T4 byte regression and F1/F3 real force statistics are unverified.",
+    "Issue293 built-in/control-volume7-9percent gap on this parent is unknown until user GPU runs.",
+    "Face clearance is sampled SDF validation, not a continuum distance certificate.",
+    "Static-parent momentum balance does not qualify arbitrary moving-body corrections."
+  ],
+  "review_roles": [
+    "authority full-document review",
+    "numerical and post-relocation byte review",
+    "gate criterion and fail-closed review"
+  ],
+  "schema": "force00_amendment1_independent_review_v1",
+  "source_sha256": {
+    "julia/CFDSDFWaterLily/src/CFDSDFWaterLily.jl": "996224432490df72726e208ad36d1a68657b506ba4058d79a0f9eb72154d4e9e",
+    "julia/CFDSDFWaterLily/src/Force00.jl": "84c58a6f029d2dd9705d95020151cec564c7141414cdcb2b3d06283fdf275927",
+    "julia/CFDSDFWaterLily/src/Forces.jl": "0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e",
+    "scripts/force00_gate.py": "dd23b5a355cf44dd507ab9a5e8ad26d9b6f501e3d29f31b8f231d35cace75d48",
+    "scripts/force00_job_regression.jl": "47f1f417e12ffbd6e0d126c0a1054d921ccc5fb612f1ed0b6b869cf57cece2b6",
+    "scripts/force00_selftest.jl": "c0c9b9ac8a841dfd49a2de71a2f05fa645ef38037cd59713debc4f57e36f70a1",
+    "scripts/force00_uniform_inputs.py": "6d6207c6f97f4b625cb37a4145f5ced92d5e9f02f2f0e1b2175422f30d6f9acf",
+    "scripts/force00_uniform_pressure.jl": "0c6a4a1240d3972c83614782ce321e8aebcb8f278e10ba458ce35e2409b58a59",
+    "scripts/waterlily_force00_dispatch.jl": "f983db0a876038068684687005dccd34b2757eae111d1dacffa4cf12ffc76383",
+    "scripts/waterlily_force00_job.diff": "93e9ab7a8ddfd3a18fe509077c7b8e00a75efed99ac4377ce6aa6a141a8a7b72",
+    "scripts/waterlily_force00_job.jl": "a308cc5317daf2a88b1fdb88f99ad0a4b23f934f6e860805aaeff231348b989d",
+    "tests/test_force00_gate.py": "9d7a7015b02dfd99b00573595e918c3c0fbefb477a735ce693e6c19fc80d8fbd",
+    "tests/test_force00_uniform_inputs.py": "7c50860e22d5c974cdfb575fd00e902e85ae9affab74d7a1c0612bca0b858a17"
+  },
+  "status": "NO_BLOCKING_SOURCE_FINDINGS",
+  "tdd": {
+    "green_command": ".venv/bin/python -m pytest -q tests/test_force00_gate.py",
+    "green_result": "41passed in29.93s",
+    "red_command": ".venv/bin/python -m pytest -q tests/test_force00_gate.py -k 'f3_history_cadence_and_summary_fail_closed or final_solver_step_can_be_sampled_off_cadence or registered_reference_catalog'",
+    "red_evidence": "Delivered by independent gate worker before implementation fix",
+    "red_result": "8 expected failures,2passed,31deselected in6.71s",
+    "root_verification": ".venv/bin/python -m pytest -q tests/test_force00_gate.py tests/test_force00_uniform_inputs.py:43passed in25.86s; raw log archived separately"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "command": [
+    "julia",
+    "--project=julia/CFDSDFWaterLily",
+    "scripts/force00_selftest.jl"
+  ],
+  "evidence_class": "CPU development validation; no GPU measurement",
+  "exit_code": 0,
+  "wall_seconds_including_process_start_and_jit": 58.15910124999937
+}

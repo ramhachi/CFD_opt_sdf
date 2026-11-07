@@ -1,0 +1,16 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "--ignore=tests/test_lbm_metal.py",
+    "-q",
+    "-rf",
+    "-p",
+    "no:cacheprovider",
+    "--junitxml=docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/amendment3/full-pytest.junit.xml"
+  ],
+  "evidence_class": "CPU development validation; no GPU measurement",
+  "exit_code": 0,
+  "wall_seconds_including_process_start_and_jit": 1149.4136249999283
+}
