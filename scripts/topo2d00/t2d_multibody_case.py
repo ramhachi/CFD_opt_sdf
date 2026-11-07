@@ -20,6 +20,46 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import t20_case as T
 
 FAMILIES = ('fine30', 'med30')
+STUDY_CONFIGS = {f'E{i}{suffix}' for i in (1, 2, 3) for suffix in ('', '_sharp')}
+# TOPO-2D-00 Amendment 1 §1; density is validated, never repaired in WP5.
+MAX_TURN_DEG = 5.0
+
+
+def _density(p, kind, cap_start, family, name):
+    edges = np.diff(p, axis=0)
+    lengths = np.linalg.norm(edges, axis=1)
+    ds = T.MESHES[family]['ds']
+    j = int(np.argmax(lengths))
+    if lengths[j] > ds + 1e-12:
+        raise ValueError(f'{name}: segment {j} length {lengths[j]:.9g} m exceeds {family} ds={ds:g} m (including cap segments)')
+    previous = np.roll(edges, 1, axis=0)
+    turns = np.degrees(np.arccos(np.clip((previous * edges).sum(1) /
+                       (np.roll(lengths, 1) * lengths), -1, 1)))
+    # A sharp cusp's TE or the two finite-cap endpoint corners are intentional.
+    turns[0] = 0
+    if kind == 'blunt':
+        turns[cap_start] = 0
+    j = int(np.argmax(turns))
+    if turns[j] > MAX_TURN_DEG + 1e-10:
+        raise ValueError(f'{name}: non-cap vertex {j} turn {turns[j]:.9g} deg exceeds {MAX_TURN_DEG:g} deg; require WP4 smooth resampling')
+    return {'family': family, 'max_segment_m': float(lengths.max()),
+            'max_noncap_turn_deg': float(turns.max()), 'limit_turn_deg': MAX_TURN_DEG, 'limit_segment_m': ds}
+
+
+def _cap(p, start):
+    """Validate supplied straight cap vertices; no insertion/interpolation."""
+    if type(start) is not int or not 0 < start < len(p) - 1:
+        raise ValueError('blunt cap_start_index must identify the second TE endpoint')
+    v = p[0] - p[start]
+    length = np.linalg.norm(v)
+    if length <= 1e-12:
+        raise ValueError('finite trailing-edge cap is missing')
+    r = p[start:] - p[start]
+    t = r @ v / length**2
+    if (np.linalg.norm(r - t[:, None] * v, axis=1).max() > 1e-12 or
+            np.any(np.diff(t) <= 0) or t[0] != 0 or abs(t[-1] - 1) > 1e-12):
+        raise ValueError('cap_start_index must bound a straight, ordered finite closing cap')
+    return start
 
 
 def _distance(a, b):
@@ -75,12 +115,17 @@ def _wp4_scene(scene: dict) -> tuple[dict, dict]:
             raise ValueError('WP4 paired surfaces must be finite matching N x 2 arrays, N>=4')
         if not np.array_equal(lower[0], upper[0]):
             raise ValueError('WP4 surfaces must share their leading edge')
-        expected = np.vstack((lower[::-1], upper[1:], lower[-1:]))
-        if not np.array_equal(polygon, expected):
+        prefix = np.vstack((lower[::-1], upper[1:]))
+        # WP4 may supply extra straight cap points to meet the all-segment ds
+        # guard. The exact supplied vertices, including those points, are kept.
+        if (polygon.ndim != 2 or polygon.shape[1] != 2 or len(polygon) <= len(prefix) or
+                not np.array_equal(polygon[:len(prefix)], prefix) or not np.array_equal(polygon[-1], lower[-1])):
             raise ValueError('WP4 polygon/surface identity mismatch')
         if np.linalg.norm(lower[-1] - upper[-1]) <= 1e-9:
             raise ValueError('WP4 finite trailing-edge cap is missing')
+        _cap(polygon, len(prefix) - 1)
         converted.append({'name': element['name'], 'points_m': (polygon * .001).tolist(), 'te_kind': 'blunt',
+                          'cap_start_index': len(prefix) - 1,
                           'source_element_metadata': {k: v for k, v in element.items() if k not in ('polygon_mm', 'suction_mm', 'pressure_mm')}})
     nominal = float(scene['height_mm']) * .001
     main_clearance = float(np.asarray(converted[0]['points_m'])[:, 1].min())
@@ -92,13 +137,15 @@ def _wp4_scene(scene: dict) -> tuple[dict, dict]:
             'height_datum': 'WP4 height_mm: main-element minimum of exported current contour above ground'}, metadata
 
 
-def load_geometry(source: Path | str | dict) -> dict:
+def load_geometry(source: Path | str | dict, family='fine30') -> dict:
     """Read strict JSON or NPZ(metadata_json + points_key arrays), validate, hash.
 
     JSON keys: config, elements[{name, points_m, te_kind:sharp|blunt}].
     First point is the TE; for blunt bodies the closing edge is the finite cap.
     All forces use the common T2-0 main chord, never each body's own chord.
     """
+    if family not in FAMILIES:
+        raise ValueError(f'family must be one of {FAMILIES}')
     if isinstance(source, dict):
         spec = source
         raw = json.dumps(source, sort_keys=True, separators=(',', ':'), allow_nan=True).encode()
@@ -161,6 +208,10 @@ def load_geometry(source: Path | str | dict) -> dict:
             raise ValueError('points_m must be finite N x 2, N>=4')
         if not np.array_equal(p[0], p[-1]) or np.any(np.linalg.norm(np.diff(p, axis=0), axis=1) <= 1e-12):
             raise ValueError('contour must be explicitly closed without repeated adjacent points')
+        cap_start = _cap(p, e.get('cap_start_index', len(p) - 2)) if e['te_kind'] == 'blunt' else None
+        if e['te_kind'] == 'sharp' and e.get('cap_start_index') is not None:
+            raise ValueError('sharp cusp has no finite cap_start_index')
+        density = _density(p, e['te_kind'], cap_start, family, e['name'])
         if np.any(p[:, 0] <= -T.UP * T.CHORD) or np.any(p[:, 0] >= T.DOWN * T.CHORD) or np.any(p[:, 1] <= 0) or np.any(p[:, 1] >= T.TOP * T.CHORD):
             raise ValueError('contours must lie strictly above ground and inside T2-0 domain')
         x = _crossings(p, p)
@@ -175,11 +226,12 @@ def load_geometry(source: Path | str | dict) -> dict:
             if _crossings(p, q).any() or _inside(p[0], q) or _inside(q[0], p):
                 raise ValueError('element contours overlap or touch')
         ile = int(np.argmin(p[:-1, 0]))
-        last = len(p) - 2 if e['te_kind'] == 'blunt' else len(p) - 1
+        last = cap_start if e['te_kind'] == 'blunt' else len(p) - 1
         if not 0 < ile < last:
             raise ValueError('contour starts at trailing edge and traverses both sides via leading edge')
         out.append({**({'source_element_metadata': e['source_element_metadata']} if 'source_element_metadata' in e else {}),
                     'name': e['name'], 'te_kind': e['te_kind'], 'points_m': p.tolist(),
+                    'cap_start_index': cap_start, 'density': density,
                     'patch': 'airfoil' if i == 0 else f'airfoil_{i + 1}', 'leading_edge_index': ile})
     h = min(np.asarray(e['points_m'])[:, 1].min() for e in out)
     if 'ride_height_m' in spec and not math.isclose(float(spec['ride_height_m']), h, abs_tol=1e-9, rel_tol=0):
@@ -191,7 +243,62 @@ def load_geometry(source: Path | str | dict) -> dict:
             **({'source_scene_metadata': source_metadata} if source_metadata is not None else {})}
 
 
-def build_mesh(geometry: dict, family: str, out_msh: Path, verbose=False) -> dict:
+def minimum_gap(geometry):
+    polygons = [np.asarray(e['points_m']) for e in geometry['elements']]
+    return min([geometry['ride_height_m']] + [_distance(a, b) for i, a in enumerate(polygons) for b in polygons[i + 1:]])
+
+
+def boundary_layer_plan(geometries: dict, require_complete=True) -> dict:
+    """Compute the study-wide stack ONCE, before rendering/generating cases.
+
+    TOPO-2D-00 Amendment 1 §3: include all six thick/sharp geometries, even
+    E3_sharp (a geometry member, not an extra production force run).
+    """
+    if not geometries or require_complete and set(geometries) != STUDY_CONFIGS:
+        raise ValueError(f'boundary-layer plan requires all six configurations: {sorted(STUDY_CONFIGS)}')
+    loaded = {c: load_geometry(p) for c, p in geometries.items()}
+    if any(c != g['config'] for c, g in loaded.items()):
+        raise ValueError('boundary-layer plan config/geometry mismatch')
+    gaps = {c: minimum_gap(g) for c, g in loaded.items()}
+    gap = min(gaps.values())
+    families = {}
+    for family in FAMILIES:
+        mesh = T.MESHES[family]
+        nspec, nlayer, bl = T.layers(mesh['ds'], mesh['y1'], mesh['g'], gap)
+        # t20_case.layers caps EACH wall stack at 0.4*gap (lines 92–99).
+        if not math.isfinite(gap) or bl > .4 * gap:
+            raise ValueError(f'{family}: study minimum gap too small for unchanged T2-0 boundary layers')
+        families[family] = {'mesh_spec': mesh, 'n_layers_spec': nspec, 'n_layers': nlayer, 'bl_thickness_m': bl}
+    return {'schema': 'topo2d00-boundary-layers-v1',
+            'scope': 'study' if set(loaded) == STUDY_CONFIGS else 'development',
+            'geometry_sha256': {c: g['geometry_sha256'] for c, g in loaded.items()},
+            'minimum_gap_by_config_m': gaps, 'minimum_gap_m': gap, 'families': families,
+            'rule_source': 'TOPO-2D-00 Amendment 1 §3; scripts/t20_case.py:layers'}
+
+
+def plan_sha256(plan):
+    return hashlib.sha256(json.dumps(plan, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()).hexdigest()
+
+
+def boundary_layer_settings(plan, geometry, family):
+    """Read the fixed plan; never re-clip the layer count to this case's gap."""
+    if plan.get('schema') != 'topo2d00-boundary-layers-v1' or plan.get('geometry_sha256', {}).get(geometry['config']) != geometry['geometry_sha256']:
+        raise ValueError('boundary-layer plan schema/geometry SHA mismatch')
+    settings = plan.get('families', {}).get(family, {})
+    mesh = T.MESHES[family]
+    n = settings.get('n_layers')
+    if settings.get('mesh_spec') != mesh or type(n) is not int or not 3 <= n <= settings.get('n_layers_spec', 0):
+        raise ValueError('boundary-layer plan family/spec/layer count mismatch')
+    thickness = mesh['y1'] * (mesh['g']**n - 1) / (mesh['g'] - 1)
+    gap = plan.get('minimum_gap_m', 0)
+    if (not math.isfinite(gap) or gap <= 0 or
+            not math.isclose(settings.get('bl_thickness_m', 0), thickness, abs_tol=1e-12, rel_tol=0) or
+            thickness > .4 * gap or minimum_gap(geometry) < gap - 1e-12):
+        raise ValueError('boundary-layer plan gap/thickness mismatch')
+    return settings
+
+
+def build_mesh(geometry: dict, family: str, out_msh: Path, verbose=False, boundary_layers=None) -> dict:
     """Assemble all holes in one 2D mesh, then extrude one cell using T2-0 helpers.
 
     Geometry is a validated load_geometry return value. Quality is recorded, never
@@ -202,11 +309,14 @@ def build_mesh(geometry: dict, family: str, out_msh: Path, verbose=False) -> dic
     import gmsh
     mesh = T.MESHES[family]
     polygons = [np.asarray(e['points_m']) for e in geometry['elements']]
-    gap = min([geometry['ride_height_m']] + [_distance(a, b) for i, a in enumerate(polygons) for b in polygons[i + 1:]])
+    for e, q in zip(geometry['elements'], polygons):
+        _density(q, e['te_kind'], e['cap_start_index'], family, e['name'])
+    gap = minimum_gap(geometry)
     ds, y1, g = (mesh[k] for k in ('ds', 'y1', 'g'))
-    nspec, nlayer, bl = T.layers(ds, y1, g, gap)
-    if not math.isfinite(gap) or bl > 0.4 * gap:
-        raise ValueError('gap too small for unchanged T2-0 boundary layers')
+    if boundary_layers is None:
+        raise ValueError('build_mesh requires a precomputed boundary-layer plan')
+    fixed = boundary_layer_settings(boundary_layers, geometry, family)
+    nspec, nlayer, bl = (fixed[k] for k in ('n_layers_spec', 'n_layers', 'bl_thickness_m'))
     out_msh = Path(out_msh)
     gmsh.initialize()
     try:
@@ -216,9 +326,10 @@ def build_mesh(geometry: dict, family: str, out_msh: Path, verbose=False) -> dic
             gmsh.option.setNumber(key, value)
         m, geo, f = gmsh.model, gmsh.model.geo, gmsh.model.mesh.field
         m.add('topo2d00')
-        loops, body_curves, fans, wakes = [], [], [], []
+        loops, body_curves, fans, wakes, wall_points = [], [], [], [], []
         for e, q in zip(geometry['elements'], polygons):
             pts = [geo.addPoint(float(x), float(y), 0) for x, y in q[:-1]]
+            wall_points.extend(pts)
             # Each WP4 contour is a polygon; lines preserve the exact same body.
             curves = [geo.addLine(a, b) for a, b in zip(pts, pts[1:] + pts[:1])]
             if e['te_kind'] == 'sharp':
@@ -272,7 +383,12 @@ def build_mesh(geometry: dict, family: str, out_msh: Path, verbose=False) -> dic
             f.setString(tag, 'F', value)
             return tag
 
-        fields = [expression(str(T.SIZE_FAR)), expression(f'{ds}+{T.GROW}*F{distance(wall_curves, 3)}'),
+        wall_distance = f.add('Distance')
+        # T2-0 build_mesh samples 200 points per spline (line 187). With dense
+        # supplied polylines use their exact vertices, no 3-per-segment drift.
+        f.setNumbers(wall_distance, 'PointsList', wall_points)
+        # Wake growth 0.2 and Sampling=100: t20_case.build_mesh line 187.
+        fields = [expression(str(T.SIZE_FAR)), expression(f'{ds}+{T.GROW}*F{wall_distance}'),
                   expression(f'{ds}+0.2*F{distance(wakes, 100)}')]
         threshold = f.add('Threshold')
         for key, value in {'InField': distance(gtop, 3000), 'SizeMin': ds, 'SizeMax': T.SIZE_FAR,
@@ -282,11 +398,13 @@ def build_mesh(geometry: dict, family: str, out_msh: Path, verbose=False) -> dic
         for q, e in zip(polygons, geometry['elements']):
             ball = f.add('Ball')
             le = q[e['leading_edge_index']]
+            # t20_case.build_mesh line 188: ball(LE, .012, ds/3); its helper
+            # uses Thickness=2.5*radius=.03 (lines 175–180).
             for key, value in {'Radius': .012, 'Thickness': .03, 'VIn': ds / 3, 'VOut': T.SIZE_FAR,
                                'XCenter': le[0], 'YCenter': le[1]}.items():
                 f.setNumber(ball, key, value)
             fields.append(ball)
-            for x, y in ([q[0]] if e['te_kind'] == 'sharp' else [q[0], q[-2]]):
+            for x, y in ([q[0]] if e['te_kind'] == 'sharp' else [q[0], q[e['cap_start_index']]]):
                 ste = min(ds / 2, mesh['te'] * y1)
                 fields.append(expression(f'{ste}+{T.TE_GROW}*Sqrt((x-({x:.12g}))^2+(y-({y:.12g}))^2)'))
         if nend:
@@ -317,6 +435,8 @@ def build_mesh(geometry: dict, family: str, out_msh: Path, verbose=False) -> dic
         gmsh.finalize()
     stats.update(ride_height_m=geometry['ride_height_m'], x_lowest_m=float(lowest[ilow, 0]),
                  minimum_gap_m=gap, n_layers_spec=nspec, n_layers=nlayer, bl_thickness_m=bl,
+                 boundary_layer_plan_sha256=plan_sha256(boundary_layers),
+                 boundary_layer_plan_scope=boundary_layers['scope'],
                  input_segment_spacing_m=[{'min': float(np.linalg.norm(np.diff(q, axis=0), axis=1).min()),
                                            'max': float(np.linalg.norm(np.diff(q, axis=0), axis=1).max())} for q in polygons],
                  element_count=len(polygons), fan_elements=[mesh['fan'] if e['te_kind'] == 'sharp' else 0 for e in geometry['elements']],

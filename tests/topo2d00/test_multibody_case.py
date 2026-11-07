@@ -9,6 +9,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from scipy.interpolate import CubicSpline
 
 SCRIPTS = Path(__file__).resolve().parents[2] / 'scripts'
 sys.path.insert(0, str(SCRIPTS))
@@ -20,19 +21,35 @@ _NO_GMSH = importlib.util.find_spec('gmsh') is None
 
 
 def geometry(kind='sharp'):
-    q, _, _ = T.airfoil_points(0.448)
+    # This test supplies its OWN smooth dense fixture, including nose refinement.
+    # No production WP5 resampling, and the scaled flap is not published E2.
+    q, _, _ = T.airfoil_points(.448)
+    s = np.r_[0, np.cumsum(np.linalg.norm(np.diff(q, axis=0), axis=1))]
+    curve = CubicSpline(s, q, bc_type='natural')
+    for _ in range(4):
+        q = curve(s)
+        q[-1] = q[0]
+        v = np.diff(q, axis=0)
+        length = np.linalg.norm(v, axis=1)
+        turn = np.degrees(np.arccos(np.clip((np.roll(v, 1, axis=0)*v).sum(1)/(np.roll(length, 1)*length), -1, 1)))
+        bad = np.flatnonzero((turn > 4.9) & (np.arange(len(turn)) != 0))
+        if not len(bad):
+            break
+        intervals = np.unique(np.r_[bad - 1, bad])
+        s = np.unique(np.r_[s, (s[intervals] + s[intervals + 1]) / 2])
+    cap_start = None
     if kind == 'blunt':
-        # Cut the last 3% from both surfaces. Closing edge is an explicit cap.
         le = int(np.argmin(q[:, 0]))
-        lo = q[:le + 1]
-        hi = q[le:]
-        xcut = q[:, 0].max() - 0.03 * T.CHORD
-        lo = lo[lo[:, 0] <= xcut]
-        hi = hi[hi[:, 0] <= xcut]
-        q = np.vstack([lo, hi[1:], lo[0]])
+        xcut = q[:, 0].max() - .03*T.CHORD
+        lo, hi = q[:le + 1], q[le:]
+        lo, hi = lo[lo[:, 0] <= xcut], hi[hi[:, 0] <= xcut]
+        body = np.vstack((lo, hi[1:]))
+        cap_start = len(body) - 1
+        cap = np.linspace(body[-1], body[0], int(np.ceil(np.linalg.norm(body[-1] - body[0])/.001)) + 1)
+        q = np.vstack((body, cap[1:]))
     flap = q.copy() * 0.55 + [0.23, 0.08]
     return {'config': 'synthetic_two_body', 'main_chord_m': T.CHORD,
-            'elements': [{'name': name, 'te_kind': kind, 'points_m': p.tolist()}
+            'elements': [{'name': name, 'te_kind': kind, 'points_m': p.tolist(), 'cap_start_index': cap_start}
                          for name, p in [('main', q), ('synthetic_flap', flap)]]}
 
 
@@ -75,6 +92,80 @@ def test_geometry_fails_closed(change):
         spec['elements'][0]['points_m'] = [[0, .1], [.1, .2], [0, .2], [.1, .1], [0, .1]]
     with pytest.raises(ValueError):
         M.load_geometry(spec)
+
+
+@pytest.mark.parametrize('kind', ['sharp', 'blunt'])
+def test_density_guard_preserves_dense_vertices(kind):
+    spec = geometry(kind)
+    got = M.load_geometry(spec, family='fine30')
+    np.testing.assert_array_equal(got['elements'][0]['points_m'], spec['elements'][0]['points_m'])
+    assert got['elements'][0]['density']['max_noncap_turn_deg'] <= 5
+    assert got['elements'][0]['density']['max_segment_m'] <= T.MESHES['fine30']['ds']
+
+
+def test_density_rejects_long_segment_and_reports_family():
+    spec = geometry()
+    q = np.asarray(spec['elements'][0]['points_m'])[::3].copy()
+    if not np.array_equal(q[-1], q[0]):
+        q = np.vstack((q, q[0]))
+    spec['elements'] = [{**spec['elements'][0], 'points_m': q.tolist()}]
+    with pytest.raises(ValueError, match=r'main.*segment.*fine30.*ds'):
+        M.load_geometry(spec, family='fine30')
+
+
+def test_density_rejects_kink_even_with_short_edges():
+    spec = geometry()
+    spec['elements'][0]['points_m'][100][1] += .0004
+    with pytest.raises(ValueError, match=r'main.*turn.*5'):
+        M.load_geometry(spec)
+
+
+def test_blunt_cap_spacing_and_endpoint_exemption():
+    spec = geometry('blunt')
+    # Cap corners exceed 5 degrees but are the only exempt vertices.
+    got = M.load_geometry(spec)
+    assert got['elements'][0]['cap_start_index'] == spec['elements'][0]['cap_start_index']
+    e = spec['elements'][0]
+    # Supply a still-straight single cap exceeding ds; do not corrupt its line.
+    e['points_m'] = e['points_m'][:e['cap_start_index'] + 1] + [e['points_m'][0].copy()]
+    e['points_m'][0][1] -= .004
+    e['points_m'][-1] = e['points_m'][0].copy()
+    assert np.linalg.norm(np.array(e['points_m'][-2]) - e['points_m'][0]) > T.MESHES['fine30']['ds']
+    with pytest.raises(ValueError, match='segment'):
+        M.load_geometry(spec)
+
+
+def test_study_boundary_layers_are_fixed_across_configurations():
+    specs = {}
+    for n in (1, 2, 3):
+        for suffix in ('', '_sharp'):
+            spec = geometry('sharp' if suffix else 'blunt')
+            spec['config'] = f'E{n}{suffix}'
+            if n == 1:
+                spec['elements'] = spec['elements'][:1]
+            elif n == 3:
+                q = np.asarray(spec['elements'][0]['points_m']) * .3 + [.4, .15]
+                spec['elements'].append({'name': 'flap2', 'te_kind': 'sharp' if suffix else 'blunt', 'points_m': q.tolist(),
+                                         'cap_start_index': spec['elements'][0]['cap_start_index']})
+            specs[spec['config']] = spec
+    plan = M.boundary_layer_plan(specs)
+    assert set(plan['geometry_sha256']) == M.STUDY_CONFIGS
+    for family in M.FAMILIES:
+        counts = {M.boundary_layer_settings(plan, M.load_geometry(s), family)['n_layers'] for s in specs.values()}
+        assert counts == {plan['families'][family]['n_layers']}
+        assert plan['families'][family]['bl_thickness_m'] <= .4 * plan['minimum_gap_m']
+    with pytest.raises(ValueError, match='six|E3_sharp'):
+        M.boundary_layer_plan({k: v for k, v in specs.items() if k != 'E3_sharp'})
+    changed = M.load_geometry(specs['E1'])
+    changed['geometry_sha256'] = 'f' * 64
+    with pytest.raises(ValueError, match='SHA'):
+        M.boundary_layer_settings(plan, changed, 'fine30')
+
+
+def test_production_requires_study_boundary_layers_before_writing(tmp_path):
+    with pytest.raises(ValueError, match='boundary.layer plan'):
+        F.write_case(tmp_path / 'case', geometry(), iters=5000)
+    assert not (tmp_path / 'case').exists()
 
 
 @pytest.mark.parametrize('metadata', [np.array(b'{}'), np.array('{}', dtype=object), np.array(['{}'])])
@@ -149,7 +240,12 @@ def test_threebody_med30(tmp_path):
     assert man['element_count'] == 3 and '"airfoil_3"' in mesh
     assert '3 10 "fluid"' in mesh
     assert man['mesh_stats']['fan_elements'] == [4, 4, 4]
-    assert not man['mesh_quality_failures'], man['mesh_stats']['quality']
+    # This synthetic tiny third nose exercises topology, not mesh qualification.
+    # Amendment 1 §8: proxy failures remain informative, never a solver gate.
+    quality = man['mesh_stats']['quality']
+    assert quality['unused_nodes'] == 0
+    assert all(np.isfinite(quality[k]) for k in ('nonorth_max', 'skew_max', 'weight_min', 'vol_ratio_min', 'det_min'))
+    assert isinstance(man['mesh_quality_failures'], list)
 
 
 @pytest.mark.parametrize('config', ['E1', 'E1_sharp', 'E2', 'E2_sharp', 'E3', 'E3_sharp'])
@@ -175,8 +271,12 @@ def test_nominal_height_separate_from_measured_clearance():
 
 def wp4_scene():
     """Source-compatible WP4 export; synthetic values, not the paper's E2."""
-    s = np.array([[0, 100], [50, 90], [120, 100], [220, 120]], float)
-    p = np.array([[0, 100], [50, 120], [120, 135], [220, 130]], float)
+    x = (1 - np.cos(np.linspace(0, np.pi, 241))) / 2
+    y = 5*.12*(.2969*np.sqrt(x) - .126*x - .3516*x*x + .2843*x**3 - .1015*x**4)
+    s, p = np.c_[x, -y]*223.4, np.c_[x, y]*223.4
+    shift = 90 - s[:, 1].min()
+    s[:, 1] += shift
+    p[:, 1] += shift
     elements = []
     for name, lower, upper in [('main', s, p), ('flap1', s * .55 + [230, 80], p * .55 + [230, 80])]:
         elements.append({'name': name, 'suction_mm': lower.tolist(), 'pressure_mm': upper.tolist(),
@@ -220,6 +320,20 @@ def test_wp4_scene_npz_adapter_checks_duplicate_arrays(tmp_path):
     np.savez(path, scene_json=json.dumps(scene), **arrays)
     with pytest.raises(ValueError, match='polygon.*mismatch'):
         M.load_geometry(path)
+
+
+def test_subdivided_cap_is_preserved_without_resampling():
+    spec = geometry('blunt')
+    e = spec['elements'][0]
+    q = np.asarray(e['points_m'])
+    # Subdividing a cap supplied upstream does not change its physical shape.
+    # Split the final supplied segment again, leaving the cap-start metadata.
+    e['points_m'] = np.vstack((q[:-1], (q[-2] + q[0]) / 2, q[0])).tolist()
+    got = M.load_geometry(spec)
+    np.testing.assert_array_equal(got['elements'][0]['points_m'], e['points_m'])
+    e['points_m'][-2][0] += .0001
+    with pytest.raises(ValueError, match='cap_start_index'):
+        M.load_geometry(spec)
 
 
 @pytest.mark.parametrize('change', ['units', 'chord', 'ground', 'gate', 'sharp_claim', 'surface_mismatch', 'cap_zero'])

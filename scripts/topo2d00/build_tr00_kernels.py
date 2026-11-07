@@ -2,8 +2,12 @@
 """Render self-contained TR-00/main CPU kernels locally; never contact Kaggle.
 
 Geometry files must be supplied explicitly. --plan-only needs no geometry.
-Main kernels remain blocked until --qualified-cell MODEL/FAMILY is explicitly
-provided after TR-00 judgment. Smoke renders only local mesh/200-iteration paths.
+Every render is development until --freeze binds the clean HEAD and every
+input hash, all six study geometries are declared and their source metadata
+explicitly says VERIFIED. This token is a new interface; WP4 currently emits
+UNVERIFIED_OCR, and the owner must substantiate verification before freeze.
+Main additionally requires --qualified-cell MODEL/FAMILY after TR-00 judgment.
+This renderer never pushes kernels or creates a freeze.
 """
 from __future__ import annotations
 
@@ -20,18 +24,21 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import collect_rans as C
+import t2d_multibody_case as M
 
 ROOT = Path(__file__).resolve().parents[2]
+# Registration §7: four workers x three waves; 3*2.5 h = 7.5 h solving,
+# 3*(3*900 s) = 2.25 h generation/mesh, plus 600 s reserve fits 11 h.
 MAX_RUNS, WORKERS, SESSIONS = 12, 4, 5
 SESSION_S, RESERVE_S, CASE_CAP_S = 11*3600, 600, 2.5*3600
 # Existing imports' transitive source dependencies; no unchanged source is copied
 # into a new implementation. It is bundled byte-for-byte and imported at runtime.
 SOURCE_FILES = (
-    "scripts/t20_case.py", "scripts/t20_foam.py", "scripts/t20d_case.py",
-    "scripts/analyze_t20b.py", "scripts/analyze_t20c.py", "scripts/analyze_t20d.py",
-    "scripts/build_t20a_kernel.py", "scripts/build_t20d_kernel.py",
+    "scripts/t20_case.py", "scripts/t20_foam.py",
+    "scripts/analyze_t20b.py", "scripts/analyze_t20c.py", "scripts/build_t20a_kernel.py",
     "scripts/topo2d00/t2d_multibody_case.py", "scripts/topo2d00/t2d_foam_case.py",
     "scripts/topo2d00/collect_rans.py", "scripts/topo2d00/run_rans.py",
+    "scripts/topo2d00/build_tr00_kernels.py", "docs/topo2d00_registration_2026_11_01.md",
     "infra/kaggle/kernel_t20b_cpu/runner.py",
     "infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/openfoam_package_lock.json",
     "infra/kaggle/kernel_openfoam_xfid_v16/openfoam_package_lock.json",
@@ -50,10 +57,10 @@ def make_plan(stage: str, qualified_cells=None) -> dict:
     else:
         runs = [{**k, "iters": 5000, "cont_iters": 15000, "mode": "production", "case_cap_s": CASE_CAP_S}
                 for k in C.expected_runs(stage, qualified_cells)]
-    ready = stage != "main" or qualified_cells is not None
     chunks = [runs[i:i+MAX_RUNS] for i in range(0, len(runs), MAX_RUNS)]
-    return {"schema_version": "topo2d00-run-plan-v1", "stage": stage, "ready_for_execution": ready,
-            "blocked_reason": None if ready else "TR-00 qualification has not been supplied; rebuild with --qualified-cell after judgment",
+    return {"schema_version": "topo2d00-run-plan-v1", "stage": stage, "ready_for_execution": False,
+            "render_kind": "development", "push_plan": [],
+            "blocked_reason": "development plan: clean source, freeze1 and verified study geometry have not been bound",
             "qualified_cells": [list(c) for c in qualified_cells] if qualified_cells is not None else None,
             "workers": WORKERS, "session_budget_s": SESSION_S, "reserve_s": RESERVE_S,
             "max_concurrent_sessions": SESSIONS, "runs": runs,
@@ -148,7 +155,14 @@ if __name__ == "__main__":
 '''
 
 
-def render(out: Path, geometries: dict[str, Path], stage="tr00", qualified_cells=None, owner="ramhachi888") -> dict:
+def render(out: Path, geometries: dict[str, Path], stage="tr00", qualified_cells=None, owner="ramhachi888", *,
+           study_geometries: dict[str, Path] | None = None, freeze: Path | None = None) -> dict:
+    """Bundle inputs locally; freeze1 is a supplied record, never inferred.
+
+    Freeze schema: topo2d00-rans-freeze1-v1, stage=freeze1, source_commit=HEAD,
+    input_sha256=the exact bundled member/hash map, geometry_sha256=all six
+    study config/hash pairs. No post-run analysis freeze is accepted here.
+    """
     out = Path(out)
     if out.exists():
         raise FileExistsError(f"refusing to overwrite: {out}")
@@ -158,19 +172,29 @@ def render(out: Path, geometries: dict[str, Path], stage="tr00", qualified_cells
         raise ValueError(f"geometry keys must be exactly {sorted(needed)}")
     if not owner or any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-" for c in owner):
         raise ValueError("invalid Kaggle owner")
-    # Loader validates actual WP4 geometry without invoking gmsh or a solver.
-    sys.path.insert(0, str(ROOT / "scripts/topo2d00"))
-    from t2d_multibody_case import load_geometry
+    study = {c: Path(p) for c, p in geometries.items()}
+    for config, path in (study_geometries or {}).items():
+        if config not in M.STUDY_CONFIGS:
+            raise ValueError(f"unknown study geometry: {config}")
+        path = Path(path)
+        if config in study and study[config].read_bytes() != path.read_bytes():
+            raise ValueError(f"run and study geometry inputs differ: {config}")
+        study[config] = path
+    # Compute ONE family stack over the declared study, including E3_sharp.
+    # Missing configurations make a development stack, never a production one.
+    boundary_layers = M.boundary_layer_plan(study, require_complete=set(study) == M.STUDY_CONFIGS)
     files = {rel: (ROOT / rel).read_bytes() for rel in SOURCE_FILES}
+    files["boundary_layer_plan.json"] = json.dumps(boundary_layers, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+    boundary_digest = M.plan_sha256(boundary_layers)
     from build_t20a_kernel import LOCK_SHA256
     for suite, rel in (("jammy", "infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/openfoam_package_lock.json"),
                        ("noble", "infra/kaggle/kernel_openfoam_xfid_v16/openfoam_package_lock.json")):
         if hashlib.sha256(files[rel]).hexdigest() != LOCK_SHA256[suite]:
             raise ValueError("OpenFOAM package lock differs from the registered T2-0 lock")
-    geometry_info = {}
-    for config, path in sorted(geometries.items()):
-        path = Path(path)
-        geometry = load_geometry(path)
+    geometry_info, verified = {}, {}
+    for config, path in sorted(study.items()):
+        # Loader validates the actual supplied WP4 vertices, never resampling.
+        geometry = M.load_geometry(path)
         if geometry["config"] != config:
             raise ValueError(f"geometry config differs: {path}")
         rel = f"geometry/{config}{path.suffix.lower()}"
@@ -178,15 +202,52 @@ def render(out: Path, geometries: dict[str, Path], stage="tr00", qualified_cells
         files[rel] = data
         geometry_info[config] = {"geometry_file": rel, "geometry_sha256": hashlib.sha256(data).hexdigest(),
                                  "elements": [{"name": e["name"], "patch": e["patch"]} for e in geometry["elements"]]}
+        sources = geometry.get("source_scene_metadata", {}).get("sources", [])
+        # Explicit future contract; missing/unknown/UNVERIFIED_OCR is blocked.
+        verified[config] = isinstance(sources, list) and bool(sources) and all(
+            isinstance(s, dict) and s.get("verification") == "VERIFIED" for s in sources)
     for row in plan["runs"]:
         row.update(geometry_info[row["config"]])
+        row.update(boundary_layer_plan_file="boundary_layer_plan.json", boundary_layer_plan_sha256=boundary_digest)
     head = subprocess.check_output(["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip()
-    dirty = bool(subprocess.check_output(["git", "-C", str(ROOT), "status", "--porcelain", "--", *SOURCE_FILES], text=True).strip())
+    dirty = bool(subprocess.check_output(["git", "-C", str(ROOT), "status", "--porcelain", "--untracked-files=all"], text=True).strip())
     inputs = {p: hashlib.sha256(data).hexdigest() for p, data in sorted(files.items())}
     archive = _archive(files)
     digest = hashlib.sha256(archive).hexdigest()
     plan.update(source_commit=head, source_dirty=dirty, input_sha256=inputs, bundle_sha256=digest,
-                geometry_input_sha256={c: v["geometry_sha256"] for c, v in geometry_info.items()})
+                geometry_input_sha256={c: v["geometry_sha256"] for c, v in geometry_info.items()},
+                geometry_verified=verified, boundary_layer_plan_sha256=boundary_digest,
+                boundary_layer_plan_scope=boundary_layers["scope"])
+    failures = []
+    if dirty:
+        failures.append("whole source tree is dirty")
+    if boundary_layers["scope"] != "study":
+        failures.append("six study geometries have not been supplied")
+    if not all(verified.values()):
+        failures.append("all geometry source records must be explicitly VERIFIED")
+    if stage == "main" and qualified_cells is None:
+        failures.append("TR-00 qualification has not been supplied")
+    freeze_info = {"path": None if freeze is None else str(Path(freeze).resolve()), "sha256": None, "matches": False}
+    frozen = None
+    if freeze is not None:
+        try:
+            payload = Path(freeze).read_bytes()
+            freeze_info["sha256"] = hashlib.sha256(payload).hexdigest()
+            frozen = json.loads(payload)
+        except (OSError, ValueError, UnicodeError) as exc:
+            failures.append(f"freeze1 record could not be read: {type(exc).__name__}")
+    if not isinstance(frozen, dict):
+        failures.append("freeze1 record is absent or invalid")
+    else:
+        expected = {"schema": "topo2d00-rans-freeze1-v1", "stage": "freeze1", "source_commit": head,
+                    "input_sha256": inputs, "geometry_sha256": plan["geometry_input_sha256"]}
+        mismatches = [key for key, value in expected.items() if frozen.get(key) != value]
+        failures.extend(f"freeze1 {key} mismatch" for key in mismatches)
+        freeze_info["matches"] = not mismatches
+    plan.update(freeze1=freeze_info, readiness_failures=failures, ready_for_execution=not failures,
+                render_kind="development" if failures else "ready", blocked_reason="; ".join(failures) if failures else None)
+    if not failures:
+        plan["push_plan"] = [{"name": k["name"], "directory": k["name"]} for k in plan["kernels"]]
     rendered = []
     for kernel in plan["kernels"]:
         kp = {k: v for k, v in plan.items() if k not in ("kernels", "runs")}
@@ -217,6 +278,9 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--stage", choices=("tr00", "main", "smoke"), required=True)
     ap.add_argument("--geometry", action="append", default=[], metavar="CONFIG=PATH")
+    ap.add_argument("--study-geometry", action="append", default=[], metavar="CONFIG=PATH",
+                    help="complete six-config thick/sharp geometry set for one fixed boundary-layer stack")
+    ap.add_argument("--freeze", type=Path, help="supplied topo2d00-rans-freeze1-v1 binding; absent/mismatched stays development")
     ap.add_argument("--qualified-cell", action="append", metavar="MODEL/FAMILY")
     ap.add_argument("--owner", default="ramhachi888", help="Kaggle metadata only; no API is called")
     ap.add_argument("--plan-only", action="store_true", help="write run_plan.json without claiming runnable kernels")
@@ -232,21 +296,22 @@ def main(argv=None) -> int:
     if args.out.exists():
         raise FileExistsError(f"refusing to overwrite: {args.out}")
     if args.plan_only:
-        if args.geometry:
-            raise ValueError("--plan-only does not consume geometry")
+        if args.geometry or args.study_geometry or args.freeze:
+            raise ValueError("--plan-only does not consume geometry or freeze records")
         plan = make_plan(args.stage, cells)
         plan["ready_for_execution"] = False
         plan["blocked_reason"] = "plan only: geometry and source have not been bundled"
         args.out.mkdir(parents=True)
         (args.out / "run_plan.json").write_bytes(_json(plan))
     else:
-        geometries = {}
-        for value in args.geometry:
-            name, sep, path = value.partition("=")
-            if not sep or not path or name in geometries:
-                raise ValueError("geometry must be unique CONFIG=PATH pairs")
-            geometries[name] = Path(path)
-        plan = render(args.out, geometries, args.stage, cells, args.owner)
+        geometries, study_geometries = {}, {}
+        for values, target in ((args.geometry, geometries), (args.study_geometry, study_geometries)):
+            for value in values:
+                name, sep, path = value.partition("=")
+                if not sep or not name or not path or name in target:
+                    raise ValueError("geometry must be unique CONFIG=PATH pairs")
+                target[name] = Path(path)
+        plan = render(args.out, geometries, args.stage, cells, args.owner, study_geometries=study_geometries, freeze=args.freeze)
     print(json.dumps({"out": str(args.out), "runs": len(plan["runs"]), "kernels": len(plan["kernels"]), "ready": plan["ready_for_execution"]}))
     return 0
 

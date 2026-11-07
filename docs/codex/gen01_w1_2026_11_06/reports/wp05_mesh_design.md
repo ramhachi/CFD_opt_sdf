@@ -1,5 +1,30 @@
 # WP05 mesh and OpenFOAM design
 
+Amendment 1 supersedes the first-attempt density and layer-count choices below.
+See [the correction design](wp05_amendment1_design.md) and current WP5 report.
+Input polylines must satisfy non-cap turn <=5 degrees and every segment <=ds,
+including finite-cap segments. WP4 supplies the smooth dense vertices; WP5
+does not resample. A generic subdivided cap declares `cap_start_index` (default
+penultimate vertex for one edge); all points from that endpoint to closure
+must lie in monotone order on the straight cap. WP4's adapter derives the
+index from the paired-surface prefix and preserves its supplied cap suffix.
+Only the two TE cap endpoints (or sharp cusp) are exempt from the turn test.
+
+`boundary_layer_plan(geometries)` requires all six E1/E2/E3 thick/sharp inputs,
+records their exact hashes and minimum ground/inter-element gap, and computes
+one `T.layers` result per family. `write_case(..., boundary_layer_plan=plan)`
+reads those fixed values for both bodies and ground. Production without a
+six-member study plan fails before output creation. Short synthetic cases
+can explicitly use a development plan, which cannot authorize a production
+render. The plan's compact sorted JSON bytes have the same SHA as
+`plan_sha256(plan)`. No present six-member WP4 study plan is invented.
+
+T2-0's LE ball, TE and wake sizing remain inherited. Wall Distance now uses
+the supplied dense point set rather than three samples per polyline segment;
+the mesh manifest retains the informational proxy. Only checkMesh controls
+acceptance. The synthetic tiny-third-nose test checks topology and finite
+proxy reporting, and does not assert a qualified three-body mesh.
+
 This is a development design record, not a registration, qualification or a change to the roadmap. The parent WP05 design covers the complete package. The implementation follows the shared W1 README, AGENTS authority split, TOPO-2D-00 §§2–4 and 7–10, immutable T2-0 helpers and LOCAL-OF-01. Ponytail applies: reuse the existing numerical and dictionary helpers; add only the multi-hole gmsh geometry assembly that the single-body helper cannot express.
 
 ## Geometry interface and scope

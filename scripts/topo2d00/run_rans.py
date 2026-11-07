@@ -7,7 +7,6 @@ No analysis verdict, geometry reconstruction or TR-00 qualification happens here
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import os
 import platform
@@ -27,14 +26,7 @@ import collect_rans as C
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def inherited_runner(source: Path = ROOT):
-    """Import immutable helper code without rendering it or invoking its main."""
-    p = source / "infra/kaggle/kernel_t20b_cpu/runner.py"
-    spec = importlib.util.spec_from_file_location("wp5_t20b_helpers", p)
-    module = importlib.util.module_from_spec(spec)
-    module.PIN_PINS = {}
-    spec.loader.exec_module(module)
-    return module
+inherited_runner = C.inherited_runner
 
 
 def _atomic(path: Path, value) -> None:
@@ -107,25 +99,40 @@ def run_case(spec: dict, source: Path, output: Path, deadline: float, helper=Non
         return rec
     cmd = [sys.executable, str(source / "scripts/topo2d00/t2d_foam_case.py"), "--geometry", str(source / spec["geometry_file"]),
            "--out", str(case), "--model", spec["model"], "--family", spec["family"], "--realisation", str(spec["realisation"]), "--iters", str(spec["iters"])]
+    phase = "generator"
     try:
+        if spec.get("boundary_layer_plan_file"):
+            plan_path = source / spec["boundary_layer_plan_file"]
+            if C.sha256(plan_path) != C._digest(spec.get("boundary_layer_plan_sha256"), "boundary-layer plan"):
+                raise ValueError("boundary-layer plan SHA differs from bundled input")
+            cmd += ["--boundary-layer-plan", str(plan_path)]
         generated = subprocess.run(cmd, capture_output=True, text=True, timeout=min(900, deadline - time.monotonic()),
                                    env={**os.environ, "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1"})
         (keep / "log.generator").write_text(generated.stdout + generated.stderr)
         rec["generator_wall_s"] = time.monotonic() - started
         if generated.returncode:
-            rec["status"] = "GENERATOR_FAILED"
+            rec["status"], rec["failure_stage"] = "MESH_FAILED", "generator"
         if rec["status"] == "COMPLETED":
             manifest = json.loads((case / "case_manifest.json").read_text())
             if manifest.get("geometry_sha256") != spec["geometry_sha256"]:
                 raise ValueError("generated geometry SHA differs from bundled input")
             rec["mesh_msh_sha256"] = C.sha256(case / "mesh.msh")
             rec["mesh_proxy_failures"] = manifest["mesh_quality_failures"]
-            if rec["mesh_proxy_failures"]:
-                rec["status"] = "MESH_FAILED"
+            # T2-0 mesh_quality proxies (including UNVERIFIED boundary skew)
+            # are informational. checkMesh below decides mesh acceptance.
+            rec["n_layers"] = manifest["n_layers"]
+            if type(rec["n_layers"]) is not int or rec["n_layers"] < 1:
+                raise ValueError("manifest n_layers must be a positive integer")
+            rec["convergence_policy"] = manifest["convergence"]
+            if rec["convergence_policy"] != C.CONVERGENCE:
+                raise ValueError("manifest convergence policy differs from T2-0c collector policy")
+        phase = "mesh"
         solve = spec["mode"] != "mesh-only"
         for stage, command in (("gmshToFoam", "gmshToFoam mesh.msh"), ("checkMesh", "checkMesh -allGeometry -allTopology"), ("simpleFoam", "simpleFoam")):
             if rec["status"] != "COMPLETED" or stage == "simpleFoam" and not solve:
                 break
+            if stage == "simpleFoam":
+                phase = "solver"
             if stage == "checkMesh":
                 sys.path.insert(0, str(source / "scripts/topo2d00"))
                 from t2d_foam_case import fix_boundary
@@ -135,7 +142,8 @@ def run_case(spec: dict, source: Path, output: Path, deadline: float, helper=Non
             result = helper.timed_run(stage, command, case, timeout)
             rec["stages"].append(result)
             if result["returncode"] or result["timed_out"]:
-                rec["status"] = f"{stage}_{'TIMEOUT' if result['timed_out'] else 'FAILED'}"
+                rec["failure_stage"] = stage
+                rec["status"] = "MESH_FAILED" if stage != "simpleFoam" else f"{stage}_{'TIMEOUT' if result['timed_out'] else 'FAILED'}"
             if stage == "checkMesh":
                 cm = helper.parse_check_mesh((case / "log.checkMesh").read_text(errors="replace"))
                 rec["check_mesh"] = cm
@@ -147,8 +155,17 @@ def run_case(spec: dict, source: Path, output: Path, deadline: float, helper=Non
             # Exactly the inherited T2-0c/T2-0b continuation trigger: Cl block plateau,
             # not residual convergence and not raw-tail convergence.
             paths = _files(case, "forceCoeffs", "coefficient.dat")
-            plateau = helper.force_summary(helper.read_coefficients(paths))["cl_plateau"]
-            if not plateau:
+            try:
+                history = C.read_history(case, [{"path": p.relative_to(case).as_posix(), "sha256": C.sha256(p)} for p in paths])
+                if not np.isfinite(history[:, 1:]).all() or np.abs(history[:, 1:]).max() > C.BLOWUP_ABS:
+                    rec["status"], rec["force_values_finite"] = "SOLVER_DIVERGED", bool(np.isfinite(history).all())
+                    plateau = True  # Divergence is a result; never continue it.
+                else:
+                    plateau = C.cl_summary(history)["cl_plateau"]
+            except (ValueError, OSError) as exc:
+                rec["status"], rec["error"] = "PARSE_FAILED", f"{type(exc).__name__}: {exc}"
+                plateau = True
+            if not plateau and rec["status"] == "COMPLETED":
                 helper._continue(case, spec["cont_iters"])
                 already = sum(s["wall_s"] for s in rec["stages"] if s["stage"].startswith("simpleFoam"))
                 timeout = min(max(1, spec["case_cap_s"] - already), deadline - time.monotonic())
@@ -165,12 +182,14 @@ def run_case(spec: dict, source: Path, output: Path, deadline: float, helper=Non
         objects = {"total": ("forceCoeffs", "forces"), **{e["patch"]: (f"forceCoeffs_{e['patch']}", f"forces_{e['patch']}") for e in spec["elements"]}}
         rec["coefficient_files"] = {k: _archive_files(case, keep, names[0], "coefficient.dat") for k, names in objects.items()}
         rec["force_files"] = {k: _archive_files(case, keep, names[1], "force.dat") for k, names in objects.items()}
+        if solve and rec["status"] not in C.MECHANICAL_STATUSES and C.divergent_coefficients(keep, rec["coefficient_files"]):
+            rec["status"] = "SOLVER_DIVERGED"
         if rec["status"] == "COMPLETED" and solve:
             histories = {name: C.read_history(keep, parts) for name, parts in rec["coefficient_files"].items()}
             dimensional = {name: C.read_force_parts(keep, parts) for name, parts in rec["force_files"].items()}
             all_histories = [*histories.values(), *(h for parts in dimensional.values() for h in parts.values())]
             rec["force_values_finite"] = all(np.isfinite(h).all() for h in all_histories)
-            if not rec["force_values_finite"] or any(np.abs(h[:, 1:]).max() > C.D.TH["blowup"] for h in all_histories):
+            if not rec["force_values_finite"] or any(np.abs(h[:, 1:]).max() > C.BLOWUP_ABS for h in all_histories):
                 rec["status"] = "SOLVER_DIVERGED"
             if spec["mode"] == "smoke" and histories["total"][-1, 0] != spec["iters"]:
                 rec["status"] = "PARSE_FAILED"
@@ -178,10 +197,11 @@ def run_case(spec: dict, source: Path, output: Path, deadline: float, helper=Non
         if not solve and rec["status"] == "COMPLETED":
             rec["status"] = "MESH_OK"
     except subprocess.TimeoutExpired:
-        rec["status"] = "GENERATOR_FAILED"
+        rec["status"], rec["failure_stage"] = "MESH_FAILED", "generator"
         rec["error"] = "generation exceeded its 900-second infrastructure budget"
     except Exception as exc:
-        rec["status"] = "RUNNER_EXCEPTION"
+        rec["status"] = "MESH_FAILED" if phase in ("generator", "mesh") else "RUNNER_EXCEPTION"
+        rec["failure_stage"] = phase
         rec["error"] = f"{type(exc).__name__}: {exc}"
     finally:
         if case.exists():
@@ -211,7 +231,7 @@ def execute(plan: dict, source: Path, output: Path) -> dict:
     if output.exists():
         raise FileExistsError(f"refusing to overwrite: {output}")
     if not plan["ready_for_execution"]:
-        raise ValueError("main execution blocked: qualify cells with TR-00, then re-render explicitly")
+        raise ValueError(plan.get("blocked_reason") or "execution requires a ready frozen render")
     if plan["stage"] != "smoke" and os.environ.get("KAGGLE_KERNEL_RUN_TYPE") not in ("Batch", "Interactive"):
         raise ValueError("production RANS may only run on Kaggle; local scope is <=200-iteration smoke")
     output.mkdir(parents=True)

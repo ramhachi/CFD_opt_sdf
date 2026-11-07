@@ -1,0 +1,452 @@
+{
+  "historical_archives": [
+    {
+      "effective_ready_for_execution": false,
+      "interpretation": "Historical first-attempt development artifact; embedded ready flags revoked by this receipt. Original raw bytes retained; not evidence for amended source.",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp05_validation/rendered_kernels_and_inputs.tar.gz",
+      "sha256_unchanged": "abaa9f076e193d8b3e25ebc86f24efa5be5fec4f3e4e9b55c429a1f1bb39fb90"
+    },
+    {
+      "effective_ready_for_execution": false,
+      "interpretation": "Historical first-attempt development artifact; embedded ready flags revoked by this receipt. Original raw bytes retained; not evidence for amended source.",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp05_validation/local_smoke_artifacts.tar.gz",
+      "sha256_unchanged": "c44942f8d70253770bc7aa5ccc5e8cadf6661aa937f4b6bb8de03f440a7490db"
+    },
+    {
+      "effective_ready_for_execution": false,
+      "interpretation": "Historical development render archive, invalidated by this receipt; embedded ready flags revoked, original bytes preserved.",
+      "path": "work/wp05/render_preinterop/rendered_kernels_and_inputs.tar.gz",
+      "sha256_unchanged": "fc6f5835dd06c163b00bb163d618493c3e6bceed423bcc3cbcf9fdde44823447"
+    }
+  ],
+  "historical_extracted_execution": "work/wp05/local_smoke_run is preserved as original execution evidence; it is not a source for another run.",
+  "kernel_regenerated": false,
+  "plans": [
+    {
+      "after_sha256": "def029c9eecac99cc792a786692e3706faca9f19d86c2bdbb1519a87ae78d448",
+      "before_sha256": "8b8979153015ab4d70c0395140eca4dc1a121175fff8847b23d1de072be83c84",
+      "path": "work/wp05/kernels_tr00/run_plan.json",
+      "previous_ready_for_execution": true
+    },
+    {
+      "after_sha256": "6215d6f983461a44555e3fda0a97a221189b58d70942cfba3b7a76035eaabfc1",
+      "before_sha256": "973f5814ea77cab852fdf4189cd2d72a3cd1c2d26ebe8cf0002b0eb06a471fca",
+      "path": "work/wp05/kernels_tr00/tr00_01/kernel_plan.json",
+      "previous_ready_for_execution": true
+    },
+    {
+      "after_sha256": "de59f1969f649fdfe80b9a5734df3cb9175c984446cf344c404c9550a5481523",
+      "before_sha256": "1acb26cdaf33f4c80dbbd116b80e9786ced1ea271518df005016f6d845ed14c7",
+      "path": "work/wp05/kernels_tr00/tr00_02/kernel_plan.json",
+      "previous_ready_for_execution": true
+    },
+    {
+      "after_sha256": "c8148dc1e9ffaf6339a286cf412965bc74f936da5a18ad62c32c669a030803db",
+      "before_sha256": "5b14266130911d139a78cc735b426970c1d14e2cb1adce4de6dfbb2b35299249",
+      "path": "work/wp05/kernels_tr00/tr00_03/kernel_plan.json",
+      "previous_ready_for_execution": true
+    },
+    {
+      "after_sha256": "ff9e15818e273bbb3091a571a79d045f3188f635418a84600c350e657e6f9b8f",
+      "before_sha256": "602bf6f41ff0b2508aa6571ec8fcd600e3b85a63829ff0f22e6bc8fef78192d0",
+      "path": "work/wp05/kernels_tr00/tr00_04/kernel_plan.json",
+      "previous_ready_for_execution": true
+    },
+    {
+      "after_sha256": "1a421dedbc70da1e107f9c14d0679a56af1526b73d1617bcc4df964e270ee886",
+      "before_sha256": "e9b103725d0c9bfd758583bbab4278a9d7c942298c276010b2c2a0938d5f3dcb",
+      "path": "work/wp05/kernels_tr00/tr00_05/kernel_plan.json",
+      "previous_ready_for_execution": true
+    },
+    {
+      "after_sha256": "237bf5e01993ed50f7e4afc553ef14af8047034998a6af63f694e83e0049ef7f",
+      "before_sha256": "0905d0f89a59d1bc004887f58ad7e0ca5f749a6a6096d6e086441c112ecd3330",
+      "path": "work/wp05/kernels_tr00/tr00_06/kernel_plan.json",
+      "previous_ready_for_execution": true
+    },
+    {
+      "after_sha256": "8ca653dbaddb4851056bb9cdd9859879f6c726a68dbf03e15eb6addabae978f9",
+      "before_sha256": "42df463251e5d04467f018f2e3db2b2721d2ed3baa69a7c1f3e74c320ed51b98",
+      "path": "work/wp05/kernels_main/main_01/kernel_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "e3f1337f902756ce1b5b0b1c9f7f5248032880fe399ccf5d136063705e5b5d02",
+      "before_sha256": "1753da7116d4b6ec8dd70b27b90849355363d15f7f8553b0d4d94a07c5ef0f58",
+      "path": "work/wp05/kernels_main/main_02/kernel_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "91241bb54a8ec864de43c1a8443b610b80eef1c3ae2c4928ac72dc76fc593e0b",
+      "before_sha256": "9b80ef6ce4cdd0ee968dfa87e664ea6c734f0713b71a6562e8704708bb072663",
+      "path": "work/wp05/kernels_main/main_03/kernel_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "d7bb370c80c9d65a1322f07487ef020e33f8bfdc1ddb048cbf42ececba74e5e2",
+      "before_sha256": "7965b38d35504b70e29ebb67627898d9437cc63a8c90976151d7d2054440dcbf",
+      "path": "work/wp05/kernels_main/main_04/kernel_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "ad97749fb3ecd41fce74c12f40261ab29fab1b016f3ca5d3f78dac535a69b3b3",
+      "before_sha256": "1c0a5281a711db7f5d4be1ff91dec6ccaa566e6a72136122a15ef23b55673cdb",
+      "path": "work/wp05/kernels_main/main_05/kernel_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "75432ade136ea0d787edd90d59f323832cf93681d65a9f890bf6bd357b9f40f9",
+      "before_sha256": "1a34d0fc02390b06dccd5f04cd59e4a2ed81cf1ac18a05e58f45c51343fd289d",
+      "path": "work/wp05/kernels_main/main_06/kernel_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "fcd9febfeefface2a10069eab5f03176b4879aa4cf59445fa9f936fcd125792a",
+      "before_sha256": "3348c04e3a148b02df772ed2aea9fb3d1c540820299dae5849910f775e51aef7",
+      "path": "work/wp05/kernels_main/main_07/kernel_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "2962faf496c534ac7a4e267e0fe76e78d7a7855ad3b0b415482e30c8c0b07899",
+      "before_sha256": "76dda2cd8a93dee0ef43694643e703406bbb617f4e0b7896c9ee4205ea50296b",
+      "path": "work/wp05/kernels_main/main_08/kernel_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "3b6afeac469ddbd5c9ab2b2557dc0a5fd25da97bbeb440ce3b92b4cf9f911d58",
+      "before_sha256": "3da828b7b4bcff34fbe00569c892dbfb7b185cbf3a30ebc23b692c4462a30481",
+      "path": "work/wp05/kernels_main/run_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "fa67946d6d873be9e5cc8e541263cebda03b6f4a899bcf30cab36e04cf2eba7b",
+      "before_sha256": "1a05f168523ffcd144661d968a1b90c19bbf2ea6d53f131f5999db28e318d5dd",
+      "path": "work/wp05/plan_tr00/run_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "883557f04eac8bfb1726710439f8ec5be8f7dbe4fd766a0836f6e54cb0663d30",
+      "before_sha256": "c9b7b3f234238d657ef1b9bce5c8ae30a23c6763691d08dc1bf262497f751c4d",
+      "path": "work/wp05/plan_main/run_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "8e56c5a9d10720d3ce3306500af49b545214da82bca77572868d9843342db17c",
+      "before_sha256": "ac723acece4e5e946160523c11d12474f346b7a82a03481747ccea555ad13ad5",
+      "path": "work/wp05/render_preinterop/kernels_tr00/run_plan.json",
+      "previous_ready_for_execution": true
+    },
+    {
+      "after_sha256": "d8dcc39f8493578d3cc301801704dfb6a250d1645e90016a3b0dca13b10811c9",
+      "before_sha256": "27d31187dd91664c4c7658ae12d39e3af07801d296505a6ec0b7d9ceafeaf1a7",
+      "path": "work/wp05/render_preinterop/kernels_tr00/tr00_01/kernel_plan.json",
+      "previous_ready_for_execution": true
+    },
+    {
+      "after_sha256": "b9cc6bfd1d82c3860b39726d0bd84d3e70eeaeb393a1c563f4423d2f0b036ae0",
+      "before_sha256": "a47576d3e9301591cc312d2633766d9470b76942ce465f4e8ca026833a80b98c",
+      "path": "work/wp05/render_preinterop/kernels_tr00/tr00_02/kernel_plan.json",
+      "previous_ready_for_execution": true
+    },
+    {
+      "after_sha256": "9cddb0840a24c750174424e7a09d4dd08381127b9e46067812c774fb7b2d6962",
+      "before_sha256": "3129b982c8aee50ea3ef68ca99aee1b0bb62a2d0631842db756c444a6bb91c70",
+      "path": "work/wp05/render_preinterop/kernels_tr00/tr00_03/kernel_plan.json",
+      "previous_ready_for_execution": true
+    },
+    {
+      "after_sha256": "adac639136ccd97a77c214eaccb03c6030bf2513e8fef7e96ed21f0a4c2769d7",
+      "before_sha256": "3a28acd4253fd6e1548ed38e609941819a00ea7415dd8a81fd678477e42d1066",
+      "path": "work/wp05/render_preinterop/kernels_tr00/tr00_04/kernel_plan.json",
+      "previous_ready_for_execution": true
+    },
+    {
+      "after_sha256": "61519149f00158fe0416c31ce94860b534db45051f0afc8c718ba14352a1eae3",
+      "before_sha256": "1201972bb2e6acaf4f941a8666d56bc0d91a8aee80385b06b18327e8bba44f49",
+      "path": "work/wp05/render_preinterop/kernels_tr00/tr00_05/kernel_plan.json",
+      "previous_ready_for_execution": true
+    },
+    {
+      "after_sha256": "c1b4228ff152b45c37f6594b9c1fa023e796da8868ee0855c5cfd0db1df775eb",
+      "before_sha256": "2da7e621338b31d519d40af7445aceda7672cadc43235a63137e9b5898fae647",
+      "path": "work/wp05/render_preinterop/kernels_tr00/tr00_06/kernel_plan.json",
+      "previous_ready_for_execution": true
+    },
+    {
+      "after_sha256": "fe7dc1e057e17f0e8ae22f16c0e2525361a9f1528d81852781713a155d2d8192",
+      "before_sha256": "b3d669416e7854a2db116b7ae1af4c6de45363aa1319f6ed7b11389ebe53f4ed",
+      "path": "work/wp05/render_preinterop/kernels_main/main_01/kernel_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "4ff39c5edfa968ba04adefa75ab8c4acec1dad093d24417f5e99353757328854",
+      "before_sha256": "a0ec1158404cee9a8dcc8282c67ee2597c912f5c0bd37303b690b4038f4c447f",
+      "path": "work/wp05/render_preinterop/kernels_main/main_02/kernel_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "3ec57b6202ebc1db96e81c5ec35c31fe1c02e010b4104cb010da07b933bbbb7b",
+      "before_sha256": "0b9c8a5ae6aac11bdd1c85036a9fe3a39579a2f761354ed160e9ccffbe031da3",
+      "path": "work/wp05/render_preinterop/kernels_main/main_03/kernel_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "a83360a509b172b0af62f042cfca4acc224029f765b5ca88841ae66a0d4a215e",
+      "before_sha256": "6d179326a86d7b45cf4ee15a51d84088a8b6ffb1c65b4c00c0a3edcf0b658b50",
+      "path": "work/wp05/render_preinterop/kernels_main/main_04/kernel_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "f9ea134f5b264921c0c31ffe3caccf8d6c1c630c397602cc3876ce5b979ae65f",
+      "before_sha256": "2ac9732cc9e969fa261ff89b95a9d38ee95438a27a065244a1632a396490bebb",
+      "path": "work/wp05/render_preinterop/kernels_main/main_05/kernel_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "e84ebeaf4cf343d55fec463b963bff0a78dbe42026dbc29b000cd965a1a47b42",
+      "before_sha256": "ed140bac3aadbd4204c31bbe272ed791ea9d2084f149013903ff8b130a6743bb",
+      "path": "work/wp05/render_preinterop/kernels_main/main_06/kernel_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "a2bb0e827c2515d964c65605e9f07d0423950e1d05871bb1b1f4b15548e9225a",
+      "before_sha256": "4bdad897dacc3f1cc60a70eef0dfdce8968bbaf3d830c9680e57905f85c9e32d",
+      "path": "work/wp05/render_preinterop/kernels_main/main_07/kernel_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "f7651aabde823f29ad98b976a9469fdf1a975d414b12fce74921f8a517fa96e0",
+      "before_sha256": "fd20bd556001b72c002f026ef877623ec316fe7218151b0664cb55a56973e3da",
+      "path": "work/wp05/render_preinterop/kernels_main/main_08/kernel_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "0d60c5a40ba05e4548bf397b92cdbb4f4f4207133a86946b29ecac0bdca47418",
+      "before_sha256": "02808b3e835deca87c7728df5524db3c55288c37b99c57364a5dfd3a9b00ed19",
+      "path": "work/wp05/render_preinterop/kernels_main/run_plan.json",
+      "previous_ready_for_execution": false
+    },
+    {
+      "after_sha256": "10e5d4d551f99ef541c1485bc6d0efd1ee4f0195df6e7abf02f553d98a8ddecf",
+      "before_sha256": "3b165110b06f85217974254c616ec4637d5ebcd5d8559fe601831f155e7f080d",
+      "path": "work/wp05/local_smoke_kernel/run_plan.json",
+      "previous_ready_for_execution": true
+    },
+    {
+      "after_sha256": "c184901c21c615f89c8c15aed5df24e7497dee23c53bb69fa127118bdd8f447e",
+      "before_sha256": "ff68cf670c0264de5edd844931e19a28ceb15f8bca7f28149dfdf3e30164eeae",
+      "path": "work/wp05/local_smoke_kernel/smoke_01/kernel_plan.json",
+      "previous_ready_for_execution": true
+    }
+  ],
+  "readback_verified": true,
+  "ready_for_execution": false,
+  "reason": "Development render invalidated by WP5 Amendment 1: coarse/unverified geometry, configuration-dependent BL and unfrozen source. Do not execute or push; await WP4 dense geometry and Claude instruction.",
+  "render_kind": "development",
+  "schema": "wp05-amendment1-render-invalidation-v1",
+  "wrappers": [
+    {
+      "after_sha256": "f9cc325fe4381d164511eb9e18a98df95601356385ab7a459d1dbd7de25753b1",
+      "before_sha256": "b2e097bfb3cb135542cdffacf9a1228dc6786fb79896b3e0d65be81e3a2f0f37",
+      "embedded_payload_literal_sha256_unchanged": "ea41df75ad439268a8e692e15cd75cc196d1da95d12b5d87f7a266e6e5a5fc8e",
+      "path": "work/wp05/kernels_tr00/tr00_01/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "ac24f6032c2903c0ba9e45fe82ccb905049c640b7f347ea70226f5d5d8d36185",
+      "before_sha256": "ec9d7ea3a05c98260d80e6fe3ce87da028d289c462695d6df3dfc235bd1da114",
+      "embedded_payload_literal_sha256_unchanged": "ea41df75ad439268a8e692e15cd75cc196d1da95d12b5d87f7a266e6e5a5fc8e",
+      "path": "work/wp05/kernels_tr00/tr00_02/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "95d48ec4d5476c281e12179beb2fbaa6541816d85d82286fe1c89af51aaca0e5",
+      "before_sha256": "033df312f7b18af15d3692cf4dcb967eb3efec707700154364b28287af8104b3",
+      "embedded_payload_literal_sha256_unchanged": "ea41df75ad439268a8e692e15cd75cc196d1da95d12b5d87f7a266e6e5a5fc8e",
+      "path": "work/wp05/kernels_tr00/tr00_03/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "544c6b6f4ade04a38bc01405e364ef70e1fb9db9c7174a5461fb25c5c7e90fb2",
+      "before_sha256": "05de38d09dbfe7b93ba09d4536e4e974cc0408b5db3f02865c7044dfa5378d3c",
+      "embedded_payload_literal_sha256_unchanged": "ea41df75ad439268a8e692e15cd75cc196d1da95d12b5d87f7a266e6e5a5fc8e",
+      "path": "work/wp05/kernels_tr00/tr00_04/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "55c01fbebf9cfc5b3eb345735891986b3c075e2dd44967e2b33f4807b305696a",
+      "before_sha256": "0ca67c0658169e2b431aa14481762f60f1ad403bc12f036cb323efa66725ef37",
+      "embedded_payload_literal_sha256_unchanged": "ea41df75ad439268a8e692e15cd75cc196d1da95d12b5d87f7a266e6e5a5fc8e",
+      "path": "work/wp05/kernels_tr00/tr00_05/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "3b30a19a225e00fd6b72f027bbf9fd165c54567964e453daf0064b9772e7dcf5",
+      "before_sha256": "f7e1cc5a8b553544b3d733cfbbfae3c5da15d17c1cb7505ab2afffa5cfb87952",
+      "embedded_payload_literal_sha256_unchanged": "ea41df75ad439268a8e692e15cd75cc196d1da95d12b5d87f7a266e6e5a5fc8e",
+      "path": "work/wp05/kernels_tr00/tr00_06/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "9107c18604fd3029cf0028a5c847db785f7f4f6e02967cc6c947d84c3a747ade",
+      "before_sha256": "c42aab6ba8c26ce87b53c0e6bd8a0e9acff0ba4885c970548d1d4f4a85849e9d",
+      "embedded_payload_literal_sha256_unchanged": "5b01b9dca557d010f93907866cb5c1ca98d0cfc90237b47999d34dcd41ca33f5",
+      "path": "work/wp05/kernels_main/main_01/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "603631d96411c2f0f261298d8a5361164e9803a6a92a661d2f9e3a6fd4a3c43f",
+      "before_sha256": "3ea2b872dc4ed085f5ed241a134d6389b40b7e408559941ef0696d4154fea3a7",
+      "embedded_payload_literal_sha256_unchanged": "5b01b9dca557d010f93907866cb5c1ca98d0cfc90237b47999d34dcd41ca33f5",
+      "path": "work/wp05/kernels_main/main_02/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "f20d1c0b1eda9e02002bff4bf9fe2b8c54ff9a4d50a1d9d0f379e6839e336fc4",
+      "before_sha256": "01eeb85d1acc8decd7be28654df39e2ebb97f548cfaa7b9f2ad52d67642894e8",
+      "embedded_payload_literal_sha256_unchanged": "5b01b9dca557d010f93907866cb5c1ca98d0cfc90237b47999d34dcd41ca33f5",
+      "path": "work/wp05/kernels_main/main_03/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "e4cb971abe0c9092e694434bcd2f4c1371a323e1961727fe9af5281c477f3eca",
+      "before_sha256": "08db0d7b35fd4c4eaa8306edb1da80bb4625d657a2f1c317b1f93e3cb725a9ae",
+      "embedded_payload_literal_sha256_unchanged": "5b01b9dca557d010f93907866cb5c1ca98d0cfc90237b47999d34dcd41ca33f5",
+      "path": "work/wp05/kernels_main/main_04/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "873bb20b52b3e00746e2b118ba8336bb92f2c6502c85cacdb068fd30c4a0dfb8",
+      "before_sha256": "7fb7aba6f86eb357e41e26622a8564618606a2a3b8e808e926367af04bfa5aba",
+      "embedded_payload_literal_sha256_unchanged": "5b01b9dca557d010f93907866cb5c1ca98d0cfc90237b47999d34dcd41ca33f5",
+      "path": "work/wp05/kernels_main/main_05/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "4c87e4fba39344c2c97ae44632adc5378cd3884adc923f5855f69682befb8d0b",
+      "before_sha256": "753707bb232eae32e9020202b0be6e51ec70247225233b8d198244314886552d",
+      "embedded_payload_literal_sha256_unchanged": "5b01b9dca557d010f93907866cb5c1ca98d0cfc90237b47999d34dcd41ca33f5",
+      "path": "work/wp05/kernels_main/main_06/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "80fc26967c2aff58675ce19c811f66f2aa1ee5b37a2cbc28ef3a514b03562b2b",
+      "before_sha256": "0ab2bfe7dd7a3f4dec55b41ac3633e96767ca35038f26db69c6770e3641f1937",
+      "embedded_payload_literal_sha256_unchanged": "5b01b9dca557d010f93907866cb5c1ca98d0cfc90237b47999d34dcd41ca33f5",
+      "path": "work/wp05/kernels_main/main_07/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "6a8c84b90490a4e02c1c8211fb58d56bfa609b2afe3a2e068a257f6197fe61c5",
+      "before_sha256": "9dca86ad53ad04739b3f3e36974aa0299b374d5e2682f4bb674f38a684320348",
+      "embedded_payload_literal_sha256_unchanged": "5b01b9dca557d010f93907866cb5c1ca98d0cfc90237b47999d34dcd41ca33f5",
+      "path": "work/wp05/kernels_main/main_08/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "180cc63cb281c244142ae1e533ca415eb812eb3075b23eeffba7bf70e014b8c1",
+      "before_sha256": "78289b784fa9e1b7dd580eeb738a26b32d9554a23b9112dd11f0446239e5f914",
+      "embedded_payload_literal_sha256_unchanged": "c132b457f560a7fdf3f145a42f6c1a23cd1102d0ca7dea310bdd13637441b616",
+      "path": "work/wp05/render_preinterop/kernels_tr00/tr00_01/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "6c7fb6e58ed99c75cc0b8b48d372353b402973f1d0a58c6ba7bfbd542b87376f",
+      "before_sha256": "cf49e1778fd9cff1bdb7b75f053fbe184c9443087ab158aedb58cade34524652",
+      "embedded_payload_literal_sha256_unchanged": "c132b457f560a7fdf3f145a42f6c1a23cd1102d0ca7dea310bdd13637441b616",
+      "path": "work/wp05/render_preinterop/kernels_tr00/tr00_02/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "bf9ac7238f52c456509448f5592ba514578eef9f2556cbb088c408b8e0017470",
+      "before_sha256": "94e0cdadde44ae25610318526f42feff5af710fc341e73a663a1588758f8d771",
+      "embedded_payload_literal_sha256_unchanged": "c132b457f560a7fdf3f145a42f6c1a23cd1102d0ca7dea310bdd13637441b616",
+      "path": "work/wp05/render_preinterop/kernels_tr00/tr00_03/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "bd0c2e09fa36504c5c8b96cfff950394df8745607284522d8ae38c24c633f515",
+      "before_sha256": "73babca8692018d4733388189fd94555e2e25ac5947a7f7f9d79559545582cbb",
+      "embedded_payload_literal_sha256_unchanged": "c132b457f560a7fdf3f145a42f6c1a23cd1102d0ca7dea310bdd13637441b616",
+      "path": "work/wp05/render_preinterop/kernels_tr00/tr00_04/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "05067f192837a416e847cc62907cc86cdee4c4041355e8e2fae750af13ef4475",
+      "before_sha256": "67464aa193a4b11d9129c9486732fef14434d6ced099f9ef02c4870426b915e0",
+      "embedded_payload_literal_sha256_unchanged": "c132b457f560a7fdf3f145a42f6c1a23cd1102d0ca7dea310bdd13637441b616",
+      "path": "work/wp05/render_preinterop/kernels_tr00/tr00_05/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "d7039b128740b16485cbf332513147ea868d274bf1e63e49c60f8094f377c508",
+      "before_sha256": "cea210aee6216f6f8d57513d267b79784c6a2f6bb665cd4205c0eedd9d36037e",
+      "embedded_payload_literal_sha256_unchanged": "c132b457f560a7fdf3f145a42f6c1a23cd1102d0ca7dea310bdd13637441b616",
+      "path": "work/wp05/render_preinterop/kernels_tr00/tr00_06/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "2640f080a491c0c50c0ba44ea3cd7957f5aa0b92b41617f62d41c4b10253bec4",
+      "before_sha256": "f09a987edbc96061c033de7bfb96a4619d8d347f8090783f81235c5b079c2198",
+      "embedded_payload_literal_sha256_unchanged": "68e91ee2e2a44b595775726f707f9d235b441565b0cba1f738ddcaf19a97d06c",
+      "path": "work/wp05/render_preinterop/kernels_main/main_01/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "8bf06e4c237cb58f10086088782a277c339ba2aa2110e0632e8b62dcb3ce608e",
+      "before_sha256": "ddb92f2238bf81797cecee152b8d8c7e0b75defc586522e4de03ea3ea7935aad",
+      "embedded_payload_literal_sha256_unchanged": "68e91ee2e2a44b595775726f707f9d235b441565b0cba1f738ddcaf19a97d06c",
+      "path": "work/wp05/render_preinterop/kernels_main/main_02/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "10a15b1d5b2530482ae6c4eb9769d1ef244c12c8524442213c1714f1cb10fa5d",
+      "before_sha256": "a206275a494a37c0936770dccb548d47c2121c3029c05e73a3c83e9a55277260",
+      "embedded_payload_literal_sha256_unchanged": "68e91ee2e2a44b595775726f707f9d235b441565b0cba1f738ddcaf19a97d06c",
+      "path": "work/wp05/render_preinterop/kernels_main/main_03/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "d643db0cd5b14b284b740f28b35e1e7b6f1c5a82fcbed0447c63fac5487b5fd0",
+      "before_sha256": "41a52bf8986e33f5dbd7360ce4382df44756f51e35d44df53a9dfcd84f63f45c",
+      "embedded_payload_literal_sha256_unchanged": "68e91ee2e2a44b595775726f707f9d235b441565b0cba1f738ddcaf19a97d06c",
+      "path": "work/wp05/render_preinterop/kernels_main/main_04/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "b8420e3bcc94c8f52e0b066ff26e06e34c2c4d5e13846a5abb2fb3d1d910596f",
+      "before_sha256": "007e9ff0720fbc8eeb66d309dbb6545af1095c5721ec6a0ef35c46bb7e03bd36",
+      "embedded_payload_literal_sha256_unchanged": "68e91ee2e2a44b595775726f707f9d235b441565b0cba1f738ddcaf19a97d06c",
+      "path": "work/wp05/render_preinterop/kernels_main/main_05/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "86ca303f5928837a7c6b8e0279f86da7cef81a6c30a77a0ea9c8241580f120c2",
+      "before_sha256": "1e1d822bbcfc87f50a139ac1aa089164feff6352cab14535d71d9234a3562313",
+      "embedded_payload_literal_sha256_unchanged": "68e91ee2e2a44b595775726f707f9d235b441565b0cba1f738ddcaf19a97d06c",
+      "path": "work/wp05/render_preinterop/kernels_main/main_06/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "7ec7980b41f744764a2a4ff9d2efc9fbaadd6028f58c5f530df1961106b1138f",
+      "before_sha256": "834ddae39b22a3b60daeeeb9e1386e36789cd94a05194f9fd1a901d4419d6dad",
+      "embedded_payload_literal_sha256_unchanged": "68e91ee2e2a44b595775726f707f9d235b441565b0cba1f738ddcaf19a97d06c",
+      "path": "work/wp05/render_preinterop/kernels_main/main_07/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "800feb66e5cbf90ce00d67a77d47da908c48e446f918909f53e8f3ad33cdedc8",
+      "before_sha256": "af930c70aceb570d8bdf21a55f5b1564acd05ceeefbac717971096ab69dc8760",
+      "embedded_payload_literal_sha256_unchanged": "68e91ee2e2a44b595775726f707f9d235b441565b0cba1f738ddcaf19a97d06c",
+      "path": "work/wp05/render_preinterop/kernels_main/main_08/runner.py",
+      "ready_for_execution": false
+    },
+    {
+      "after_sha256": "58255836cef7c2f38730e8eef21ec4107ca6408430a2649ecc7911f877ad3532",
+      "before_sha256": "7d55aad9ca8390af98e6baac52e2f9e0fe5580abb8ea64d2f5f9c3065de2f20d",
+      "embedded_payload_literal_sha256_unchanged": "9e86382a59d98492ab0de8aaf0a95e812bbd205d8b4d79b45fa5d5a4761ca64d",
+      "path": "work/wp05/local_smoke_kernel/smoke_01/runner.py",
+      "ready_for_execution": false
+    }
+  ]
+}

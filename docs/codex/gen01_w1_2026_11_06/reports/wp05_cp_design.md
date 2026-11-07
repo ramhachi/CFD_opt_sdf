@@ -39,8 +39,9 @@ spread is a sensitivity estimate, not a confidence interval or total error.
   independence provenance. Estimate each element by the mean of the two
   trapezoidal results; use their absolute difference as a conservative
   digitization sensitivity. Sum element sensitivities (no cancellation), then
-  sum E1 and E2 sensitivities for an increment. Preserve the signed paired
-  difference as a separate diagnostic.
+  retain E1 plus E2 sensitivity descriptively for an increment. Amendment 1
+  uses E2's sensitivity alone for the registered 5% comparison. Preserve the
+  absolute paired-total difference as a separate diagnostic.
 - Accept Table 15 as an explicitly supplied scalar with source, source chord,
   reading sensitivity and its stated basis. It is never represented as a new
   Cp integral. The existing audit verifies 1.009 at h/c1 = 0.448; source
@@ -79,3 +80,36 @@ matching height / incidence. A metadata assertion records provenance; it does
 not independently establish a figure's geometry or experimental conditions.
 Real E2 Cp CSVs are not supplied, so no measured E2 Cl, reference increment or
 TR-00 eligibility is produced by this implementation.
+
+## Amendment 1 design (2026-11-06; before implementation)
+
+The external registration Amendment 1 §6 and the Opus source review C1/C2
+supersede the permissive initial input checks. Each physical Cp surface must
+have at least 10 points. For each element, corresponding upper and lower CSVs
+from the two readers must have different SHA-256 content hashes, even if their
+paths differ. Each individual reader's element integral must be strictly
+downforce-positive before averaging; negative and zero integrals are refused
+with a surface-label diagnostic. The signed low-level integral remains useful
+for mathematical checks; the wing-specific positive-downforce guard belongs to
+the reference builder. Two Cl(h/c) CSVs must also be SHA-distinct, but they are
+curves rather than physical surfaces and retain the two-point interpolation
+minimum. Table 15 remains a scalar transcription with its separate provenance.
+
+The registered E2 digitising uncertainty remains the sum over elements of the
+absolute difference between reader integrals, with no cancellation. The 5%
+comparison uses the target E2 uncertainty. The earlier increment field added
+E1's reading sensitivity to that threshold; this amendment instead reports
+the source sensitivity and the summed difference-reading sensitivity in
+separate fields. Neither is promoted into total reference uncertainty.
+
+Add explicit `observable: pressure_cl` to the output and to each reference,
+while retaining the existing precise normalization provenance. Report
+`h_over_c1 = height_m / 0.2234` and `h_over_c = height_m / 0.380`; preserve the
+publication's rounded height ratio separately in source metadata. No actual
+CSV, source figure, reference value, freeze, or registered threshold changes.
+
+Only the existing Cp source, tests, format guide, and this design memo change.
+Tests first cover copied contents under distinct names, copies on either
+surface, a nonpositive individual element hidden by positive other readings,
+the 9/10-point boundary, identical Cl(h/c) files, known integrals, unchanged
+per-element uncertainty, and the E2-only 5% comparison with E1 reported apart.

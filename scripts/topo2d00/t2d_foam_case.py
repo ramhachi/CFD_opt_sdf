@@ -18,16 +18,14 @@ import t20_case as T
 import t20_foam as B
 try:
     from . import t2d_multibody_case as M
+    from .collect_rans import CONVERGENCE
 except ImportError:  # direct CLI
     import t2d_multibody_case as M
+    from collect_rans import CONVERGENCE
 
 MODELS = ('sa-wf', 'sst-wf')
-# Source: T2-0b runner constants and force_summary; inherited by T2-0c §5.
-CONVERGENCE = {'initial_iterations': 5000, 'continuation_iterations': 15000, 'max_continuations': 1,
-               'tail_fraction': .2, 'tail_min_rows': 50, 'block_iterations': 20,
-               'plateau_relative_std_limit': .005, 'plateau_relative_drift_limit': .005,
-               'unsteady_raw_tail_relative_std': .005,
-               'rule_source': 'infra/kaggle/kernel_t20b_cpu/runner.py:force_summary; docs/t20c_registration_2026_10_20.md §5'}
+# TOPO-2D-00 §2: published double-element combined chord (all arms report h/c).
+COMBINED_CHORD_M = .380
 
 
 def _patches(patches):
@@ -73,8 +71,10 @@ def case_files(model: str, family: str, patches: list[str], iters=5000) -> dict[
     files = {'0/' + key: _extra_walls(value, patches) for key, value in B.fields(mdl, T.U_INF, T.NU, T.TU, T.L_INT).items()}
     files.update(B.system_and_constant(mdl, mesh, p))
     files['system/controlDict'] = _force_objects(files['system/controlDict'], patches)
-    cont = B.system_and_constant(mdl, mesh, {**p, 'iters': 15000, 'start': 'latestTime'})
-    files['continuation/system/controlDict'] = _force_objects(cont['system/controlDict'], patches)
+    # The runner uses the unchanged T2-0b _continue, which changes only endTime
+    # and startFrom; retain the inherited initial writeInterval in this preview.
+    files['continuation/system/controlDict'] = re.sub(r'^endTime .*;$', 'endTime 15000;',
+        re.sub(r'^startFrom .*;$', 'startFrom latestTime;', files['system/controlDict'], flags=re.M), flags=re.M)
     return files
 
 
@@ -89,18 +89,29 @@ def fix_boundary(text: str, patches: list[str]) -> str:
     return text
 
 
-def write_case(out: Path, geometry: Path | str | dict, model='sa-wf', family='fine30', realisation=0, iters=5000) -> dict:
+def write_case(out: Path, geometry: Path | str | dict, model='sa-wf', family='fine30', realisation=0, iters=5000,
+               boundary_layer_plan=None) -> dict:
     """Write mesh/dictionaries and manifest. Each call is one fresh realisation."""
     if type(realisation) is not int or not 0 <= realisation < 8:
         raise ValueError('realisation must be an integer in [0,7]')
-    geom = M.load_geometry(geometry)
+    geom = M.load_geometry(geometry, family)
+    if boundary_layer_plan is None:
+        if iters == 5000:
+            raise ValueError('production requires a study-wide boundary-layer plan from all six configurations')
+        boundary_layer_plan = M.boundary_layer_plan({geom['config']: geometry}, require_complete=False)
+    elif not isinstance(boundary_layer_plan, dict):
+        boundary_layer_plan = json.loads(Path(boundary_layer_plan).read_text())
+    if iters == 5000 and (boundary_layer_plan.get('scope') != 'study' or
+                         set(boundary_layer_plan.get('geometry_sha256', {})) != M.STUDY_CONFIGS):
+        raise ValueError('production boundary-layer plan must bind all six study configurations')
+    fixed_layers = M.boundary_layer_settings(boundary_layer_plan, geom, family)
     patches = [e['patch'] for e in geom['elements']]
     files = case_files(model, family, patches, iters)
     out = Path(out)
     if out.exists() and any(out.iterdir()):
         raise FileExistsError(f'refusing to overwrite nonempty case {out}')
     out.mkdir(parents=True, exist_ok=True)
-    stats = M.build_mesh(geom, family, out / 'mesh.msh')
+    stats = M.build_mesh(geom, family, out / 'mesh.msh', boundary_layers=boundary_layer_plan)
     for rel, text in files.items():
         path = out / rel
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -110,10 +121,16 @@ def write_case(out: Path, geometry: Path | str | dict, model='sa-wf', family='fi
            'model': model, 'foam_model': T.MODELS[model]['foam'], 'family': family, 'mesh': family,
            'mesh_spec': T.MESHES[family], 'realisation': realisation,
            'iterations': iters, 'convergence': CONVERGENCE,
-           'h_m': geom['ride_height_m'], 'h_over_c': geom['ride_height_m'] / T.CHORD,
+           'h_m': geom['ride_height_m'], 'h_over_c1': geom['ride_height_m'] / T.CHORD,
+           'h_over_c': geom['ride_height_m'] / COMBINED_CHORD_M,
            'h_m_datum': 'minimum current contour clearance; not a published zero-incidence datum',
            'minimum_clearance_m': geom['minimum_clearance_m'], 'main_element_clearance_m': geom['main_element_clearance_m'],
            'nominal_ride_height_m': geom['nominal_ride_height_m'], 'nominal_height_datum': geom['height_datum'],
+           'nominal_h_over_c1': None if geom['nominal_ride_height_m'] is None else geom['nominal_ride_height_m'] / T.CHORD,
+           'nominal_h_over_c': None if geom['nominal_ride_height_m'] is None else geom['nominal_ride_height_m'] / COMBINED_CHORD_M,
+           'combined_chord_m': COMBINED_CHORD_M,
+           'n_layers': fixed_layers['n_layers'], 'boundary_layer_plan': boundary_layer_plan,
+           'boundary_layer_plan_sha256': M.plan_sha256(boundary_layer_plan),
            'chord_m': T.CHORD, 'reference_chord_m': T.CHORD, 'z_m': T.Z, 'Aref_m2': T.CHORD * T.Z,
            'U_inf': T.U_INF, 'Re_c': T.RE_C, 'nu': T.NU, 'Tu': T.TU, 'L_int_m': T.L_INT,
            'transition_model': 'none', 'trip': False,
@@ -150,8 +167,9 @@ def main(argv=None):
     ap.add_argument('--family', choices=M.FAMILIES, default='fine30')
     ap.add_argument('--realisation', type=int, default=0)
     ap.add_argument('--iters', type=int, default=5000)
+    ap.add_argument('--boundary-layer-plan', type=Path)
     args = ap.parse_args(argv)
-    man = write_case(args.out, args.geometry, args.model, args.family, args.realisation, args.iters)
+    man = write_case(args.out, args.geometry, args.model, args.family, args.realisation, args.iters, args.boundary_layer_plan)
     print(json.dumps({'out': str(args.out), 'config': man['config'], 'mesh_msh_sha256': man['mesh_msh_sha256'],
                       'cells': man['mesh_stats']['cells_3d'], 'proxy_failures': man['mesh_quality_failures']}))
 

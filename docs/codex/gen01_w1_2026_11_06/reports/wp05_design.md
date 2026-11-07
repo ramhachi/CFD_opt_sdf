@@ -1,5 +1,11 @@
 # WP5 design — TR-00 / TOPO-2D-00 RANS tooling
 
+Amendment 1: the first-attempt decisions/verification below are historical.
+The active correction design is [wp05_amendment1_design.md](wp05_amendment1_design.md).
+In particular, coarse faceted input is now rejected, BL counts are fixed per
+family over six geometries, and T2-0c (not T2-0d) classifies convergence.
+Claude performs commit/push; no real kernel is re-rendered in this amendment.
+
 Date: 2026-11-06. Development/capability work only; the registration remains a
 draft, qualification flags remain false, and no production run is authorised.
 Base: `e3dcdf61`, branch `feat/gen01-w1-05-tr00-rans`, clean before work.

@@ -19,6 +19,7 @@ from pathlib import Path
 
 # TOPO-2D-00 draft §2: use the SAME reference length for E1/E2/E3 differences.
 REFERENCE_CHORD_M = 0.2234
+COMBINED_CHORD_M = 0.380  # Registration §2: second, published ride-height normalization.
 SIGN = "downforce=-Fz"
 _COVERAGE_TOL = 1e-10  # dimensionless x/c, tolerance for text representation only
 _COMMON = {"config", "method", "height_m", "height_mapping_note", "source"}
@@ -61,8 +62,11 @@ def _csv_input(path, columns):
             points.append(pair)
     except (csv.Error, UnicodeError) as exc:
         raise ValueError(f"{path}: invalid CSV") from exc
-    if len(points) < 2:
-        raise ValueError(f"{path}: at least two points are required")
+    # Registration Amendment 1 §6: >=10 points per physical Cp surface. A
+    # Cl(h/c) curve is not a surface; linear interpolation still needs >=2.
+    minimum = 10 if tuple(columns) == ("x/c", "Cp") else 2
+    if len(points) < minimum:
+        raise ValueError(f"{path}: at least {minimum} points are required")
     if all(b[0] < a[0] for a, b in zip(points, points[1:])):
         points.reverse()
     if any(b[0] <= a[0] for a, b in zip(points, points[1:])):
@@ -71,7 +75,7 @@ def _csv_input(path, columns):
 
 
 def read_csv(path, columns=("x/c", "Cp")):
-    """Read finite, strictly monotone two-column data; reverse descending data."""
+    """Read finite monotone data: >=10 Cp points, >=2 curve points; reverse descending."""
     return _csv_input(path, columns)[0]
 
 
@@ -149,7 +153,12 @@ def _cp(config, base, chord):
             upper, up_input = _input(base, surfaces["upper"])
             lower, lo_input = _input(base, surfaces["lower"])
             value = _integrate_points(upper, lower, element["abscissa_chord_m"], chord, element["x_extent"])
+            if value <= 0:
+                raise ValueError(f"{element_id}/{who}: integrated Cl must be downforce-positive; check physical upper/lower surface labels")
             digitizations.append({"id": who, "Cl": value, "upper": up_input, "lower": lo_input})
+        for surface in ("upper", "lower"):
+            if digitizations[0][surface]["sha256"] == digitizations[1][surface]["sha256"]:
+                raise ValueError(f"{element_id}: {surface} digitizations must have different CSV SHA-256 contents")
         value, sensitivity = _pair_summary([d["Cl"] for d in digitizations])
         elements.append({"id": element_id, "Cl": value, "digitization_sensitivity_abs": sensitivity,
                          "abscissa_chord_m": element["abscissa_chord_m"], "x_extent": element["x_extent"],
@@ -193,6 +202,8 @@ def _curve(config, base, chord):
         (x0, y0), (x1, y1) = points[i - 1:i + 1]
         fraction = (target - x0) / (x1 - x0)
         digits.append({"id": who, "Cl": _number(((1 - fraction) * y0 + fraction * y1) * scale, "interpolated Cl"), "input": inp})
+    if digits[0]["input"]["sha256"] == digits[1]["input"]["sha256"]:
+        raise ValueError("Cl(h/c) digitizations must have different CSV SHA-256 contents")
     value, sensitivity = _pair_summary([d["Cl"] for d in digits])
     return {"Cl": value, "digitization_sensitivity_abs": sensitivity, "digitizations": digits,
             "digitizers": config["digitizers"], "independence_note": config["independence_note"],
@@ -236,7 +247,9 @@ def build_reference(manifest_path):
             estimate = _curve(config, manifest_path.parent, chord)
         else:
             raise ValueError("unknown reference method")
-        references.append({"config": name, "method": method, "height_m": config["height_m"],
+        references.append({"config": name, "method": method, "observable": "pressure_cl",
+                           "height_m": config["height_m"], "h_over_c1": config["height_m"] / chord,
+                           "h_over_c": config["height_m"] / COMBINED_CHORD_M,
                            "height_mapping_note": config["height_mapping_note"], "source": source, **estimate,
                            "uncertainty": {"digitization_sensitivity_abs": estimate["digitization_sensitivity_abs"],
                                            "total_reference_abs": None, "covers_total_reference": False,
@@ -257,14 +270,22 @@ def build_reference(manifest_path):
         if a["height_m"] != b["height_m"]:
             raise ValueError("increment references must declare the same physical height")
         delta = _number(b["Cl"] - a["Cl"], "reference increment")
-        sensitivity = _number(a["digitization_sensitivity_abs"] + b["digitization_sensitivity_abs"], "increment sensitivity")
+        # Registration §4 / Amendment 1 §6: compare the double-element reading
+        # uncertainty against 5% of the increment, retaining E1 separately.
+        sensitivity = b["digitization_sensitivity_abs"]
+        difference_sensitivity = _number(a["digitization_sensitivity_abs"] + sensitivity, "difference reading sensitivity")
         increments.append({**request, "delta_Cl": delta, "digitization_sensitivity_abs": sensitivity,
+                           "from_digitization_sensitivity_abs": a["digitization_sensitivity_abs"],
+                           "to_digitization_sensitivity_abs": sensitivity,
+                           "reference_difference_reading_sensitivity_abs": difference_sensitivity,
+                           "threshold_uncertainty_basis": "to_reference_digitization_sensitivity_abs",
                            "digitization_fraction_of_increment": sensitivity / abs(delta) if delta else None,
                            "digitization_exceeds_5_percent": sensitivity > 0.05 * abs(delta) if delta else None,
                            "threshold_fraction": 0.05,  # TOPO-2D-00 draft §4, never tuned here
                            "zero_increment": delta == 0, "total_reference_uncertainty_known": False,
                            "qualification_decided": False})
     result = {"kind": "topo2d00_pressure_reference_v1", "evidence_class": "reference_estimate",
+              "observable": "pressure_cl",
               "normalization": {"reference_chord_m": chord, "sign": SIGN,
                                 "observable": "pressure_only_centre_section_Cl",
                                 "abscissa_direction": "global_streamwise", "surfaces": "physical_upper_lower"},

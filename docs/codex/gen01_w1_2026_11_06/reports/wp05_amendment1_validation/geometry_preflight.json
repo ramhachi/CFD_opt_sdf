@@ -1,0 +1,106 @@
+{
+  "current_E2_mesh_smoke": "NOT_RERUN: available source geometry fails Amendment1 density guard; WP4 supplies dense identical polygons, then Claude instructs new render. First-attempt smoke is historical only.",
+  "evidence_class": "DEVELOPMENT_INPUT_AUDIT",
+  "geometry_regenerated": false,
+  "inputs": [
+    {
+      "accepted_by_amendment1": false,
+      "body_density": [
+        {
+          "max_noncap_turn_deg": 15.44770883323115,
+          "max_segment_m_including_cap": 0.011513675872477615,
+          "name": "main",
+          "vertices": 87
+        }
+      ],
+      "new_loader_rejection": "main: segment 6 length 0.0115136759 m exceeds fine30 ds=0.002 m (including cap segments)",
+      "path": "work/wp05/geometry/E1.json",
+      "sha256": "39049da67d9da2ebbfe55bf59a1a5bd377e535a1c56370799f0bc3033d1663b7"
+    },
+    {
+      "accepted_by_amendment1": false,
+      "body_density": [
+        {
+          "max_noncap_turn_deg": 15.44770883323115,
+          "max_segment_m_including_cap": 0.011539242956104171,
+          "name": "main",
+          "vertices": 87
+        }
+      ],
+      "new_loader_rejection": "main: segment 6 length 0.011539243 m exceeds fine30 ds=0.002 m (including cap segments)",
+      "path": "work/wp05/geometry/E1_sharp.json",
+      "sha256": "2f065b8344f5b35d7d7710e09de8cf292de06448cf10a730761a64ac3ebdd4bd"
+    },
+    {
+      "accepted_by_amendment1": false,
+      "body_density": [
+        {
+          "max_noncap_turn_deg": 15.44770883323115,
+          "max_segment_m_including_cap": 0.011513675872477615,
+          "name": "main",
+          "vertices": 87
+        },
+        {
+          "max_noncap_turn_deg": 55.53187581285128,
+          "max_segment_m_including_cap": 0.01470891684235172,
+          "name": "flap1",
+          "vertices": 35
+        }
+      ],
+      "new_loader_rejection": "main: segment 6 length 0.0115136759 m exceeds fine30 ds=0.002 m (including cap segments)",
+      "path": "work/wp05/geometry/E2.json",
+      "sha256": "a2c3bb4e869ce92a60d44c62247a20288321c4a04ed7c02a26f9a6f03309812d"
+    },
+    {
+      "accepted_by_amendment1": false,
+      "body_density": [
+        {
+          "max_noncap_turn_deg": 15.44770883323115,
+          "max_segment_m_including_cap": 0.011539242956104171,
+          "name": "main",
+          "vertices": 87
+        },
+        {
+          "max_noncap_turn_deg": 55.53187581285128,
+          "max_segment_m_including_cap": 0.014653718435946567,
+          "name": "flap1",
+          "vertices": 35
+        }
+      ],
+      "new_loader_rejection": "main: segment 6 length 0.011539243 m exceeds fine30 ds=0.002 m (including cap segments)",
+      "path": "work/wp05/geometry/E2_sharp.json",
+      "sha256": "1594a124429a406533e5b9da7d3684a1b3fd9e0c5ee32634e785da782b4aeb4b"
+    },
+    {
+      "accepted_by_amendment1": false,
+      "body_density": [
+        {
+          "max_noncap_turn_deg": 15.44770883323115,
+          "max_segment_m_including_cap": 0.011513675872477615,
+          "name": "main",
+          "vertices": 87
+        },
+        {
+          "max_noncap_turn_deg": 55.531875812851574,
+          "max_segment_m_including_cap": 0.0074513173320046745,
+          "name": "flap1",
+          "vertices": 35
+        },
+        {
+          "max_noncap_turn_deg": 55.5318758128498,
+          "max_segment_m_including_cap": 0.007451317332004684,
+          "name": "flap2",
+          "vertices": 35
+        }
+      ],
+      "new_loader_rejection": "main: segment 6 length 0.0115136759 m exceeds fine30 ds=0.002 m (including cap segments)",
+      "path": "work/wp05/geometry/E3.json",
+      "sha256": "c0b1bb21f9fdb531f9e8863c223b9745bf4db2fe69a57ba2bf050f35efb7e5e3"
+    }
+  ],
+  "kernel_regenerated": false,
+  "missing_study_configs": [
+    "E3_sharp"
+  ],
+  "production_run": false
+}

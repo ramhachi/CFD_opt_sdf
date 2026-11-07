@@ -1,5 +1,14 @@
 # WP5 development validation artifacts
 
+**Amendment 1 invalidation (2026-11-06):** these are the first-attempt
+historical artifacts. Embedded `ready_for_execution` flags are revoked;
+all original kernels are development renders and must not be executed or
+pushed. See `../wp05_amendment1_validation/render_invalidation.json` for
+archive hashes, explicit ready=false and the blocked working-plan inventory.
+Original archive bytes are retained, not rewritten. Their faceted E2 smoke
+does not validate the amended density guard, fixed BL plan or new source.
+Current validation and status are in `../wp05_report.md`.
+
 These artifacts document code contracts and a bounded local OpenFOAM smoke.
 They are not TR-00 qualification, production RANS, measured experimental Cp,
 grid convergence, or proof that local gmsh reproduces Kaggle's realization.

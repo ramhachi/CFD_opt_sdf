@@ -10,10 +10,12 @@ from __future__ import annotations
 import argparse
 import gzip
 import hashlib
+import importlib.util
 import json
 import math
 import re
 import sys
+from functools import lru_cache
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -21,13 +23,14 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
-import analyze_t20d as D  # noqa: E402 -- registered convergence rules, unchanged
+import analyze_t20c as TC  # noqa: E402 -- registered SIMPLE classification, unchanged
 import t20_case as T  # noqa: E402 -- reference scales, no gmsh import side effect
 
 SCHEMA = ROOT / "docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_measurement_schema.json"
 SHARED_SCHEMA = SCHEMA.with_name("topo2d00_rans_result_schema.json")
 VERSION = "topo2d00-rans-v1"
 CONFIGS = ("E1_sharp", "E2_sharp", "E1", "E2", "E3")
+STUDY_GEOMETRIES = (*CONFIGS, "E3_sharp")  # BL plan includes the unsolved E3 original.
 MODELS, FAMILIES = ("sa-wf", "sst-wf"), ("fine30", "med30")
 KEY_FIELDS = ("config", "model", "family", "realisation")
 NORMALIZATION = {
@@ -40,11 +43,55 @@ FORCE_CONVENTION = {
     "Cl": "downforce", "Cd": "drag",
     "lift_direction": [0, -1, 0], "drag_direction": [1, 0, 0],
 }
-INFRA_STATUSES = D.INFRA_ST | {"SOLVER_TIMEOUT_PARTIAL"}
-MECHANICAL_STATUSES = D.MECH_ST
+INFRA_STATUSES = TC.INFRA | {"SOLVER_TIMEOUT_PARTIAL", "NOT_RUN"}
+MECHANICAL_STATUSES = (TC.MECH - {"PARSE_FAILED"}) | {"MESH_FAILED"}
 SOLVER_STATUSES = {"COMPLETED", "SOLVER_DIVERGED", "SOLVER_FAIL", "simpleFoam_FAILED", "simpleFoam_cont_FAILED",
-                   "simpleFoam_TIMEOUT", "simpleFoam_cont_TIMEOUT"}
+                   "simpleFoam_TIMEOUT", "simpleFoam_cont_TIMEOUT", "PARSE_FAILED"}
 STATUSES = INFRA_STATUSES | MECHANICAL_STATUSES | SOLVER_STATUSES
+# Immutable T2-0b runner.py:371-372 (blown_up), inherited by T2-0c.
+BLOWUP_ABS = 100.0
+# TOPO-2D-00 registration §§2-3: common h=100 mm, c1=223.4 mm,
+# combined experimental chord c=380 mm, Re_c1=4.6e5.
+HEIGHT_M, COMBINED_CHORD_M, REYNOLDS_C1 = .1, .380, 460000
+
+
+@lru_cache(maxsize=None)
+def inherited_runner(source: Path = ROOT):
+    """Load immutable T2-0b helpers without rendering or invoking its main."""
+    p = source / "infra/kaggle/kernel_t20b_cpu/runner.py"
+    spec = importlib.util.spec_from_file_location("wp5_t20b_helpers", p)
+    module = importlib.util.module_from_spec(spec)
+    module.PIN_PINS = {}
+    spec.loader.exec_module(module)
+    return module
+
+
+_HELPER = inherited_runner()
+# One policy object re-exported by t2d_foam_case and used by the driver.
+# T2-0c registration §5 / analyzer.classify inherits this force_summary.
+CONVERGENCE = {
+    "initial_iterations": 5000, "continuation_iterations": _HELPER.CONT_ITERS,
+    "max_continuations": 1, "tail_fraction": _HELPER.TAIL_FRACTION,
+    "tail_min_rows": 50,  # force_summary's registered minimum tail length
+    "block_iterations": _HELPER.BLOCK,
+    "plateau_relative_std_limit": _HELPER.PLATEAU_REL,
+    "plateau_relative_drift_limit": _HELPER.PLATEAU_REL,
+    "unsteady_raw_tail_relative_std": TC.TH["unsteady"],
+    "rule_source": "T2-0c: infra/kaggle/kernel_t20b_cpu/runner.py:force_summary; docs/t20c_registration_2026_10_20.md §5; analyze_t20c.classify",
+}
+
+
+def cl_summary(history: np.ndarray) -> dict:
+    """Exact inherited Cl statistics, without unused raw Cd diagnostics.
+
+    The registered validity rule uses Cl only. Supply Cl in the helper's
+    unused Cd slot to keep zero drag from making that unrelated ratio undefined.
+    """
+    rows = [{"Time": float(t), "Cl": float(cl), "Cd": float(cl)} for t, cl in history[:, :2]]
+    summary = inherited_runner().force_summary(rows)
+    summary.pop("Cd")
+    summary.pop("force_plateau")
+    return summary
 
 
 class HistoryUnavailable(ValueError):
@@ -107,7 +154,7 @@ def _input_path(folder: Path, relative: str) -> Path:
     return p
 
 
-def read_history(folder: Path, files: list[dict], columns=("Time", "Cl", "Cd")) -> np.ndarray:
+def read_history(folder: Path, files: list[dict], columns=("Time", "Cl", "Cd"), *, minimum_rows=2) -> np.ndarray:
     """Strict named-column reader of restart segments in their declared order."""
     if not isinstance(files, list) or not files:
         raise HistoryUnavailable("missing coefficient history")
@@ -133,11 +180,27 @@ def read_history(folder: Path, files: list[dict], columns=("Time", "Cl", "Cd")) 
             raise ValueError(f"coefficient column count differs: {p}")
         pieces.append(a[:, [h.index(name) for name in columns]])
     out = np.concatenate(pieces)
-    if len(out) < 2:
-        raise HistoryUnavailable("coefficient history has fewer than two rows")
+    if len(out) < minimum_rows:
+        raise HistoryUnavailable(f"coefficient history has fewer than {minimum_rows} rows")
     if not np.isfinite(out[:, 0]).all() or not np.all(np.diff(out[:, 0]) == 1):
         raise ValueError("coefficient SIMPLE iteration history must be contiguous, increasing, with >=2 rows")
     return out
+
+
+def divergent_coefficients(folder: Path, files: dict) -> bool:
+    """Even one nonfinite solver row is a result, including interrupted runs."""
+    if not isinstance(files, dict):
+        raise ValueError("coefficient_files must be an object")
+    diverged = False
+    for entries in files.values():
+        try:
+            history = read_history(folder, entries, minimum_rows=1)
+        except HistoryUnavailable:
+            continue
+        # Inspect all declared artifacts even after a bad row, preserving SHA
+        # and path validation instead of hiding corruption behind divergence.
+        diverged |= not np.isfinite(history[:, 1:]).all() or bool(np.abs(history[:, 1:]).max() > BLOWUP_ABS)
+    return diverged
 
 
 def read_force_parts(folder: Path, files: list[dict]) -> dict[str, np.ndarray]:
@@ -152,38 +215,25 @@ def read_force_parts(folder: Path, files: list[dict]) -> dict[str, np.ndarray]:
 
 
 def convergence(history: np.ndarray, record: dict) -> dict:
-    """T2-0d statistics in iteration coordinates; no physical-period claim."""
+    """T2-0c block plateau, then raw-tail Cl variability; no cycle label."""
     base = {"coordinate": "SIMPLE iteration (not physical time)", "raw_class": "SOLVER_FAIL", "statistics": {}}
     solver = record.get("solver", {})
     bad_log = any(solver.get(k) for k in ("nan_in_log", "sigfpe", "foam_fatal"))
     if (record["status"] == "SOLVER_DIVERGED" or bad_log or not np.isfinite(history[:, 1:]).all()
-            or np.max(np.abs(history[:, 1:])) > D.TH["blowup"]):
+            or np.max(np.abs(history[:, 1:])) > BLOWUP_ABS):
         return {**base, "state": "diverged", "reason": "solver failure, nonfinite coefficient, or |coefficient|>100"}
     if record["status"] != "COMPLETED":
         return {**base, "state": "not_settled", "reason": record["status"]}
     cl = history[:, 1]
     # The registered relative tests are undefined at exactly zero mean.
-    n = min(len(cl), max(50, math.ceil(len(cl) * D.TH["tail"])))
+    n = min(len(cl), max(CONVERGENCE["tail_min_rows"], math.ceil(len(cl) * CONVERGENCE["tail_fraction"])))
     if abs(float(cl[-n:].mean())) < np.finfo(float).tiny:
         return {**base, "state": "not_settled", "reason": "zero Cl mean: relative convergence rule undefined"}
-    st = D.steady_stats(cl)
-    if st["class"] == "CONVERGED":
-        return {**base, "state": "settled", "raw_class": st["class"], "statistics": st, "reason": "T2-0d steady rule"}
-    # A bounded SIMPLE oscillation is numerical: dt=1 is ONE ITERATION, not seconds.
-    tail = history[-n:]
-    if n >= 100:
-        with np.errstate(all="ignore"):
-            periodic = D.urans_stats(tail[:, 0], tail[:, 1], 1.0, float(tail[0, 0] - 1), float(tail[-1, 0]))
-        periodic.pop("St_c", None)  # dt=1 iteration has no physical Strouhal number.
-        periodic["frequency_unit"] = "cycles per SIMPLE iteration"
-        if periodic["class"] == "VALID_PERIODIC":
-            return {**base, "state": "limit_cycle", "raw_class": periodic["class"], "statistics": periodic,
-                    "reason": "T2-0d periodic rule applied to SIMPLE iterations only"}
-        raw = periodic["class"]
-    else:
-        raw = st["class"]
-    return {**base, "state": "not_settled", "raw_class": raw, "statistics": st,
-            "reason": "T2-0d steady rule failed; no qualified stationary iteration cycle"}
+    st = cl_summary(history)
+    raw = TC.classify({"status": "COMPLETED", "check_mesh": {"mesh_ok": True}, "forces": st})
+    return {**base, "state": "settled" if raw == "VALID" else "not_settled", "raw_class": raw,
+            "statistics": st, "reason": "T2-0c block plateau and raw-tail relative Cl std <=0.005" if raw == "VALID"
+            else "T2-0c raw-tail relative Cl std >0.005" if raw == "UNSTEADY" else "T2-0c Cl block plateau failed"}
 
 
 def _finite_json(value):
@@ -211,8 +261,14 @@ def collect_case(path: Path) -> dict:
         raise ValueError(f"unknown case status: {status}")
     if r.get("normalization") != NORMALIZATION or r.get("force_convention") != FORCE_CONVENTION:
         raise ValueError("force normalization/convention differs from the common c1 reference")
+    if status == "COMPLETED" and r.get("convergence_policy") != CONVERGENCE:
+        raise ValueError("completed run convergence policy differs from the T2-0c contract")
     geometry = _digest(r.get("geometry_sha256"), "geometry")
     mesh = _digest(r.get("mesh_msh_sha256"), "mesh", nullable=status != "COMPLETED")
+    n_layers = r.get("n_layers")
+    if ((n_layers is not None and (type(n_layers) is not int or n_layers < 1))
+            or mesh is not None and status not in MECHANICAL_STATUSES and n_layers is None):
+        raise ValueError("meshed run requires a positive integer n_layers")
     if r.get("mesh_file"):
         if sha256(_input_path(path.parent, r["mesh_file"])) != mesh:
             raise ValueError("mesh SHA mismatch")
@@ -225,16 +281,31 @@ def collect_case(path: Path) -> dict:
             or len({e.get("name") for e in elements}) != expected_count
             or any(not isinstance(e.get("name"), str) or not e["name"] for e in elements)):
         raise ValueError("element count/names/patches differ from configuration")
-    base = {**key, "status": status, "mesh_msh_sha256": mesh, "geometry_sha256": geometry,
-            "observable": "pressure_plus_viscous",
+    base = {**key, "status": "MESH_FAILED" if status in MECHANICAL_STATUSES else status,
+            "mesh_msh_sha256": mesh, "geometry_sha256": geometry, "n_layers": n_layers,
+            "observable": "pressure_cl" if key["config"].endswith("_sharp") else "total_cl",
             "coefficients": {"total": None, "elements": [{"name": e["name"], "patch": e["patch"], "Cl": None, "Cd": None} for e in elements]},
             "pressure_coefficients": {"total": None, "elements": [{"name": e["name"], "patch": e["patch"], "Cl": None, "Cd": None} for e in elements]},
             "viscous_coefficients": {"total": None, "elements": [{"name": e["name"], "patch": e["patch"], "Cl": None, "Cd": None} for e in elements]},
-            "convergence": {"state": "unavailable", "raw_class": "INFRA_LOSS" if status in INFRA_STATUSES else "MECHANICAL_FAIL",
+            "convergence": {"state": "unavailable", "raw_class": "INFRA_LOSS" if status in INFRA_STATUSES else "MESH_FAILED",
                             "coordinate": "SIMPLE iteration (not physical time)", "statistics": {}, "reason": status},
             "usable": False, "provenance": {"case_result": str(path), "case_result_sha256": sha256(path),
                                             "coefficient_files": r.get("coefficient_files", {}), "force_files": r.get("force_files", {})}}
     base["pressure_convergence"] = dict(base["convergence"])
+    cm = r.get("check_mesh", {})
+    if status == "COMPLETED" and (not cm.get("mesh_ok") or cm.get("failed_check_counts")):
+        base["status"] = "MESH_FAILED"
+        base["convergence"]["reason"] = "checkMesh rejected the mesh"
+        base["pressure_convergence"] = dict(base["convergence"])
+        return base
+    coefficient_failure = status not in MECHANICAL_STATUSES and divergent_coefficients(path.parent, r.get("coefficient_files", {}))
+    bad_solver_log = any(r.get("solver", {}).get(k) for k in ("nan_in_log", "sigfpe", "foam_fatal"))
+    if status not in MECHANICAL_STATUSES and (coefficient_failure or bad_solver_log):
+        base["status"] = "SOLVER_DIVERGED"
+        base["convergence"] = {**base["convergence"], "state": "diverged", "raw_class": "SOLVER_FAIL",
+                               "reason": "nonfinite/blown-up coefficient row or genuine solver failure log, including a partial or timed-out history"}
+        base["pressure_convergence"] = dict(base["convergence"])
+        return base
     timed_out = status.endswith("_TIMEOUT") and status not in MECHANICAL_STATUSES
     if status in INFRA_STATUSES | MECHANICAL_STATUSES or timed_out and not r.get("solver", {}).get("nan_in_log"):
         if timed_out:
@@ -291,7 +362,7 @@ def collect_case(path: Path) -> dict:
     cv["statistics"]["history_rows"] = len(total)
     cv["statistics"]["analysis_segment"] = "last continuation" if max(segment_counts) > 1 else "initial solve"
     all_histories = [*histories.values(), *(h for parts in split.values() for h in parts.values())]
-    if any(not np.isfinite(h[:, 1:]).all() or np.abs(h[:, 1:]).max() > D.TH["blowup"] for h in all_histories):
+    if any(not np.isfinite(h[:, 1:]).all() or np.abs(h[:, 1:]).max() > BLOWUP_ABS for h in all_histories):
         cv = {**cv, "state": "diverged", "raw_class": "SOLVER_FAIL", "reason": "nonfinite/blown-up element history"}
     base["convergence"] = _finite_json(cv)
     pressure_cv = convergence(analysis_split["total"]["pressure"], r)
@@ -309,16 +380,34 @@ def collect_case(path: Path) -> dict:
         if not np.allclose(sum(split[p][component][:, 1:] for p in patches), split["total"][component][:, 1:], rtol=1e-5, atol=1e-6):
             raise ValueError(f"per-element {component} force sum fails total closure")
     count = len(analysis_histories["total"])
-    n = min(count, max(50, math.ceil(count * D.TH["tail"])))
+    n = min(count, max(CONVERGENCE["tail_min_rows"], math.ceil(count * CONVERGENCE["tail_fraction"])))
     mean = lambda a: {"Cl": float(a[-n:, 1].mean()), "Cd": float(a[-n:, 2].mean())}
     base["coefficients"] = {"total": mean(analysis_histories["total"]), "elements": [{"name": e["name"], "patch": e["patch"], **mean(analysis_histories[e["patch"]])} for e in elements]}
     for component in ("pressure", "viscous"):
         base[f"{component}_coefficients"] = {"total": mean(analysis_split["total"][component]), "elements": [
             {"name": e["name"], "patch": e["patch"], **mean(analysis_split[e["patch"]][component])} for e in elements]}
     cm = r.get("check_mesh", {})
-    base["usable"] = bool(cv["state"] == "settled" and pressure_cv["state"] == "settled" and status == "COMPLETED"
+    selected_cv = pressure_cv if base["observable"] == "pressure_cl" else cv
+    base["usable"] = bool(selected_cv["state"] == "settled" and status == "COMPLETED"
                           and cm.get("mesh_ok") and not cm.get("failed_check_counts"))
     return base
+
+
+def _family_layers(rows: list[dict]) -> dict[str, int]:
+    """A3: the same stack is required across configurations and models."""
+    families = {}
+    for row in rows:
+        count = row.get("n_layers")
+        if count is None:
+            if row.get("mesh_msh_sha256") is not None and row.get("status") != "MESH_FAILED":
+                raise ValueError(f"meshed run requires n_layers for {row['family']}")
+            continue  # Generator failure before a mesh was available.
+        if type(count) is not int or count < 1:
+            raise ValueError(f"invalid n_layers for {row['family']}")
+        if row["family"] in families and families[row["family"]] != count:
+            raise ValueError(f"inconsistent n_layers within family {row['family']}")
+        families[row["family"]] = count
+    return families
 
 
 def collect(inputs, *, expected=None, stage="tr00") -> dict:
@@ -342,11 +431,12 @@ def collect(inputs, *, expected=None, stage="tr00") -> dict:
             raise ValueError(f"duplicate run key: {rid}")
         if rid not in allowed:
             raise ValueError(f"unexpected run key: {rid}")
-        for field in ("geometry_sha256",):
+        for field in ("geometry_sha256", "n_layers"):
             if field in bound[rid] and record.get(field) != bound[rid][field]:
                 raise ValueError(f"run {field} differs from the expected plan: {rid}")
         found.add(rid)
         rows.append(collect_case(p))
+    _family_layers(rows)
     missing = [k for k in expected if run_id(k) not in found]
     out = {"schema_version": VERSION, "evidence_class": "RANS_MEASUREMENT_UNQUALIFIED", "normalization": NORMALIZATION,
            "force_convention": FORCE_CONVENTION, "complete": not missing, "expected_runs": len(expected),
@@ -365,7 +455,7 @@ def _number(value, label, *, nonnegative=False):
 
 def _pressure_reference(reference: dict) -> dict:
     """Map only the canonical digitize_cp output, retaining its uncertainty ceiling."""
-    if reference.get("kind") != "topo2d00_pressure_reference_v1":
+    if reference.get("kind") != "topo2d00_pressure_reference_v1" or reference.get("observable") != "pressure_cl":
         raise ValueError("reference must come from digitize_cp.build_reference")
     norm = reference.get("normalization", {})
     if (not math.isclose(_number(norm.get("reference_chord_m"), "reference chord"), T.CHORD, rel_tol=0, abs_tol=1e-12)
@@ -381,7 +471,10 @@ def _pressure_reference(reference: dict) -> dict:
     chosen = [named[c] for c in ("E1_sharp", "E2_sharp")]
     urls = []
     for ref in chosen:
-        if _number(ref.get("height_m"), "reference height") != .1:
+        if (_number(ref.get("height_m"), "reference height") != HEIGHT_M
+                or ref.get("observable") != "pressure_cl"
+                or not math.isclose(_number(ref.get("h_over_c1"), "reference h/c1"), HEIGHT_M/T.CHORD, rel_tol=1e-12)
+                or not math.isclose(_number(ref.get("h_over_c"), "reference h/c"), HEIGHT_M/COMBINED_CHORD_M, rel_tol=1e-12)):
             raise ValueError("TR-00 reference must declare the same physical h=100 mm")
         if ref.get("source", {}).get("observable") != "centre_section_pressure_integrated":
             raise ValueError("reference source must be centre-section pressure, not balance CL")
@@ -403,12 +496,20 @@ def _pressure_reference(reference: dict) -> dict:
         digitizations = element.get("digitizations", [])
         if len(digitizations) != 2 or {d.get("id") for d in digitizations} != set(ids):
             raise ValueError("Cp element lacks both digitizations")
+        if _number(element.get("Cl"), "Cp element Cl") <= 0:
+            raise ValueError("Cp element Cl must be downforce-positive")
         for digitization in digitizations:
+            if _number(digitization.get("Cl"), "Cp reading Cl") <= 0:
+                raise ValueError("each Cp element reading must be downforce-positive")
             for surface in ("upper", "lower"):
                 artifact = digitization.get(surface, {})
                 if not isinstance(artifact.get("path"), str) or not artifact["path"]:
                     raise ValueError("Cp digitization source path missing")
                 _digest(artifact.get("sha256"), "Cp digitization")
+                if type(artifact.get("points")) is not int or artifact["points"] < 10:
+                    raise ValueError("each Cp surface requires at least 10 points")
+        if any(digitizations[0][surface]["sha256"] == digitizations[1][surface]["sha256"] for surface in ("upper", "lower")):
+            raise ValueError("independent Cp digitizations require SHA-distinct corresponding CSVs")
     increments = [i for i in reference.get("increments", []) if i.get("from") == "E1_sharp" and i.get("to") == "E2_sharp"]
     if len(increments) != 1:
         raise ValueError("reference requires the unique E1_sharp -> E2_sharp increment")
@@ -416,8 +517,13 @@ def _pressure_reference(reference: dict) -> dict:
     delta = _number(inc.get("delta_Cl"), "reference increment")
     sensitivity = _number(inc.get("digitization_sensitivity_abs"), "increment digitizing sensitivity", nonnegative=True)
     if (delta == 0 or not math.isclose(delta, chosen[1]["Cl"] - chosen[0]["Cl"], rel_tol=1e-12, abs_tol=1e-12)
-            or not math.isclose(sensitivity, sum(r["digitization_sensitivity_abs"] for r in chosen), rel_tol=1e-12, abs_tol=1e-12)
-            or inc.get("threshold_fraction") != .05):
+            or not math.isclose(sensitivity, chosen[1]["digitization_sensitivity_abs"], rel_tol=1e-12, abs_tol=1e-12)
+            or inc.get("threshold_fraction") != .05
+            or inc.get("threshold_uncertainty_basis") != "to_reference_digitization_sensitivity_abs"
+            or inc.get("from_digitization_sensitivity_abs") != chosen[0]["digitization_sensitivity_abs"]
+            or inc.get("to_digitization_sensitivity_abs") != chosen[1]["digitization_sensitivity_abs"]
+            or not math.isclose(_number(inc.get("reference_difference_reading_sensitivity_abs"), "full difference reading sensitivity"),
+                                sum(r["digitization_sensitivity_abs"] for r in chosen), rel_tol=1e-12, abs_tol=1e-12)):
         raise ValueError("reference increment/sensitivity/unchanged 5% threshold is inconsistent")
     manifest = reference.get("manifest", {})
     manifest_digest = _digest(manifest.get("sha256"), "Cp manifest")
@@ -455,6 +561,8 @@ def _pressure_reference(reference: dict) -> dict:
                     for surface in ("upper", "lower"):
                         add_artifact(digitization[surface], f"{ref['config']} cp {element['id']} {surface}; operator={reader['operator']}; tool={reader['tool']}; digitizer={reader['id']}; global-streamwise pressure integration")
         elif method == "cl_curve":
+            if len(ref.get("digitizations", [])) != 2 or len({d["input"]["sha256"] for d in ref["digitizations"]}) != 2:
+                raise ValueError("Cl(h) readings require SHA-distinct CSVs")
             for digitization in ref["digitizations"]:
                 reader = readers_by_id[digitization["id"]]
                 add_artifact(digitization["input"], f"{ref['config']} cl_curve; operator={reader['operator']}; tool={reader['tool']}; digitizer={reader['id']}; interpolation at declared physical height")
@@ -462,14 +570,14 @@ def _pressure_reference(reference: dict) -> dict:
             pass  # Exact scalar extraction is bound by the manifest, not a fabricated CSV.
         else:
             raise ValueError("unknown reference extraction method")
-    return {"delta_cl": delta, "digitizing_uncertainty": sensitivity,
+    return {"delta_cl": delta, "digitizing_uncertainty": sensitivity, "observable": "pressure_cl",
             "source": {"title": "; ".join(r["source"]["citation"] for r in chosen),
                        "url": "; ".join(urls),
                        "pages": "; ".join(r["source"]["location"] for r in chosen),
                        "observable": "centre-section pressure-integrated Cl",
                        "digitization_records": artifacts,
                        "method": "digitize_cp: " + "; ".join(f"{r['config']}={r['method']} ({r['source']['location']})" for r in chosen)
-                                 + "; absolute reading sensitivity only; total experimental/integration uncertainty remains unknown"}}
+                                 + "; registered 5% test uses E2 elementwise absolute reading sensitivity; E1 reading sensitivity remains separately in reference_estimate; total experimental/integration uncertainty remains unknown"}}
 
 
 def _export_identity(measurements, plans, supplied_geometry):
@@ -477,7 +585,7 @@ def _export_identity(measurements, plans, supplied_geometry):
     geometry, identities, runtimes = {}, [], []
 
     def bind(config, digest):
-        if config not in CONFIGS:
+        if config not in STUDY_GEOMETRIES:
             raise ValueError(f"unknown geometry config: {config}")
         _digest(digest, "geometry")
         if config in geometry and geometry[config] != digest:
@@ -516,11 +624,11 @@ def _export_identity(measurements, plans, supplied_geometry):
                 bind(row["config"], row["geometry_sha256"])
         source_identity(plan, f"supplied plan {index}")
     if supplied_geometry is not None:
-        if not isinstance(supplied_geometry, dict) or set(supplied_geometry) != set(CONFIGS):
-            raise ValueError("supplied geometry SHA inventory must contain exactly all five configurations")
+        if not isinstance(supplied_geometry, dict) or not set(CONFIGS) <= set(supplied_geometry) <= set(STUDY_GEOMETRIES):
+            raise ValueError("supplied geometry SHA inventory must contain all five run configurations, optionally E3_sharp for the BL plan")
         for config, digest in supplied_geometry.items():
             bind(config, digest)
-    if set(geometry) != set(CONFIGS):
+    if not set(CONFIGS) <= set(geometry):
         raise ValueError("shared output needs all five geometry identities; supply --geometry-plan without requiring main solves, or use --measurements-only")
     roots = set()
     for row in measurements.get("results", []):
@@ -534,7 +642,9 @@ def _export_identity(measurements, plans, supplied_geometry):
                 payload = _read_json(p)
                 runtimes.append({"path": str(p), "sha256": sha256(p), "record": payload})
                 source_identity(payload, str(p))
-    result = {"geometry_sha256": geometry}
+    result = {"geometry_sha256": {c: geometry[c] for c in CONFIGS}}
+    if "E3_sharp" in geometry:
+        result["study_geometry_sha256"] = geometry
     if identities:
         result["source_identity"] = identities
         commits = {x["source_commit"] for x in identities if "source_commit" in x}
@@ -554,6 +664,7 @@ def to_wp4(measurements: dict, reference_json: dict, *, plans=(), geometry_sha25
     """
     if measurements.get("schema_version") != VERSION or measurements.get("normalization") != NORMALIZATION or measurements.get("force_convention") != FORCE_CONVENTION:
         raise ValueError("unknown RANS measurement normalization/schema")
+    _family_layers(measurements.get("results", []))
     reference = _pressure_reference(reference_json)
     identity = _export_identity(measurements, plans, geometry_sha256)
     rows, cells = {}, set()
@@ -562,9 +673,12 @@ def to_wp4(measurements: dict, reference_json: dict, *, plans=(), geometry_sha25
         rid = run_id(key)
         if rid in rows:
             raise ValueError("duplicate measurement run identity")
-        if type(row.get("usable")) is not bool or row["usable"] and (row.get("status") != "COMPLETED"
-                or row.get("convergence", {}).get("state") != "settled" or row.get("pressure_convergence", {}).get("state") != "settled"):
+        observable = "pressure_cl" if key["config"].endswith("_sharp") else "total_cl"
+        selected_cv = row.get("pressure_convergence" if observable == "pressure_cl" else "convergence", {})
+        if type(row.get("usable")) is not bool or row["usable"] and (row.get("status") != "COMPLETED" or selected_cv.get("state") != "settled"):
             raise ValueError("usable measurement contradicts its declared convergence/status")
+        if row.get("observable") != observable:
+            raise ValueError(f"measurement observable differs for {key['config']}")
         rows[rid] = row
         cells.add((key["model"], key["family"]))
     for missing in measurements.get("missing_runs", []):
@@ -574,7 +688,7 @@ def to_wp4(measurements: dict, reference_json: dict, *, plans=(), geometry_sha25
         cells.add((key["model"], key["family"]))
     if not cells:
         raise ValueError("measurement matrix is empty")
-    component = {c: "pressure_only" if c.endswith("_sharp") else "pressure_plus_viscous" for c in CONFIGS}
+    component = {c: "pressure_cl" if c.endswith("_sharp") else "total_cl" for c in CONFIGS}
     mapped = []
     for model, family in sorted(cells):
         replicates = []
@@ -593,16 +707,52 @@ def to_wp4(measurements: dict, reference_json: dict, *, plans=(), geometry_sha25
                 if row["usable"]:
                     field = "pressure_coefficients" if config.endswith("_sharp") else "coefficients"
                     values = row[field]["total"]
-                    rep["forces"][config] = {"downforce": _number(values["Cl"], "exported Cl"), "drag": _number(values["Cd"], "exported Cd")}
+                    rep["forces"][config] = {"downforce": _number(values["Cl"], "exported Cl"), "drag": _number(values["Cd"], "exported Cd"),
+                                              "observable": component[config]}
                     _digest(row["mesh_msh_sha256"], "settled mesh")
                     rep["status"][config] = "SETTLED"
                 else:
                     infrastructure = row["convergence"].get("raw_class") == "INFRA_LOSS"
-                    rep["status"][config] = "INCOMPLETE" if infrastructure else "NUMERICAL"
+                    rep["status"][config] = "INCOMPLETE" if infrastructure else "MESH_FAILED" if row["status"] == "MESH_FAILED" else "NUMERICAL"
             replicates.append(rep)
-        mapped.append({"model": model, "family": family, "realisations": replicates})
-    out = {"schema": "topo2d00-rans-results-v1", "coefficient_reference": {"chord_mm": 223.4, "units": "dimensionless", "downforce": "-Cz", "drag": "+Cx",
-                                                                                  "reynolds_c1": 460000, "height_mm": 100},
+        summaries = {}
+        for config in CONFIGS:
+            hashes = [r["mesh_sha256"][config] for r in replicates if r["mesh_sha256"][config] is not None]
+            forces = [r["forces"][config] for r in replicates if r["forces"][config] is not None]
+            statuses = {r["status"][config] for r in replicates}
+            degenerate = len(set(hashes)) < len(hashes)
+            state = ("DEGENERATE_REALISATIONS" if degenerate else "MESH_FAILED" if "MESH_FAILED" in statuses else
+                     "NUMERICAL" if "NUMERICAL" in statuses else "COMPLETE" if statuses == {"SETTLED"} else "INCOMPLETE")
+            summaries[config] = {"status": state, "observable": component[config], "distinct_meshes": len(set(hashes)),
+                                 "measured_realisations": len(forces),
+                                 "point_estimate": {name: float(np.mean([f[name] for f in forces])) for name in ("downforce", "drag")} if forces else None,
+                                 # WP4 owns confidence intervals. Degenerate cells can
+                                 # never yield one, even from identical finite forces.
+                                 "ci90": None, "ratio_test_status": "READY" if state == "COMPLETE" else "INCOMPLETE"}
+            if degenerate:
+                for rep in replicates:
+                    # Compatibility bridge: the old WP4 reader cannot certify a
+                    # duplicate-mesh cell while retaining finite diagnostic forces.
+                    rep["status"][config] = "INCOMPLETE"
+        thickening = []
+        for config in ("E1", "E2"):
+            for observable, field in (("pressure_cl", "pressure_coefficients"), ("total_cl", "coefficients")):
+                differences = []
+                for i in range(8):
+                    left = rows.get(run_id(dict(config=config+"_sharp", model=model, family=family, realisation=i)))
+                    right = rows.get(run_id(dict(config=config, model=model, family=family, realisation=i)))
+                    if left and right and left["usable"] and right["usable"]:
+                        a, b = left[field]["total"], right[field]["total"]
+                        differences.append({"downforce": _number(b["Cl"], "thickened Cl")-_number(a["Cl"], "original Cl"),
+                                            "drag": _number(b["Cd"], "thickened Cd")-_number(a["Cd"], "original Cd")})
+                thickening.append({"from": config+"_sharp", "to": config, "observable": observable,
+                                   "paired_realisations": len(differences), "ci90": None,
+                                   "point_estimate": {name: float(np.mean([d[name] for d in differences])) for name in ("downforce", "drag")} if differences else None})
+        mapped.append({"model": model, "family": family, "realisations": replicates,
+                       "cell_summary": summaries, "thickening_alone": thickening})
+    out = {"schema": "topo2d00-rans-results-v1", "coefficient_reference": {"chord_mm": float(format(T.CHORD*1000, ".10g")), "units": "dimensionless", "downforce": "-Cz", "drag": "+Cx",
+                                                                                  "reynolds_c1": REYNOLDS_C1, "height_mm": HEIGHT_M*1000,
+                                                                                  "h_over_c1": HEIGHT_M/T.CHORD, "h_over_c": HEIGHT_M/COMBINED_CHORD_M},
            "reference": reference, "cells": mapped,
            "provenance": {"component_by_config": component, "measurements": measurements, "reference_estimate": reference_json,
                           **identity,

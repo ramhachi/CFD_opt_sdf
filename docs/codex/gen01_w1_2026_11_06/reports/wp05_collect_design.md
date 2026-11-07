@@ -1,5 +1,31 @@
 # WP5 collection and local kernel rendering design
 
+Amendment 1 supersedes the first-attempt convergence and readiness decisions
+below; [wp05_amendment1_design.md](wp05_amendment1_design.md) is the active
+correction design. T2-0d is no longer imported or applied to SIMPLE histories.
+The inherited T2-0b `force_summary` and T2-0c raw-tail threshold define the
+shared policy, re-exported in the foam manifest. No limit-cycle label exists.
+Nonfinite coefficients are diverged/NUMERICAL; generator/mesh failures export
+MESH_FAILED. Proxy failure does not gate the solver when checkMesh accepts.
+
+Collector asserts equal `n_layers` within each family across configs/models.
+Eight mesh SHA values must be distinct in every (config,model,family); a
+duplicate gives `DEGENERATE_REALISATIONS`, retained point means, null interval
+and INCOMPLETE ratio input. Export also sets affected per-run statuses to
+INCOMPLETE to prevent the previous WP4 reader from certifying those records.
+Shared force objects now require `observable` (pressure_cl sharp, total_cl
+thick); same-observable pressure and total thickening deltas are descriptive.
+Schema updates must be integrated into WP4 before formal analysis.
+
+The renderer requires a clean whole tree, verified geometry and an explicit
+`topo2d00-rans-freeze1-v1` binding to HEAD and every bundled input SHA. Supply
+all six study geometries with `--study-geometry CONFIG=PATH` and the owner's
+freeze with `--freeze PATH`. Missing binding keeps render_kind=development,
+ready_for_execution=false, push_plan empty. E3_sharp is a BL-plan member but
+not an additional force run. This amendment does not re-render real kernels;
+the original bundles are historical and their readiness is revoked by
+`wp05_amendment1_validation/render_invalidation.json`.
+
 Written before implementation. Authority: W1 `00_README.md`, TOPO-2D-00
 registration §§3–5,7–9, T2-0c evidence README, T2-0 summary, the immutable
 T2-0b runner and T2-0d analyzer. The full WP5 design remains `wp05_design.md`.

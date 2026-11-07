@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:cfd2026:topo2d00:rans:v1",
   "title": "WP4/WP5 TOPO-2D-00 RANS measurements (common c1 normalization)",
-  "description": "Collection is not a TR-00 verdict. Only complete, usable settled production measurements may enter qualification. A limit cycle is in SIMPLE iteration coordinates; it is not physical URANS evidence. Missing runs have no invented coefficient values.",
+  "description": "Collection is not a TR-00 verdict. T2-0c SIMPLE block plateau uses raw-tail Cl relative std <=0.005 after the plateau; SIMPLE iterations carry no physical cycle classification. Only complete, usable settled production measurements enter qualification. Missing runs have no invented coefficient values. Layers are equal within each mesh family across configurations and models.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "evidence_class", "normalization", "force_convention", "complete", "expected_runs", "missing_runs", "results"],
@@ -64,7 +64,7 @@
     },
     "result": {
       "type": "object", "additionalProperties": false,
-      "required": ["config", "model", "family", "realisation", "status", "mesh_msh_sha256", "geometry_sha256", "observable", "coefficients", "pressure_coefficients", "viscous_coefficients", "convergence", "pressure_convergence", "usable", "provenance"],
+      "required": ["config", "model", "family", "realisation", "status", "mesh_msh_sha256", "geometry_sha256", "n_layers", "observable", "coefficients", "pressure_coefficients", "viscous_coefficients", "convergence", "pressure_convergence", "usable", "provenance"],
       "properties": {
         "config": {"enum": ["E1_sharp", "E2_sharp", "E1", "E2", "E3"]},
         "model": {"enum": ["sa-wf", "sst-wf"]}, "family": {"enum": ["fine30", "med30"]},
@@ -72,7 +72,8 @@
         "status": {"type": "string", "minLength": 1},
         "mesh_msh_sha256": {"$ref": "#/$defs/nullable_sha"},
         "geometry_sha256": {"$ref": "#/$defs/sha"},
-        "observable": {"const": "pressure_plus_viscous", "description": "For TR-00 comparison to Cp-integrated data use pressure_coefficients.Cl, never silently compare that reference to the pressure-plus-viscous total."},
+        "n_layers": {"type": ["integer", "null"], "minimum": 1, "description": "Registered family-wide boundary-layer count. Null only when no mesh was generated; equality across configurations/models is enforced by the collector."},
+        "observable": {"enum": ["pressure_cl", "total_cl"], "description": "Selected study observable: pressure_cl on sharp arms for Cp comparison; total_cl on thickened arms for WaterLily. coefficients always retains total pressure+viscous, pressure_coefficients retains pressure only."},
         "coefficients": {
           "type": "object", "additionalProperties": false, "required": ["total", "elements"],
           "properties": {
@@ -86,13 +87,13 @@
           "type": "object", "additionalProperties": false,
           "required": ["state", "raw_class", "coordinate", "statistics", "reason"],
           "properties": {
-            "state": {"enum": ["settled", "limit_cycle", "diverged", "not_settled", "unavailable"]},
-            "raw_class": {"type": "string"},
+            "state": {"enum": ["settled", "diverged", "not_settled", "unavailable"]},
+            "raw_class": {"type": "string", "description": "T2-0c VALID, UNSTEADY (>0.005 raw-tail relative Cl std after plateau), SOLVER_FAIL, MESH_FAILED or INFRA_LOSS."},
             "coordinate": {"const": "SIMPLE iteration (not physical time)"},
             "statistics": {"type": "object"}, "reason": {"type": "string"}
           }
         },
-        "pressure_convergence": {"$ref": "#/$defs/convergence", "description": "Independent pressure-only Cl convergence. A settled total can mask cancellation between unsettled pressure and viscous contributions."},
+        "pressure_convergence": {"$ref": "#/$defs/convergence", "description": "Independent pressure-only Cl convergence. Controls validity for pressure_cl sharp arms; retained as a diagnostic for total_cl thick arms, whose selected total convergence controls validity."},
         "usable": {"type": "boolean"},
         "provenance": {
           "type": "object", "additionalProperties": false,
@@ -106,10 +107,14 @@
       },
       "allOf": [{"if": {"properties": {"usable": {"const": true}}}, "then": {
         "properties": {"status": {"const": "COMPLETED"}, "mesh_msh_sha256": {"$ref": "#/$defs/sha"},
-          "convergence": {"properties": {"state": {"const": "settled"}}},
-          "pressure_convergence": {"properties": {"state": {"const": "settled"}}},
-          "coefficients": {"properties": {"total": {"$ref": "#/$defs/coefficient"}}}}
-      }}]
+          "coefficients": {"properties": {"total": {"$ref": "#/$defs/coefficient"}}}},
+        "anyOf": [
+          {"properties": {"observable": {"const": "pressure_cl"}, "pressure_convergence": {"properties": {"state": {"const": "settled"}}}}},
+          {"properties": {"observable": {"const": "total_cl"}, "convergence": {"properties": {"state": {"const": "settled"}}}}}
+        ]
+      }},
+        {"if": {"properties": {"config": {"enum": ["E1_sharp", "E2_sharp"]}}}, "then": {"properties": {"observable": {"const": "pressure_cl"}}}},
+        {"if": {"properties": {"config": {"enum": ["E1", "E2", "E3"]}}}, "then": {"properties": {"observable": {"const": "total_cl"}}}}]
     },
     "artifact": {
       "type": "object", "additionalProperties": false,
@@ -127,8 +132,8 @@
       "type": "object", "additionalProperties": false,
       "required": ["state", "raw_class", "coordinate", "statistics", "reason"],
       "properties": {
-        "state": {"enum": ["settled", "limit_cycle", "diverged", "not_settled", "unavailable"]},
-        "raw_class": {"type": "string"}, "coordinate": {"const": "SIMPLE iteration (not physical time)"},
+        "state": {"enum": ["settled", "diverged", "not_settled", "unavailable"]},
+        "raw_class": {"type": "string", "description": "T2-0c VALID, UNSTEADY (>0.005 raw-tail relative Cl std after plateau), SOLVER_FAIL, MESH_FAILED or INFRA_LOSS."}, "coordinate": {"const": "SIMPLE iteration (not physical time)"},
         "statistics": {"type": "object"}, "reason": {"type": "string"}
       }
     }

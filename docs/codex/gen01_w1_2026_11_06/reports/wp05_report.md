@@ -1,127 +1,253 @@
-# WP5 TR-00／TOPO-2D-00 RANS 側 報告
+# WP5 TR-00／TOPO-2D-00 RANS 側 — Amendment 1 報告
 
 ## 状態
 
-PARTIAL — 実装・検証・feature branch の push は完了。PR 作成は承認制限で未完了。新しい多体生成器、Cp 積分器、WP4 互換集計器、CPU kernel のローカル生成と、E2_sharp／E2 の mesh-only・各 200 反復 smoke を実装・検証した。TR-00 の実測参照増分や適格性判定はまだ出していない。Kaggle への push・本番実行は行っていない。
+**PARTIAL（修正実装・指定検証完了。密な WP4 幾何を使う E2 再 smoke／再 render は保留）**。
+ユーザー指定の `cb4df650` から Amendment 1 の source-review 修正を行った。
+Kaggle への push、本番 5000／15000 反復、Cp 図のデジタイズ、freeze、登録判定は行っていない。
+commit／push と Draft PR #87 の更新は Amendment 1 §12 に従い Claude が host で行う。
+`work/wp05/publication.git` は使用していない。現在の HEAD は `cb4df650` のまま。
 
-通常の一括 pytest は、基準版から既存 Metal backend の import で abort する。この環境制約を明示し、Metal を除いた全体 suite と Metal 6 node の個別実行を合わせ、base の全 3562 node と変更後の全 3681 node を照合した。既存 node の結果はすべて同一、追加119件はすべて pass。一括コマンド自体の成功とは扱っていない。
-
-PR は未作成。作成先: [比較・PR 作成画面](https://github.com/ramhachi/CFD_opt_sdf/compare/codex%2Fkaggle-batch-migration...feat%2Fgen01-w1-05-tr00-rans?expand=1)（base: `codex/kaggle-batch-migration`、head: `feat/gen01-w1-05-tr00-rans`）。auto-merge の設定はしていない。
-
-実装 commit: `f7ab4b0fcb81b8072f105b3be22f3843d21035c1`。検証記録 commit: `2446960e6de89b9a9e24dfbfad5c1fc11da01d04`。
-
-元の worktree の Git 管理領域は sandbox の書込範囲外だったため、許可された `work/wp05/publication.git` に独立した Git 管理領域を作り、同じ feature branch を commit／push した。元の worktree の HEAD・index は base `e3dcdf61` のまま。既存ファイルは変更せず、新規ファイルだけを対象にした。
+旧 WP4 入力5構成は新しい density guard に全て拒否され、手元の入力集合には E3_sharp もない。
+このため正式な6構成の BL 計画は作っていない。密な入力を WP4 が渡し、Claude が指示するまで
+kernel は再生成しない。実装の分岐を確認する synthetic test render だけを一時ディレクトリで行った。
+第1回の E2 mesh／200反復は保存した歴史的 smoke であり、修正後の source の受け入れ証拠にはしない。
 
 ## 作ったもの（パス、1 行ずつ）
 
-- `scripts/topo2d00/t2d_multibody_case.py` — 閉曲線 1〜3 体の gmsh 生成、要素別 patch、BL、sharp fan／blunt no-fan、入力・メッシュ SHA と品質 proxy。
-- `scripts/topo2d00/t2d_foam_case.py` — SA-WF／SST-WF、fine30／med30、5000→必要時 15000 の一度だけの継続、要素別・合計の係数と圧力／粘性力。
-- `scripts/topo2d00/digitize_cp.py` — ユーザー CSV の台形積分、独立 2 読み取りの差、Table 15／Cl(h) 入力、共通 c1 への換算。
-- `scripts/topo2d00/collect_rans.py` — hash 検証、欠け run、収束分類、共通規格化、WP4 analyzer への変換。
-- `scripts/topo2d00/build_tr00_kernels.py`・`run_rans.py` — source／幾何を束ねた CPU kernel の生成、時間上限、実行記録の保存。
-- `tests/topo2d00/` — 合成 Cp、閉曲線、schema・収束・欠け run、kernel 分割・継続・上書き拒否の 119 テスト。
-- `docs/codex/gen01_w1_2026_11_06/reports/cp_digitised_format.md` — CSV と JSON manifest の完全な入力例、座標・測定量・不確かさの限界。
-- `docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_result_schema.json` — 実際の WP4 と byte 同一の共有形式。
-- `docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_measurement_schema.json` — 要素別係数・収束・raw artifact の詳細形式。
-- `docs/codex/gen01_w1_2026_11_06/reports/wp05*_design.md` — 実装前の設計、格子族・後縁・参照・集計の判断。
-- `docs/codex/gen01_w1_2026_11_06/reports/wp05_validation/` — raw smoke、生成済み kernel・幾何入力のアーカイブ、SHA、schema 接続とテストの記録。
+- `scripts/topo2d00/t2d_multibody_case.py` — 入力の折れ角・線分長 guard、供給済み後縁 cap の検証、全6構成の共通 BL 計画。
+- `scripts/topo2d00/t2d_foam_case.py` — 共通 BL 計画を要求する本番 case、共有収束 policy、両 chord による h、継続 dictionary と runtime の一致。
+- `scripts/topo2d00/digitize_cp.py` — reader SHA の相違、各面10点以上、読み取りごとの各要素 Cl 正、E2 不確かさの判定用分離。
+- `scripts/topo2d00/collect_rans.py` — T2-0c 分類、family 内層数一致、重複 mesh SHA、observable、thickening 記述量、欠け run／mesh failure の区別。
+- `scripts/topo2d00/run_rans.py` — checkMesh の採否、非有限／FPE の divergence、BL 計画の SHA 検証と generator への受け渡し。
+- `scripts/topo2d00/build_tr00_kernels.py` — clean な tree＋明示 freeze 1＋検証済み6幾何を要求する ready 規則と、開発 render の実行阻止。
+- `tests/topo2d00/` — 既知積分、入力 guard、収束反例、層数、mesh SHA、結果とインフラ、freeze／render の回帰テスト190件。
+- `reports/topo2d00_rans_result_schema.json`・`topo2d00_rans_measurement_schema.json` — WP4 への共有形式と詳細診断形式を更新。
+- `reports/cp_digitised_format.md`・`wp05*_design.md` — CSV 契約、修正前後の判断、入力と検証の範囲を記録。
+- `reports/wp05_amendment1_validation/` — 入力 audit、旧 render 失効、synthetic mesh、変更禁止ファイルの照合、テストと hash の記録。
 
 ## インターフェース（他 WP が使う関数・CLI・ファイル形式）
 
-`write_case(out, geometry, model, family, realisation, iters=5000)` は、WP4 の `topo2d-scene-v1` JSON／NPZ、または metre 単位の閉曲線 JSON／NPZ を読む。WP4 の polygon を曲線で近似し直さず、その線分を保持する。patch は `airfoil`／`airfoil_2`／`airfoil_3` と既存 T2-0 の外部境界。fine30 は ds=2 mm、med30 は ds=4 mm、両方 y1=0.6 mm、g=1.2。密な入力頂点によって実際の壁面間隔が名目 ds より細かくなる場合を記録する。
+### 幾何と BL 計画
 
-参照の比の帯 **[0.5, 2]** と **5%** の規則は変更していない。
+`load_geometry(source, family='fine30')` は JSON／pickle 不使用 NPZ を読む。
+非 cap 頂点の折れ角 >5°、**cap を含む全線分**の長さ >family.ds は、要素名・index・値付きの例外で拒否する。
+WP5 は spline 再標本化しない。入力 SHA と供給された頂点を保持する。
+数学的 cusp は既存 fan、有限 cap は no-fan。`*_sharp` は原形という arm 名であり、
+WP4 の原形にある有限厚 TE を勝手に尖らせない。
 
-全構成と要素を c1=0.2234 m、span=0.002 m、Aref=0.0004468 m² で規格化し、Cl は下向き正、Cd は流れ方向正。`forceCoeffs` の前後分割を圧力／粘性と取り違えず、`forces` の次元付き出力から成分を保持する。TR-00 の sharp 系は Cp と比較する圧力係数、厚い E1〜E3 は WaterLily と比較する総係数を WP4 へ渡す。
+generic JSON は `elements[].cap_start_index` で有限 cap の第2端点を指定できる。
+省略時は単一の closing edge。指定端点から閉点までは、供給済みの直線上の単調な頂点だけを許す。
+WP4 JSON は `suction_mm[::-1] + pressure_mm[1:]` をそのまま prefix として保ち、その後に供給済みの
+straight cap subdivision と閉点を置く。adapter が cap の index を導くので WP4 に冗長な index は不要。
 
-Cp の CSV は UTF-8、正確に `x/c,Cp` の 2 列。各要素の物理的上面／下面を、2 人または 2 ツールで独立に読むため、E2 は計 8 CSV。`x/c` は指定 chord で割った global streamwise X、両面は全輪郭の同じ投影端点を覆う。傾いた local chord 座標をそのまま積分する入力は拒否する。入力 JSON は出典 URL、図／パネル、高さ、座標の根拠、読み取り者・ツールと各 CSV を宣言する。元 manifest と実 CSV を絶対パス・SHA・方法で束ね、study freeze が入力を照合できる形にする。単一要素は Table 15 の Cl=1.009（h/c1=0.448）を別由来の表値として入力するか、独立した Cl(h/c) 曲線 2 本を使う。
+`boundary_layer_plan({config: geometry_input})` は E1／E2／E3 の thick と sharp **全6構成**の
+最小 ground／inter-element gap から、fine30 と med30 の `T.layers` を一度ずつ計算する。
+幾何 SHA、構成別 gap、全体の最小 gap、family の mesh_spec／層数／厚さを記録する。
+compact sorted JSON（改行なし）の SHA が `plan_sha256(plan)`。
+`write_case(..., boundary_layer_plan=plan_or_path)` は計画の同じ層数を全要素と ground block に使う。
+本番で計画なし／6構成未満は出力作成前に拒否する。短い synthetic case の小集合計画は development と明記する。
+
+### 結果・収束・observable
+
+収束 policy は `collect_rans.CONVERGENCE` を foam が再 export する。
+immutable T2-0b `force_summary` と T2-0c `classify` を使い、20% tail（最低50行）、20反復 block の
+相対 std／drift が各0.005未満なら plateau、raw-tail Cl 相対 std **0.005超のみ** UNSTEADY。
+初回5000、plateau 不成立時のみ一度15000まで継続し、最後の segment で判定する。
+T2-0d の `steady_stats`／`urans_stats`、1e-3 閾値、`limit_cycle` は使用しない。
+選択した observable の収束を使い、他の成分の収束は診断として保持する。
+
+`collect_rans.py` の共有出力は `topo2d00-rans-results-v1`。
+各 force の `observable` を必須化し、sharp は `pressure_cl`、thick は `total_cl`。
+詳細診断には各要素・合計の total／pressure／viscous Cl・Cd と両収束状態を保持する。
+共通規格化は c1=0.2234 m、span=0.002 m、Aref=0.0004468 m²、Cl は下向き正、Cd は流れ方向正。
+共有 `coefficient_reference` に h/c1=100/223.4 と h/c=100/380 を出す。
+case manifest では nominal h の datum と実輪郭 clearance、それぞれの両規格化を分けて保存する。
+
+同じ family の集計 run は `n_layers` が一致しなければ例外。
+各 (config,model,family) の8つの mesh SHA が重複すれば `DEGENERATE_REALISATIONS`。
+有限な点平均は残すが `ci90=null`、ratio は INCOMPLETE。
+旧 WP4 reader にも affected per-run status を INCOMPLETE と渡し、誤ったゼロ幅区間で適格化させない。
+正常 cell の90% t区間の計算は引き続き WP4 analyzer の責任で、collector の点診断とは別。
+
+`cell.thickening_alone` は E1／E2 について、同じ observable の E*−E*_sharp を pressure／total 別に出す。
+記述量であり合否規則はない。E3_sharp は BL 計画の一員だが solve matrix にないため、その差は未出力。
+shared の5結果構成 map と、`provenance.study_geometry_sha256` の6幾何 map を区別する。
+
+gmsh proxy は情報のみ。checkMesh が mesh の採否を決める。
+generator／mesh failure は MESH_FAILED、非有限係数・FPE・fatal は diverged／NUMERICAL、
+欠け run・実行枠による loss は INCOMPLETE。timeout が非有限／FPE の結果を上書きしない。
+
+### Cp 入力（ユーザーが用意するもの）
+
+完全な JSON manifest と CSV の例は [cp_digitised_format.md](cp_digitised_format.md)。
+UTF-8 CSV の列は厳密に `x/c,Cp`。E2 は2要素×物理的上面／下面×2読み取り＝**8 CSV**、各面10点以上。
+`x/c` は global streamwise X を宣言した chord で割った座標で、両面が同じ投影端点を覆う。
+local-chord の座標をそのまま積分しない。対応する A／B の upper／lower CSV は SHA が異なる必要がある。
+同じ内容を別名で渡すと拒否する。各読み取りで各要素の積分 Cl は downforce 正でなければ拒否する。
+独立性はファイル差だけでは証明できないため、人／ツールと方法の出典 metadata も必要。
+
+E2 の digitising sensitivity は要素ごとの |Cl_A−Cl_B| の和。
+登録 §4／Amendment 1 §6 の5% test は **E2 のこの値**を使う。
+E1 の読み取り感度と E1+E2 の全差分感度は別フィールドに残し、判定用感度へ足さない。
+単一要素は Table 15 の1.009（h/c1=0.448）を独立した表値として、または2本の Cl(h/c) 曲線として扱う。
+後者の CSV も SHA 相違を要求するが、面ではないので線形補間の最低点数は2。
+読み取り差は信頼区間でも総参照不確かさの上限でもない。総参照不確かさは未確定のまま。
+参照帯 **[0.5,2]** と **5%** は変更していない。
 
 ```sh
-.venv/bin/python scripts/topo2d00/digitize_cp.py path/to/cp_manifest.json \
-  --out path/to/tr00_reference.json
-.venv/bin/python scripts/topo2d00/collect_rans.py path/to/tr-output path/to/main-output \
-  --plan work/wp05/kernels_tr00/run_plan.json \
-  --plan path/to/qualified-main/run_plan.json \
+.venv/bin/python scripts/topo2d00/digitize_cp.py path/to/user_manifest.json --out path/to/tr00_reference.json
+.venv/bin/python scripts/topo2d00/collect_rans.py path/to/extracted-output \
+  --plan path/to/frozen/run_plan.json --geometry-plan path/to/main/run_plan.json \
   --reference path/to/tr00_reference.json --out rans_results.json
 ```
 
-TR-only の集計では `--plan kernels_tr00/run_plan.json --geometry-plan kernels_main/run_plan.json` を使うと、未実行の main plan から幾何 identity だけを渡せる。本番の run は期待集合に加えない。共有出力には全 5 構成の一致した幾何 SHA を要求する。
+### render と freeze 1（今回は実物を再生成しない）
 
-`rans_results.json` は `topo2d00-rans-results-v1` の cells／8 realisations。元の要素別 Cl・Cd、圧力／粘性、メッシュ SHA、収束状態は diagnostics／provenance に残す。欠け run は null／INCOMPLETE として残し、通常 CLI は非ゼロ終了。Cp 未入力時は `--measurements-only` で詳細診断だけを出せる。settled／limit_cycle／diverged に加え、判定不能を not_settled／unavailable と区別する。SIMPLE の周期は反復上の数値的周期であり、物理的な周期や URANS 適格性とは扱わない。
+`--study-geometry CONFIG=PATH` を繰り返して全6構成を宣言し、`--freeze PATH` に owner の freeze 1 を渡す。
+新しい freeze input interface は次の通り。WP4 の post-run analysis freeze は代用しない。
 
-## テスト（コマンドと結果。全体 pytest の失敗集合が base と同一か）
-
-- `.venv/bin/python -m pytest -q tests/topo2d00` — **119 passed、106.41 s**。gmsh がない環境では該当するメッシュテストを skip。既存 conftest や pin は変更していない。
-- `.venv/bin/python -m compileall src tests` — exit 0。
-- 通常の `.venv/bin/python -m pytest -q` — 基準版が既存 `tests/test_lbm_metal.py` の MLX import で native abort（exit 134）。「No Metal device available」という sandbox 環境障害であり、全体 pass とは報告しない。
-- `.venv/bin/python -m pytest -q --ignore=tests/test_lbm_metal.py --junitxml=…` — 独立した base checkout: **3482 passed / 74 skipped（exit 0）**、変更後: **3601 passed / 74 skipped（exit 0）**。Metal 以外の失敗集合 **一致（双方0件）**。Metal 6 test は各々を新しい pytest process で実行し、base／変更後とも同じ 6 node が同じ device 不足で失敗した。分割検証の失敗集合も同一。既存テスト・依存環境は変更していない。詳細とログ hash は `wp05_validation/test_validation.json` と `metal_environment_diagnostic.json`。
-- 取得した integration tip `b06452a18b47a81788d4b425b0b2f390affd7d2f` との `git merge-tree --write-tree HEAD FETCH_HEAD` は conflict なし（working tree／branch の merge はしていない）。
-- `git diff --check` と独立 Git index の `git diff --cached --check` — exit 0。凍結ソース・既存 infra・登録・roadmap の変更なし。
-- 2 つの JSON Schema と合成出力を Draft 2020-12 validator で確認し、WP4 analyzer の観測 snapshot（SHA `704423d491d4b9cf0521b2cf8b0ae7d7417e2249cff661a425ffe7d268a3e8b2`）の `validate_input` も通過。合成データの判定ラベルは接続確認のみで、物理検証には数えない。
-
-ローカルでは下記の wrapper を用い、各 1 realisation で **mesh generation → gmshToFoam → checkMesh → 同じ mesh の SA-WF 200 反復**を実行した。
-
-```sh
-.venv/bin/python scripts/local_openfoam.py run \
-  work/wp05/local_smoke_kernel/smoke_01 --out work/wp05/local_smoke_run \
-  --cpus 4 --memory 8g
+```json
+{
+  "schema": "topo2d00-rans-freeze1-v1",
+  "stage": "freeze1",
+  "source_commit": "<正確な40桁のHEAD>",
+  "input_sha256": {"<全bundle member>": "<SHA256>"},
+  "geometry_sha256": {"E1": "<SHA>", "E1_sharp": "<SHA>", "E2": "<SHA>", "E2_sharp": "<SHA>", "E3": "<SHA>", "E3_sharp": "<SHA>"}
+}
 ```
 
-| 指標 | E2_sharp | E2（厚い版） |
-| --- | ---: | ---: |
-| cells | 37,754 | 37,848 |
-| checkMesh | Mesh OK、failed checks なし | Mesh OK、failed checks なし |
-| 最大 non-orthogonality（°） | 54.276422 | 54.664386 |
-| 最大 skewness（checkMesh） | 2.3987006 | 1.7989068 |
-| 最小 determinant（checkMesh） | 0.034175708 | 0.050301549 |
-| 最小 face weight（checkMesh） | 0.14761962 | 0.15404030 |
-| 最小 volume ratio（checkMesh） | 0.13512438 | 0.14207175 |
-| proxy internal／boundary skew | 0.658047／0.417515 | 0.613896／0.252040 |
-| 最小 gmsh SICN（triangle proxy） | 0.310723 | 0.381999 |
-| 品質 proxy failures／unused nodes | 0／0 | 0／0 |
-| SA-WF | 200 反復、全 force 有限 | 200 反復、全 force 有限 |
+全 bundle member には登録文書、renderer、runtime source、6幾何、BL 計画を含む。
+whole tree が clean、HEAD と全 hash が一致、全幾何の source metadata が明示的に VERIFIED、
+main はさらに適格 cell が明示済みの場合だけ ready。それ以外は render_kind=development、ready=false、push_plan=[]。
+VERIFIED は今後 WP4 側で根拠とともに設定する新しい interface で、現行の UNVERIFIED_OCR は通らない。
+この token だけで学術的な検証をしたとは扱わない。今回は freeze を作っていない。
 
-両方とも 4 BL 層、厚さ 3.2208 mm、airfoil 第一層中央値 0.6 mm。メッシュ SHA は E2_sharp `68af8c4906a0f27bb9dfd2c4202cb4d5f288029491a144500cbeff8c7ba49013`、E2 `adade07782c033a4617b0ed7558ab6f0c4d1103bfb7a787b0c1891e4f014fe68`。smoke 全体の wrapper wall time は 235.43 s、return code 0、実行後 package inventory は lock と一致した。要素の和・圧力／粘性の和・次元付き force と係数の換算も照合し、最大絶対差は 3×10⁻⁸ 未満だった。収束・格子独立性・Kaggle 再現性の結果ではない。
+## テスト（コマンドと結果。base との失敗集合）
 
-`local_smoke_artifacts.tar.gz` の SHA-256 は `c44942f8d70253770bc7aa5ccc5e8cadf6661aa937f4b6bb8de03f440a7490db`。`rendered_kernels_and_inputs.tar.gz` は `abaa9f076e193d8b3e25ebc86f24efa5be5fec4f3e4e9b55c429a1f1bb39fb90`。展開後の全 member の hash を照合済み。後者にローカル生成した kernel、WP4 幾何 JSON／NPZ、生成元の snapshot と入力 SHA を含む。
+- `.venv/bin/python -m pytest -q tests/topo2d00 -p no:cacheprovider --basetemp /private/tmp/wp05-amendment1-final-unit2 --junitxml=/private/tmp/wp05-amendment1-focused-final.xml` — **190 passed / 55.42 s / exit 0**。gmsh がある環境。ない場合は mesh-executing tests が従来流儀で skip。pin は増やしていない。
+- `.venv/bin/python -m compileall src tests` — **exit 0**。
+- `.venv/bin/python -m pytest --ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` — **3672 passed / 74 skipped / 0 failed / 7295 warnings / 2059.24 s（34分19秒）/ exit 0**。failure node 集合 **[]**、error node 集合 **[]**。
+- `git diff --check` — **exit 0**（最後に再確認）。
+- JSON Schema Draft 2020-12：両 schema と通常／duplicate-SHA／total-only-valid の合成出力を既存の一時 validator で検証。依存追加なし。
+- 17個の変更禁止 source／pin／authority ファイルを base `e3dcdf61` と byte 照合し、すべて同一。diff も WP5 範囲に限定。
 
-## 仕様からの逸脱と理由
+base の比較対象はユーザーが提示した **Claude host の e3dcdf61: 3482 passed / 74 skipped / 0 failed**。
+この amendment で base／Metal を再実行していない。result 側の上記除外コマンドも失敗 node 集合 **[]** で、指定の base と一致した。warnings の同一性は比較していない。
 
-- 通常の全体 pytest は基準版から Metal import で abort するため、残りの suite と Metal 6 test の個別プロセスに分けて回帰を比較した。未使用の Metal backend を修正・削除する変更は本 WP に含めていない。
-- 第 2 格子族は既存の **med30** を選び、新しい調整値や pin を追加しなかった。
-- WP4 の実入力では `_sharp` は「厚み追加前の原形」の名称で、数学的 cusp ではなく有限厚の後縁 cap がある。この入力を尖らせず、E2_sharp・E2 とも **blunt no-fan** とした。両方の実 checkMesh と proxy は上表のとおり。数学的 sharp の fan は別の合成閉曲線テストで確認した。この結果から全ての鈍い後縁の妥当性は一般化しない。
-- 実際の WP4 schema に合わせ、詳細測定形式を別ファイルに残し、共有形式への adapter を追加した。共有 schema は WP4 と byte 同一。
-- 登録の 13〜21 分という時間幅は、T2-0 summary では **xfine30** に対応し、fine30 は 6〜11 分だった。依頼の 13〜21 分を計画用の幅として使い、測定実績の誤った帰属は避けた。
-- OpenCode Go は callable MCP がなく、CLI のモデル確認も sandbox のログ書込制限で失敗したため、分担した native worker で実装・独立レビューを行った。追加の従量課金 API や global 設定変更は行っていない。
+TDD で A1／A3 の欠落7件、A2／A3 の既存分類差9件、非有限1行の3件、独立レビューでの timeout/FPE と
+selected-observable の7件を先に失敗させた。周期2、周期7、0.2%白色雑音の review 反例は settled を確認。
+Cp はコピー CSV／点数不足／符号誤り／相殺する要素差、render は dirty／freeze 欠落／OCR／第6構成欠落を検査した。
+最終の合成 mesh は archive の member/hash を read back して照合した。これらは実験参照や物理 qualification の証拠ではない。
 
-## 未確認の仮定（実行して初めて分かること、PDF から読めなかった値など）
+### ローカル OpenFOAM smoke の範囲
 
-WP4 の source/table SHA を保存した開発 snapshot を smoke と kernel 入力に使った。正式 run 案は WP4 JSON を使用する。NPZ の mesh 入力にも対応するが、raw NPZ SHA を formal WP4 が要求する JSON-file SHA に置き換えず、対応付けは別途合意・検証が要る。元の座標表には未検証 OCR の表示があり、原論文との幾何照合や BDIM core の適格性は、この mesh の成功では解決しない。nominal h=100 mm の datum と実輪郭の最小すき間を別々に保存した。密な polygon と名目 ds の関係を含め、格子族は登録上の独立な realisation として本番で再確認が要る。
+**修正後の E2_sharp／E2 の OpenFOAM mesh-only／200反復は未実行**。
+手元の旧幾何は main 最大15.45°、flap 最大55.53°、長い線分11.5〜14.7 mm を含み、fine30 ds=2 mm の guard を通らない。
+`geometry_preflight.json` は5入力の SHA、要素別の指標、拒否理由を保存する。
+WP5 で再標本化せず、WP4 の密な幾何を待つという Amendment 1 §1 と再 render 禁止に従った。
 
-SA／SST は trip を置かない fully turbulent wall-function 計算であり、自由遷移位置を予測する遷移モデルではない。実験の自由遷移や 2D／3D・有限幅の差は残る。
+第1回保存 artifact の歴史的事実：E2_sharp／E2 は各1 mesh、各200 SA-WF反復、checkMesh は Mesh OK、force 有限。
+両者の有限 TE は no-fan だった。cells 37,754／37,848、max nonorth 54.276422°／54.664386°、
+max skew 2.3987006／1.7989068、min determinant 0.034175708／0.050301549、min face weight
+0.14761962／0.15404030、min volume ratio 0.13512438／0.14207175、4 BL層、3.2208 mm。
+これで **粗い旧入力を mesh 化できた**ことは示すが、密な corrected input の no-fan 妥当性、現在の pipeline、
+Kaggle 再現性、収束や物理精度を検証したことにはならない。
 
-Cp CSV はユーザー入力待ちであり、実験 E2 の Cl・ΔCl・不確かさ・TR-00 判定は未生成。2 読み取りの絶対差はデジタイズ感度で、信頼区間や総実験誤差の上限ではない。総参照不確かさは null のまま保持する。Table 15 の高さの丸め・trip 条件、2D CFD の既報の偏りも解消しない。
+新しい Python/gmsh の2体 synthetic sharp／blunt unit mesh は品質 proxy failure 0、SHA と全 patch を確認。
+小さい第3の鼻を持つ synthetic med30 case は topology と有限 proxy reporting を確認するだけで、proxy に失敗項目がある。
+そのケースを checkMesh 通過や3要素 qualification として扱わない。実 proxy は synthetic_mesh_summary.json と archive に全て残す。
 
-Kaggle での installer・5000／15000 反復・SST 実行・多体の所要時間は未実行。gmsh の非再現性により、今回のローカル mesh SHA を Kaggle の実測値に代用しない。
+旧 working render の plan36件、wrapper29件を development／ready=false にした。
+source bundle の payload は再生成していない。歴史的 archive の bytes と SHA は保存し、内部の古い ready flag を
+`render_invalidation.json` で失効させた。raw 実行記録の extracted copy は変更していない。
+追跡対象の既存 infra kernel は編集していない。
 
-## Claude／ユーザーへの提案する追記（phase_plan、STATE、exploratory_index、仕様 rev 0 への修正点）
+## 仕様からの相違点と理由（A1／A3／A2 を明示）
 
-本報告と保存 artifact を **WP5 tooling／LOCAL_SMOKE** として参照し、本番計測・TR-00 の verdict と分けて記録する。仕様本文は変更していない。共有 schema、sharp 系＝圧力／厚い版＝総力の比較成分、共通 c1、名目高さと幾何 datum、`_sharp` の有限 cap を、統合時に明文化することを提案する。
+- **A1:** 第1回は粗い WP4 polygon をそのまま受理した。今回、非 cap5°／全線分dsの guard と straight supplied-cap 契約に修正した。WP4 の旧 source は密な input をまだ出さないので、新しい E2 smoke と render は保留。
+- **A3:** 第1回は構成ごとに gap で BL 層数が減り、med30 で E1=7／E2_sharp=5／E2 thick=4 となり得た。今回、全6構成の最小 gap で計画した family 定数に統一。正式入力不足を仮の層数で埋めていない。
+- **A2:** 第1回 collector は manifest が0.005を宣言しながら T2-0d の1e-3を使い、雑音を limit_cycle とした。今回、manifest／runner／collector／schema を T2-0c の同じ定数と分類へ揃えた。
+- `gmsh quality proxy` は情報だけとし、checkMesh の採否と分けた。旧3体 fixture の clean-proxy assertion を、topology と有限指標の検査に限定したことも上記に明示した。
+- 根拠 artifact のなかった merge-tree の主張は削除した。今回は merge／merge-tree を実行していない。
+- OpenCode Go は callable MCP がなく、通常CLIはログ権限エラー、一時データ先の catalogue query は Provider not found: opencode-go。global設定と有料APIを変えず、native inherited worker の分担＋親レビューで実装した。
 
-既存 Metal backend の実機検証と、一括 pytest の native abort を扱う test-runner 方針は別途整理が必要。今回の分割検証は、その backend を通過済みにはしていない。
+## 未確認の仮定と claim ceiling
 
-時間見積りの fine30／xfine30 の帰属と、全セッションを通じた 160 CPU h の予算台帳の管理者を明確にすることを提案する。kernel は 11 h の session cap と case cap を持つが、**複数 kernel を通じた 160 CPU h は自動集計・強制しない**。独立 case cap の合計は最大 400 solver h に達し得るため、ユーザーの共通台帳で登録上限を守る必要がある。
+密な WP4 の E1〜E3 thick／sharp、出典画像照合、正式 BL 計画と freeze 1 は未受領。
+Cp CSV はユーザー入力待ちなので、実験 E2 Cl、ΔCl、不確かさ、TR-00 verdict は未生成。
+Table 15 の丸め高さ／trip と総参照不確かさは解消していない。
+SA／SST wall functions の trip なしは、自由遷移を予測する遷移モデルではない。
+既報の2D CFD +5〜17%、3D double-element −7% は文献上の scatter/context であり、criterion や digitization sensitivity に足さない。
+LOCAL-OF-01 の gmsh platform 差により、local mesh/force は Kaggle の本番値の代用にならない。
+格子独立性、3D／FSAE、正式な Stage T／V ranking、high-Re evaluator GO は主張しない。
 
-## 次に要るもの（GPU 実行、Kaggle、ユーザーの判断）
+## Claude／ユーザーへの提案する追記と WP4 への差分
 
-ユーザーが一次資料の座標・高さ・圧力の測定量を確認した独立 2 読み取り CSV と manifest を用意し、参照値を作る。その後、凍結・資格条件を確認してユーザーが Kaggle CPU で TR-00 を回す。厚い版本番は、TR-00 の結果から明示した `--qualified-cell model/family` で再生成するまで blocked。GPU 実行は WP5 の範囲に含めない。
+1. WP4 geometry producer と validate_scene をともに更新し、密な smooth paired surfaces（≤1 mm、5° guardも満たす）と、供給済み straight TE cap subdivision を同一 SHA で W／R に渡す。**LE cap の3 source pairs は TE cap の角度免除ではない。**
+2. 全6幾何を BL 計画／実行前 freeze に束縛し、結果構成は従来の5つへ射影する。E3_sharp の run は追加しない。
+3. WP4 に両 shared schema の更新を反映する。force.observable／reference.observable、MESH_FAILED、cell_summary（DEGENERATE_REALISATIONSとratio INCOMPLETE）、両 h、thickening_alone、任意の study_geometry_sha256 を読む。observable をまたぐ差を拒否し、重複meshの区間を作らない。
+4. VERIFIED の肯定側契約は、Claude／ユーザーが source page image の照合後に根拠付きで設定する。現在のOCRから ready を作らない。freeze、phase_plan、STATE、登録本文、PR #87 の更新は owner 側で行う。
+5. 第1回 artifact は歴史的 development としてのみ残し、新 source の smoke／正式計測と区別する。
 
-| 段階 | run 数 | kernel 数（最大 12 run／kernel） | 5 session 枠での波数 |
+## 次に要るものと run 数・推定時間
+
+密な6幾何 → Claude の再 render 指示 → local mesh-only＋SA-WF200反復を各1 realisation → source review／正式 freeze →
+ユーザーの Kaggle CPU TR-00 → WP4の適格 cell 判定 → 厚い版本番、の順。Cp 入力は並行してユーザーが用意する。
+この amendment 中に実物の kernel 再生成／Kaggle push／本番 solve は行わない。
+
+| 段階 | run数 | 12 run以下/kernel | 5同時sessionでの波数 |
 | --- | ---: | ---: | ---: |
-| TR-00: E1_sharp／E2_sharp × 2 model × 2 family × 8 | 64 | 6 | 2 |
-| 厚い E1〜E3: 全 4 cell が適格だった場合の最大 | 96 | 8 | 2 |
-| 合計最大 | 160 | 14 | 4（TR 判定を挟む） |
+| TR-00 E1_sharp／E2_sharp ×2 model ×2 family ×8 | 64 | 6 | 2 |
+| main E1〜E3 ×最大4適格cell ×8 | 最大96 | 最大8 | 2 |
+| 最大合計 | 160 | 14 | 4（TR判断を挟む） |
 
-13〜21 分／5000 反復を仮定すると、初回 solve の合計は 34.7〜56 worker h。4 worker／session の分割では、段階を分けた 10 case wave が理想的には **130〜210 分（2.17〜3.50 h、0.09〜0.15 連続日）＋ setup・TR 判断時間**。全 run が 3 倍まで継続すれば 6.5〜10.5 h に相当するが、いずれも多体計測前の計画値。保守的な 4 kernel wave × 11 h は 44 h（1.83 連続日）の枠であり、完了保証や日次 quota の主張ではない。160 CPU h 台帳と実際の所要時間に従って中断・残件を明示する。
+13〜21分／5000反復の envelope なら、初回 solve は34.7〜56 worker h。
+stageを分けた12-run分割は10 case waveで、理想値130〜210分＝2.17〜3.50h（0.09〜0.15連続日）＋setup／判断時間。
+全 run が15000まで延びる3倍仮定では6.5〜10.5h（0.27〜0.44日）。
+保守的な4 kernel wave×11hの枠は44h＝1.83連続日で、完了保証・日次quotaの意味ではない。
+T2-0 summary §3では **fine30は6〜11分、13〜21分はxfine30**。登録§7の幅を計画envelopeとして使い、
+多体の実測所要時間とは呼ばない。160 CPU hは全session共通台帳でownerが管理する。
+個別2.5h capの合計は最大400 worker hに達し、global_budget_enforced=falseなので、独立capは160hの強制ではない。
 
-**PR 作成は自動承認の制限で拒否された。** GitHub コネクタは `MCP tool call requires approval, but approval policy is never` を返した。この実行環境では必要な承認を要求できない。PR 本文として使える本報告と、上記の作成リンクを残した。
+## Claude が commit すべき完全なファイル一覧
+
+以下の **34ファイル**。同じ一覧を `wp05_amendment1_validation/commit_files.txt` に保存した。
+
+```text
+docs/codex/gen01_w1_2026_11_06/reports/cp_digitised_format.md
+docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_measurement_schema.json
+docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_result_schema.json
+docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment1_design.md
+docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment1_validation/README.md
+docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment1_validation/SHA256SUMS
+docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment1_validation/authority_read_receipt.json
+docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment1_validation/commit_files.txt
+docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment1_validation/frozen_inputs_unchanged.json
+docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment1_validation/geometry_preflight.json
+docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment1_validation/render_invalidation.json
+docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment1_validation/run_forecast.json
+docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment1_validation/schema_validation.json
+docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment1_validation/source_inventory.json
+docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment1_validation/synthetic_mesh_summary.json
+docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment1_validation/synthetic_unit_meshes.tar.gz
+docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment1_validation/test_logs.tar.gz
+docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment1_validation/validation.json
+docs/codex/gen01_w1_2026_11_06/reports/wp05_collect_design.md
+docs/codex/gen01_w1_2026_11_06/reports/wp05_cp_design.md
+docs/codex/gen01_w1_2026_11_06/reports/wp05_design.md
+docs/codex/gen01_w1_2026_11_06/reports/wp05_mesh_design.md
+docs/codex/gen01_w1_2026_11_06/reports/wp05_report.md
+docs/codex/gen01_w1_2026_11_06/reports/wp05_validation/README.md
+scripts/topo2d00/build_tr00_kernels.py
+scripts/topo2d00/collect_rans.py
+scripts/topo2d00/digitize_cp.py
+scripts/topo2d00/run_rans.py
+scripts/topo2d00/t2d_foam_case.py
+scripts/topo2d00/t2d_multibody_case.py
+tests/topo2d00/test_build_tr00_kernels.py
+tests/topo2d00/test_collect_rans.py
+tests/topo2d00/test_digitize_cp.py
+tests/topo2d00/test_multibody_case.py
+```
+ignoredな旧working renderのメタデータ変更は失効receiptで記録し、巨大なworkディレクトリ自体は commit 対象にしない。
