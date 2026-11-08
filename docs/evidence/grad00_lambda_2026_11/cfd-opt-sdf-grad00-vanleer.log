@@ -1,0 +1,80 @@
+[{"stream_name":"stdout","time":14.917487042,"data":"RUN /kaggle/working/grad00-4r08via8/julia-1.12.6/bin/julia --project=/kaggle/working/grad00-4r08via8/source/julia/CFDSDFWaterLilyT4 -e using Pkg; Pkg.instantiate()\n"}
+,{"stream_name":"stdout","time":316.900982383,"data":"   1994.6 ms  ✓ LibTracyClient_jll\n"}
+,{"stream_name":"stdout","time":316.901041356,"data":"   8213.3 ms  ✓ EllipsisNotation\n"}
+,{"stream_name":"stdout","time":316.901048354,"data":"   7820.5 ms  ✓ CUDA_Driver_jll\n"}
+,{"stream_name":"stdout","time":316.901054155,"data":"   2315.6 ms  ✓ JuliaNVTXCallbacks_jll\n"}
+,{"stream_name":"stdout","time":316.90105951,"data":"   2175.7 ms  ✓ LMDB_jll\n"}
+,{"stream_name":"stdout","time":316.901064873,"data":"   3758.0 ms  ✓ LLVMExtra_jll\n"}
+,{"stream_name":"stdout","time":316.901070369,"data":"   1866.1 ms  ✓ tree_sitter_spirv_jll\n"}
+,{"stream_name":"stdout","time":316.901075754,"data":"  12118.5 ms  ✓ StringManipulation\n"}
+,{"stream_name":"stdout","time":316.901080791,"data":"   1494.8 ms  ✓ NVPTX_LLVM_Backend_jll\n"}
+,{"stream_name":"stdout","time":316.901086071,"data":"   1505.9 ms  ✓ tree_sitter_llvm_jll\n"}
+,{"stream_name":"stdout","time":316.901091429,"data":"   1722.6 ms  ✓ tree_sitter_gcn_jll\n"}
+,{"stream_name":"stdout","time":316.901096714,"data":"   1545.1 ms  ✓ demumble_jll\n"}
+,{"stream_name":"stdout","time":316.901101936,"data":"   1648.9 ms  ✓ tree_sitter_ptx_jll\n"}
+,{"stream_name":"stdout","time":316.901106969,"data":"   2027.3 ms  ✓ OpenSpecFun_jll\n"}
+,{"stream_name":"stdout","time":316.901110971,"data":"   1838.7 ms  ✓ Tracy\n"}
+,{"stream_name":"stdout","time":316.901114959,"data":"   2439.5 ms  ✓ NVTX\n"}
+,{"stream_name":"stdout","time":316.901120335,"data":"   3015.5 ms  ✓ LMDB\n"}
+,{"stream_name":"stdout","time":316.90112558,"data":"   6474.6 ms  ✓ CUDA_Compiler_jll\n"}
+,{"stream_name":"stdout","time":316.901131311,"data":"   1965.5 ms  ✓ CompilerCaching\n"}
+,{"stream_name":"stdout","time":316.901136494,"data":"  25641.2 ms  ✓ StaticArrays\n"}
+,{"stream_name":"stdout","time":316.901142225,"data":"   7473.6 ms  ✓ SpecialFunctions\n"}
+,{"stream_name":"stdout","time":316.901147379,"data":"   1556.0 ms  ✓ StaticArrays → StaticArraysStatisticsExt\n"}
+,{"stream_name":"stdout","time":316.901152379,"data":"   1648.5 ms  ✓ Adapt → AdaptStaticArraysExt\n"}
+,{"stream_name":"stdout","time":316.901156693,"data":"   1413.3 ms  ✓ ConstructionBase → ConstructionBaseStaticArraysExt\n"}
+,{"stream_name":"stdout","time":316.901160936,"data":"   6586.4 ms  ✓ CUDA_Runtime_jll\n"}
+,{"stream_name":"stdout","time":316.901164943,"data":"   1575.0 ms  ✓ DiffRules\n"}
+,{"stream_name":"stdout","time":316.901168974,"data":"  22812.2 ms  ✓ LLVM\n"}
+,{"stream_name":"stdout","time":316.901185644,"data":"  10469.5 ms  ✓ KernelAbstractions\n"}
+,{"stream_name":"stdout","time":316.901190029,"data":"  10364.5 ms  ✓ ForwardDiff\n"}
+,{"stream_name":"stdout","time":316.901194048,"data":"   2939.8 ms  ✓ LLVM → BFloat16sExt\n"}
+,{"stream_name":"stdout","time":316.901198241,"data":"   3394.5 ms  ✓ GPUToolbox\n"}
+,{"stream_name":"stdout","time":316.901203773,"data":"   3995.6 ms  ✓ UnsafeAtomics → UnsafeAtomicsLLVM\n"}
+,{"stream_name":"stdout","time":316.901211527,"data":"   1688.9 ms  ✓ KernelAbstractions → LinearAlgebraExt\n"}
+,{"stream_name":"stdout","time":316.901214452,"data":"   2380.1 ms  ✓ KernelAbstractions → SparseArraysExt\n"}
+,{"stream_name":"stdout","time":316.901217395,"data":"   1437.0 ms  ✓ ForwardDiff → ForwardDiffStaticArraysExt\n"}
+,{"stream_name":"stdout","time":316.901220262,"data":"   9065.7 ms  ✓ WaterLily\n"}
+,{"stream_name":"stdout","time":316.901255983,"data":"  12391.9 ms  ✓ GPUArrays\n"}
+,{"stream_name":"stdout","time":316.901260715,"data":"  60868.2 ms  ✓ PrettyTables\n"}
+,{"stream_name":"stdout","time":316.901264527,"data":"  72671.3 ms  ✓ GPUCompiler\n"}
+,{"stream_name":"stdout","time":316.901267769,"data":"  87370.3 ms  ✓ CUDACore\n"}
+,{"stream_name":"stdout","time":316.901270993,"data":"   9036.3 ms  ✓ CUDACore → SpecialFunctionsExt\n"}
+,{"stream_name":"stdout","time":316.901274338,"data":"  12077.2 ms  ✓ cuFFT\n"}
+,{"stream_name":"stdout","time":316.901277579,"data":"  14994.9 ms  ✓ cuRAND\n"}
+,{"stream_name":"stdout","time":316.901280734,"data":"  15790.0 ms  ✓ NVML\n"}
+,{"stream_name":"stdout","time":316.901283953,"data":"  18448.1 ms  ✓ CUPTI\n"}
+,{"stream_name":"stdout","time":316.901287104,"data":"  14126.7 ms  ✓ cuSPARSE\n"}
+,{"stream_name":"stdout","time":316.90129031,"data":"  20601.9 ms  ✓ cuBLAS\n"}
+,{"stream_name":"stdout","time":316.901293461,"data":"  25705.2 ms  ✓ CUDATools\n"}
+,{"stream_name":"stdout","time":316.901296744,"data":"  13421.9 ms  ✓ cuSOLVER\n"}
+,{"stream_name":"stdout","time":316.901299863,"data":"   7736.6 ms  ✓ CUDA\n"}
+,{"stream_name":"stdout","time":316.901303069,"data":"   7544.6 ms  ✓ Atomix → AtomixCUDAExt\n"}
+,{"stream_name":"stdout","time":316.901306271,"data":"   7957.3 ms  ✓ WaterLily → WaterLilyCUDAExt\n"}
+,{"stream_name":"stdout","time":316.901309518,"data":"  95 dependencies successfully precompiled in 281 seconds. 34 already precompiled.\n"}
+,{"stream_name":"stdout","time":316.901312897,"data":"  1 dependency had output during precompilation:\n"}
+,{"stream_name":"stdout","time":316.901316221,"data":"┌ WaterLily\n"}
+,{"stream_name":"stdout","time":316.901319537,"data":"│  ┌ Warning: Using WaterLily in serial (ie. JULIA_NUM_THREADS=1) is not recommended because it defaults to serial CPU execution.\n"}
+,{"stream_name":"stdout","time":316.90133991,"data":"│  │ Use JULIA_NUM_THREADS=auto, or any number of threads greater than 1, to allow multi-threading in CPU backends.\n"}
+,{"stream_name":"stdout","time":316.901344638,"data":"│  │ For a low-overhead single-threaded CPU only backend set: WaterLily.set_backend(\"SIMD\")\n"}
+,{"stream_name":"stdout","time":316.901349139,"data":"│  └ @ WaterLily ~/.julia/packages/WaterLily/yOkji/src/WaterLily.jl:206\n"}
+,{"stream_name":"stdout","time":316.901353096,"data":"└  \n"}
+,{"stream_name":"stdout","time":316.901743084,"data":"RUN /kaggle/working/grad00-4r08via8/julia-1.12.6/bin/julia --project=/kaggle/working/grad00-4r08via8/source/julia/CFDSDFWaterLilyT4 /kaggle/working/grad00-4r08via8/source/scripts/waterlily_grad00_lambda_2026_11.jl /kaggle/working/grad00-4r08via8/source/docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431 /kaggle/working/grad00_vanLeer /kaggle/working/grad00-4r08via8/source/docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D0_interface_offset.dir_f4_fortran.raw d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549 /kaggle/working/grad00-4r08via8/source/docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D1_filtered_seed11.dir_f4_fortran.raw 96fe6e62c5fcb7ad0108dd64d6fac68cc488ee49deb188be742530f828037a87 /kaggle/working/grad00-4r08via8/source/docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D2_filtered_seed2026.dir_f4_fortran.raw 2a22eb09407a14755f495fa07d4df8dee2d4632db41a0b75d1bf744fd3d1d5de /kaggle/working/grad00-4r08via8/source/docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/P1_upstream_lobe.dir_f4_fortran.raw 24cc06aeb18e2a5729e560636f13ce78f8f19746268699783e8498921aec5dcc 0.003971641173621408 0.003971641173621408 0.003971641173621408 0.003971641173621408\n"}
+,{"stream_name":"stdout","time":435.43339552,"data":"GRAD00_PREFLIGHT_BEGIN selected_dual lambda=typeof(WaterLily.vanLeer) steps=20\n"}
+,{"stream_name":"stdout","time":435.433432981,"data":"GRAD00_PREFLIGHT_END selected_dual seconds=65.08213496208191\n"}
+,{"stream_name":"stdout","time":435.433439923,"data":"GRAD00_PREFLIGHT_BEGIN selected_plain lambda=typeof(WaterLily.vanLeer) steps=20\n"}
+,{"stream_name":"stdout","time":435.433444738,"data":"GRAD00_PREFLIGHT_END selected_plain seconds=33.874982833862305\n"}
+,{"stream_name":"stdout","time":435.433450335,"data":"GRAD00_RESULT INCOMPLETE /kaggle/working/grad00_vanLeer\n"}
+,{"stream_name":"stdout","time":435.750747178,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":435.750774677,"data":"  File \"/kaggle/src/script.py\", line 185, in main\n"}
+,{"stream_name":"stdout","time":435.750780822,"data":"    raise RuntimeError(f\"measurement script exited {code}\")\n"}
+,{"stream_name":"stdout","time":435.750786282,"data":"RuntimeError: measurement script exited 2\n"}
+,{"stream_name":"stdout","time":435.750791808,"data":"\n"}
+,{"stream_name":"stdout","time":435.752049093,"data":"OUTPUT_MANIFEST_SHA256 66ee800458f44b7074db31081fbae4374447ae2e1bf92deeb865d4d8d748f2d8\n"}
+,{"stream_name":"stderr","time":437.937229474,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":437.937257659,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":438.253588352,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":438.253620286,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":439.751979705,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":440.797488139,"data":"[NbConvertApp] Writing 333820 bytes to __results__.html\n"}
+]
