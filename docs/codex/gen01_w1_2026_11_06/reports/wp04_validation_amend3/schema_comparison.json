@@ -1,0 +1,42 @@
+{
+  "byte_equal": false,
+  "different_json_paths": [
+    "$.$defs.cell.properties.cell_summary.$ref",
+    "$.$defs.cell.properties.cell_summary.description",
+    "$.$defs.cell.properties.cell_summary.type",
+    "$.$defs.cell.properties.thickening_alone.description",
+    "$.$defs.cell.properties.thickening_alone.maxItems",
+    "$.$defs.cell.properties.thickening_alone.minItems",
+    "$.$defs.cell.required",
+    "$.$defs.config_summary",
+    "$.$defs.force_map.properties.E1.anyOf",
+    "$.$defs.force_map.properties.E1_sharp.anyOf",
+    "$.$defs.force_map.properties.E2.anyOf",
+    "$.$defs.force_map.properties.E2_sharp.anyOf",
+    "$.$defs.force_map.properties.E3.anyOf",
+    "$.$defs.point_estimate",
+    "$.$defs.pressure_force",
+    "$.$defs.realisation.description",
+    "$.$defs.summary_map",
+    "$.$defs.thickening_difference.description",
+    "$.$defs.thickening_difference.properties.point_estimate.anyOf",
+    "$.$defs.total_force",
+    "$.description",
+    "$.properties.coefficient_reference.properties.h_over_c.description",
+    "$.properties.coefficient_reference.properties.h_over_c1.description",
+    "$.properties.coefficient_reference.properties.height_mm.const",
+    "$.properties.coefficient_reference.properties.height_mm.description",
+    "$.properties.coefficient_reference.properties.height_mm.exclusiveMinimum",
+    "$.properties.coefficient_reference.properties.height_mm.type",
+    "$.properties.reference.properties.digitizing_uncertainty.description"
+  ],
+  "integration_owner": "Claude host, per user Amendment 2 section 5; no WP5 edits",
+  "wp4": {
+    "path": "docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_result_schema.json",
+    "sha256": "ce5c4c90f821aa5dcf3d63493096a16cad6f72395c461f434307a7dcd3ceb5a7"
+  },
+  "wp5": {
+    "path": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-05-tr00-rans/docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_result_schema.json",
+    "sha256": "c47d77013fcf7a8fef52c30ae42475a60b55bafb9711cc3d4fd4bdcfcf9cbcf9"
+  }
+}

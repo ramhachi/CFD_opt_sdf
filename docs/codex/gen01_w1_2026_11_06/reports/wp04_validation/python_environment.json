@@ -1,0 +1,52 @@
+{
+  "schema": "topo2d-wp4-python-environment-v1",
+  "python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]",
+  "executable": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+  "platform": "macOS-26.3.1-arm64-arm-64bit",
+  "common_thread_env": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "checkouts": {
+    "clean_base": {
+      "path": "/private/tmp/topo2d00-wp04-clean-base",
+      "links": {
+        ".venv": {
+          "symlink_target": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv",
+          "resolved": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv"
+        },
+        "work": {
+          "symlink_target": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/work",
+          "resolved": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/work"
+        }
+      }
+    },
+    "full_suite_feature": {
+      "path": "/private/tmp/topo2d00-wp04-publish",
+      "links": {
+        ".venv": {
+          "symlink_target": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv",
+          "resolved": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv"
+        },
+        "work": {
+          "symlink_target": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/work",
+          "resolved": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/work"
+        }
+      }
+    },
+    "final_program": {
+      "path": "/private/tmp/topo2d00-wp04-final-publish",
+      "links": {
+        ".venv": {
+          "symlink_target": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/.venv",
+          "resolved": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv"
+        },
+        "work": {
+          "symlink_target": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/work",
+          "resolved": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/work"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "mcp_available": false,
+  "attempts": [
+    {
+      "requested_model": "OpenCode Go current catalog",
+      "actual_model": null,
+      "reason": "FileSystem.open denied at /Users/sota/.local/share/opencode/log/opencode.log",
+      "attempt_number": 1
+    },
+    {
+      "requested_model": "OpenCode Go current catalog via isolated XDG",
+      "actual_model": null,
+      "reason": "Provider not found: opencode-go",
+      "attempt_number": 2
+    },
+    {
+      "requested_model": "OpenCode Go worker roles",
+      "actual_model": "native Codex workers (inherited model)",
+      "reason": "No callable MCP and no usable provider in permitted CLI environment",
+      "attempt_number": 3
+    }
+  ],
+  "external_spending_enabled": false,
+  "global_configuration_changed": false,
+  "delegation": [
+    "julia_amend5",
+    "analysis_amend5",
+    "campaign_amend5"
+  ]
+}

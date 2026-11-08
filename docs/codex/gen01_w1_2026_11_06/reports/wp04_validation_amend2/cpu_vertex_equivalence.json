@@ -1,0 +1,40 @@
+{
+  "comparisons": {
+    "E1/topo2d.forces.csv": {
+      "max_finite_abs_difference": 0.0,
+      "new_sha256": "60bbd3768fb4ec3f7ebb07e134b3cbc9d8099c12f1e9bc8865bcaa897dd7f5a9",
+      "numeric_bit_class_equal_nan": true,
+      "old_sha256": "60bbd3768fb4ec3f7ebb07e134b3cbc9d8099c12f1e9bc8865bcaa897dd7f5a9",
+      "same_header": true,
+      "same_shape": true
+    },
+    "E2/topo2d.forces.csv": {
+      "max_finite_abs_difference": 0.0,
+      "new_sha256": "16d8cba3a2fba29d48e17ea115c2c8f96aa3d2320166e3a5f0c62f9cd49840be",
+      "numeric_bit_class_equal_nan": true,
+      "old_sha256": "16d8cba3a2fba29d48e17ea115c2c8f96aa3d2320166e3a5f0c62f9cd49840be",
+      "same_header": true,
+      "same_shape": true
+    },
+    "job_entrypoint/entrypoint.forces.csv": {
+      "max_finite_abs_difference": 0.0,
+      "new_sha256": "60bbd3768fb4ec3f7ebb07e134b3cbc9d8099c12f1e9bc8865bcaa897dd7f5a9",
+      "numeric_bit_class_equal_nan": true,
+      "old_sha256": "60bbd3768fb4ec3f7ebb07e134b3cbc9d8099c12f1e9bc8865bcaa897dd7f5a9",
+      "same_header": true,
+      "same_shape": true
+    },
+    "wp2_integration/topo2d.forces.csv": {
+      "max_finite_abs_difference": 0.0,
+      "new_sha256": "0c0d4b1f7f6cf317dde728fc57b7cbfb031598ceec2110c07ab68f0cb121036b",
+      "numeric_bit_class_equal_nan": true,
+      "old_sha256": "0c0d4b1f7f6cf317dde728fc57b7cbfb031598ceec2110c07ab68f0cb121036b",
+      "same_header": true,
+      "same_shape": true
+    }
+  },
+  "evidence_class": "CPU_IMPLEMENTATION_CAPABILITY_ONLY",
+  "final_vector_seconds": 113.19236087799072,
+  "prior_tuple_seconds": 1805.9648878574371,
+  "schema": "wp04-cpu-vector-equivalence-v1"
+}

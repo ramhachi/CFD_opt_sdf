@@ -1,0 +1,52 @@
+{
+  "baseline": {
+    "failed_nodes": [],
+    "passed": 3482,
+    "provenance": "user-supplied Claude host execution",
+    "skipped": 74,
+    "source_commit": "e3dcdf61"
+  },
+  "commands": [
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-m",
+        "compileall",
+        "src",
+        "tests"
+      ],
+      "exit_code": 0,
+      "log_sha256": "54b3f21f95866ef1343719b1eab42086d5346ceb2d301f5c17fcf09ddd9d222d",
+      "name": "compileall",
+      "wall_seconds": 0.7998449802398682
+    }
+  ],
+  "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily",
+  "full_pytest_status": "INTERRUPTED_BEFORE_FINAL_CODE; not a completed regression result",
+  "interrupt_reason": "Same-observable sharp/thick diagnostic path added after current WP5 result inspection",
+  "schema": "wp04-amend2-python-execution-v1",
+  "source_after": {
+    "julia/CFDSDFWaterLily/gen01/Topo2D.jl": "8be920d77bd03dfd1ddac8728c9355046a16744fe7bcbed470bd9c8e612db608",
+    "scripts/topo2d00/analyze.py": "8e2950b32cd176934edc013446d0479c18ae5e1ce12b2d77f745e4c0028e7283",
+    "scripts/topo2d00/check.py": "3c81c622d6ed51548920d9faf35d42f909fc684cfac7fb2882ca346a86d6f97e",
+    "scripts/topo2d00/plot_geometry.py": "c18d155a8dc50f85a9c85517b821e3e6d4c5da977116948d71621160365172b0",
+    "scripts/topo2d_selftest.jl": "aee268f001b3a2f3917c5b88f388776abd39bb096f6a19bf286ca7a879737104",
+    "scripts/waterlily_topo2d_job.jl": "96d33b5732e339e18ddecf3fc02ab81a9bdc84138b1c50aa12c749aa3c34c645",
+    "src/cfd_gen/__init__.py": "58671457aa4e97078672298ab97ab42c73451817d308b6bfe1cfff5ea063c750",
+    "src/cfd_gen/topo2d/__init__.py": "3b74b60d63b34e84a56d22098a1deca8eaaa410ceb1359b89fa659954673178b",
+    "src/cfd_gen/topo2d/geometry.py": "3f33be577438fbe3e78eaa1d589bbe1172e0b93330088f5b8f080f54f20ee512",
+    "src/cfd_harness/scene_campaign.py": "abf7f60f31fdad3817499dae20c3b95a53b70b03a0f933149a9efd22d7cef191"
+  },
+  "source_before": {
+    "julia/CFDSDFWaterLily/gen01/Topo2D.jl": "8be920d77bd03dfd1ddac8728c9355046a16744fe7bcbed470bd9c8e612db608",
+    "scripts/topo2d00/analyze.py": "8e2950b32cd176934edc013446d0479c18ae5e1ce12b2d77f745e4c0028e7283",
+    "scripts/topo2d00/check.py": "3c81c622d6ed51548920d9faf35d42f909fc684cfac7fb2882ca346a86d6f97e",
+    "scripts/topo2d00/plot_geometry.py": "c18d155a8dc50f85a9c85517b821e3e6d4c5da977116948d71621160365172b0",
+    "scripts/topo2d_selftest.jl": "aee268f001b3a2f3917c5b88f388776abd39bb096f6a19bf286ca7a879737104",
+    "scripts/waterlily_topo2d_job.jl": "96d33b5732e339e18ddecf3fc02ab81a9bdc84138b1c50aa12c749aa3c34c645",
+    "src/cfd_gen/__init__.py": "58671457aa4e97078672298ab97ab42c73451817d308b6bfe1cfff5ea063c750",
+    "src/cfd_gen/topo2d/__init__.py": "3b74b60d63b34e84a56d22098a1deca8eaaa410ceb1359b89fa659954673178b",
+    "src/cfd_gen/topo2d/geometry.py": "3f33be577438fbe3e78eaa1d589bbe1172e0b93330088f5b8f080f54f20ee512",
+    "src/cfd_harness/scene_campaign.py": "abf7f60f31fdad3817499dae20c3b95a53b70b03a0f933149a9efd22d7cef191"
+  }
+}

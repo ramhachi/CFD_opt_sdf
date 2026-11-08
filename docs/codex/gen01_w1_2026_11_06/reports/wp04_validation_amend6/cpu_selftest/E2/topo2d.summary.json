@@ -1,0 +1,104 @@
+{
+  "backend": "WaterLily CPU",
+  "batch_count": 4,
+  "case_id": "topo2d",
+  "cd_time_weighted": 8.205698449532017,
+  "checkpoint_note": "WP1 source-pinned finite-column payload and fresh static-scene coefficients; WP4 CPU bit-identity verified with remeasure=false; CUDA restore unverified",
+  "checkpoint_provider": "WP1_DATA_ONLY_FINITE_COLUMN_ADAPTER",
+  "cl_time_weighted": 20.213895540165865,
+  "downforce_time_weighted_n_per_m": 2.2578921318365275,
+  "drag_time_weighted_n_per_m": 0.9165765168127263,
+  "finite_forces": true,
+  "finite_p": true,
+  "finite_u": true,
+  "flow_dims": [
+    320,
+    160
+  ],
+  "flow_origin_m": [
+    -0.022340000000000002,
+    0.0,
+    -0.014893333333333335
+  ],
+  "force_csv_sha256": "129a3a66fe49126d75325b67c56cbfa15f2d228e70ab836744f076b05e06b4fe",
+  "force_projection_semantics": "drag=+Fx; downforce=-Fz",
+  "force_scale_n_per_m": 0.0018616666666666669,
+  "force_unit": "N/m",
+  "ground_plane_solver": 8.0,
+  "ground_velocity_solver": [
+    1.0,
+    0.0
+  ],
+  "h_over_c": 0.2631578947368421,
+  "h_over_c1": 0.4476275738585497,
+  "observable": "total_cl",
+  "phase_shift_m": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "readout_available": {
+    "cur": true,
+    "cv": false,
+    "nds": false
+  },
+  "readout_note": "WP2 wing-only readouts absent: cur only; nds/cv reserved as NaN in CSV",
+  "reference_chord_mm": 223.4,
+  "remeasure_after_construction": false,
+  "reynolds": 200.0,
+  "runtime": {
+    "julia_version": "1.12.6",
+    "memory": "Array",
+    "scalar_type": "Float32",
+    "scheme": "quick",
+    "threads": 1,
+    "waterlily_version": "1.8.0"
+  },
+  "sample_every_solver_steps": 1,
+  "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+  "schema": "topo2d-job-summary-v1",
+  "smoke": true,
+  "solver_length": 120.0,
+  "source_sha256": {
+    "data/zz2003/flap_table4.dat": "8dd4c9582f265b5585f926bc98377fea0b1648b0cf9f0e7ceebce27148def89a",
+    "data/zz2003/main_element_table3.dat": "66bbf8b5caa90f78f52c0851503077b83bab3fd803709858885d8387c05695d8",
+    "data/zz2003/single_element_table2.dat": "04934133a6c085e2f10e0a8e688e91fbd53dc8fc8b999a07433d351d8e152cfe",
+    "julia/CFDSDFWaterLily/Manifest.toml": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    "julia/CFDSDFWaterLily/Project.toml": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+    "julia/CFDSDFWaterLily/gen01/Checkpoint.jl": "21d7c9a2ca2c27bbfbecc6ed579417acde0c4dc1ca270c9ee3d5c1da64e13076",
+    "julia/CFDSDFWaterLily/gen01/Topo2D.jl": "32e2c8ec168b8ff5350456619ad19e54ac8e54c2d77cc145da8885a405e8e3c1",
+    "julia/CFDSDFWaterLily/src/CFDSDFWaterLily.jl": "996224432490df72726e208ad36d1a68657b506ba4058d79a0f9eb72154d4e9e",
+    "julia/CFDSDFWaterLily/src/Forces.jl": "0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e",
+    "julia/CFDSDFWaterLily/src/GridSDFBody.jl": "fa6aecccecbf140158396c9c8e5f3a6c16d3810f792ba45b9c8f4ee481709058",
+    "julia/CFDSDFWaterLily/src/Runtime.jl": "bd830f7f307f7bd5de67642b4e9243ae5586959fd475765b13ef14d19637d458",
+    "julia/CFDSDFWaterLily/src/Simulation.jl": "99cfc7a30741c17b7e83f4451270e0536e336dd2c79cc1f904492910e8588cc2",
+    "julia/CFDSDFWaterLily/src/WaterLilyBody.jl": "e5b9329fbf29bc86fa1eb1a5481b255535e255e04418d0d2582f1d33e42df369",
+    "scripts/waterlily_topo2d_job.jl": "96d33b5732e339e18ddecf3fc02ab81a9bdc84138b1c50aa12c749aa3c34c645",
+    "src/cfd_gen/__init__.py": "58671457aa4e97078672298ab97ab42c73451817d308b6bfe1cfff5ea063c750",
+    "src/cfd_gen/topo2d/__init__.py": "3b74b60d63b34e84a56d22098a1deca8eaaa410ceb1359b89fa659954673178b",
+    "src/cfd_gen/topo2d/geometry.py": "0983904c6d90e1f95cbd5e7ee5a43b75c8d1351d1e763705b547a5eb7b1b56e1",
+    "src/cfd_harness/campaign_schema.py": "4c3c494ed381930d9d1e51b063efbbdcf1fa4586c1ac7e84d2b999a5c984d1b8",
+    "src/cfd_harness/scene_campaign.py": "8a036d0c5e07047e2e20aad43a3ce6876a8bbb7008f70b63c8e28b55fb99ba00"
+  },
+  "stationarity_relative_half_window_drift": {
+    "downforce": 0.43295803018577983,
+    "drag": 0.4141670893718441
+  },
+  "steps": 14,
+  "t_end_reached": 0.01526627317070961,
+  "timestep_floor": "eps(T)*max(1,abs(solver_time))",
+  "top_factor": 1.0,
+  "topo2d": {
+    "configuration": "E2",
+    "grid": "main",
+    "height_mm": 100.0,
+    "phase": "0",
+    "reynolds": 200.0,
+    "role": "primary"
+  },
+  "wall_seconds": 36.53307104110718,
+  "window_t_u_l": [
+    0.003,
+    0.015
+  ]
+}

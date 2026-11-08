@@ -1,0 +1,37 @@
+{
+  "evidence_class": "SYNTHETIC_CONTRACT_ONLY",
+  "analysis_uncompressed_sha256": "5aa50e579d5b7a854c5d7808632e63d22be1d041be28e0519e1fc9fe9e0e21c9",
+  "source_sha256": {
+    "scripts/topo2d00/analyze.py": "4b19f862bc86ba3a97d8f7e444f35f78f787801a617b1a2676e00c6690257d6e",
+    "scripts/topo2d00/check.py": "f9f2bf3230afbfc323b206f5d7b7d9e2d74866cfa92b1d6071f83b2ad06344eb",
+    "tests/topo2d00/synthetic.py": "c5121726aef5ba69389679ffb83e00271bf2a5088cbab75005ab4aa77888c233"
+  },
+  "matching": {
+    "argv": [
+      "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/.venv/bin/python",
+      "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/scripts/topo2d00/check.py",
+      "/private/tmp/topo2d00_checker_final/analysis.json"
+    ],
+    "returncode": 0,
+    "output": {
+      "pass": true,
+      "discrepancies": []
+    },
+    "stderr": ""
+  },
+  "tampered": {
+    "argv": [
+      "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/.venv/bin/python",
+      "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/scripts/topo2d00/check.py",
+      "/private/tmp/topo2d00_checker_final/analysis.json"
+    ],
+    "returncode": 1,
+    "output": {
+      "pass": false,
+      "discrepancies": [
+        "waterlily.1000.12.downforce.mean: 1.1000000000000003 != 1.0000000000000002"
+      ]
+    },
+    "stderr": ""
+  }
+}

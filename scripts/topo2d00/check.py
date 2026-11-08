@@ -1,0 +1,666 @@
+#!/usr/bin/env python3
+"""Independent TOPO-2D-00 arithmetic; does not import the analyzer or its helpers.
+
+The input/output contract is wp04_design.md and the registration, rather than
+another implementation. This checks the normalized input saved in analysis.json;
+it does not replace the analyzer's raw-artifact/freeze verification.
+"""
+from __future__ import annotations
+
+import argparse
+import csv
+import hashlib
+import json
+import math
+from pathlib import Path
+
+import numpy as np
+from scipy.stats import t
+
+LIMITATIONS = [
+    "No physical, grid-independent, FSAE or 3D qualification is implied.",
+    "Concordance is judged per Re under registration Amendment 7: downforce 12/23 are required on both sides, and 13 is also required if W or any qualified R cell is non-monotone; only jointly resolved pairs determine ordering. Re states combine under Amendment 5.",
+    "RETENTION_12 uses delta-method relative-increment variances followed by Fieller; it is not an exact nested-ratio interval.",
+    "The uncertainty model treats placement phases and equal-duration batches as sampling units; iid adequacy requires registration review.",
+    "The confirmation grid re-thickens at its own 4dx; its contrast includes geometry and grid changes.",
+    "Thickening-alone differences need the same observable on sharp and thick arms; the primary pressure/total arms cannot be subtracted.",
+]
+CONFIGS = ("E1", "E2", "E3")
+READOUTS = ("cur", "nds", "cv")
+RESPONSES = ("downforce", "drag")
+RCONFIGS = (*CONFIGS, "E1_sharp", "E2_sharp")
+
+
+def need(condition, message):
+    if not condition:
+        raise ValueError(message)
+
+
+def number(x):
+    need(not isinstance(x, bool) and isinstance(x, (int, float)) and math.isfinite(x),
+         f"expected finite number, got {x!r}")
+    return float(x)
+
+
+def classical(values):
+    a = np.asarray([number(x) for x in values], dtype=float)
+    need(a.size >= 2, "at least two independent units required")
+    n = len(a)
+    mean = float(np.sum(a) / n)
+    sd = float(np.sqrt(np.sum((a - mean) ** 2) / (n - 1)))
+    se = sd / math.sqrt(n)
+    half = float(t.ppf(.95, n - 1)) * se
+    return dict(n=n, mean=mean, sd=sd, se=se, df=n - 1,
+                ci90=[mean - half, mean + half])
+
+
+def batch_variance(readout, response):
+    batches = [number(row[response]) for row in readout["batches"]]
+    need(len(batches) >= 4, "at least four equal-duration batches required")
+    n = len(batches)
+    mean, whole = sum(batches) / n, number(readout[response])
+    need(abs(mean - whole) <= 1e-9 * max(1, abs(mean), abs(whole)),
+         "equal-duration batch means do not reproduce whole-window mean")
+    variance = float(np.var(batches, ddof=1)) / n
+    return variance
+
+
+def paired_w(left, right, response, readout="cur"):
+    need(len(left) == len(right) and len(left) >= 2, "paired phase count")
+    need(all(r.get("observable") == "total_cl" and r["readouts"][readout].get("observable") == "total_cl" for r in [*left, *right]),
+         "cannot difference across observables")
+    n = len(left)
+    d = np.array([number(b["readouts"][readout][response]) -
+                  number(a["readouts"][readout][response]) for a, b in zip(left, right)])
+    mean = float(np.mean(d))
+    sa = float(np.std(d, ddof=1))
+    sb = math.sqrt(sum(batch_variance(row["readouts"][readout], response)
+                       for row in [*left, *right]) / n)
+    se = max(sa, sb) / math.sqrt(n)
+    hw = float(t.ppf(.95, n - 1)) * se
+    return dict(n=n, mean=mean, sigma_a=sa, sigma_b=sb, sigma=max(sa, sb),
+                se=se, df=n - 1, ci90=[mean - hw, mean + hw])
+
+
+def relative_w(left, right, readout="cur"):
+    n = len(left)
+    a = np.array([number(row["readouts"][readout]["downforce"]) for row in left])
+    b = np.array([number(row["readouts"][readout]["downforce"]) for row in right])
+    baseline = float(a.mean())
+    if baseline == 0:
+        return None, None
+    r = float((b - a).mean() / baseline)
+    influence = ((b - a) - r * a) / baseline
+    va = float(np.var(influence, ddof=1)) / n
+    vb = sum(batch_variance(y["readouts"][readout], "downforce")
+             + (1 + r) ** 2 * batch_variance(x["readouts"][readout], "downforce")
+             for x, y in zip(left, right)) / (n * n * baseline * baseline)
+    return r, max(va, vb)
+
+
+def relative_r(realizations):
+    a = np.array([number(r["forces"]["E1"]["downforce"]) for r in realizations])
+    b = np.array([number(r["forces"]["E2"]["downforce"]) for r in realizations])
+    if float(a.mean()) == 0:
+        return None, None
+    r = float((b - a).mean() / a.mean())
+    influence = ((b - a) - r * a) / a.mean()
+    return r, float(np.var(influence, ddof=1)) / len(a)
+
+
+def fieller(numerator, denominator, variance_num, variance_den, df, covariance=0.):
+    """Solve the confidence-set quadratic, retaining disconnected sets/infinity."""
+    u, v, vu, vv, cov = map(number, (numerator, denominator, variance_num,
+                                     variance_den, covariance))
+    need(vu >= 0 and vv >= 0 and df > 0, "invalid Fieller variance/df")
+    if vu == 0 or vv == 0:
+        need(cov == 0, "invalid Fieller covariance")
+    else:
+        # Cauchy-Schwarz on standard deviations avoids squaring tiny/large
+        # coefficients, so changing coefficient units cannot weaken admission.
+        bound = math.sqrt(vu) * math.sqrt(vv)
+        need(abs(cov) <= bound * (1 + 32 * np.finfo(float).eps),
+             "invalid Fieller covariance")
+    q = float(t.ppf(.95, df)) ** 2
+    a, b, c = v * v - q * vv, -2 * u * v + 2 * q * cov, u * u - q * vu
+    eps = 32 * np.finfo(float).eps
+    if abs(a) <= eps * max(v * v, q * vv, np.finfo(float).tiny):
+        if abs(b) <= eps * max(abs(2 * u * v), abs(2 * q * cov), np.finfo(float).tiny):
+            return dict(kind="all_real" if c <= 0 else "empty",
+                        intervals=[[None, None]] if c <= 0 else [])
+        bound = -c / b
+        return dict(kind="half_line", intervals=[[None, bound]] if b > 0 else [[bound, None]])
+    disc = b * b - 4 * a * c
+    if abs(disc) <= eps * max(b * b, abs(4 * a * c), np.finfo(float).tiny):
+        disc = 0.
+    if disc < 0:
+        return dict(kind="all_real" if a < 0 else "empty",
+                    intervals=[[None, None]] if a < 0 else [])
+    root = math.sqrt(disc)
+    # Direct roots suffice here; comparing with the independent implementation
+    # catches material cancellation on the registered synthetic/measurement scale.
+    low, high = sorted(((-b - root) / (2 * a), (-b + root) / (2 * a)))
+    if a > 0:
+        return dict(kind="bounded", intervals=[[low, high]])
+    if disc == 0:
+        return dict(kind="all_real", intervals=[[None, None]])
+    return dict(kind="disjoint", intervals=[[None, low], [high, None]])
+
+
+def resolved(stat):
+    lo, hi = stat["ci90"]
+    return lo > 0 or hi < 0
+
+
+def same_sign(a, b):
+    return resolved(a) and resolved(b) and (a["mean"] > 0) == (b["mean"] > 0)
+
+
+def z_test(mean, se):
+    return dict(z=abs(mean) / se if se > 0 else (0. if mean == 0 else None),
+                **{"pass": abs(mean) > 3 * se})
+
+
+def thickness_effect(cell):
+    """Recompute each auxiliary component from raw paired WP5 rows."""
+    output = {}
+    for config in CONFIGS:
+        source = config + "_sharp"
+        if source not in RCONFIGS:
+            output[config] = dict(status="UNAVAILABLE_SHARP_ARM", observables={})
+            continue
+        output[config] = {"from": source, "to": config, "observables": {}}
+        for label in ("pressure_cl", "total_cl"):
+            field, cv = (("pressure_coefficients", "pressure_convergence") if label == "pressure_cl" else ("coefficients", "convergence"))
+            samples = {"downforce": [], "drag": []}
+            for rep in cell["realisations"]:
+                values = []
+                for arm in (source, config):
+                    diagnostic = rep.get("diagnostics", {}).get(arm, {})
+                    coefficients = diagnostic.get(field, {}).get("total")
+                    if (diagnostic.get("status") != "COMPLETED" or diagnostic.get("usable") is not True
+                            or diagnostic.get(cv, {}).get("state") != "settled"
+                            or rep["status"][arm] not in {"SETTLED", "INCOMPLETE"}
+                            or not isinstance(coefficients, dict)):
+                        break
+                    numbers = [coefficients.get(k) for k in ("Cl", "Cd")]
+                    if not all(type(x) in (int, float) and math.isfinite(x) for x in numbers):
+                        break
+                    need((diagnostic.get("config"), diagnostic.get("model"), diagnostic.get("family"), diagnostic.get("mesh_msh_sha256"))
+                         == (arm, cell["model"], cell["family"], rep["mesh_sha256"][arm]), "auxiliary RANS identity differs")
+                    values.append(numbers)
+                if len(values) == 2:
+                    for i, response in enumerate(RESPONSES):
+                        samples[response].append(values[1][i] - values[0][i])
+            count = len(samples["downforce"])
+            all_settled = all(row["status"][arm] == "SETTLED" for row in cell["realisations"] for arm in (source, config))
+            distinct = True
+            for arm in (source, config):
+                hashes = [row["mesh_sha256"][arm] for row in cell["realisations"]]
+                distinct &= None not in hashes and len(set(hashes)) == 8
+            confidence = count == 8 and all_settled and distinct
+            output[config]["observables"][label] = dict(
+                observable=label, status="DESCRIPTIVE" if confidence else "POINT_ONLY" if count else "UNAVAILABLE",
+                paired_realisations=count,
+                point_estimate={k: sum(v) / count for k, v in samples.items()} if count else None,
+                ci90={k: classical(v)["ci90"] for k, v in samples.items()} if confidence else None)
+    return output
+
+
+def initial():
+    return dict(schema="topo2d00-analysis-v1", label="INVALID",
+        tr00=dict(cells={}, qualified_cells=[]), waterlily={}, rans={}, agreement={},
+        resolution=dict(status="NOT_JUDGED", downforce=None),
+        height=dict(height_mm=100.0, h_over_c1=100 / 223.4, h_over_c=100 / 380.0),
+        observables=dict(waterlily="total_cl", rans_main="total_cl", tr00="pressure_cl"),
+        rans_diagnostics={}, thickening_alone={},
+        controls=dict(determinism=dict(judged=False, **{"pass": None}),
+                      domain=dict(status="DOMAIN_NOT_JUDGED", z=None), readout={}, manipulation={}),
+        limitations=list(LIMITATIONS))
+
+
+def raw_reference(payload):
+    """Independent recomputation of WP5 manifest and frozen numeric readings."""
+    rans = payload["rans"]
+    summary = {k: number(rans["reference"][k]) for k in ("delta_cl", "digitizing_uncertainty")}
+    if "reference_inputs" not in payload:
+        need("reference_estimate" not in rans.get("provenance", {}), "WP5 provenance requires frozen reference inputs")
+        return summary  # Pure arithmetic fixtures only; formal loader requires raw inputs.
+    source = payload["reference_inputs"]
+    need(isinstance(source, dict) and isinstance(source.get("sha256"), dict) and source["sha256"], "reference inputs missing")
+    hashes = source["sha256"]
+    for filename, digest in hashes.items():
+        need(isinstance(filename, str) and Path(filename).is_absolute() and isinstance(digest, str) and len(digest) == 64,
+             "reference path/SHA malformed")
+        need(Path(filename).is_file() and hashlib.sha256(Path(filename).read_bytes()).hexdigest() == digest,
+             "reference input SHA differs: " + filename)
+    descriptor = rans.get("provenance", {}).get("reference_estimate", {})
+    need(descriptor.get("kind") == "topo2d00_pressure_reference_v1" and descriptor.get("observable") == "pressure_cl", "WP5 pressure reference estimate required")
+    pointer = descriptor.get("manifest", {})
+    filename = Path(source.get("manifest", "")).resolve()
+    need(str(filename) == pointer.get("path") and hashes.get(str(filename)) == pointer.get("sha256"), "reference manifest is not frozen")
+
+    def pairs(items):
+        d = {}
+        for key, value in items:
+            need(key not in d, "duplicate reference JSON field")
+            d[key] = value
+        return d
+    manifest = json.loads(filename.read_text(), object_pairs_hook=pairs,
+                          parse_constant=lambda token: number(float(token)))
+    need(manifest.get("kind") == "topo2d00_cp_manifest_v1" and number(manifest.get("reference_chord_m")) == .2234,
+         "reference manifest kind/chord differs")
+    configurations = manifest.get("configs")
+    need(isinstance(configurations, list) and all(isinstance(c, dict) for c in configurations), "reference configurations missing")
+    by_name = {c.get("config"): c for c in configurations}
+    need(len(by_name) == len(configurations) and {"E1_sharp", "E2_sharp"} <= set(by_name), "reference sharp configurations not unique")
+    need(isinstance(manifest.get("increments"), list) and manifest["increments"].count({"from": "E1_sharp", "to": "E2_sharp"}) == 1,
+         "reference increment declaration missing")
+
+    def csv_values(relative, header):
+        need(isinstance(relative, str) and relative, "reference CSV path missing")
+        path = (filename.parent / relative).resolve()
+        need(str(path) in hashes, "reference CSV not frozen")
+        with path.open(encoding="utf-8-sig", newline="") as handle:
+            reader = csv.reader(handle, strict=True)
+            need(next(reader, None) == header, "reference CSV columns differ")
+            rows = list(reader)
+        need(len(rows) >= (10 if header[0] == "x/c" else 2) and all(len(row) == 2 for row in rows), "reference CSV has too few points or wrong width")
+        values = [[number(float(value)) for value in row] for row in rows]
+        if values[0][0] > values[-1][0]:
+            values.reverse()
+        need(all(a[0] < b[0] for a, b in zip(values, values[1:])), "reference CSV coordinates not strictly monotone")
+        return np.asarray(values)
+
+    def people(config):
+        entries = config.get("digitizers")
+        need(isinstance(entries, list) and len(entries) == 2 and all(isinstance(p, dict) for p in entries), "two reference readers required")
+        need(all(isinstance(p.get(k), str) and p[k].strip() for p in entries for k in ("id", "operator", "tool")), "reference reader identity missing")
+        need(entries[0]["id"] != entries[1]["id"] and (entries[0]["operator"], entries[0]["tool"]) != (entries[1]["operator"], entries[1]["tool"]), "reference readers not independent")
+        need(isinstance(config.get("independence_note"), str) and config["independence_note"].strip(), "reference independence note missing")
+        return [entry["id"] for entry in entries]
+
+    output = {}
+    for name in ("E1_sharp", "E2_sharp"):
+        config = by_name[name]
+        need(number(config.get("height_m")) == .1 and config.get("source", {}).get("observable") == "centre_section_pressure_integrated", "reference height/observable invalid")
+        method = config.get("method")
+        need(name != "E2_sharp" or method == "cp", "E2 needs Cp reference")
+        if method == "tabulated_cl":
+            need(config.get("coefficient_sign") == "downforce=-Fz" and number(config.get("coefficient_chord_m")) > 0,
+                 "reference coefficient convention invalid")
+            need(number(config.get("reading_sensitivity_abs")) >= 0, "negative table reading sensitivity")
+            output[name] = number(config.get("Cl")) * config["coefficient_chord_m"] / .2234, 0.
+        elif method == "cl_curve":
+            who = people(config)
+            need(config.get("coefficient_sign") == "downforce=-Fz" and number(config.get("coefficient_chord_m")) > 0 and number(config.get("height_chord_m")) > 0,
+                 "reference curve convention invalid")
+            need(isinstance(config.get("curves"), dict) and set(config["curves"]) == set(who), "reference curve reader map invalid")
+            curves = [csv_values(config["curves"][reader], ["h/c", "Cl"]) for reader in who]
+            need(not np.array_equal(*curves), "reference curves have identical normalized numeric contents")
+            target = .1 / config["height_chord_m"]
+            values = []
+            for curve in curves:
+                need(curve[0, 0] <= target <= curve[-1, 0], "reference curve extrapolation")
+                values.append(float(np.interp(target, curve[:, 0], curve[:, 1])) * config["coefficient_chord_m"] / .2234)
+            output[name] = sum(values) / 2, abs(values[0] - values[1])
+        else:
+            need(method == "cp" and config.get("abscissa_direction") == "global_streamwise", "reference method/abscissa invalid")
+            who = people(config)
+            elems = config.get("elements")
+            need(isinstance(elems, list) and len(elems) == (1 if name == "E1_sharp" else 2), "reference element count invalid")
+            need(len({e.get("id") for e in elems}) == len(elems), "duplicate reference element")
+            means, errors = [], []
+            for element in elems:
+                need(number(element.get("abscissa_chord_m")) > 0, "reference abscissa chord invalid")
+                extent = element.get("x_extent")
+                need(isinstance(extent, list) and len(extent) == 2 and number(extent[0]) < number(extent[1]), "reference contour extent invalid")
+                surface_map = element.get("surfaces")
+                need(isinstance(surface_map, dict) and set(surface_map) == set(who), "reference surface reader map invalid")
+                readers = []
+                for reader in who:
+                    need(isinstance(surface_map[reader], dict) and set(surface_map[reader]) == {"upper", "lower"}, "reference physical surface map invalid")
+                    readers.append([csv_values(surface_map[reader][side], ["x/c", "Cp"]) for side in ("upper", "lower")])
+                need(all(not np.array_equal(readers[0][side], readers[1][side]) for side in (0, 1)), "reference surfaces have identical normalized numeric contents")
+                integrals = []
+                for upper, lower in readers:
+                    for surface in (upper, lower):
+                        need(np.allclose(surface[[0, -1], 0], extent, rtol=0, atol=1e-10), "reference Cp coverage incomplete")
+                    def integral(surface):
+                        return float(np.dot(np.diff(surface[:, 0]), (surface[1:, 1] + surface[:-1, 1]) / 2))
+                    value = (integral(upper) - integral(lower)) * element["abscissa_chord_m"] / .2234
+                    need(value > 0, "reference element must be downforce-positive; surface swap refused")
+                    integrals.append(value)
+                means.append(sum(integrals) / 2)
+                errors.append(abs(integrals[0] - integrals[1]))
+            output[name] = sum(means), sum(errors)
+    recomputed = dict(delta_cl=output["E2_sharp"][0] - output["E1_sharp"][0], digitizing_uncertainty=output["E2_sharp"][1])
+    need(recomputed["delta_cl"] != 0, "zero recomputed reference increment")
+    need(all(math.isclose(summary[k], number(v), rel_tol=1e-12, abs_tol=1e-12) for k, v in recomputed.items()), "summary differs from recomputed reference")
+    return recomputed
+
+
+def tr_cells(payload, measured_reference):
+    need(payload["schema"] == "topo2d00-rans-results-v1", "RANS schema")
+    need(payload["coefficient_reference"]["chord_mm"] == 223.4, "RANS chord convention")
+    reference = payload["coefficient_reference"]
+    need(reference.get("height_mm") == 100, "RANS physical height")
+    for key, chord in (("h_over_c1", 223.4), ("h_over_c", 380.)):
+        need(math.isclose(number(reference.get(key)), 100 / chord, rel_tol=1e-12), "inconsistent RANS " + key)
+    need(payload["reference"].get("observable") == "pressure_cl", "TR-00 reference observable must be pressure_cl")
+    reference = measured_reference["delta_cl"]
+    uncertainty = measured_reference["digitizing_uncertainty"]
+    need(reference != 0 and uncertainty >= 0, "invalid measured reference increment")
+    output, qualified = {}, {}
+    for cell in payload["cells"]:
+        key = cell["model"] + "/" + cell["family"]
+        need(key not in output, "duplicate model/family")
+        rows = cell["realisations"]
+        need(len({row["id"] for row in rows}) == len(rows), "duplicate realisation")
+        statuses = [row["status"][config] for row in rows for config in ("E1_sharp", "E2_sharp")]
+        need(set(statuses) <= {"SETTLED", "NUMERICAL", "INCOMPLETE", "MESH_FAILED"}, "unknown RANS status")
+        for row in rows:
+            for config in RCONFIGS:
+                force = row["forces"][config]
+                if force is not None:
+                    need(force.get("observable") == ("pressure_cl" if config.endswith("_sharp") else "total_cl"),
+                         "RANS observable mismatch: cannot difference across observables")
+        degenerate = any(len({r["mesh_sha256"][c] for r in rows}) < 8
+                         and all(r["mesh_sha256"][c] is not None for r in rows)
+                         for c in ("E1_sharp", "E2_sharp"))
+        measured = all(r["forces"][c] is not None for r in rows for c in ("E1_sharp", "E2_sharp"))
+        point = (sum(number(r["forces"]["E2_sharp"]["downforce"]) - number(r["forces"]["E1_sharp"]["downforce"]) for r in rows) / len(rows)
+                 if measured else None)
+        block = dict(label="TR00_FAIL", delta=None, ratio_ci90=None, point_estimate=point,
+                     reason="DEGENERATE_REALISATIONS" if degenerate else None, observable="pressure_cl")
+        # Amendment 3 cell severity precedes the downstream scientific label.
+        if len(rows) != 8 or "INCOMPLETE" in statuses or degenerate:
+            block["label"] = "INCOMPLETE"
+        elif "MESH_FAILED" in statuses:
+            block["label"] = "MESH_FAILED"
+        elif "NUMERICAL" in statuses:
+            block["label"] = "NUMERICAL"
+        else:
+            stat = classical([number(row["forces"]["E2_sharp"]["downforce"]) -
+                              number(row["forces"]["E1_sharp"]["downforce"]) for row in rows])
+            ratio = sorted(x / reference for x in stat["ci90"])
+            block.update(delta=stat, ratio_ci90=ratio)
+            agrees = resolved(stat) and (stat["mean"] > 0) == (reference > 0)
+            if agrees and uncertainty > .05 * abs(reference):
+                block["label"] = "TR00_PASS_SIGN"
+            elif agrees and .5 <= ratio[0] and ratio[1] <= 2:
+                block["label"] = "TR00_PASS_RATIO"
+        output[key] = block
+        if block["label"].startswith("TR00_PASS_"):
+            qualified[key] = rows
+    return output, qualified
+
+
+def select(rows, config, reynolds, role="primary", grid="main"):
+    chosen = [row for row in rows if row["configuration"] == config
+              and row["reynolds"] == reynolds and row["role"] == role and row["grid"] == grid]
+    need(len({str(row["phase"]) for row in chosen}) == len(chosen), "duplicate configuration/phase")
+    return {str(row["phase"]): row for row in chosen}
+
+
+def pair(rows, reynolds, a="E1", b="E2", role="primary", grid="main", phases=None):
+    x, y = select(rows, a, reynolds, role, grid), select(rows, b, reynolds, role, grid)
+    need(set(x) == set(y), "paired phase identities differ")
+    keys = sorted(x) if phases is None else sorted(phases)
+    need(set(keys) <= set(x), "requested phases missing")
+    return [x[k] for k in keys], [y[k] for k in keys]
+
+
+def check(payload):
+    need(payload["schema"] == "topo2d00-input-v1", "normalized input schema")
+    need(type(payload["identity_valid"]) is bool and type(payload["cap_hit"]) is bool,
+         "identity/cap flags must be explicit booleans")
+    result = initial()
+    if not payload["identity_valid"]:
+        return result
+    for row in payload["waterlily"]:
+        need(row.get("observable") == "total_cl", "WaterLily observable must be total_cl")
+        for force in row["readouts"].values():
+            if force is not None:
+                need(force.get("observable") == "total_cl", "WaterLily readout observable mismatch")
+        for key, chord in (("h_over_c1", 223.4), ("h_over_c", 380.)):
+            if key in row:
+                need(math.isclose(number(row[key]), number(row["height_mm"]) / chord, rel_tol=1e-12), "inconsistent " + key)
+    for cell in payload["rans"]["cells"]:
+        key = cell["model"] + "/" + cell["family"]
+        result["rans_diagnostics"][key] = {}
+        for config in RCONFIGS:
+            values = [r["forces"][config] for r in cell["realisations"] if r["forces"][config] is not None]
+            hashes = [r["mesh_sha256"][config] for r in cell["realisations"] if r["mesh_sha256"][config] is not None]
+            states = {r["status"][config] for r in cell["realisations"]}
+            if "INCOMPLETE" in states:
+                status = "INCOMPLETE"
+            elif len(hashes) == 8 and len(set(hashes)) < 8:
+                # Repeated meshes are an incomplete realisation experiment,
+                # even when failed runs retain diagnostic coefficients.
+                status = "DEGENERATE_REALISATIONS"
+            elif "MESH_FAILED" in states:
+                status = "MESH_FAILED"
+            elif "NUMERICAL" in states:
+                status = "NUMERICAL"
+            else:
+                status = "COMPLETE" if len(hashes) == 8 and states == {"SETTLED"} else "INCOMPLETE"
+            result["rans_diagnostics"][key][config] = dict(
+                status=status, distinct_meshes=len(set(hashes)), measured_realisations=len(values), ci90=None,
+                point_estimate={q: sum(number(v[q]) for v in values) / len(values) for q in RESPONSES} if values else None)
+        result["thickening_alone"][key] = thickness_effect(cell)
+    reference = raw_reference(payload)
+    cells, qualified = tr_cells(payload["rans"], reference)
+    result["tr00"] = dict(cells=cells, qualified_cells=sorted(qualified), reference=reference)
+    if not qualified:
+        result["label"] = "TR_UNQUALIFIED"
+        return result
+    rows = payload["waterlily"]
+    readout = payload["controls"].get("primary_readout", "cur")
+    need(readout in READOUTS, "unknown primary readout")
+    required = [r for r in rows if r["role"] in ("primary", "confirmation")]
+    for row in rows:
+        need(all(type(row[k]) is bool for k in ("ok", "finite", "complete")),
+             "explicit run flags required")
+    # Cell severity and study precedence are different registered operations.
+    outcomes = [result["rans_diagnostics"][key][config]["status"] for key in qualified for config in CONFIGS]
+    if (any(not r["finite"] for r in rows)
+            or any(r["complete"] and not r["ok"] for r in required)
+            or any(state in {"MESH_FAILED", "NUMERICAL"} for state in outcomes)):
+        result["label"] = "NUMERICAL"
+        return result
+    if (payload["cap_hit"] or any(not r["complete"] and r["finite"] for r in required)
+            or any(state in {"INCOMPLETE", "DEGENERATE_REALISATIONS"} for state in outcomes)):
+        result["label"] = "INCOMPLETE"
+        return result
+    for reynolds in (1000, 3000):
+        phase_sets = [set(select(rows, c, reynolds)) for c in CONFIGS]
+        need(len(phase_sets[0]) == 16 and all(s == phase_sets[0] for s in phase_sets),
+             "exactly 16 common primary phases per Re required")
+    confirm = pair(rows, 3000, role="confirmation", grid="confirmation")
+    need(len(confirm[0]) == 4, "exactly four confirmation phases required")
+    for row in required:
+        need(number(row["height_mm"]) == 100, "primary physical height must be 100mm")
+        need(isinstance(row["scene_sha256"], str) and len(row["scene_sha256"]) == 64,
+             "scene identity missing")
+        need(row["readouts"].get(readout) is not None, "primary readout required")
+    for re in (1000, 3000):
+        result["waterlily"][str(re)] = {}
+        for key, a, b in (("12", "E1", "E2"), ("23", "E2", "E3"), ("13", "E1", "E3")):
+            p = pair(rows, re, a, b)
+            result["waterlily"][str(re)][key] = {q: paired_w(*p, q, readout) for q in RESPONSES}
+    for key, values in sorted(qualified.items()):
+        result["rans"][key] = {}
+        for transition, a, b in (("12", "E1", "E2"), ("23", "E2", "E3"), ("13", "E1", "E3")):
+            result["rans"][key][transition] = {
+                q: classical([number(row["forces"][b][q]) - number(row["forces"][a][q])
+                              for row in values]) for q in RESPONSES}
+    for re in (1000, 3000):
+        per_cell = {}
+        wstats = result["waterlily"][str(re)]
+        required_pairs = ["12", "23"]
+        for stats in [wstats, *result["rans"].values()]:
+            a, b = (stats[k]["downforce"]["mean"] for k in ("12", "23"))
+            if (a > 0 and b < 0) or (a < 0 and b > 0):
+                required_pairs.append("13")
+                break
+        u, vu = relative_w(*pair(rows, re), readout)
+        for key, values in sorted(qualified.items()):
+            rstats = result["rans"][key]
+            v, vv = relative_r(values)
+            ready = all(resolved(stats[p]["downforce"]) for stats in (wstats, rstats) for p in required_pairs)
+            opposite = any(resolved(wstats[p]["downforce"]) and resolved(rstats[p]["downforce"])
+                           and (wstats[p]["downforce"]["mean"] > 0) != (rstats[p]["downforce"]["mean"] > 0)
+                           for p in ("12", "23", "13"))
+            per_cell[key] = {
+                "SIGN_AGREE_12": same_sign(wstats["12"]["downforce"], rstats["12"]["downforce"]),
+                "RANK_AGREE": ready and not opposite,
+                "DRAG_SIGN_AGREE_12": same_sign(wstats["12"]["drag"], rstats["12"]["drag"]),
+                "RETENTION_12": dict(relative_w=u, variance_w=vu, relative_r=v, variance_r=vv,
+                                     fieller=(dict(kind="undefined_zero_baseline", intervals=[])
+                                              if u is None or v is None
+                                              else fieller(u, v, vu, vv, 7))),
+            }
+        result["agreement"][str(re)] = {
+            field: all(c[field] for c in per_cell.values())
+            for field in ("SIGN_AGREE_12", "RANK_AGREE", "DRAG_SIGN_AGREE_12")}
+        result["agreement"][str(re)]["cells"] = per_cell
+        result["agreement"][str(re)]["required_pairs"] = required_pairs
+        required_at_re = [wstats[k]["downforce"] for k in required_pairs]
+        required_at_re.extend(stats[k]["downforce"] for stats in result["rans"].values() for k in required_pairs)
+        if not all(resolved(stat) for stat in required_at_re):
+            state = "UNRESOLVED"
+        elif (not result["agreement"][str(re)]["SIGN_AGREE_12"]
+              or not result["agreement"][str(re)]["RANK_AGREE"]):
+            state = "DISCORDANT"
+        else:
+            state = "CONCORDANT"
+        result["agreement"][str(re)]["state"] = state
+    phases = [str(r["phase"]) for r in confirm[0]]
+    coarse = pair(rows, 3000, phases=phases)
+    sm = paired_w(*coarse, "downforce", readout)
+    sf = paired_w(*confirm, "downforce", readout)
+    dm = [b["readouts"][readout]["downforce"] - a["readouts"][readout]["downforce"]
+          for a, b in zip(*coarse)]
+    dfine = [b["readouts"][readout]["downforce"] - a["readouts"][readout]["downforce"]
+             for a, b in zip(*confirm)]
+    covariance = float(np.cov(dfine, dm, ddof=1)[0, 1]) / 4
+    ratio = fieller(sf["mean"], sm["mean"], sf["se"] ** 2, sm["se"] ** 2, 3, covariance)
+    in_band = ratio["kind"] == "bounded" and .5 <= ratio["intervals"][0][0] and ratio["intervals"][0][1] <= 2
+    limited = (sf["mean"] > 0) != (sm["mean"] > 0) or not in_band
+    result["resolution"] = dict(status="RESOLUTION_LIMITED" if limited else "PASS",
+                                downforce=dict(main=sm, confirmation=sf, ratio=ratio))
+    controls = result["controls"]
+    repeats = [r for r in rows if r["role"] == "determinism"]
+    if repeats:
+        passed = True
+        for row in repeats:
+            original = select(rows, row["configuration"], row["reynolds"])
+            need(str(row["phase"]) in original, "determinism primary absent")
+            base = original[str(row["phase"])]
+            need(("force_csv_sha256" in row) == ("force_csv_sha256" in base), "unpaired determinism CSV identity")
+            passed &= (row["readouts"] == base["readouts"] and row["scene_sha256"] == base["scene_sha256"]
+                       and row.get("force_csv_sha256") == base.get("force_csv_sha256")
+                       and row["ok"] and row["finite"] and row["complete"])
+        controls["determinism"] = dict(judged=True, **{"pass": bool(passed)})
+    domains = [r for r in rows if r["role"] == "domain" and r["reynolds"] == 3000
+               and r["height_mm"] == 100 and r["grid"] == "main"]
+    if domains:
+        a, b = select(domains, "E1", 3000, "domain"), select(domains, "E2", 3000, "domain")
+        originals = [select(rows, c, 3000) for c in ("E1", "E2")]
+        if ({r["configuration"] for r in domains} == {"E1", "E2"}
+                and len(a) >= 2 and set(a) == set(b) and all(set(a) <= set(original) for original in originals)
+                and all(r["ok"] and r["finite"] and r["complete"] and r["readouts"].get(readout) is not None for r in domains)):
+            dp = pair(domains, 3000, role="domain")
+            mp = pair(rows, 3000, phases=set(a))
+            ds, ms = paired_w(*dp, "downforce", readout), paired_w(*mp, "downforce", readout)
+            error, se = abs(ds["mean"] - ms["mean"]), math.hypot(ds["se"], ms["se"])
+            z = error / se if se else (0. if not error else None)
+            controls["domain"] = dict(status="DOMAIN_SENSITIVE" if error > 3 * se else "CONSISTENT", z=z)
+    for re in (1000, 3000):
+        p = pair(rows, re)
+        controls["readout"][str(re)] = {}
+        for name in READOUTS:
+            available = all(r["readouts"].get(name) is not None for r in [*p[0], *p[1]])
+            controls["readout"][str(re)][name] = {
+                q: float(np.mean([number(b["readouts"][name][q]) - number(a["readouts"][name][q])
+                                  for a, b in zip(*p)])) for q in RESPONSES} if available else None
+        s = result["waterlily"][str(re)]["12"]["downforce"]
+        controls["manipulation"][f"W/{re}"] = z_test(s["mean"], s["se"])
+    for key, rstats in result["rans"].items():
+        s = rstats["12"]["downforce"]
+        controls["manipulation"][f"R/{key}"] = z_test(s["mean"], s["se"])
+    if limited:
+        result["label"] = "RESOLUTION_LIMITED"
+        return result
+    states = [result["agreement"][str(re)]["state"] for re in (1000, 3000)]
+    if "UNRESOLVED" in states or not all(v["pass"] for v in controls["manipulation"].values()):
+        result["label"] = "UNRESOLVED"
+    elif all(state == "DISCORDANT" for state in states):
+        result["label"] = "DISCORDANT"
+    elif "DISCORDANT" in states:
+        result["label"] = "CONCORDANT_PARTIAL"
+    else:
+        result["label"] = "CONCORDANT"
+    return result
+
+
+def compare(expected, actual, path="", *, rtol=1e-9):
+    """List every differing decision/numerical path; strings/bools/null exact."""
+    differences = []
+    if isinstance(expected, dict) and isinstance(actual, dict):
+        for key in sorted(set(expected) | set(actual)):
+            p = f"{path}.{key}" if path else str(key)
+            if key not in expected or key not in actual:
+                differences.append(p + ": missing key")
+            else:
+                differences.extend(compare(expected[key], actual[key], p, rtol=rtol))
+    elif isinstance(expected, (list, tuple)) and isinstance(actual, (list, tuple)):
+        if len(expected) != len(actual):
+            differences.append(path + ": length")
+        for i, (a, b) in enumerate(zip(expected, actual)):
+            differences.extend(compare(a, b, f"{path}[{i}]", rtol=rtol))
+    elif isinstance(expected, bool) or isinstance(actual, bool) or expected is None or actual is None:
+        if type(expected) is not type(actual) or expected != actual:
+            differences.append(f"{path}: {expected!r} != {actual!r}")
+    elif isinstance(expected, (int, float)) and isinstance(actual, (int, float)):
+        if not (math.isfinite(expected) and math.isfinite(actual)) or abs(expected - actual) > rtol * max(1, abs(expected), abs(actual)):
+            differences.append(f"{path}: {expected!r} != {actual!r}")
+    elif type(expected) is not type(actual) or expected != actual:
+        differences.append(f"{path}: {expected!r} != {actual!r}")
+    return differences
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("analysis", type=Path)
+    args = parser.parse_args()
+    def reject(text):
+        raise ValueError(f"nonfinite JSON token {text}")
+    def pairs(items):
+        out = {}
+        for key, value in items:
+            need(key not in out, f"duplicate JSON key: {key}")
+            out[key] = value
+        return out
+    record = json.loads(args.analysis.read_text(), parse_constant=reject, object_pairs_hook=pairs)
+    recomputed = check(record["input"])
+    differences = compare(record["result"], recomputed)
+    directory = args.analysis.parent
+    tr_path, sums_path = directory / "tr00.json", directory / "SHA256SUMS"
+    if tr_path.is_file():
+        standalone = json.loads(tr_path.read_text(), parse_constant=reject, object_pairs_hook=pairs)
+        differences.extend(compare(recomputed["tr00"], standalone, "tr00.json"))
+    else:
+        differences.append("tr00.json: missing registered output")
+    names = ("analysis.json", "analysis.md", "tr00.json")
+    expected = "".join(hashlib.sha256((directory / name).read_bytes()).hexdigest() + "  " + name + "\n"
+                       for name in names if (directory / name).is_file())
+    if not sums_path.is_file() or sums_path.read_text() != expected or any(not (directory / name).is_file() for name in names):
+        differences.append("SHA256SUMS: missing or differing registered artifact hashes")
+    print(json.dumps({"pass": not differences, "discrepancies": differences}, indent=2, allow_nan=False))
+    raise SystemExit(bool(differences))
+
+
+if __name__ == "__main__":
+    main()

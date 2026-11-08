@@ -1,0 +1,17 @@
+{
+  "command": [
+    "julia",
+    "--project=julia/CFDSDFWaterLily",
+    "scripts/topo2d_selftest.jl",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend3/cpu_selftest"
+  ],
+  "evidence_class": "CPU_CAPABILITY_ONLY",
+  "exit_code": 0,
+  "provider_source_unchanged": {
+    "WP1": true,
+    "WP2": true
+  },
+  "started_at_utc": "2026-11-07T09:44:06.242002+00:00",
+  "timeout_seconds": 240,
+  "wall_seconds": 97.64048779103905
+}

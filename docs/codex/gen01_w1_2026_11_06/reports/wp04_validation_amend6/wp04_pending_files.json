@@ -1,0 +1,282 @@
+{
+  "task_start_commit": "0741a474",
+  "host_action": "Claude host handles staging/commit/push; no git mutation performed by this agent",
+  "status": "PARTIAL: trueW50 Monte Carlo acceptance remains unmet",
+  "moves": [],
+  "deletions": [],
+  "modified_count": 10,
+  "new_count": 46,
+  "files": [
+    {
+      "operation": "modified",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_design.md"
+    },
+    {
+      "operation": "modified",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_report.md"
+    },
+    {
+      "operation": "modified",
+      "path": "scripts/topo2d00/analyze.py"
+    },
+    {
+      "operation": "modified",
+      "path": "scripts/topo2d00/check.py"
+    },
+    {
+      "operation": "modified",
+      "path": "scripts/topo2d00/prerun_window.py"
+    },
+    {
+      "operation": "modified",
+      "path": "src/cfd_harness/scene_campaign.py"
+    },
+    {
+      "operation": "modified",
+      "path": "tests/topo2d00/test_analyze.py"
+    },
+    {
+      "operation": "modified",
+      "path": "tests/topo2d00/test_campaign.py"
+    },
+    {
+      "operation": "modified",
+      "path": "tests/topo2d00/test_check.py"
+    },
+    {
+      "operation": "modified",
+      "path": "tests/topo2d00/test_prerun_window.py"
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/README.md",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/SHA256SUMS",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/analysis-green.log.gz",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/analysis-red.log.gz",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/ar1-results.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/ar1_summary.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/authority.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/compileall.log.gz",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/compileall_execution.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu.log.gz",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_checkpoint_exclusion.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_execution.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/E1/W4_JOB_DONE",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/E1/topo2d.forces.csv",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/E1/topo2d.summary.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/E1/topo2d.summary.toml",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/E2/W4_JOB_DONE",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/E2/topo2d.forces.csv",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/E2/topo2d.summary.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/E2/topo2d.summary.toml",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/dt_collapse/ERROR.txt",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/dt_collapse/job_preflight.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/dt_collapse/job_preflight.toml",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/dt_collapse/numerical_failure.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/dt_collapse/numerical_failure.toml",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/job_entrypoint/W4_JOB_DONE",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/job_entrypoint/entrypoint.forces.csv",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/job_entrypoint/entrypoint.summary.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/job_entrypoint/entrypoint.summary.toml",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/job_entrypoint/job_preflight.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/job_entrypoint/job_preflight.toml",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/selftest.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest/selftest.toml",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_source_verification.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/development_review.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/log_archives.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/prerun-core-green.log.gz",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/prerun-green.log.gz",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/prerun-independent-audit.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/prerun-red.log.gz",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/protected_source_closure.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/targeted.log.gz",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/targeted_execution.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/targeted_junit.xml",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/test_summary.json",
+      "requires_explicit_force_add": false
+    },
+    {
+      "operation": "new",
+      "path": "docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/wp04_pending_files.json",
+      "requires_explicit_force_add": false
+    }
+  ],
+  "ignored_intended_paths": []
+}

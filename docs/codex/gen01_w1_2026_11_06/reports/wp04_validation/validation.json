@@ -1,0 +1,148 @@
+{
+  "schema": "topo2d-wp4-validation-v1",
+  "recorded_utc": "2026-11-06T08:24:36.304638+00:00",
+  "evidence_class": "CPU_CAPABILITY_AND_SYNTHETIC_CONTRACT_ONLY",
+  "status": "PARTIAL",
+  "base": {
+    "commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+    "cwd": "/private/tmp/topo2d00-wp04-clean-base",
+    "command": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python -m pytest -q --ignore=tests/test_lbm_metal.py --durations=20",
+    "exit_code": 0,
+    "passed": 3482,
+    "skipped": 74,
+    "failed": 0,
+    "warnings": 7295,
+    "seconds": 3125.46,
+    "failure_ids": []
+  },
+  "full_suite_feature": {
+    "commit": "970d8fad90884b1e9bfa1470f4fa3f4f78a3a5ec",
+    "cwd": "/private/tmp/topo2d00-wp04-publish",
+    "command": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python -m pytest -q --ignore=tests/test_lbm_metal.py --durations=20",
+    "exit_code": 1,
+    "passed": 3592,
+    "skipped": 74,
+    "failed": 2,
+    "warnings": 7295,
+    "seconds": 2387.34,
+    "failure_ids": [
+      "tests/test_grid02_evidence.py::test_the_analysis_is_the_registered_one_and_reproduces_from_the_kept_output",
+      "tests/test_grid02_prereg.py::test_the_real_freeze_validates_with_the_analyzer_and_is_sidecar_bound"
+    ]
+  },
+  "same_failure_set_as_base": false,
+  "final_focused": {
+    "program_commit": "b68b3beea15efb10c343442c83ad14f42e19d87f",
+    "cwd": "/private/tmp/topo2d00-wp04-final-publish",
+    "command": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python -m pytest -q tests/topo2d00",
+    "exit_code": 0,
+    "passed": 118,
+    "seconds": 12.39,
+    "ran_before_commit_with_identical_source_bytes": true,
+    "full_suite_repeated_after_zero_baseline_only_delta": false
+  },
+  "compileall": {
+    "command": ".venv/bin/python -m compileall src tests",
+    "exit_code": 0,
+    "source": "final_program_committed_at_b68b3beea15efb10c343442c83ad14f42e19d87f"
+  },
+  "cpu_selftest": {
+    "receipt_path": "cpu_selftest/execution_receipt.json",
+    "receipt_sha256": "cb13296cb6db736e2d26f6624945eab524c5a725856301c049fcbfa879264536",
+    "passed": 56,
+    "total": 56,
+    "exit_code": 0,
+    "real_seconds": 84.99,
+    "cuda_module_loaded": false
+  },
+  "metal_exclusion": {
+    "path": "tests/test_lbm_metal.py",
+    "tests": 6,
+    "reason": "User prohibits GPU work. An earlier unconditional legacy run aborted during mlx.core import, exit 134; it was not a complete baseline run.",
+    "unexpected_legacy_test_entry": true,
+    "gpu_calculation_reached_before_abort": null,
+    "uncertainty": "The first Metal test failed and the next aborted during mlx.core import; the abort log does not establish whether GPU computation was reached before that."
+  },
+  "legacy_failure_cause": "Historical GRID02 analyzer recursively enumerates current src/cfd_sdf Python files. Two new topo2d module files are absent from its frozen closure. Registered files were not modified.",
+  "physical_qualification": false,
+  "formal_campaign_run": false,
+  "rans_solver_run": false,
+  "artifacts": {
+    "clean_base_cpu_pytest.log.gz": {
+      "sha256": "ff9451e021208a49a5f54f81faa3b41685cd672d0ce23346da20ee4147844be3",
+      "bytes": 2125,
+      "uncompressed_sha256": "3dfabdec139c40e977f5f28eb3614abbf2631bad586bfcb4872c73292a4dbd46"
+    },
+    "feature_cpu_pytest.log.gz": {
+      "sha256": "1c8278ac2a40ba8f9b4789dc93b365669c6727df46b4b934ca77b6513a23534f",
+      "bytes": 3714,
+      "uncompressed_sha256": "58e0c8f4bcde9354a3c5cfb98355ab42d3e8375c25d7ad94ee8521d3a5c2113c"
+    },
+    "feature_grid02.log.gz": {
+      "sha256": "68cf6aa8e8cc0231229f85d7e07e30f6bd90ff9d49ac17d528520567cd1bd631",
+      "bytes": 454,
+      "uncompressed_sha256": "13f42d5ca028324e841223703a60f5e70a64ed85657aa60b14aec15620a93207"
+    },
+    "initial_metal_abort.log.gz": {
+      "sha256": "81c0a3e6f32a7c447359018a21437b07c9cbfb2196440c49ebaddc497d6fafd1",
+      "bytes": 36165,
+      "uncompressed_sha256": "9d8dfa7f3e5ab77b6c5a9abecc004eb47866057d9c98171c02659fbdd33da66f"
+    },
+    "focused_pytest.log": {
+      "sha256": "59fcd038e907c57ab5b4a530c0c41b848310b8dba8aa71efb99e6a70f9addb94",
+      "bytes": 181
+    },
+    "focused_pytest_final.log": {
+      "sha256": "fe6fb210933353473ce3e2402268b1e823ca1bf8e97ed8b7027a84aa8b90eaa5",
+      "bytes": 181
+    },
+    "compileall.log": {
+      "sha256": "b7fa0fc92a507030cb1c0499bf65c537738ff4fef1d6edfce99cfcf0d612c265",
+      "bytes": 432
+    },
+    "compileall_final.log": {
+      "sha256": "dfb94cbfde298201629a79b43c5755e23fb9922bc43871e5f90513493526022b",
+      "bytes": 336
+    },
+    "checker_analysis.json.gz": {
+      "sha256": "da4bae0e20200dcf1face2124b36941a330ef7de4e1cc694b910b89a0c205c1d",
+      "bytes": 6367,
+      "uncompressed_sha256": "5aa50e579d5b7a854c5d7808632e63d22be1d041be28e0519e1fc9fe9e0e21c9"
+    },
+    "checker_cli.json": {
+      "sha256": "95a2ae3590dac21b549b5a998bafcb8fe52799315ee8a72c7410ea63854419d4",
+      "bytes": 1373
+    },
+    "program_sources.json": {
+      "sha256": "e5c907693b3d8212d15b309808a3703e3e48979db189d9a581b0dd67daa32fbc",
+      "bytes": 9658
+    },
+    "provider_origins.json": {
+      "sha256": "29688ec02344a09a0a2cbcd3a5cca88af9fae90d5933f6d09972addb6ce79cc1",
+      "bytes": 1138
+    },
+    "python_environment.json": {
+      "sha256": "dc76584fc3746f23df404eb0ad991d2b972f2deb502cfab5dba22c77a362c621",
+      "bytes": 1968
+    },
+    "wp5_interface_readback.json": {
+      "sha256": "5ac55017dc1ab0ae973ff9e344a376e6b14ed5ace784048a0ecf95bccef6b5dc",
+      "bytes": 993
+    },
+    "integration_preview.json": {
+      "sha256": "ac98af59aa49e52408cac6ae879074768d72b4c64bf794f5fd3e3ba00c655211",
+      "bytes": 506
+    },
+    "publication_code_receipt.json": {
+      "sha256": "55ec65ba3c8a3b112ebb5d87fbb4b39d75ccdc06fd46e4e54967f62cf020670e",
+      "bytes": 907
+    }
+  },
+  "wp4_gpu_job_run": false,
+  "whitespace_check": {
+    "command": "git diff --check e3dcdf6188df6079e197eb28f7fcba1451ec512d HEAD",
+    "cwd": "/private/tmp/topo2d00-wp04-final-publish",
+    "head_commit": "b68b3beea15efb10c343442c83ad14f42e19d87f",
+    "exit_code": 0
+  }
+}

@@ -1,0 +1,2604 @@
+{
+  "baseline": null,
+  "campaign_id": "topo2d00",
+  "directions": {},
+  "domain": {
+    "fluid_box_max_m": [
+      1.117,
+      0.0,
+      1.51912
+    ],
+    "fluid_box_min_m": [
+      -0.4468,
+      0.0,
+      0.0
+    ],
+    "solid_ground_padding_cells": 8
+  },
+  "harness_version": "harness v1.1",
+  "index_name": "harness_index.json",
+  "job_env_common": {
+    "TOPO2D_BACKEND": "cpu",
+    "TOPO2D_WINDOW_FROZEN": "0"
+  },
+  "job_env_keys": [
+    "TOPO2D_REYNOLDS",
+    "TOPO2D_WINDOW_START",
+    "TOPO2D_WINDOW_END",
+    "TOPO2D_PHASE",
+    "TOPO2D_GRID",
+    "TOPO2D_ROLE",
+    "TOPO2D_CASE_ID",
+    "TOPO2D_TOP_FACTOR"
+  ],
+  "kernels": {
+    "confirmation": {
+      "case": {
+        "case_id": "confirmation",
+        "density_kg_m3": 1.0,
+        "dynamic_viscosity_pa_s": 7.446666666666666e-05,
+        "flow_dims": [
+          1260,
+          1232
+        ],
+        "flow_spacing_m": 0.001241111111111111,
+        "freestream_mps": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "reference_area_m2": 0.2234,
+        "reference_length_m": 0.2234,
+        "reynolds": 3000.0,
+        "solver_length": 180.0,
+        "solver_time_unit_s": 0.001241111111111111,
+        "solver_viscosity": 0.06
+      },
+      "config": {
+        "formal_runner": "FROZEN_LOCAL_GPU_REQUIRES_BACKEND_AND_WINDOW_APPROVAL",
+        "gpu_probe_timeout_s": 300,
+        "instantiate_timeout_s": 2400,
+        "kernel_timeout_s": 25200,
+        "per_state_timeout_s": 3600,
+        "reserve_s": 900,
+        "solver_wall_time_cap_s": 21600
+      },
+      "job": "scripts/waterlily_topo2d_job.jl",
+      "kernel_id": "ramhachi888/cfd-opt-sdf-topo2d00-confirmation",
+      "runs": [
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00031633150349488884,0,8.6679561163333332e-05"
+          },
+          "state": "E1_h100_re3000_confirmation_k01"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00031633150349488884,0,8.6679561163333332e-05"
+          },
+          "state": "E2_h100_re3000_confirmation_k01"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00031633150349488884,0,-8.6679561163333332e-05"
+          },
+          "state": "E1_h100_re3000_confirmation_k02"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00031633150349488884,0,-8.6679561163333332e-05"
+          },
+          "state": "E2_h100_re3000_confirmation_k02"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "1.2107451434222131e-05,0,-0.00044719643322888887"
+          },
+          "state": "E1_h100_re3000_confirmation_k03"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "1.2107451434222131e-05,0,-0.00044719643322888887"
+          },
+          "state": "E2_h100_re3000_confirmation_k03"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-1.2107451434222131e-05,0,0.00044719643322888887"
+          },
+          "state": "E1_h100_re3000_confirmation_k04"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-1.2107451434222131e-05,0,0.00044719643322888887"
+          },
+          "state": "E2_h100_re3000_confirmation_k04"
+        }
+      ]
+    },
+    "re1000": {
+      "case": {
+        "case_id": "re1000",
+        "density_kg_m3": 1.0,
+        "dynamic_viscosity_pa_s": 0.00022339999999999998,
+        "flow_dims": [
+          840,
+          824
+        ],
+        "flow_spacing_m": 0.0018616666666666666,
+        "freestream_mps": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "reference_area_m2": 0.2234,
+        "reference_length_m": 0.2234,
+        "reynolds": 1000.0,
+        "solver_length": 120.0,
+        "solver_time_unit_s": 0.0018616666666666666,
+        "solver_viscosity": 0.12
+      },
+      "config": {
+        "formal_runner": "FROZEN_LOCAL_GPU_REQUIRES_BACKEND_AND_WINDOW_APPROVAL",
+        "gpu_probe_timeout_s": 300,
+        "instantiate_timeout_s": 2400,
+        "kernel_timeout_s": 54000,
+        "per_state_timeout_s": 3600,
+        "reserve_s": 900,
+        "solver_wall_time_cap_s": 50400
+      },
+      "job": "scripts/waterlily_topo2d_job.jl",
+      "kernel_id": "ramhachi888/cfd-opt-sdf-topo2d00-re1000",
+      "runs": [
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00047449725524233323,0,0.00013001934174499999"
+          },
+          "state": "E1_h100_re1000_main_k01"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00047449725524233323,0,0.00013001934174499999"
+          },
+          "state": "E2_h100_re1000_main_k01"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00047449725524233323,0,0.00013001934174499999"
+          },
+          "state": "E3_h100_re1000_main_k01"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00047449725524233323,0,-0.00013001934174499999"
+          },
+          "state": "E1_h100_re1000_main_k02"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00047449725524233323,0,-0.00013001934174499999"
+          },
+          "state": "E2_h100_re1000_main_k02"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00047449725524233323,0,-0.00013001934174499999"
+          },
+          "state": "E3_h100_re1000_main_k02"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "1.8161177151333199e-05,0,-0.00067079464984333328"
+          },
+          "state": "E1_h100_re1000_main_k03"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "1.8161177151333199e-05,0,-0.00067079464984333328"
+          },
+          "state": "E2_h100_re1000_main_k03"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "1.8161177151333199e-05,0,-0.00067079464984333328"
+          },
+          "state": "E3_h100_re1000_main_k03"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-1.8161177151333199e-05,0,0.00067079464984333328"
+          },
+          "state": "E1_h100_re1000_main_k04"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-1.8161177151333199e-05,0,0.00067079464984333328"
+          },
+          "state": "E2_h100_re1000_main_k04"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-1.8161177151333199e-05,0,0.00067079464984333328"
+          },
+          "state": "E3_h100_re1000_main_k04"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00043817490093966705,0,0.000390058025235"
+          },
+          "state": "E1_h100_re1000_main_k05"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00043817490093966705,0,0.000390058025235"
+          },
+          "state": "E2_h100_re1000_main_k05"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00043817490093966705,0,0.000390058025235"
+          },
+          "state": "E3_h100_re1000_main_k05"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00043817490093966705,0,-0.000390058025235"
+          },
+          "state": "E1_h100_re1000_main_k06"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00043817490093966705,0,-0.000390058025235"
+          },
+          "state": "E2_h100_re1000_main_k06"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00043817490093966705,0,-0.000390058025235"
+          },
+          "state": "E3_h100_re1000_main_k06"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00089451097903066692,0,-0.00041075596635333335"
+          },
+          "state": "E1_h100_re1000_main_k07"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00089451097903066692,0,-0.00041075596635333335"
+          },
+          "state": "E2_h100_re1000_main_k07"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00089451097903066692,0,-0.00041075596635333335"
+          },
+          "state": "E3_h100_re1000_main_k07"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00089451097903066692,0,0.00041075596635333335"
+          },
+          "state": "E1_h100_re1000_main_k08"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00089451097903066692,0,0.00041075596635333335"
+          },
+          "state": "E2_h100_re1000_main_k08"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00089451097903066692,0,0.00041075596635333335"
+          },
+          "state": "E3_h100_re1000_main_k08"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.0005108196095449999,0,0.00065009670872500042"
+          },
+          "state": "E1_h100_re1000_main_k09"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.0005108196095449999,0,0.00065009670872500042"
+          },
+          "state": "E2_h100_re1000_main_k09"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.0005108196095449999,0,0.00065009670872500042"
+          },
+          "state": "E3_h100_re1000_main_k09"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.0005108196095449999,0,-0.00065009670872500042"
+          },
+          "state": "E1_h100_re1000_main_k10"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.0005108196095449999,0,-0.00065009670872500042"
+          },
+          "state": "E2_h100_re1000_main_k10"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.0005108196095449999,0,-0.00065009670872500042"
+          },
+          "state": "E3_h100_re1000_main_k10"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "5.4483531453999183e-05,0,-0.00015071728286333334"
+          },
+          "state": "E1_h100_re1000_main_k11"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "5.4483531453999183e-05,0,-0.00015071728286333334"
+          },
+          "state": "E2_h100_re1000_main_k11"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "5.4483531453999183e-05,0,-0.00015071728286333334"
+          },
+          "state": "E3_h100_re1000_main_k11"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-5.4483531453999183e-05,0,0.00015071728286333334"
+          },
+          "state": "E1_h100_re1000_main_k12"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-5.4483531453999183e-05,0,0.00015071728286333334"
+          },
+          "state": "E2_h100_re1000_main_k12"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-5.4483531453999183e-05,0,0.00015071728286333334"
+          },
+          "state": "E3_h100_re1000_main_k12"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00040185254663699984,0,0.00091013539221499959"
+          },
+          "state": "E1_h100_re1000_main_k13"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00040185254663699984,0,0.00091013539221499959"
+          },
+          "state": "E2_h100_re1000_main_k13"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00040185254663699984,0,0.00091013539221499959"
+          },
+          "state": "E3_h100_re1000_main_k13"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00040185254663699984,0,-0.00091013539221499959"
+          },
+          "state": "E1_h100_re1000_main_k14"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00040185254663699984,0,-0.00091013539221499959"
+          },
+          "state": "E2_h100_re1000_main_k14"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00040185254663699984,0,-0.00091013539221499959"
+          },
+          "state": "E3_h100_re1000_main_k14"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00085818862472800052,0,0.00010932140062666665"
+          },
+          "state": "E1_h100_re1000_main_k15"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00085818862472800052,0,0.00010932140062666665"
+          },
+          "state": "E2_h100_re1000_main_k15"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00085818862472800052,0,0.00010932140062666665"
+          },
+          "state": "E3_h100_re1000_main_k15"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00085818862472800052,0,-0.00010932140062666665"
+          },
+          "state": "E1_h100_re1000_main_k16"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00085818862472800052,0,-0.00010932140062666665"
+          },
+          "state": "E2_h100_re1000_main_k16"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00085818862472800052,0,-0.00010932140062666665"
+          },
+          "state": "E3_h100_re1000_main_k16"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00047449725524233323,0,0.00013001934174499999"
+          },
+          "state": "E1_h80_re1000_main_k01_secondary"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00047449725524233323,0,0.00013001934174499999"
+          },
+          "state": "E2_h80_re1000_main_k01_secondary"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00047449725524233323,0,-0.00013001934174499999"
+          },
+          "state": "E1_h80_re1000_main_k02_secondary"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00047449725524233323,0,-0.00013001934174499999"
+          },
+          "state": "E2_h80_re1000_main_k02_secondary"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "1.8161177151333199e-05,0,-0.00067079464984333328"
+          },
+          "state": "E1_h80_re1000_main_k03_secondary"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "1.8161177151333199e-05,0,-0.00067079464984333328"
+          },
+          "state": "E2_h80_re1000_main_k03_secondary"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-1.8161177151333199e-05,0,0.00067079464984333328"
+          },
+          "state": "E1_h80_re1000_main_k04_secondary"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-1.8161177151333199e-05,0,0.00067079464984333328"
+          },
+          "state": "E2_h80_re1000_main_k04_secondary"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0,0,0"
+          },
+          "state": "E1_h100_re1000_main_k00_prerun"
+        }
+      ]
+    },
+    "re3000": {
+      "case": {
+        "case_id": "re3000",
+        "density_kg_m3": 1.0,
+        "dynamic_viscosity_pa_s": 7.446666666666666e-05,
+        "flow_dims": [
+          840,
+          824
+        ],
+        "flow_spacing_m": 0.0018616666666666666,
+        "freestream_mps": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "reference_area_m2": 0.2234,
+        "reference_length_m": 0.2234,
+        "reynolds": 3000.0,
+        "solver_length": 120.0,
+        "solver_time_unit_s": 0.0018616666666666666,
+        "solver_viscosity": 0.04
+      },
+      "config": {
+        "formal_runner": "FROZEN_LOCAL_GPU_REQUIRES_BACKEND_AND_WINDOW_APPROVAL",
+        "gpu_probe_timeout_s": 300,
+        "instantiate_timeout_s": 2400,
+        "kernel_timeout_s": 54000,
+        "per_state_timeout_s": 3600,
+        "reserve_s": 900,
+        "solver_wall_time_cap_s": 50400
+      },
+      "job": "scripts/waterlily_topo2d_job.jl",
+      "kernel_id": "ramhachi888/cfd-opt-sdf-topo2d00-re3000",
+      "runs": [
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00047449725524233323,0,0.00013001934174499999"
+          },
+          "state": "E1_h100_re3000_main_k01"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00047449725524233323,0,0.00013001934174499999"
+          },
+          "state": "E2_h100_re3000_main_k01"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00047449725524233323,0,0.00013001934174499999"
+          },
+          "state": "E3_h100_re3000_main_k01"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00047449725524233323,0,-0.00013001934174499999"
+          },
+          "state": "E1_h100_re3000_main_k02"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00047449725524233323,0,-0.00013001934174499999"
+          },
+          "state": "E2_h100_re3000_main_k02"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00047449725524233323,0,-0.00013001934174499999"
+          },
+          "state": "E3_h100_re3000_main_k02"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "1.8161177151333199e-05,0,-0.00067079464984333328"
+          },
+          "state": "E1_h100_re3000_main_k03"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "1.8161177151333199e-05,0,-0.00067079464984333328"
+          },
+          "state": "E2_h100_re3000_main_k03"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "1.8161177151333199e-05,0,-0.00067079464984333328"
+          },
+          "state": "E3_h100_re3000_main_k03"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-1.8161177151333199e-05,0,0.00067079464984333328"
+          },
+          "state": "E1_h100_re3000_main_k04"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-1.8161177151333199e-05,0,0.00067079464984333328"
+          },
+          "state": "E2_h100_re3000_main_k04"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-1.8161177151333199e-05,0,0.00067079464984333328"
+          },
+          "state": "E3_h100_re3000_main_k04"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00043817490093966705,0,0.000390058025235"
+          },
+          "state": "E1_h100_re3000_main_k05"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00043817490093966705,0,0.000390058025235"
+          },
+          "state": "E2_h100_re3000_main_k05"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00043817490093966705,0,0.000390058025235"
+          },
+          "state": "E3_h100_re3000_main_k05"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00043817490093966705,0,-0.000390058025235"
+          },
+          "state": "E1_h100_re3000_main_k06"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00043817490093966705,0,-0.000390058025235"
+          },
+          "state": "E2_h100_re3000_main_k06"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00043817490093966705,0,-0.000390058025235"
+          },
+          "state": "E3_h100_re3000_main_k06"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00089451097903066692,0,-0.00041075596635333335"
+          },
+          "state": "E1_h100_re3000_main_k07"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00089451097903066692,0,-0.00041075596635333335"
+          },
+          "state": "E2_h100_re3000_main_k07"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00089451097903066692,0,-0.00041075596635333335"
+          },
+          "state": "E3_h100_re3000_main_k07"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00089451097903066692,0,0.00041075596635333335"
+          },
+          "state": "E1_h100_re3000_main_k08"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00089451097903066692,0,0.00041075596635333335"
+          },
+          "state": "E2_h100_re3000_main_k08"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00089451097903066692,0,0.00041075596635333335"
+          },
+          "state": "E3_h100_re3000_main_k08"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.0005108196095449999,0,0.00065009670872500042"
+          },
+          "state": "E1_h100_re3000_main_k09"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.0005108196095449999,0,0.00065009670872500042"
+          },
+          "state": "E2_h100_re3000_main_k09"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.0005108196095449999,0,0.00065009670872500042"
+          },
+          "state": "E3_h100_re3000_main_k09"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.0005108196095449999,0,-0.00065009670872500042"
+          },
+          "state": "E1_h100_re3000_main_k10"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.0005108196095449999,0,-0.00065009670872500042"
+          },
+          "state": "E2_h100_re3000_main_k10"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.0005108196095449999,0,-0.00065009670872500042"
+          },
+          "state": "E3_h100_re3000_main_k10"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "5.4483531453999183e-05,0,-0.00015071728286333334"
+          },
+          "state": "E1_h100_re3000_main_k11"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "5.4483531453999183e-05,0,-0.00015071728286333334"
+          },
+          "state": "E2_h100_re3000_main_k11"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "5.4483531453999183e-05,0,-0.00015071728286333334"
+          },
+          "state": "E3_h100_re3000_main_k11"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-5.4483531453999183e-05,0,0.00015071728286333334"
+          },
+          "state": "E1_h100_re3000_main_k12"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-5.4483531453999183e-05,0,0.00015071728286333334"
+          },
+          "state": "E2_h100_re3000_main_k12"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-5.4483531453999183e-05,0,0.00015071728286333334"
+          },
+          "state": "E3_h100_re3000_main_k12"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00040185254663699984,0,0.00091013539221499959"
+          },
+          "state": "E1_h100_re3000_main_k13"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00040185254663699984,0,0.00091013539221499959"
+          },
+          "state": "E2_h100_re3000_main_k13"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00040185254663699984,0,0.00091013539221499959"
+          },
+          "state": "E3_h100_re3000_main_k13"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00040185254663699984,0,-0.00091013539221499959"
+          },
+          "state": "E1_h100_re3000_main_k14"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00040185254663699984,0,-0.00091013539221499959"
+          },
+          "state": "E2_h100_re3000_main_k14"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00040185254663699984,0,-0.00091013539221499959"
+          },
+          "state": "E3_h100_re3000_main_k14"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00085818862472800052,0,0.00010932140062666665"
+          },
+          "state": "E1_h100_re3000_main_k15"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00085818862472800052,0,0.00010932140062666665"
+          },
+          "state": "E2_h100_re3000_main_k15"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00085818862472800052,0,0.00010932140062666665"
+          },
+          "state": "E3_h100_re3000_main_k15"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00085818862472800052,0,-0.00010932140062666665"
+          },
+          "state": "E1_h100_re3000_main_k16"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00085818862472800052,0,-0.00010932140062666665"
+          },
+          "state": "E2_h100_re3000_main_k16"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00085818862472800052,0,-0.00010932140062666665"
+          },
+          "state": "E3_h100_re3000_main_k16"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00047449725524233323,0,0.00013001934174499999"
+          },
+          "state": "E1_h80_re3000_main_k01_secondary"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00047449725524233323,0,0.00013001934174499999"
+          },
+          "state": "E2_h80_re3000_main_k01_secondary"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00047449725524233323,0,-0.00013001934174499999"
+          },
+          "state": "E1_h80_re3000_main_k02_secondary"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-0.00047449725524233323,0,-0.00013001934174499999"
+          },
+          "state": "E2_h80_re3000_main_k02_secondary"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "1.8161177151333199e-05,0,-0.00067079464984333328"
+          },
+          "state": "E1_h80_re3000_main_k03_secondary"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "1.8161177151333199e-05,0,-0.00067079464984333328"
+          },
+          "state": "E2_h80_re3000_main_k03_secondary"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-1.8161177151333199e-05,0,0.00067079464984333328"
+          },
+          "state": "E1_h80_re3000_main_k04_secondary"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "-1.8161177151333199e-05,0,0.00067079464984333328"
+          },
+          "state": "E2_h80_re3000_main_k04_secondary"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0.00047449725524233323,0,0.00013001934174499999"
+          },
+          "state": "E1_h100_re3000_main_k01_determinism"
+        },
+        {
+          "env": {
+            "TOPO2D_TOP_FACTOR": "1.5",
+            "W4_CANONICAL_ORIGIN_M": "0.00047449725524233323,0,0.00013001934174499999"
+          },
+          "state": "E1_h100_re3000_main_k01_domain"
+        },
+        {
+          "env": {
+            "TOPO2D_TOP_FACTOR": "1.5",
+            "W4_CANONICAL_ORIGIN_M": "0.00047449725524233323,0,0.00013001934174499999"
+          },
+          "state": "E2_h100_re3000_main_k01_domain"
+        },
+        {
+          "env": {
+            "TOPO2D_TOP_FACTOR": "1.5",
+            "W4_CANONICAL_ORIGIN_M": "-0.00047449725524233323,0,-0.00013001934174499999"
+          },
+          "state": "E1_h100_re3000_main_k02_domain"
+        },
+        {
+          "env": {
+            "TOPO2D_TOP_FACTOR": "1.5",
+            "W4_CANONICAL_ORIGIN_M": "-0.00047449725524233323,0,-0.00013001934174499999"
+          },
+          "state": "E2_h100_re3000_main_k02_domain"
+        },
+        {
+          "env": {
+            "W4_CANONICAL_ORIGIN_M": "0,0,0"
+          },
+          "state": "E1_h100_re3000_main_k00_prerun"
+        }
+      ]
+    }
+  },
+  "legacy_replay": false,
+  "measurement": {
+    "candidate_operator": "SetBody(min, AutoBody polygon elements); wing-only force",
+    "force_unit": "N/m",
+    "parent_prerun": {
+      "configuration": "E1",
+      "estimator": "scripts/topo2d00/prerun_window.py",
+      "formal_window": "hash-bound parent record; hand-entered windows refused",
+      "grid": "main",
+      "horizon_c1_over_u": 520,
+      "measurement_window_c1_over_u": [
+        80,
+        520
+      ],
+      "phase": "0",
+      "record_template": "docs/harness/topo2d00_window_re<Re>.json"
+    },
+    "phase_rule": "JOB-02 R2 (0.7548776662,0.5698402910) fractional shifts centered at 0, k=1..8 with exact mirrors in x,z",
+    "reference_chord_mm": 223.4,
+    "remaining_controls": "E1 parent pre-run force histories must fix windows before freeze; unavailable readout controls remain NOT_JUDGED until WP2 integration",
+    "requires_parent_window_freeze": true,
+    "time_window_t_u_l": null,
+    "window_formula": {
+      "cap_c1_over_u": 400,
+      "minimum_multiple_c1_over_u": 50,
+      "source": "TOPO-2D-00 section 5; RE-01 Stage-0",
+      "target_se_fraction": 0.015
+    }
+  },
+  "out_prefix": "topo2d00_",
+  "owner": "ramhachi888",
+  "pins": [
+    "julia/CFDSDFWaterLily/gen01/Topo2D.jl",
+    "src/cfd_harness/scene_campaign.py"
+  ],
+  "repo_url": "https://github.com/ramhachi/CFD_opt_sdf.git",
+  "scrub_env": [],
+  "sparse": [
+    "julia/CFDSDFWaterLily/gen01",
+    "docs/harness/topo2d00_scenes"
+  ],
+  "states": {
+    "E1_h100_re1000_main_k00_prerun": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "0",
+        "reynolds": 1000.0,
+        "role": "prerun"
+      }
+    },
+    "E1_h100_re1000_main_k01": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "1",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re1000_main_k02": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "2",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re1000_main_k03": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "3",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re1000_main_k04": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "4",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re1000_main_k05": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "5",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re1000_main_k06": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "6",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re1000_main_k07": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "7",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re1000_main_k08": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "8",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re1000_main_k09": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "9",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re1000_main_k10": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "10",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re1000_main_k11": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "11",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re1000_main_k12": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "12",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re1000_main_k13": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "13",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re1000_main_k14": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "14",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re1000_main_k15": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "15",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re1000_main_k16": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "16",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re3000_confirmation_k01": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1_fine.json",
+      "scene_sha256": "574808f8812ee5055fb78a6eba8ebc1cd283b08afbd9bb8cfa4ecfbad9bf9595",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "confirmation",
+        "height_mm": 100.0,
+        "phase": "1",
+        "reynolds": 3000.0,
+        "role": "confirmation"
+      }
+    },
+    "E1_h100_re3000_confirmation_k02": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1_fine.json",
+      "scene_sha256": "574808f8812ee5055fb78a6eba8ebc1cd283b08afbd9bb8cfa4ecfbad9bf9595",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "confirmation",
+        "height_mm": 100.0,
+        "phase": "2",
+        "reynolds": 3000.0,
+        "role": "confirmation"
+      }
+    },
+    "E1_h100_re3000_confirmation_k03": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1_fine.json",
+      "scene_sha256": "574808f8812ee5055fb78a6eba8ebc1cd283b08afbd9bb8cfa4ecfbad9bf9595",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "confirmation",
+        "height_mm": 100.0,
+        "phase": "3",
+        "reynolds": 3000.0,
+        "role": "confirmation"
+      }
+    },
+    "E1_h100_re3000_confirmation_k04": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1_fine.json",
+      "scene_sha256": "574808f8812ee5055fb78a6eba8ebc1cd283b08afbd9bb8cfa4ecfbad9bf9595",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "confirmation",
+        "height_mm": 100.0,
+        "phase": "4",
+        "reynolds": 3000.0,
+        "role": "confirmation"
+      }
+    },
+    "E1_h100_re3000_main_k00_prerun": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "0",
+        "reynolds": 3000.0,
+        "role": "prerun"
+      }
+    },
+    "E1_h100_re3000_main_k01": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "1",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re3000_main_k01_determinism": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "1",
+        "reynolds": 3000.0,
+        "role": "determinism"
+      }
+    },
+    "E1_h100_re3000_main_k01_domain": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "1",
+        "reynolds": 3000.0,
+        "role": "domain"
+      }
+    },
+    "E1_h100_re3000_main_k02": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "2",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re3000_main_k02_domain": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "2",
+        "reynolds": 3000.0,
+        "role": "domain"
+      }
+    },
+    "E1_h100_re3000_main_k03": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "3",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re3000_main_k04": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "4",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re3000_main_k05": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "5",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re3000_main_k06": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "6",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re3000_main_k07": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "7",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re3000_main_k08": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "8",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re3000_main_k09": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "9",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re3000_main_k10": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "10",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re3000_main_k11": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "11",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re3000_main_k12": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "12",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re3000_main_k13": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "13",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re3000_main_k14": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "14",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re3000_main_k15": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "15",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h100_re3000_main_k16": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1.json",
+      "scene_sha256": "f1226e64ca5f5b5c8d063b52734c901c39e583cdaa70604ab9bebc36524c6dab",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "16",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E1_h80_re1000_main_k01_secondary": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1_h80.json",
+      "scene_sha256": "d9e7cc0da6134a52fc5746390dd828bf6237011505af5c11582055dc8a02b0d2",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 80.0,
+        "phase": "1",
+        "reynolds": 1000.0,
+        "role": "secondary"
+      }
+    },
+    "E1_h80_re1000_main_k02_secondary": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1_h80.json",
+      "scene_sha256": "d9e7cc0da6134a52fc5746390dd828bf6237011505af5c11582055dc8a02b0d2",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 80.0,
+        "phase": "2",
+        "reynolds": 1000.0,
+        "role": "secondary"
+      }
+    },
+    "E1_h80_re1000_main_k03_secondary": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1_h80.json",
+      "scene_sha256": "d9e7cc0da6134a52fc5746390dd828bf6237011505af5c11582055dc8a02b0d2",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 80.0,
+        "phase": "3",
+        "reynolds": 1000.0,
+        "role": "secondary"
+      }
+    },
+    "E1_h80_re1000_main_k04_secondary": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1_h80.json",
+      "scene_sha256": "d9e7cc0da6134a52fc5746390dd828bf6237011505af5c11582055dc8a02b0d2",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 80.0,
+        "phase": "4",
+        "reynolds": 1000.0,
+        "role": "secondary"
+      }
+    },
+    "E1_h80_re3000_main_k01_secondary": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1_h80.json",
+      "scene_sha256": "d9e7cc0da6134a52fc5746390dd828bf6237011505af5c11582055dc8a02b0d2",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 80.0,
+        "phase": "1",
+        "reynolds": 3000.0,
+        "role": "secondary"
+      }
+    },
+    "E1_h80_re3000_main_k02_secondary": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1_h80.json",
+      "scene_sha256": "d9e7cc0da6134a52fc5746390dd828bf6237011505af5c11582055dc8a02b0d2",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 80.0,
+        "phase": "2",
+        "reynolds": 3000.0,
+        "role": "secondary"
+      }
+    },
+    "E1_h80_re3000_main_k03_secondary": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1_h80.json",
+      "scene_sha256": "d9e7cc0da6134a52fc5746390dd828bf6237011505af5c11582055dc8a02b0d2",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 80.0,
+        "phase": "3",
+        "reynolds": 3000.0,
+        "role": "secondary"
+      }
+    },
+    "E1_h80_re3000_main_k04_secondary": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E1_h80.json",
+      "scene_sha256": "d9e7cc0da6134a52fc5746390dd828bf6237011505af5c11582055dc8a02b0d2",
+      "topo2d": {
+        "configuration": "E1",
+        "grid": "main",
+        "height_mm": 80.0,
+        "phase": "4",
+        "reynolds": 3000.0,
+        "role": "secondary"
+      }
+    },
+    "E2_h100_re1000_main_k01": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "1",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re1000_main_k02": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "2",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re1000_main_k03": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "3",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re1000_main_k04": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "4",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re1000_main_k05": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "5",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re1000_main_k06": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "6",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re1000_main_k07": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "7",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re1000_main_k08": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "8",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re1000_main_k09": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "9",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re1000_main_k10": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "10",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re1000_main_k11": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "11",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re1000_main_k12": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "12",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re1000_main_k13": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "13",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re1000_main_k14": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "14",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re1000_main_k15": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "15",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re1000_main_k16": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "16",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re3000_confirmation_k01": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2_fine.json",
+      "scene_sha256": "f7131cef61223e21a57c70708dd58622c630ff71fbe5b55aa39c47791919e7c6",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "confirmation",
+        "height_mm": 100.0,
+        "phase": "1",
+        "reynolds": 3000.0,
+        "role": "confirmation"
+      }
+    },
+    "E2_h100_re3000_confirmation_k02": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2_fine.json",
+      "scene_sha256": "f7131cef61223e21a57c70708dd58622c630ff71fbe5b55aa39c47791919e7c6",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "confirmation",
+        "height_mm": 100.0,
+        "phase": "2",
+        "reynolds": 3000.0,
+        "role": "confirmation"
+      }
+    },
+    "E2_h100_re3000_confirmation_k03": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2_fine.json",
+      "scene_sha256": "f7131cef61223e21a57c70708dd58622c630ff71fbe5b55aa39c47791919e7c6",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "confirmation",
+        "height_mm": 100.0,
+        "phase": "3",
+        "reynolds": 3000.0,
+        "role": "confirmation"
+      }
+    },
+    "E2_h100_re3000_confirmation_k04": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2_fine.json",
+      "scene_sha256": "f7131cef61223e21a57c70708dd58622c630ff71fbe5b55aa39c47791919e7c6",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "confirmation",
+        "height_mm": 100.0,
+        "phase": "4",
+        "reynolds": 3000.0,
+        "role": "confirmation"
+      }
+    },
+    "E2_h100_re3000_main_k01": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "1",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re3000_main_k01_domain": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "1",
+        "reynolds": 3000.0,
+        "role": "domain"
+      }
+    },
+    "E2_h100_re3000_main_k02": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "2",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re3000_main_k02_domain": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "2",
+        "reynolds": 3000.0,
+        "role": "domain"
+      }
+    },
+    "E2_h100_re3000_main_k03": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "3",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re3000_main_k04": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "4",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re3000_main_k05": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "5",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re3000_main_k06": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "6",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re3000_main_k07": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "7",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re3000_main_k08": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "8",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re3000_main_k09": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "9",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re3000_main_k10": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "10",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re3000_main_k11": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "11",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re3000_main_k12": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "12",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re3000_main_k13": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "13",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re3000_main_k14": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "14",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re3000_main_k15": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "15",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h100_re3000_main_k16": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2.json",
+      "scene_sha256": "4dc4b10e30674b57fcdbcd65b543a2bfa7177a883f009ceb38a8cf85038abc5f",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "16",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E2_h80_re1000_main_k01_secondary": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2_h80.json",
+      "scene_sha256": "2786a4b0dd0998fcdf6bf79a99786ba4c6992da951854e9f09c2df68d7ee307b",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 80.0,
+        "phase": "1",
+        "reynolds": 1000.0,
+        "role": "secondary"
+      }
+    },
+    "E2_h80_re1000_main_k02_secondary": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2_h80.json",
+      "scene_sha256": "2786a4b0dd0998fcdf6bf79a99786ba4c6992da951854e9f09c2df68d7ee307b",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 80.0,
+        "phase": "2",
+        "reynolds": 1000.0,
+        "role": "secondary"
+      }
+    },
+    "E2_h80_re1000_main_k03_secondary": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2_h80.json",
+      "scene_sha256": "2786a4b0dd0998fcdf6bf79a99786ba4c6992da951854e9f09c2df68d7ee307b",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 80.0,
+        "phase": "3",
+        "reynolds": 1000.0,
+        "role": "secondary"
+      }
+    },
+    "E2_h80_re1000_main_k04_secondary": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2_h80.json",
+      "scene_sha256": "2786a4b0dd0998fcdf6bf79a99786ba4c6992da951854e9f09c2df68d7ee307b",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 80.0,
+        "phase": "4",
+        "reynolds": 1000.0,
+        "role": "secondary"
+      }
+    },
+    "E2_h80_re3000_main_k01_secondary": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2_h80.json",
+      "scene_sha256": "2786a4b0dd0998fcdf6bf79a99786ba4c6992da951854e9f09c2df68d7ee307b",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 80.0,
+        "phase": "1",
+        "reynolds": 3000.0,
+        "role": "secondary"
+      }
+    },
+    "E2_h80_re3000_main_k02_secondary": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2_h80.json",
+      "scene_sha256": "2786a4b0dd0998fcdf6bf79a99786ba4c6992da951854e9f09c2df68d7ee307b",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 80.0,
+        "phase": "2",
+        "reynolds": 3000.0,
+        "role": "secondary"
+      }
+    },
+    "E2_h80_re3000_main_k03_secondary": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2_h80.json",
+      "scene_sha256": "2786a4b0dd0998fcdf6bf79a99786ba4c6992da951854e9f09c2df68d7ee307b",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 80.0,
+        "phase": "3",
+        "reynolds": 3000.0,
+        "role": "secondary"
+      }
+    },
+    "E2_h80_re3000_main_k04_secondary": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E2_h80.json",
+      "scene_sha256": "2786a4b0dd0998fcdf6bf79a99786ba4c6992da951854e9f09c2df68d7ee307b",
+      "topo2d": {
+        "configuration": "E2",
+        "grid": "main",
+        "height_mm": 80.0,
+        "phase": "4",
+        "reynolds": 3000.0,
+        "role": "secondary"
+      }
+    },
+    "E3_h100_re1000_main_k01": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "1",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re1000_main_k02": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "2",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re1000_main_k03": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "3",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re1000_main_k04": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "4",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re1000_main_k05": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "5",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re1000_main_k06": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "6",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re1000_main_k07": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "7",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re1000_main_k08": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "8",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re1000_main_k09": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "9",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re1000_main_k10": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "10",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re1000_main_k11": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "11",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re1000_main_k12": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "12",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re1000_main_k13": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "13",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re1000_main_k14": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "14",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re1000_main_k15": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "15",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re1000_main_k16": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "16",
+        "reynolds": 1000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re3000_main_k01": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "1",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re3000_main_k02": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "2",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re3000_main_k03": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "3",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re3000_main_k04": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "4",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re3000_main_k05": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "5",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re3000_main_k06": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "6",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re3000_main_k07": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "7",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re3000_main_k08": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "8",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re3000_main_k09": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "9",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re3000_main_k10": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "10",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re3000_main_k11": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "11",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re3000_main_k12": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "12",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re3000_main_k13": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "13",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re3000_main_k14": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "14",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re3000_main_k15": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "15",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    },
+    "E3_h100_re3000_main_k16": {
+      "kind": "scene",
+      "scene_path": "docs/harness/topo2d00_scenes/E3.json",
+      "scene_sha256": "828dcfe2e63e84fb706305450582a419acbbc521111ae470a3c305584052de6f",
+      "topo2d": {
+        "configuration": "E3",
+        "grid": "main",
+        "height_mm": 100.0,
+        "phase": "16",
+        "reynolds": 3000.0,
+        "role": "primary"
+      }
+    }
+  }
+}

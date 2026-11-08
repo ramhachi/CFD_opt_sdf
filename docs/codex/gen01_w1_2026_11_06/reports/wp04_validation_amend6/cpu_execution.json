@@ -1,0 +1,24 @@
+{
+  "command": [
+    "/opt/homebrew/bin/julia",
+    "--startup-file=no",
+    "--project=julia/CFDSDFWaterLily",
+    "scripts/topo2d_selftest.jl",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/docs/codex/gen01_w1_2026_11_06/reports/wp04_validation_amend6/cpu_selftest"
+  ],
+  "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily",
+  "environment": {
+    "scrubbed_prefixes": [
+      "TOPO2D_",
+      "W4_",
+      "CUDA_"
+    ],
+    "overrides": {
+      "JULIA_NUM_THREADS": "1"
+    },
+    "external_provider_injection": false
+  },
+  "evidence_class": "short_cpu_capability_no_physical_qualification",
+  "exit_code": 0,
+  "wall_seconds": 58.063722209
+}

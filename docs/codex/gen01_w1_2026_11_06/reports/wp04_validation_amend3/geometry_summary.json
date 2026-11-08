@@ -1,0 +1,979 @@
+{
+  "cells": {
+    "confirmation": {
+      "c1": 180,
+      "dx_mm": 1.241111111111111,
+      "flap": 133.50940017905103,
+      "gap": 9.668755595344674,
+      "half_flap": 66.75470008952551,
+      "thickness_floor": 4.0
+    },
+    "main": {
+      "c1": 120,
+      "dx_mm": 1.8616666666666668,
+      "flap": 89.006266786034,
+      "gap": 6.445837063563115,
+      "half_flap": 44.503133393017,
+      "thickness_floor": 4.0
+    }
+  },
+  "environment": {
+    "numpy": "2.5.2",
+    "platform": "macOS-26.3.1-arm64-arm-64bit",
+    "python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "scipy": "1.18.1"
+  },
+  "evidence_class": "GEOMETRY_SOFTWARE_ONLY",
+  "global_sampling": {
+    "max_adjacent_segment_ratio": 2.897564688141328,
+    "max_noncap_turn_deg": 3.445371053014021,
+    "max_segment_mm": 0.9929049002053859,
+    "min_segment_mm": 0.13317992250116495
+  },
+  "main_vs_t20_max_abs_columns_mm": [
+    0.05233999999998673,
+    0.8170199999999976,
+    0.04599999999999227,
+    0.8549799999999994
+  ],
+  "scenes": {
+    "E1.json": {
+      "configuration": "E1",
+      "dx_mm": 1.8616666666666668,
+      "elements": [
+        {
+          "actual_chord_cells": 120.24002859149128,
+          "max_thickness_ratio": 4.594745076277198,
+          "name": "main",
+          "nominal_chord_cells": 120.0,
+          "sampling": {
+            "duplicate_vertices": false,
+            "max_adjacent_segment_ratio": 1.718556939917815,
+            "max_noncap_turn_deg": 3.4426716214324946,
+            "max_segment_mm": 0.9308339190556993,
+            "min_segment_mm": 0.1805928418893029,
+            "vertices": 786
+          }
+        }
+      ],
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 100.0,
+        "controlled_minima": [
+          {
+            "element": "main",
+            "thickness_mm": 7.446671352445512
+          }
+        ],
+        "overlap": false,
+        "pair_gaps_mm": [],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": true,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "placement": {
+        "combined_chord_mm": 223.84685322782627,
+        "combined_incidence_deg": 3.4549901830136687,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0,
+        "transformations": [
+          {
+            "element": "main",
+            "source_scale": 1.0,
+            "translation_mm": [
+              0.0,
+              117.37311374134036
+            ]
+          }
+        ]
+      },
+      "sha256": "f36dc5a30fb989a70923872473370e094d3c50ea7955f3560a7a3305cac21b85"
+    },
+    "E1_fine.json": {
+      "configuration": "E1",
+      "dx_mm": 1.241111111111111,
+      "elements": [
+        {
+          "actual_chord_cells": 180.36004288723694,
+          "max_thickness_ratio": 3.0632108532169107,
+          "name": "main",
+          "nominal_chord_cells": 180.0,
+          "sampling": {
+            "duplicate_vertices": false,
+            "max_adjacent_segment_ratio": 1.718556982428401,
+            "max_noncap_turn_deg": 3.442672413640632,
+            "max_segment_mm": 0.9929049002053859,
+            "min_segment_mm": 0.1805928418893029,
+            "vertices": 783
+          }
+        }
+      ],
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 100.0,
+        "controlled_minima": [
+          {
+            "element": "main",
+            "thickness_mm": 4.964524501026833
+          }
+        ],
+        "overlap": false,
+        "pair_gaps_mm": [],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": true,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "placement": {
+        "combined_chord_mm": 223.84685322782627,
+        "combined_incidence_deg": 3.4549901830136758,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0,
+        "transformations": [
+          {
+            "element": "main",
+            "source_scale": 1.0,
+            "translation_mm": [
+              0.0,
+              117.37307447813701
+            ]
+          }
+        ]
+      },
+      "sha256": "d57f5947590401517748eff77ccb289d2f4c382d1ee0a3c99a7e636307d6cabb"
+    },
+    "E1_h80.json": {
+      "configuration": "E1",
+      "dx_mm": 1.8616666666666668,
+      "elements": [
+        {
+          "actual_chord_cells": 120.24002859149128,
+          "max_thickness_ratio": 4.594745076277198,
+          "name": "main",
+          "nominal_chord_cells": 120.0,
+          "sampling": {
+            "duplicate_vertices": false,
+            "max_adjacent_segment_ratio": 1.718556939917815,
+            "max_noncap_turn_deg": 3.4426716214324946,
+            "max_segment_mm": 0.9308339190556993,
+            "min_segment_mm": 0.1805928418893029,
+            "vertices": 786
+          }
+        }
+      ],
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 80.0,
+        "controlled_minima": [
+          {
+            "element": "main",
+            "thickness_mm": 7.4466713524455255
+          }
+        ],
+        "overlap": false,
+        "pair_gaps_mm": [],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": true,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 80.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.21052631578947367,
+        "h_over_c1": 0.35810205908683973
+      },
+      "placement": {
+        "combined_chord_mm": 223.84685322782627,
+        "combined_incidence_deg": 3.4549901830136687,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0,
+        "transformations": [
+          {
+            "element": "main",
+            "source_scale": 1.0,
+            "translation_mm": [
+              0.0,
+              97.37311374134036
+            ]
+          }
+        ]
+      },
+      "sha256": "bab24c97a260015b557a2ca14c9344f64f5bb4880091a39493031a38bfb3318e"
+    },
+    "E1_sharp.json": {
+      "configuration": "E1_sharp",
+      "dx_mm": 1.8616666666666668,
+      "elements": [
+        {
+          "actual_chord_cells": 120.24002859149128,
+          "max_thickness_ratio": 1.0,
+          "name": "main",
+          "nominal_chord_cells": 120.0,
+          "sampling": {
+            "duplicate_vertices": false,
+            "max_adjacent_segment_ratio": 1.7228364885313434,
+            "max_noncap_turn_deg": 3.43571603820754,
+            "max_segment_mm": 0.8360000000000127,
+            "min_segment_mm": 0.1805928418893029,
+            "vertices": 780
+          }
+        }
+      ],
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 100.0,
+        "controlled_minima": [],
+        "overlap": false,
+        "pair_gaps_mm": [],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": false,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "placement": {
+        "combined_chord_mm": 223.84685322782627,
+        "combined_incidence_deg": 3.454990183013665,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0,
+        "transformations": [
+          {
+            "element": "main",
+            "source_scale": 1.0,
+            "translation_mm": [
+              0.0,
+              117.37744475026628
+            ]
+          }
+        ]
+      },
+      "sha256": "c4a2ce56ef6f7cfbaa0e8a8f41a267afce4b1e99880a79bb512e80eb6b921612"
+    },
+    "E2.json": {
+      "configuration": "E2",
+      "dx_mm": 1.8616666666666668,
+      "elements": [
+        {
+          "actual_chord_cells": 120.24002859149128,
+          "max_thickness_ratio": 4.594745076277198,
+          "name": "main",
+          "nominal_chord_cells": 120.0,
+          "sampling": {
+            "duplicate_vertices": false,
+            "max_adjacent_segment_ratio": 1.718556939917815,
+            "max_noncap_turn_deg": 3.4426716214324946,
+            "max_segment_mm": 0.9308339190556993,
+            "min_segment_mm": 0.1805928418893029,
+            "vertices": 786
+          }
+        },
+        {
+          "actual_chord_cells": 88.88713581134832,
+          "max_thickness_ratio": 8.86671143889008,
+          "name": "flap1",
+          "nominal_chord_cells": 89.006266786034,
+          "sampling": {
+            "duplicate_vertices": false,
+            "max_adjacent_segment_ratio": 1.4485807668412796,
+            "max_noncap_turn_deg": 3.444775299355507,
+            "max_segment_mm": 0.930833337826019,
+            "min_segment_mm": 0.2755074236008483,
+            "vertices": 588
+          }
+        }
+      ],
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 100.0,
+        "controlled_minima": [
+          {
+            "element": "main",
+            "thickness_mm": 7.446671352445512
+          },
+          {
+            "element": "flap1",
+            "thickness_mm": 7.44666666666663
+          }
+        ],
+        "overlap": false,
+        "pair_gaps_mm": [
+          {
+            "distance_mm": 8.573124916422216,
+            "elements": [
+              "main",
+              "flap1"
+            ]
+          }
+        ],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": true,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "placement": {
+        "combined_chord_mm": 379.42810773003464,
+        "combined_incidence_deg": 14.436796728942292,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0,
+        "transformations": [
+          {
+            "element": "main",
+            "source_scale": 1.0,
+            "translation_mm": [
+              0.0,
+              117.37311374134036
+            ]
+          },
+          {
+            "element": "flap1",
+            "source_scale": 1.0,
+            "translation_mm": [
+              0.006000000000000227,
+              120.18004984112628
+            ]
+          }
+        ]
+      },
+      "sha256": "e7ec3c47e10622991ce5f6146044e61bafab1afa38470b2507e831d0dfcfc8b7"
+    },
+    "E2_fine.json": {
+      "configuration": "E2",
+      "dx_mm": 1.241111111111111,
+      "elements": [
+        {
+          "actual_chord_cells": 180.36004288723694,
+          "max_thickness_ratio": 3.0632108532169107,
+          "name": "main",
+          "nominal_chord_cells": 180.0,
+          "sampling": {
+            "duplicate_vertices": false,
+            "max_adjacent_segment_ratio": 1.718556982428401,
+            "max_noncap_turn_deg": 3.442672413640632,
+            "max_segment_mm": 0.9929049002053859,
+            "min_segment_mm": 0.1805928418893029,
+            "vertices": 783
+          }
+        },
+        {
+          "actual_chord_cells": 133.3307037170225,
+          "max_thickness_ratio": 5.911141331791372,
+          "name": "flap1",
+          "nominal_chord_cells": 133.50940017905103,
+          "sampling": {
+            "duplicate_vertices": false,
+            "max_adjacent_segment_ratio": 1.5450813405618362,
+            "max_noncap_turn_deg": 3.445371053014021,
+            "max_segment_mm": 0.9928890117071978,
+            "min_segment_mm": 0.2755046365510305,
+            "vertices": 585
+          }
+        }
+      ],
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 100.0,
+        "controlled_minima": [
+          {
+            "element": "main",
+            "thickness_mm": 4.964524501026833
+          },
+          {
+            "element": "flap1",
+            "thickness_mm": 4.964444444444451
+          }
+        ],
+        "overlap": false,
+        "pair_gaps_mm": [
+          {
+            "distance_mm": 9.806064917017604,
+            "elements": [
+              "main",
+              "flap1"
+            ]
+          }
+        ],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": true,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "placement": {
+        "combined_chord_mm": 379.42796657728894,
+        "combined_incidence_deg": 14.436713933568768,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0,
+        "transformations": [
+          {
+            "element": "main",
+            "source_scale": 1.0,
+            "translation_mm": [
+              0.0,
+              117.37307447813701
+            ]
+          },
+          {
+            "element": "flap1",
+            "source_scale": 1.0,
+            "translation_mm": [
+              0.006000000000000227,
+              120.17944440698909
+            ]
+          }
+        ]
+      },
+      "sha256": "05cff8029f675219768411d382cc59d6d5e461881b20db6b8d9ab8093763c2e0"
+    },
+    "E2_h80.json": {
+      "configuration": "E2",
+      "dx_mm": 1.8616666666666668,
+      "elements": [
+        {
+          "actual_chord_cells": 120.24002859149128,
+          "max_thickness_ratio": 4.594745076277198,
+          "name": "main",
+          "nominal_chord_cells": 120.0,
+          "sampling": {
+            "duplicate_vertices": false,
+            "max_adjacent_segment_ratio": 1.718556939917815,
+            "max_noncap_turn_deg": 3.4426716214324946,
+            "max_segment_mm": 0.9308339190556993,
+            "min_segment_mm": 0.1805928418893029,
+            "vertices": 786
+          }
+        },
+        {
+          "actual_chord_cells": 88.88713581134832,
+          "max_thickness_ratio": 8.86671143889008,
+          "name": "flap1",
+          "nominal_chord_cells": 89.006266786034,
+          "sampling": {
+            "duplicate_vertices": false,
+            "max_adjacent_segment_ratio": 1.4485807668412796,
+            "max_noncap_turn_deg": 3.4447752993551894,
+            "max_segment_mm": 0.930833337826019,
+            "min_segment_mm": 0.2755074236008483,
+            "vertices": 588
+          }
+        }
+      ],
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 80.0,
+        "controlled_minima": [
+          {
+            "element": "main",
+            "thickness_mm": 7.4466713524455255
+          },
+          {
+            "element": "flap1",
+            "thickness_mm": 7.44666666666663
+          }
+        ],
+        "overlap": false,
+        "pair_gaps_mm": [
+          {
+            "distance_mm": 8.573124916422188,
+            "elements": [
+              "main",
+              "flap1"
+            ]
+          }
+        ],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": true,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 80.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.21052631578947367,
+        "h_over_c1": 0.35810205908683973
+      },
+      "placement": {
+        "combined_chord_mm": 379.42810773003464,
+        "combined_incidence_deg": 14.436796728942292,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0,
+        "transformations": [
+          {
+            "element": "main",
+            "source_scale": 1.0,
+            "translation_mm": [
+              0.0,
+              97.37311374134036
+            ]
+          },
+          {
+            "element": "flap1",
+            "source_scale": 1.0,
+            "translation_mm": [
+              0.006000000000000227,
+              100.18004984112628
+            ]
+          }
+        ]
+      },
+      "sha256": "71afd0f92e499f73c194c4327089a2c89a747e63f76a16c48fc7e0d051009a41"
+    },
+    "E2_sharp.json": {
+      "configuration": "E2_sharp",
+      "dx_mm": 1.8616666666666668,
+      "elements": [
+        {
+          "actual_chord_cells": 120.24002859149128,
+          "max_thickness_ratio": 1.0,
+          "name": "main",
+          "nominal_chord_cells": 120.0,
+          "sampling": {
+            "duplicate_vertices": false,
+            "max_adjacent_segment_ratio": 1.7228364885313434,
+            "max_noncap_turn_deg": 3.43571603820754,
+            "max_segment_mm": 0.8360000000000127,
+            "min_segment_mm": 0.1805928418893029,
+            "vertices": 780
+          }
+        },
+        {
+          "actual_chord_cells": 88.88713581134832,
+          "max_thickness_ratio": 1.0,
+          "name": "flap1",
+          "nominal_chord_cells": 89.006266786034,
+          "sampling": {
+            "duplicate_vertices": false,
+            "max_adjacent_segment_ratio": 1.2634081568539473,
+            "max_noncap_turn_deg": 3.4404185637765305,
+            "max_segment_mm": 0.6489392546291525,
+            "min_segment_mm": 0.26635984500238447,
+            "vertices": 582
+          }
+        }
+      ],
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 100.0,
+        "controlled_minima": [],
+        "overlap": false,
+        "pair_gaps_mm": [
+          {
+            "distance_mm": 11.437980503695714,
+            "elements": [
+              "main",
+              "flap1"
+            ]
+          }
+        ],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": false,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "placement": {
+        "combined_chord_mm": 379.4339179470803,
+        "combined_incidence_deg": 14.440204346934753,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0,
+        "transformations": [
+          {
+            "element": "main",
+            "source_scale": 1.0,
+            "translation_mm": [
+              0.0,
+              117.37744475026628
+            ]
+          },
+          {
+            "element": "flap1",
+            "source_scale": 1.0,
+            "translation_mm": [
+              0.006000000000000227,
+              120.2076831728602
+            ]
+          }
+        ]
+      },
+      "sha256": "bc416012668448c414594fe8381306123e162bb669c1c7f063a6498cdb6ed5d5"
+    },
+    "E3.json": {
+      "configuration": "E3",
+      "dx_mm": 1.8616666666666668,
+      "elements": [
+        {
+          "actual_chord_cells": 120.24002859149128,
+          "max_thickness_ratio": 4.594745076277198,
+          "name": "main",
+          "nominal_chord_cells": 120.0,
+          "sampling": {
+            "duplicate_vertices": false,
+            "max_adjacent_segment_ratio": 1.718556939917815,
+            "max_noncap_turn_deg": 3.4426716214324946,
+            "max_segment_mm": 0.9308339190556993,
+            "min_segment_mm": 0.1805928418893029,
+            "vertices": 786
+          }
+        },
+        {
+          "actual_chord_cells": 44.44356790567416,
+          "max_thickness_ratio": 17.733422877780182,
+          "name": "flap1",
+          "nominal_chord_cells": 44.503133393017,
+          "sampling": {
+            "duplicate_vertices": false,
+            "max_adjacent_segment_ratio": 2.897564688141328,
+            "max_noncap_turn_deg": 3.4404185637816185,
+            "max_segment_mm": 0.9308333333508938,
+            "min_segment_mm": 0.1379987522570947,
+            "vertices": 588
+          }
+        },
+        {
+          "actual_chord_cells": 44.44356790567416,
+          "max_thickness_ratio": 17.733422877780185,
+          "name": "flap2",
+          "nominal_chord_cells": 44.503133393017,
+          "sampling": {
+            "duplicate_vertices": false,
+            "max_adjacent_segment_ratio": 2.8975646881406827,
+            "max_noncap_turn_deg": 3.4404185637823606,
+            "max_segment_mm": 0.9308333333508875,
+            "min_segment_mm": 0.13799875225709524,
+            "vertices": 588
+          }
+        }
+      ],
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 100.0,
+        "controlled_minima": [
+          {
+            "element": "main",
+            "thickness_mm": 7.446671352445512
+          },
+          {
+            "element": "flap1",
+            "thickness_mm": 7.446666666666651
+          },
+          {
+            "element": "flap2",
+            "thickness_mm": 7.446666666666639
+          }
+        ],
+        "overlap": false,
+        "pair_gaps_mm": [
+          {
+            "distance_mm": 8.395099172939728,
+            "elements": [
+              "main",
+              "flap1"
+            ]
+          },
+          {
+            "distance_mm": 77.62302357715747,
+            "elements": [
+              "main",
+              "flap2"
+            ]
+          },
+          {
+            "distance_mm": 8.934197849890756,
+            "elements": [
+              "flap1",
+              "flap2"
+            ]
+          }
+        ],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": true,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "placement": {
+        "combined_chord_mm": 374.67857534304034,
+        "combined_incidence_deg": 14.595283260227143,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0,
+        "transformations": [
+          {
+            "element": "main",
+            "source_scale": 1.0,
+            "translation_mm": [
+              0.0,
+              117.37311374134036
+            ]
+          },
+          {
+            "element": "flap1",
+            "source_scale": 0.5,
+            "translation_mm": [
+              214.44,
+              146.68925805166495
+            ]
+          },
+          {
+            "element": "flap2",
+            "source_scale": 0.5,
+            "translation_mm": [
+              286.0841670746214,
+              180.2767529218438
+            ]
+          }
+        ]
+      },
+      "sha256": "ca786452f882bc23dc214c2bb69db6bbd2f7a318caaacc6b94d2793e1f94f3e1"
+    },
+    "E3_sharp.json": {
+      "configuration": "E3_sharp",
+      "dx_mm": 1.8616666666666668,
+      "elements": [
+        {
+          "actual_chord_cells": 120.24002859149128,
+          "max_thickness_ratio": 1.0,
+          "name": "main",
+          "nominal_chord_cells": 120.0,
+          "sampling": {
+            "duplicate_vertices": false,
+            "max_adjacent_segment_ratio": 1.7228364885313434,
+            "max_noncap_turn_deg": 3.43571603820754,
+            "max_segment_mm": 0.8360000000000127,
+            "min_segment_mm": 0.1805928418893029,
+            "vertices": 780
+          }
+        },
+        {
+          "actual_chord_cells": 44.44356790567416,
+          "max_thickness_ratio": 1.0,
+          "name": "flap1",
+          "nominal_chord_cells": 44.503133393017,
+          "sampling": {
+            "duplicate_vertices": false,
+            "max_adjacent_segment_ratio": 1.6123161037175118,
+            "max_noncap_turn_deg": 3.4404185637816185,
+            "max_segment_mm": 0.5133517312720447,
+            "min_segment_mm": 0.1331799225012034,
+            "vertices": 581
+          }
+        },
+        {
+          "actual_chord_cells": 44.44356790567416,
+          "max_thickness_ratio": 1.0,
+          "name": "flap2",
+          "nominal_chord_cells": 44.503133393017,
+          "sampling": {
+            "duplicate_vertices": false,
+            "max_adjacent_segment_ratio": 1.6123161037177058,
+            "max_noncap_turn_deg": 3.4404185637823606,
+            "max_segment_mm": 0.5133517312720447,
+            "min_segment_mm": 0.13317992250116495,
+            "vertices": 581
+          }
+        }
+      ],
+      "gates": {
+        "accepted": true,
+        "bdim_core_qualified": false,
+        "clearance_mm": 100.0,
+        "controlled_minima": [],
+        "overlap": false,
+        "pair_gaps_mm": [
+          {
+            "distance_mm": 11.225968589423843,
+            "elements": [
+              "main",
+              "flap1"
+            ]
+          },
+          {
+            "distance_mm": 78.3244598974326,
+            "elements": [
+              "main",
+              "flap2"
+            ]
+          },
+          {
+            "distance_mm": 12.497934474815828,
+            "elements": [
+              "flap1",
+              "flap2"
+            ]
+          }
+        ],
+        "self_intersections": false,
+        "thickness_metric": "actual polygon width along each controlled camber-segment normal",
+        "thickness_required": false,
+        "thickness_scope": "original maximum-thickness station aft; LE cap and ramp excluded"
+      },
+      "height_mm": 100.0,
+      "normalizations": {
+        "c1_mm": 223.4,
+        "c_mm": 380.0,
+        "h_over_c": 0.2631578947368421,
+        "h_over_c1": 0.4476275738585497
+      },
+      "placement": {
+        "combined_chord_mm": 374.6111743473414,
+        "combined_incidence_deg": 14.555641128107967,
+        "e3_rule": "two half-scale source profiles; equal main-to-flap angle increments",
+        "flap_rotation_center_mm": [
+          215.45999999999998,
+          28.88
+        ],
+        "gap_mm": 12.0,
+        "gap_reference": "upstream trailing-edge midpoint",
+        "nominal_incidence_deg": 14.1,
+        "overlap_mm": 9.0,
+        "transformations": [
+          {
+            "element": "main",
+            "source_scale": 1.0,
+            "translation_mm": [
+              0.0,
+              117.37744475026628
+            ]
+          },
+          {
+            "element": "flap1",
+            "source_scale": 0.5,
+            "translation_mm": [
+              214.44,
+              146.45936447628324
+            ]
+          },
+          {
+            "element": "flap2",
+            "source_scale": 0.5,
+            "translation_mm": [
+              286.0841670746214,
+              180.01325289700895
+            ]
+          }
+        ]
+      },
+      "sha256": "f48ec5464152bb2432ccdc1ffff88faa07cc826bb87ff78135cf0d9b49c001c2"
+    }
+  },
+  "schema": "wp04-amend3-geometry-review-v1"
+}

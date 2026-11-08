@@ -1,0 +1,98 @@
+{
+  "cells": {
+    "SA-WF/fine30": {
+      "delta": {
+        "ci90": [
+          0.9999999999999999,
+          1.0000000000000002
+        ],
+        "df": 7,
+        "mean": 1.0,
+        "n": 8,
+        "sd": 1.6784994417006302e-16,
+        "se": 5.934391687221748e-17
+      },
+      "label": "TR00_PASS_RATIO",
+      "observable": "pressure_cl",
+      "point_estimate": 1.0,
+      "ratio_ci90": [
+        0.9999999999999999,
+        1.0000000000000002
+      ],
+      "reason": null
+    },
+    "SA-WF/second": {
+      "delta": {
+        "ci90": [
+          0.9999999999999999,
+          1.0000000000000002
+        ],
+        "df": 7,
+        "mean": 1.0,
+        "n": 8,
+        "sd": 1.6784994417006302e-16,
+        "se": 5.934391687221748e-17
+      },
+      "label": "TR00_PASS_RATIO",
+      "observable": "pressure_cl",
+      "point_estimate": 1.0,
+      "ratio_ci90": [
+        0.9999999999999999,
+        1.0000000000000002
+      ],
+      "reason": null
+    },
+    "SST-WF/fine30": {
+      "delta": {
+        "ci90": [
+          0.9999999999999999,
+          1.0000000000000002
+        ],
+        "df": 7,
+        "mean": 1.0,
+        "n": 8,
+        "sd": 1.6784994417006302e-16,
+        "se": 5.934391687221748e-17
+      },
+      "label": "TR00_PASS_RATIO",
+      "observable": "pressure_cl",
+      "point_estimate": 1.0,
+      "ratio_ci90": [
+        0.9999999999999999,
+        1.0000000000000002
+      ],
+      "reason": null
+    },
+    "SST-WF/second": {
+      "delta": {
+        "ci90": [
+          0.9999999999999999,
+          1.0000000000000002
+        ],
+        "df": 7,
+        "mean": 1.0,
+        "n": 8,
+        "sd": 1.6784994417006302e-16,
+        "se": 5.934391687221748e-17
+      },
+      "label": "TR00_PASS_RATIO",
+      "observable": "pressure_cl",
+      "point_estimate": 1.0,
+      "ratio_ci90": [
+        0.9999999999999999,
+        1.0000000000000002
+      ],
+      "reason": null
+    }
+  },
+  "qualified_cells": [
+    "SA-WF/fine30",
+    "SA-WF/second",
+    "SST-WF/fine30",
+    "SST-WF/second"
+  ],
+  "reference": {
+    "delta_cl": 1.0,
+    "digitizing_uncertainty": 0.009999999999999787
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cfd-opt-sdf:topo2d00-rans-results-v1",
+  "title": "WP4/WP5 TOPO-2D-00 RANS results interchange (draft, not a scientific freeze)",
+  "description": "All forces are dimensionless centre-section coefficients on common c1=223.4 mm, drag=+Cx and downforce=-Cz. Sharp-arm force records carry observable=pressure_cl for Cp comparison; thick-arm records carry observable=total_cl for WaterLily comparison. Differencing across observables is forbidden. Every physical height reports h/c1 and h/c (c=380 mm). Eight paired realisations per model/family are required; repeated mesh SHA-256 make that arm DEGENERATE_REALISATIONS with point estimate only, no interval and an INCOMPLETE ratio test. Published finite trailing edges remain in E*_sharp. NUMERICAL, MESH_FAILED and INCOMPLETE remain distinct outcomes, never zero force. Registration Amendment 5 maps each aggregated INCOMPLETE/DEGENERATE_REALISATIONS cell to study INCOMPLETE and MESH_FAILED/NUMERICAL to study NUMERICAL; study NUMERICAL precedes INCOMPLETE. Formal CLI reference values are independently recomputed from frozen WP5 digitize_cp manifest and raw CSVs, including content-level reader distinctness.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "coefficient_reference", "reference", "cells"],
+  "properties": {
+    "schema": {"const": "topo2d00-rans-results-v1"},
+    "coefficient_reference": {
+      "type": "object", "additionalProperties": false, "required": ["chord_mm", "height_mm", "h_over_c1", "h_over_c"],
+      "properties": {
+        "chord_mm": {"const": 223.4}, "units": {"const": "dimensionless"},
+        "downforce": {"const": "-Cz"}, "drag": {"const": "+Cx"},
+        "reynolds_c1": {"const": 460000}, "height_mm": {"const": 100},
+        "h_over_c1": {"type": "number", "exclusiveMinimum": 0, "description": "Same physical height_mm divided by 223.4 mm; the consumer validates consistency."},
+        "h_over_c": {"type": "number", "exclusiveMinimum": 0, "description": "Same physical height_mm divided by 380 mm; the consumer validates consistency."}
+      }
+    },
+    "reference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["delta_cl", "digitizing_uncertainty", "observable"],
+      "properties": {
+        "delta_cl": {"type": "number", "not": {"const": 0}, "description": "Measured centre-section E2_original minus E1_original downforce coefficient, both re-normalized on c1. Positive downforce convention. A claimed summary only: formal analysis recomputes this from the frozen manifest/raw readings and refuses a mismatch."},
+        "observable": {"const": "pressure_cl"},
+        "digitizing_uncertainty": {"type": "number", "minimum": 0, "description": "Absolute double-element Cp-integral reading sensitivity: sum over elements of abs(integrated_Cl_reader1 - integrated_Cl_reader2), per Amendment 1 section 6 and Amendment 5 section 6. A claimed summary only; formal analysis recomputes from frozen raw CSVs. Corresponding reader surfaces must differ after monotone numeric normalization, not merely as bytes. If greater than 0.05*abs(delta_cl), TR-00 uses sign-only; equality uses the ratio rule. This is reading sensitivity, not total experimental/integration uncertainty or a confidence interval."},
+        "source": {"type": "object", "additionalProperties": false, "description": "Required for formal CLI analysis, optional only in pure synthetic arithmetic fixtures. Existing WP5 collector format: digitization_records inventories the canonical digitize_cp manifest plus every Cp/Cl-curve CSV artifact (all paths and SHAs bound by the study freeze). provenance.reference_estimate.manifest identifies the manifest. E1 can be tabulated_cl, cl_curve or cp; E2 is exactly two Cp elements. Every physical upper/lower Cp surface needs at least 10 monotone samples covering the declared global-streamwise extent; each element reading must be downforce-positive.", "required": ["title", "url", "pages", "observable", "digitization_records", "method"], "properties": {
+          "title": {"type": "string"}, "url": {"type": "string"}, "pages": {"type": "string"},
+          "observable": {"const": "centre-section pressure-integrated Cl"},
+          "digitization_records": {"type": "array", "minItems": 2, "items": {"type": "object", "additionalProperties": false, "required": ["path", "sha256", "method"], "properties": {"path": {"type": "string", "minLength": 1, "description": "Distinct actual artifact path, repository-relative or absolute; includes WP5 manifest and raw CSVs, all bound by study freeze inputs. Reader independence is checked between corresponding parsed numeric surfaces; unrelated artifacts need not have globally distinct hashes."}, "sha256": {"$ref": "#/$defs/sha"}, "method": {"type": "string", "minLength": 1, "description": "Independent person/tool and extraction/integration method; distinct files alone do not prove methodological independence."}}}},
+          "method": {"type": "string"}
+        }}
+      }
+    },
+    "cells": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/cell"}},
+    "provenance": {
+      "type": "object", "description": "OPTIONAL only for synthetic numerical API fixtures. REQUIRED for a formal CLI dataset: geometry_sha256 must contain exactly E1,E2,E3,E1_sharp,E2_sharp and equal the parent-owned study freeze's geometry_sha256 map of main-grid/unthickened-original JSON file hashes. The actual scene JSON files must also appear in that freeze input inventory. WP5 records actual source/runtime/freeze identities here; the study freeze binds this entire JSON by SHA-256. Confirmation-grid geometry is separately bound by its harness campaign; it is not substituted for the main RANS geometry.",
+      "properties": {"reference_estimate": {"type": "object", "description": "Existing WP5 digitize_cp.build_reference output, required by formal CLI. The manifest pointer and every raw CSV are freeze-bound. Derived references/increments in this object remain provenance; analyzer and independent checker recalculate from the manifest and CSV numeric contents.", "required": ["kind", "observable", "manifest"], "properties": {"kind": {"const": "topo2d00_pressure_reference_v1"}, "observable": {"const": "pressure_cl"}, "manifest": {"type": "object", "required": ["path", "sha256"], "properties": {"path": {"type": "string", "minLength": 1, "description": "Canonical absolute path of topo2d00_cp_manifest_v1; must appear among source.digitization_records and freeze inputs."}, "sha256": {"$ref": "#/$defs/sha"}}}}}, "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "geometry_sha256": {"type": "object", "additionalProperties": false, "required": ["E1", "E2", "E3", "E1_sharp", "E2_sharp"], "properties": {"E1": {"$ref": "#/$defs/sha"}, "E2": {"$ref": "#/$defs/sha"}, "E3": {"$ref": "#/$defs/sha"}, "E1_sharp": {"$ref": "#/$defs/sha"}, "E2_sharp": {"$ref": "#/$defs/sha"}}}, "freeze_sha256": {"$ref": "#/$defs/sha"}}
+    }
+  },
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "force": {"type": "object", "additionalProperties": false, "required": ["downforce", "drag", "observable"], "properties": {"downforce": {"type": "number"}, "drag": {"type": "number"}, "observable": {"enum": ["pressure_cl", "total_cl"]}}},
+    "status": {"enum": ["SETTLED", "NUMERICAL", "INCOMPLETE", "MESH_FAILED"]},
+    "status_map": {"type": "object", "additionalProperties": false, "required": ["E1", "E2", "E3", "E1_sharp", "E2_sharp"], "properties": {
+      "E1": {"$ref": "#/$defs/status"}, "E2": {"$ref": "#/$defs/status"}, "E3": {"$ref": "#/$defs/status"}, "E1_sharp": {"$ref": "#/$defs/status"}, "E2_sharp": {"$ref": "#/$defs/status"}
+    }},
+    "mesh_map": {"type": "object", "additionalProperties": false, "required": ["E1", "E2", "E3", "E1_sharp", "E2_sharp"], "properties": {
+      "E1": {"anyOf": [{"$ref": "#/$defs/sha"}, {"type": "null"}]}, "E2": {"anyOf": [{"$ref": "#/$defs/sha"}, {"type": "null"}]}, "E3": {"anyOf": [{"$ref": "#/$defs/sha"}, {"type": "null"}]}, "E1_sharp": {"anyOf": [{"$ref": "#/$defs/sha"}, {"type": "null"}]}, "E2_sharp": {"anyOf": [{"$ref": "#/$defs/sha"}, {"type": "null"}]}
+    }},
+    "force_map": {"type": "object", "additionalProperties": false, "required": ["E1", "E2", "E3", "E1_sharp", "E2_sharp"], "properties": {
+      "E1": {"anyOf": [{"allOf": [{"$ref": "#/$defs/force"}, {"properties": {"observable": {"const": "total_cl"}}}]}, {"type": "null"}]}, "E2": {"anyOf": [{"allOf": [{"$ref": "#/$defs/force"}, {"properties": {"observable": {"const": "total_cl"}}}]}, {"type": "null"}]}, "E3": {"anyOf": [{"allOf": [{"$ref": "#/$defs/force"}, {"properties": {"observable": {"const": "total_cl"}}}]}, {"type": "null"}]}, "E1_sharp": {"anyOf": [{"allOf": [{"$ref": "#/$defs/force"}, {"properties": {"observable": {"const": "pressure_cl"}}}]}, {"type": "null"}]}, "E2_sharp": {"anyOf": [{"allOf": [{"$ref": "#/$defs/force"}, {"properties": {"observable": {"const": "pressure_cl"}}}]}, {"type": "null"}]}
+    }},
+    "realisation": {
+      "type": "object", "additionalProperties": false, "required": ["id", "mesh_sha256", "status", "forces"],
+      "properties": {"id": {"type": "string", "minLength": 1}, "mesh_sha256": {"$ref": "#/$defs/mesh_map"}, "status": {"$ref": "#/$defs/status_map"}, "forces": {"$ref": "#/$defs/force_map"}, "diagnostics": {"type": "object"}},
+      "description": "SETTLED requires a non-null finite force and non-null mesh SHA for that config. The Python consumer enforces this cross-field rule and unique IDs; null is allowed only for failed/unattempted configs. Pair all configurations by id, not by accidental array order. Eight mesh SHA values must be distinct for each configuration across the cell. Duplicate SHA values preserve point diagnostics but cannot yield an interval."
+    },
+    "cell": {
+      "type": "object", "additionalProperties": false, "required": ["model", "family", "realisations"],
+      "properties": {"model": {"type": "string", "minLength": 1, "pattern": "^[^/]+$"}, "family": {"type": "string", "minLength": 1, "pattern": "^[^/]+$"}, "realisations": {"type": "array", "minItems": 8, "maxItems": 8, "items": {"$ref": "#/$defs/realisation"}}, "cell_summary": {"type": "object", "description": "Optional collector diagnostics. The analyzer independently recomputes mesh identities and point estimates."}, "thickening_alone": {"type": "array", "items": {"$ref": "#/$defs/thickening_difference"}, "description": "Optional collector summaries. The analyzer recomputes same-observable differences from realisation.diagnostics, never from these summaries."}}
+    },
+    "thickening_difference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["from", "to", "observable", "paired_realisations", "ci90", "point_estimate"],
+      "properties": {
+        "from": {"enum": ["E1_sharp", "E2_sharp"]}, "to": {"enum": ["E1", "E2"]},
+        "observable": {"enum": ["pressure_cl", "total_cl"]},
+        "paired_realisations": {"type": "integer", "minimum": 0, "maximum": 8},
+        "ci90": {"type": "null"},
+        "point_estimate": {"anyOf": [{"type": "null"}, {"type": "object", "additionalProperties": false, "required": ["downforce", "drag"], "properties": {"downforce": {"type": "number"}, "drag": {"type": "number"}}}]}
+      },
+      "description": "Descriptive thick minus original at one identical observable on both arms; no study label. Collector emits point estimates only. Independent analyzer/checker use raw per-realisation coefficients and observable-specific convergence."
+    }
+  }
+}
