@@ -1,0 +1,57 @@
+{
+  "actual_kernels_regenerated": false,
+  "base_comparison": {
+    "base_commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+    "failed": 0,
+    "failure_nodeids": [],
+    "failure_sets_equal": true,
+    "passed": 3482,
+    "scope": "Requested suite excluding tests/test_lbm_metal.py only; no Metal/base rerun or unfiltered full-suite claim.",
+    "skipped": 74,
+    "source": "User-provided Claude host execution in WP5 Amendment1 section11; not re-executed by this amendment"
+  },
+  "commit_push_owner": "Claude host; no git mutations by Codex",
+  "compileall": {
+    "command": ".venv/bin/python -m compileall src tests",
+    "returncode": 0
+  },
+  "corrected_E2_openfoam_smoke": "NOT_RUN: dense WP4 input and Claude render instruction pending",
+  "diff_check": {
+    "command": "git diff --check",
+    "returncode": 0
+  },
+  "evidence_class": "DEVELOPMENT_VALIDATION",
+  "final_source_inventory_unchanged_after_tests": true,
+  "focused": {
+    "command": ".venv/bin/python -m pytest -q tests/topo2d00 -p no:cacheprovider --basetemp /private/tmp/wp05-amendment1-final-unit2 --junitxml=/private/tmp/wp05-amendment1-focused-final.xml",
+    "duration_s": 55.42,
+    "failed": 0,
+    "passed": 190,
+    "returncode": 0,
+    "skipped": 0
+  },
+  "full_result_only": {
+    "command": ".venv/bin/python -m pytest --ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider",
+    "complete": true,
+    "duration_s": 2059.24,
+    "error_nodeids": [],
+    "errors": 0,
+    "failed": 0,
+    "failure_nodeids": [],
+    "passed": 3672,
+    "returncode": 0,
+    "skipped": 74,
+    "warnings": 7295
+  },
+  "production_run": false,
+  "registration_status": "DRAFT_NOT_FROZEN",
+  "source_commit": "cb4df6506ba9be542ef6e3840e57faca5a5f7bb6",
+  "source_dirty": true,
+  "test_logs_archive": {
+    "bytes": 5544,
+    "members": 5,
+    "path": "docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment1_validation/test_logs.tar.gz",
+    "readback_verified": true,
+    "sha256": "67a5390039188a6fa3c7b4ac15b3c7dc236a52e1878a2d09067366984852ccc4"
+  }
+}

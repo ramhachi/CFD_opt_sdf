@@ -1,0 +1,98 @@
+{
+  "N2": {
+    "coordinate_postprocessing_or_candidate_mesh_flags_adopted": false,
+    "eight_distinct_mesh_sha_measured": true,
+    "focused_receipt": "mesh_realisations.json",
+    "full_receipt": "mesh_realisations_full.json",
+    "registered_indexed_inputs_implemented": true,
+    "same_index_raw_mesh_sha_repeatable": false,
+    "status": "BLOCKED",
+    "strict_assertion_retained": true
+  },
+  "acceptance_met": false,
+  "base_comparison": {
+    "commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+    "error_node_sets_equal": true,
+    "error_nodes": [],
+    "failed": 0,
+    "failed_node_sets_equal": false,
+    "failed_nodes": [],
+    "new_failed_nodes": [
+      "tests/topo2d00/test_multibody_case.py::test_eight_med30_realisations_are_distinct_and_fresh_process_repeatable"
+    ],
+    "passed": 3482,
+    "removed_failed_nodes": [],
+    "skipped": 74,
+    "source": "User-supplied Claude host result; not rerun here"
+  },
+  "base_head": "45917d8cc93fea6ba17897b914d8ac82f4d930fb",
+  "evidence_class": "IMPLEMENTATION_CONTRACT_TESTS_ONLY",
+  "focused": {
+    "counts": {
+      "errors": 0,
+      "failed": 1,
+      "passed": 272,
+      "skipped": 0
+    },
+    "error_nodes": [],
+    "execution": {
+      "command": [
+        "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/topo2d00",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment2_validation/focused.xml"
+      ],
+      "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-05-tr00-rans",
+      "ended_utc": "2026-11-07T10:15:20.573489+00:00",
+      "exit_code": 1,
+      "log": "docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment2_validation/focused.log",
+      "started_utc": "2026-11-07T10:13:20.394377+00:00",
+      "status": "finished",
+      "wall_s": 120.17971370904706
+    },
+    "failed_nodes": [
+      "tests/topo2d00/test_multibody_case.py::test_eight_med30_realisations_are_distinct_and_fresh_process_repeatable"
+    ],
+    "junit": "focused.xml",
+    "log": "focused.log.gz"
+  },
+  "full": {
+    "counts": {
+      "errors": 0,
+      "failed": 1,
+      "passed": 3754,
+      "skipped": 74
+    },
+    "error_nodes": [],
+    "execution": {
+      "command": [
+        "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+        "-m",
+        "pytest",
+        "--ignore=tests/test_lbm_metal.py",
+        "-q",
+        "-rf",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment2_validation/full.xml"
+      ],
+      "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-05-tr00-rans",
+      "ended_utc": "2026-11-07T10:27:02.528950+00:00",
+      "exit_code": 1,
+      "log": "docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment2_validation/full.log",
+      "started_utc": "2026-11-07T10:13:20.394365+00:00",
+      "status": "finished",
+      "wall_s": 822.1389852499124
+    },
+    "failed_nodes": [
+      "tests/topo2d00/test_multibody_case.py::test_eight_med30_realisations_are_distinct_and_fresh_process_repeatable"
+    ],
+    "junit": "full.xml",
+    "log": "full.log.gz"
+  },
+  "scope": "Development synthetic mesh/schema/runner tests. No OpenFOAM checkMesh or smoke, physical E2 qualification, Kaggle, production solve, freeze, commit or push."
+}

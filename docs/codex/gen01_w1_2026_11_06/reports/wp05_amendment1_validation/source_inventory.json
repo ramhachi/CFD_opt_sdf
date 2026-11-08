@@ -1,0 +1,54 @@
+{
+  "actual_kernel_rendered": false,
+  "dependencies": {
+    "gmsh": "4.15.2",
+    "numpy": "2.5.2",
+    "pytest": "9.1.1",
+    "scipy": "1.18.1"
+  },
+  "evidence_class": "DEVELOPMENT_SOURCE_IDENTITY",
+  "figure_digitized": false,
+  "git_publication": "No commit, push, PR mutation or publication.git use. Claude host owns publication per user Amendment1 section12.",
+  "openfoam_run_this_amendment": false,
+  "python": "3.12.13",
+  "read_only_external_authority_sha256": {
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/codex/gen01_w1_2026_11_06/reviews/wp05_review_1_opus.md": "f27e3257f06cc40e9b87c8071b86c28acf0afa1d3e190f22b96bc025fb19fffa",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/topo2d00_registration_2026_11_01.md": "38a725c9c7af35b78cb42c56d2e4408b87ddfd1a059414ced49bcf6e94c93a63"
+  },
+  "routing": [
+    {
+      "actual_model": null,
+      "attempt_number": 1,
+      "reason": "no callable MCP; CLI log path permission failure",
+      "requested_model": "OpenCode Go logical worker pool"
+    },
+    {
+      "actual_model": null,
+      "attempt_number": 2,
+      "reason": "temporary data/cache/state catalogue: Provider not found: opencode-go",
+      "requested_model": "OpenCode Go current catalogue"
+    },
+    {
+      "actual_model": "native inherited Codex (exact model ID not recorded)",
+      "attempt_number": 3,
+      "reason": "OpenCode Go provider unavailable; disjoint work and independent review",
+      "requested_model": "native inherited Codex (no override)"
+    }
+  ],
+  "source_commit": "cb4df6506ba9be542ef6e3840e57faca5a5f7bb6",
+  "source_dirty": true,
+  "source_sha256": {
+    "docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_measurement_schema.json": "636064a20ad9c0779da26a3a4d2f64c4efe8e50699587adfbea7a5760b6fafde",
+    "docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_result_schema.json": "d96200bc9b706e5ce10f2222193a94ace0f0ef77d969622d61f05afbafe4d6be",
+    "scripts/topo2d00/build_tr00_kernels.py": "481f44d8644af4fb79779c33ac74c568d4893436dc2f0aa9022a312ecc4da326",
+    "scripts/topo2d00/collect_rans.py": "406526f1d3a6bed9625f0c70756c7d093496b89a6218f1caa5893bb1e0064da1",
+    "scripts/topo2d00/digitize_cp.py": "b1506926c319890420773b95a68d9c8de1dbd85d72185ef0cf9fa1c53f72c1b0",
+    "scripts/topo2d00/run_rans.py": "46e6b93f61e724c1906d87b525a7bee094a5ae8d2f1dc493d01dbef99265da21",
+    "scripts/topo2d00/t2d_foam_case.py": "ccc9533e2e37526149695c4bfe07e21c8388c806178cf21c398a7e7222ee1616",
+    "scripts/topo2d00/t2d_multibody_case.py": "583022c5c45d9d9d991a9d758104b783a023c7df29a98c12204e72f90861810c",
+    "tests/topo2d00/test_build_tr00_kernels.py": "33c92afc40d5edcf46a7733c983400f15cc92e8c6fff0ffb8095b3d213cfe474",
+    "tests/topo2d00/test_collect_rans.py": "f939b63bcafabd0f11e28d938688620378ecad404d7c7237c0a9db83c276c1c5",
+    "tests/topo2d00/test_digitize_cp.py": "c4d4f36f84d8c5d6c3b80f67516fd14c9f80d794cd05448eda4c0fffd93e7b50",
+    "tests/topo2d00/test_multibody_case.py": "a629876cb304f49bbe61881657bae1cbe4adefd1b08995e34df2e45689628232"
+  }
+}

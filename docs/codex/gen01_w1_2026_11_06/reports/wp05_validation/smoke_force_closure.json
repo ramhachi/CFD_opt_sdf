@@ -1,0 +1,44 @@
+{
+  "cases": [
+    {
+      "all_finite": true,
+      "case_result_sha256": "14604bde4ab4850fba32d661f449b99440b8f45a553ea35aaeb276120c006da0",
+      "closure_atol": 1e-06,
+      "closure_rtol": 1e-05,
+      "coefficient_and_dimensional_sampling_identical": true,
+      "config": "E2",
+      "maximum_abs_coefficient_difference_dimensional_vs_forceCoeffs": {
+        "airfoil": 7.304287841236601e-09,
+        "airfoil_2": 1.1866110760649917e-08,
+        "total": 1.611061328787855e-08
+      },
+      "maximum_abs_component_sum_difference": {
+        "pressure": 4.973640166383575e-09,
+        "viscous": 4.9736399027056066e-11
+      },
+      "maximum_abs_element_sum_difference": 9.99999993922529e-09,
+      "samples": 200
+    },
+    {
+      "all_finite": true,
+      "case_result_sha256": "f5efca99b1412d5e7baebbd603d7a06b71294624ad8900d43e88bb9f51f0f050",
+      "closure_atol": 1e-06,
+      "closure_rtol": 1e-05,
+      "coefficient_and_dimensional_sampling_identical": true,
+      "config": "E2_sharp",
+      "maximum_abs_coefficient_difference_dimensional_vs_forceCoeffs": {
+        "airfoil": 7.23465642948895e-09,
+        "airfoil_2": 6.897443283193638e-09,
+        "total": 2.950164113002529e-08
+      },
+      "maximum_abs_component_sum_difference": {
+        "pressure": 2.4868199055561035e-08,
+        "viscous": 4.973640249650302e-11
+      },
+      "maximum_abs_element_sum_difference": 1.000000082740371e-08,
+      "samples": 200
+    }
+  ],
+  "evidence_class": "LOCAL_SMOKE_BOOKKEEPING_ONLY",
+  "qualified_coefficients_or_convergence": false
+}

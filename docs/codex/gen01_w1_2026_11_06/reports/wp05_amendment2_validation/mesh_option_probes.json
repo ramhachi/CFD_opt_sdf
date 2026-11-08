@@ -1,0 +1,579 @@
+{
+  "evidence_class": "DEVELOPMENT_SYNTHETIC_GMSH_OPTION_PROBE",
+  "index": 3,
+  "options": {
+    "reposition0": {
+      "Mesh.RecombineNodeRepositioning": 0
+    },
+    "smoothing0": {
+      "Mesh.Smoothing": 0
+    }
+  },
+  "probe_code": "import json,sys\nfrom pathlib import Path\nfrom topo2d00.t2d_foam_case import write_case\nimport gmsh\noriginal_initialize=gmsh.initialize\noptions=json.loads(sys.argv[3])\ndef initialize(*args, **kwargs):\n    original_initialize(*args, **kwargs)\n    for name,value in options.items():\n        gmsh.option.setNumber(name,value)\ngmsh.initialize=initialize\nm=write_case(Path(sys.argv[2]),Path(sys.argv[1]),family=\"med30\",iters=1,realisation=3,expected_height_m=.09)\nprint(json.dumps(m))\n",
+  "production_modified": false,
+  "results": [
+    {
+      "cells_3d": 31796,
+      "generator_sha256": {
+        "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+        "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+        "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+        "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+      },
+      "index": 0,
+      "mesh_serialization": {
+        "coordinate_significant_digits": 13,
+        "max_allowed_node_displacement_m": 1e-12,
+        "max_node_displacement_m": 6.263421762700815e-13,
+        "mesh_msh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+        "policy": "MSH2 node coordinates only; fixed significant decimal digits; connectivity and node order unchanged",
+        "raw_mesh_msh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a"
+      },
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "options": {
+        "Mesh.RecombineNodeRepositioning": 0
+      },
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/reposition0-0",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 11.352814596742167,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.0109484550304451,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050274732564,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079897993345,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872467071,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251082307261334,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "returncode": 0,
+      "variant": "reposition0",
+      "wall_s": 3.3874630419304594
+    },
+    {
+      "cells_3d": 31796,
+      "generator_sha256": {
+        "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+        "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+        "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+        "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+      },
+      "index": 1,
+      "mesh_serialization": {
+        "coordinate_significant_digits": 13,
+        "max_allowed_node_displacement_m": 1e-12,
+        "max_node_displacement_m": 6.263421762700815e-13,
+        "mesh_msh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+        "policy": "MSH2 node coordinates only; fixed significant decimal digits; connectivity and node order unchanged",
+        "raw_mesh_msh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a"
+      },
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "options": {
+        "Mesh.RecombineNodeRepositioning": 0
+      },
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/reposition0-1",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 11.352814596742167,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.0109484550304451,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050274732564,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079897993345,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872467071,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251082307261334,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "returncode": 0,
+      "variant": "reposition0",
+      "wall_s": 3.9212257500039414
+    },
+    {
+      "cells_3d": 31796,
+      "generator_sha256": {
+        "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+        "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+        "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+        "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+      },
+      "index": 2,
+      "mesh_serialization": {
+        "coordinate_significant_digits": 13,
+        "max_allowed_node_displacement_m": 1e-12,
+        "max_node_displacement_m": 6.263421762700815e-13,
+        "mesh_msh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+        "policy": "MSH2 node coordinates only; fixed significant decimal digits; connectivity and node order unchanged",
+        "raw_mesh_msh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a"
+      },
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "options": {
+        "Mesh.RecombineNodeRepositioning": 0
+      },
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/reposition0-2",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 11.352814596742167,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.0109484550304451,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050274732564,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079897993345,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872467071,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251082307261334,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "returncode": 0,
+      "variant": "reposition0",
+      "wall_s": 4.569552415981889
+    },
+    {
+      "cells_3d": 31796,
+      "generator_sha256": {
+        "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+        "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+        "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+        "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+      },
+      "index": 3,
+      "mesh_serialization": {
+        "coordinate_significant_digits": 13,
+        "max_allowed_node_displacement_m": 1e-12,
+        "max_node_displacement_m": 6.263421762700815e-13,
+        "mesh_msh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+        "policy": "MSH2 node coordinates only; fixed significant decimal digits; connectivity and node order unchanged",
+        "raw_mesh_msh_sha256": "7c01d3892b59009e3551ef1310a61b64d410975a51b73038e2a2061b5d24fe5a"
+      },
+      "mesh_sha256": "02112c05df74b8e91c15c0bbc61c849e99b15a5571c531182b60ac09e4c12c2e",
+      "options": {
+        "Mesh.RecombineNodeRepositioning": 0
+      },
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/reposition0-3",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "weight_min"
+      ],
+      "quality": {
+        "aspect_ratio_max": 11.352814596742167,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.0109484550304451,
+        "nonorth_gt70_faces": 0,
+        "nonorth_max": 69.70050274732564,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 1.5632079897993345,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.04439824872467071,
+        "weight_lt0.05_faces": 3,
+        "weight_min": 0.04251082307261334,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.181985,
+            0.142366
+          ],
+          "det": [
+            0.269432,
+            0.166685
+          ],
+          "nonorth": [
+            0.269236,
+            0.166719
+          ],
+          "vol_ratio": [
+            0.298003,
+            0.164504
+          ],
+          "weight": [
+            0.298003,
+            0.164504
+          ]
+        }
+      },
+      "returncode": 0,
+      "variant": "reposition0",
+      "wall_s": 4.988983624964021
+    },
+    {
+      "cells_3d": 31796,
+      "generator_sha256": {
+        "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+        "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+        "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+        "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+      },
+      "index": 0,
+      "mesh_serialization": {
+        "coordinate_significant_digits": 13,
+        "max_allowed_node_displacement_m": 1e-12,
+        "max_node_displacement_m": 6.364096263238047e-13,
+        "mesh_msh_sha256": "7621e6b9229f163b666106779b16c8631c76b0c84e3c639efdbd68330eb11911",
+        "policy": "MSH2 node coordinates only; fixed significant decimal digits; connectivity and node order unchanged",
+        "raw_mesh_msh_sha256": "a3f36c59e88819795df78b1f10d7ecb61227f9ebe412fc3ff44a3e37f0ada150"
+      },
+      "mesh_sha256": "7621e6b9229f163b666106779b16c8631c76b0c84e3c639efdbd68330eb11911",
+      "options": {
+        "Mesh.Smoothing": 0
+      },
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/smoothing0-0",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "nonorth_max",
+        "weight_min",
+        "min_sicn"
+      ],
+      "quality": {
+        "aspect_ratio_max": 26.388631134016208,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.002484866320182721,
+        "nonorth_gt70_faces": 18,
+        "nonorth_max": 76.77000187035569,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 2.5182757550244608,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.031976790874407586,
+        "weight_lt0.05_faces": 38,
+        "weight_min": 0.03098595453855522,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.224151,
+            0.11578
+          ],
+          "det": [
+            0.224151,
+            0.11578
+          ],
+          "nonorth": [
+            0.224193,
+            0.11729
+          ],
+          "vol_ratio": [
+            0.356854,
+            0.142141
+          ],
+          "weight": [
+            0.356854,
+            0.142141
+          ]
+        }
+      },
+      "returncode": 0,
+      "variant": "smoothing0",
+      "wall_s": 3.3372049590107054
+    },
+    {
+      "cells_3d": 31796,
+      "generator_sha256": {
+        "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+        "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+        "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+        "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+      },
+      "index": 1,
+      "mesh_serialization": {
+        "coordinate_significant_digits": 13,
+        "max_allowed_node_displacement_m": 1e-12,
+        "max_node_displacement_m": 6.364096263238047e-13,
+        "mesh_msh_sha256": "7621e6b9229f163b666106779b16c8631c76b0c84e3c639efdbd68330eb11911",
+        "policy": "MSH2 node coordinates only; fixed significant decimal digits; connectivity and node order unchanged",
+        "raw_mesh_msh_sha256": "a3f36c59e88819795df78b1f10d7ecb61227f9ebe412fc3ff44a3e37f0ada150"
+      },
+      "mesh_sha256": "7621e6b9229f163b666106779b16c8631c76b0c84e3c639efdbd68330eb11911",
+      "options": {
+        "Mesh.Smoothing": 0
+      },
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/smoothing0-1",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "nonorth_max",
+        "weight_min",
+        "min_sicn"
+      ],
+      "quality": {
+        "aspect_ratio_max": 26.388631134016208,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.002484866320182721,
+        "nonorth_gt70_faces": 18,
+        "nonorth_max": 76.77000187035569,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 2.5182757550244608,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.031976790874407586,
+        "weight_lt0.05_faces": 38,
+        "weight_min": 0.03098595453855522,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.224151,
+            0.11578
+          ],
+          "det": [
+            0.224151,
+            0.11578
+          ],
+          "nonorth": [
+            0.224193,
+            0.11729
+          ],
+          "vol_ratio": [
+            0.356854,
+            0.142141
+          ],
+          "weight": [
+            0.356854,
+            0.142141
+          ]
+        }
+      },
+      "returncode": 0,
+      "variant": "smoothing0",
+      "wall_s": 3.810738499974832
+    },
+    {
+      "cells_3d": 31796,
+      "generator_sha256": {
+        "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+        "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+        "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+        "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+      },
+      "index": 2,
+      "mesh_serialization": {
+        "coordinate_significant_digits": 13,
+        "max_allowed_node_displacement_m": 1e-12,
+        "max_node_displacement_m": 6.364096263238047e-13,
+        "mesh_msh_sha256": "7621e6b9229f163b666106779b16c8631c76b0c84e3c639efdbd68330eb11911",
+        "policy": "MSH2 node coordinates only; fixed significant decimal digits; connectivity and node order unchanged",
+        "raw_mesh_msh_sha256": "a3f36c59e88819795df78b1f10d7ecb61227f9ebe412fc3ff44a3e37f0ada150"
+      },
+      "mesh_sha256": "7621e6b9229f163b666106779b16c8631c76b0c84e3c639efdbd68330eb11911",
+      "options": {
+        "Mesh.Smoothing": 0
+      },
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/smoothing0-2",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "nonorth_max",
+        "weight_min",
+        "min_sicn"
+      ],
+      "quality": {
+        "aspect_ratio_max": 26.388631134016208,
+        "cells": 31796,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.002484866320182721,
+        "nonorth_gt70_faces": 18,
+        "nonorth_max": 76.77000187035569,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 2.5182757550244608,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.031976790874407586,
+        "weight_lt0.05_faces": 38,
+        "weight_min": 0.03098595453855522,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.224151,
+            0.11578
+          ],
+          "det": [
+            0.224151,
+            0.11578
+          ],
+          "nonorth": [
+            0.224193,
+            0.11729
+          ],
+          "vol_ratio": [
+            0.356854,
+            0.142141
+          ],
+          "weight": [
+            0.356854,
+            0.142141
+          ]
+        }
+      },
+      "returncode": 0,
+      "variant": "smoothing0",
+      "wall_s": 4.486011625034735
+    },
+    {
+      "cells_3d": 31794,
+      "generator_sha256": {
+        "t20_case.py": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+        "t20_foam.py": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+        "t2d_foam_case.py": "ec2255af8e108d41eb5654a11899bbe2bf14da1c90a919b8fa62350410edb12d",
+        "t2d_multibody_case.py": "abf7f42d3354491b377b4842ddc6014739bf9b293674d9aba80b61bc82b18e98"
+      },
+      "index": 3,
+      "mesh_serialization": {
+        "coordinate_significant_digits": 13,
+        "max_allowed_node_displacement_m": 1e-12,
+        "max_node_displacement_m": 6.364096263238047e-13,
+        "mesh_msh_sha256": "97987c433eb232b06702a2b98a26cbaee0eb6ab862a4f783e21d231604d011f6",
+        "policy": "MSH2 node coordinates only; fixed significant decimal digits; connectivity and node order unchanged",
+        "raw_mesh_msh_sha256": "c27479a231b301e66d2ce5e18a0aaf1b5f0742be6ab97405890a3cab3435a193"
+      },
+      "mesh_sha256": "97987c433eb232b06702a2b98a26cbaee0eb6ab862a4f783e21d231604d011f6",
+      "options": {
+        "Mesh.Smoothing": 0
+      },
+      "output": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_/smoothing0-3",
+      "proxy_failures": [
+        "weight_lt0.05_faces",
+        "nonorth_max",
+        "weight_min",
+        "min_sicn"
+      ],
+      "quality": {
+        "aspect_ratio_max": 26.388631134016208,
+        "cells": 31794,
+        "det_lt1e-3_cells": 0,
+        "det_min": 0.002484866320182721,
+        "nonorth_gt70_faces": 18,
+        "nonorth_max": 76.77000187035569,
+        "skew_boundary_max": 0.17902500012780295,
+        "skew_gt4_faces": 0,
+        "skew_max": 2.5182757550244608,
+        "unused_nodes": 0,
+        "vol_ratio_lt0.01_faces": 0,
+        "vol_ratio_min": 0.031976790874407586,
+        "weight_lt0.05_faces": 38,
+        "weight_min": 0.03098595453855522,
+        "worst_xy_m": {
+          "aspect_ratio": [
+            0.224151,
+            0.11578
+          ],
+          "det": [
+            0.224151,
+            0.11578
+          ],
+          "nonorth": [
+            0.224193,
+            0.11729
+          ],
+          "vol_ratio": [
+            0.356854,
+            0.142141
+          ],
+          "weight": [
+            0.356854,
+            0.142141
+          ]
+        }
+      },
+      "returncode": 0,
+      "variant": "smoothing0",
+      "wall_s": 4.818106708000414
+    }
+  ],
+  "root": "/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/wp05-mesh-option-probes-9w354v6_",
+  "summary": {
+    "reposition0": {
+      "distinct_mesh_shas": 1,
+      "successful_processes": 4
+    },
+    "smoothing0": {
+      "distinct_mesh_shas": 2,
+      "successful_processes": 4
+    }
+  }
+}

@@ -1,0 +1,148 @@
+[
+  {
+    "bl_thickness_m": 0.0032208,
+    "check_mesh": {
+      "cells": 37754,
+      "diagnostic_lines": [],
+      "failed_check_counts": [],
+      "max_aspect_ratio": "4.2685435",
+      "max_non_orthogonality": "54.276422",
+      "max_skewness": "2.3987006",
+      "mesh_ok": true,
+      "min_determinant": "0.034175708",
+      "min_face_weight": "0.14761962",
+      "min_volume_ratio": "0.13512438",
+      "severe_non_orthogonal_faces": 0,
+      "unused_points": 0
+    },
+    "config": "E2_sharp",
+    "element_count": 2,
+    "fan_elements": [
+      0,
+      0
+    ],
+    "first_cell_airfoil_m": {
+      "median": 0.0006000000000005411,
+      "p05": 0.0005989175986520211,
+      "p95": 0.0006396288618141718
+    },
+    "force_values_finite": true,
+    "gmsh_min_sicn_tri": 0.31072334369205745,
+    "mesh_msh_sha256": "68af8c4906a0f27bb9dfd2c4202cb4d5f288029491a144500cbeff8c7ba49013",
+    "mesh_quality_failures": [],
+    "minimum_gap_m": 0.011433330448368141,
+    "n_layers": 4,
+    "quality": {
+      "aspect_ratio_max": 4.268543263915208,
+      "cells": 37754,
+      "det_lt1e-3_cells": 0,
+      "det_min": 0.03417570566287943,
+      "nonorth_gt70_faces": 0,
+      "nonorth_max": 54.276422402108125,
+      "skew_boundary_max": 0.41751507159629225,
+      "skew_gt4_faces": 0,
+      "skew_max": 0.6580470463259684,
+      "unused_nodes": 0,
+      "vol_ratio_lt0.01_faces": 0,
+      "vol_ratio_min": 0.1351243703764775,
+      "weight_lt0.05_faces": 0,
+      "weight_min": 0.14761961891260153,
+      "worst_xy_m": {
+        "aspect_ratio": [
+          0.110463,
+          0.12964
+        ],
+        "det": [
+          0.370326,
+          0.212423
+        ],
+        "nonorth": [
+          0.370197,
+          0.213884
+        ],
+        "vol_ratio": [
+          -0.002983,
+          0.119433
+        ],
+        "weight": [
+          -0.002983,
+          0.119433
+        ]
+      }
+    },
+    "solver_iterations": 200
+  },
+  {
+    "bl_thickness_m": 0.0032208,
+    "check_mesh": {
+      "cells": 37848,
+      "diagnostic_lines": [],
+      "failed_check_counts": [],
+      "max_aspect_ratio": "4.2685435",
+      "max_non_orthogonality": "54.664386",
+      "max_skewness": "1.7989068",
+      "mesh_ok": true,
+      "min_determinant": "0.050301549",
+      "min_face_weight": "0.1540403",
+      "min_volume_ratio": "0.14207175",
+      "severe_non_orthogonal_faces": 0,
+      "unused_points": 0
+    },
+    "config": "E2",
+    "element_count": 2,
+    "fan_elements": [
+      0,
+      0
+    ],
+    "first_cell_airfoil_m": {
+      "median": 0.0006000000000005952,
+      "p05": 0.0005990275287942611,
+      "p95": 0.0006404983244826005
+    },
+    "force_values_finite": true,
+    "gmsh_min_sicn_tri": 0.38199907665793625,
+    "mesh_msh_sha256": "adade07782c033a4617b0ed7558ab6f0c4d1103bfb7a787b0c1891e4f014fe68",
+    "mesh_quality_failures": [],
+    "minimum_gap_m": 0.008542107166877366,
+    "n_layers": 4,
+    "quality": {
+      "aspect_ratio_max": 4.268543263915208,
+      "cells": 37848,
+      "det_lt1e-3_cells": 0,
+      "det_min": 0.05030153261407956,
+      "nonorth_gt70_faces": 0,
+      "nonorth_max": 54.66438625961302,
+      "skew_boundary_max": 0.2520404450105779,
+      "skew_gt4_faces": 0,
+      "skew_max": 0.6138959327374454,
+      "unused_nodes": 0,
+      "vol_ratio_lt0.01_faces": 0,
+      "vol_ratio_min": 0.14207174330004096,
+      "weight_lt0.05_faces": 0,
+      "weight_min": 0.154040293887052,
+      "worst_xy_m": {
+        "aspect_ratio": [
+          0.110463,
+          0.12964
+        ],
+        "det": [
+          0.216111,
+          0.156038
+        ],
+        "nonorth": [
+          0.221794,
+          0.137939
+        ],
+        "vol_ratio": [
+          -0.002983,
+          0.119433
+        ],
+        "weight": [
+          -0.002983,
+          0.119433
+        ]
+      }
+    },
+    "solver_iterations": 200
+  }
+]

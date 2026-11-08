@@ -1,0 +1,69 @@
+{
+  "all_continued_ideal_hours": [
+    6.5,
+    10.5
+  ],
+  "assumption": "13-21 min envelope from registration7; summary attributes it to xfine30 and fine30 to6-11. No multibody timing measurement. setup/TR decision/ledger caps apply.",
+  "evidence_class": "DEVELOPMENT_PLANNING_ONLY",
+  "four_11h_session_waves_days": 1.8333333333333333,
+  "ideal_staged_hours": [
+    2.1666666666666665,
+    3.5
+  ],
+  "initial_solver_run_hours": [
+    34.666666666666664,
+    56.0
+  ],
+  "kernels_regenerated": false,
+  "staged_case_waves": 10,
+  "stages": [
+    {
+      "cost_estimate": {
+        "conservative_5000_min": 60,
+        "continuation_factor": 3,
+        "cpu_budget_h": 160,
+        "estimate_is_measurement": false,
+        "global_budget_accounting": "User must maintain the 160 CPU h study ledger across all sessions before launching and while running",
+        "global_budget_enforced": false,
+        "hard_session_hours": 11,
+        "historical_5000_min": [
+          13,
+          21
+        ],
+        "historical_source": "TOPO-2D-00 registration section 7",
+        "planning_wave_hours": 9,
+        "source_caveat": "T2-0 summary associates 13-21 min with xfine30, fine30 with 6-11; multibody timing is unmeasured",
+        "unconstrained_case_cap_total_h": 160.0
+      },
+      "kernel_count": 6,
+      "ready_for_execution": false,
+      "run_count": 64,
+      "stage": "tr00",
+      "waves_with_5_sessions": 2
+    },
+    {
+      "cost_estimate": {
+        "conservative_5000_min": 60,
+        "continuation_factor": 3,
+        "cpu_budget_h": 160,
+        "estimate_is_measurement": false,
+        "global_budget_accounting": "User must maintain the 160 CPU h study ledger across all sessions before launching and while running",
+        "global_budget_enforced": false,
+        "hard_session_hours": 11,
+        "historical_5000_min": [
+          13,
+          21
+        ],
+        "historical_source": "TOPO-2D-00 registration section 7",
+        "planning_wave_hours": 9,
+        "source_caveat": "T2-0 summary associates 13-21 min with xfine30, fine30 with 6-11; multibody timing is unmeasured",
+        "unconstrained_case_cap_total_h": 240.0
+      },
+      "kernel_count": 8,
+      "ready_for_execution": false,
+      "run_count": 96,
+      "stage": "main",
+      "waves_with_5_sessions": 2
+    }
+  ]
+}

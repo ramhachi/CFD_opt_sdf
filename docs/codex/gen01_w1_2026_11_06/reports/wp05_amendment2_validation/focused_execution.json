@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/topo2d00",
+    "-p",
+    "no:cacheprovider",
+    "--junitxml=docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment2_validation/focused.xml"
+  ],
+  "cwd": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-05-tr00-rans",
+  "ended_utc": "2026-11-07T10:15:20.573489+00:00",
+  "exit_code": 1,
+  "log": "docs/codex/gen01_w1_2026_11_06/reports/wp05_amendment2_validation/focused.log",
+  "started_utc": "2026-11-07T10:13:20.394377+00:00",
+  "status": "finished",
+  "wall_s": 120.17971370904706
+}

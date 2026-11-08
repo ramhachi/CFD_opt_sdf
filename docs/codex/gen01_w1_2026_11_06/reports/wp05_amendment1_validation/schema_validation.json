@@ -1,0 +1,48 @@
+{
+  "actual_physics_or_reference_validated": false,
+  "checks": [
+    {
+      "case": "distinct_meshes",
+      "passed": true,
+      "schema": "measurements"
+    },
+    {
+      "case": "distinct_meshes",
+      "passed": true,
+      "schema": "shared"
+    },
+    {
+      "case": "duplicate_meshes",
+      "passed": true,
+      "schema": "measurements"
+    },
+    {
+      "case": "duplicate_meshes",
+      "passed": true,
+      "schema": "shared"
+    },
+    {
+      "case": "total_selected_pressure_drifting",
+      "passed": true,
+      "schema": "measurements"
+    },
+    {
+      "case": "total_selected_pressure_drifting",
+      "passed": true,
+      "schema": "shared"
+    },
+    {
+      "case": "unknown_observable_rejected",
+      "passed": true,
+      "schema": "shared"
+    }
+  ],
+  "evidence_class": "SYNTHETIC_SCHEMA_VALIDATION",
+  "fixture_source_sha256": "f939b63bcafabd0f11e28d938688620378ecad404d7c7237c0a9db83c276c1c5",
+  "schema_sha256": {
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-05-tr00-rans/docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_measurement_schema.json": "636064a20ad9c0779da26a3a4d2f64c4efe8e50699587adfbea7a5760b6fafde",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-05-tr00-rans/docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_result_schema.json": "d96200bc9b706e5ce10f2222193a94ace0f0ef77d969622d61f05afbafe4d6be"
+  },
+  "validator": "jsonschema 4.26.0",
+  "validator_location": "/private/tmp/wp05-schema-validator (existing pip target; no install)"
+}

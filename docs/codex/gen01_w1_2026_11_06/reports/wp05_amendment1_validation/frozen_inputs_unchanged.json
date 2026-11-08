@@ -1,0 +1,108 @@
+{
+  "all_unchanged": true,
+  "base_commit": "e3dcdf6188df6079e197eb28f7fcba1451ec512d",
+  "files": [
+    {
+      "base_sha256": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+      "current_sha256": "23f98d6d1fac84a7eca85b18379374d03f5a5ac987c5b88a4e83b6edaabfcf69",
+      "path": "scripts/t20_case.py",
+      "unchanged": true
+    },
+    {
+      "base_sha256": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+      "current_sha256": "f1b34c38b9700a6b3ab1522343f787f1c3adf28102c7f3d8d2aafe4a2eba7c1e",
+      "path": "scripts/t20_foam.py",
+      "unchanged": true
+    },
+    {
+      "base_sha256": "156cd8416d3291a42704dc712f78ee62fef5ff9c60b5f552b3800d22a78bc5ad",
+      "current_sha256": "156cd8416d3291a42704dc712f78ee62fef5ff9c60b5f552b3800d22a78bc5ad",
+      "path": "scripts/t20c_case.py",
+      "unchanged": true
+    },
+    {
+      "base_sha256": "9b8b4aaf17a34443a84dad5b083bda69e8ec9b8cc9ca4bfd1f9ca00910df3f0f",
+      "current_sha256": "9b8b4aaf17a34443a84dad5b083bda69e8ec9b8cc9ca4bfd1f9ca00910df3f0f",
+      "path": "scripts/t20d_case.py",
+      "unchanged": true
+    },
+    {
+      "base_sha256": "482b0fa4a46e0b0e893f76b590af8e4e7196ce3c1e411f23be834fef87ccda57",
+      "current_sha256": "482b0fa4a46e0b0e893f76b590af8e4e7196ce3c1e411f23be834fef87ccda57",
+      "path": "scripts/build_t20b_kernel.py",
+      "unchanged": true
+    },
+    {
+      "base_sha256": "e53a0c8c5f8dffbdff3a19954f5488e2da84b39ce7d2ec0cce8ba7e234027739",
+      "current_sha256": "e53a0c8c5f8dffbdff3a19954f5488e2da84b39ce7d2ec0cce8ba7e234027739",
+      "path": "infra/kaggle/kernel_t20b_cpu/runner.py",
+      "unchanged": true
+    },
+    {
+      "base_sha256": "10fee253e6611141644b1c90a4e0854dbce99894a7038cfba801ad433d4be13d",
+      "current_sha256": "10fee253e6611141644b1c90a4e0854dbce99894a7038cfba801ad433d4be13d",
+      "path": "scripts/local_openfoam.py",
+      "unchanged": true
+    },
+    {
+      "base_sha256": "58418a11355ab4dce6e11abcedf8bfaf9d7ec029321e2abcb0b6b666bad467eb",
+      "current_sha256": "58418a11355ab4dce6e11abcedf8bfaf9d7ec029321e2abcb0b6b666bad467eb",
+      "path": "tests/conftest.py",
+      "unchanged": true
+    },
+    {
+      "base_sha256": "3b87123c43d0e6cafcc2bc37f7b62e70f6b52f4ca532216c1b3bc76459ad120e",
+      "current_sha256": "3b87123c43d0e6cafcc2bc37f7b62e70f6b52f4ca532216c1b3bc76459ad120e",
+      "path": "pyproject.toml",
+      "unchanged": true
+    },
+    {
+      "base_sha256": "e9bc9b97836e4d92a20027453aed2abc82981a25aafbbee70c7420731855cb23",
+      "current_sha256": "e9bc9b97836e4d92a20027453aed2abc82981a25aafbbee70c7420731855cb23",
+      "path": "docs/phase_plan.md",
+      "unchanged": true
+    },
+    {
+      "base_sha256": "8261732a99c4bf40856655e9aab46370d239dc7fa32fe4c458bbeca6a524bbc3",
+      "current_sha256": "8261732a99c4bf40856655e9aab46370d239dc7fa32fe4c458bbeca6a524bbc3",
+      "path": "docs/STATE.md",
+      "unchanged": true
+    },
+    {
+      "base_sha256": "edcbe927e097d0909c206e45819ed188f0d6093b1027237cf3e43dba01ed5efe",
+      "current_sha256": "edcbe927e097d0909c206e45819ed188f0d6093b1027237cf3e43dba01ed5efe",
+      "path": "docs/gen_system_plan_2026_11_01.md",
+      "unchanged": true
+    },
+    {
+      "base_sha256": "e9854c6330219352c21c516adf5fd3bac3219324c5d8a471ce5e3431c47dbb3a",
+      "current_sha256": "e9854c6330219352c21c516adf5fd3bac3219324c5d8a471ce5e3431c47dbb3a",
+      "path": "docs/topo2d00_registration_2026_11_01.md",
+      "unchanged": true
+    },
+    {
+      "base_sha256": "1c1a142c6f3de9469f3325341389f23fc9c570515ba92efae3a9dee053170038",
+      "current_sha256": "1c1a142c6f3de9469f3325341389f23fc9c570515ba92efae3a9dee053170038",
+      "path": "docs/local_openfoam_env_gate_2026_10_20.md",
+      "unchanged": true
+    },
+    {
+      "base_sha256": "ea6bb712e6552282640a1f852f5fef535a801c5842f13b1b1aed2b1b79588bd3",
+      "current_sha256": "ea6bb712e6552282640a1f852f5fef535a801c5842f13b1b1aed2b1b79588bd3",
+      "path": "docs/eval_valid01_reference_audit_2026_10_22.md",
+      "unchanged": true
+    },
+    {
+      "base_sha256": "98b8483fe945b7645164cec5bd561e40d774dec899a1bc9d9974f9e04bf4bb99",
+      "current_sha256": "98b8483fe945b7645164cec5bd561e40d774dec899a1bc9d9974f9e04bf4bb99",
+      "path": "docs/evidence/t20c_registered_2026_10_20/README.md",
+      "unchanged": true
+    },
+    {
+      "base_sha256": "2350bbbf7d16d0fdc65e2f6fd5c33b0be618e9f1df4327b4487a56498e105370",
+      "current_sha256": "2350bbbf7d16d0fdc65e2f6fd5c33b0be618e9f1df4327b4487a56498e105370",
+      "path": "docs/evidence/gen01_plan_2026_11_01/research/facts_for_w1_drafts.md",
+      "unchanged": true
+    }
+  ]
+}

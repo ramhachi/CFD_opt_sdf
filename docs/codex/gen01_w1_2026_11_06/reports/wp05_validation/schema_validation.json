@@ -1,0 +1,95 @@
+{
+  "actual_physics_or_reference_validated": false,
+  "actual_wp4_consumer": {
+    "component_declaration_matches_formal_expression": true,
+    "execution_binding": "Exact source bytes read once and compiled; no repeated live-source chase",
+    "path": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-04-topo2d-waterlily/scripts/topo2d00/analyze.py",
+    "scope": "Synthetic pressure histories/reference only. This does not exercise formal CLI study-freeze/harness validation and is not scientific qualification.",
+    "sha256": "704423d491d4b9cf0521b2cf8b0ae7d7417e2249cff661a425ffe7d268a3e8b2",
+    "synthetic_tr00_result": {
+      "cells": {
+        "sa-wf/fine30": {
+          "delta": {
+            "ci90": [
+              0.9499999999999997,
+              0.9499999999999997
+            ],
+            "df": 7,
+            "mean": 0.9499999999999997,
+            "n": 8,
+            "sd": 0.0,
+            "se": 0.0
+          },
+          "label": "TR00_PASS_RATIO",
+          "ratio_ci90": [
+            0.9999999999999998,
+            0.9999999999999998
+          ]
+        }
+      },
+      "qualified_cells": [
+        "sa-wf/fine30"
+      ]
+    },
+    "validate_input": "PASS"
+  },
+  "artifact_contract": {
+    "common_geometry_configs": [
+      "E1",
+      "E1_sharp",
+      "E2",
+      "E2_sharp",
+      "E3"
+    ],
+    "distinct_verified_absolute_records": 9,
+    "fragment_records": 0,
+    "freeze_scope": "Parent-owned study freeze remains external and was not created, inferred, or formally validated",
+    "geometry_scope": "Explicit synthetic SHA map; no geometry/physics qualification",
+    "result": "PASS",
+    "source_url_scope": "Explicit reserved synthetic URL; no invented production URL and no network verification",
+    "test_artifact_scope": "Temporary synthetic fixture files were verified before cleanup; these are not user reference data"
+  },
+  "evidence_class": "DEVELOPMENT_CONTRACT_AND_SYNTHETIC_ARITHMETIC",
+  "focused_tests": {
+    "command": ".venv/bin/python -m pytest -q tests/topo2d00/test_collect_rans.py tests/topo2d00/test_build_tr00_kernels.py",
+    "duration_s": 19.72,
+    "failed": 0,
+    "observation": "Previously observed 58 passed in 19.72 s; NOT rerun for this snapshot-only evidence refresh",
+    "passed": 58
+  },
+  "formal_cli_freeze_validation_exercised": false,
+  "implementation_sha256": {
+    "scripts/topo2d00/build_tr00_kernels.py": "4aed4acfed138accd3c0970c2dac0e591b9426a5f4f57fe51c3f57d2a39f767e",
+    "scripts/topo2d00/collect_rans.py": "4e8c6017c7850315fca9f16afd14bc1a896454930069127e3fa14d656f7c029c",
+    "scripts/topo2d00/digitize_cp.py": "73e24c0087505c380914df61f6e4827c961f16c4de8c60d4b589cb5543f0482e",
+    "scripts/topo2d00/run_rans.py": "35d672fc6119e4197ce4a70d6f4cd6a0d518d071fb25b645ad6ec4860226a0d5",
+    "tests/topo2d00/test_build_tr00_kernels.py": "d558dcc756c8d52d7ec2170888de3d9944657d3dcb3ddec9513c0aa10921a009",
+    "tests/topo2d00/test_collect_rans.py": "9c5dc7607713c0d08b0f7b3bb274c3702fbe70ce8d7fea70d8dc8783e8dcf4f7"
+  },
+  "schemas": [
+    {
+      "check_schema": "PASS",
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-05-tr00-rans/docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_measurement_schema.json",
+      "sha256": "525f390cd32feb079cf7edef938cffc229473325e00d99cfc225b940f3b91d17",
+      "synthetic_output_validation": "PASS"
+    },
+    {
+      "check_schema": "PASS",
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09-wp-05-tr00-rans/docs/codex/gen01_w1_2026_11_06/reports/topo2d00_rans_result_schema.json",
+      "sha256": "04ebcf764568f206071c2d81bf9a32318f0f3283c9cdae596e43f93f0a8016b4",
+      "synthetic_output_validation": "PASS"
+    }
+  ],
+  "source_tests_design_changed_for_refresh": false,
+  "standalone_only_refresh": true,
+  "standalone_validation_utc": "2026-11-06T07:07:10.076691+00:00",
+  "study_freeze_created": false,
+  "utc": "2026-11-06T06:43:34.564884+00:00",
+  "validator": {
+    "draft": "2020-12",
+    "library": "jsonschema",
+    "project_dependency_changed": false,
+    "temporary_install": "/private/tmp/wp05-schema-validator",
+    "version": "4.26.0"
+  }
+}
