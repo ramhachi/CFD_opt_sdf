@@ -1,0 +1,148 @@
+Precompiling packages...
+    995.8 ms  ✓ Preferences
+    672.6 ms  ✓ JLLWrappers
+   1730.9 ms  ✓ CUDA_Driver_jll
+  3 dependencies successfully precompiled in 3 seconds. 4 already precompiled.
+   Installed IrrationalConstants ─ v0.2.6
+   Installed GPUArraysCore ─────── v0.2.0
+   Installed Adapt ─────────────── v4.7.0
+   Installed EllipsisNotation ──── v1.12.0
+   Installed CUPTI ─────────────── v6.3.1
+   Installed NVML ──────────────── v6.3.1
+   Installed cuFFT ─────────────── v6.3.1
+   Installed Preferences ───────── v1.5.2
+   Installed LoggingExtras ─────── v1.2.0
+   Installed PrettyTables ──────── v3.4.8
+   Installed cuSOLVER ──────────── v6.3.1
+   Installed CUDA_Driver_jll ───── v13.3.4+0
+   Installed NaNMath ───────────── v1.1.4
+   Installed CUDACore ──────────── v6.3.1
+   Installed OrderedCollections ── v2.0.1
+   Installed StaticArrays ──────── v1.9.20
+   Installed CUDATools ─────────── v6.3.1
+   Installed CUDA_Compiler_jll ─── v0.6.2+0
+   Installed GPUCompiler ───────── v2.5.1
+   Installed BFloat16s ─────────── v0.6.1
+   Installed LMDB_jll ──────────── v1.0.0+0
+   Installed GPUToolbox ────────── v3.0.0
+   Installed WaterLily ─────────── v1.8.0
+   Installed CompilerCaching ───── v0.4.7
+   Installed cuSPARSE ──────────── v6.3.1
+   Installed CUDA_Runtime_jll ──── v0.24.4+2
+   Installed LogExpFunctions ───── v1.0.1
+   Installed ForwardDiff ───────── v1.4.5
+   Installed KernelAbstractions ── v0.9.42
+   Installed GPUArrays ─────────── v11.5.14
+   Installed StringManipulation ── v0.5.0
+   Installed cuRAND ────────────── v6.3.1
+   Installed Atomix ────────────── v1.1.3
+   Installed cuBLAS ────────────── v6.3.1
+   Installed CUDA ──────────────── v6.3.1
+   Installed LLVM ──────────────── v9.13.1
+  Installing 2 artifacts
+   Installed artifact LMDB               905.8 KiB
+   Installed artifact CUDA_Driver        145.9 MiB
+Precompiling packages...
+    962.0 ms  ✓ LLVMLoopInfo
+    912.2 ms  ✓ DataValueInterfaces
+   1366.1 ms  ✓ LaTeXStrings
+   1501.1 ms  ✓ AbstractFFTs
+    967.6 ms  ✓ Reexport
+   1517.2 ms  ✓ DocStringExtensions
+   1315.8 ms  ✓ ExprTools
+   1485.3 ms  ✓ Statistics
+    960.0 ms  ✓ IteratorInterfaceExtensions
+   1431.5 ms  ✓ Adapt
+   5047.8 ms  ✓ OrderedCollections
+   1246.3 ms  ✓ DataAPI
+   5012.6 ms  ✓ ConstructionBase
+   6868.3 ms  ✓ IrrationalConstants
+   6635.5 ms  ✓ UnsafeAtomics
+   5204.1 ms  ✓ BFloat16s
+   7346.0 ms  ✓ Crayons
+   2644.5 ms  ✓ RandomNumbers
+   4531.6 ms  ✓ CEnum
+   1160.6 ms  ✓ StaticArraysCore
+   1330.8 ms  ✓ HashArrayMappedTries
+   1357.2 ms  ✓ Scratch
+   5288.9 ms  ✓ CUDA_Runtime_Discovery
+   2460.8 ms  ✓ Requires
+   1381.2 ms  ✓ LoggingExtras
+  10738.8 ms  ✓ MacroTools
+   2197.2 ms  ✓ Preferences
+   2206.9 ms  ✓ Statistics → SparseArraysExt
+   1059.2 ms  ✓ TableTraits
+   5575.5 ms  ✓ NaNMath
+    897.6 ms  ✓ ConstructionBase → ConstructionBaseLinearAlgebraExt
+   1471.3 ms  ✓ GPUArraysCore
+   1499.9 ms  ✓ LogExpFunctions
+   1889.4 ms  ✓ Adapt → AdaptSparseArraysExt
+   1407.7 ms  ✓ Atomix
+   1070.6 ms  ✓ DiffResults
+   1077.0 ms  ✓ ScopedValues
+   1086.2 ms  ✓ PrecompileTools
+   1340.2 ms  ✓ CommonSubexpressions
+   2673.4 ms  ✓ Random123
+   1364.5 ms  ✓ JLLWrappers
+   1668.7 ms  ✓ NVTX_jll
+   7302.2 ms  ✓ Tables
+   8808.4 ms  ✓ EllipsisNotation
+   2268.1 ms  ✓ LibTracyClient_jll
+   8237.1 ms  ✓ CUDA_Driver_jll
+   2080.9 ms  ✓ JuliaNVTXCallbacks_jll
+   2075.0 ms  ✓ tree_sitter_spirv_jll
+   2377.2 ms  ✓ LMDB_jll
+   4171.3 ms  ✓ LLVMExtra_jll
+  13034.6 ms  ✓ StringManipulation
+   1681.3 ms  ✓ NVPTX_LLVM_Backend_jll
+   1873.5 ms  ✓ tree_sitter_llvm_jll
+   1733.7 ms  ✓ tree_sitter_gcn_jll
+   1703.9 ms  ✓ demumble_jll
+   1630.6 ms  ✓ tree_sitter_ptx_jll
+   2133.9 ms  ✓ OpenSpecFun_jll
+   2150.9 ms  ✓ Tracy
+   2673.0 ms  ✓ NVTX
+   2917.9 ms  ✓ LMDB
+   6274.8 ms  ✓ CUDA_Compiler_jll
+   2094.8 ms  ✓ CompilerCaching
+   8248.6 ms  ✓ SpecialFunctions
+  29460.9 ms  ✓ StaticArrays
+   1838.6 ms  ✓ DiffRules
+   6800.7 ms  ✓ CUDA_Runtime_jll
+   1462.0 ms  ✓ Adapt → AdaptStaticArraysExt
+   1800.7 ms  ✓ StaticArrays → StaticArraysStatisticsExt
+   1570.2 ms  ✓ ConstructionBase → ConstructionBaseStaticArraysExt
+  24364.1 ms  ✓ LLVM
+  11700.1 ms  ✓ ForwardDiff
+  11809.3 ms  ✓ KernelAbstractions
+   3424.6 ms  ✓ LLVM → BFloat16sExt
+   4005.2 ms  ✓ GPUToolbox
+   1953.1 ms  ✓ ForwardDiff → ForwardDiffStaticArraysExt
+   4623.8 ms  ✓ UnsafeAtomics → UnsafeAtomicsLLVM
+   2408.0 ms  ✓ KernelAbstractions → SparseArraysExt
+   1556.1 ms  ✓ KernelAbstractions → LinearAlgebraExt
+  10179.1 ms  ✓ WaterLily
+  12402.9 ms  ✓ GPUArrays
+  67279.5 ms  ✓ PrettyTables
+  82394.4 ms  ✓ GPUCompiler
+  99621.4 ms  ✓ CUDACore
+  10875.9 ms  ✓ CUDACore → SpecialFunctionsExt
+  13214.9 ms  ✓ cuFFT
+  16619.2 ms  ✓ cuRAND
+  16897.9 ms  ✓ NVML
+  20040.5 ms  ✓ CUPTI
+  17759.2 ms  ✓ cuSPARSE
+  22340.1 ms  ✓ cuBLAS
+  29186.3 ms  ✓ CUDATools
+  14831.0 ms  ✓ cuSOLVER
+   8190.6 ms  ✓ CUDA
+   8104.4 ms  ✓ Atomix → AtomixCUDAExt
+   8582.4 ms  ✓ WaterLily → WaterLilyCUDAExt
+  95 dependencies successfully precompiled in 316 seconds. 34 already precompiled.
+  1 dependency had output during precompilation:
+┌ WaterLily
+│  ┌ Warning: Using WaterLily in serial (ie. JULIA_NUM_THREADS=1) is not recommended because it defaults to serial CPU execution.
+│  │ Use JULIA_NUM_THREADS=auto, or any number of threads greater than 1, to allow multi-threading in CPU backends.
+│  │ For a low-overhead single-threaded CPU only backend set: WaterLily.set_backend("SIMD")
+│  └ @ WaterLily ~/.julia/packages/WaterLily/yOkji/src/WaterLily.jl:206
+└  
