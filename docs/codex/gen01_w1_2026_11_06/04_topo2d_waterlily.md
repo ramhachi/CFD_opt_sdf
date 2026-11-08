@@ -48,3 +48,63 @@ Zhang & Zerihan（2003）の 2 要素の地面効果翼から 1／2／3 要素�
 ## やらないこと
 
 - GPU 実行、Kaggle、RANS 側（WP5）、仕様の閾値の変更（4Δx、[0.5, 2]、α 0.05 は仕様の値）、既存 job の編集。
+
+## Amendment 1（2026-11-06。WP5 の Opus review（`docs/codex/gen01_w1_2026_11_06/reviews/wp05_review_1_opus.md`、follow-ups branch）から先回りで決めた点。1 回目の試みが終わった後の 2 回目に適用する。この節が本文より優先する）
+
+1. **幾何の密度。** 要素の多角形は、Zerihan の表の座標を補間 spline で **弧長 ≤ 1 mm** に再標本化したもの（T2-0 の `t20_case.airfoil_points` と同じ規則。可能ならその関数を import して使う）。WP5 の kernel に入った開発 snapshot はフラップが 36 頂点で前縁に 55° の折れがあり、RANS（Re 4.6e5）でも BDIM でも許容できない。cap 以外の頂点の折れ角 ≤ 5° をテストで確認する。幾何ファイル（JSON、SHA-256）が W と R の唯一の出所。
+2. **observable。** 共有結果形式と analyzer に `observable`（`pressure_cl`：sharp 腕、Cp 積分との比較／`total_cl`：thick 腕、WaterLily との比較）を足し、analyzer は observable をまたぐ差分を拒否する。h は h/c₁ と h/c（c = 380 mm）の両方。
+3. 登録文書の Amendment 1（`docs/topo2d00_registration_2026_11_01.md`、follow-ups branch）を読む。
+
+## Amendment 2（2026-11-06。1 回目の試み（PARTIAL、Draft PR #89、`88fea06e`）への回答。Amendment 1 と合わせて適用する。この節が本文より優先する）
+
+1. **`src/cfd_sdf/` は登録済みの source closure**（`scripts/analyze_grid02.py` と `analyze_lowdim03.py` が現在の tree から `src/cfd_sdf/**/*.py` を列挙して凍結 `file_hashes` に含まれることを要求する。1 回目の残り 2 件はこれ）。歴史テストの例外は不要・不許可。**`src/cfd_sdf/topo2d/` を `src/cfd_gen/topo2d/` に移す**（WP6 も `src/cfd_gen/scene/` を使う。`src/cfd_gen/__init__.py` と `README.md` は WP6 が作るので、存在しなければ同じ 2〜3 行の README を作る）。`src/cfd_sdf/` に 1 byte も残さない。
+2. **Julia の置き場所**：`julia/topo2d/Topo2D.jl` を **`julia/CFDSDFWaterLily/gen01/Topo2D.jl`** に移す（README の規則。WP1 の `gen01/Checkpoint.jl` と同じ場所。job から `Base.include(CFDSDFWaterLily, …)` で読む）。
+3. **Amendment 1 を適用する**：表の座標を補間 spline で弧長 ≤ 1 mm に再標本化（`t20_case.airfoil_points` と同じ規則。import できればそれを使う）。厚くする生成器は頂点番号ではなく **弧長**で書き直す（前縁 cap は LE から弧長 2 % c、smoothstep で最大厚さ位置へ、以後 4Δx）。cap 以外の頂点の折れ角 ≤ 5° をテストする。scene JSON を再生成し、図も更新する。
+4. **datum の判断は登録文書の Amendment 2**（`.../github-local-status-review-66bea1/docs/topo2d00_registration_2026_11_01.md`、Amendment 1 と 2 を読む）。1 回目の解釈（公称 9／12 mm の後配置、TE 中点基準、c と迎角の記録、`mathematically_sharp=false`）はそのまま採用された。
+5. **observable**：共有 RANS 形式に `observable`（`pressure_cl`／`total_cl`）を足し、analyzer は observable をまたぐ差分を拒否する。WP5 の 2 回目が同じ登録文（Amendment 1 §5）から同じ schema を更新中なので、WP4 の schema ファイルは登録文の定義だけに従い、WP5 との byte 一致は Claude が統合時に揃える。
+6. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。base は Claude の host 実行（e3dcdf61、3482 passed / 74 skipped / 0 failed）。
+7. **commit／push は Claude が host で行う。** `/tmp` の clone は使わない。報告に commit すべきファイルの完全な一覧（移動元→移動先、変更、新規）を書く。worktree は `88fea06e` に同期済み。PR #89 の本文は Claude が更新する。
+
+## Amendment 3（2026-11-07。2 回目（PR #89、`ba3164c7`）への回答。Amendment 1・2 の上に適用する。この節が本文より優先する）
+
+1. **sliver。** 再標本化した多角形に 5.6 µm の線分がある（WP5 の review が (27.3, 127.1) mm 付近で検出。`polygon_mm` の最小線分は 0）。登録 Amendment 3 §1 の規則に合わせる：線分長 ∈ [0.1 mm, 1 mm]、折れ角 ≤ 5°（cap 2 頂点のみ免除）、隣接線分比 ≤ 3、閉じる線分は隣に併合（終点の重複なし）。`geometry.py` の gate と `tests/topo2d00/test_geometry.py` に 4 条件を足し、全 10 scene を再生成して図を更新する。
+2. **cell state の順序**を `INCOMPLETE > MESH_FAILED > NUMERICAL > SETTLED` に（WP5 と共通）。
+3. **高さ。** `E1_h80.json` が `E1` として読まれ export が 100 mm を hard-code している。scene JSON の高さを唯一の出所にし、export と campaign はそれを使う。宣言した高さと scene の高さが違えば拒否。
+4. **`CONCORDANT_PARTIAL`**：登録 Amendment 3 §5 の定義（SIGN_AGREE_12 が片方の Re だけ真、RANK_AGREE は両側 resolved の範囲で真）に analyzer と checker を合わせ、8 ラベルの到達性テストを更新する。
+5. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。
+6. **commit／push は Claude が host で行う。** worktree は `ba3164c7`。報告に commit すべきファイルの一覧を書く。
+
+## Amendment 4（2026-11-07。3 回目（PR #89、host commit 済み）の保留点への回答。小さな追加のみ。Opus review の後に適用する）
+
+1. **`CONCORDANT_PARTIAL`**：登録 Amendment 4 §2 のとおり、優先順位はそのまま（UNRESOLVED が先）。到達するのは「片方の Re で SIGN_AGREE_12 が真、もう片方では両側 resolved で符号が逆、RANK_AGREE は両側 resolved の範囲で真」のケース。WP4 が提案した「片方未解決なら PARTIAL」は採らない。analyzer と checker にこの正確なケースの到達性テストを足す（判定コードの変更が不要ならテストだけ）。
+2. **多角形の表現**：登録 Amendment 4 §1（終点を重複しない開いた頂点列、閉じる辺は暗黙、重複は拒否）を JSON schema と docstring に明記する。
+3. 全体 pytest は不要（テストと docstring だけ）。commit は Claude が host で行う。
+
+## Amendment 5（2026-11-07。3 回目（PR #89、`fae6c0a8`）への Opus source review の回答。Amendment 4 の `CONCORDANT_PARTIAL` 項は撤回し、登録 Amendment 5 に従う。この節が本文と Amendment 1〜4 より優先する）
+
+review 全文：`/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/codex/gen01_w1_2026_11_06/reviews/wp04_review_1_opus.md`。登録の判断は同じ worktree の `docs/topo2d00_registration_2026_11_01.md` **Amendment 5**（読む）。verdict は INTEGRATE_AFTER_FIXES。
+
+1. **M1。** `sim_step!(sim; remeasure=false)` に変更し、CPU で remeasure=true との bit 一致テストを足す。fingerprint の項目を更新。
+2. **m2。** runner の環境を scrub（`TOPO2D_*`、`W4_*`、`CUDA_*` を落としてから campaign の `job_env_common`／`job_env_keys`／`scrub_env` を適用）。smoke で `TOPO2D_DIMS` が格子を変えないテスト。
+3. **m4。** worktree は統合 branch（WP1 の `gen01/Checkpoint.jl`、WP3）と merge 済み。自己テストは **branch 内の** `gen01/Checkpoint.jl` を使い、環境変数なしで WP1 の経路を含めて走らせる（WP2 の `Force00.jl` は未統合なので、無ければ cur のみの経路で、記録にその旨を書く）。記録するコマンドに環境を含める。
+4. **B1。** 登録 Amendment 5 §1 の per-Re 規則（UNRESOLVED／DISCORDANT／CONCORDANT を Re ごとに判定し、両方 concordant → CONCORDANT、片方 concordant 片方 discordant → CONCORDANT_PARTIAL、両方 discordant → DISCORDANT、どちらか unresolved → UNRESOLVED）を analyzer と checker に実装し、review の反例 (c) が `CONCORDANT_PARTIAL` になる到達性テストと、8 ラベル全部の到達性テストを更新する。
+5. **M3。** σ_d を点推定（A と B の大きい方）に戻し、区間は自由度 P−1 の 90 % t。上側信頼限界と Bonferroni の分割を外す。DOMAIN control（P=2）が無力でないことをテストで示す。
+6. **M2。** 親 pre-run：campaign に Re ごとの E1 pre-run state（主格子、phase 0、520 c₁/U）を足し、`scripts/topo2d00/prerun_window.py` が登録 Amendment 5 §4 の burn-in／S0／W を計算して `docs/harness/topo2d00_window_re<Re>.json` を 1 回だけ書く（単位を明記）。formal campaign はこの記録（hash 束縛）から W と B を読み、手入力の `formal_context` は拒否する。合成時系列（既知の S0）でテスト。
+7. **m1。** 研究ラベルへの写像（登録 Amendment 5 §2）：cell INCOMPLETE → INCOMPLETE、MESH_FAILED／NUMERICAL → NUMERICAL、研究レベルでは §5 の順（NUMERICAL が INCOMPLETE より先）。
+8. **m3。** E3 の半フラップの鼻（t_max < t_min）の数値を報告と scene の metadata に書く（幾何は変えない）。
+9. **m5／m6／m7／m8／NOTE 3。** `tr00.json` と `SHA256SUMS` を書く；freeze 経路は `UNVERIFIED_OCR` を拒否；TR-00 参照増分と不確かさは凍結 digitisation 記録から再計算（内容レベルの相違検査）；Δt 崩壊は NUMERICAL；numerical stop の key に height と role を含める。
+10. **m9。** tuple union の `isbitstype` を CPU 側で検査するテスト。
+11. **多角形の表現**（Amendment 4 §2 のまま）：schema と docstring に明記。
+12. **全体 pytest**：結果側だけを `--ignore=tests/test_lbm_metal.py -q -rf -p no:cacheprovider` で完走させ、失敗 node 集合（期待：空）を報告に書く。
+13. **commit／push は Claude が host で行う。** 報告に commit すべきファイルの一覧を書く。GPU smoke は user の機材で後で行う（review の条件を報告の runbook に書く）。
+
+## Amendment 6（2026-11-07。4 回目（PR #89、`0741a474`）への 2 回目の Opus review の回答。round-1 の B1／M1／M3 と minors は closed、M2 は partial。この節が本文と Amendment 1〜5 より優先する）
+
+review 全文：`/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/github-local-status-review-66bea1/docs/codex/gen01_w1_2026_11_06/reviews/wp04_review_2_opus.md`。登録の判断は同じ worktree の `docs/topo2d00_registration_2026_11_01.md` **Amendment 7**（読む）。
+
+1. **N1。** 順位比較は両側で resolved な対だけ。W か R の点順位が非単調（E2 が最良／最悪）なら E1↔E3 の差も両側で required（未解決なら UNRESOLVED）。review の (h′)（E1↔E3 が雑音レベル）が DISCORDANT ではなく UNRESOLVED になるテストと、resolved な対の逆順が DISCORDANT になるテスト。analyzer と checker の両方。
+2. **N2。** `prerun_window.py` を登録 Amendment 7 §2 に書き直す：burn-in の候補は最初のサンプル時刻から 50 c₁/U 刻み、判定は ±2 SE（SE は残り部分の block 20 c₁/U の batch-means SE）、≥ 80、fallback は 130 c₁/U で `BURN_IN_FALLBACK`；S0 は L ∈ {10, 20, 40} の点推定の最大（χ² 上限なし）；W は 50 の倍数で 400 で clip（`WINDOW_CAPPED`）、拒否しない。`scene_campaign.parent_window` の > 400 拒否を clip に変える。**合成 AR(1)（既知 S0、200 seed）で拒否率 0、W の中央値が真値＋50 c₁/U 以内（50 刻みの切り上げ 1 段）**を示すテストを足す（review の表と同じ設定。2026-11-07 訂正：真値 50 では切り上げの粒度で中央値 100 になるので「1.5 倍以内」は不適切。登録式はそのまま）。WP2 統合後に最初のサンプルが step 1 の後に来ても B の候補が成立することをテスト。
+3. **N3。** DOMAIN control は記述のみ：不完全・timeout・単一位相の DOMAIN state は `DOMAIN_NOT_JUDGED` とし、解析全体を拒否しない。analyzer と checker を揃えてテスト。
+4. **NOTE 2。** GPU smoke の runbook に「force sample あたりの wall」を足す。
+5. 重点テスト（tests/topo2d00）と Julia 自己テストを回す。全体 pytest は **不要**（変更は analyzer／checker／prerun／campaign とテストだけ。job と幾何は触らない）。
+6. **commit／push は Claude が host で行う。** worktree は `0741a474`。報告に commit すべきファイルの一覧を書く。

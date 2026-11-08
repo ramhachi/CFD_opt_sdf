@@ -1,0 +1,157 @@
+{
+  "boundary_witness": {
+    "boundary_phi_m": 0.0,
+    "boundary_point_m": [
+      0.242,
+      0.0,
+      0.05990773333333334
+    ],
+    "distance_upper_bound_m": 0.0408826350235783,
+    "point_m": [
+      0.25,
+      0.0,
+      0.1
+    ],
+    "source_phi_m": 0.04166666666666667
+  },
+  "evidence_class": "solver_free_development_diagnostic",
+  "finite_difference_step_m": 1e-06,
+  "numpy_version": "2.5.2",
+  "probe_sha256": "707c93c89cf6fbdcc5eed748c15ff4a2a7e14ee701a13b637891406323df4029",
+  "samples": [
+    {
+      "analytic_gradient_norm": 1.0,
+      "gradient": [
+        0.0,
+        0.0,
+        1.000000000001
+      ],
+      "gradient_norm": 1.000000000001,
+      "name": "flat_control",
+      "parameters": {
+        "L": 1.0,
+        "alpha": 0.0,
+        "camber": 0.0,
+        "reflex": 0.0,
+        "t": 0.1,
+        "xc": 0.0,
+        "y_tip": 0.5,
+        "zc": 0.0
+      },
+      "phi_m": 0.05,
+      "point_m": [
+        0.25,
+        0.0,
+        0.1
+      ]
+    },
+    {
+      "analytic_gradient_norm": 1.019803902718557,
+      "gradient": [
+        0.19999999999881224,
+        0.0,
+        1.000000000001
+      ],
+      "gradient_norm": 1.0198039027193047,
+      "name": "camber",
+      "parameters": {
+        "L": 1.0,
+        "alpha": 0.0,
+        "camber": 0.1,
+        "reflex": 0.0,
+        "t": 0.1,
+        "xc": 0.0,
+        "y_tip": 0.5,
+        "zc": 0.0
+      },
+      "phi_m": 0.04166666666666667,
+      "point_m": [
+        0.25,
+        0.0,
+        0.1
+      ]
+    },
+    {
+      "analytic_gradient_norm": 1.0071742649611337,
+      "gradient": [
+        -0.11999999999234845,
+        0.0,
+        1.000000000001
+      ],
+      "gradient_norm": 1.007174264961215,
+      "name": "reflex",
+      "parameters": {
+        "L": 1.0,
+        "alpha": 0.0,
+        "camber": 0.0,
+        "reflex": 0.1,
+        "t": 0.1,
+        "xc": 0.0,
+        "y_tip": 0.5,
+        "zc": 0.0
+      },
+      "phi_m": 0.05,
+      "point_m": [
+        0.0,
+        0.0,
+        0.1
+      ]
+    },
+    {
+      "analytic_gradient_norm": 1.0261091559868278,
+      "gradient": [
+        0.23000000000383825,
+        0.0,
+        1.000000000001
+      ],
+      "gradient_norm": 1.0261091559886628,
+      "name": "combined",
+      "parameters": {
+        "L": 1.0,
+        "alpha": 0.0,
+        "camber": 0.1,
+        "reflex": 0.1,
+        "t": 0.1,
+        "xc": 0.0,
+        "y_tip": 0.5,
+        "zc": 0.0
+      },
+      "phi_m": 0.02416666666666667,
+      "point_m": [
+        0.25,
+        0.0,
+        0.1
+      ]
+    },
+    {
+      "analytic_gradient_norm": 1.019803902718557,
+      "gradient": [
+        0.19999999999881224,
+        0.0,
+        1.000000000001
+      ],
+      "gradient_norm": 1.0198039027193047,
+      "name": "camber_on_surface",
+      "parameters": {
+        "L": 1.0,
+        "alpha": 0.0,
+        "camber": 0.1,
+        "reflex": 0.0,
+        "t": 0.1,
+        "xc": 0.0,
+        "y_tip": 0.5,
+        "zc": 0.0
+      },
+      "phi_m": 0.0,
+      "point_m": [
+        0.25,
+        0.0,
+        0.058333333333333334
+      ]
+    }
+  ],
+  "scope": "negative preflight only; neither scene acceptance nor topology/physics qualification",
+  "source_path": "scripts/v18_plate.py",
+  "source_sha256": "4641c2f4cc06135825a67cb32a07dcb2a60adb6462a7d0b6149926d3812c6df7",
+  "status": "CONTRACT_CONFLICT_CONFIRMED"
+}
