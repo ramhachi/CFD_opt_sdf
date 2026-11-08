@@ -1,0 +1,12 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "-m",
+    "compileall",
+    "src",
+    "tests"
+  ],
+  "evidence_class": "CPU development validation; no GPU measurement",
+  "exit_code": 0,
+  "wall_seconds_including_process_start_and_jit": 0.14931499992962927
+}

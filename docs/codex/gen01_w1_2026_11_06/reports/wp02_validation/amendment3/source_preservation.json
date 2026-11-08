@@ -1,0 +1,30 @@
+{
+  "baseline_commit": "e3dcdf61",
+  "current_head": "afac79ed177f774965be07460b2b66bfc3bcf943",
+  "git_diff_e3dcdf61_src_empty": true,
+  "job_diff_byte_identical_to_fresh_no_index": true,
+  "production_evidence_root_absent": true,
+  "src_file_set_and_bytes_identical": true,
+  "src_tree_file_count": 13,
+  "status": "PASS",
+  "unchanged_file_sha256": {
+    "julia/CFDSDFWaterLily/Manifest.toml": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    "julia/CFDSDFWaterLily/Project.toml": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+    "julia/CFDSDFWaterLily/src/CFDSDFWaterLily.jl": "996224432490df72726e208ad36d1a68657b506ba4058d79a0f9eb72154d4e9e",
+    "julia/CFDSDFWaterLily/src/CandidateCWaterLilyBody.jl": "2a4b056a1a4a23dc5699ad340faed8ad35bfab4c103302169a93150feedd04c6",
+    "julia/CFDSDFWaterLily/src/DeviceGridSDF.jl": "2f02c840f4fad5ba5d26d42f4c24bc83f413502b15487427a7dc52f06a80a874",
+    "julia/CFDSDFWaterLily/src/Forces.jl": "0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e",
+    "julia/CFDSDFWaterLily/src/GridSDFBody.jl": "fa6aecccecbf140158396c9c8e5f3a6c16d3810f792ba45b9c8f4ee481709058",
+    "julia/CFDSDFWaterLily/src/OwnedV16Run.jl": "695872cbc31a35fee222c6304e51daa7a193a8dee2c64438ea51b8af658e35fe",
+    "julia/CFDSDFWaterLily/src/Runtime.jl": "bd830f7f307f7bd5de67642b4e9243ae5586959fd475765b13ef14d19637d458",
+    "julia/CFDSDFWaterLily/src/Simulation.jl": "99cfc7a30741c17b7e83f4451270e0536e336dd2c79cc1f904492910e8588cc2",
+    "julia/CFDSDFWaterLily/src/SurfaceFluxQuadrature.jl": "907be4b5fad43636e32f9d37d5f8fce8f46f0962a409a422f2d8b5af79c03cbc",
+    "julia/CFDSDFWaterLily/src/V16PhysicalProfile.jl": "17011858795ab6521c5ed4eed2702c5553fbc97fbf97d1bf88b370c18851b1be",
+    "julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl": "f5e6a4743e4d115bb88c0832f1dfe688f2789d8c78f1a3f919b67a7fbc8353a0",
+    "julia/CFDSDFWaterLily/src/WaterLilyBody.jl": "e5b9329fbf29bc86fa1eb1a5481b255535e255e04418d0d2582f1d33e42df369",
+    "julia/CFDSDFWaterLily/src/WaterLilyNormalFloorBody.jl": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf",
+    "scripts/waterlily_lowdim02_flow32_job.jl": "418796ce258e8f9e9945332d18869104a53f74000a96b609d4f4b42c82a21683",
+    "tests/conftest.py": "58418a11355ab4dce6e11abcedf8bfaf9d7ec029321e2abcb0b6b666bad467eb"
+  },
+  "venv_link_target": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv"
+}

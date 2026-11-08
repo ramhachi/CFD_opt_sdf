@@ -1,0 +1,20 @@
+{
+  "base_commit": "e3dcdf61",
+  "base_tree_sha256": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+  "changed_existing_files": [],
+  "extra_files": [
+    "Force00.jl"
+  ],
+  "feature_tree_sha256": "63cf94233f102cd301e9a19ad380c6722257ebdb901e0a5c4a8ae79cd7496cf3",
+  "frozen_record": "docs/evidence/grad03_g2_diag5_one_step_gain_2026_10_09/prerun_freeze.json",
+  "missing_files": [],
+  "path": "julia/CFDSDFWaterLily/src",
+  "pin_source": "scripts/run_grad_g2_diag5_local.py:sha256",
+  "proposed_resolution": "Move only the new opt-in file to julia/CFDSDFWaterLily/force00/Force00.jl, retaining numerical bytes and explicit Base.include.",
+  "registered_tree_sha256": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+  "schema": "force00_full_tree_pin_conflict_v1",
+  "scope": "File-level pins are preserved, but adding a new file changes the registered full-tree pin. No freeze, test or runner has been changed.",
+  "status": "ADDITIONAL_SOURCE_TREE_PIN_FAILURE",
+  "test_id": "tests/test_grad_g2_diag5_prereg.py::test_driver_pins_agree_with_the_freeze",
+  "user_clarification": "Requested asynchronously; not yet answered."
+}

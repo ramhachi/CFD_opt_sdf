@@ -1,0 +1,204 @@
+{
+  "all_20_registered_references_verified": true,
+  "closure": {
+    "R_cur": {
+      "groups": {
+        "U1/flow_24": {
+          "count": 40,
+          "hundredfold_reduction_descriptive": false,
+          "max_norm": 20.032020200933726,
+          "max_relative_to_projected_area": 0.02086405667855183,
+          "pass": false,
+          "reduction_factor_vs_cur": 1.0,
+          "relative_threshold": 0.0001,
+          "rms_norm": 12.982502160786142
+        },
+        "U1/flow_32": {
+          "count": 40,
+          "hundredfold_reduction_descriptive": false,
+          "max_norm": 33.52205717381142,
+          "max_relative_to_projected_area": 0.01963935378385821,
+          "pass": false,
+          "reduction_factor_vs_cur": 1.0,
+          "relative_threshold": 0.0001,
+          "rms_norm": 23.093060121110156
+        },
+        "U2/16": {
+          "count": 8,
+          "hundredfold_reduction_descriptive": false,
+          "max_norm": 0.938702754658205,
+          "max_relative_to_projected_area": 0.0011671811210768126,
+          "pass": false,
+          "reduction_factor_vs_cur": 1.0,
+          "relative_threshold": 0.001,
+          "rms_norm": 0.892755356430639
+        },
+        "U2/32": {
+          "count": 8,
+          "hundredfold_reduction_descriptive": false,
+          "max_norm": 0.447844477824882,
+          "max_relative_to_projected_area": 0.00013921223121530991,
+          "pass": true,
+          "reduction_factor_vs_cur": 1.0,
+          "relative_threshold": 0.001,
+          "rms_norm": 0.33707141539549773
+        },
+        "U2/8": {
+          "count": 8,
+          "hundredfold_reduction_descriptive": false,
+          "max_norm": 0.23750021698444648,
+          "max_relative_to_projected_area": 0.0011812291724522617,
+          "pass": false,
+          "reduction_factor_vs_cur": 1.0,
+          "relative_threshold": 0.001,
+          "rms_norm": 0.20498709074600302
+        }
+      },
+      "status": "FAIL_CLOSURE"
+    },
+    "R_cv": {
+      "groups": {
+        "U1/flow_24": {
+          "count": 40,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 0.0,
+          "max_relative_to_projected_area": 0.0,
+          "pass": true,
+          "reduction_factor_vs_cur": null,
+          "relative_threshold": 0.0001,
+          "rms_norm": 0.0
+        },
+        "U1/flow_32": {
+          "count": 40,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 0.0,
+          "max_relative_to_projected_area": 0.0,
+          "pass": true,
+          "reduction_factor_vs_cur": null,
+          "relative_threshold": 0.0001,
+          "rms_norm": 0.0
+        },
+        "U2/16": {
+          "count": 8,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 0.0,
+          "max_relative_to_projected_area": 0.0,
+          "pass": true,
+          "reduction_factor_vs_cur": null,
+          "relative_threshold": 0.001,
+          "rms_norm": 0.0
+        },
+        "U2/32": {
+          "count": 8,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 0.0,
+          "max_relative_to_projected_area": 0.0,
+          "pass": true,
+          "reduction_factor_vs_cur": null,
+          "relative_threshold": 0.001,
+          "rms_norm": 0.0
+        },
+        "U2/8": {
+          "count": 8,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 0.0,
+          "max_relative_to_projected_area": 0.0,
+          "pass": true,
+          "reduction_factor_vs_cur": null,
+          "relative_threshold": 0.001,
+          "rms_norm": 0.0
+        }
+      },
+      "status": "PASS"
+    },
+    "R_nds": {
+      "groups": {
+        "U1/flow_24": {
+          "count": 40,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 1.1608925366079802e-13,
+          "max_relative_to_projected_area": 1.2091105858792878e-16,
+          "pass": true,
+          "reduction_factor_vs_cur": 172557059066512.9,
+          "relative_threshold": 0.0001,
+          "rms_norm": 4.711629669390523e-14
+        },
+        "U1/flow_32": {
+          "count": 40,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 1.8392412655928278e-13,
+          "max_relative_to_projected_area": 1.0775445469100873e-16,
+          "pass": true,
+          "reduction_factor_vs_cur": 182260249380640.78,
+          "relative_threshold": 0.0001,
+          "rms_norm": 9.424932044270335e-14
+        },
+        "U2/16": {
+          "count": 8,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 1.5583775705348016e-13,
+          "max_relative_to_projected_area": 1.9376835433918161e-16,
+          "pass": true,
+          "reduction_factor_vs_cur": 6023589997744.016,
+          "relative_threshold": 0.001,
+          "rms_norm": 1.1364158360279093e-13
+        },
+        "U2/32": {
+          "count": 8,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 9.098302021585842e-13,
+          "max_relative_to_projected_area": 2.8282026181218185e-16,
+          "pass": true,
+          "reduction_factor_vs_cur": 492228634268.6416,
+          "relative_threshold": 0.001,
+          "rms_norm": 4.368173649956146e-13
+        },
+        "U2/8": {
+          "count": 8,
+          "hundredfold_reduction_descriptive": true,
+          "max_norm": 5.867455159979668e-14,
+          "max_relative_to_projected_area": 2.918232787752537e-16,
+          "pass": true,
+          "reduction_factor_vs_cur": 4047755125669.669,
+          "relative_threshold": 0.001,
+          "rms_norm": 4.51541929732456e-14
+        }
+      },
+      "status": "PASS"
+    }
+  },
+  "evidence_class": "CPU geometry closure; no solved parent flow",
+  "exact_unc_camber_sigma_absent": true,
+  "max_nds_norm": 9.098302021585842e-13,
+  "production_evidence_root_absent": true,
+  "registered_grid_boxes": {
+    "flow_24": {
+      "lower": [
+        4,
+        4,
+        6
+      ],
+      "upper": [
+        149,
+        71,
+        53
+      ]
+    },
+    "flow_32": {
+      "lower": [
+        4,
+        4,
+        6
+      ],
+      "upper": [
+        199,
+        95,
+        71
+      ]
+    }
+  },
+  "rows": 104,
+  "status": "PASS",
+  "uniform_production_provenance_pass": true,
+  "uniform_sha256": "fc76ee6d3143d9aec9f385756be41b009002790a33fc04086ec780bf84ad369b"
+}

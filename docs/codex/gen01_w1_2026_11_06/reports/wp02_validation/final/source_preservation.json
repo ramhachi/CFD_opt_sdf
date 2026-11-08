@@ -1,0 +1,50 @@
+{
+  "schema": "force00_amendment2_source_preservation_v1",
+  "head": "21d1e8e7cb14e096f648e2e4de0ec30c8dafdd2c",
+  "base": "e3dcdf61",
+  "src_tree_diff_empty": true,
+  "production_evidence_directory_absent": true,
+  "source_force00_absent": true,
+  "job_diff_is_exact": true,
+  "venv_symlink": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv",
+  "files": [
+    {
+      "path": "julia/CFDSDFWaterLily/src/Forces.jl",
+      "base_sha256": "0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e",
+      "current_sha256": "0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e",
+      "byte_identical": true
+    },
+    {
+      "path": "julia/CFDSDFWaterLily/src/CFDSDFWaterLily.jl",
+      "base_sha256": "996224432490df72726e208ad36d1a68657b506ba4058d79a0f9eb72154d4e9e",
+      "current_sha256": "996224432490df72726e208ad36d1a68657b506ba4058d79a0f9eb72154d4e9e",
+      "byte_identical": true
+    },
+    {
+      "path": "julia/CFDSDFWaterLily/Project.toml",
+      "base_sha256": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+      "current_sha256": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+      "byte_identical": true
+    },
+    {
+      "path": "julia/CFDSDFWaterLily/Manifest.toml",
+      "base_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+      "current_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+      "byte_identical": true
+    },
+    {
+      "path": "scripts/waterlily_lowdim02_flow32_job.jl",
+      "base_sha256": "418796ce258e8f9e9945332d18869104a53f74000a96b609d4f4b42c82a21683",
+      "current_sha256": "418796ce258e8f9e9945332d18869104a53f74000a96b609d4f4b42c82a21683",
+      "byte_identical": true
+    },
+    {
+      "path": "tests/conftest.py",
+      "base_sha256": "58418a11355ab4dce6e11abcedf8bfaf9d7ec029321e2abcb0b6b666bad467eb",
+      "current_sha256": "58418a11355ab4dce6e11abcedf8bfaf9d7ec029321e2abcb0b6b666bad467eb",
+      "byte_identical": true
+    }
+  ],
+  "src_file_count": 13,
+  "all_src_members_and_bytes_equal": true
+}

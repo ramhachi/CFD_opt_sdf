@@ -1,0 +1,24 @@
+{
+  "schema": "force00_amendment2_full_suite_comparison_v1",
+  "base": {
+    "source": "user-provided completed Claude host execution, Amendment 2",
+    "commit": "e3dcdf61",
+    "passed": 3482,
+    "skipped": 74,
+    "failed": 0,
+    "failure_nodes": []
+  },
+  "feature": {
+    "passed": 3528,
+    "skipped": 74,
+    "failed": 0,
+    "errors": 0,
+    "failure_nodes": [],
+    "exit_code": 0,
+    "elapsed_seconds": 1983.8997124999296
+  },
+  "same_failure_node_set": true,
+  "base_provenance": "User-provided completed host run; not rerun or independently captured here",
+  "venv": "Original existing shared .venv, no substitutions or installs",
+  "ignore": "tests/test_lbm_metal.py per Amendment 2"
+}

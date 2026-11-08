@@ -1,0 +1,11 @@
+{
+  "command": [
+    "julia",
+    "--project=julia/CFDSDFWaterLily",
+    "scripts/force00_job_regression.jl",
+    "docs/codex/gen01_w1_2026_11_06/reports/wp02_validation/final/cpu_job_regression"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds_including_jit": 80.64535237499513,
+  "evidence_class": "CPU flow_16 development byte regression only"
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "force00_focused_python_checks_v1",
+  "checks": [
+    {
+      "role": "root",
+      "command": ".venv/bin/python -m pytest -q -p no:cacheprovider tests/test_force00_gate.py tests/test_force00_uniform_inputs.py",
+      "exit_code": 0,
+      "passed": 46,
+      "elapsed_seconds": 10.59,
+      "source": "terminal tool result"
+    },
+    {
+      "role": "root",
+      "command": ".venv/bin/python -m pytest -q -p no:cacheprovider tests/test_candidate_c_w2a_plan.py::test_candidate_c_w2a_source_manifest_and_criteria_hashes_resolve tests/test_grad_g2_diag5_prereg.py::test_driver_pins_agree_with_the_freeze",
+      "exit_code": 0,
+      "passed": 2,
+      "elapsed_seconds": 0.1,
+      "source": "terminal tool result"
+    }
+  ]
+}

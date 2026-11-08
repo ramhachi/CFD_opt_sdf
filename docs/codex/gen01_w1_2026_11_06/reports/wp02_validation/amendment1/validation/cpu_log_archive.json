@@ -1,0 +1,37 @@
+{
+  "records": [
+    {
+      "archive": "selftest.log.gz",
+      "archive_sha256": "f35e1e6fa12e5ce36916b3fc3b53b7585331563d9849adb26580a2d6ce87fa40",
+      "label": "selftest",
+      "original_path": "/private/tmp/force00-amend1-selftest.log",
+      "raw_bytes": 568,
+      "raw_sha256": "2493ac17ef2b6dbf9394b43a0173fbf3216478f00025d512c11733230438dc4f"
+    },
+    {
+      "archive": "pin.log.gz",
+      "archive_sha256": "bc49e2116a686f05af0af534d4fc6823ab91c205aa74eebcb1da16d77004774e",
+      "label": "pin",
+      "original_path": "/private/tmp/force00-amend1-pin.log",
+      "raw_bytes": 127,
+      "raw_sha256": "c020a2e9f4fc86e655c8280714ed18d5d3e80322be2b49f6f106da96ad3dd488"
+    },
+    {
+      "archive": "focused.log.gz",
+      "archive_sha256": "dbc5e6f3bfcc3412449c712e08899a08be80d003a23159e72145995974ca9a00",
+      "label": "focused",
+      "original_path": "/private/tmp/force00-amend1-focused.log",
+      "raw_bytes": 130,
+      "raw_sha256": "6b4eb32921aef0052b8c20de7c28d92a8c29440ad4820baad7fce7e4eabf087a"
+    },
+    {
+      "archive": "compileall.log.gz",
+      "archive_sha256": "a40a8cb22995f46f3bc4a7fb7cde6cbc59a04daf347a154f45630059b5785bbf",
+      "label": "compileall",
+      "original_path": "/private/tmp/force00-amend1-compileall.log",
+      "raw_bytes": 399,
+      "raw_sha256": "10334d41a769a49f8c959937e8960e1d12affbdcd5df3314d25891faacedca13"
+    }
+  ],
+  "schema": "force00_completed_cpu_logs_v1"
+}

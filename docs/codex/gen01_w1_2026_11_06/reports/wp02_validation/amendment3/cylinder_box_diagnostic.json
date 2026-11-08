@@ -1,0 +1,73 @@
+{
+  "averaging": "trapezoidal physical-time weighted",
+  "boxes": [
+    [
+      [
+        32,
+        66
+      ],
+      [
+        32,
+        66
+      ]
+    ],
+    [
+      [
+        24,
+        90
+      ],
+      [
+        20,
+        78
+      ]
+    ],
+    [
+      [
+        16,
+        140
+      ],
+      [
+        12,
+        86
+      ]
+    ]
+  ],
+  "cur_mean": [
+    11.399226206078923,
+    0.284735314617875
+  ],
+  "cv_drag_relative_spread": 0.000460180824497046,
+  "cv_means": [
+    [
+      12.822166290930566,
+      0.32171466046878133
+    ],
+    [
+      12.82806822286828,
+      0.3286256510912675
+    ],
+    [
+      12.825501263532432,
+      0.3392009972259995
+    ]
+  ],
+  "cv_vs_cur_relative": [
+    0.12482777858139382,
+    0.1253455270523003,
+    0.12512033989578275
+  ],
+  "diameter_cells": 16,
+  "evidence_class": "CPU solved-cylinder diagnostic; descriptive only; not project-parent evidence",
+  "instantaneous_box1_box3_lift_rms": 0.25903451769592845,
+  "nds_mean": [
+    11.396594101045142,
+    0.2989025663286389
+  ],
+  "raw_log_sha256": "8917805be34d13ef290838d0ffce05dcc1f028757b883f34e4371eb00acced05",
+  "reynolds": 100,
+  "sample_interval_steps": 8,
+  "sampled_steps": 800,
+  "threshold_for_box_spread": null,
+  "warmup_steps": 1500,
+  "window_solver_time": 305.7698974609375
+}
